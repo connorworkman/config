@@ -1,0 +1,66 @@
+#!/bin/bash
+
+#vklist=$(cat)
+
+#printf '%s\n%s' "${vklist:-${vkvar}}" "foobar" | \
+#	paste -s -d '~' | \
+#	while IFS='~' read -r -d '~'; do openvk "$REPLY"; done
+#while IFS= read -r; do echo vk "$REPLY"; done <${1:-/dev/stdin}
+#sleep 1 && echo
+
+eurl () {
+    local LC_ALL=C c
+    while IFS= read -r -n1 -d '' c
+    do
+        if [[ $c = [[:alnum:]] ]]
+        then
+            printf %s "$c"
+        else
+            printf %%%02x "'$c"
+        fi
+    done
+}
+
+openvk() {
+        local vkurl search
+        search="$1"
+        while [[ ! -z "$2" ]]
+        do
+                shift && search="$search+$1"
+        done
+	vkurl='http://vk.com/audio?q='"$(printf '%s' "$search" | eurl | tr -d \')"
+	#vkurl='http://vk.com/audios361427414?act=popular&q='"$(printf '%s' "$search" | eurl | tr -d \')"
+        #local vkurl='http://vk.com/audios361427414?act=popular&q='$(printf '%s' "${search}" | sed -f "$(which urlencode.sed)"
+		chromium "$vkurl" &
+	#printf'%s ' "$vkurl"
+        #xdg-open "$vkurl"
+        #open_command "$vkurl"
+	return 0
+}
+openmp3fy() {
+        local vkurl search
+        search="$1"
+        while [[ ! -z "$2" ]]
+        do
+                shift && search="$search+$1"
+        done
+	vkurl='http://www.mp3fy.com/music/search.php?s=foo&artist=bar+foo+bar&type=track&page=1'
+	# vkurl="http://vk.com/audios361427414?act=popular&q=$(printf '%s' ${searchi} | eurl | tr -d )"
+        # local vkurl='http://vk.com/audios361427414?act=popular&q='$(printf '%s' "${search}" |  sed -f "$(which urlencode.sed)"
+		# chromium "$vkurl" &
+	# printf'%s ' "$vkurl"
+        # xdg-open "$vkurl"
+        # open_command "$vkurl"
+	return 0
+}
+
+declare -a vkarray
+#readarray vkarray <${1:-/dev/stdin}
+readarray -t vkarray <"${1:-/dev/stdin}"
+let i=0
+while (( ${#vkarray[@]} > i )); do openvk "${vkarray[i++]}"; done
+vkvar=$(while (( ${#vkarray[@]} > i )); do openvk "${vkarray[i++]}"; done | tr -d \')
+#google-chrome-stable "$vkvar"
+#echo "$vkvar"
+if jobs %%; then wait $!; fi
+echo

@@ -1,0 +1,62 @@
+# 
+# /etc/fstab: static file system information
+#
+# <file system>	<dir>	<type>	<options>	<dump>	<pass>
+#
+# blkid output:
+#
+#/dev/sda1: LABEL="Recovery" UUID="1C58D29B58D272CE" TYPE="ntfs" PARTLABEL="Windows recovery partition" PARTUUID="52a43b86-3f12-4f08-b70f-bcda67ed6475"
+#/dev/sda2: LABEL="ESP" UUID="8AD3-1E1C" TYPE="vfat" PARTLABEL="EFI system partition" PARTUUID="3daf787f-296d-4ed8-afcb-6e86843ebcab"
+#/dev/sda4: LABEL="Windows" UUID="5A9AFEEA9AFEC195" TYPE="ntfs" PARTLABEL="Windows data partition" PARTUUID="d6862e5b-452e-4a9f-b9e2-0709d59c7b67"
+#/dev/sda5: LABEL="Swap" UUID="0275a37d-c862-444f-b82e-21bb74146fb2" TYPE="swap" PARTLABEL="Arch swap partition" PARTUUID="89a70885-0379-4bf3-9f60-ae7e7436fbd6"
+#/dev/sda6: LABEL="Arch" UUID="1e4595ad-3149-47e8-a0ad-65f803f46409" UUID_SUB="52ca6dbd-8c91-4e5b-96ec-bc02d3a21111" TYPE="btrfs" PARTLABEL="Arch root partition" PARTUUID="f7b3a180-281e-401b-afeb-a1033be91b88"
+#/dev/sdb1: LABEL="microSDXC64GB" UUID="19F3-8FCC" TYPE="exfat" PTTYPE="dos" PARTUUID="f40b7f6f-01"
+#/dev/sdc1: LABEL="FreeAgentDrive" UUID="12E8C69FE8C68109" TYPE="ntfs" PARTUUID="a4b57300-01"
+#/dev/sdd1: LABEL="Lexar128GB" UUID="e6d742a6-3722-48f4-91b9-eb7ead1667c7" UUID_SUB="5b87549f-9525-4541-8f94-db9648e0fc58" TYPE="btrfs" PARTUUID="54b4a949-e640-4799-b5ba-f1667e56d818"
+#/dev/sde1: LABEL="SanDisk64GB" UUID="1AB00756B00737B1" TYPE="ntfs" PARTUUID="fabac321-01"
+#/dev/sda3: PARTLABEL="Microsoft reserved partition" PARTUUID="5073bd9c-31a9-4573-a44b-5d820c3311e0"
+
+# UUID=8AD3-1E1C LABEL=ESP
+/dev/sda2		/boot/efi	vfat		rw,noatime,fmask=0022,dmask=0022,codepage=437,iocharset=iso8859-1,shortname=mixed,errors=remount-ro	0 0
+
+# UUID=1e4595ad-3149-47e8-a0ad-65f803f46409 LABEL=Arch
+/dev/sda6		/		btrfs		rw,noatime,compress=lzo,ssd,space_cache,subvolid=260		0 0
+/dev/sda6		/home		btrfs		rw,noatime,compress=lzo,ssd,space_cache,subvolid=261		0 0
+/dev/sda6		/store		btrfs		rw,noatime,compress=lzo,ssd,space_cache,subvolid=262		0 0
+#/dev/sda6		/home		btrfs		rw,noatime,compress=lzo,ssd,space_cache,subvol=__snapshot/__active/home					0 0
+#/dev/sda6		/store		btrfs		rw,noatime,compress=lzo,ssd,space_cache,subvol=__snapshot/__active/store				0 0
+
+## Btrfs actual filesystem root
+/dev/sda6		/btrfs		btrfs		rw,noatime,compress=lzo,ssd,space_cache,subvolid=0		0 0
+
+## Alternate snapshot rootfs
+# UUID=1e4595ad-3149-47e8-a0ad-65f803f46409 LABEL=Arch
+#/dev/sda6		/		btrfs		rw,noatime,compress=lzo,ssd,space_cache,subvol=__snapshot/rootfs					0 0
+
+# UUID=0275a37d-c862-444f-b82e-21bb74146fb2 LABEL=Swap
+/dev/sda5		none		swap		defaults,priority=10						0 0
+
+## MySQL tmpfs
+tmpfs			/var/lib/mysqltmp	tmpfs	rw,gid=89,uid=89,size=100M,mode=0750,noatime			0 0
+
+## Increase shared tmpfs size
+#none			/dev/shm		tmpfs	defaults,size=1G						0 0
+
+## Music bindmount
+#/run/media/alyptik/microSDXC/Music	/home/alyptik/Music	none	defaults,bind	0 0
+
+## Windows partition
+#/dev/sda4: LABEL="Windows" UUID="5A9AFEEA9AFEC195" TYPE="ntfs" PARTLABEL="Windows data partition" PARTUUID="d6862e5b-452e-4a9f-b9e2-0709d59c7b67"
+#/LABEL="Windows"	/media/Windows		ntfs-3g		auto,defaults,rw,x-systemd.automount,x-systemd.device-timeout=1,timeo=15,x-systemd.idle-timeout=1min,nofail,nosuid,nodev,noatime,default_permissions,allow_other,users,exec,locale=en_US.UTF-8		0 0
+## NTFS
+#LABEL="FreeAgentDrive"	/media/FreeAgentDrive	ntfs-3g		auto,defaults,rw,x-systemd.automount,x-systemd.device-timeout=1,timeo=15,x-systemd.idle-timeout=1min,nofail,nosuid,nodev,noatime,default_permissions,allow_other		0 0
+#LABEL="FreeAgentDrive"	/media/FreeAgentDrive	ntfs-3g	auto,defaults,rw,x-systemd.automount,x-systemd.device-timeout=1,timeo=15,x-systemd.idle-timeout=1min,nofail,nosuid,nodev,noatime,default_permissions,allow_other,uhelper=udisks2	0 0
+#LABEL="SanDisk64G"	/media/SanDisk64	ntfs-3g		auto,defaults,rw,x-systemd.automount,x-systemd.device-timeout=1,timeo=15,x-systemd.idle-timeout=1min,nofail,nosuid,nodev,noatime,default_permissions,allow_other		0 0
+## BTRFS
+#LABEL="Lexar128GB"	/media/Lexar128GB	btrfs		auto,defaults,rw,x-systemd.automount,x-systemd.device-timeout=10,timeo=15,x-systemd.idle-timeout=1min,nofail,nosuid,nodev,noatime,discard,compress=lzo,ssd,space_cache		
+## exFAT
+#LABEL="microSDXC64GB"	/media/microSDXC64GB	exfat		auto,rw,x-systemd.automount,x-systemd.device-timeout=1,timeo=15,x-systemd.idle-timeout=1min,nofail,blksize=4096,noatime,users		0 0
+#LABEL="microSDXC64GB"	/mnt/usb		exfat		auto,rw,x-systemd.automount,x-systemd.device-timeout=1,timeo=15,x-systemd.idle-timeout=1min,nofail,dmask=000,fmask=000,blksize=4096,noatime,users		0 0
+#LABEL="microSDXC64GB"	/media/microSDXC64GB	exfat-fuse	rw,nofail,x-systemd.device-timeout=1,nosuid,nodev,noatime,user_id=0,group_id=0,default_permissions,allow_other,blksize=4096,uuid=gid=1000,helper=udisks2	0 0
+#LABEL="microSDXC64GB"	/media/microSDXC64GB	exfat	auto,defaults,rw,x-systemd.automount,x-systemd.device-timeout=1,timeo=15,x-systemd.idle-timeout=1min,nofail,nosuid,nodev,noatime,default_permissions,allow_other		0 0
+

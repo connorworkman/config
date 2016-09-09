@@ -1,0 +1,120 @@
+#!/usr/bin/nft -f
+
+# ipv4/ipv6 Simple & Safe Firewall
+# you can find examples in /usr/share/nftables/
+
+flush ruleset
+
+define ip_trust = { 127.0.0.1, 192.168.1.98, 192.168.1.1, 192.168.1.2, 76.173.136.206, 98.150.139.104, 98.150.136.0/21 };
+define loc_trust = { 127.0.0.1, 192.168.1.0/24 };
+define ip6_trust = { ::1, 2001:470:d:7e:5e26:aff:fe0b:f7dd, 2001:470:d:7e:c80f:b56b:8de9:56e7, 2001:470:d:7e:b7f9:af60:457d:3d7f };
+#define loc6_trust = { ::1 };
+define loc6_trust = $ip6_trust;
+define fports = { 20-25, 53, 67, 110, 111, 143, 222, 443, 465, 587, 873, 953, 993, 995, 1723, 2222, 4434, 5353, 5800, 5900-5999, 7657, 8112, 9051, 9091 };
+define fserv = { ftp ,ssh, telnet, smtp, pop3, imap, http, https, rsync, pptp };
+
+table inet filter {
+    chain input {
+	# Interface jumps
+	type filter hook input priority 0; policy accept;
+	# Accept loopback traffic
+	iifname lo accept;
+	# allow established/related connection
+	ct state { established, related } counter accept;
+	# early drop of invalid connections
+	ct state invalid counter reject with tcp reset;
+	# Other traffic (i.e. internal)
+	iifname != eth1 counter goto internal;
+	# Allowed ports
+	tcp dport $fserv accept;
+	udp dport $fserv accept;
+	tcp dport $fports accept;
+	udp dport $fports accept;
+
+	# Webmin
+        tcp dport 10000 ip saddr $ip_trust counter accept;
+        udp dport 10000 ip saddr $ip_trust counter accept;
+        tcp dport 10000 ip6 saddr $ip6_trust counter accept;
+        udp dport 10000 ip6 saddr $ip6_trust counter accept;
+        tcp dport 10000 ip saddr != 192.168.1.0/24 counter reject;
+        udp dport 10000 ip saddr != 192.168.1.0/24 counter reject;
+	# Reject and log other packets
+ 	iifname eth1 limit rate 1/minute counter log counter drop;
+	#iifname eth1 counter drop;
+	#iifname eth1 counter reject;
+  }
+    chain forward {
+	type filter hook forward priority 0; policy accept;
+  }
+    chain output {
+	type filter hook output priority 0; policy accept;
+  }
+## Custom chains
+    chain internal {
+	# Webmin
+	tcp dport 10000 ip saddr $ip_trust counter accept;
+	udp dport 10000 ip saddr $ip_trust counter accept;
+	tcp dport 10000 ip6 saddr $ip6_trust counter accept;
+	udp dport 10000 ip6 saddr $ip6_trust counter accept;
+	tcp dport 10000 ip saddr != 192.168.1.0/24 counter reject;
+	udp dport 10000 ip saddr != 192.168.1.0/24 counter reject;
+	counter accept;
+  }
+}
+
+table ip filter {
+	chain input {
+        type filter hook input priority 0; policy accept;
+  }
+	chain forward {
+        type filter hook forward priority 0; policy accept;
+  }
+	chain output {
+	type filter hook output priority 0; policy accept;
+  }
+}
+
+table ip6 filter {
+	chain input {
+        type filter hook input priority 0; policy accept;
+}
+ 	chain forward {
+        type filter hook forward priority 0; policy accept;
+  }
+  	chain output {
+        type filter hook output priority 0; policy accept;
+  }
+}
+
+table ip nat {
+    chain prerouting {
+	type nat hook prerouting priority -150;
+  }
+   chain postrouting {
+	type nat hook prerouting priority -150;
+  }
+}
+
+table ip6 nat {
+   chain prerouting {
+	type nat hook prerouting priority -150;
+   }
+ chain postrouting {
+	type nat hook postrouting priority -150;
+  }
+}
+
+table ip mangle {
+   chain output {
+	type route hook output priority -150;
+  }
+}
+
+table ip6 mangle {
+   chain output {
+	type route hook output priority -150;
+  }
+}
+
+# vim:set ts=2 sw=2 et:
+

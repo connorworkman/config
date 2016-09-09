@@ -1,0 +1,50 @@
+# The vncserver service unit file
+#
+# 1. Copy this file to /etc/systemd/system/vncserver@:<display>.service
+# 2. Edit User=
+#   ("User=foo")
+# 3. Edit  and vncserver parameters appropriately
+#   ("/usr/bin/vncserver %i -arg1 -arg2 -argn")
+# 4. Run `systemctl --system daemon-reload`
+# 5. Run `systemctl enable vncserver@:<display>.service`
+#
+# DO NOT RUN THIS SERVICE if your local area network is untrusted!
+#
+# See the wiki page for more on security
+# https://wiki.archlinux.org/index.php/Vncserver
+
+
+[Unit]
+Description=VNC Server for X11
+#After=graphical.target network.target
+After=syslog.target network.target
+Requires=graphical.target
+
+[Service]
+Type=forking
+User=root
+PIDFile=/tmp/x11vnc.pid
+KillMode=process
+#BusName=org.freedesktop.x11vnc
+RestartSec=30
+Restart=on-failure
+ExecStopPost=/bin/bash -c "killall x11vnc || true"
+ExecStopPost=/bin/bash -c "[[ ! -e /tmp/x11vnc.pid ]] || /bin/rm -f /tmp/x11vnc.pid"
+ExecStart=/bin/bash -c "/usr/bin/x11vnc -env FD_SDDM=1 -auth /tmp/xauth-1000-_0 -forever -shared -display :0 -autoport 5901 -6 -rfbauth /etc/x11vnc.pass -ncache 10 -ncache_cr -ssldir /home/alyptik/certs/vnc -ssl /home/alyptik/certs/vnc/server-vencrypt.pem -vencrypt support:nox509 -anontls support:nox509 -dhparams /home/alyptik/certs/vnc/dh.pem -noxdamage -noxkb -noxfixes -rmflag create:/tmp/x11vnc.pid & "
+
+#Type=oneshot
+#GuessMainPID=1
+#User=alyptik
+#Restart=on-failure
+#ExecStartPost=/bin/bash -c "echo ${MAINPID} >/tmp/x11vnc.pid"
+#ExecStartPost=/bin/bash -c "sed -ri '1 s/^(.*) ?.*$/& '"${MAINPID}"'/;q' /tmp/x11vnc.pid"
+#ExecStartPost=/bin/bash -c "echo ${MAINPID} >>/var/run/x11vnc.pid"
+#ExecStartPost=/bin/sudo bash -c "sed -i '1 s/^.*$/'${MAINPID}'/;q' /var/run/x11vnc.pid || true"
+#ExecStopPost=/bin/bash -c "kill $(cat /tmp/x11vnc.pid) || true"
+#ExecStart=/usr/bin/x11vnc -env FD_XDM=1 -env FD_SDDM=1 -auth /var/run/sddm/* -bg -forever -shared -display :0 -autoport -6 -rfbauth /etc/x11vnc.pass -ncache 10 -ncache_cr -ssldir /home/alyptik/certs/vnc -ssl /home/alyptik/certs/vnc/server-vencrypt.pem -vencrypt support:nox509 -anontls support:nox509 -dhparams /home/alyptik/certs/vnc/dh.pem -rmflag /var/run/x11vnc.pid
+#ExecStart=x11vnc -auth guess -bg -forever -shared -display :0 -autoport -6 -rfbauth /etc/x11vnc.pass -ncache 10 -ncache_cr -ssldir /home/alyptik/certs/vnc -ssl /home/alyptik/certs/vnc/server-vencrypt.pem -vencrypt support:nox509 -anontls support:nox509 -dhparams /home/alyptik/certs/vnc/dh.pem -rmflag /run/x11vnc.pid
+#ExecStart=/usr/bin/x11vnc -auth guess -bg -forever -shared -display :0 -rfbauth /etc/x11vnc.pass -autoport -6 -ncache 10 -ncache_cr -ssldir /home/alyptik/certs/vnc -ssl /home/alyptik/certs/vnc/server-vencrypt.pem -vencrypt force -anontls force -dhparams /home/alyptik/certs/vnc/dh.pem -rmflag create:/run/x11vnc.pid
+#ExecStart=/usr/bin/x11vnc -env FD_XDM=1 -env FD_SDDM=1 -auth /home/alyptik/.Xauthority -bg -forever -shared -display :0 -autoport -6 -rfbauth /etc/x11vnc.pass -ncache 10 -ncache_cr -ssldir /home/alyptik/certs/vnc -ssl /home/alyptik/certs/vnc/server-vencrypt.pem -vencrypt force -anontls force -dhparams /home/alyptik/certs/vnc/dh.pem -rmflag /var/run/x11vnc.pid
+
+[Install]
+WantedBy=multi-user.target
