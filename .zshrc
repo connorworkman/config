@@ -118,6 +118,11 @@ export BULLETTRAIN_EXEC_TIME_SHOW=true
 export BULLETTRAIN_IS_SSH_CLIENT=true
 export BULLETTRAIN_DIR_CONTEXT_SHOW=false
 
+## Tmux plugin env
+export ZSH_TMUX_FIXTERM=false
+export ZSH_TMUX_AUTOSTART=false
+export ZSH_TMUX_AUTOCONNECT=false
+
 # Uncomment the following line to use case-sensitive completion.
 CASE_SENSITIVE="false"
 
