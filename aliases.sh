@@ -11,6 +11,10 @@ alias zshconfig='vim ${HOME}/.zshrc '
 alias ohmyzsh='pushd ${ZSH} '
 
 ## Custom aliases
+
+
+alias tm='tmux '
+alias tma='tmux atatch '
 alias wm='wemux '
 alias cp='cp --reflink=auto '
 alias ix="curl -F 'f:1=<-' ix.io "
@@ -167,9 +171,10 @@ alias ald='ld -I/lib64/ld-linux-x86-64.so.2 /usr/lib/crt1.o /usr/lib/crti.o -lc 
 
 ## New shell functions
 
+so() { chromium "http://stackoverflow.com/search?q=${*}"; }
 hexconv() { printf "${1:/dev/stdin}" | sed 's/0x//;s/\(..\)\(..\)\(..\)\(..\)/\\x\4\\x\3\\x\2\\x\1/'; echo; }
 lsupd() { checkupdates; cower -ub; }
-ytconv(){
+ytconv() {
 	[ -r "out.avi" ] && printf "\n \033[31m %s \n\033[0m" "Error \'out.mp4\' exists..." || \
 		ffmpeg -loop 1 -y -i "$1" -i "$2" -acodec copy -vcodec libx264 -shortest out.avi
 		#ffmpeg -loop 1 -i "${1}" -i "${2}" -c:v libx264 -tune stillimage -c:a aac -strict experimental -b:a 192k -pix_fmt yuv420p -shortest out.mp4
