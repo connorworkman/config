@@ -8,7 +8,7 @@
 #export PATH="/opt/openresty/bin:/opt/openresty/nginx/sbin:${PATH}"
 #export PATH="/opt/android-sdk/platform-tools:${HOME}/.gem/ruby/2.3.0/bin:${HOME}/bin:/store/scripts:/store/local/Wolfram/CDFPlayer/10.3/Executables:/store/local/bin:${HOME}/.linuxbrew/bin:${PATH}"
 #export PATH="/usr/lib/colorgcc/bin:${PATH}"    # As per usual colorgcc installation, leave unchanged (don't add ccache)
-export PATH=/usr/lib/colorgcc/bin:/opt/android-sdk/platform-tools:${HOME}/.gem/ruby/2.3.0/bin:${HOME}/bin:/store/scripts:/store/local/Wolfram/CDFPlayer/10.3/Executables:/store/local/bin:${HOME}/.linuxbrew/bin:/opt/openresty/bin:/opt/openresty/nginx/sbin:${HOME}/GNUstep/Tools:/bin:/sbin:/usr/local/sbin:/usr/local/bin:/usr/bin:/usr/lib/jvm/default/bin:/usr/bin/site_perl:/usr/bin/vendor_perl:/usr/bin/core_perl
+export PATH=/store/config/scripts:/usr/lib/colorgcc/bin:/opt/android-sdk/platform-tools:${HOME}/.gem/ruby/2.3.0/bin:${HOME}/bin:/store/scripts:/store/local/Wolfram/CDFPlayer/10.3/Executables:/store/local/bin:${HOME}/.linuxbrew/bin:/opt/openresty/bin:/opt/openresty/nginx/sbin:${HOME}/GNUstep/Tools:/bin:/sbin:/usr/local/sbin:/usr/local/bin:/usr/bin:/usr/lib/jvm/default/bin:/usr/bin/site_perl:/usr/bin/vendor_perl:/usr/bin/core_perl
 #export MANPATH="/usr/local/man:${MANPATH}"
 export MANPATH=/usr/local/man:${MANPATH}:${HOME}/.linuxbrew/share/man
 export INFOPATH=${HOME}/.linuxbrew/share/info:/usr/share/info:${HOME}/GNUstep/Library/Documentation/info
@@ -47,7 +47,8 @@ export LC="en_US.UTF-8"
 export CCACHE_PATH="/usr/bin"
 ## Less env
 export PAGER="less"
-export SYSTEMD_LESS='-FRXMK' journalctl
+#export SYSTEMD_LESS='-FRXMK' journalctl
+export SYSTEMD_LESS='-RXMK' journalctl
 ## Intel VA-API and VDPAU configu
 export LIBVA_DRIVER_NAME="i965"
 export VDPAU_DRIVER="va_gl"

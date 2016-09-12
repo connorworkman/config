@@ -121,7 +121,7 @@ export BULLETTRAIN_DIR_CONTEXT_SHOW=false
 ## Tmux plugin env
 export ZSH_TMUX_FIXTERM=false
 export ZSH_TMUX_AUTOSTART=false
-export ZSH_TMUX_AUTOCONNECT=false
+export ZSH_TMUX_AUTOCONNECT=true
 
 # Uncomment the following line to use case-sensitive completion.
 CASE_SENSITIVE="false"
@@ -162,7 +162,7 @@ DISABLE_UNTRACKED_FILES_DIRTY="true"
 HIST_STAMPS="mm/dd/yyyy"
 
 # Would you like to use another custom folder than $ZSH/custom?
-ZSH_CUSTOM=${HOME}/.oh-my-zsh
+#ZSH_CUSTOM=${HOME}/.oh-my-zsh
 #ZSH_CUSTOM=/path/to/new-custom-folder
 
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
