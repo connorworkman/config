@@ -11,6 +11,7 @@ alias zshconfig='vim ${HOME}/.zshrc '
 alias ohmyzsh='pushd ${ZSH} '
 
 ## Custom aliases
+alias wm='wemux '
 alias cp='cp --reflink=auto '
 alias ix="curl -F 'f:1=<-' ix.io "
 alias tbin='nc termbin.com 9999 '
