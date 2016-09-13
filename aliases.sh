@@ -12,7 +12,7 @@ alias ohmyzsh='pushd ${ZSH} '
 
 ## Custom aliases
 
-
+alias cm='chromium '
 alias tm='tmux '
 alias tma='tmux atatch '
 alias wm='wemux '

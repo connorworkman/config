@@ -7,12 +7,16 @@
 SOUND_CARD_PCI_ID=00:1b.0
 ## HDMI
 #SOUND_CARD_PCI_ID=00:03.0
-setpci -v -d *:* latency_timer=b0
-setpci -v -s "$SOUND_CARD_PCI_ID" latency_timer=ff
+sudo setpci -v -d *:* latency_timer=b0
+sudo setpci -v -s "$SOUND_CARD_PCI_ID" latency_timer=ff
 ## eg. SOUND_CARD_PCI_ID=03:00.0 (use `lspci | grep -i audio)
 
-printf '%s' "2048" > /sys/class/rtc/rtc0/max_user_freq
-printf '%s' "2048" > /proc/sys/dev/hpet/max-user-freq
+printf '%s' "performance
+performance
+performance
+performance" | sudo tee /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor; echo
+printf '%s' "2048" | sudo tee /sys/class/rtc/rtc0/max_user_freq; echo
+printf '%s' "2048" | sudo tee  /proc/sys/dev/hpet/max-user-freq; echo
 #dd <<<"2048" of='/sys/class/rtc/rtc0/max_user_freq'
 #dd <<<"2048" of='/proc/sys/dev/hpet/max-user-freq'
 
