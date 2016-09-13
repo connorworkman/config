@@ -28,6 +28,7 @@ case $1 in
   *.pdf) /usr/bin/foxitreader "$1" ;;
   #*://dpaste.de/*) ~/bin/pyb "$1" ;;
   *://*youtube.com/*) mpvcmd "$1" ;;
+  *://*youtu.be/*) mpvcmd "$1" ;;
   *) /usr/bin/chromium "$1" ;;
   #*) /usr/bin/firefox -new-tab "$1" ;;
 esac
