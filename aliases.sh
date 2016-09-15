@@ -14,7 +14,7 @@ alias ohmyzsh='pushd ${ZSH} '
 
 alias cm='chromium '
 alias tm='tmux '
-alias tma='tmux atatch '
+alias tma='tmux attach '
 alias wm='wemux '
 alias cp='cp --reflink=auto '
 alias ix="curl -F 'f:1=<-' ix.io "

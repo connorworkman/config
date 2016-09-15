@@ -25,7 +25,7 @@ case $1 in
   *://i.imgur.com/*) feh "$1" ;;
   *://imgur.com/*) imgurredirect "$1" ;;
   *.jpg|*.jpeg|*.png) feh "$1" ;;
-  *.pdf) /usr/bin/foxitreader "$1" ;;
+  #*.pdf) /usr/bin/foxitreader "$1" ;;
   #*://dpaste.de/*) ~/bin/pyb "$1" ;;
   *://*youtube.com/*) mpvcmd "$1" ;;
   *://*youtu.be/*) mpvcmd "$1" ;;
