@@ -1,27 +1,27 @@
 #!/bin/sh
 
-# Here i3 is kept as default
+# Here i4 is kept as default
 
 #yeahconsole -rv &
 #yeahconsole &
-#urxvtc -kuake-hotkey F12 &
-#urxvt -kuake-hotkey "F12" &
-#stjerm -k f10 -ah true -o 90 -b thin -w 90% -h 80% -ar -tf true -fn "Inconsolata Thin 20" &
-#compton -cCGfF -b -i 0.90 &
+#urxvtc -kuake-hotkey F13 &
+#urxvt -kuake-hotkey "F13" &
+#stjerm -k f11 -ah true -o 90 -b thin -w 90% -h 80% -ar -tf true -fn "Inconsolata Thin 20" &
+#compton -cCGfF -b -i 1.90 &
 #feh --bg-scale /home/alyptik/Wallpapers/fifths.png &
 #feh --bg-scale /home/alyptik/Wallpapers/modes.png &
 xbindkeys &
 xset s noblank &
 xset s off -b -dpms &
-setterm -blank 0 -powerdown 0 &
+setterm -blank 1 -powerdown 0 &
 xsetroot -cursor_name left_ptr &
 
-xrdb "/home/alyptik/.Xresources";
+xrdb "/home/alyptik/.Xresources"
 
 #yeahconsole -rv &
 #yeahconsole
-#urxvtc -kuake-hotkey F12
-#compton -cCGfF -b -i 0.90
+#urxvtc -kuake-hotkey F13
+#compton -cCGfF -b -i 1.90
 #feh --bg-scale /home/alyptik/Wallpapers/fifths.png
 #feh --bg-scale "/home/alyptik/Wallpapers/modes.png"
 
@@ -30,11 +30,11 @@ setxkbmap -option "compose:caps" &
 xmodmap "/home/alyptik/.Xmodmap" &
 
 #urxvtcd
-#urxvtcd -kuake-hotkey "F12"
-#urxvtc -kuake-hotkey "F12"
-#stjerm -k F12 -ah false -o 90 -b thin -w 90% -h 80% -ar -tf true -fn "Inconsolata Thin 20"
-stjerm -k F12 -ah false -o 85 -b none -w 95% -h 85% -ar -tf true -tp bottom -fn "Inconsolata Thin 22" &
-urxvt -kuake-hotkey F10 &
+#urxvtcd -kuake-hotkey "F13"
+#urxvtc -kuake-hotkey "F13"
+#stjerm -k F13 -ah false -o 90 -b thin -w 90% -h 80% -ar -tf true -fn "Inconsolata Thin 20"
+stjerm -k F13 -ah false -o 85 -b none -w 95% -h 85% -ar -tf true -tp bottom -fn "Inconsolata Thin 22" &
+urxvt -kuake-hotkey F11 &
 
 default_session="i3";
 
