@@ -62,6 +62,14 @@ highlight link SearchSpecialSearchType MoreMsg
 "You can remap the direct group searches (by default via the keypad 1-9 keys): >
     nmap <Leader>1  <Plug>MarkSearchGroup1Next
     nmap <Leader>!  <Plug>MarkSearchGroup1Prev
+    nmap <Leader>2  <Plug>MarkSearchGroup2Next
+    nmap <Leader>3  <Plug>MarkSearchGroup2Next
+    nmap <Leader>4  <Plug>MarkSearchGroup2Next
+    nmap <Leader>5  <Plug>MarkSearchGroup2Next
+    nmap <Leader>6  <Plug>MarkSearchGroup2Next
+    nmap <Leader>7  <Plug>MarkSearchGroup2Next
+    nmap <Leader>8  <Plug>MarkSearchGroup2Next
+    nmap <Leader>9  <Plug>MarkSearchGroup2Next
 "*g:mwDirectGroupJumpMappingNum*
 "If you need more / less groups, this can be configured via: >
     let g:mwDirectGroupJumpMappingNum = 50
@@ -178,17 +186,24 @@ function! ToggleHex()
     endif
 endfunction
 nnoremap <M-F8> :call ToggleHex()<CR>
-let g:tmouse = 0
-function! ToggleMouse()
-    if g:tmouse
-        set mouse=a
-        let g:tmouse = 0
+"let g:tmouse = 0
+let g:tfold = 0
+"function! ToggleMouse()
+function! ToggleFold()
+    "if g:tmouse
+    if g:tfold
+        "set mouse=a
+        "let g:tmouse = 0
+	0,$foldc!
+	let g:tfold = 0
     else
-        set mouse=r
-        let g:tmouse = 1
+        "set mouse=r
+        "let g:tmouse = 1
+	0,$foldo!
+	let g:tfold = 1
     endif
 endfunction
-nnoremap <F9> :call ToggleMouse()<CR>
+nnoremap <F9> :call ToggleFold()<CR>
 "nnoremap <F9> :call ToggleMouse()<CR>
 let g:txxd = 0
 function! ToggleXXD()
