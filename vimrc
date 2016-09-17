@@ -20,6 +20,7 @@ let vimpager_use_gvim = 1
 "let vimpager_disable_x11 = 1
 "let vimpager_scrolloff = 5
 "let vimpager_disable_ansiesc = 1
+" [1;5Q [12^
 
 " tmux will send xterm-style keys when its xterm-keys option is on
 "if &term =~ '^screen'
@@ -135,14 +136,36 @@ nnoremap <Leader>, :s/ .*:[0-9][0-9]//
 nnoremap <Leader>. :s/[0-9]*\. //
 "nnoremap <Leader>. V"+y<Esc>:call system("xclip -i -selection clipboard", getreg("\""))
 "\<CR>:call system("xclip -i", getreg("\""))<CR>
-map <F2> ^
-map <C-F2> {
-map <F3> $
-map <C-F3> }
-map <F4> <C-u>
-map <C-F4> gi
-map <F5> <C-d>
-map <C-F5> 0dw
+map [1;5Q <C-F2>
+map [1;5R <C-F3>
+map [1;5S <C-F4>
+map [15;5~ <C-F5>
+map [17;5~ <C-F6>
+map [18;5~ <C-F7>
+map [19;5~ <C-F8>
+map [20;5~ <C-F9>
+map <Esc><F2> <M-F2>
+map <Esc><F3> <M-F3>
+map <Esc><F4> <M-F4>
+map <Esc><F5> <M-F5>
+map <Esc><F6> <M-F6>
+map <Esc><F7> <M-F7>
+map <Esc><F8> <M-F8>
+map <Esc><F9> <M-F9>
+nnoremap <F2> ^
+"nunmap <C-F2>
+nnoremap <C-F2> <Esc>:tabn<CR>
+"nunmap <M-F2>
+nnoremap <M-F2> <Esc>:set scrollbind<CR>
+nnoremap <F3> $
+"nunmap <C-F3>
+nnoremap <C-F3> <Esc>:tabp<CR>
+"nunmap <M-F3>
+nnoremap <M-F3> <Esc>:set noscb<CR>
+nnoremap <F4> <C-u>
+nnoremap <C-F4> gi
+nnoremap <F5> <C-d>
+nnoremap <C-F5> 0dw
 " Clipboard mappings
 vmap <F6> "+y<Esc>:call system("xclip -i -selection clipboard", getreg("\""))
 \<CR>:call system("xclip -i", getreg("\""))<CR>
@@ -279,6 +302,8 @@ set showcmd
 set timeout timeoutlen=2500 ttimeoutlen=100
 set pastetoggle=<F10>
 set number
+set incsearch
+set smartcase
 "set relativenumber
 "formal: au BufNewFile,BufRead * setf {filetype}
 au BufNewFile,BufRead *.jq setf javascript
@@ -513,14 +538,14 @@ endfunction
 "	let g:thex = 1
 "    endif
 "function! ToggleHex()
-"    if g:thex == 0 
+"    if g:thex == 0
 "	set display=uhex
 "	let g:thex = 1
-"    elseif g:thex == 1 
+"    elseif g:thex == 1
 "	set display=lastline
 "	let g:thex = 2
 "   else
-"	set display= 
+"	set display=
 "	let g:thex = 0
 "    endif
 "endfunction

@@ -119,7 +119,7 @@ export BULLETTRAIN_IS_SSH_CLIENT=true
 export BULLETTRAIN_DIR_CONTEXT_SHOW=false
 
 ## Tmux plugin env
-export ZSH_TMUX_FIXTERM=true
+export ZSH_TMUX_FIXTERM=false
 export ZSH_TMUX_AUTOSTART=false
 export ZSH_TMUX_AUTOCONNECT=false
 
@@ -243,7 +243,7 @@ REPORTTIME=5
 #select-word-style shell
 
 ## don't alert me if something failed
-unsetopt correctall correct_all nomatch beep printexitvalue caseglob
+unsetopt correctall correct_all nomatch beep printexitvalue caseglob nohistverify
 setopt histignorealldups hist_expire_dups_first hist_ignore_dups hist_ignore_space correct completeinword
 setopt extended_history append_history share_history inc_append_history autocd notify clobber
 setopt extendedglob noverbose casematch
