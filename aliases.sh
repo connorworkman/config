@@ -173,6 +173,7 @@ alias ald='ld -I/lib64/ld-linux-x86-64.so.2 /usr/lib/crt1.o /usr/lib/crti.o -lc 
 
 ## New shell functions
 
+csox() { sox "$1" -C ${3:-10} "${1/wav/${2}}"; }
 gif() { ffmpeg -i "${1:?Error, no input file specified!}" "${2:-${1/.*/.gif}}" -threads 0; }
 test256() { (x=`tput op` y=`printf %76s`;for i in {0..256};do o=00$i;echo -e ${o:${#o}-3:3} `tput setaf $i;tput setab $i`${y// /=}$x;done); }
 so() { chromium "http://stackoverflow.com/search?q=${*}"; }
@@ -1086,7 +1087,7 @@ alias pong='ping -c 5 '
 alias fastping='ping -c 100 -s1 '
 alias ports='netstat -tulanp '
 
-alias enft='sudo nano /etc/nftables.conf '
+alias enft='sudo vim /etc/nftables.conf '
 alias rnft='sudo nft -f /etc/nftables.conf '
 alias lnft='sudo nft list ruleset -a '
 

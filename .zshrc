@@ -119,7 +119,7 @@ export BULLETTRAIN_IS_SSH_CLIENT=true
 export BULLETTRAIN_DIR_CONTEXT_SHOW=false
 
 ## Tmux plugin env
-export ZSH_TMUX_FIXTERM=false
+export ZSH_TMUX_FIXTERM=true
 export ZSH_TMUX_AUTOSTART=false
 export ZSH_TMUX_AUTOCONNECT=false
 
