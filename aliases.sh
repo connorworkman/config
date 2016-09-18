@@ -12,6 +12,7 @@ alias ohmyzsh='pushd ${ZSH} '
 
 ## Custom aliases
 
+alias vrc='sudo vim /etc/vimrc '
 alias cm='chromium '
 alias tm='tmux '
 alias tma='tmux attach '
@@ -717,10 +718,10 @@ lpackages() {
 }
 snft () {
         if [[ ! -e "/tmp/nft" ]] ; then
-         printf '%s\n' 'Writing nftables ruleset to /tmp/nft.' ;
-         sudo printf '%s\n' "nft flush ruleset" >/tmp/nft ;
-         sudo nft list ruleset -annn >>/tmp/nft ;
-         sudo gvim /tmp/nft ;
+         printf '%s\n' 'Writing nftables ruleset to /tmp/nft.'
+         sudo printf '%s\n' "nft flush ruleset" >/tmp/nft
+         sudo nft list ruleset -annn >>/tmp/nft
+         sudo vim /tmp/nft
         else
          printf '%s\n' '/tmp/nft exists!' ;
         fi
@@ -1087,9 +1088,9 @@ alias pong='ping -c 5 '
 alias fastping='ping -c 100 -s1 '
 alias ports='netstat -tulanp '
 
-alias enft='sudo vim /etc/nftables.conf '
-alias rnft='sudo nft -f /etc/nftables.conf '
-alias lnft='sudo nft list ruleset -a '
+alias enft='sudo vim /etc/nftables.nft '
+alias rnft='sudo nft -f /etc/nftables.nft '
+alias lnft='sudo nft list ruleset -a | less -R '
 
 alias start-wmin='sudo /etc/webmin/start '
 alias stop-wmin='sudo /etc/webmin/stop '

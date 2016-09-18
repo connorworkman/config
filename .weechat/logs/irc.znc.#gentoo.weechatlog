@@ -5451,3 +5451,98 @@
 2016-09-17 17:17:19	maolang	it wont reemerge it it wil just add the reference to the package in world
 2016-09-17 17:17:20	wokko	eKenda: Yeah looks you dont have a codec enabled for your card but by your link you do... does 'uname -v' the correct time of your last kernel build?
 2016-09-17 17:17:34	minimalism	eKenda: Same as mine then
+2016-09-17 17:17:41	wokko	have the correct*
+2016-09-17 17:18:38	Vaska	maolang: would libtool ever get removed with a depclean if I didn't record it with --noreplace?
+2016-09-17 17:18:39	eKenda	wokko: no, it's showing a 3 day difference. I built it last night
+2016-09-17 17:18:58	maolang	Vaska: --oneshot should really just be used for testing packages apps, or troubleshooting problems installing stuff etc, otherwise youshould emerge packages normally
+2016-09-17 17:19:03	wokko	eKenda: did you forget to mount /boot before you installed kernel?
+2016-09-17 17:19:22	maolang	Vaska if nothing depended onit it would likely get removed
+2016-09-17 17:19:35	Vaska	maolang: Good to know, I'll change my process then, thanks!
+2016-09-17 17:20:03	<--	spareproject (~user@97e3fe92.skybroadband.com) has quit (Ping timeout: 240 seconds)
+2016-09-17 17:20:08	maolang	Vaska: look at equery depends <packagename> and equery depgraph <packagename>
+2016-09-17 17:20:16	kurly	Vaska: libtool is a dependency of many things
+2016-09-17 17:20:35	-->	willeponken (~willeponk@diderot.campus.ltu.se) has joined #gentoo
+2016-09-17 17:20:41	eKenda	wokko: nope. I specifically had to rebuild ext2 as a module since I hadn't during install to mount /boot. so I remember mount /boot
+2016-09-17 17:20:53	kurly	Vaska: I recommend 'emerge -pvc package' over what maolang is suggesting, but there's nothing wrong with equery.  equery is faster but less accurate.
+2016-09-17 17:20:59	minimalism	eKenda: Here's what I have enabled to have sound working on that same device https://ptpb.pw/AN4KdpjezIYt3JJOG-bymz8R4G5d
+2016-09-17 17:21:22	kurly	Vaska: if you are rebuilding an already installed package, you should probably use --oneshot
+2016-09-17 17:21:25	eKenda	wokko: I just followed the wiki word to word to rebuild
+2016-09-17 17:21:52	maolang	Vaska with those last 2 specified you can quickly run checks, butin the end trust the answer that emerge -(p)whatever other options you may use
+2016-09-17 17:22:02	Vaska	kurly: got it, I'll continue with --oneshot on libtool then, thanks
+2016-09-17 17:22:03	wokko	eKenda: How did you build your kernel manaually with make or genkernel?
+2016-09-17 17:22:11	kurly	Vaska: there is no need for libtool to be in your world file.  the world file is for things you personally want installed regardless of any changes to the dependency tree
+2016-09-17 17:22:12	eKenda	wokko: manually
+2016-09-17 17:22:24	<--	jenenliu (~jenenliu@183.6.157.58) has quit (Quit: Leaving)
+2016-09-17 17:22:40	eKenda	minimalism: I've the same things enabled in my kernel
+2016-09-17 17:22:51	wokko	eKenda: ok check if /boot is mounted and if not check that /boot is empty
+2016-09-17 17:22:54	maolang	kurly: if package is already installed and you oneshot and it was in world, will it remain or be moved out of world?
+2016-09-17 17:23:02	-->	hydrogen (~hydrogen@amarok/developer/hydrogen) has joined #gentoo
+2016-09-17 17:23:03	-->	jenenliu (~jenenliu@183.6.157.58) has joined #gentoo
+2016-09-17 17:23:09	kurly	maolang: oneshot has no effect on the world file
+2016-09-17 17:23:11	maolang	or this only applies on first install when its N
+2016-09-17 17:23:17	Vaska	kurly: is it advised to rebuild libtool after a world update?  I must have read or heard that somewhere and have just geen doing it for years
+2016-09-17 17:24:03	kurly	Vaska: I've not done that in my five years of gentoo; I think it used to be suggested on gcc upgrades, but not aware of it being suggested on standard world updates
+2016-09-17 17:24:03		[17:24]
+2016-09-17 17:24:57	Vaska	kurly: got it, I'll stop doing it then
+2016-09-17 17:25:27	kurly	Vaska: it's harmless but unnecessary
+2016-09-17 17:25:44	wokko	eKenda: Then I suggest you mount /boot, cd to kernel source dir and run 'make install' redo bootloader config eg if using grub run 'grub-mkconfig -o /boot/grub/grub.cfg'
+2016-09-17 17:26:09	kurly	wokko: might be worth having them clean out the "fake /boot" (unmounted)
+2016-09-17 17:26:37	eKenda	wokko: It was not mounted now(which is normal I think) and it's not empty. I'll try redoing "make install" and "grub-mkconfig" as you suggested though
+2016-09-17 17:26:46	wokko	kurly: Yeah thats why i said to check that /boot is empty
+2016-09-17 17:27:36	wokko	eKenda: as kurly mentioned clean out the /boot dir before you mount it
+2016-09-17 17:27:49	eKenda	alright
+2016-09-17 17:31:26	<--	eKenda (31cf39bd@gateway/web/freenode/ip.49.207.57.189) has quit (Quit: Page closed)
+2016-09-17 17:33:28	-->	eKenda (31cf39bd@gateway/web/freenode/ip.49.207.57.189) has joined #gentoo
+2016-09-17 17:34:39	-->	hotaronohanako (~user@unaffiliated/hotaronohanako) has joined #gentoo
+2016-09-17 17:35:29	<--	mkaindl (~mkaindl@pD9E602F0.dip0.t-ipconnect.de) has quit (Ping timeout: 240 seconds)
+2016-09-17 17:35:56	maolang	looks like that virtual emacs now linked to v.25 is letting v.24 be removed by a depclean now
+2016-09-17 17:36:09	-->	smithjd (~enderw@d142-179-133-37.abhsia.telus.net) has joined #gentoo
+2016-09-17 17:36:37	-->	mkaindl (~mkaindl@p5B174D9B.dip0.t-ipconnect.de) has joined #gentoo
+2016-09-17 17:36:53	eKenda	wokko: cleaned out unmounted boot, mounted boot ,make install, grub-mkconfig but I ended up going into rescue mode. I think I've screwed up lol.
+2016-09-17 17:37:10	eKenda	Going to chroot from live disk and try again
+2016-09-17 17:38:03	wokko	eKenda: Try redoing you kernel build and do you use an initramfs?
+2016-09-17 17:38:54	<--	vivid (~vivid@unaffiliated/vivid) has quit (Ping timeout: 265 seconds)
+2016-09-17 17:39:13	wokko	eKenda: make install should have made a kernel.old so no need to boot livecd and chroot just boot old kernel
+2016-09-17 17:39:13		[17:39]
+2016-09-17 17:40:38	eKenda	How do I do that. Grub only says rescue on reboot
+2016-09-17 17:41:23	wokko	eKenda: do you get to the grub menu?
+2016-09-17 17:41:34	kurly	wondering if you ever did a grub-install with /boot mounted
+2016-09-17 17:41:45	 *	kurly ponders
+2016-09-17 17:41:51	kurly	maybe unrelated
+2016-09-17 17:41:53	wokko	kurly: ah yeah could be onto something there
+2016-09-17 17:42:27	@username234	if the grub prompt is showing it could also just be that grub-mkconfig wasn't run
+2016-09-17 17:43:04	@username234	in any case, if GRUB can read the rootfs booting the kernel from the GRUB prompt isn't that hard
+2016-09-17 17:44:02	--	Mode #gentoo [-o username234] by ChanServ
+2016-09-17 17:45:56	eKenda	wokko: no grub menu. kurly: I might not have
+2016-09-17 17:51:00		[17:45]
+2016-09-17 17:51:08	Vaska	I'm almost afraid to ask, but what does the "offensive" use flag in youtube-dl enable?
+2016-09-17 17:52:34	phredus	does alsasound need to be in rc-update?   rc-update show | grep -i alsa         alsasound | boot
+2016-09-17 17:53:40	Vaska	phredus: I didn't think so, as the devices are populated during boot from the kernel, but I could be wrong
+2016-09-17 17:54:33	wokko	eKenda: can you boot from the grub prompt?
+2016-09-17 17:54:37	maolang	Vaska might allow you to download offensive video clips....
+2016-09-17 17:54:42	kurly	Vaska: youtube-dl works on more than youtube
+2016-09-17 17:55:01	kurly	Vaska: some of those sites are a little risque
+2016-09-17 17:55:02	LushKava_	Vaska: allows for downloading from select sites known to result in engorgement of the male member, I think
+2016-09-17 17:55:10	Vaska	kurly: maolang ah, I see what your saying
+2016-09-17 17:55:20	wokko	phredus: yes if you want your sound settings restored upon boot
+2016-09-17 17:55:20	Vaska	LushKava_: lmao
+2016-09-17 17:56:02	maolang	that flag also exists on SUDO,  and i do wonder what it really make sudo say to you when you try to use sdo but are not allowed to...
+2016-09-17 17:56:27	kurly	maolang: sudo insults you by default when you mistype your password
+2016-09-17 17:56:31	Vaska	maolang: you're joking :|
+2016-09-17 17:56:39	maolang	no i am not lol
+2016-09-17 17:57:04	 *	Vaska is emering sudo as we speak :/
+2016-09-17 17:57:53	maolang	just imagine yougot packages that wont emerge sometimes and then you got your own emerged / installed packages to top the cherry on the cake that insult you....
+2016-09-17 17:58:33	kurly	most distros turn off that behavior, but the default is for sudo to insult you when you mistype your password
+2016-09-17 17:59:45	 *	maolang first thing next i do is rename root user to hal
+2016-09-17 17:59:57	Vaska	This will be like being roasted a dozen times a day.  Maybe I don't need that kind of abuse.
+2016-09-17 18:02:17	-->	superusr (~usr@p5B2458CE.dip0.t-ipconnect.de) has joined #gentoo
+2016-09-17 18:02:48	--	Vasco_O is now known as Vasco
+2016-09-17 18:04:19	-->	josef__k (~jeremy@59.102.31.229) has joined #gentoo
+2016-09-17 18:07:33	<--	mikaelh (mikaelh@cable-hvk-50dd89-166.dhcp.inet.fi) has quit (Ping timeout: 240 seconds)
+2016-09-17 18:07:33		[18:07]
+2016-09-17 18:07:50	-->	beardedeagle (~beardedea@38.93.166.99) has joined #gentoo
+2016-09-17 18:09:55	<--	cilly (pluto@unaffiliated/cilly) has quit (Ping timeout: 244 seconds)
+2016-09-17 18:10:05	-->	methylherd_ (~quassel@p5DEB58FA.dip0.t-ipconnect.de) has joined #gentoo
+2016-09-17 18:10:48	-->	Tommy[D] (~TommyD]@gentoo/developer/tommy) has joined #gentoo
+2016-09-17 18:10:48	--	Mode #gentoo [+v Tommy[D]] by ChanServ
+2016-09-17 18:11:40	-->	cilly (pluto@unaffiliated/cilly) has joined #gentoo

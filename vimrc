@@ -311,6 +311,7 @@ au BufNewFile,BufRead *tmux.conf setf tmux
 au BufNewFile,BufRead *nanorc setf nanorc
 au BufNewFile,BufRead *conf setf config
 au BufNewFile,BufRead *vimpagerrc setf vim
+au BufNewFile,BufRead *.\(service*\|target\|timer\)* setf sysctl
 " Tell vim to remember certain things when we exit
 "  '10  :  marks will be remembered for up to 10 previously edited files
 "  "100 :  will save up to 100 lines for each register
