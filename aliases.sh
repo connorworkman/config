@@ -173,7 +173,22 @@ alias sld='ld -s -I/lib64/ld-linux-x86-64.so.2 /usr/lib/crt1.o /usr/lib/crti.o -
 alias ald='ld -I/lib64/ld-linux-x86-64.so.2 /usr/lib/crt1.o /usr/lib/crti.o -lc /usr/lib/crtn.o '
 
 ## New shell functions
-
+kvm() {
+	#qemu-system-x86_64 -cdrom ~/sdxc/install-amd64-minimal-20160915.iso -boot order=d -drive file=/@media/backup/gentoo.cow,format=qcow2 -enable-kvm -m 512 -net nic -net bridge,br=virbr0
+	[[ -z "$2" ]] &&
+		qemu-system-x86_64 -boot order=d -drive file="${1?No image specified!}",format="${1/*cow/qcow2}" -enable-kvm \
+			-m "${3:-512}" -net nic -net bridge,br=virbr0 ||
+		qemu-system-x86_64 -cdrom "${2}" -boot order=d -drive file="${1?No image specified!}",format="${1/*cow/qcow2}" -enable-kvm \
+			-m "${3:-512}" -net nic -net bridge,br=virbr0
+}
+ovmf-kvm() {
+	#qemu-system-x86_64 -cdrom ~/sdxc/install-amd64-minimal-20160915.iso -boot order=d -drive file=/@media/backup/gentoo.cow,format=qcow2 -enable-kvm -m 512 -net nic -net bridge,br=virbr0
+	[[ -z "$2" ]] &&
+		qemu-system-x86_64 -boot order=d -drive file="${1?No image specified!}",format="${1/*cow/qcow2}" -enable-kvm \
+			-m "${3:-512}" -net nic -net bridge,br=virbr0 -bios "${HOME}/ovmf_x64.bin" ||
+		qemu-system-x86_64 -cdrom "${2}" -boot order=d -drive file="${1?No image specified!}",format="${1/*cow/qcow2}" -enable-kvm \
+			-m "${3:-512}" -net nic -net bridge,br=virbr0 -bios "${HOME}/ovmf_x64.bin"
+}
 csox() { sox "$1" -C ${3:-10} "${1/wav/${2}}"; }
 gif() { ffmpeg -i "${1:?Error, no input file specified!}" "${2:-${1/.*/.gif}}" -threads 0; }
 test256() { (x=`tput op` y=`printf %76s`;for i in {0..256};do o=00$i;echo -e ${o:${#o}-3:3} `tput setaf $i;tput setab $i`${y// /=}$x;done); }
