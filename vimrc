@@ -153,19 +153,15 @@ map <Esc><F7> <M-F7>
 map <Esc><F8> <M-F8>
 map <Esc><F9> <M-F9>
 nnoremap <F2> ^
-"nunmap <C-F2>
-nnoremap <C-F2> <Esc>:tabn<CR>
-"nunmap <M-F2>
+nnoremap <C-F2> 0dw
 nnoremap <M-F2> <Esc>:set scrollbind<CR>
 nnoremap <F3> $
-"nunmap <C-F3>
-nnoremap <C-F3> <Esc>:tabp<CR>
-"nunmap <M-F3>
+nnoremap <C-F3> gi
 nnoremap <M-F3> <Esc>:set noscb<CR>
 nnoremap <F4> <C-u>
-nnoremap <C-F4> gi
+nnoremap <C-F4> <Esc>:tabn<CR>
 nnoremap <F5> <C-d>
-nnoremap <C-F5> 0dw
+nnoremap <C-F5> <Esc>:tabp<CR>
 " Clipboard mappings
 vmap <F6> "+y<Esc>:call system("xclip -i -selection clipboard", getreg("\""))
 \<CR>:call system("xclip -i", getreg("\""))<CR>
@@ -309,9 +305,10 @@ set smartcase
 au BufNewFile,BufRead *.jq setf javascript
 au BufNewFile,BufRead *tmux.conf setf tmux
 au BufNewFile,BufRead *nanorc setf nanorc
-au BufNewFile,BufRead *conf setf config
 au BufNewFile,BufRead *vimpagerrc setf vim
-au BufNewFile,BufRead *.\(service*\|target\|timer\)* setf sysctl
+au BufNewFile,BufRead *.\(service\|socket\|target\|timer\)* setf sysctl
+au BufNewFile,BufRead *\(nftables.conf\|.nft\)* set filetype=nftables
+au BufNewFile,BufRead *conf setf config
 " Tell vim to remember certain things when we exit
 "  '10  :  marks will be remembered for up to 10 previously edited files
 "  "100 :  will save up to 100 lines for each register
