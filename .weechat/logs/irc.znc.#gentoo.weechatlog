@@ -12782,3 +12782,1787 @@
 2016-09-20 04:32:09	-->	doug_ndndn (~doug@217-68-249-8.dslgateway.co.uk) has joined #gentoo
 2016-09-20 04:32:20	-->	Tecumseh (~Tecumseh_@mtl01-4-78-203-200-19.fbx.proxad.net) has joined #gentoo
 2016-09-20 04:33:20	-->	eZ (~ez@201-27-37-202.dsl.telesp.net.br) has joined #gentoo
+2016-09-20 04:33:34	<--	szorfein (~szorfein@gateway/vpn/privateinternetaccess/szorfein) has quit (Ping timeout: 240 seconds)
+2016-09-20 04:33:50	-->	cvaq (~yaaic@c213-89-88-48.bredband.comhem.se) has joined #gentoo
+2016-09-20 04:34:04	NullConstant	welp I guess I had to get rid of my swap partition to make space for a Windows partition without also causing extra chaos with extended partitions (then again it's not like I was using that swap anyway)
+2016-09-20 04:34:14	eZ	hi guys, how are you ? I am migrating from udev to eudev. Do I need to disable all udev flags ? Will the system try to install udev if i keep it enabled ?
+2016-09-20 04:34:30	-->	b (~a@199.180.238.154) has joined #gentoo
+2016-09-20 04:34:31	+iamben	eZ: you still want USE=udev enabled.  eudev is just another udev implementation.
+2016-09-20 04:34:31	+grknight	eZ: no, don't do that
+2016-09-20 04:34:54	--	b is now known as Guest58275
+2016-09-20 04:34:56	-->	sndtyi (~john@dslb-088-074-238-226.088.074.pools.vodafone-ip.de) has joined #gentoo
+2016-09-20 04:35:14	ehermes	I can't build sci-libs/hdf5-1.8.17. It tries and fails to download the source from http://gentoo.cites.uiuc.edu/pub/gentoo/distfiles/hdf5-1.8.17.tar.bz2 (404), and ends up failing over to hdfgroup.org which redirects erroneously until it's trying to fetch from /ftphttps://support.hdfgroup.orghttps://support.hdfgroup.orghttps:support.hdfgroup.org ad nauseam
+2016-09-20 04:35:19	+iamben	you really dont need to do anything for the migration except "emerge -1av eudev" or similar
+2016-09-20 04:35:31	cvaq	am I supposed use portage with root?
+2016-09-20 04:35:36	-->	AsumFace (~asumface@ip1f1060c0.dynamic.kabel-deutschland.de) has joined #gentoo
+2016-09-20 04:35:57	cvaq	emerge
+2016-09-20 04:36:04	NullConstant	cvaq: either as root or through sudo, yes
+2016-09-20 04:36:35	Tecumseh	is swap really useful on 4Gb of ram or more?
+2016-09-20 04:36:44	NullConstant	except for some functionality like --search because it doesn't modify any files
+2016-09-20 04:36:57	-->	beardedeagle (~beardedea@64.202.161.57) has joined #gentoo
+2016-09-20 04:37:08	username234	Tecumseh: 32 GB of Ram + 2 GB swap here.
+2016-09-20 04:37:13	NullConstant	Tecumseh: well I have a 4GB system but nowadays I rarely really had to use it...so unless you have even less RAM than that, not really?
+2016-09-20 04:37:19	eZ	iamben: but the portage will not try to install the udev package ?
+2016-09-20 04:37:29	+iamben	eZ: no, it won't
+2016-09-20 04:37:52	username234	eZ: if it does, then an ebuild is incorrectly written and needs to be fixed.
+2016-09-20 04:37:53	+iamben	USE=udev is appropriate for any udev implementation, whether it comes from sys-fs/udev, sys-fs/eudev, or sys-apps/systemd
+2016-09-20 04:38:16	--	Guest58275 is now known as incog
+2016-09-20 04:38:34	<--	nighoo (~nighoo@unaffiliated/nighoo) has quit (Ping timeout: 244 seconds)
+2016-09-20 04:38:52	Tecumseh	username234, what kind of system is that? I rarely see swap being used.
+2016-09-20 04:39:43	username234	Tecumseh: one designed for heavy package building / experimentation.
+2016-09-20 04:39:45	<--	rhombus (~rhombus@remote.rl-institut.de) has quit (Quit: KVIrc KVIrc Aria 4.3.1, revision: 6250, sources date: 20120701, built on: 2016-09-17 11:52:23 UTC http://www.kvirc.net/)
+2016-09-20 04:39:52	+iamben	having at least a small amount of swap allows linux to use your real memory a bit more efficiently
+2016-09-20 04:39:54	-->	SylvieLorxu (~TheLastPr@541B7AAC.cm-5-4b.dynamic.ziggo.nl) has joined #gentoo
+2016-09-20 04:39:58	username234	it's not hard to exhaust 4GB of RAM
+2016-09-20 04:40:18	Tecumseh	username234, that's what I thought. no 'ordinary' system.
+2016-09-20 04:40:23	+iamben	and yeah, 4GB is really not a lot in the context of gentoo =)
+2016-09-20 04:40:37	-->	nighoo (~nighoo@unaffiliated/nighoo) has joined #gentoo
+2016-09-20 04:40:42	username234	as for laptops, swap should be > then RAM.
+2016-09-20 04:40:48	<--	incog (~a@199.180.238.154) has quit (K-Lined)
+2016-09-20 04:41:01	username234	provided you care about being able to hibernate.
+2016-09-20 04:41:22	eZ	username234: well, idk why udev still installed if eudev is the default
+2016-09-20 04:41:25	rivarun	why are you saying this specifically for laptops?
+2016-09-20 04:41:29	eZ	username234: i have both no my system
+2016-09-20 04:41:33	Tecumseh	iamben, I still create swap on new systems, but wondering it was not a bit 'old-school'. Obviously not.
+2016-09-20 04:41:38	+iamben	eZ: can you pastebin output of "emerge -pv eudev"?
+2016-09-20 04:41:59	username234	rivarun: well you're right, it's true for any computer.  I've just never seen anyone care about hibernating a desktop.
+2016-09-20 04:42:02	loa	can't get where is prime? and can i use it on my desktop?
+2016-09-20 04:42:07	rivarun	username234: you have now!
+2016-09-20 04:42:16	username234	noted :)
+2016-09-20 04:42:18	-->	cur_elder (~noname@195-71-139-78.kamensktel.ru) has joined #gentoo
+2016-09-20 04:42:34	Tecumseh	username234, hibernate has been broken for a long time on my system... I don't bother anymore.
+2016-09-20 04:42:54	-->	Judge_Dredd (~Judge_Dre@unaffiliated/judge-dredd/x-2170742) has joined #gentoo
+2016-09-20 04:42:57	rivarun	it was for me, but don't give up on your dreams
+2016-09-20 04:43:17	<--	jsubl2 (~jim@159-118-22-126.cpe.cableone.net) has quit (Ping timeout: 250 seconds)
+2016-09-20 04:43:28	-->	thunderrd (~thunderrd@119.42.85.87) has joined #gentoo
+2016-09-20 04:43:40	<--	althorion (~althorion@176.58.22.70) has quit (Quit: WeeChat 1.5)
+2016-09-20 04:43:53	maolang	Tecumseh: i will help you hybernate as well as your computer too :)
+2016-09-20 04:44:14	<--	thunderrd (~thunderrd@119.42.85.87) has quit (Remote host closed the connection)
+2016-09-20 04:44:18	Tecumseh	maolang, I wish I could hibernate ;-)
+2016-09-20 04:44:27	 *	username234 can only see that ending badly, so he's going to take a break now
+2016-09-20 04:44:35	<--	tjoener (~tjoener@vm.tjoener.be) has quit (Remote host closed the connection)
+2016-09-20 04:45:18	maolang	do a short hybernate just a few safe hours at a time...
+2016-09-20 04:45:52	rypervenche	What is a good file to use if I want to add something to .bashrc but globally for all users?
+2016-09-20 04:45:52		[04:45]
+2016-09-20 04:46:07	-->	KlinedByAVirgin (~tits@174-30-83-10.desm.qwest.net) has joined #gentoo
+2016-09-20 04:46:12	Tecumseh	maolang, my system can sleep ... kinda and so can I ;-)
+2016-09-20 04:46:20	+iamben	rypervenche: you can put it in /etc/profile
+2016-09-20 04:46:47	-->	Renich (~Renich@94.26.92.11) has joined #gentoo
+2016-09-20 04:47:06	<--	latenite (~latenite@p5B375AF9.dip0.t-ipconnect.de) has quit (Ping timeout: 265 seconds)
+2016-09-20 04:47:15	NullConstant	okay I created an extended partition and put Windows and a Linux swap on it. I guess I do want it after all just in case. (I need to update my fstab though don't I)
+2016-09-20 04:47:22	Tecumseh	rypervenche, or edit /etc/bashrc?
+2016-09-20 04:47:27	-->	davetk (~davetk@c-83-233-47-20.cust.bredband2.com) has joined #gentoo
+2016-09-20 04:47:56	rypervenche	Thanks.
+2016-09-20 04:48:04	NullConstant	anyway, I'm off to install Windows because unfortunately I cannot do that in a chroot (one day...)
+2016-09-20 04:48:09	-->	ov3rmind (~leo@unaffiliated/ov3rmind) has joined #gentoo
+2016-09-20 04:48:16	<--	NullConstant (1f007f21@gateway/web/freenode/ip.31.0.127.33) has quit (Quit: Page closed)
+2016-09-20 04:48:54	<--	KlinedByAVirgin (~tits@174-30-83-10.desm.qwest.net) has quit (K-Lined)
+2016-09-20 04:49:05	-->	KWhat4 (~kwhat@47.150.72.111) has joined #gentoo
+2016-09-20 04:49:11	-->	globber (~globber@c-98-224-165-226.hsd1.mi.comcast.net) has joined #gentoo
+2016-09-20 04:49:30	cvaq	do I have put any who, in portage conf?
+2016-09-20 04:49:31	<--	maho (~m4ho@p5DD1586A.dip0.t-ipconnect.de) has quit (Quit: WeeChat 1.4)
+2016-09-20 04:49:40	cvaq	ABI*
+2016-09-20 04:49:58	<--	brendel_ (~brice@LAubervilliers-656-1-215-246.w217-128.abo.wanadoo.fr) has quit (Ping timeout: 244 seconds)
+2016-09-20 04:50:18	<--	neuraload (~Thunderbi@5.2.152.160) has quit (Quit: neuraload)
+2016-09-20 04:51:26	rivarun	how come x11-drivers/xf86-video-ati-7.7.0 says CONFIG_FB_RADEON should be disabled?
+2016-09-20 04:52:06	+iamben	rivarun: because radeonfb is a separate driver from radeon, and it directly conflicts
+2016-09-20 04:52:15	-->	m4ho (~m4ho@unaffiliated/m4ho) has joined #gentoo
+2016-09-20 04:52:39	+iamben	DRM_RADEON is the radeon driver you know and love, which provides KMS and xorg functionality.  radeonfb is some old thing that's entirely different.
+2016-09-20 04:53:24	rivarun	thanks for being clear about what's what
+2016-09-20 04:53:34	-->	hawkandbaby (~hawkandba@d50-115-191-200.commercial1.cgocable.net) has joined #gentoo
+2016-09-20 04:53:47	+iamben	it's a similar story with nvidiafb
+2016-09-20 04:53:50	<--	beardedeagle (~beardedea@64.202.161.57) has quit
+2016-09-20 04:54:10	-->	catpig (~catpig@p54A5788A.dip0.t-ipconnect.de) has joined #gentoo
+2016-09-20 04:54:22	-->	larzen (~Adium@184.70.103.94) has joined #gentoo
+2016-09-20 04:54:27	<--	larzen (~Adium@184.70.103.94) has quit (Client Quit)
+2016-09-20 04:55:02	-->	KlinedByAVirgin (~tits@91.229.101.43) has joined #gentoo
+2016-09-20 04:55:22	<--	W0lf (~Fenrir@122.162.15.234) has quit (Ping timeout: 255 seconds)
+2016-09-20 04:55:22	<--	KlinedByAVirgin (~tits@91.229.101.43) has quit (K-Lined)
+2016-09-20 04:55:31	-->	mints (~mints@unaffiliated/mints) has joined #gentoo
+2016-09-20 04:55:32	cvaq	ABI?
+2016-09-20 04:55:37	<--	don_quixote (~don_quixo@89.10.153.80) has quit (Read error: Connection reset by peer)
+2016-09-20 04:55:50	+iamben	cvaq: can you restate your question?
+2016-09-20 04:56:04	+iamben	are you asking about ABI_X86?
+2016-09-20 04:56:45	cvaq	yea alin3x mention something about ABI in portage
+2016-09-20 04:56:46	<--	Base_2 (~maurice@50702952.cm-14.dynamic.ziggo.nl) has quit (Ping timeout: 265 seconds)
+2016-09-20 04:57:17	cvaq	is it really needed for me install package and such
+2016-09-20 04:57:35	-->	waltercool (~waltercoo@186.67.55.43) has joined #gentoo
+2016-09-20 04:57:39	+iamben	if you are on amd64 but want to enable 32bit libs globally where available, you can do this with an ABI_X86="64 32" setting in make.conf
+2016-09-20 04:57:46	<--	m4ho (~m4ho@unaffiliated/m4ho) has quit (Quit: WeeChat 1.4)
+2016-09-20 04:57:47	+iamben	you can also do it per-package in package.use
+2016-09-20 04:57:47	<--	mguillech (~mguillech@host184.201-252-170.telecom.net.ar) has quit (Read error: Connection reset by peer)
+2016-09-20 04:58:20	-->	mguillech (~mguillech@host184.201-252-170.telecom.net.ar) has joined #gentoo
+2016-09-20 04:58:28	-->	larzen (~Adium@184.70.103.94) has joined #gentoo
+2016-09-20 04:58:58	<--	tdy (~tdy@unaffiliated/tdy) has quit (Ping timeout: 255 seconds)
+2016-09-20 04:59:51	-->	greister_ (1bd78da8@gateway/web/freenode/ip.27.215.141.168) has joined #gentoo
+2016-09-20 04:59:51	cvaq	what does it?
+2016-09-20 05:00:09	<--	jkroon (~jkroon@uls-154-73-35-201.wall.uls.co.za) has quit (Remote host closed the connection)
+2016-09-20 05:00:18	+iamben	it enables 32bit libraries in case you need them for 32bit binary blob software
+2016-09-20 05:00:22	<--	enigma42 (~enigma@cpe-173-91-213-133.neo.res.rr.com) has quit (Quit: WeeChat 1.4)
+2016-09-20 05:00:39	cvaq	like wine
+2016-09-20 05:00:51	-->	don_quixote (~don_quixo@89.10.153.80) has joined #gentoo
+2016-09-20 05:00:55	<--	zokum (~zokum@51.174.52.188) has quit
+2016-09-20 05:00:55		[05:00]
+2016-09-20 05:01:01	+iamben	yes, wine is one example... it's not a binary blob but most people do want 32bit wine, to run 32bit windows apps
+2016-09-20 05:01:04	Maitreya	it ages with time?
+2016-09-20 05:02:18	<--	norayr (~noch@host-54.196.162.46.ucom.am) has quit (Quit: Leaving.)
+2016-09-20 05:02:19	-->	ponyofdeath (~vladi@cpe-76-172-86-115.socal.res.rr.com) has joined #gentoo
+2016-09-20 05:02:45	<--	barthess (~barthess@93.85.167.189) has quit (Quit: Leaving.)
+2016-09-20 05:02:59	-->	tdy (~tdy@unaffiliated/tdy) has joined #gentoo
+2016-09-20 05:03:06	ov3rmind	i got permission deny on try eerge any what is happening?
+2016-09-20 05:03:52	-->	tty0_ (~NA@207.34.252.51) has joined #gentoo
+2016-09-20 05:03:58	+iamben	ov3rmind: you will need to pastebin the full output if you want help here
+2016-09-20 05:04:18	ov3rmind	one min
+2016-09-20 05:04:19	<--	twnqx (~twnqx@2001:67c:274c:200:4baa:b064:8417:c5f5) has quit (Ping timeout: 272 seconds)
+2016-09-20 05:04:23	<--	ov3rmind (~leo@unaffiliated/ov3rmind) has quit (Quit: leaving)
+2016-09-20 05:04:33	<--	tty0_ (~NA@207.34.252.51) has quit (Changing host)
+2016-09-20 05:04:33	-->	tty0_ (~NA@unaffiliated/tty0/x-3092968) has joined #gentoo
+2016-09-20 05:05:07	-->	slobber (~slobber@unaffiliated/linkxs) has joined #gentoo
+2016-09-20 05:05:16	-->	nE0sIghT (~Thunderbi@unaffiliated/ne0sight) has joined #gentoo
+2016-09-20 05:05:22	slobber	holy crap i for the life of me cannot get the touchpad on chromebook c720 to work
+2016-09-20 05:05:30	greister_	I cann't emerge neovim. Stop with this:https://dpaste.de/DYmE
+2016-09-20 05:05:52	-->	brendel_ (~brice@LAubervilliers-656-1-215-246.w217-128.abo.wanadoo.fr) has joined #gentoo
+2016-09-20 05:06:14	slobber	i've got modules modprobed, cmt crap in, but x11 doens't seem to be even loading it for my touchpad
+2016-09-20 05:06:24	cvaq	where portage located?
+2016-09-20 05:06:28	slobber	i can't figure out what can even list the touchpad
+2016-09-20 05:06:30	+iamben	greister_: please pastebin the full build.log
+2016-09-20 05:06:34	<--	kelsoo (~kelsoo@dragora/developer/kelsoo) has quit (Quit: WeeChat 1.3)
+2016-09-20 05:06:37	+iamben	slobber: please pastebin the xorg log
+2016-09-20 05:07:04	greenhat_	Anyone have good luck running gentoo on a mid 2012 retina macbook pro? OSX is harshing my buzz.
+2016-09-20 05:07:19	slobber	iamben: http://pastebin.com/zAgbuMzQ
+2016-09-20 05:07:26	<--	Judge_Dredd (~Judge_Dre@unaffiliated/judge-dredd/x-2170742) has quit (Quit: Leaving.)
+2016-09-20 05:08:07	Tecumseh	greenbagels, MBP Feb 2011, 13' here. No problem.
+2016-09-20 05:08:13	+iamben	slobber: do you have any way to test from another OS/distro/livecd?
+2016-09-20 05:08:24	Tecumseh	greenhat_, *
+2016-09-20 05:08:28	slobber	not really, not without making a liveusb
+2016-09-20 05:08:56	-->	m4ho (~m4ho@unaffiliated/m4ho) has joined #gentoo
+2016-09-20 05:08:56	+iamben	slobber: can you also pastebin "dmesg | grep input" output? fyi wgetpaste can make quick work of all these pastebins
+2016-09-20 05:08:58	Tecumseh	greenhat_,  MBP Feb 2011, 13' here. No problem.
+2016-09-20 05:08:58	slobber	i mean, it was working in chromeos, iamben. and people online report it working with cyapa and cmt, but i have a very vague understanding of that whole system
+2016-09-20 05:09:23	<--	Therior_Slide (~andrei@213.157.188.71) has quit (Quit: Konversation terminated!)
+2016-09-20 05:09:24	slobber	iamben: http://pastebin.com/D4dKpt3u
+2016-09-20 05:09:33	-->	uwjbvg (~nine@151.45.251.223) has joined #gentoo
+2016-09-20 05:09:42	slobber	i've unplugged the usb mouse since then
+2016-09-20 05:09:47	-->	zokum (zokum@51.174.52.188) has joined #gentoo
+2016-09-20 05:10:08	slobber	iamben: earlier the cmt driver would catch onto the usb mouse, i figured it could be a problem
+2016-09-20 05:11:07	+iamben	slobber: i think you may need some 3rd party kernel driver for that
+2016-09-20 05:11:44	cvaq	https://wiki.gentoo.org/wiki/Project:Multilib/Concepts#Multilib_ABI_USE_flags
+2016-09-20 05:11:45	slobber	iamben: i've read people had success with chromeos_laptop and cyapatp.. but it seems not
+2016-09-20 05:11:47	+iamben	i was hoping it was a simple misconfiguration issue but this is complicated
+2016-09-20 05:12:25	<--	andrewammerlaan (~Thunderbi@a83-163-214-205.adsl.xs4all.nl) has quit (Remote host closed the connection)
+2016-09-20 05:12:30	slobber	iamben: i don't even know where else to ask but the deserted forumposts
+2016-09-20 05:12:47	--	Vasco_O is now known as Vasco
+2016-09-20 05:13:33	<--	FireBurn (~fireburnu@no-sources/fireburn) has quit (Ping timeout: 244 seconds)
+2016-09-20 05:14:42	cvaq	omg shitty Android IRC client :-(
+2016-09-20 05:15:28	+iamben	cvaq: remember we have a clean language policy here in #gentoo
+2016-09-20 05:15:42	cvaq	oh, sorry iamben
+2016-09-20 05:15:58	+iamben	and you should get a good irc client on your gentoo =)
+2016-09-20 05:15:58		[05:15]
+2016-09-20 05:16:01	-->	jenenliu (~jenenliu@183.6.157.58) has joined #gentoo
+2016-09-20 05:16:09	slobber	also i've had weird experiences with evdev hijacking devices; does xorg also load configs from /usr/share/X11/xorg.conf.d?
+2016-09-20 05:16:20	slobber	besides /etc/X11/xorg.conf.d?
+2016-09-20 05:16:36	cvaq	do know any beside Jessi? :-)
+2016-09-20 05:16:45	cvaq	irrzsi
+2016-09-20 05:16:45	-->	chry (~chry@funtoo/user/chry) has joined #gentoo
+2016-09-20 05:16:45	slobber	cvaq: weechat4lyfe
+2016-09-20 05:16:48	+iamben	slobber: the inputclass configs in /usr/share/X11/xorg.conf.d supply the base configuration, then the user can override in /etc/X11/xorg.conf.d
+2016-09-20 05:16:50	-->	kelsoo (~kelsoo@dragora/developer/kelsoo) has joined #gentoo
+2016-09-20 05:16:51	Kelsar	Quassel!
+2016-09-20 05:17:00	slobber	iamben: ah, i see
+2016-09-20 05:17:12	+iamben	but your kernel isnt even seeing the device, so xorg isnt really to blame (yet)
+2016-09-20 05:17:24	cvaq	both work for terminal?
+2016-09-20 05:17:24	slobber	ohhhhhh, interesting point
+2016-09-20 05:17:43	slobber	cvaq: weechat has an awesome android app that connects remotely to your weechat instance
+2016-09-20 05:17:51	slobber	over ssh or their own weird relay proto
+2016-09-20 05:18:02	slobber	cvaq: but yes, irssi is also on term
+2016-09-20 05:18:03	-->	vpi_ (~vpi@195.66.82.9) has joined #gentoo
+2016-09-20 05:18:31	-->	Ov3rmind (~leo@unaffiliated/ov3rmind) has joined #gentoo
+2016-09-20 05:19:01	-->	ZucZero (~zucca@85-76-35-251-nat.elisa-mobile.fi) has joined #gentoo
+2016-09-20 05:19:04	<--	spY|da (~spychodel@owncloud.linuxjunkies.de) has quit (Remote host closed the connection)
+2016-09-20 05:19:08	<--	kelsoo (~kelsoo@dragora/developer/kelsoo) has quit (Client Quit)
+2016-09-20 05:19:15	<--	GurliGebis_ (~GurliGebi@gentoo/developer/gurligebis) has quit (Ping timeout: 250 seconds)
+2016-09-20 05:19:23	<--	vpi (~vpi@195.66.82.9) has quit (Read error: Connection reset by peer)
+2016-09-20 05:20:02	cvaq	what's recommended for new gentoo as me? ;-)
+2016-09-20 05:20:09	cvaq	user.
+2016-09-20 05:20:16	<--	KWhat4 (~kwhat@47.150.72.111) has quit (Ping timeout: 244 seconds)
+2016-09-20 05:20:27	slobber	mirc
+2016-09-20 05:20:42	+iamben	i use irssi but if you're not already familiar with it then you probably should just start with weechat which is more modern
+2016-09-20 05:20:47	-->	spY|da (~spychodel@owncloud.linuxjunkies.de) has joined #gentoo
+2016-09-20 05:21:04	slobber	i switched from irssi to weechat a couple years ago, been way happier
+2016-09-20 05:21:12	Ov3rmind	i have two root partitions on disk one have python3 enviroment corrupt in the new fresh gentoo i can emerge any the system say permission denied during emerge task but if i boot in older corrupt and chroot to new all works fine whre i have to start to look ?
+2016-09-20 05:21:23	slobber	i like the config management, scripts, all kinds of stuff
+2016-09-20 05:21:34	+iamben	Ov3rmind: can you please use wgetpaste to pastebin the full error output?
+2016-09-20 05:21:37	-->	thunderrd (~thunderrd@119.42.85.87) has joined #gentoo
+2016-09-20 05:21:40	+iamben	wgetpaste -c "emerge whatever"
+2016-09-20 05:21:47	cvaq	I'm familiar with it , I just want check out something else familiar
+2016-09-20 05:22:11	+iamben	cvaq: well if you're in the mood to learn, go to weechat.  im still on irssi because im too lazy to learn a new one.
+2016-09-20 05:23:20	cvaq	what is the way supposed to install again?
+2016-09-20 05:23:35	+iamben	emerge?
+2016-09-20 05:23:56	-->	EvilPeng1 (~EvilPengu@bur-inet-pa-4.disney.com) has joined #gentoo
+2016-09-20 05:24:08	chry	iamben, weechat has a strong no-learning policy... It learns everything itself.
+2016-09-20 05:24:55	cvaq	hehe yes
+2016-09-20 05:25:06	<--	Maitreya (~mark@89.184.170.101) has quit (Quit: Leaving.)
+2016-09-20 05:25:09	cvaq	what first right?
+2016-09-20 05:25:16	cvaq	si.
+2016-09-20 05:25:32	cvaq	su.
+2016-09-20 05:25:35	-->	kelsoo (~kelsoo@dragora/developer/kelsoo) has joined #gentoo
+2016-09-20 05:25:41	-->	slicktux (~slicktux@unaffiliated/slicktux) has joined #gentoo
+2016-09-20 05:25:42	<--	larzen (~Adium@184.70.103.94) has left #gentoo
+2016-09-20 05:25:43	cvaq	right?
+2016-09-20 05:25:49	+iamben	"su -" to get a root login
+2016-09-20 05:26:23	cvaq	and then emerge package?
+2016-09-20 05:26:27	+iamben	yes
+2016-09-20 05:26:34	cvaq	ok
+2016-09-20 05:27:22	greister_	iamben:https://dpaste.de/fOW3,full log
+2016-09-20 05:28:32	+iamben	greister_: it died on its own, you didnt press ctrl-c or something?
+2016-09-20 05:29:04	-->	Mr_Queue (~Mr_Queue@ns527918.ip-158-69-242.net) has joined #gentoo
+2016-09-20 05:29:47	cvaq	hi check the reps on a package?
+2016-09-20 05:29:53	cvaq	how..
+2016-09-20 05:30:01	Kelsar	reps on a package?
+2016-09-20 05:30:05	cvaq	dep
+2016-09-20 05:30:10	+iamben	you need to get that new irc client asap
+2016-09-20 05:30:16	greister_	iamben,it stay in this command,no go to the next step. I have to ctr-c to stop it.
+2016-09-20 05:30:29	+iamben	greister_: is your clock set correctly?
+2016-09-20 05:31:06	<--	fefelix (~fefe@80.87.117.74) has quit (Quit: Leaving.)
+2016-09-20 05:31:06		[05:31]
+2016-09-20 05:31:21	<--	Renich (~Renich@94.26.92.11) has quit (Ping timeout: 248 seconds)
+2016-09-20 05:31:22	<--	mguillech (~mguillech@host184.201-252-170.telecom.net.ar) has quit (Read error: Connection reset by peer)
+2016-09-20 05:31:23	<--	wdna (~wdna@bzq-109-65-29-34.red.bezeqint.net) has quit (Ping timeout: 250 seconds)
+2016-09-20 05:31:35	greister_	iamben, the clock isn't corrent.
+2016-09-20 05:31:45	+iamben	that can cause builds to hang
+2016-09-20 05:31:46	-->	mguillech (~mguillech@host184.201-252-170.telecom.net.ar) has joined #gentoo
+2016-09-20 05:31:56	cvaq	dependent package needed for the sofware
+2016-09-20 05:32:08	+iamben	cvaq: one way is to just read the ebuild, you can also use "equery g" or "qdepends"
+2016-09-20 05:33:20	-->	Renich (~Renich@187.246.207.161) has joined #gentoo
+2016-09-20 05:33:53	-->	tomtix (~tomtix@2a01:e35:8bc0:8af0:323a:64ff:fe12:2d57) has joined #gentoo
+2016-09-20 05:33:56	<--	delacroix (~delacroix@2a02:810c:e3f:ecac:ccc8:491f:6055:78b4) has quit (Quit: ZNC - http://znc.in)
+2016-09-20 05:34:56	<--	Ov3rmind (~leo@unaffiliated/ov3rmind) has quit (Remote host closed the connection)
+2016-09-20 05:36:50	<--	jsabeaudry (~jsabeaudr@QUBCPQ0641W-LP130-01-1178060307.dsl.bell.ca) has quit (Ping timeout: 265 seconds)
+2016-09-20 05:37:18	<--	grandrew (uid47547@gateway/web/irccloud.com/x-xxmqexvtcendjvlp) has quit (Quit: Connection closed for inactivity)
+2016-09-20 05:37:59	<--	mahalay (~sabayonus@203.87.250.226) has quit (Read error: Connection reset by peer)
+2016-09-20 05:40:06	<--	oldmacd (~eieio@34.06.01a8.ip4.static.sl-reverse.com) has quit (Ping timeout: 264 seconds)
+2016-09-20 05:40:57	<--	PhotoJim (~Jim@hobart.ip6.photojim.ca) has quit (Ping timeout: 248 seconds)
+2016-09-20 05:41:54	-->	no-use (~no-use@d54c65ccf.access.telenet.be) has joined #gentoo
+2016-09-20 05:41:54	<--	no-use (~no-use@d54c65ccf.access.telenet.be) has quit (Changing host)
+2016-09-20 05:41:54	-->	no-use (~no-use@unaffiliated/no-use) has joined #gentoo
+2016-09-20 05:41:56	<--	pratch (~pratch@unaffiliated/pratch) has quit (Quit: Leaving)
+2016-09-20 05:42:35	<--	victorx (~victorx@unaffiliated/victorx) has quit (Ping timeout: 252 seconds)
+2016-09-20 05:42:53	-->	hellrazor__ (~hellrazor@p4FEEA5BA.dip0.t-ipconnect.de) has joined #gentoo
+2016-09-20 05:43:33	<--	bearsh|work (~quassel@71.243.107.92.dynamic.wline.res.cust.swisscom.ch) has quit (Ping timeout: 240 seconds)
+2016-09-20 05:43:44	-->	jsubl2 (~jim@159-118-22-126.cpe.cableone.net) has joined #gentoo
+2016-09-20 05:43:48	<--	slicktux (~slicktux@unaffiliated/slicktux) has quit (Quit: leaving)
+2016-09-20 05:44:33	<--	mazes_80 (~mazes_80@mur31-4-78-210-220-201.fbx.proxad.net) has quit (Remote host closed the connection)
+2016-09-20 05:44:46	-->	W0lf (~Fenrir@122.162.15.234) has joined #gentoo
+2016-09-20 05:44:46	-->	pratch (~pratch@unaffiliated/pratch) has joined #gentoo
+2016-09-20 05:46:04	<--	hellrazor_ (~hellrazor@p508EA595.dip0.t-ipconnect.de) has quit (Ping timeout: 240 seconds)
+2016-09-20 05:47:00	cvaq	hihi choose irssi
+2016-09-20 05:47:00		[05:47]
+2016-09-20 05:47:27	cvaq	where do I config names and such?
+2016-09-20 05:47:34	-->	ov3rmind (~root@unaffiliated/ov3rmind) has joined #gentoo
+2016-09-20 05:47:47	<--	Shentino (~Shentino@gentoo/contributor/shentino) has quit (Quit: Ex-Chat)
+2016-09-20 05:48:04	-->	radia (~radia@exit1.radia.tor-relays.net) has joined #gentoo
+2016-09-20 05:48:15	cvaq	iamben
+2016-09-20 05:48:20	ov3rmind	hey guys on fresh install i can buid any and can't run any as normal user as normal user ben i try run bash this returns me an error related to /dev/nul
+2016-09-20 05:48:40	+iamben	cvaq: you can do it from irssi's interface (try /help) or you can hand-edit the config.  there are guides all over the web.
+2016-09-20 05:50:20	rypervenche	ov3rmind: We need actual output in order to be able to help.
+2016-09-20 05:50:45	<--	duderonomy (~duderonom@c-73-189-177-212.hsd1.ca.comcast.net) has quit (Ping timeout: 244 seconds)
+2016-09-20 05:50:51	ov3rmind	\q
+2016-09-20 05:50:58	<--	ov3rmind (~root@unaffiliated/ov3rmind) has quit (Client Quit)
+2016-09-20 05:51:04	+iamben	ov3rmind: why do you refuse to use wgetpaste to pastebin some actual error logs?
+2016-09-20 05:51:08	+iamben	it's quite irritating
+2016-09-20 05:52:47	<--	radia (~radia@exit1.radia.tor-relays.net) has quit (Ping timeout: 265 seconds)
+2016-09-20 05:56:07	<--	_jd (~john@bba424895.alshamil.net.ae) has quit (Quit: leaving)
+2016-09-20 05:56:18	+iamben	also the way it takes you 30 mins to respond to each followup question, makes things difficult
+2016-09-20 05:56:30	+iamben	perhaps you should use the forums
+2016-09-20 05:56:32	<--	eclm (~alan_w@75.78.166.9) has quit (Quit: WeeChat 1.4)
+2016-09-20 05:57:22	-->	zyxelthrone (~nepgear@2601:18a:c502:22d0:ffe1:9c99:873:e299) has joined #gentoo
+2016-09-20 05:57:31	-->	Shentino (~Shentino@gentoo/contributor/shentino) has joined #gentoo
+2016-09-20 05:58:52	rypervenche	iamben: He left before you wrote anything. :/
+2016-09-20 05:59:01	+iamben	oops
+2016-09-20 05:59:11	+iamben	well, that makes it difficult as well =)
+2016-09-20 05:59:44	<--	tlaxkit (~Thunderbi@92.185.154.236) has quit (Quit: tlaxkit)
+2016-09-20 06:00:17	-->	superusr (~usr@p5B2458CE.dip0.t-ipconnect.de) has joined #gentoo
+2016-09-20 06:00:17	<--	newbie1 (~yqt@81.88.230.28) has quit (Ping timeout: 240 seconds)
+2016-09-20 06:01:00	-->	Thymo (~Thymo@524ACC90.cm-4-3d.dynamic.ziggo.nl) has joined #gentoo
+2016-09-20 06:01:03	-->	ov3rmind (~root@unaffiliated/ov3rmind) has joined #gentoo
+2016-09-20 06:01:42	-->	mazes_80 (~mazes_80@mur31-4-78-210-220-201.fbx.proxad.net) has joined #gentoo
+2016-09-20 06:02:51	-->	Faraclas (~elias@69.169.138.52) has joined #gentoo
+2016-09-20 06:02:51		[06:02]
+2016-09-20 06:03:01	loa	can't get where is prime? and can i use it on my desktop?
+2016-09-20 06:03:01	ov3rmind	https://paste.pound-python.org/show/QuQv0pTa648vQfkxN4ye
+2016-09-20 06:04:07	+iamben	ov3rmind: page not found
+2016-09-20 06:05:04	ov3rmind	maybe the link is wrong i can copy paste wgetpaste runing in othe terminal
+2016-09-20 06:05:29	<--	laumann (~thomas@2.109.38.18) has quit (Ping timeout: 248 seconds)
+2016-09-20 06:05:42	<--	greister_ (1bd78da8@gateway/web/freenode/ip.27.215.141.168) has quit (Ping timeout: 240 seconds)
+2016-09-20 06:05:51	+iamben	you can also add "-s dpaste" to the wgetpaste command, the dpaste service has shorter URLs
+2016-09-20 06:06:50	Faraclas	Hey guys. I'm having an issue where I cant figure out why protage will not try to merge the newest version of virtualbox.  Details here: https://bpaste.net/show/64cece02974d
+2016-09-20 06:07:01	<--	Thymo (~Thymo@524ACC90.cm-4-3d.dynamic.ziggo.nl) has quit (Ping timeout: 240 seconds)
+2016-09-20 06:07:02	<--	Tecumseh (~Tecumseh_@mtl01-4-78-203-200-19.fbx.proxad.net) has quit (Quit: Leaving)
+2016-09-20 06:07:10	ov3rmind	http://dpaste.com/23AKXWF
+2016-09-20 06:07:14	ov3rmind	may is it
+2016-09-20 06:07:31	+iamben	ov3rmind: check the permissions on /dev/null, "ls -l /dev/null"
+2016-09-20 06:07:55	antranigv	anyone here runs unpriv LXC?
+2016-09-20 06:08:01	Hoolootwo	I do on my laptop
+2016-09-20 06:08:09	Hoolootwo	(on debian)
+2016-09-20 06:08:10	-->	delacroix (~delacroix@2a02:810c:e3f:ecac:f901:4148:721d:14c7) has joined #gentoo
+2016-09-20 06:08:30	<--	ilken (~ilk@107.161.81.45) has quit (Quit: ragequit)
+2016-09-20 06:08:31	antranigv	Hoolootwo: ah, I need on gentoo, I'm having some cgoups problem
+2016-09-20 06:08:42	-->	hasues (~hasues@204.78.58.43) has joined #gentoo
+2016-09-20 06:08:43	ov3rmind	/dev/nul root:root crw rw ----
+2016-09-20 06:08:44	<--	hasues (~hasues@204.78.58.43) has left #gentoo
+2016-09-20 06:08:48	antranigv	I want to fix it, so I can run it on my gentoo servers
+2016-09-20 06:09:13	+iamben	ov3rmind: those permissions are wrong, it should be:  crw-rw-rw- 1 root root
+2016-09-20 06:09:16	<--	jfmcarreira (~Joao@unaffiliated/jfmcarreira) has quit (Ping timeout: 265 seconds)
+2016-09-20 06:09:36	+iamben	ov3rmind: if you boot via openrc, can you check "/etc/init.d/udev status" to see if it's started?
+2016-09-20 06:09:57	+grknight	Faraclas: does it work if you do 'emerge -1a virtualbox virtualbox-modules virtualbox-additions virtualbox-extpack-oracle'?
+2016-09-20 06:10:11	-->	jfmcarreira (~Joao@bl6-7-183.dsl.telepac.pt) has joined #gentoo
+2016-09-20 06:10:11	<--	jfmcarreira (~Joao@bl6-7-183.dsl.telepac.pt) has quit (Changing host)
+2016-09-20 06:10:11	-->	jfmcarreira (~Joao@unaffiliated/jfmcarreira) has joined #gentoo
+2016-09-20 06:10:27	ov3rmind	udev failed to start
+2016-09-20 06:10:36	-->	test_ (~test@c213-89-88-48.bredband.comhem.se) has joined #gentoo
+2016-09-20 06:10:41	test_	dope
+2016-09-20 06:10:48	+iamben	ov3rmind: ok that is at the root of the problem.  does it give any other errors telling why/how udev failed?
+2016-09-20 06:10:59	+iamben	maybe try "/etc/init.d/udev restart --nodeps"
+2016-09-20 06:11:10	test_	hehe nice im irssi now iamben :D
+2016-09-20 06:11:23	ov3rmind	unable to find udev executable
+2016-09-20 06:11:35	+iamben	ov3rmind: did you unmerge (e)udev?
+2016-09-20 06:11:55	Faraclas	grknight: yes, that seems to find them.. What was the issue (and how did that work?)
+2016-09-20 06:12:02	<--	jfmcarreira (~Joao@unaffiliated/jfmcarreira) has quit (Excess Flood)
+2016-09-20 06:12:08	<--	sasso (~davide@host88-197-static.0-79-b.business.telecomitalia.it) has quit (Quit: o.0)
+2016-09-20 06:12:29	<--	ov3rmind (~root@unaffiliated/ov3rmind) has quit (Quit: leaving)
+2016-09-20 06:12:31	-->	Thymo (~Thymo@524ACC90.cm-4-3d.dynamic.ziggo.nl) has joined #gentoo
+2016-09-20 06:12:53	+grknight	Faraclas: dependency skipping most likely.  unless all packages are analyzed, an upgrade may be skipped.  a similar result would have occurred if you did 'emerge -avuD @world'
+2016-09-20 06:13:11	+grknight	a similar positive result
+2016-09-20 06:13:29	test_	why could i select text in gentoo instasll cd, but now now in irssi? or  gentoo?
+2016-09-20 06:13:29	<--	uwjbvg (~nine@151.45.251.223) has quit (Read error: Connection reset by peer)
+2016-09-20 06:13:54	+iamben	test_: gpm provides that console mouse functionality
+2016-09-20 06:14:03	+iamben	you can install & start it on your new gentoo, if you like
+2016-09-20 06:14:23	test_	hehe, i like it alot in terminal, im in now
+2016-09-20 06:14:28	-->	stqn (~stqn@pdc38-1-82-246-180-56.fbx.proxad.net) has joined #gentoo
+2016-09-20 06:15:17	Faraclas	grknight: that makes sense. Thanks!
+2016-09-20 06:15:37	-->	jfmcarreira (~Joao@bl6-7-183.dsl.telepac.pt) has joined #gentoo
+2016-09-20 06:15:37	<--	jfmcarreira (~Joao@bl6-7-183.dsl.telepac.pt) has quit (Changing host)
+2016-09-20 06:15:37	-->	jfmcarreira (~Joao@unaffiliated/jfmcarreira) has joined #gentoo
+2016-09-20 06:16:01	<--	jeezy (~xz@bitchx/apple/jeezy) has quit (Ping timeout: 250 seconds)
+2016-09-20 06:16:41	<--	Thymo (~Thymo@524ACC90.cm-4-3d.dynamic.ziggo.nl) has quit (Ping timeout: 240 seconds)
+2016-09-20 06:17:15	+grknight	Faraclas: fwiw, virtualbox has "issues" now and again with its kernel modules;  for smoothest compatibility, qemu is integrated directly with the kernel
+2016-09-20 06:18:09	Hoolootwo	antranigv, yeah, on debian everything worked :/
+2016-09-20 06:18:09		[06:18]
+2016-09-20 06:18:11	<--	cvaq (~yaaic@c213-89-88-48.bredband.comhem.se) has quit (Quit: Yaaic - Yet another Android IRC client - http://www.yaaic.org)
+2016-09-20 06:18:25	-->	metachr0n (~nobody@78.1.broadband13.iol.cz) has joined #gentoo
+2016-09-20 06:18:33	test_	iamben: how do i make gpm working?
+2016-09-20 06:18:52	Faraclas	grknight: thanks for the tip. I switched to virtualbox from vmware because of kernel issues. I tried qemu but didnt have a good experience.  I have found virtualbox to be awesome.  The only reason I am updating is because the Windows 10 guest updated iteself and I want the newest virtualbox stuff to see if I can make Win10 behave like it did yesterday
+2016-09-20 06:19:34	-->	ov3rmind (~leonardo@unaffiliated/ov3rmind) has joined #gentoo
+2016-09-20 06:19:41	<--	f4cl3y (~f4cl3y@unaffiliated/f4cl3y) has quit (Ping timeout: 272 seconds)
+2016-09-20 06:19:57	ov3rmind	https://paste.pound-python.org/show/73oCYnK5m4iTJbvrhVYF/
+2016-09-20 06:21:01	-->	realnot (~realnot@unaffiliated/realnot) has joined #gentoo
+2016-09-20 06:21:01	test_	is it possible to play csgo in terminal? ;3
+2016-09-20 06:21:08	+iamben	test_: /etc/init.d/gpm start
+2016-09-20 06:21:09	+grknight	ov3rmind: it looks like you went the wrong way trying to replace sys-fs/udev with systemd
+2016-09-20 06:21:31	+iamben	test_: you MAY need to edit /etc/conf.d/gpm
+2016-09-20 06:21:33	<--	jsubl2 (~jim@159-118-22-126.cpe.cableone.net) has quit (Ping timeout: 240 seconds)
+2016-09-20 06:21:56	-->	silverhom (~silverhom@c83-252-238-248.bredband.comhem.se) has joined #gentoo
+2016-09-20 06:22:08	-->	Thymo (~Thymo@524ACC90.cm-4-3d.dynamic.ziggo.nl) has joined #gentoo
+2016-09-20 06:22:18	test_	does that line work in plain terminal?
+2016-09-20 06:22:22	+iamben	test_: yes
+2016-09-20 06:22:30	+iamben	ov3rmind: did you set USE=build? that's not a good idea
+2016-09-20 06:22:40	test_	that u mention first
+2016-09-20 06:23:12	-->	embik (~embik@unaffiliated/embik) has joined #gentoo
+2016-09-20 06:24:08	test_	iamben: so, everytime i boot i have to apply this right?
+2016-09-20 06:24:23	+grknight	yeah, USE=build removes the systemd dependency for util-linux
+2016-09-20 06:24:27	<--	maolang (~maolang@2a01:e35:2e6c:5620:c77e:c4ff:15e1:718) has quit (Remote host closed the connection)
+2016-09-20 06:24:48	+iamben	test_: you can do "rc-update add gpm default" to make it start @ boot
+2016-09-20 06:26:20	-->	maolang (~maolang@2a01:e35:2e6c:5620:c77e:c4ff:15e1:718) has joined #gentoo
+2016-09-20 06:26:30	test_	iamben: ok, thanks
+2016-09-20 06:27:08	-->	Phlyniii (~alex@84-115-53-64.cable.dynamic.surfer.at) has joined #gentoo
+2016-09-20 06:28:57	test_	iamben: do you know any commandline browser gut for new users??
+2016-09-20 06:29:22	Hoolootwo	browser? like web browser?
+2016-09-20 06:29:24	<--	bootkiller (~bootkille@a89-154-162-166.cpe.netcabo.pt) has quit (Quit: KVIrc 4.9.2 Aria http://www.kvirc.net/)
+2016-09-20 06:29:27	Dracwyrm	w3m
+2016-09-20 06:29:33	ov3rmind	http://bpaste.net/show/28c439776204
+2016-09-20 06:29:36	Hoolootwo	w3m, or lynx or links
+2016-09-20 06:29:42	ov3rmind	util-linux build log
+2016-09-20 06:29:59	+grknight	or elinks for a web browser
+2016-09-20 06:30:03	-->	tirej (c38eb3fd@gateway/web/freenode/ip.195.142.179.253) has joined #gentoo
+2016-09-20 06:30:05	+iamben	test_: i use links but only for the bare basic needs until i get X up and running asap
+2016-09-20 06:30:17	<--	kelsoo (~kelsoo@dragora/developer/kelsoo) has quit (Quit: WeeChat 1.3)
+2016-09-20 06:30:26	tirej	hi everyone
+2016-09-20 06:30:36	test_	iamben: alright, i just want to get my gentoo up and running :)
+2016-09-20 06:30:41	<--	Shentino (~Shentino@gentoo/contributor/shentino) has quit (Ping timeout: 240 seconds)
+2016-09-20 06:30:49	-->	kelsoo (~kelsoo@dragora/developer/kelsoo) has joined #gentoo
+2016-09-20 06:31:02	+grknight	ov3rmind: turn off the build USE, it's not to be set by users
+2016-09-20 06:31:09	tirej	i am trying to install gentoo with livedvd but i can not make wifi work
+2016-09-20 06:31:15	ov3rmind	i not setup this
+2016-09-20 06:31:20	ov3rmind	where is it
+2016-09-20 06:31:30	+iamben	ov3rmind: can you share your /etc/portage/make.conf with us?
+2016-09-20 06:31:31	+grknight	ov3rmind: either in make.conf or somewhere in package.use
+2016-09-20 06:31:35	<--	Phlyniii (~alex@84-115-53-64.cable.dynamic.surfer.at) has quit (Ping timeout: 260 seconds)
+2016-09-20 06:32:10	-->	loriot (~tro0o0on@dslb-188-105-227-180.188.105.pools.vodafone-ip.de) has joined #gentoo
+2016-09-20 06:32:37	-->	Inv1s1ble (~Beep@208.184.224.241) has joined #gentoo
+2016-09-20 06:32:59	-->	tina- (~quassel@ptr-2hj4tbwoest2j8vui3b57dx7e.ip6.access.telenet.be) has joined #gentoo
+2016-09-20 06:33:21	ov3rmind	iamben: i have cleaed all USE flags
+2016-09-20 06:33:21		[06:33]
+2016-09-20 06:33:30	stqn	tirej: I never used the livedvd so I can’t help you with that, but you can always use another live distro (like ubuntu) if it helps.
+2016-09-20 06:34:06	tirej	stqn: how can use ubuntu to install gentoo ?
+2016-09-20 06:34:23	stqn	tirej: follow the handbook
+2016-09-20 06:34:58	+grknight	tirej: you can use any live environment which has network access, disk tools and a compatible kernel;  you are the installer of Gentoo, there is no program to do it
+2016-09-20 06:34:59	stqn	there are no special instructions (except for the DNS settings)
+2016-09-20 06:35:18	+grknight	stqn: and possibly /dev/shm
+2016-09-20 06:36:01	stqn	grknight: but it’s documented in the handbook I think?
+2016-09-20 06:36:10	+grknight	stqn: in the alternate install section
+2016-09-20 06:36:15	-->	parapente (~nobody@unaffiliated/parapente) has joined #gentoo
+2016-09-20 06:36:38	+grknight	https://wiki.gentoo.org/wiki/Installation_alternatives#Installation_from_non-Gentoo_LiveCDs
+2016-09-20 06:36:51	<--	`VL (~vl@178.23.225.78) has quit (Quit: Leaving)
+2016-09-20 06:37:19	test_	iamben: how do i read chat policy?
+2016-09-20 06:37:22	<--	PsyLok (~PsyLok@unaffiliated/psylok) has quit (Remote host closed the connection)
+2016-09-20 06:37:23	koracain	should i just drop kernel patches in /etc/portage/patches/sys-linux/hardened-sources ?
+2016-09-20 06:37:44	<--	Faraclas (~elias@69.169.138.52) has left #gentoo
+2016-09-20 06:37:59	+iamben	test_: what chat policy?
+2016-09-20 06:38:15	test_	iamben: is it only english here right?
+2016-09-20 06:38:17	+iamben	the channel guidelines for #gentoo?
+2016-09-20 06:38:20	Inv1s1ble	huh..I'm a little confused on these dependency blocks: https://bpaste.net/show/a23755376d7d
+2016-09-20 06:38:24	test_	yeah
+2016-09-20 06:38:24	+grknight	koracain: yes, but in the correct path
+2016-09-20 06:38:34	+iamben	test_: https://www.gentoo.org/get-involved/irc-channels/
+2016-09-20 06:38:48	<--	caveman (~mahmoud@unaffiliated/mahmoud) has quit (Read error: Connection reset by peer)
+2016-09-20 06:38:48	-->	Guest28945 (~pine@90.209.211.26) has joined #gentoo
+2016-09-20 06:39:10	koracain	care to ellaborate?
+2016-09-20 06:39:25	+iamben	Inv1s1ble: try a depclean, see if it's able to remove any orphans.  also make sure you have no perl-related packages in /var/lib/portage/world
+2016-09-20 06:39:29	-->	anigma (~coder@pdpc/supporter/student/anigma) has joined #gentoo
+2016-09-20 06:39:40	<--	delacroix (~delacroix@2a02:810c:e3f:ecac:f901:4148:721d:14c7) has quit (Ping timeout: 265 seconds)
+2016-09-20 06:40:00	-->	TheLive1_ (~TheLive1@77.31.160.105) has joined #gentoo
+2016-09-20 06:40:11	Inv1s1ble	hmm.. I have perl-gcpan/Term-Size and perl-cleaner in world
+2016-09-20 06:40:35	Inv1s1ble	trying a depclean
+2016-09-20 06:40:37	+iamben	Inv1s1ble: those 2 should be ok, i think
+2016-09-20 06:40:51	test_	iamben: am i allowed to speak my native language?
+2016-09-20 06:40:53	+iamben	perl-core/ or dev-perl/ stuff could be a problem, though
+2016-09-20 06:41:09	+iamben	test_: no, there are language-specific channels for that, what is your native lang?
+2016-09-20 06:41:16	test_	:'(
+2016-09-20 06:41:20	test_	swedish
+2016-09-20 06:41:49	+iamben	#gentoo-se i think?
+2016-09-20 06:41:51	muffindrake	Compilation using revdep-rebuild failed at one of the last 5 or so packages, is there any way to find out the order they were going to be compiled in?
+2016-09-20 06:42:13	-->	delacroix (~delacroix@2a02:810c:e3f:ecac:f901:4148:721d:14c7) has joined #gentoo
+2016-09-20 06:42:14	Inv1s1ble	muffindrake, emerge -a --resume ?
+2016-09-20 06:42:21	Inv1s1ble	I can't remember if you can ask on a resume
+2016-09-20 06:42:27	<--	Thymo (~Thymo@524ACC90.cm-4-3d.dynamic.ziggo.nl) has quit (Quit: ZNC - http://znc.in)
+2016-09-20 06:42:30	test_	iamben: yeah, i thought so xD
+2016-09-20 06:42:57	-->	Thymo (~Thymo@524ACC90.cm-4-3d.dynamic.ziggo.nl) has joined #gentoo
+2016-09-20 06:43:12	<--	TheLive1 (~TheLive1@unaffiliated/thelive1) has quit (Ping timeout: 276 seconds)
+2016-09-20 06:43:21	ov3rmind	http://bpaste.net/show/3a7177a1d5f1
+2016-09-20 06:43:21	-->	ilken (~ilken@107.161.81.45) has joined #gentoo
+2016-09-20 06:44:04	Inv1s1ble	iamben, hmm..depclean give me the following: https://bpaste.net/show/16ec5ea8a643
+2016-09-20 06:44:22	Inv1s1ble	huh..why do I have icetea 6..I should get rid of that
+2016-09-20 06:44:46	<--	CrowX- (~CrowX-@79.141.115.88) has quit (Quit: Leaving)
+2016-09-20 06:45:16	-->	Shentino (~Shentino@gentoo/contributor/shentino) has joined #gentoo
+2016-09-20 06:45:21	+iamben	yeah unfortunately it can be hard to get depclean working if you're not already fully up to date
+2016-09-20 06:45:36	+iamben	try adding --backtrack=30 on your original emerge, that MAY be enough
+2016-09-20 06:45:46	+grknight	Inv1s1ble: you do have some rarely used VIDEO_CARDS set, fbdev, glint, and dummy.  those, along with vesa don't have the automatic rebuild property set with xorg-server, so they cause their own conflict
+2016-09-20 06:46:17	<--	chry (~chry@funtoo/user/chry) has quit (Quit: localhost ~ # shutdown -r now)
+2016-09-20 06:46:25	<--	eshlox (uid44222@gateway/web/irccloud.com/x-fpznlktjjlblqqts) has quit (Quit: Connection closed for inactivity)
+2016-09-20 06:46:51	-->	laumann (~thomas@0190102017.0.fullrate.ninja) has joined #gentoo
+2016-09-20 06:47:09	test_	iamben: is "working" next thing after installation or, is it optional?
+2016-09-20 06:47:11	Inv1s1ble	grknight, ahh..yea I should clean those out. I use to run this image in a VM. I should only need radeon/radeonsi now.
+2016-09-20 06:47:28	test_	i want to play csgo so bad :3
+2016-09-20 06:47:38	Inv1s1ble	huh...I don't have icetea-6 installed...
+2016-09-20 06:48:00	test_	iamben: am refering to the gentoo handbook
+2016-09-20 06:48:02	<--	nE0sIghT (~Thunderbi@unaffiliated/ne0sight) has quit (Quit: nE0sIghT)
+2016-09-20 06:48:03	+iamben	Inv1s1ble: you have icedtea-bin though, right?
+2016-09-20 06:48:11	<--	metachr0n (~nobody@78.1.broadband13.iol.cz) has quit (Read error: Connection reset by peer)
+2016-09-20 06:48:11	-->	ng0 (~ng0@unaffiliated/niasterisk) has joined #gentoo
+2016-09-20 06:48:12	+iamben	test_: at least get xorg up!
+2016-09-20 06:48:14	-->	mawiegand (~marcel@p5088C986.dip0.t-ipconnect.de) has joined #gentoo
+2016-09-20 06:48:19	<--	ow1 (~ow1@pppoe-static.194.158.193.152.telecom.mogilev.by) has quit (Ping timeout: 255 seconds)
+2016-09-20 06:48:51	<--	noexcept (~noexcept@2a03:b0c0:3:d0::33:9001) has quit (Ping timeout: 265 seconds)
+2016-09-20 06:48:51		[06:48]
+2016-09-20 06:49:03	Inv1s1ble	iamben, ahh..I mispelled it when grepping, forgot the d :)
+2016-09-20 06:50:35	test_	iamben: this profile thing, will help me, if i gonna install plasma in the future?
+2016-09-20 06:51:10	+iamben	test_: the earlier you set a plasma profile and do an update, the less rebuilding you'll have to do later... but it does mean a lot of updating & rebuilding now
+2016-09-20 06:51:13	-->	JigmeDatse (~JigmeDats@d50-92-206-112.bchsia.telus.net) has joined #gentoo
+2016-09-20 06:51:45	<--	cdown (~cdown@199.201.66.0) has quit (Ping timeout: 265 seconds)
+2016-09-20 06:52:31	test_	iamben: ok so what is the best shortcut, if want to play csgo really bad?
+2016-09-20 06:53:03	+iamben	set the base desktop profile, update, follow the xorg guide to install xorg, get a wm, install steam/whatever
+2016-09-20 06:53:29	test_	iamben: what wm do u recommend?
+2016-09-20 06:53:35	<--	ezakimak_ (~ezakimak@dominologic.com) has quit (Remote host closed the connection)
+2016-09-20 06:53:47	+iamben	i like fluxbox as a good basic one, that emerges quickly
+2016-09-20 06:53:49	cur_elder	i3wm :)
+2016-09-20 06:53:50	-->	ezakimak (~ezakimak@dominologic.com) has joined #gentoo
+2016-09-20 06:54:26	<--	mguillech (~mguillech@host184.201-252-170.telecom.net.ar) has quit (Read error: Connection reset by peer)
+2016-09-20 06:54:44	test_	sorry, but how do i set profile again?
+2016-09-20 06:54:49	-->	mguillech (~mguillech@host184.201-252-170.telecom.net.ar) has joined #gentoo
+2016-09-20 06:55:08	<--	jtriley (~jtriley@140.247.242.54) has quit (Ping timeout: 265 seconds)
+2016-09-20 06:55:12	+iamben	eselect profile
+2016-09-20 06:55:46	test_	iamben: this one right?
+2016-09-20 06:55:51	test_	iamben: default/linux/amd64/13.0/desktop
+2016-09-20 06:55:55	+iamben	yep
+2016-09-20 06:56:33	<--	mawiegand (~marcel@p5088C986.dip0.t-ipconnect.de) has quit (Ping timeout: 265 seconds)
+2016-09-20 06:57:58	-->	metachr0n (~nobody@78.1.broadband13.iol.cz) has joined #gentoo
+2016-09-20 06:58:04	-->	noexcept (~noexcept@2a03:b0c0:3:d0::33:9001) has joined #gentoo
+2016-09-20 06:58:45	-->	cdown (~cdown@199.201.66.0) has joined #gentoo
+2016-09-20 06:59:17	slobber	also on my chromebook, i've got mem=4g as a kernel parameter but on bootup i still see only 2GB in /proc/meminfo
+2016-09-20 06:59:20	slobber	any ideas on that?
+2016-09-20 07:00:02	<--	Turingtoast (~Tino@p54BCCA60.dip0.t-ipconnect.de) has quit (Max SendQ exceeded)
+2016-09-20 07:00:30	<--	nimms (~nimms@5.141.237.208) has quit (Ping timeout: 265 seconds)
+2016-09-20 07:00:58	test_	hmm updat is like "emerge --sync" ?
+2016-09-20 07:00:58	+grknight	slobber: shouldn't that be highmem=4g?
+2016-09-20 07:01:02	test_	or am i wrong?
+2016-09-20 07:01:35	-->	ow1 (~ow1@pppoe-static.194.158.193.152.telecom.mogilev.by) has joined #gentoo
+2016-09-20 07:01:35	+iamben	test_: --sync is to pull down the newest ebuilds into the repo, it doesn't update your installed packages
+2016-09-20 07:01:44	+iamben	for updating your installed packages, you want like "emerge -uDNav @world"
+2016-09-20 07:01:52	<--	ov3rmind (~leonardo@unaffiliated/ov3rmind) has quit (Quit: KVIrc 4.3.1 Aria http://www.kvirc.net/)
+2016-09-20 07:02:00	slobber	grknight: hmm let me try that
+2016-09-20 07:02:07	tirej	guys, i did as is handbook says --> https://wiki.gentoo.org/wiki/Wpa_supplicant but cannot connect wpa_supplicant
+2016-09-20 07:02:18	slobber	grknight: sure was, thanks!
+2016-09-20 07:02:24	wuseman	tirej: Hi!
+2016-09-20 07:02:32	zrts	what is Stage 3?
+2016-09-20 07:02:36	tirej	wuseman: hi
+2016-09-20 07:02:43	wuseman	tirej: tell me why you cant connect, error message is?
+2016-09-20 07:02:58	-->	wdna (~wdna@bzq-84-111-20-20.red.bezeqint.net) has joined #gentoo
+2016-09-20 07:02:58	test_	iamben: haha ok thanks ;)
+2016-09-20 07:03:00	loa	somebody have problems with liborcus and libixion?
+2016-09-20 07:03:23	+iamben	zrts: that's the gentoo base system that you use as the seed for your new gentoo
+2016-09-20 07:03:50	zrts	iamben: awesome, and whats HardFP for ARMs?
+2016-09-20 07:03:51	tirej	wuseman: i want to connect wi-fi and i made configuration as handbook says but when i run #wpa_cli command it says : Could not connect to wpa_supplicant : (nil) - re-trying
+2016-09-20 07:03:51		[07:03]
+2016-09-20 07:04:12	+iamben	zrts: hardfp = hardware floating point, some ARMs have it and some do not
+2016-09-20 07:04:38	+iamben	tirej: did you start the wpa_supplicant daemon yet?
+2016-09-20 07:04:41	tirej	wuseman: i tried wpa_gui too but cannot see my wifi ethernet
+2016-09-20 07:04:45	zrts	w0t
+2016-09-20 07:04:53	tirej	iamben: no, how to start ?
+2016-09-20 07:05:00	zrts	alright ty
+2016-09-20 07:05:01	wuseman	wuyin: tirej can you pastebin your wpa_supplicant.conf pzl
+2016-09-20 07:05:04	wuseman	plz
+2016-09-20 07:05:17	<--	asurace (~asurace@131.228.216.128) has quit (Ping timeout: 272 seconds)
+2016-09-20 07:05:18	-->	barthess (~barthess@93.85.167.189) has joined #gentoo
+2016-09-20 07:05:38	wuseman	tirej: wich value you gave scan?
+2016-09-20 07:05:45	tirej	wuseman: i've no internet con on my laptop but i'll rewrite for you
+2016-09-20 07:05:46	<--	ilken (~ilken@107.161.81.45) has quit (Quit: ZNC 1.6.3+deb1 - http://znc.in)
+2016-09-20 07:05:56	wuseman	thx
+2016-09-20 07:06:02	+iamben	tirej: if you're not using a higher-level tool like netifrc or dhcpcd or nm or whatever, you can manually start wpa_supplicant like this: https://wiki.gentoo.org/wiki/Wpa_supplicant#Run_wpa_supplicant_in_debug_mode
+2016-09-20 07:06:39	test_	some
+2016-09-20 07:06:42	<--	sklv (~sklv@80.229.16.48) has quit (Remote host closed the connection)
+2016-09-20 07:06:43	<--	cur_elder (~noname@195-71-139-78.kamensktel.ru) has quit (Quit: WeeChat 1.4)
+2016-09-20 07:06:46	test_	ting to worry about?
+2016-09-20 07:06:50	test_	"The following packages are causing rebuilds" ??
+2016-09-20 07:06:52	-->	sklv (~sklv@80.229.16.48) has joined #gentoo
+2016-09-20 07:07:20	+iamben	test_: no, nothing to worry about at all
+2016-09-20 07:07:26	-->	jtriley (~jtriley@65.112.10.219) has joined #gentoo
+2016-09-20 07:08:04	tirej	wuseman: http://ideone.com/ggLLor <-- wpa_supplicant.conf
+2016-09-20 07:08:07	<--	krajo1 (~asdf@cst-prg-83-1.cust.vodafone.cz) has quit (Ping timeout: 255 seconds)
+2016-09-20 07:08:20	<--	EvilPeng1 (~EvilPengu@bur-inet-pa-4.disney.com) has quit (Ping timeout: 260 seconds)
+2016-09-20 07:08:40	<--	mints (~mints@unaffiliated/mints) has quit
+2016-09-20 07:08:46	+iamben	tirej: i dunno if it's gonna like those spaces around "="
+2016-09-20 07:09:47	<--	kerframil (~kerframil@gentoo/user/kerframil) has quit (Quit: Leaving)
+2016-09-20 07:09:52	tirej	iamben: not working without spaces either
+2016-09-20 07:09:52	wuseman	Correct ^
+2016-09-20 07:09:56	wuseman	Must be 1 line
+2016-09-20 07:10:09	slobber	10:00:58   +grknight | slobber: shouldn't that be highmem=4g?
+2016-09-20 07:10:13	slobber	oh boy
+2016-09-20 07:10:13	wuseman	ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=wheel
+2016-09-20 07:10:19	+iamben	tirej: well you still have to actually RUN wpa_supplicant somehow, before you try to use wpa_cli or another frontend to connect to it
+2016-09-20 07:10:24	slobber	sorry, tried to click a link and pasted
+2016-09-20 07:10:35	test_	wtf 183 packageS?
+2016-09-20 07:10:41	-->	johnnyreb (~tth@unaffiliated/johnnyreb) has joined #gentoo
+2016-09-20 07:10:48	test_	im so out of date?
+2016-09-20 07:11:12	+iamben	the perl packages may be a big part of that, also a lot of pending USE changes due to the profile change
+2016-09-20 07:11:13	tirej	wuseman: did as it is
+2016-09-20 07:11:32	slobber	perl loves breaking my portage, test_
+2016-09-20 07:11:40	<--	Lazydog|2 (~Lazydog@38.88.148.2) has quit (Quit: Until next time.......)
+2016-09-20 07:11:54	-->	Bloodclaw (~bloodclaw@2001:bc8:3078:1fe:f0eb:8230:5e76:a22d) has joined #gentoo
+2016-09-20 07:12:05	tirej	wuseman: btw, i am on livedvd.
+2016-09-20 07:12:08	-->	Lazydog (~Lazydog@38.88.148.2) has joined #gentoo
+2016-09-20 07:12:11	wuseman	ohh. tirej
+2016-09-20 07:12:16	wuseman	sec.
+2016-09-20 07:12:21	wuseman	first try add scan_ssid=1
+2016-09-20 07:12:23	+grknight	test_: if you see a bunch of virtual/* packages, they don't actually install anything and only take the time to record the dependencies
+2016-09-20 07:12:33	-->	EvilPeng1 (~EvilPengu@bur-inet-pa-4.disney.com) has joined #gentoo
+2016-09-20 07:12:36	-->	Base_2 (~maurice@5ED6A641.cm-7-7c.dynamic.ziggo.nl) has joined #gentoo
+2016-09-20 07:12:46	-->	nimms (~nimms@5.141.236.114) has joined #gentoo
+2016-09-20 07:13:13	test_	grknight: i got like 183 emerging, wondering why :/
+2016-09-20 07:13:28	tirej	wuseman: no, it didnt work
+2016-09-20 07:13:39	+grknight	test_: because the base gentoo is quite minimal;  you build the system the way you want it
+2016-09-20 07:13:40	test_	grknight: ok, have seen 2 so far
+2016-09-20 07:13:59	<--	tina- (~quassel@ptr-2hj4tbwoest2j8vui3b57dx7e.ip6.access.telenet.be) has quit (Ping timeout: 265 seconds)
+2016-09-20 07:14:13	test_	so then i choose profile desktop
+2016-09-20 07:14:14	+iamben	test_: changing to the desktop profile changed a lot of USE flags on your existing packages, and will also cause a lot of new optional deps to be installed, this is normal
+2016-09-20 07:14:27	-->	_0bitcount (~Big_Byte@92.176.142.156) has joined #gentoo
+2016-09-20 07:14:40	test_	iamben: ok :)
+2016-09-20 07:14:54	-->	Turingtoast (~Tino@p54BCCA60.dip0.t-ipconnect.de) has joined #gentoo
+2016-09-20 07:17:25	test_	i guess can take a while :/
+2016-09-20 07:17:58	+iamben	it should mostly be pretty small packages
+2016-09-20 07:18:04	test_	someone request good song to listen while :)
+2016-09-20 07:18:16	test_	seem very slow to progress.. dont know why
+2016-09-20 07:18:37	<--	mazes_80 (~mazes_80@mur31-4-78-210-220-201.fbx.proxad.net) has quit (Remote host closed the connection)
+2016-09-20 07:18:51	-->	nelder (~noname@195-71-139-78.kamensktel.ru) has joined #gentoo
+2016-09-20 07:18:51		[07:18]
+2016-09-20 07:19:29	+grknight	if you have MAKEOPTS tuned and multiple -j set on emerge, it goes faster
+2016-09-20 07:20:30	test_	i have, like -j13
+2016-09-20 07:21:20	+iamben	if you really have 12 cores/threads at your disposal, your upgrade should go very quickly =)
+2016-09-20 07:21:22	Inv1s1ble	test_, Do you have..13 cores?
+2016-09-20 07:21:36	test_	no 12
+2016-09-20 07:21:38	test_	:P
+2016-09-20 07:21:47	Inv1s1ble	wow. Xeon?
+2016-09-20 07:22:01	test_	hehe nope :P
+2016-09-20 07:22:06	+grknight	personally, i would do something like MAKEOPTS="-j6" emerge -j3
+2016-09-20 07:22:14	jcjordyn120-andr	i7?
+2016-09-20 07:22:15	test_	Intel i7
+2016-09-20 07:22:27	test_	extreme edition :)
+2016-09-20 07:22:39	jcjordyn120-andr	cool :)
+2016-09-20 07:22:47	test_	o rlly??
+2016-09-20 07:22:49	test_	^^
+2016-09-20 07:22:58	ShoarAu	-j24
+2016-09-20 07:23:16	+grknight	test_: that would be my recommendation to speed large build lists
+2016-09-20 07:23:51	test_	ok, i check it out later
+2016-09-20 07:24:13	+grknight	the makeopts affects the build of a single package, the 'emerge -j3' says build up to 3 packages at a time
+2016-09-20 07:24:53	+grknight	the most jobs running would be 18, but the average will be less
+2016-09-20 07:25:31	+grknight	this assumes a good amount of RAM available
+2016-09-20 07:26:04	test_	got 24GB
+2016-09-20 07:26:26	+grknight	good :)
+2016-09-20 07:27:11	-->	mawiegand (~marcel@p5088C986.dip0.t-ipconnect.de) has joined #gentoo
+2016-09-20 07:27:43	-->	KlinedByAVirgin (~tits@host-5-58-4-101.la.net.ua) has joined #gentoo
+2016-09-20 07:28:12	-->	ov3rmind (~leo@unaffiliated/ov3rmind) has joined #gentoo
+2016-09-20 07:28:13	test_	grknight: so everytime i update  that iamben  told, and -j3 added in?
+2016-09-20 07:28:27	-->	poeticrpm (~poeticrpm@109.163.226.153) has joined #gentoo
+2016-09-20 07:28:37	-->	Tecumseh (~Tecumseh@mtl01-4-78-203-200-19.fbx.proxad.net) has joined #gentoo
+2016-09-20 07:28:38	-->	bizarro_1 (~bizarro_1@103.red-83-49-8.dynamicip.rima-tde.net) has joined #gentoo
+2016-09-20 07:28:43	+iamben	you can add -j3 in EMERGE_DEFAULT_OPTS="" in make.conf to apply it to all emerges, if you want
+2016-09-20 07:28:43	+grknight	if you like yes. or you can add it to make.conf's EMERGE_DEFAULT_OPTS
+2016-09-20 07:28:49	<--	cdown (~cdown@199.201.66.0) has quit (Ping timeout: 250 seconds)
+2016-09-20 07:28:50	+iamben	^
+2016-09-20 07:29:27	+grknight	and there is --ignore-default-opts for when you want to skip those
+2016-09-20 07:30:44	<--	FroZnShiva (~FroZnShiv@CM-POP2-732.catv.wtnet.de) has quit (Quit: So long and thanks for all the fish.)
+2016-09-20 07:30:56	test_	omg so slow xD
+2016-09-20 07:31:04	test_	im at 33
+2016-09-20 07:31:10	-->	gienah (~mwright@gentoo/developer/gienah) has joined #gentoo
+2016-09-20 07:31:10	--	Mode #gentoo [+v gienah] by ChanServ
+2016-09-20 07:31:43	+grknight	you could stop and apply other suggestions (so long as you are not in an merge phase)
+2016-09-20 07:32:57	<--	Guest28945 (~pine@90.209.211.26) has quit (Ping timeout: 248 seconds)
+2016-09-20 07:33:29	test_	:S
+2016-09-20 07:33:33	<--	Tecumseh (~Tecumseh@mtl01-4-78-203-200-19.fbx.proxad.net) has quit (Ping timeout: 240 seconds)
+2016-09-20 07:33:45	test_	wtf.. libpaper
+2016-09-20 07:33:48	maolang	n1cky: you around?
+2016-09-20 07:33:51	-->	fekepp (~Thunderbi@94.156.6.254) has joined #gentoo
+2016-09-20 07:33:51		[07:33]
+2016-09-20 07:33:58	test_	got stuck or something
+2016-09-20 07:34:01	<--	Vurtatoo (~Vurtatoo@86.57.158.250) has quit (Quit: KVIrc 4.9.1 Aria http://www.kvirc.net/)
+2016-09-20 07:34:17	test_	nvm
+2016-09-20 07:34:35	<--	gienah_ (~mwright@gentoo/developer/gienah) has quit (Ping timeout: 260 seconds)
+2016-09-20 07:34:56	-->	rafspiny|2 (~kvirc@151.77.114.113) has joined #gentoo
+2016-09-20 07:35:03	<--	fekepp (~Thunderbi@94.156.6.254) has quit (Client Quit)
+2016-09-20 07:35:12	<--	Base_2 (~maurice@5ED6A641.cm-7-7c.dynamic.ziggo.nl) has quit (Ping timeout: 276 seconds)
+2016-09-20 07:36:11	-->	beardedeagle (~beardedea@64.202.161.57) has joined #gentoo
+2016-09-20 07:38:22	--	hellrazor__ is now known as hellrazor
+2016-09-20 07:39:36	test_	i dont know but the tail -f ...log. is taking long time
+2016-09-20 07:40:12	test_	or am i to inpatience xD
+2016-09-20 07:40:31	<--	jcjordyn120-andr (~jcjordyn1@2607:fb90:5843:9d5f:0:4b:b7af:1401) has quit (Ping timeout: 250 seconds)
+2016-09-20 07:41:08	-->	Vurtatoo (~Vurtatoo@86.57.158.250) has joined #gentoo
+2016-09-20 07:42:36	test_	me lonely.
+2016-09-20 07:43:04	 *	test_ wants to be hugged..
+2016-09-20 07:44:05	<--	tdy (~tdy@unaffiliated/tdy) has quit (Ping timeout: 244 seconds)
+2016-09-20 07:44:16	<--	parapente (~nobody@unaffiliated/parapente) has quit (Quit: Konversation terminated!)
+2016-09-20 07:46:12	-->	jeezy (~xz@net.romdesign.ro) has joined #gentoo
+2016-09-20 07:46:15	test_	he compiling is not taking long, but the whole tail -f log thing
+2016-09-20 07:46:17	slobber	wohooo i figured out the touchpad thing
+2016-09-20 07:46:23	slobber	i have:
+2016-09-20 07:46:25	slobber	00:15.2 Serial bus controller [0c80]: Intel Corporation 8 Series I2C Controller #1 (rev 04)
+2016-09-20 07:46:26	test_	grats slobber
+2016-09-20 07:46:30	slobber	and didn't have a driver for it
+2016-09-20 07:46:32	slobber	Kernel driver in use: i2c-designware-pci
+2016-09-20 07:46:35	--	jeezy is now known as Guest20193
+2016-09-20 07:46:38	slobber	loaded and now cyapa works
+2016-09-20 07:46:48	-->	tdy (~tdy@unaffiliated/tdy) has joined #gentoo
+2016-09-20 07:46:49	slobber	stupid i2c touchpads
+2016-09-20 07:46:55	slobber	thanks for helps
+2016-09-20 07:47:03	anigma	'emerge-webrsync' is supposed to take a while, right?
+2016-09-20 07:47:11	slobber	anigma: a few minutes
+2016-09-20 07:47:12	slobber	at least
+2016-09-20 07:47:53	<--	Guest20193 (~xz@net.romdesign.ro) has quit (Changing host)
+2016-09-20 07:47:53	-->	Guest20193 (~xz@bitchx/apple/jeezy) has joined #gentoo
+2016-09-20 07:48:22	test_	you guys playing csgo?
+2016-09-20 07:49:04	<--	Muzer (~muzer@tim32.org) has quit (Ping timeout: 255 seconds)
+2016-09-20 07:49:04		[07:49]
+2016-09-20 07:49:41	--	Guest20193 is now known as jeezy
+2016-09-20 07:51:17	<--	niee (~user@MIND.THE.GAP.NIEE.INFO) has quit (Ping timeout: 252 seconds)
+2016-09-20 07:51:36	test_	the knights who say NIIIE
+2016-09-20 07:51:39	test_	NIIII
+2016-09-20 07:51:58	+iamben	test_: our off-topic chan is #gentoo-chat, btw
+2016-09-20 07:52:07	test_	oh k
+2016-09-20 07:52:50	<--	TvL2386 (~tom@185.24.48.180) has quit (Remote host closed the connection)
+2016-09-20 07:53:08	-->	Base_2 (~maurice@5ED6A641.cm-7-7c.dynamic.ziggo.nl) has joined #gentoo
+2016-09-20 07:54:01	-->	CaptainPi (~edx@dslb-188-099-059-189.188.099.pools.vodafone-ip.de) has joined #gentoo
+2016-09-20 07:54:20	test_	iamben: cant joiin.. seem i have to be reg
+2016-09-20 07:55:03	+iamben	yes there has been a spam problem lately so it's locked down to only registered users.  registration is free, though.
+2016-09-20 07:55:25	anigma	is there any information on the different profiles available?
+2016-09-20 07:55:30	-->	bitlord (~bitlord@unaffiliated/bitlord) has joined #gentoo
+2016-09-20 07:55:41	<--	trazillion (~trazillio@2600:8805:bd80:1d:dc18:43ba:f4dc:a3b4) has quit (Quit: Leaving)
+2016-09-20 07:56:10	<--	mguillech (~mguillech@host184.201-252-170.telecom.net.ar) has quit (Read error: Connection reset by peer)
+2016-09-20 07:56:37	+grknight	anigma: they are meant to be self-explanitory, but feel free to ask questions
+2016-09-20 07:56:41	-->	mguillech (~mguillech@host184.201-252-170.telecom.net.ar) has joined #gentoo
+2016-09-20 07:56:52	<--	speedytux (~speedytux@109.166.138.29) has quit (Remote host closed the connection)
+2016-09-20 07:56:56	test_	im to lazy to reg now ;D
+2016-09-20 07:57:48	anigma	grknight: well, what is included in desktop? Is that just pure xorg without WM?
+2016-09-20 07:58:10	+iamben	profiles set USE flags mostly, they dont really install packages
+2016-09-20 07:58:33	+grknight	anigma: the desktop profile sets the common USE flags expected once you install xorg-server and a WM/DE
+2016-09-20 07:58:39	+iamben	so the desktop profile turns on a bunch of things you'd commonly want for a desktop... X support, alsa/audio support, etc etc
+2016-09-20 07:58:43	test_	wow all package going fast rifht now, im havent done anything ;)
+2016-09-20 07:58:55	+grknight	test_: some are trivial, some are not
+2016-09-20 07:59:09	-->	egon2003 (~erik@5-44-200-253.customer.universal.se) has joined #gentoo
+2016-09-20 07:59:16	<--	pekkari (~pekkari@a91-152-37-63.elisa-laajakaista.fi) has quit (Quit: Konversation terminated!)
+2016-09-20 07:59:22	anigma	aha
+2016-09-20 07:59:24	+grknight	configure time is the most intense as it is single threaded
+2016-09-20 07:59:54	+iamben	anigma: to specifically see what global flags the desktop profiles add over the base, check out /usr/portage/profiles/targets/desktop/make.defaults
+2016-09-20 07:59:58	+grknight	anigma: the plasma or gnome profiles build on this as to what is expected to get such DEs working
+2016-09-20 08:00:53	-->	minimalism (~minimalis@unaffiliated/minimalism) has joined #gentoo
+2016-09-20 08:01:13	<--	wonko7 (~wonko7@2a01:e35:2e74:a2c0:5dfe:9b72:ff95:5968) has quit (Ping timeout: 255 seconds)
+2016-09-20 08:01:21	<--	timahvo1 (~rogue@197.237.134.7) has quit (Ping timeout: 265 seconds)
+2016-09-20 08:01:43	-->	Kalrish (50ab4237@gateway/web/freenode/ip.80.171.66.55) has joined #gentoo
+2016-09-20 08:02:22	<--	sklv (~sklv@80.229.16.48) has quit (Ping timeout: 265 seconds)
+2016-09-20 08:02:26	test_	wow you guys grknight iamben moste active and helpful people i met :)
+2016-09-20 08:02:39	loa	iamben, why this is happen? http://pastebin.com/Hn5LfTHU
+2016-09-20 08:02:41	+iamben	i dunno about him but I IRC during the workday =)
+2016-09-20 08:02:57	loa	or i can ignore this safe?
+2016-09-20 08:02:58	+grknight	ditto
+2016-09-20 08:03:26	+iamben	loa: that's not really a problem, it's just telling you that it has to defer an upgrade for that package, to satisfy others
+2016-09-20 08:03:36	-->	speedytux (~speedytux@109.166.138.29) has joined #gentoo
+2016-09-20 08:03:42	loa	nice
+2016-09-20 08:03:46	-->	jcjordyn120-andr (~jcjordyn1@2607:fb90:58f6:dc65:0:49:28b8:fa01) has joined #gentoo
+2016-09-20 08:03:56	test_	ooooh, update almost finish <3
+2016-09-20 08:04:18	<--	speedytux (~speedytux@109.166.138.29) has quit (Remote host closed the connection)
+2016-09-20 08:04:18		[08:04]
+2016-09-20 08:04:27	-->	Muzer (~muzer@cpc96772-rdng27-2-0-cust294.15-3.cable.virginm.net) has joined #gentoo
+2016-09-20 08:04:48	+grknight	my 'emerge -e' is almost finished in this Gentoo/FreeBSD experiment, 100/126
+2016-09-20 08:04:57	<--	Vurtatoo (~Vurtatoo@86.57.158.250) has quit (Read error: Connection reset by peer)
+2016-09-20 08:05:53	<--	SlP_ (~slp@213-65-8-173-no18.tbcn.telia.com) has quit (Quit: leaving)
+2016-09-20 08:06:37	Thymo	rc-status is telling me I have a crashed service. It didn't crash (as I'm currently talking to you using it). How can I reset it to a running state without having to zap and restart it?
+2016-09-20 08:07:15	+grknight	Thymo: the pid (or pidfile) is different then when openrc started it
+2016-09-20 08:08:04	Thymo	grknight: Can I tell OpenRC to use the new PID somehow?
+2016-09-20 08:09:10	-->	elxa (~elxa@p4FC82034.dip0.t-ipconnect.de) has joined #gentoo
+2016-09-20 08:09:12	+grknight	Thymo: which daemon is it?
+2016-09-20 08:09:21	Thymo	ZNC.
+2016-09-20 08:09:40	+grknight	Thymo: does a /run/openrc/daemons/znc exist? and there should be a file under it
+2016-09-20 08:10:28	-->	sklv (~sklv@80.229.16.48) has joined #gentoo
+2016-09-20 08:10:29	Thymo	No, it doesn't should I create it?
+2016-09-20 08:10:35	+grknight	no
+2016-09-20 08:10:43	<--	metachr0n (~nobody@78.1.broadband13.iol.cz) has quit (Quit: WeeChat 1.5)
+2016-09-20 08:10:57	+grknight	that is created automatically to track daemons
+2016-09-20 08:11:22	+grknight	it may be something else under /run/openrc/daemons
+2016-09-20 08:11:45	-->	niee (~user@MIND.THE.GAP.NIEE.INFO) has joined #gentoo
+2016-09-20 08:11:55	test_	if i switch tty, does it matter?
+2016-09-20 08:12:10	+grknight	test_: nope
+2016-09-20 08:12:12	test_	the speed then i am compiling or whatevea
+2016-09-20 08:12:14	<--	jcjordyn120-andr (~jcjordyn1@2607:fb90:58f6:dc65:0:49:28b8:fa01) has quit (Remote host closed the connection)
+2016-09-20 08:12:20	test_	ok
+2016-09-20 08:12:22	Thymo	There are some other dirs there, but those are from different services.
+2016-09-20 08:12:43	-->	Vaska (~Vaska@99-6-101-70.lightspeed.milwwi.sbcglobal.net) has joined #gentoo
+2016-09-20 08:12:57	+grknight	Thymo: reading the init source, /run/znc/znc.pid should be the location of the znc pidfile
+2016-09-20 08:13:05	-->	Guest28945 (~pine@90.209.211.26) has joined #gentoo
+2016-09-20 08:13:44	+grknight	or it may just use the name of /usr/bin/znc (which isn't reliable)
+2016-09-20 08:14:00	Thymo	grknight: Weird. That doesn't exist either.
+2016-09-20 08:15:29	Thymo	grknight: I'll try just sending a SIGTERM and then a zap and start.
+2016-09-20 08:15:32	Thymo	brb
+2016-09-20 08:15:59	<--	Thymo (~Thymo@524ACC90.cm-4-3d.dynamic.ziggo.nl) has quit (Quit: ZNC - http://znc.in)
+2016-09-20 08:16:36	-->	`VL (~vl@broadband-46-188-31-14.2com.net) has joined #gentoo
+2016-09-20 08:16:38	-->	Thymo (~Thymo@524ACC90.cm-4-3d.dynamic.ziggo.nl) has joined #gentoo
+2016-09-20 08:16:46	test_	does /dev/null exist? =)
+2016-09-20 08:17:04	+grknight	test_: as a device to nothing, yes
+2016-09-20 08:17:18	Thymo	grknight: All good now. I don't know what made those PIDs disappear though.
+2016-09-20 08:17:35	test_	really what does it?.. is it like a black hole or sometyhing in cyberspace?
+2016-09-20 08:17:38	+grknight	sorry my connection dropped, dunno if you got my last messages
+2016-09-20 08:18:05	+iamben	test_: it's local, but otherwise yes it's a black hole
+2016-09-20 08:18:14	+grknight	test_: blackhole in the kernel, accepts input but writes no where.  reading from it returns nulls
+2016-09-20 08:18:44	<--	embik (~embik@unaffiliated/embik) has quit (Quit: WeeChat 1.5)
+2016-09-20 08:18:46	Thymo	grknight: Messages to me or test_?
+2016-09-20 08:18:52	+grknight	Thymo: you
+2016-09-20 08:19:20	Thymo	I got some about /run/znc. That's the last I got from you.
+2016-09-20 08:19:20		[08:19]
+2016-09-20 08:19:22	-->	cdown (~cdown@82-132-212-167.dab.02.net) has joined #gentoo
+2016-09-20 08:19:49	+iamben	/run/znc, isn't that a hip hop group?
+2016-09-20 08:19:58	 *	iamben ducks, and gets back on topic
+2016-09-20 08:19:58	-->	Kostenko_ (~Kostenko@bl14-204-63.dsl.telepac.pt) has joined #gentoo
+2016-09-20 08:20:08	Thymo	I terminated and then zapped and started znc in the mean time though. So the pid files are back now.
+2016-09-20 08:20:14	Thymo	Don
+2016-09-20 08:20:17	+grknight	Thymo: the newer unstable version of znc uses an init which points to /run/znc/znc.pid as the location;  the stable works different
+2016-09-20 08:20:28	Thymo	Don't know what made them disappear in the first place though.
+2016-09-20 08:20:35	<--	bocaneri (~bocaneri@about/linux/staff/sauvin) has quit (Remote host closed the connection)
+2016-09-20 08:21:04	test_	haha, im so ENTERTAINED!
+2016-09-20 08:21:35	Thymo	grknight: Yeah, I'm running stable. This is the first time that this happened though. If it happens again I'll consider switching.
+2016-09-20 08:21:48	Thymo	iamben: lol
+2016-09-20 08:22:39	<--	Kostenko (~Kostenko@bl14-204-63.dsl.telepac.pt) has quit (Ping timeout: 276 seconds)
+2016-09-20 08:23:35	test_	have you heard about installgentoo meme..?
+2016-09-20 08:24:06	neuro_sys	was there any prominent criticism against DBus?
+2016-09-20 08:24:30	Thymo	test_: https://40.media.tumblr.com/cd04c5996145586147412d2dbbfb917f/tumblr_mm0dxsRgvd1spxfkfo1_500.jpg
+2016-09-20 08:24:37	 *	Thymo gets back on topic.
+2016-09-20 08:24:58	<--	gdollaz (~gnaimoli@static-72-78-70-45.phlapa.fios.verizon.net) has quit (Quit: Lost terminal)
+2016-09-20 08:25:07	-->	buggy_man (~user@185.13.47.7) has joined #gentoo
+2016-09-20 08:25:13	test_	Thymo: haha, you know i cant view it yet
+2016-09-20 08:25:33	+grknight	neuro_sys: dbus itself is just an IPC mechanism; there was much more debate on the defunct kdbus
+2016-09-20 08:26:09	test_	dude, wondering why does it emerge qt and stuff?
+2016-09-20 08:26:25	test_	if  i choose desktop only?
+2016-09-20 08:26:37	+iamben	test_: it's installing optoinal qt features on some of your existing packages, this is normal
+2016-09-20 08:26:38	test_	now /dev/qt
+2016-09-20 08:26:41	+grknight	test_: because qt4 is enabled in the desktop profile.  not related to KDE or Plasma
+2016-09-20 08:26:42	+iamben	the desktop profile turns on qt4 & gtk flags
+2016-09-20 08:26:45	test_	alright
+2016-09-20 08:26:57	-->	rigan (~maxim@176.13.13.220) has joined #gentoo
+2016-09-20 08:27:06	+grknight	GTK and QT are toolkits for all programs
+2016-09-20 08:27:17	Thymo	test_: I didn't. It's a picture of RMS standing in front of a burning house with a quote "See what happens when software doesn't respect your freedoms?". And Install Gentoo with a logo below it.
+2016-09-20 08:27:24	<--	cdown (~cdown@82-132-212-167.dab.02.net) has quit (Remote host closed the connection)
+2016-09-20 08:27:37	<--	Sir_Designer (~Sir_Desig@wikipedia/mareklug) has quit (Ping timeout: 272 seconds)
+2016-09-20 08:27:40	<--	iZ6S82 (dufijmic@bitcoinshell.mooo.com) has quit (Ping timeout: 260 seconds)
+2016-09-20 08:27:46	test_	Thymo: HAHA :D
+2016-09-20 08:28:14	-->	wonko7 (~wonko7@2a01:e35:2e74:a2c0:5dfe:9b72:ff95:5968) has joined #gentoo
+2016-09-20 08:28:39	test_	oh is some dev-qt package.. :/
+2016-09-20 08:28:40	-->	Sir_Designer (~Sir_Desig@wikipedia/mareklug) has joined #gentoo
+2016-09-20 08:29:11	-->	muffindr1ke (~muffindra@p5B0754A5.dip0.t-ipconnect.de) has joined #gentoo
+2016-09-20 08:29:50	-->	iZ6S82 (dufijmic@bitcoinshell.mooo.com) has joined #gentoo
+2016-09-20 08:30:28	<--	kingedgy (~edgar@c-174-61-41-44.hsd1.fl.comcast.net) has quit (Ping timeout: 255 seconds)
+2016-09-20 08:30:32	-->	shields- (~CLDX@cpe-108-183-237-164.twcny.res.rr.com) has joined #gentoo
+2016-09-20 08:30:58	test_	little off-topic, how are you guys!
+2016-09-20 08:31:17	<--	sasukeskapa (~sasukeska@catv-89-132-97-31.catv.broadband.hu) has quit (Quit: Leaving)
+2016-09-20 08:32:03	<--	Guest28945 (~pine@90.209.211.26) has quit (Ping timeout: 240 seconds)
+2016-09-20 08:32:03	<--	muffindrake (~muffindra@unaffiliated/muffindrake) has quit (Ping timeout: 272 seconds)
+2016-09-20 08:33:40	<--	blueness (~blueness@gentoo/developer/blueness) has quit (Quit: blueness)
+2016-09-20 08:34:25	wonko7	test_: this is perfect material for #gentoo-chat, we won't answer out of fear of being banned forever from here
+2016-09-20 08:34:25		[08:34]
+2016-09-20 08:34:32	-->	hotaronohanako (~user@unaffiliated/hotaronohanako) has joined #gentoo
+2016-09-20 08:34:51	-->	ANero (~nero@unaffiliated/anero) has joined #gentoo
+2016-09-20 08:34:58	-->	mints (~mints@unaffiliated/mints) has joined #gentoo
+2016-09-20 08:35:00	test_	wonko7: oh so so strict.. k no more off-topic
+2016-09-20 08:35:03	-->	Guest28945 (~pine@90.209.211.26) has joined #gentoo
+2016-09-20 08:35:26	<--	egon2003 (~erik@5-44-200-253.customer.universal.se) has quit (Quit: Konversation terminated!)
+2016-09-20 08:35:48	ov3rmind	http://bpaste.net/show/b96e6bfb7919
+2016-09-20 08:35:56	ov3rmind	it's my make.conf
+2016-09-20 08:36:03	--	KlinedByAVirgin is now known as incog
+2016-09-20 08:36:27	test_	wonko7: isnt it possible to get whitelisten in channel?
+2016-09-20 08:36:35	test_	listed*
+2016-09-20 08:36:43	<--	muffindr1ke (~muffindra@p5B0754A5.dip0.t-ipconnect.de) has quit (Quit: Reconnecting)
+2016-09-20 08:36:49	-->	muffindrake (~muffindra@unaffiliated/muffindrake) has joined #gentoo
+2016-09-20 08:36:54	-->	duderonomy (~duderonom@2620:149:5:1b04:1c3d:6155:ee87:fe6a) has joined #gentoo
+2016-09-20 08:37:19	test_	the gentoo-chat channel
+2016-09-20 08:38:01	+grknight	we don't control #gentoo-chat
+2016-09-20 08:38:04	@a3li	how about you just sign up like anyone else.
+2016-09-20 08:38:10	Thymo	test_: I think the only thing you need to do is register with NickServ.
+2016-09-20 08:38:11	-->	nipav (~nipav@cpe-86-58-102-80.static.triera.net) has joined #gentoo
+2016-09-20 08:38:31	-->	wcasper (~wcasper@D-128-95-41-152.dhcp4.washington.edu) has joined #gentoo
+2016-09-20 08:38:36	theShirbiny	ov3rmind, ACCEPT_KEYWORDS="~amd64" O.O
+2016-09-20 08:38:39	<--	nipav (~nipav@cpe-86-58-102-80.static.triera.net) has quit (Client Quit)
+2016-09-20 08:38:52	test_	Thymo: how do i do that?
+2016-09-20 08:38:56	-->	nipav (~nipav@cpe-86-58-102-80.static.triera.net) has joined #gentoo
+2016-09-20 08:39:49	Thymo	<slash> msg NickServ register password email
+2016-09-20 08:39:52	+grknight	theShirbiny: nothing wrong with that
+2016-09-20 08:40:01	-->	albertus1 (~albertus1@x55b4be1f.dyn.telefonica.de) has joined #gentoo
+2016-09-20 08:40:26	Thymo	<slash> msg NickServ help. When in doubt.
+2016-09-20 08:40:30	+grknight	test_: '/msg NickServ help' for how to use the service...
+2016-09-20 08:40:36	theShirbiny	sure, if you don't care about your system
+2016-09-20 08:41:18	+grknight	theShirbiny: many people set that and run perfectly fine;  if you hit a bump, go back
+2016-09-20 08:41:25	<--	poeticrpm (~poeticrpm@109.163.226.153) has quit (Remote host closed the connection)
+2016-09-20 08:41:28	rypervenche	You can usually type // and it will be interpreted as a / if it's the first character in most IRC clients. So you don't have to type <slash>
+2016-09-20 08:41:32	<--	incog (~tits@host-5-58-4-101.la.net.ua) has quit (K-Lined)
+2016-09-20 08:41:34	-->	PhotoJim (~Jim@2605:7200:f0:4222:225:90ff:fec6:7c7d) has joined #gentoo
+2016-09-20 08:41:40	test_	grknight: k, and another thing, then you got @ infront of your name is that a admin?
+2016-09-20 08:41:47	-->	Ordog_by (~ordog@mm-192-125-44-37.mgts.dynamic.pppoe.byfly.by) has joined #gentoo
+2016-09-20 08:41:59	+grknight	test_: i'm Voiced because i'm a Gentoo dev
+2016-09-20 08:42:00	theShirbiny	I was told before here that you can't always go back from unstable to stable
+2016-09-20 08:42:34	-->	pine (~pine@90.221.172.181) has joined #gentoo
+2016-09-20 08:42:34	test_	what about a3li with  @  ??
+2016-09-20 08:42:35	wonko7	theShirbiny: nothing is impossible, it won't be supported, but you can try
+2016-09-20 08:42:36	+grknight	theShirbiny: you can't go back immediately, but you can work your way back over time
+2016-09-20 08:42:42	-->	KingEdgar (~edgar@2601:586:4401:9000::2) has joined #gentoo
+2016-09-20 08:42:44	<--	mawiegand (~marcel@p5088C986.dip0.t-ipconnect.de) has quit (Read error: No route to host)
+2016-09-20 08:42:47	-->	DeadlyAssassin (~marcel@p5088C986.dip0.t-ipconnect.de) has joined #gentoo
+2016-09-20 08:42:58	--	pine is now known as Guest29189
+2016-09-20 08:43:22	-->	KlinedByAVirgin (~tits@104.235.153.142) has joined #gentoo
+2016-09-20 08:43:44	theShirbiny	hmm, no thanks. I like my systems stable
+2016-09-20 08:43:45	--	KlinedByAVirgin is now known as incog
+2016-09-20 08:44:08	test_	omg, diest it wreck my system if my clock is wronge or something?
+2016-09-20 08:44:11	test_	does*
+2016-09-20 08:44:17	<--	mackal (~mike@pool-96-237-144-12.bstnma.fios.verizon.net) has quit (Quit: BE VIGILANT.)
+2016-09-20 08:44:36	wonko7	theShirbiny: ~amd64 is surprisingly stable, I run into something that won't build once every 3 months at most
+2016-09-20 08:44:43	test_	my gentoo clock is 22:44, but my clock is 20:44
+2016-09-20 08:44:51	<--	Guest28945 (~pine@90.209.211.26) has quit (Ping timeout: 265 seconds)
+2016-09-20 08:44:52	<--	ezzieyguywuf (~wolfie@unaffiliated/ezzieyguywuf) has quit (Ping timeout: 244 seconds)
+2016-09-20 08:45:04	+grknight	theShirbiny: there's a bit of debate about that since the stabling process has pretty much stalled except for security and maintainer stables on amd64
+2016-09-20 08:45:16	+iamben	test_: a couple of hours off is usually not a problem, but if your system encounters files which have future modification times, things can go wonky
+2016-09-20 08:45:31	test_	iamben: is it eassy to fix?
+2016-09-20 08:45:37	bazzy	if I want to search inside a single file for embedded files of certain types (WAV, png) is there a tool for such a job?
+2016-09-20 08:45:46	+iamben	test_: sure, just use "date" or an ntp client to set a proper date
+2016-09-20 08:45:57	+iamben	test_: out of curiosity, what does "date -u" report?
+2016-09-20 08:46:22	test_	Tue Sep 20 20:46:14 UTC 2016
+2016-09-20 08:46:51	+grknight	test_: is your hardware clock set to local or UTC? do you dual-boot with windows?
+2016-09-20 08:46:59	theShirbiny	wonko7, I don't go ~amd64, unless 1- there's a bug in the stable version that's fixed in the new one 2- there's a new feature in new versions
+2016-09-20 08:47:05	<--	spareproject (~user@97e3fe92.skybroadband.com) has quit (Quit: Lost terminal)
+2016-09-20 08:47:06	test_	i installed gentoo over the whole computer :P
+2016-09-20 08:47:21	test_	really dont know i prev, got windows 10 installed.. eww
+2016-09-20 08:47:23	test_	:)
+2016-09-20 08:47:43	+grknight	test_: Linux's default behavior is that the hwclock is expected to be in UTC; and Gentoo goes with this
+2016-09-20 08:48:05	+grknight	you can modify the behaviour, but must keep track of daylight time (if any) yourself
+2016-09-20 08:48:11	test_	k, but to be on the safe side whats tehe best?
+2016-09-20 08:48:14	+iamben	test_: ok was just making sure it wasnt a zone problem... it's not, you really are 2 hrs off
+2016-09-20 08:49:00	test_	iamben: :D
+2016-09-20 08:49:22	test_	but isnt i should worry about now?
+2016-09-20 08:49:37	+grknight	test_: next time you reboot, set the clock back 2 hours
+2016-09-20 08:49:37		[08:49]
+2016-09-20 08:49:42	+grknight	the BIOS/UEFI clock
+2016-09-20 08:49:51	-->	reinzelmann (~reinzelma@host-92-17-97-58.as13285.net) has joined #gentoo
+2016-09-20 08:50:11	test_	ok k, thanks grknight iamben
+2016-09-20 08:50:41	+grknight	test_: Linux uses offsets to display the correct time, while the hardware clock is actually stable
+2016-09-20 08:51:14	+grknight	unlike windows which modifies the hwclock constantly
+2016-09-20 08:51:48	test_	so i have only to modifie the clock then i BIOS setting clock k
+2016-09-20 08:51:53	-->	ezzieyguywuf (~wolfie@unaffiliated/ezzieyguywuf) has joined #gentoo
+2016-09-20 08:52:28	+grknight	ironically systemd, if i read the docs right, reverses this and expects local time
+2016-09-20 08:52:35	--	wuseman is now known as wuseman|AFK
+2016-09-20 08:52:49	--	wuseman|AFK is now known as wuseman
+2016-09-20 08:53:17	<--	nighoo (~nighoo@unaffiliated/nighoo) has quit (Ping timeout: 244 seconds)
+2016-09-20 08:54:29	rivarun	nothing ironic there
+2016-09-20 08:54:37	<--	PhotoJim (~Jim@2605:7200:f0:4222:225:90ff:fec6:7c7d) has quit (Ping timeout: 250 seconds)
+2016-09-20 08:55:08	+grknight	(no i'm not trying to start a flame war either)
+2016-09-20 08:55:30	+iamben	grknight: im curious where you see that, becuase teh timedatectl man page strongly discourages RTC in local
+2016-09-20 08:55:31	-->	nighoo (~nighoo@unaffiliated/nighoo) has joined #gentoo
+2016-09-20 08:55:41	-->	FireBurn (~fireburnu@no-sources/fireburn) has joined #gentoo
+2016-09-20 08:56:01	<--	KingEdgar (~edgar@2601:586:4401:9000::2) has quit (Ping timeout: 265 seconds)
+2016-09-20 08:56:20	+iamben	"Note that maintaining the RTC in the local timezone is not fully supported and will create various problems with time zone changes and daylight saving adjustments. If at all possible, keep the RTC in UTC mode."
+2016-09-20 08:56:37	-->	PhotoJim (~Jim@hobart.ip6.photojim.ca) has joined #gentoo
+2016-09-20 08:56:42	<--	tirej (c38eb3fd@gateway/web/freenode/ip.195.142.179.253) has quit (Ping timeout: 240 seconds)
+2016-09-20 08:56:42	+grknight	iamben: i swear it was at one time, unless things changed
+2016-09-20 08:56:57	ov3rmind	what ist the flags neede by plasma-desktop
+2016-09-20 08:57:32	-->	stelf (~TIE-Fight@p508D59E0.dip0.t-ipconnect.de) has joined #gentoo
+2016-09-20 08:58:12	<--	ov3rmind (~leo@unaffiliated/ov3rmind) has quit (Quit: leaving)
+2016-09-20 08:59:55	<--	rigan (~maxim@176.13.13.220) has quit (Changing host)
+2016-09-20 08:59:55	-->	rigan (~maxim@unaffiliated/rigan) has joined #gentoo
+2016-09-20 09:00:33	<--	TIE-Fighter (~TIE-Fight@p508D7617.dip0.t-ipconnect.de) has quit (Ping timeout: 240 seconds)
+2016-09-20 09:02:25	-->	szorfein (~szorfein@45.32.232.26) has joined #gentoo
+2016-09-20 09:03:05	<--	Bloodclaw (~bloodclaw@2001:bc8:3078:1fe:f0eb:8230:5e76:a22d) has quit (Quit: Leaving)
+2016-09-20 09:03:17	-->	chry (~chry@funtoo/user/chry) has joined #gentoo
+2016-09-20 09:03:30	test_	emerge
+2016-09-20 09:03:38	test_	recommends me to
+2016-09-20 09:03:48	test_	emerge --depclean
+2016-09-20 09:04:08	+iamben	you should do that as often as you can (after making changes to the installed packages at all)
+2016-09-20 09:04:21	-->	fefelix (~Miranda@x5d824e95.dyn.telefonica.de) has joined #gentoo
+2016-09-20 09:05:28	test_	just error for me
+2016-09-20 09:05:28		[09:05]
+2016-09-20 09:05:42	test_	i mean.. cant resolve..
+2016-09-20 09:05:53	+iamben	you mostly need to be fully up to date before depclean is possible
+2016-09-20 09:05:55	test_	like perl stuff
+2016-09-20 09:05:58	+iamben	so do it AFTER your upgrades
+2016-09-20 09:06:04	-->	jcjordyn120-andr (~jcjordyn1@2607:fb90:58f6:dc65:0:49:28b8:fa01) has joined #gentoo
+2016-09-20 09:06:16	test_	but the command you gave me is finnish
+2016-09-20 09:06:28	+iamben	no it was english =)
+2016-09-20 09:06:35	test_	haha lol
+2016-09-20 09:06:51	+iamben	try adding --with-bdeps=y like the depclean output suggests
+2016-09-20 09:07:37	<--	PhotoJim (~Jim@hobart.ip6.photojim.ca) has quit (Ping timeout: 250 seconds)
+2016-09-20 09:07:44	+kent\n	I'm starting to think we should be suggesting @everything sometimes y' know.
+2016-09-20 09:08:39	test_	haha
+2016-09-20 09:09:04	-->	blueness (~blueness@gentoo/developer/blueness) has joined #gentoo
+2016-09-20 09:09:04	--	Mode #gentoo [+v blueness] by ChanServ
+2016-09-20 09:10:04	-->	KingEdgar (~edgar@c-174-61-41-44.hsd1.fl.comcast.net) has joined #gentoo
+2016-09-20 09:10:42	<--	jcjordyn120-andr (~jcjordyn1@2607:fb90:58f6:dc65:0:49:28b8:fa01) has quit (Read error: Connection reset by peer)
+2016-09-20 09:13:10	<--	don_quixote (~don_quixo@89.10.153.80) has quit (Ping timeout: 260 seconds)
+2016-09-20 09:13:13	-->	jcjordyn120-andr (~jcjordyn1@2602:302:d115:9450:345f:905a:9874:bb88) has joined #gentoo
+2016-09-20 09:13:18	test_	prepare kernel for xorg?
+2016-09-20 09:13:20	test_	what?
+2016-09-20 09:13:45	test_	i usad genkernel
+2016-09-20 09:14:00	+grknight	test_: that should enable what you need
+2016-09-20 09:14:06	-->	don_quixote (~don_quixo@80.89-10-153.nextgentel.com) has joined #gentoo
+2016-09-20 09:14:14	+grknight	if it doesn't the build will complaing
+2016-09-20 09:14:17	+grknight	-g
+2016-09-20 09:14:46	test_	?
+2016-09-20 09:15:09	test_	ok i test without doing andything to the kernel see if it have included it
+2016-09-20 09:15:13	<--	r1k0 (~rik@d5152cdf5.static.telenet.be) has quit (Remote host closed the connection)
+2016-09-20 09:15:21	-->	nE0sIghT (~Thunderbi@unaffiliated/ne0sight) has joined #gentoo
+2016-09-20 09:15:37	-->	blackli0nxx (~blackli0n@129.7.0.133) has joined #gentoo
+2016-09-20 09:15:52	+grknight	the wiki pages can list kernel features required for completeness; some people go in and turn too much off or too little on by hand
+2016-09-20 09:15:59	blackli0nxx	Hi is this where the grand wizards live?
+2016-09-20 09:16:19	slobber	cheers
+2016-09-20 09:16:21	+grknight	no wizards here, just us chickens
+2016-09-20 09:16:21	<--	slobber (~slobber@unaffiliated/linkxs) has left #gentoo ("WeeChat 1.4")
+2016-09-20 09:16:31	rypervenche	bawk bawk
+2016-09-20 09:17:20	test_	VIDEO_CARDS=nvidia?
+2016-09-20 09:17:29	-->	ov3rmind (~leo@unaffiliated/ov3rmind) has joined #gentoo
+2016-09-20 09:17:33	-->	endstille (~endstille@p2003000611750045D9C63A7D7E3840C6.dip0.t-ipconnect.de) has joined #gentoo
+2016-09-20 09:17:36	+grknight	test_: if you want the closed-source driver from nvidia, yes
+2016-09-20 09:17:41	<--	endstille (~endstille@p2003000611750045D9C63A7D7E3840C6.dip0.t-ipconnect.de) has quit (Client Quit)
+2016-09-20 09:17:58	test_	just now, cus im so want to get CSGO running.. havent played for a while ;D
+2016-09-20 09:17:59	maolang	n1cky: not going to scream victory, but i think the issue has been solved...
+2016-09-20 09:18:33	<--	j3nkins (~jenkins@e1.85.7a9f.ip4.static.sl-reverse.com) has quit (Ping timeout: 276 seconds)
+2016-09-20 09:18:35	<--	nipav (~nipav@cpe-86-58-102-80.static.triera.net) has quit (Quit: Leaving)
+2016-09-20 09:18:55	-->	endstille (~endstille@p2003000611750045D9C63A7D7E3840C6.dip0.t-ipconnect.de) has joined #gentoo
+2016-09-20 09:19:07	<--	endstille (~endstille@p2003000611750045D9C63A7D7E3840C6.dip0.t-ipconnect.de) has quit (Client Quit)
+2016-09-20 09:20:11	-->	PhotoJim (~Jim@hobart.ip6.photojim.ca) has joined #gentoo
+2016-09-20 09:21:13	test_	grknight: syptantics is for like netbook and laptops right?
+2016-09-20 09:21:13		[09:21]
+2016-09-20 09:21:22	+grknight	test_: any touchpad
+2016-09-20 09:21:46	<--	reinzelmann (~reinzelma@host-92-17-97-58.as13285.net) has quit (Ping timeout: 255 seconds)
+2016-09-20 09:22:17	maolang	n1cky: qemu/kvm --> http://dpaste.com/1CJPYQA
+2016-09-20 09:22:45	test_	grknight: xorg-drivers needed? if have havent choosed to do the settings on the wiki?
+2016-09-20 09:23:29	+iamben	test_: it's a dep of xorg-server, you'll get it either way
+2016-09-20 09:23:32	+grknight	test_: that is pulled in when you 'emerge xorg-server';  if you changed VIDEO_CARDS or INPUT_DEVICES since then, you need to do 'emerge -1a xorg-drivers'
+2016-09-20 09:24:06	test_	only included video_cards=nvidia
+2016-09-20 09:24:19	<--	sndtyi (~john@dslb-088-074-238-226.088.074.pools.vodafone-ip.de) has quit (Ping timeout: 244 seconds)
+2016-09-20 09:24:20	+grknight	it has a default which a much bigger list
+2016-09-20 09:24:23	rafspiny|2	Hi guys, is there a rule or a policy that can be used to apply when writing an overlay in regards to providing a package.keywords file? So users can eventually symlink the provided package.keywords in their /etc/portage
+2016-09-20 09:24:27	+grknight	s/which/with/
+2016-09-20 09:25:54	<--	turmfalke (~turmfalke@p5DCE3AC7.dip0.t-ipconnect.de) has quit (Ping timeout: 265 seconds)
+2016-09-20 09:26:12	test_	grknight: i got abi_x86_32 on the
+2016-09-20 09:26:18	test_	xorg is normal?
+2016-09-20 09:26:23	test_	i have added the abi yet?
+2016-09-20 09:26:27	test_	i havent*
+2016-09-20 09:26:56	+grknight	test_: by default, nvidia-drivers adds a multilib USE for 32-bit opengl.  you can disable it if you don't need it right now
+2016-09-20 09:27:25	test_	right now i dont know, i just want to get my csgo up and running smoooth..
+2016-09-20 09:27:57	test_	64-bit would be nice. if it would help
+2016-09-20 09:28:13	<--	incog (~tits@104.235.153.142) has quit (Changing host)
+2016-09-20 09:28:13	-->	incog (~tits@unaffiliated/incog) has joined #gentoo
+2016-09-20 09:28:32	+grknight	test_: just add 'x11-drivers/nvidia-drivers -multilib' to package.use and if you need it later, remove it and rebuild everything with 32-bit support
+2016-09-20 09:28:42	+grknight	it's not a big deal
+2016-09-20 09:28:48	<--	khj (~Thunderbi@192.232.16.95.dynamic.jazztel.es) has quit (Remote host closed the connection)
+2016-09-20 09:29:49	-->	tirej (c38eb3fd@gateway/web/freenode/ip.195.142.179.253) has joined #gentoo
+2016-09-20 09:30:08	tirej	guys i'll be using stage3 tarball right? (64bit arch)
+2016-09-20 09:30:09	koracain	so i need to merge libre office but:  https://bpaste.net/show/a94a10669d51
+2016-09-20 09:30:21	+grknight	tirej: indeed, the amd64 stage3
+2016-09-20 09:30:30	tirej	grknight: okay, thanks
+2016-09-20 09:30:39	test_	grknight: i havent started xorg yet, but how do if i want to do it now
+2016-09-20 09:31:02	+grknight	koracain: you are missing a single python target enabled
+2016-09-20 09:31:18	tirej	grknight: is this latest --> http://distfiles.gentoo.org/releases/amd64/autobuilds/current-stage3-amd64/stage3-amd64-20160915.tar.bz2 ?
+2016-09-20 09:31:24	+grknight	koracain: PYTHON_SINGLE_TARGET="-python3_4 -python3_5" vs exactly-one-of ( python_single_target_python3_4 python_single_target_python3_5 )
+2016-09-20 09:31:36	+grknight	tirej: sounds about right
+2016-09-20 09:31:45	<--	zrts (~zrts@unaffiliated/zrts) has left #gentoo
+2016-09-20 09:31:47	tirej	grknight: okay, thnx again
+2016-09-20 09:32:36	+grknight	koracain: suggest setting "dev-libs/liborcus python_single_target_python3_4" in package.use
+2016-09-20 09:33:02	test_	grknight: ok  waht if i ant use it right now?
+2016-09-20 09:33:37	-->	l0velace (~lovelace@ip-95-223-144-247.hsi16.unitymediagroup.de) has joined #gentoo
+2016-09-20 09:33:50	 *	koracain will do
+2016-09-20 09:33:51	koracain	thanks
+2016-09-20 09:34:15	+grknight	test_: hmm?
+2016-09-20 09:34:27	test_	grknight: wnat use the 64bit
+2016-09-20 09:34:40	test_	xorg
+2016-09-20 09:35:21	+grknight	oh, want to use it now... to use the 32-bit OpenGL support in nvidia-drivers, you would need to add all USE flags to the dependencies like portage requests
+2016-09-20 09:36:07	test_	have i misunderstand or something or doenst opengl doesnt got 64bit?
+2016-09-20 09:36:36	test_	or can i reinstall it later then im less intoxicated? :3
+2016-09-20 09:36:36		[09:36]
+2016-09-20 09:36:44	+grknight	you always get 64-bit, but you can optionally have 32-bit
+2016-09-20 09:36:56	test_	ok
+2016-09-20 09:37:07	+grknight	32-bit only binaries need 32-bit libraries, they cannot use the 64-bit
+2016-09-20 09:37:20	+grknight	like wine, skype, acroread, etc.
+2016-09-20 09:37:44	test_	how do i paste again?.. i encountered
+2016-09-20 09:37:45	-->	reinzelmann (~reinzelma@host-92-17-97-58.as13285.net) has joined #gentoo
+2016-09-20 09:37:45	-->	mazes_80 (~mazes_80@mur31-4-78-210-220-201.fbx.proxad.net) has joined #gentoo
+2016-09-20 09:37:53	test_	a error which more then 1 line
+2016-09-20 09:37:53	+grknight	well wine is special because it needs 32-bit libs to run 32-bit windows programs, which are still dominant
+2016-09-20 09:38:49	test_	- x11-libs/libXext-1.3.2::gentoo (Change USE: +abi_x86_32)
+2016-09-20 09:39:08	test_	is required to complete my request... something
+2016-09-20 09:39:21	+grknight	right, that means to enable 32-bit support on that library
+2016-09-20 09:39:45	test_	how? :3
+2016-09-20 09:39:49	<--	W0lf (~Fenrir@122.162.15.234) has quit (Ping timeout: 244 seconds)
+2016-09-20 09:39:54	+grknight	you just wrote it
+2016-09-20 09:40:00	test_	haha ok k
+2016-09-20 09:40:13	test_	with the plus?
+2016-09-20 09:40:38	+grknight	you have to get used to the idea that there are flags that control everything.  other systems turn everything on
+2016-09-20 09:40:41	<--	albel727 (~albel727@unaffiliated/albel727) has quit (Ping timeout: 240 seconds)
+2016-09-20 09:41:11	+grknight	no plus.  you really should review https://wiki.gentoo.org/wiki/Handbook:AMD64/Working/USE at this point
+2016-09-20 09:41:21	test_	im to lazy now, nothing i cant get over with it? :)
+2016-09-20 09:41:22	<--	nimms (~nimms@5.141.236.114) has quit (Quit: Leaving)
+2016-09-20 09:41:23	test_	xD oh no
+2016-09-20 09:42:13	-->	albel727 (~albel727@unaffiliated/albel727) has joined #gentoo
+2016-09-20 09:42:44	test_	grknight: isnt anything i can do temp?
+2016-09-20 09:43:07	+grknight	hmm?
+2016-09-20 09:43:14	test_	temporary
+2016-09-20 09:43:21	-->	toralf (~toralf@x50ab6ea6.dyn.telefonica.de) has joined #gentoo
+2016-09-20 09:43:22	test_	change it later? :)
+2016-09-20 09:43:47	+grknight	you can use --autounmask-write and follow the instructions;  OR disable the multlib USE on nvidia-drivers like i explained earlier
+2016-09-20 09:44:32	-->	cdown_ (~cdown@82-132-212-167.dab.02.net) has joined #gentoo
+2016-09-20 09:46:01	<--	cdown_ (~cdown@82-132-212-167.dab.02.net) has quit (Remote host closed the connection)
+2016-09-20 09:46:17	-->	sleepster (6cb90c94@gateway/web/freenode/ip.108.185.12.148) has joined #gentoo
+2016-09-20 09:46:23	-->	Kruppt (~Krupptus@104.169.28.145) has joined #gentoo
+2016-09-20 09:47:06	-->	asurace (~asurace@ip5f5af00b.dynamic.kabel-deutschland.de) has joined #gentoo
+2016-09-20 09:47:15	test_	grknight: i just want fast way to get it upp and running
+2016-09-20 09:47:49	test_	atleast the xorg
+2016-09-20 09:48:02	djdunn	maybe gentoo isnt the best choice for you
+2016-09-20 09:49:05	owl0	win 7
+2016-09-20 09:49:13	+grknight	test_: there is only two things to do, enable 32-bit support on a bunch of libraries or disable the optional multilib USE on nvidia-drivers;  nothing simpler
+2016-09-20 09:49:16	test_	really?
+2016-09-20 09:49:33	+iamben	if you're heading towards steam, you'll want it on
+2016-09-20 09:49:33	+grknight	one of two
+2016-09-20 09:49:42	djdunn	gentoo is all about doing exactly what you want to do, right, the first time
+2016-09-20 09:49:46	-->	erossetto_ (~erossetto@r167-56-42-190.dialup.adsl.anteldata.net.uy) has joined #gentoo
+2016-09-20 09:49:58	-->	j3nkins (~jenkins@c6.85.7a9f.ip4.static.sl-reverse.com) has joined #gentoo
+2016-09-20 09:50:13	<--	erossetto (~erossetto@r167-57-121-207.dialup.adsl.anteldata.net.uy) has quit (Read error: Connection reset by peer)
+2016-09-20 09:50:36	test_	ali3nx said about sometthing like abi x86_64
+2016-09-20 09:50:41	test_	or whateva
+2016-09-20 09:50:50	djdunn	thats multilib support
+2016-09-20 09:51:01	djdunn	and you shouldnt set that useflag manually
+2016-09-20 09:51:37	<--	Nahra` (~user@78.47.10.125) has quit (Quit: ERC (IRC client for Emacs 24.5.1))
+2016-09-20 09:51:37		[09:51]
+2016-09-20 09:52:06	test_	djdunn: give me a hand
+2016-09-20 09:52:29	djdunn	ABI_X86="32 64" is the line you want to add to your make.conf for multilib support
+2016-09-20 09:52:53	djdunn	test_: are you keyworded ~amd64 or amd64?
+2016-09-20 09:53:07	test_	what?
+2016-09-20 09:53:39	test_	im 64bit
+2016-09-20 09:53:40	tdr	test_, you should really look over the docs grknight recomended
+2016-09-20 09:54:16	-->	Nahra (~user@unaffiliated/nahra) has joined #gentoo
+2016-09-20 09:54:18	test_	is irssi automatic logging the chats? so i can look this over tomorrow?
+2016-09-20 09:54:21	djdunn	test_: are you in the gentoo stable tree or testing tree?
+2016-09-20 09:54:25	<--	laumann (~thomas@0190102017.0.fullrate.ninja) has quit (Ping timeout: 265 seconds)
+2016-09-20 09:54:39	djdunn	did you turn logging on?
+2016-09-20 09:54:49	+grknight	test_: djdunn: ABI_X86 in make.conf is if you want system-wide multilib, you can also do per package
+2016-09-20 09:54:50	test_	havent don anyting
+2016-09-20 09:55:46	test_	i have config the portage .conf now
+2016-09-20 09:55:51	test_	with ABI_X86="32 64"
+2016-09-20 09:56:01	djdunn	per package multilib is such a pain
+2016-09-20 09:56:03	tdr	finally found my stage2.spec file errror, this has been fun
+2016-09-20 09:56:19	djdunn	now just do emerge -uDavN @world
+2016-09-20 09:56:21	+iamben	djdunn: more user work up front, one time... much less cpu work down the road, forever
+2016-09-20 09:56:40	+iamben	it's a tradeoff
+2016-09-20 09:57:08	tdr	seems catalayst doesn't need the file extention for the source tarball when using stage1.spec but does with the stage2
+2016-09-20 09:57:10	test_	is it eazy to get rid of the fiels then
+2016-09-20 09:57:25	test_	if im not required anylonger with 32bittt
+2016-09-20 09:57:42	djdunn	people still do stage1?
+2016-09-20 09:57:45	+iamben	test_: it's doable, usually somewhat easy
+2016-09-20 09:57:56	+iamben	djdunn: people building custom stage3's via catalyst do
+2016-09-20 09:57:59	tdr	djdunn, if your using catalyst it does
+2016-09-20 09:58:14	test_	iamben: ok, luv u
+2016-09-20 09:58:28	+iamben	let's just be friends
+2016-09-20 09:58:49	tdr	iamben++
+2016-09-20 09:59:44	-->	gentoo_live (~gentoo@88.231.78.164) has joined #gentoo
+2016-09-20 10:00:00	-->	logosftw (~O@91.214.169.69) has joined #gentoo
+2016-09-20 10:00:03	<--	buggy_man (~user@185.13.47.7) has quit (Quit: Leaving)
+2016-09-20 10:00:18	<--	sag3 (~O@91.214.169.69) has quit (Read error: Connection reset by peer)
+2016-09-20 10:00:43	<--	nelder (~noname@195-71-139-78.kamensktel.ru) has quit (Quit: WeeChat 1.4)
+2016-09-20 10:01:05	<--	Lazydog (~Lazydog@38.88.148.2) has quit (Quit: Until next time.......)
+2016-09-20 10:01:22	--	gentoo_live is now known as nix-tr
+2016-09-20 10:01:52	tirej	guys, do i need MAKEOPTS in make.conf ?
+2016-09-20 10:01:59	<--	apus (~tux@p200300422C013275BEAEC5FFFE6B0505.dip0.t-ipconnect.de) has quit (Quit: Konversation terminated!)
+2016-09-20 10:02:06	l0velace	hello lads
+2016-09-20 10:02:08	tirej	if yes then what should i do for i7?
+2016-09-20 10:02:15	+iamben	tirej: technically no but it's highly recommended if you have >1 cpu/core
+2016-09-20 10:02:42	+iamben	tirej: check "lscpu", how many cpus does it report?
+2016-09-20 10:02:56	-->	LudaOtaku (~ludaota@178.197.225.109) has joined #gentoo
+2016-09-20 10:03:01	test_	haha no higher than 12 rigght? :)
+2016-09-20 10:03:12	<--	LudaOtaku (~ludaota@178.197.225.109) has quit (Client Quit)
+2016-09-20 10:03:30	tirej	CPU(s) : 8
+2016-09-20 10:03:36	tirej	iamben: 8 cpu
+2016-09-20 10:03:55	test_	+ 1 right?
+2016-09-20 10:04:13	-->	shaggymane (~steve@d207-6-176-176.bchsia.telus.net) has joined #gentoo
+2016-09-20 10:04:28	tirej	test_: as handbook says, yes. but i want to be sure.
+2016-09-20 10:04:41	+iamben	tirej: yeah -j9 will be good
+2016-09-20 10:04:54	+grknight	so long as you don't have a tiny amount of RAM
+2016-09-20 10:05:02	<--	elxa (~elxa@p4FC82034.dip0.t-ipconnect.de) has quit (Quit: Leaving)
+2016-09-20 10:05:22	shaggymane	I did an  EFI grub2 install and modified my kernel for efi and everything.. the system boots up EFI mode but hangs and waiting for uevents to be processed
+2016-09-20 10:05:39	-->	khj (~Thunderbi@192.232.16.95.dynamic.jazztel.es) has joined #gentoo
+2016-09-20 10:06:02	-->	jsubl2 (~jim@159-118-22-126.cpe.cableone.net) has joined #gentoo
+2016-09-20 10:06:04	+iamben	shaggymane: usually that's due to firmware load failures, does it eventually continue after a couple of minutes?
+2016-09-20 10:06:12	shaggymane	no
+2016-09-20 10:06:15	<--	PichuChen (~PichuChen@2001:b011:30e0:1851:ec15:534c:6538:63a2) has quit (Remote host closed the connection)
+2016-09-20 10:06:36	shaggymane	I can ctrl-alt-delete and it restarts
+2016-09-20 10:07:11	+iamben	do you have linux-firmware installed?
+2016-09-20 10:07:11		[10:07]
+2016-09-20 10:07:19	shaggymane	so the computer is not froze
+2016-09-20 10:07:24	shaggymane	no
+2016-09-20 10:07:26	+grknight	could also be a bad video handoff
+2016-09-20 10:07:33	<--	delacroix (~delacroix@2a02:810c:e3f:ecac:f901:4148:721d:14c7) has quit (Ping timeout: 265 seconds)
+2016-09-20 10:07:43	<--	Skunky (skunky@unaffiliated/skunky) has quit (Remote host closed the connection)
+2016-09-20 10:08:06	+iamben	the video handoff actually sounds more likely since it responds to c-a-del
+2016-09-20 10:08:25	-->	Skunky (skunky@unaffiliated/skunky) has joined #gentoo
+2016-09-20 10:08:35	-->	delacroix (~delacroix@2a02:810c:e3f:ecac:f901:4148:721d:14c7) has joined #gentoo
+2016-09-20 10:08:43	+iamben	shaggymane: see if it boots successfully with the "nocoldplug" kernel param passed via your bootloader
+2016-09-20 10:08:56	+grknight	though they could both be true if this is a radeon with missing firmware ;)
+2016-09-20 10:09:09	shaggymane	kk gunno load firmawares first
+2016-09-20 10:09:45	-->	sametsisartenep (~sametsisa@106.pool85-53-34.dynamic.orange.es) has joined #gentoo
+2016-09-20 10:10:33	<--	Adamas (~Thunderbi@117.114.136.146) has quit (Ping timeout: 276 seconds)
+2016-09-20 10:10:47	-->	lel (~lel@unaffiliated/lel) has joined #gentoo
+2016-09-20 10:10:58	<--	l0velace (~lovelace@ip-95-223-144-247.hsi16.unitymediagroup.de) has quit (Quit: Leaving)
+2016-09-20 10:10:59	test_	how do i save the chat in log right now irssi?
+2016-09-20 10:11:07	-->	Cube (~Cube@151.30.59.101) has joined #gentoo
+2016-09-20 10:11:18	test_	i dont know if im gonna remember you guys have told me ;)
+2016-09-20 10:12:12	+iamben	test_: https://irssi.org/documentation/startup/#lastlog-and-jumping-around-in-scrollback
+2016-09-20 10:13:13	test_	iamben: got ssl error
+2016-09-20 10:13:17	djdunn	test_: there is always the gentoo handbook
+2016-09-20 10:13:53	+iamben	/LASTLOG -file ~/irc.log
+2016-09-20 10:13:58	<--	PhotoJim (~Jim@hobart.ip6.photojim.ca) has quit (Ping timeout: 255 seconds)
+2016-09-20 10:14:13	test_	iamben: thanks you angel <3
+2016-09-20 10:14:54	blackflow	Look, mr. Bubbles, it's an angel!
+2016-09-20 10:14:59	blackflow	oops, not in -chat...
+2016-09-20 10:15:34	<--	rigan (~maxim@unaffiliated/rigan) has quit (Quit: WeeChat 1.4)
+2016-09-20 10:17:40	shaggymane	Iamben:  emrege linux firmware fixxed it ty
+2016-09-20 10:20:46	<--	logosftw (~O@91.214.169.69) has quit (Quit: ZNC - http://znc.in)
+2016-09-20 10:21:06	-->	sag3 (~O@91.214.169.69) has joined #gentoo
+2016-09-20 10:21:29	<--	eZ (~ez@201-27-37-202.dsl.telesp.net.br) has quit (Quit: Lost terminal)
+2016-09-20 10:21:30	<--	toralf (~toralf@x50ab6ea6.dyn.telefonica.de) has quit (Ping timeout: 264 seconds)
+2016-09-20 10:21:49	shaggymane	what was command to see what if you network card was gunna be so I can add it to net.lo
+2016-09-20 10:21:58	<--	lifeai (~lifeai@222.18.127.27) has quit (Ping timeout: 265 seconds)
+2016-09-20 10:22:01	<--	Kalrish (50ab4237@gateway/web/freenode/ip.80.171.66.55) has quit (Quit: Page closed)
+2016-09-20 10:22:17	<--	_ohm (~research@unaffiliated/-ohm/x-0955948) has quit (Quit: ##conservative for a channel to discuss politics on the right)
+2016-09-20 10:22:17		[10:22]
+2016-09-20 10:22:29	+iamben	ip link
+2016-09-20 10:22:31	shaggymane	apparently enp2s0 wasnt the one
+2016-09-20 10:22:34	shaggymane	ty vm
+2016-09-20 10:22:48	-->	parapente (~nobody@unaffiliated/parapente) has joined #gentoo
+2016-09-20 10:22:48	-->	_ohm (~research@unaffiliated/-ohm/x-0955948) has joined #gentoo
+2016-09-20 10:22:55	-->	LeRieur (~quassel@AStDenis-651-1-330-46.w80-8.abo.wanadoo.fr) has joined #gentoo
+2016-09-20 10:25:57	<--	shaggymane (~steve@d207-6-176-176.bchsia.telus.net) has left #gentoo
+2016-09-20 10:28:09	--	Vasco is now known as Vasco_O
+2016-09-20 10:30:20	-->	shiznix (quassel@gentoo/user/shiznix) has joined #gentoo
+2016-09-20 10:32:18	-->	Quicken2k (~quicken2k@node-4fdke8pbgfzrkjdt7g1.ipv6.teksavvy.com) has joined #gentoo
+2016-09-20 10:32:25	<--	gmturner (~gmturner@2601:645:4000:6bf0:a956:5357:9f65:7734) has quit (Ping timeout: 255 seconds)
+2016-09-20 10:32:41	<--	Guest29189 (~pine@90.221.172.181) has quit (Ping timeout: 240 seconds)
+2016-09-20 10:33:30	<--	jtriley (~jtriley@65.112.10.219) has quit (Ping timeout: 264 seconds)
+2016-09-20 10:34:20	-->	Bobbejaantje (~nevzets@ip51cc146b.speed.planet.nl) has joined #gentoo
+2016-09-20 10:34:36	<--	VargaD (~VargaD@188-143-48-35.pool.digikabel.hu) has quit (Ping timeout: 276 seconds)
+2016-09-20 10:34:47	<--	Korhoset (~nevzets@ip51cc146b.speed.planet.nl) has quit (Read error: Connection reset by peer)
+2016-09-20 10:36:17	larks	question, when I try to install gnat-gcc I get this http://pastebin.com/ZYNWPLJv
+2016-09-20 10:36:28	larks	anything stand out?
+2016-09-20 10:36:33	-->	nelder (~noname@195-71-139-78.kamensktel.ru) has joined #gentoo
+2016-09-20 10:36:34	<--	parapente (~nobody@unaffiliated/parapente) has quit (Quit: Konversation terminated!)
+2016-09-20 10:37:00	-->	VargaD (~VargaD@84-236-101-127.pool.digikabel.hu) has joined #gentoo
+2016-09-20 10:37:50	<--	sametsisartenep (~sametsisa@106.pool85-53-34.dynamic.orange.es) has quit (Quit: zzzZZZ)
+2016-09-20 10:37:50		[10:37]
+2016-09-20 10:38:14	<--	nelder (~noname@195-71-139-78.kamensktel.ru) has quit (Client Quit)
+2016-09-20 10:38:44	<--	nix-tr (~gentoo@88.231.78.164) has left #gentoo ("Konversation terminated!")
+2016-09-20 10:38:53	-->	ashkan (~ashkan@unaffiliated/askywalker/x-0000002) has joined #gentoo
+2016-09-20 10:39:19	tirej	guys, i am at this phase on installation https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Base#Optional:_Updating_the_Portage_tree but i need to shutdown everything.
+2016-09-20 10:39:32	larks	well, I only have gcc-4.9.3 and gcc-5.4.0 installed so I'll try installing gcc-4.6.4 and see if that helps
+2016-09-20 10:39:43	tirej	when i come does this going to be problem? and what'd i do ?
+2016-09-20 10:39:49	tirej	*back
+2016-09-20 10:40:03	+iamben	tirej: you'll need to redo the mount and chroot steps, that's all
+2016-09-20 10:40:12	+iamben	(all of the mounts, probably 4-6 of them total)
+2016-09-20 10:40:14	<--	ng0 (~ng0@unaffiliated/niasterisk) has quit (Remote host closed the connection)
+2016-09-20 10:40:53	<--	obarun (~obarun@154.67.14.64) has quit (Remote host closed the connection)
+2016-09-20 10:41:05	-->	m0n0lith|zZz (~mono@dyndsl-092-252-023-101.ewe-ip-backbone.de) has joined #gentoo
+2016-09-20 10:41:05	tirej	iamben: Mounting filesystems(home, root, boot etc ) AND Mounting the necessary filesystems AND Entering the new environment right ?
+2016-09-20 10:41:39	+iamben	yep
+2016-09-20 10:42:00	<--	bitlord (~bitlord@unaffiliated/bitlord) has quit (Quit: Leaving)
+2016-09-20 10:42:45	tirej	iamben: do i need these --> #source /etc/profile  AND #export PS1="(chroot) $PS1" ?
+2016-09-20 10:43:09	+iamben	tirej: yeah
+2016-09-20 10:43:23	tirej	iamben: okay, thanks!
+2016-09-20 10:43:43	<--	j3nkins (~jenkins@c6.85.7a9f.ip4.static.sl-reverse.com) has quit (Quit: WeeChat 1.5)
+2016-09-20 10:44:14	Quicken2k	Should I avoid a masked package?
+2016-09-20 10:44:31	waltercool	Is there a tutorial to build a stage2?
+2016-09-20 10:44:53	+iamben	waltercool: for what purpose?
+2016-09-20 10:45:09	+grknight	Quicken2k: masked how? by keyword? hard mask? license?
+2016-09-20 10:45:32	waltercool	iamben: I want to do some testing against musl
+2016-09-20 10:45:37	-->	Adamas (~Thunderbi@117.114.136.146) has joined #gentoo
+2016-09-20 10:45:44	Quicken2k	just says [Masked] in emerge
+2016-09-20 10:45:52	waltercool	and llvm
+2016-09-20 10:46:05	+grknight	Quicken2k: don't rely on 'emerge -s' it is not very informative
+2016-09-20 10:46:25	Skunky	and it's S L O W
+2016-09-20 10:46:26	+grknight	Quicken2k: try to do 'emerge -pv <package>' to find out why it is masked
+2016-09-20 10:46:29	+iamben	waltercool: catalyst is the tool to do that, it't not too difficult really but documentation is a bit sparse
+2016-09-20 10:46:53	waltercool	iamben: is the tool self-explanatory? I read about it, but no tutorial about it
+2016-09-20 10:47:06	+grknight	Quicken2k: a better search tool is eix, which shows more information and easily shows some masks in a more readable format
+2016-09-20 10:48:13	+grknight	waltercool: fwiw, there's a musl stage3 already, but clang/llvm is known to not work as a global compiler
+2016-09-20 10:48:18	+iamben	waltercool: well to generate a stage2 (assuming you already ahve stage1) all you really *run* is "catalyst -f mystage2.spec", but it's the writing of the spec files that will be the interesting part.  im not sure where the most current documentation for that is, you may wanna ask in #gentoo-releng
+2016-09-20 10:48:20	-->	ng0 (~ng0@unaffiliated/niasterisk) has joined #gentoo
+2016-09-20 10:48:37	Quicken2k	yeah K
+2016-09-20 10:48:41	<--	blackli0nxx (~blackli0n@129.7.0.133) has quit (Ping timeout: 248 seconds)
+2016-09-20 10:48:56	Quicken2k	yeah I installed eix already
+2016-09-20 10:49:05	waltercool	grknight: I'm already using that into a custom Gentoo container, but I had to recompile everything, I want to try making a system without gcc from start
+2016-09-20 10:49:18	-->	cheeseboy (~cheeseboy@unaffiliated/cheeseboy) has joined #gentoo
+2016-09-20 10:49:41	waltercool	iamben: haha ugggh, I will try learning from others spec files
+2016-09-20 10:50:32	waltercool	chrooting works amazing with my current system config
+2016-09-20 10:50:47	+iamben	waltercool: check out the releng repo and those specs as a starting poitn, if you haven't
+2016-09-20 10:50:53	Quicken2k	eix does not replace emerge does it?
+2016-09-20 10:51:02	<--	dilfridge (~quassel@gentoo/developer/dilfridge) has quit (Quit: No Ping reply in 180 seconds.)
+2016-09-20 10:51:20	+iamben	Quicken2k: eix is primarily a search tool, it only replace's emerge's search function, not installing pkgs
+2016-09-20 10:51:30	+grknight	waltercool: good luck; there's a tracker bug to follow and you'll need to fix gcc-config
+2016-09-20 10:51:57	+grknight	or else emulate gcc-config's output
+2016-09-20 10:52:24	-->	dilfridge (~quassel@gentoo/developer/dilfridge) has joined #gentoo
+2016-09-20 10:52:37	waltercool	iamben: found it :)
+2016-09-20 10:52:39	--	Mode #gentoo [+v dilfridge] by ChanServ
+2016-09-20 10:53:09	waltercool	grknight: Or I can do a dummy package to fake it, a gcc-config-9999 without anything useful
+2016-09-20 10:53:09		[10:53]
+2016-09-20 10:53:14	-->	ilken (~ilk@107.161.81.56) has joined #gentoo
+2016-09-20 10:53:33	+grknight	waltercool: it's not the package that is the problem, it is the /etc/env.d files it makes
+2016-09-20 10:54:00	<--	pratch (~pratch@unaffiliated/pratch) has quit (Quit: Leaving)
+2016-09-20 10:54:07	+grknight	well the package should be ultimately fixed, but you still need the variables set
+2016-09-20 10:54:20	waltercool	grknight: uhmmm you are right, I will need to find out how to modify those ones
+2016-09-20 10:54:25	-->	toralf (~toralf@x50ab6ea6.dyn.telefonica.de) has joined #gentoo
+2016-09-20 10:54:29	Quicken2k	k thx
+2016-09-20 10:54:59	waltercool	thanks for reaching that point, I will chroot everything to avoid any mistake
+2016-09-20 10:55:24	-->	OCmylife (~androirc@ip-178-200-181-40.hsi07.unitymediagroup.de) has joined #gentoo
+2016-09-20 10:55:33	-->	zilion (~zilion@191.8.21.7) has joined #gentoo
+2016-09-20 10:56:18	<--	brendel_ (~brice@LAubervilliers-656-1-215-246.w217-128.abo.wanadoo.fr) has quit (Ping timeout: 264 seconds)
+2016-09-20 10:58:06	<--	wdna (~wdna@bzq-84-111-20-20.red.bezeqint.net) has quit (Ping timeout: 264 seconds)
+2016-09-20 10:58:26	<--	Lildirt (~Lildirt@lildirt.com) has quit (Quit: Leb wohl, meine Freunde. Ich wünsche Ihnen das beste von Tagen.)
+2016-09-20 10:59:24	-->	Lildirt (~Lildirt@lildirt.com) has joined #gentoo
+2016-09-20 11:00:34	<--	Lildirt (~Lildirt@lildirt.com) has quit (Client Quit)
+2016-09-20 11:01:23	Quicken2k	My CPU usage is always around 50 is that normal?
+2016-09-20 11:01:43	+iamben	Quicken2k: if you're emerging and only using half your cores, maybe
+2016-09-20 11:02:08	Quicken2k	not doing anyhing, but using Konversation
+2016-09-20 11:02:26	+iamben	open up "top" and see what's using cpu
+2016-09-20 11:03:04	-->	blackli0nxx (~blackli0n@129.7.0.133) has joined #gentoo
+2016-09-20 11:03:17	<--	szorfein (~szorfein@45.32.232.26) has quit (Remote host closed the connection)
+2016-09-20 11:04:17	Quicken2k	says quicken2k cpu usage 42%
+2016-09-20 11:04:30	+iamben	that's the process name?
+2016-09-20 11:04:38	Quicken2k	yes
+2016-09-20 11:05:27	Quicken2k	nrn
+2016-09-20 11:05:30	<--	Quicken2k (~quicken2k@node-4fdke8pbgfzrkjdt7g1.ipv6.teksavvy.com) has quit (Quit: Konversation terminated!)
+2016-09-20 11:06:02	<--	xmorph (~xt_@unaffiliated/xmorph) has quit (Quit: Konversation terminated!)
+2016-09-20 11:06:31	<--	SylvieLorxu (~TheLastPr@541B7AAC.cm-5-4b.dynamic.ziggo.nl) has quit (Quit: ZNC - http://znc.in)
+2016-09-20 11:06:45	-->	PichuChen (~PichuChen@111-250-166-238.dynamic.hinet.net) has joined #gentoo
+2016-09-20 11:07:30	<--	FinboySlick (~shark@74.117.40.10) has quit (Quit: Leaving.)
+2016-09-20 11:07:48	-->	Quicken2k (~quicken2k@2607:f2c0:938b:d600:43b1:3cec:53f9:23f1) has joined #gentoo
+2016-09-20 11:07:50	-->	gattler (~gattler@x4e37934f.dyn.telefonica.de) has joined #gentoo
+2016-09-20 11:08:16	Quicken2k	Plasma is doing it when I go back to sddm pc fans calm down
+2016-09-20 11:08:16		[11:08]
+2016-09-20 11:08:51	<--	venom00ut (~venom00@unaffiliated/venom00) has quit (Ping timeout: 265 seconds)
+2016-09-20 11:09:03	<--	Ycarus (~ycarus@2a01:e34:eda7:b1f0:5e3d:ee40:8bba:20a1) has quit (Quit: Ycarus)
+2016-09-20 11:11:48	-->	brendel_ (~brice@LAubervilliers-656-1-215-246.w217-128.abo.wanadoo.fr) has joined #gentoo
+2016-09-20 11:13:15	<--	ng0 (~ng0@unaffiliated/niasterisk) has quit (Remote host closed the connection)
+2016-09-20 11:13:21	-->	Kryptron_ (~Kryptron@unaffiliated/kryptron) has joined #gentoo
+2016-09-20 11:14:42	<--	jsubl2 (~jim@159-118-22-126.cpe.cableone.net) has quit (Quit: leaving)
+2016-09-20 11:14:44	<--	stintel (stijn@madwifi/support/stintel) has quit (Ping timeout: 265 seconds)
+2016-09-20 11:16:02	<--	thunderrd (~thunderrd@119.42.85.87) has quit (Read error: Connection reset by peer)
+2016-09-20 11:16:13	<--	Frog_ (~me@neu93-h04-176-136-62-80.dsl.sta.abo.bbox.fr) has quit (Quit: WeeChat 1.6-dev)
+2016-09-20 11:16:43	<--	Kryptron (~Kryptron@unaffiliated/kryptron) has quit (Ping timeout: 272 seconds)
+2016-09-20 11:17:10	-->	thunderrd (~thunderrd@110.77.194.182) has joined #gentoo
+2016-09-20 11:18:04	<--	incog (~tits@unaffiliated/incog) has quit (Remote host closed the connection)
+2016-09-20 11:18:17	-->	KlinedByAVirgin (~tits@104.235.153.142) has joined #gentoo
+2016-09-20 11:19:39	-->	bjoern2 (~bjoern2@ip5f5bc8c9.dynamic.kabel-deutschland.de) has joined #gentoo
+2016-09-20 11:19:50	<--	bjoern2 (~bjoern2@ip5f5bc8c9.dynamic.kabel-deutschland.de) has quit (Client Quit)
+2016-09-20 11:19:52	<--	KlinedByAVirgin (~tits@104.235.153.142) has quit (Client Quit)
+2016-09-20 11:20:57	-->	bjoern2 (~bjoern2@ip5f5bc8c9.dynamic.kabel-deutschland.de) has joined #gentoo
+2016-09-20 11:21:04	<--	bjoern2 (~bjoern2@ip5f5bc8c9.dynamic.kabel-deutschland.de) has quit (Client Quit)
+2016-09-20 11:21:40	<--	gattler (~gattler@x4e37934f.dyn.telefonica.de) has quit (Quit: WeeChat 1.5)
+2016-09-20 11:21:57	-->	Tiger (~tiger@unaffiliated/tiger) has joined #gentoo
+2016-09-20 11:22:17	-->	filtered (~filtered@95-37-33-157.dynamic.mts-nn.ru) has joined #gentoo
+2016-09-20 11:24:09	<--	Quicken2k (~quicken2k@2607:f2c0:938b:d600:43b1:3cec:53f9:23f1) has quit (Quit: Konversation terminated!)
+2016-09-20 11:24:09		[11:24]
+2016-09-20 11:24:46	-->	pratch (~pratch@unaffiliated/pratch) has joined #gentoo
+2016-09-20 11:24:59	<--	test_ (~test@c213-89-88-48.bredband.comhem.se) has quit (Ping timeout: 250 seconds)
+2016-09-20 11:25:08	<--	filtered (~filtered@95-37-33-157.dynamic.mts-nn.ru) has quit (Read error: Connection reset by peer)
+2016-09-20 11:25:10	<--	Cube (~Cube@151.30.59.101) has quit (Remote host closed the connection)
+2016-09-20 11:25:36	-->	filtered (~filtered@95-37-33-157.dynamic.mts-nn.ru) has joined #gentoo
+2016-09-20 11:26:07	-->	Nanuq (~nanuq@tecciztecatl.teotlalli.ecks.ca) has joined #gentoo
+2016-09-20 11:26:18	<--	albertus1 (~albertus1@x55b4be1f.dyn.telefonica.de) has quit (Quit: Leaving.)
+2016-09-20 11:26:49	<--	reinzelmann (~reinzelma@host-92-17-97-58.as13285.net) has quit (Quit: Leaving)
+2016-09-20 11:27:09	ov3rmind	guys i had unmet requirements how is the best way to solve try add flags globaly?
+2016-09-20 11:27:34	+iamben	ov3rmind: we need to see the exact output, you are being too vague
+2016-09-20 11:28:46	-->	jtriley (~jtriley@209-6-38-104.c3-0.smr-ubr2.sbo-smr.ma.cable.rcn.com) has joined #gentoo
+2016-09-20 11:29:03	<--	yokel (~yokel@unaffiliated/contempt) has quit (Ping timeout: 240 seconds)
+2016-09-20 11:29:14	<--	genpaku (~genpaku@107.191.100.185) has quit (Ping timeout: 265 seconds)
+2016-09-20 11:29:39	--	filtered is now known as incog
+2016-09-20 11:29:43	<--	incog (~filtered@95-37-33-157.dynamic.mts-nn.ru) has quit (Changing host)
+2016-09-20 11:29:43	-->	incog (~filtered@unaffiliated/incog) has joined #gentoo
+2016-09-20 11:29:50	ov3rmind	http://bpaste.net/show/a0fc70240d5
+2016-09-20 11:29:53	-->	genpaku (~genpaku@107.191.100.185) has joined #gentoo
+2016-09-20 11:29:57	<--	_0bitcount (~Big_Byte@92.176.142.156) has quit (Quit: Leaving)
+2016-09-20 11:30:07	ov3rmind	output of emerge -pv plasma-meta
+2016-09-20 11:30:22	+iamben	404
+2016-09-20 11:30:27	ov3rmind	ops
+2016-09-20 11:30:40	<--	ov3rmind (~leo@unaffiliated/ov3rmind) has quit (Quit: leaving)
+2016-09-20 11:31:06	-->	redprincess (~cleancut@158.58.172.33) has joined #gentoo
+2016-09-20 11:31:16	redprincess	https://www.youtube.com/watch?v=sBNLta3iIPA
+2016-09-20 11:31:32	--	Mode #gentoo [+o iamben] by ChanServ
+2016-09-20 11:31:36	<--	iamben has kicked redprincess (redprincess)
+2016-09-20 11:31:40	<--	iamben has kicked incog (incog)
+2016-09-20 11:31:47	-->	redprincess (~cleancut@158.58.172.33) has joined #gentoo
+2016-09-20 11:31:55	<--	jcjordyn120-andr (~jcjordyn1@2602:302:d115:9450:345f:905a:9874:bb88) has quit (Ping timeout: 272 seconds)
+2016-09-20 11:32:10	--	Mode #gentoo [+b *!*@158.58.172.33] by iamben
+2016-09-20 11:32:10	<--	iamben has kicked redprincess (redprincess)
+2016-09-20 11:33:03	--	Mode #gentoo [-o iamben] by ChanServ
+2016-09-20 11:33:20	-->	ng0 (~ng0@unaffiliated/niasterisk) has joined #gentoo
+2016-09-20 11:33:49	<--	blackli0nxx (~blackli0n@129.7.0.133) has quit (Ping timeout: 244 seconds)
+2016-09-20 11:35:07	-->	jansegre (~jan@3-161-45-187.static.in-addr.vialink.com.br) has joined #gentoo
+2016-09-20 11:35:12	<--	AsumFace (~asumface@ip1f1060c0.dynamic.kabel-deutschland.de) has quit (Read error: Connection reset by peer)
+2016-09-20 11:35:37	-->	blackli0nxx (~blackli0n@129.7.0.133) has joined #gentoo
+2016-09-20 11:35:44	<--	beardedeagle (~beardedea@64.202.161.57) has quit
+2016-09-20 11:37:37	<--	toralf (~toralf@x50ab6ea6.dyn.telefonica.de) has quit (Ping timeout: 272 seconds)
+2016-09-20 11:39:16	-->	jcjordyn120-andr (~jcjordyn1@2607:fb90:5903:d1c9:0:49:28ca:4f01) has joined #gentoo
+2016-09-20 11:39:16		[11:39]
+2016-09-20 11:39:31	<--	aktiv[b] (~loke@95.169.55.204) has quit (Quit: leaving)
+2016-09-20 11:40:43	-->	coffee88 (~mike@unaffiliated/coffee88) has joined #gentoo
+2016-09-20 11:41:03	-->	ov3rmind (~leo@unaffiliated/ov3rmind) has joined #gentoo
+2016-09-20 11:41:08	<--	Renich (~Renich@187.246.207.161) has quit (Quit: leaving)
+2016-09-20 11:41:29	<--	irco (~irco@HSI-KBW-134-3-111-4.hsi14.kabel-badenwuerttemberg.de) has quit (Ping timeout: 248 seconds)
+2016-09-20 11:41:34	-->	H2O2 (~chris@71-92-244-106.static.trlk.ca.charter.com) has joined #gentoo
+2016-09-20 11:41:42	<--	barthess (~barthess@93.85.167.189) has quit (Quit: Leaving.)
+2016-09-20 11:41:44	<--	PichuChen (~PichuChen@111-250-166-238.dynamic.hinet.net) has quit (Ping timeout: 265 seconds)
+2016-09-20 11:42:40	-->	mackal (~mike@pool-96-237-144-12.bstnma.fios.verizon.net) has joined #gentoo
+2016-09-20 11:42:44	coffee88	hi. something in my overdue update wants to pull in python3.3 again after I removed it, but I can't work out what/why. Full (long) emerge output here https://dpaste.de/eeQQ any ideas?!
+2016-09-20 11:42:55	H2O2	hey quick question..  trying to change the value of /sys/class/backlight/intel_backlight/brightness but when i edit the file and then write with vi i get a Fsync failed and it won't let me make the change. any ideas as to what im doing wrong?
+2016-09-20 11:43:04	<--	genpaku (~genpaku@107.191.100.185) has quit (Ping timeout: 255 seconds)
+2016-09-20 11:44:16	-->	incog (~filtered@unaffiliated/incog) has joined #gentoo
+2016-09-20 11:44:27	incog	what was that for iamben
+2016-09-20 11:44:43	ov3rmind	http?//bpaste.net/show/d2919f55c2a
+2016-09-20 11:45:15	ov3rmind	is the output of emerge -pv kde-plasma/plasma-meta
+2016-09-20 11:45:16	--	Mode #gentoo [+o iamben] by ChanServ
+2016-09-20 11:45:18	--	Mode #gentoo [+b *!*@unaffiliated/incog] by iamben
+2016-09-20 11:45:18	<--	iamben has kicked incog (incog)
+2016-09-20 11:45:25	--	Mode #gentoo [-o iamben] by ChanServ
+2016-09-20 11:46:00	+iamben	coffee88: setuptools is still built for the old python, it's not being pulled into the dep graph because it's a buildtime-only dep (i think)... try adding --with-bdeps=y
+2016-09-20 11:46:18	-->	PhotoJim (~Jim@hobart.ip6.photojim.ca) has joined #gentoo
+2016-09-20 11:46:30	jcjordyn120	virtualbox-modules wont compile
+2016-09-20 11:46:48	maolang	iamben: were you on a killing spree in last couple minutes...
+2016-09-20 11:47:25	+iamben	ov3rmind: 404 again
+2016-09-20 11:47:32	+iamben	maolang: known trolls
+2016-09-20 11:47:33	ov3rmind	oh
+2016-09-20 11:47:45	<--	blackli0nxx (~blackli0n@129.7.0.133) has quit (Ping timeout: 272 seconds)
+2016-09-20 11:47:53	<--	jcjordyn120-andr (~jcjordyn1@2607:fb90:5903:d1c9:0:49:28ca:4f01) has quit (Ping timeout: 248 seconds)
+2016-09-20 11:47:54	ov3rmind	http?//bpaste.net/show/d2919f55ec2a
+2016-09-20 11:48:00	ov3rmind	this
+2016-09-20 11:48:33	+iamben	ov3rmind: you cannot have both qt4 & qt5 flags enabled on vlc
+2016-09-20 11:49:35	jcjordyn120	this is the build log http://pasted.co/57f0029f
+2016-09-20 11:50:23	-->	cvaq (~test@c213-89-88-48.bredband.comhem.se) has joined #gentoo
+2016-09-20 11:50:44	<--	cvaq (~test@c213-89-88-48.bredband.comhem.se) has quit (Client Quit)
+2016-09-20 11:50:51	+iamben	jcjordyn120: you most likely need a newer version of virtualbox-modules for that ~amd64 kernel
+2016-09-20 11:51:26	jcjordyn120	i tried to keyword virtualbox-modules, it still tries to install the older version
+2016-09-20 11:51:27	-->	anuxivm (~anuxi@92.185.154.236) has joined #gentoo
+2016-09-20 11:51:43	<--	zilion (~zilion@191.8.21.7) has left #gentoo
+2016-09-20 11:51:54	<--	asurace (~asurace@ip5f5af00b.dynamic.kabel-deutschland.de) has quit (Ping timeout: 244 seconds)
+2016-09-20 11:51:58	ov3rmind	http?//bpaste.net/show/328330681b12
+2016-09-20 11:52:04	larks	ok, so I think the reason gnat-gcc was failing was because of multilib stuff, trying a newer version and seeing if that helps
+2016-09-20 11:52:33	+iamben	jcjordyn120: you probably need to do the same for virtualbox itself, too
+2016-09-20 11:52:43	jcjordyn120	did that too
+2016-09-20 11:52:51	+iamben	ov3rmind: 404, this is getting ridiculous
+2016-09-20 11:53:10	ov3rmind	excuse
+2016-09-20 11:53:16	+iamben	jcjordyn120: pastebin output of "emerge -pv virtualbox virtualbox-modules"
+2016-09-20 11:53:17	H2O2	wow you guys looks busy right now..  guess i'll go back to googling
+2016-09-20 11:53:31	+iamben	H2O2: use echo, not vim
+2016-09-20 11:53:49	<--	erossetto_ (~erossetto@r167-56-42-190.dialup.adsl.anteldata.net.uy) has quit (Quit: Leaving)
+2016-09-20 11:53:58	ov3rmind	http?//bpaste.net/show/3283300681b12 try it  and escuse ?)
+2016-09-20 11:54:01	ov3rmind	:)
+2016-09-20 11:54:14	jcjordyn120	https://paste.linuxdistrocommunity.com/paste/syEtvbCQ#5vLfXfJ2PRRf26xsX2dhOYYBhKeCbWPvjOipKWAFxhS
+2016-09-20 11:54:26	maolang	read the output ov3rmind , the answers are there in the messages, the ! means NOT while the other is active, you should use --verbose with emerge, the messages would be more explanatory...
+2016-09-20 11:54:26		[11:54]
+2016-09-20 11:54:35	+iamben	ov3rmind: no, it doesn't work.  why are you unable to type or copy/paste the URL properly?
+2016-09-20 11:54:53	H2O2	iamben yeah just read that it requires the "-n" falg to be used
+2016-09-20 11:55:09	H2O2	but thx mate  :-)  goot luck its busy in here today  :-)
+2016-09-20 11:55:15	coffee88	iamben: that cleared a few blocks, but still left with a few and still python3.3 seems to be pulled in somehow... https://dpaste.de/eiE8
+2016-09-20 11:55:58	H2O2	dont know why i couldn't fine that before now..  lol
+2016-09-20 11:56:03	<--	ov3rmind (~leo@unaffiliated/ov3rmind) has quit (Quit: leaving)
+2016-09-20 11:56:08	+iamben	coffee88: try adding setuptools explicitly to the list
+2016-09-20 11:57:39	maolang	wow, thats a big list....
+2016-09-20 11:58:10	+iamben	coffee88: you may also wanna see if there's ANY mention of python3_3 in package.use
+2016-09-20 11:58:19	-->	kadintrooper (~user@S0106f0f2493c8a83.su.shawcable.net) has joined #gentoo
+2016-09-20 11:58:26	<--	H2O2 (~chris@71-92-244-106.static.trlk.ca.charter.com) has quit (Quit: leaving)
+2016-09-20 11:58:41	kadintrooper	 bk
+2016-09-20 11:58:46	<--	nighoo (~nighoo@unaffiliated/nighoo) has quit (Ping timeout: 244 seconds)
+2016-09-20 11:58:54	<--	kadintrooper (~user@S0106f0f2493c8a83.su.shawcable.net) has left #gentoo
+2016-09-20 11:59:19	-->	ov3rmind (~leonardo@unaffiliated/ov3rmind) has joined #gentoo
+2016-09-20 11:59:48	-->	nighoo (~nighoo@unaffiliated/nighoo) has joined #gentoo
+2016-09-20 12:00:08	<--	ANero (~nero@unaffiliated/anero) has quit (Quit: Leaving)
+2016-09-20 12:01:14	maolang	would making 3.3 and enabling targets both both 3.4 and 3.5 solve that one?
+2016-09-20 12:01:18	ov3rmind	http://bpaste.net/show/0d324b26572c iamben now i can copy the link
+2016-09-20 12:01:24	maolang	masking 3.3 that was
+2016-09-20 12:01:36	-->	the_abra (~philipp@p4FFF5A52.dip0.t-ipconnect.de) has joined #gentoo
+2016-09-20 12:01:58	maolang	good old ffmpeg
+2016-09-20 12:02:07	+iamben	ov3rmind: https://wiki.gentoo.org/wiki/Handbook:AMD64/Working/USE#Satisfying_REQUIRED_USE_conditions
+2016-09-20 12:02:14	-->	kerframil (~kerframil@gentoo/user/kerframil) has joined #gentoo
+2016-09-20 12:02:37	-->	iflema (~ian@2001:8003:204c:c100:5627:1eff:fe6a:89ab) has joined #gentoo
+2016-09-20 12:03:11	 *	maolang passes a glass of Jack Daniels to iamben
+2016-09-20 12:03:23	maolang	looks like you need it...
+2016-09-20 12:03:29	+iamben	im still at work!
+2016-09-20 12:03:50	xpoint	anyone have a ebuild for pymilter ?
+2016-09-20 12:04:14	xpoint	https://bpaste.net/show/641f3037b560
+2016-09-20 12:04:24	xpoint	working on it
+2016-09-20 12:04:48	maolang	they do xpoint --> http://dpaste.com/08F3YZ4
+2016-09-20 12:05:27	coffee88	even just trying to emerge seetuptools on its own has a block, but not the need to pull in 3.3.. https://dpaste.de/PfGc
+2016-09-20 12:06:09	coffee88	and all metion of 3.3 commented out in the package.use
+2016-09-20 12:06:09	<--	_sfiguser (~sfigguser@93-35-253-193.ip57.fastwebnet.it) has quit (Ping timeout: 250 seconds)
+2016-09-20 12:06:20	maolang	it needs a target though...
+2016-09-20 12:06:27	<--	jansegre (~jan@3-161-45-187.static.in-addr.vialink.com.br) has quit (Quit: kthxbye)
+2016-09-20 12:06:29	+iamben	coffee88: yes im sure that doing setuptools *by itself* will cause confligs, do "emerge -uDNav @world setuptools"
+2016-09-20 12:06:31	<--	nE0sIghT (~Thunderbi@unaffiliated/ne0sight) has quit (Remote host closed the connection)
+2016-09-20 12:06:40	+iamben	all tehse pieces need to be upgraded together, or there will be conflicts
+2016-09-20 12:07:04	<--	the_abra (~philipp@p4FFF5A52.dip0.t-ipconnect.de) has quit (Remote host closed the connection)
+2016-09-20 12:07:57	<--	ng0 (~ng0@unaffiliated/niasterisk) has quit (Remote host closed the connection)
+2016-09-20 12:07:59	-->	latenite (~latenite@p5B375AF9.dip0.t-ipconnect.de) has joined #gentoo
+2016-09-20 12:08:03	maolang	iamben: i remember those days 3 months ago when i was getting grey hair or lots of those myself!
+2016-09-20 12:08:29	-->	timahvo1 (~rogue@197.237.134.7) has joined #gentoo
+2016-09-20 12:08:44	<--	ov3rmind (~leonardo@unaffiliated/ov3rmind) has quit (Quit: KVIrc 4.3.1 Aria http://www.kvirc.net/)
+2016-09-20 12:10:00	xpoint	maolang: thanks
+2016-09-20 12:10:00		[12:10]
+2016-09-20 12:10:01	<--	Turingtoast (~Tino@p54BCCA60.dip0.t-ipconnect.de) has quit (Quit: My Mac has gone to sleep. ZZZzzz…)
+2016-09-20 12:10:42	<--	antranigv (~antranigv@cert.am) has quit (Ping timeout: 264 seconds)
+2016-09-20 12:10:55	maolang	xpoint: you have worked with overlays before?
+2016-09-20 12:11:00	-->	pauloalvarez (~pauloalva@191.223.233.196) has joined #gentoo
+2016-09-20 12:12:40	<--	kelsoo (~kelsoo@dragora/developer/kelsoo) has quit (Quit: WeeChat 1.3)
+2016-09-20 12:13:14	<--	LeRieur (~quassel@AStDenis-651-1-330-46.w80-8.abo.wanadoo.fr) has quit (Quit: http://quassel-irc.org - Chat comfortably. Anywhere.)
+2016-09-20 12:13:24	<--	groepaz (~groepaz@ip-84-119-191-168.unity-media.net) has quit (Remote host closed the connection)
+2016-09-20 12:14:59	-->	kelsoo (~kelsoo@dragora/developer/kelsoo) has joined #gentoo
+2016-09-20 12:15:51	-->	groepaz (~groepaz@ip-84-119-191-168.unity-media.net) has joined #gentoo
+2016-09-20 12:16:00	<--	DeaDSouL_ (~DeaDSouL@94.29.129.165) has quit (Ping timeout: 276 seconds)
+2016-09-20 12:16:01	Skunky	why is "PC Speaker" an input device.  it's not a microphone.
+2016-09-20 12:16:10	-->	venom00ut (~venom00@unaffiliated/venom00) has joined #gentoo
+2016-09-20 12:16:38	-->	antranigv (~antranigv@141.136.77.142) has joined #gentoo
+2016-09-20 12:16:52	<--	tty0_ (~NA@unaffiliated/tty0/x-3092968) has quit (Quit: Leaving.)
+2016-09-20 12:16:58	antranigv	guys, how can I add an interface to a bridge?
+2016-09-20 12:17:01	antranigv	it's shutting down
+2016-09-20 12:17:03	coffee88	grrr, still have the need for 3.3 popping up there. https://dpaste.de/7Et1
+2016-09-20 12:17:08	antranigv	the remote server
+2016-09-20 12:17:11	antranigv	while adding
+2016-09-20 12:17:24	-->	DeaDSouL (~DeaDSouL@94.29.130.13) has joined #gentoo
+2016-09-20 12:17:29	-->	twnqx (~twnqx@ip4d149e0b.dynamic.kabel-deutschland.de) has joined #gentoo
+2016-09-20 12:17:56	xpoint	maolang: not much, just my own fidonet
+2016-09-20 12:18:03	maolang	k
+2016-09-20 12:18:42	xpoint	i have build clamav-9999 with succes without help
+2016-09-20 12:19:03	maolang	xpoint: are you on openrc or systemd?
+2016-09-20 12:19:10	xpoint	but i like to make dspam-milter working on gentoo now
+2016-09-20 12:19:18	-->	_sfiguser (~sfigguser@93-35-253-193.ip57.fastwebnet.it) has joined #gentoo
+2016-09-20 12:19:18	<--	chaisen (~chaisen@p54993111.dip0.t-ipconnect.de) has quit (Quit: WeeChat 1.5)
+2016-09-20 12:19:23	xpoint	openrc
+2016-09-20 12:19:40	maolang	have you started the different services now or not yet?
+2016-09-20 12:20:00	xpoint	what services ?
+2016-09-20 12:20:48	-->	nimbius (~nimbius@putrid.dev1ce.com) has joined #gentoo
+2016-09-20 12:20:50	nimbius	hey gentoo
+2016-09-20 12:20:53	nimbius	what mail client do we use?
+2016-09-20 12:20:55	-->	chaisen (~chaisen@p54993111.dip0.t-ipconnect.de) has joined #gentoo
+2016-09-20 12:21:15	xpoint	last days i have thinked about make my own local github to make it more simple to work with repoman and egencache, but i have not found much help on it
+2016-09-20 12:21:32	<--	twnqx (~twnqx@ip4d149e0b.dynamic.kabel-deutschland.de) has quit (Ping timeout: 244 seconds)
+2016-09-20 12:21:36	maolang	well the clamav freshclam and clamavd etc
+2016-09-20 12:22:02	zyliwax	is it safe to add extra packages i want to add alongside an emerge @world?
+2016-09-20 12:22:08	maolang	yes
+2016-09-20 12:22:14	zyliwax	schweet
+2016-09-20 12:22:23	maolang	they will be all calculated on the same command line
+2016-09-20 12:22:29	xpoint	maolang: ah yes, i just wish the clamav used splited openrc scripts, not just a single clamd for all
+2016-09-20 12:22:47	zyliwax	so i imagine order does not matter either?
+2016-09-20 12:23:06	maolang	now i have the clamav and freshclam working fine but the clamavd not so
+2016-09-20 12:23:14	maolang	nope
+2016-09-20 12:23:24	zyliwax	schweet thanks ;)
+2016-09-20 12:23:38	maolang	only if you on same line put an exlusion, then what follows is exclusions
+2016-09-20 12:23:39	zyliwax	oops that was supposed to be a colon :)
+2016-09-20 12:24:03	zyliwax	right on, that last detail makes sense
+2016-09-20 12:24:17	<--	jtriley (~jtriley@209-6-38-104.c3-0.smr-ubr2.sbo-smr.ma.cable.rcn.com) has quit (Ping timeout: 240 seconds)
+2016-09-20 12:24:41	-->	hydrogen (~hydrogen@amarok/developer/hydrogen) has joined #gentoo
+2016-09-20 12:24:45	maolang	like for example this --> emerge --ask --update --newuse @world @world --exclude gnome-base/gnome-shell
+2016-09-20 12:25:00	xpoint	maolang: here i have 2 clamd running with 2 diffrent database dirs, one with official sigs, to be used in rmilter for reject virus, and another clamav-milter to just add 3dr party spam sigs, that can be used in spamassassin and rspamd
+2016-09-20 12:25:00		[12:25]
+2016-09-20 12:26:05	maolang	id like to get the deamon working so i can in turn get working with clamdtop
+2016-09-20 12:26:08	jcjordyn120	i got virtualbox-bin working, but not virtualbox.
+2016-09-20 12:26:32	-->	blackli0nxx (~blackli0n@129.7.0.133) has joined #gentoo
+2016-09-20 12:26:49	xpoint	maolang: what problems shows clamconf ?
+2016-09-20 12:26:49	-->	yokel (~yokel@unaffiliated/contempt) has joined #gentoo
+2016-09-20 12:27:28	Skunky	antranigv: brctl
+2016-09-20 12:27:29	maolang	wont start, but wont troubleshoot that tonight need to sleep after this drink and cig i am having have to wake up early today
+2016-09-20 12:28:32	-->	Turingtoast (~Tino@p54BCCA60.dip0.t-ipconnect.de) has joined #gentoo
+2016-09-20 12:28:35	maolang	got one thing working that i had been wanting to get up and running for so long and now it is and running smooth, QEMU / KVM
+2016-09-20 12:29:33	<--	rafspiny|2 (~kvirc@151.77.114.113) has quit (Ping timeout: 272 seconds)
+2016-09-20 12:29:58	<--	mguillech (~mguillech@host184.201-252-170.telecom.net.ar) has quit (Read error: Connection reset by peer)
+2016-09-20 12:30:04	maolang	took a lot of help here, and web and digging and experimenting, but now its 100%
+2016-09-20 12:30:37	-->	mguillech (~mguillech@host184.201-252-170.telecom.net.ar) has joined #gentoo
+2016-09-20 12:30:40	<--	nimbius (~nimbius@putrid.dev1ce.com) has left #gentoo (""i dont think im doing this right at all."")
+2016-09-20 12:31:04	<--	rich0 (~quassel@gentoo/developer/rich0) has quit (Remote host closed the connection)
+2016-09-20 12:34:28	-->	rich0 (~quassel@gentoo/developer/rich0) has joined #gentoo
+2016-09-20 12:34:28	--	Mode #gentoo [+v rich0] by ChanServ
+2016-09-20 12:34:40	-->	l1sk0v (~liskov@exit0.liskov.tor-relays.net) has joined #gentoo
+2016-09-20 12:35:53	<--	a3Dman (~3Dman@unaffiliated/a3dman) has quit (Ping timeout: 240 seconds)
+2016-09-20 12:36:56	-->	rich0_ (~quassel@gentoo/developer/rich0) has joined #gentoo
+2016-09-20 12:36:56	--	Mode #gentoo [+v rich0_] by ChanServ
+2016-09-20 12:38:31	-->	[Gentoo] (~Gentoo@2001:470:681e::dead) has joined #gentoo
+2016-09-20 12:38:35	<--	rich0 (~quassel@gentoo/developer/rich0) has quit (Ping timeout: 244 seconds)
+2016-09-20 12:39:25	-->	a3Dman (~3Dman@unaffiliated/a3dman) has joined #gentoo
+2016-09-20 12:41:44	[Gentoo]	hi recently I've been getting a thing where if I try to run some commands (such as man, sudo) I get operation not permitted
+2016-09-20 12:41:44		[12:41]
+2016-09-20 12:42:41	xpoint	maolang: you are out of mem in 2 places ?, well we can help later with it
+2016-09-20 12:42:44	<--	thinkpad (~thinkpad@bb219-75-15-144.singnet.com.sg) has quit (Max SendQ exceeded)
+2016-09-20 12:42:58	-->	larzen-home (~gregf@node-1w7jr9y87lsmcnqlzghp00yxz.ipv6.telus.net) has joined #gentoo
+2016-09-20 12:43:16	<--	jcjordyn120 (~jcjordyn1@unaffiliated/jcjordyn120) has quit (Remote host closed the connection)
+2016-09-20 12:43:27	xpoint	now i just need to solve PEP 440, what ever it is
+2016-09-20 12:43:31	[Gentoo]	qdot:
+2016-09-20 12:43:33	<--	[Gentoo] (~Gentoo@2001:470:681e::dead) has quit (Quit: WeeChat 1.6-rc1)
+2016-09-20 12:43:34	maolang	out of mem in 2 places.. well physical ram i am rarely under 18-19gb not free... and 24gb of pagefile
+2016-09-20 12:43:36	<--	pauloalvarez (~pauloalva@191.223.233.196) has quit (Read error: Connection reset by peer)
+2016-09-20 12:44:14	antranigv	maolang: for what are you using the ~20gb ram?
+2016-09-20 12:44:23	<--	psymin (~psymin@host-69-146-8-222.static.bresnan.net) has quit (Quit: Leaving)
+2016-09-20 12:44:35	<--	silverhom (~silverhom@c83-252-238-248.bredband.comhem.se) has quit (Quit: Leaving)
+2016-09-20 12:44:37	<--	hydrogen (~hydrogen@amarok/developer/hydrogen) has quit (Remote host closed the connection)
+2016-09-20 12:44:38	-->	poeticrpm (~poeticrpm@109.163.226.153) has joined #gentoo
+2016-09-20 12:45:04	-->	thinkpad (~thinkpad@bb219-75-15-144.singnet.com.sg) has joined #gentoo
+2016-09-20 12:45:17	maolang	its available, for stuff like VM's which now i can use properly with KVM since i ealier fixed the persistency it had that made it continuously swap and not using any avail ram...
+2016-09-20 12:45:51	<--	iflema (~ian@2001:8003:204c:c100:5627:1eff:fe6a:89ab) has quit (Quit: WeeChat 1.5)
+2016-09-20 12:46:20	maolang	i set some of it ofc has tmpfs
+2016-09-20 12:46:51	+iamben	coffee88: can you try with --autounmask=n? i think autounmask may be lying about the reason
+2016-09-20 12:47:48	loa	maolang, and what configuration you have?
+2016-09-20 12:47:57	loa	for what purpose you want use it?
+2016-09-20 12:48:05	loa	i want try this http://arseniyshestakov.com/2016/03/31/how-to-pass-gpu-to-vm-and-back-without-x-restart/
+2016-09-20 12:48:07	maolang	for kvm?
+2016-09-20 12:48:13	coffee88	iamben: trying that now.....
+2016-09-20 12:48:22	loa	but i have feeling that i will not succeed lol :D
+2016-09-20 12:48:37	maolang	that i cant yet since i am on a laptop
+2016-09-20 12:48:40	-->	pauloalvarez (~pauloalva@191.223.233.196) has joined #gentoo
+2016-09-20 12:48:49	antranigv	shit, I can't access my server :/
+2016-09-20 12:48:57	loa	i can try this in few minutes, but i am in fear that will not work.
+2016-09-20 12:49:06	antranigv	need to go to the data center tmrw to hard reset
+2016-09-20 12:49:31	loa	maolang, you know what prime is? how i need use it under gentoo?
+2016-09-20 12:49:40	loa	i thought it is some kind of daemon.
+2016-09-20 12:50:13	maolang	no sorry
+2016-09-20 12:50:27	<--	DeviantPeer (~kvirc@541E60B8.cm-5-7b.dynamic.ziggo.nl) has quit (Ping timeout: 276 seconds)
+2016-09-20 12:50:30	+iamben	antranigv: remember we have a clean language rule here in #gentoo
+2016-09-20 12:50:58	maolang	now for KVM/QEMU i got the right stuff in kernel and in gentoo itself, it works as i need it to :)
+2016-09-20 12:51:13	antranigv	iamben: oh, sorry, didn't excpect *that* clean :/
+2016-09-20 12:51:25	loa	maolang, i mean for what purpose you use your vm?
+2016-09-20 12:51:32	-->	gentoo_live (~gentoo@216.120.209.7) has joined #gentoo
+2016-09-20 12:51:39	maolang	running windows mostly
+2016-09-20 12:52:00	loa	it is with passthrough?
+2016-09-20 12:52:04	maolang	antranigv: try instead when you get emotional 'holy Popeye'!
+2016-09-20 12:52:04	<--	l1sk0v (~liskov@exit0.liskov.tor-relays.net) has left #gentoo
+2016-09-20 12:52:17	<--	gentoo_live (~gentoo@216.120.209.7) has quit (Client Quit)
+2016-09-20 12:52:20	maolang	no loa, i am on laptop, only one video card...
+2016-09-20 12:52:33	loa	oh, ok.
+2016-09-20 12:53:05	<--	Kryptron_ (~Kryptron@unaffiliated/kryptron) has quit (Ping timeout: 260 seconds)
+2016-09-20 12:53:13	-->	hasues (~hasues@204.78.58.43) has joined #gentoo
+2016-09-20 12:53:16	<--	hasues (~hasues@204.78.58.43) has left #gentoo
+2016-09-20 12:53:40	<--	m0n0lith|zZz (~mono@dyndsl-092-252-023-101.ewe-ip-backbone.de) has quit (Ping timeout: 260 seconds)
+2016-09-20 12:53:46	<--	hawkandbaby (~hawkandba@d50-115-191-200.commercial1.cgocable.net) has quit (Ping timeout: 265 seconds)
+2016-09-20 12:54:16	-->	jcjordyn120-andr (~jcjordyn1@2602:302:d115:9450:74fb:e9dd:b6be:e94a) has joined #gentoo
+2016-09-20 12:54:29	<--	bizarro_1 (~bizarro_1@103.red-83-49-8.dynamicip.rima-tde.net) has quit (Quit: Leaving)
+2016-09-20 12:55:00	<--	CrustY_ (~crusty@93.84.52.169) has quit (Quit: Konversation terminated!)
+2016-09-20 12:55:30	<--	koracain (~korain@unaffiliated/korain) has quit (Quit: koracain)
+2016-09-20 12:55:40	maolang	it would be really to run some windows office apps and games which otherwise would not run under linux, but as for games 3 of the games i would play more until now i can here in gentoo, are running though wine as good as if they had been under windows...
+2016-09-20 12:56:53	<--	Nahra (~user@unaffiliated/nahra) has quit (Quit: ERC (IRC client for Emacs 24.5.1))
+2016-09-20 12:56:53		[12:56]
+2016-09-20 12:58:24	<--	mguillech (~mguillech@host184.201-252-170.telecom.net.ar) has quit (Read error: Connection reset by peer)
+2016-09-20 12:58:35	maolang	for KVM/QEMU i had lots of pieces and questions and lots of missing parts whichi finished sorting though after finding a very nice fedora page on the subject that finished plugging rest of those missing pieces
+2016-09-20 12:58:45	maolang	very intsresting read...
+2016-09-20 12:58:52	-->	mguillech (~mguillech@host184.201-252-170.telecom.net.ar) has joined #gentoo
+2016-09-20 12:59:09	maolang	https://fedoraproject.org/wiki/How_to_debug_Virtualization_problems
+2016-09-20 12:59:11	coffee88	iamben: still the same, but maybe a hint here https://dpaste.de/2bwU is dev-python/pyusb-1.0.0_beta1::gentoo the problem child?
+2016-09-20 13:00:38	<--	antranigv (~antranigv@141.136.77.142) has quit (Quit: leaving)
+2016-09-20 13:00:55	maolang	loa: and this sibgle command helped plug the missing parts i did not have --> virt-host-validate
+2016-09-20 13:00:55	<--	ketas (~ketas@200-62-46-176.dyn.estpak.ee) has quit (Read error: Connection reset by peer)
+2016-09-20 13:01:23	-->	bootkiller (~bootkille@a89-154-162-166.cpe.netcabo.pt) has joined #gentoo
+2016-09-20 13:01:34	loa	maolang, i have working configuration already
+2016-09-20 13:02:35	maolang	once i had those --> http://dpaste.com/2YHA6DH plus the user / group and one more aspect on that page set, then i was set 100% functional
+2016-09-20 13:04:25	<--	loriot (~tro0o0on@dslb-188-105-227-180.188.105.pools.vodafone-ip.de) has quit (Quit: Leaving.)
+2016-09-20 13:05:33	<--	koldbrutality (~koldbruta@108-90-227-153.lightspeed.sndgca.sbcglobal.net) has quit (Ping timeout: 240 seconds)
+2016-09-20 13:05:43	-->	jtriley (~jtriley@209-6-38-104.c3-0.smr-ubr2.sbo-smr.ma.cable.rcn.com) has joined #gentoo
+2016-09-20 13:05:46	loa	maolang, most problems i had with input devices, usb devices, hdd devices :D
+2016-09-20 13:06:19	-->	ketas (~ketas@200-62-46-176.dyn.estpak.ee) has joined #gentoo
+2016-09-20 13:06:29	<--	Skunky (skunky@unaffiliated/skunky) has quit (Remote host closed the connection)
+2016-09-20 13:06:46	loa	maolang, you use uefi?
+2016-09-20 13:06:55	+iamben	coffee88: yeah it's to blame, i wonder why it's not pulled in for upgrade at all
+2016-09-20 13:06:58	maolang	not in kvm yet no
+2016-09-20 13:07:01	loa	you know how i can get those firmwares for uefi?
+2016-09-20 13:07:12	+iamben	try adding it to the emerge list explicitly i guess
+2016-09-20 13:07:12	<--	jcjordyn120-andr (~jcjordyn1@2602:302:d115:9450:74fb:e9dd:b6be:e94a) has quit (Disconnected by services)
+2016-09-20 13:07:12	loa	ok.
+2016-09-20 13:07:26	-->	jcjordyn120-andr (~jcjordyn1@2602:302:d115:9450:74fb:e9dd:b6be:e94a) has joined #gentoo
+2016-09-20 13:07:32	<--	jcjordyn120-andr (~jcjordyn1@2602:302:d115:9450:74fb:e9dd:b6be:e94a) has quit (Client Quit)
+2016-09-20 13:07:43	maolang	a project for another time loa, i use this frontend for kvm, pretty darn nice --> app-emulation/aqemu
+2016-09-20 13:07:44	coffee88	iamben: changed the keywording to the base package, not the specific version. I'll see if that fixes it.
+2016-09-20 13:07:50	-->	veXx (~veXx@unaffiliated/vexx) has joined #gentoo
+2016-09-20 13:08:36	maolang	coffee88: is your list of blocks getting smaller each new emerge try you do?
+2016-09-20 13:08:38	-->	koldbrutality (~koldbruta@108-90-227-153.lightspeed.sndgca.sbcglobal.net) has joined #gentoo
+2016-09-20 13:08:58	+iamben	ah, all new versions were masked, that'd do it
+2016-09-20 13:09:11	coffee88	maolang: I think so. with the help of bdeps bit,,,
+2016-09-20 13:09:17	<--	hurikhan77 (~kakra@2a02:8109:19c0:14c8:225:22ff:fee6:c90b) has quit (Ping timeout: 265 seconds)
+2016-09-20 13:09:48	maolang	nothing like this to learn how to solve the problem and learn how to read the stuff emerge tells you...
+2016-09-20 13:10:01	coffee88	iamben: maolang and we're away with the emerge finally! thanks for the help/patience!
+2016-09-20 13:10:23	coffee88	only 360 packages to go....
+2016-09-20 13:10:39	maolang	coffee88: dont forget to use this on your line with such a large emerge wont hurt... --> --keep-going
+2016-09-20 13:11:05	coffee88	maolang: thanks for the tip
+2016-09-20 13:11:18	maolang	if something fails along the way it will continue and at the end you do get a list of what did not go through
+2016-09-20 13:11:46	maolang	at least you deal with the fat first and later deal with the leftovers...
+2016-09-20 13:12:16	-->	Skunky (~skunky@unaffiliated/skunky) has joined #gentoo
+2016-09-20 13:12:16		[13:12]
+2016-09-20 13:12:51	maolang	if any are to be dealt with...
+2016-09-20 13:13:22	<--	trumee (~trumee@c-73-155-87-64.hsd1.tx.comcast.net) has quit (Quit: ZNC 1.6.1 - http://znc.in)
+2016-09-20 13:13:33	xpoint	can anyone verify any errors i did dspam-milter-9999::fidonet
+2016-09-20 13:13:57	xpoint	buildpkgonly dont complain
+2016-09-20 13:14:09	xpoint	repoman is happy
+2016-09-20 13:14:52	maolang	xpoint i am scared its got '9999' in its name :)
+2016-09-20 13:14:56	xpoint	yes i know i possible miss dependice for dspam, but that is a easy fix
+2016-09-20 13:15:04	<--	fefelix2 (~fefe@x5d824e95.dyn.telefonica.de) has quit (Remote host closed the connection)
+2016-09-20 13:15:15	-->	wonsonwin (~NEWMATIC@securitykiss4.kylos.net.pl) has joined #gentoo
+2016-09-20 13:15:24	wonsonwin	It's not nice to wake up and understand we have been lied to our whole life.
+2016-09-20 13:15:25	tdr	maolang, means its a live build, doesn't actually mean its on fire
+2016-09-20 13:15:41	tdr	wonsonwin, then you should avoid IT
+2016-09-20 13:15:41	maolang	i know :)
+2016-09-20 13:16:08	wonsonwin	I have study holocaust for about ten years , and believe me , the gas chamber is a straight forward lie !
+2016-09-20 13:16:19	-->	owenthewizard (4672a164@gateway/web/freenode/ip.70.114.161.100) has joined #gentoo
+2016-09-20 13:16:23	tdr	wonsonwin, very off topic here, ever.
+2016-09-20 13:16:29	xpoint	maolang:  https://github.com/whyscream/dspam-milter here is the source
+2016-09-20 13:16:46	-->	zread (~zread@pcd663245.netvigator.com) has joined #gentoo
+2016-09-20 13:16:48	wonsonwin	https://www.youtube.com/watch?v=_TePORVgns4
+2016-09-20 13:16:50	wonsonwin	PART 19 - 20 - TORTURE / NUREMBERG TRIALS - Dennis Wise on The Greatest Story NEVER Told
+2016-09-20 13:16:56	<--	iik (~IIK@staticline-31-183-46-69.toya.net.pl) has quit (Ping timeout: 265 seconds)
+2016-09-20 13:16:58	--	Mode #gentoo [+o iamben] by ChanServ
+2016-09-20 13:17:01	--	Mode #gentoo [+b *!*@securitykiss4.kylos.net.pl] by iamben
+2016-09-20 13:17:01	<--	iamben has kicked wonsonwin (wonsonwin)
+2016-09-20 13:17:05	maolang	iamben: get your hammer....
+2016-09-20 13:17:49	<--	bobwya (~quassel@host-92-11-33-213.as43234.net) has quit (Ping timeout: 244 seconds)
+2016-09-20 13:18:00	-->	hurikhan77 (~kakra@2a02:8109:1ec0:43d4:225:22ff:fee6:c90b) has joined #gentoo
+2016-09-20 13:18:08	owenthewizard	grkinght: I fixed my issues with suspend and shutdown and such, turns out the pam useflag is basically required.
+2016-09-20 13:18:08	-->	girlsox (~french@192.71.249.200) has joined #gentoo
+2016-09-20 13:18:42	owenthewizard	grknight i mean
+2016-09-20 13:18:52	<--	Kelzier (~duka@109.121.58.206) has quit (Remote host closed the connection)
+2016-09-20 13:19:22	maolang	got those sorted as well, sleep, hybryd, hybernate, hybryd etc all good now
+2016-09-20 13:19:56	owenthewizard	:)
+2016-09-20 13:20:05	maolang	with no hardware not waking up or dying etc
+2016-09-20 13:20:51	owenthewizard	afaik I won't be able to get hibernate working as I use an encrypted swap device
+2016-09-20 13:20:56	girlsox	"You're working for the Jews." LOL. We're all working for the Jews. What about it?
+2016-09-20 13:21:01	<--	dev1990 (~dev@77-254-61-211.adsl.inetia.pl) has quit (Read error: Connection reset by peer)
+2016-09-20 13:21:07	owenthewizard	but I don't really use hibernate anyway
+2016-09-20 13:21:10	maolang	you can sleep thoughN
+2016-09-20 13:21:14	<--	girlsox (~french@192.71.249.200) has quit (Client Quit)
+2016-09-20 13:21:16	owenthewizard	yeah, sleep works
+2016-09-20 13:21:27	maolang	cause memory and os is still active
+2016-09-20 13:21:40	owenthewizard	indeed
+2016-09-20 13:21:56	<--	don_quixote (~don_quixo@80.89-10-153.nextgentel.com) has quit (Read error: Connection reset by peer)
+2016-09-20 13:21:59	-->	crystalmah (~pristine@217.115.113.137) has joined #gentoo
+2016-09-20 13:22:03	<--	latenite (~latenite@p5B375AF9.dip0.t-ipconnect.de) has quit (Ping timeout: 240 seconds)
+2016-09-20 13:22:12	maolang	i did get LUKS working but not booted from only encrypted data HD's, perfectly fine
+2016-09-20 13:22:36	maolang	works great with AES-NI flag taken into account for cpu supports etc
+2016-09-20 13:22:47	owenthewizard	iirc there's a way to get full disk encryption (as in no unencrypted /boot) with grub
+2016-09-20 13:23:05	maolang	you need to have something booting thats not encrypted
+2016-09-20 13:23:11	crystalmah	maolang, AES-NI is backdoored.
+2016-09-20 13:23:12	-->	latenite (~latenite@p5B375A47.dip0.t-ipconnect.de) has joined #gentoo
+2016-09-20 13:23:13	maolang	 /boot at the very least
+2016-09-20 13:23:21	crystalmah	maolang, You shouldn't use it.
+2016-09-20 13:23:41	owenthewizard	you can do it w/out an encrypted /boot with LibreBoot and grub, idk if there was another way
+2016-09-20 13:23:43	maolang	i am not protecting against nsa, its just against casual theft etc
+2016-09-20 13:23:50	sheep	crystalmah: how do you know it's backdoored?
+2016-09-20 13:23:59	owenthewizard	^
+2016-09-20 13:24:21	maolang	he wrote the door code...
+2016-09-20 13:24:24	owenthewizard	sheep: username checks out
+2016-09-20 13:24:30	crystalmah	sheep, http://www.renegadebroadcasting.com/solar-storm-blackbird9-semitic-spying-operations-9-18-16/
+2016-09-20 13:25:11	sheep	crystalmah: got a timestamp? I don't have time to listen to the whole thing
+2016-09-20 13:25:19	owenthewizard	crystalmah: is this another anti-jew thing?
+2016-09-20 13:25:19	 *	maolang passes Negan's Lucille to iamben 
+2016-09-20 13:25:44	crystalmah	sheep, Then read the top-rated comment with 18 likes.
+2016-09-20 13:25:45	<--	tomtix (~tomtix@2a01:e35:8bc0:8af0:323a:64ff:fe12:2d57) has quit (Remote host closed the connection)
+2016-09-20 13:26:12	-->	Judge_Dredd (~Judge_Dre@unaffiliated/judge-dredd/x-2170742) has joined #gentoo
+2016-09-20 13:26:43	crystalmah	You're pretty delusional trusting Intel with your encryption.
+2016-09-20 13:26:51	-->	don_quixote (~don_quixo@89.10.153.80) has joined #gentoo
+2016-09-20 13:27:21	sheep	until I see something from an actual cryptographer who isn't trying to push an angenda I'm not believing it
+2016-09-20 13:27:21		[13:27]
+2016-09-20 13:27:22	crystalmah	I consider AES-NI children's encryption. It looks and works like the real thing.
+2016-09-20 13:28:27	crystalmah	sheep, Intel is like Google.
+2016-09-20 13:28:37	owenthewizard	sheep: damn straight
+2016-09-20 13:28:41	<--	Amanas (~Amanas@cpe-2606-A000-43C6-C900-FDDA-12D7-DC9E-FBA4.dyn6.twc.com) has quit (Ping timeout: 248 seconds)
+2016-09-20 13:28:45	sheep	and watermelons are like eggplantsa
+2016-09-20 13:29:31	-->	iik (~IIK@staticline-31-183-46-69.toya.net.pl) has joined #gentoo
+2016-09-20 13:30:14	owenthewizard	anyone know how I can compile a package (e.x. busybox) with specified useflags but not install it? I know about ebuild $ebuild compile but how do I specify my useflags
+2016-09-20 13:30:56	<--	iik (~IIK@staticline-31-183-46-69.toya.net.pl) has quit (Max SendQ exceeded)
+2016-09-20 13:30:58	sheep	what happens when you try doing it the same way you do for emerge?
+2016-09-20 13:30:58	-->	Amanas (~Amanas@cpe-2606-A000-43C6-C900-946F-EF78-14A4-7E2E.dyn6.twc.com) has joined #gentoo
+2016-09-20 13:31:01	maolang	owenthewizard: there is a --buildonly command
+2016-09-20 13:31:27	-->	iik (~IIK@staticline-31-183-46-69.toya.net.pl) has joined #gentoo
+2016-09-20 13:31:41	maolang	you can use with emerge
+2016-09-20 13:31:49	xpoint	maolang: --buildpkgonly imho or is both ?
+2016-09-20 13:32:15	maolang	something like this, check the man on emerge you wil find it rigth away
+2016-09-20 13:32:29	xpoint	+1
+2016-09-20 13:32:48	owenthewizard	emerge man page says --buildpkgonly or -b
+2016-09-20 13:32:57	owenthewizard	-B*
+2016-09-20 13:32:59	owenthewizard	capital
+2016-09-20 13:33:05	<--	crystalmah (~pristine@217.115.113.137) has quit (Ping timeout: 240 seconds)
+2016-09-20 13:33:12	maolang	ill do you an easy one hehe --> man emerge | grep -i pkg
+2016-09-20 13:33:20	owenthewizard	-b builds and installs it
+2016-09-20 13:33:39	owenthewizard	i goofed up a bit
+2016-09-20 13:33:45	maolang	-B
+2016-09-20 13:33:47	-->	trumee (~trumee@c-73-155-87-64.hsd1.tx.comcast.net) has joined #gentoo
+2016-09-20 13:33:50	-->	Cheyenne (~Cheyenne@97-122-203-25.hlrn.qwest.net) has joined #gentoo
+2016-09-20 13:34:49	maolang	i have defaults set to build binpackages, so everything i emerge is also built and its set to make different builds if uses changes
+2016-09-20 13:35:30	maolang	i have my dist / bin folder on a seperate partition
+2016-09-20 13:35:49	<--	EvilPeng1 (~EvilPengu@bur-inet-pa-4.disney.com) has quit (Read error: Connection reset by peer)
+2016-09-20 13:36:21	<--	jtriley (~jtriley@209-6-38-104.c3-0.smr-ubr2.sbo-smr.ma.cable.rcn.com) has quit (Ping timeout: 265 seconds)
+2016-09-20 13:36:28	<--	coffee88 (~mike@unaffiliated/coffee88) has quit (Quit: leaving)
+2016-09-20 13:36:32	-->	Q-Chymera (~chymera@77-57-120-129.dclient.hispeed.ch) has joined #gentoo
+2016-09-20 13:36:36	-->	PichuChen (~PichuChen@2001:b011:30e0:1851:ec15:534c:6538:63a2) has joined #gentoo
+2016-09-20 13:36:41	maolang	comes in real handy if something i have trouble emerging etc, i simply unmerge etc if needed to try if no difference easily reemerge the right bin  package without rebuilding for nothing
+2016-09-20 13:39:22	-->	EvilPeng1 (~EvilPengu@bur-inet-pa-4.disney.com) has joined #gentoo
+2016-09-20 13:40:14	<--	SebastianFlyte (~sebf@pool-108-48-93-213.washdc.fios.verizon.net) has quit (Quit: Leaving)
+2016-09-20 13:40:14	Cheyenne	Question concerning setting PYTHON_SINGLE_TARGET for one specific package.  Where in /etc/portage would I do this?
+2016-09-20 13:40:44	owenthewizard	Cheyenne: not sure if it's correct but I have it in make.conf
+2016-09-20 13:40:51	maolang	ive installed and configured 3 gentoos like this for some friends in under 2 hours each from my custom built stage5 to full gnome, chromium, libre office, installed, networking, display etc
+2016-09-20 13:40:57	<--	PichuChen (~PichuChen@2001:b011:30e0:1851:ec15:534c:6538:63a2) has quit (Ping timeout: 248 seconds)
+2016-09-20 13:41:12	xpoint	Cheyenne: its should be done in the ebuild imho
+2016-09-20 13:41:13	-->	SebastianFlyte (~sebf@pool-108-48-93-213.washdc.fios.verizon.net) has joined #gentoo
+2016-09-20 13:41:19	Cheyenne	make.conf is "global".  I want to set it for just one package

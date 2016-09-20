@@ -12,6 +12,7 @@ alias ohmyzsh='pushd ${ZSH} '
 
 ## Custom aliases
 
+alias sefi="sed 's@/boot/@EFI/arch/@g' /boot/refind_linux.conf | sudo tee /boot/efi/EFI/arch/refind_linux.conf "
 alias vrc='sudo vim /etc/vimrc '
 alias cm='chromium '
 alias tm='tmux '
@@ -172,22 +173,29 @@ alias nld64='ld -m elf_x86_64 '
 alias sld='ld -s -I/lib64/ld-linux-x86-64.so.2 /usr/lib/crt1.o /usr/lib/crti.o -lc /usr/lib/crtn.o '
 alias ald='ld -I/lib64/ld-linux-x86-64.so.2 /usr/lib/crt1.o /usr/lib/crti.o -lc /usr/lib/crtn.o '
 
-## New shell functions
+## shell functions
+
 kvm() {
-	#qemu-system-x86_64 -cdrom ~/sdxc/install-amd64-minimal-20160915.iso -boot order=d -drive file=/@media/backup/gentoo.cow,format=qcow2 -enable-kvm -m 512 -net nic -net bridge,br=virbr0
+	local format
+	format="${1##*.}"
+	#format="${format/cow/qcow2}"
 	[[ -z "$2" ]] &&
-		qemu-system-x86_64 -boot order=d -drive file="${1?No image specified!}",format="${1/*cow/qcow2}" -enable-kvm \
-			-m "${3:-512}" -net nic -net bridge,br=virbr0 ||
-		qemu-system-x86_64 -cdrom "${2}" -boot order=d -drive file="${1?No image specified!}",format="${1/*cow/qcow2}" -enable-kvm \
-			-m "${3:-512}" -net nic -net bridge,br=virbr0
+		qemu-system-x86_64 -boot menu=on -drive file="${1?No image specified!}",format="${format/cow/qcow2}" -enable-kvm \
+			-m "${3:-2048}" -net nic -net bridge,br=virbr0 ||
+		qemu-system-x86_64 -cdrom "${2}" -boot menu=on -drive file="${1?No image specified!}",format="${format/cow/qcow2}" -enable-kvm \
+	#qemu-system-x86_64 -cdrom ~/sdxc/install-amd64-minimal-20160915.iso -boot order=d -drive file=/@media/backup/gentoo.cow,format=qcow2 -enable-kvm -m 512 -net nic -net bridge,br=virbr0
+			-m "${3:-2048}" -net nic -net bridge,br=virbr0
 }
 ovmf-kvm() {
-	#qemu-system-x86_64 -cdrom ~/sdxc/install-amd64-minimal-20160915.iso -boot order=d -drive file=/@media/backup/gentoo.cow,format=qcow2 -enable-kvm -m 512 -net nic -net bridge,br=virbr0
+	local format
+	format="${1##*.}"
+	#format="${format/cow/qcow2}"
 	[[ -z "$2" ]] &&
-		qemu-system-x86_64 -boot order=d -drive file="${1?No image specified!}",format="${1/*cow/qcow2}" -enable-kvm \
-			-m "${3:-512}" -net nic -net bridge,br=virbr0 -bios "${HOME}/ovmf_x64.bin" ||
-		qemu-system-x86_64 -cdrom "${2}" -boot order=d -drive file="${1?No image specified!}",format="${1/*cow/qcow2}" -enable-kvm \
-			-m "${3:-512}" -net nic -net bridge,br=virbr0 -bios "${HOME}/ovmf_x64.bin"
+		qemu-system-x86_64 -boot menu=on -drive file="${1?No image specified!}",format="${format/cow/qcow2}" -enable-kvm \
+			-m "${3:-2048}" -net nic -net bridge,br=virbr0 -bios "${HOME}/ovmf_x64.bin" ||
+		qemu-system-x86_64 -cdrom "${2}" -boot menu=on -drive file="${1?No image specified!}",format="${format/cow/qcow2}" -enable-kvm \
+			-m "${3:-2048}" -net nic -net bridge,br=virbr0 -bios "${HOME}/ovmf_x64.bin"
+	#qemu-system-x86_64 -cdrom ~/sdxc/install-amd64-minimal-20160915.iso -boot menu=on -drive file=/@media/backup/gentoo.cow,format=qcow2 -enable-kvm -m 2048 -net nic -net bridge,br=virbr0
 }
 csox() { sox "$1" -C ${3:-10} "${1/wav/${2}}"; }
 gif() { ffmpeg -i "${1:?Error, no input file specified!}" "${2:-${1/.*/.gif}}" -threads 0; }
@@ -368,34 +376,34 @@ dbr() {
 			rmdir "/@media/microSDXC/audio/${REPLY}"
 		done
 	find /@media/microSDXC/audio -maxdepth 1 -name "*alyptik*" -type d -print | \
-		sed 's/^.*\/alyptik - \(.*\)$/\1/' | while read -r; do
-                rclone lsd "dropbox:/edm/audio/$(<<<${REPLY:l} sed 's/ (.*//')" 2>/dev/null && \
-			printf '\n \033[31m %s \n\033[0m' \
-				"Directory dropbox:/edm/audio/$(<<<${REPLY/*- /} \
-				sed 's/./\l&/g;s/ (.*//') exists!" || \
-			rclone move "/@media/microSDXC/audio/alyptik - ${REPLY}" \
-				"dropbox:/edm/audio/$(<<<${REPLY/*- /} \
-				sed 's/./\l&/g;s/ (.*//')" && \
-				rmdir "/@media/microSDXC/audio/alyptik - ${REPLY}"
-
+		sed 's/^.*\/alyptik - \(.*\)$/\1/' | \
+		while read -r; do
+			rclone lsd "dropbox:/edm/audio/$(<<<${REPLY:l} sed 's/ (.*//')" 2>/dev/null && \
+				printf '\n \033[31m %s \n\033[0m' \
+					"Directory dropbox:/edm/audio/$(<<<${REPLY/*- /} \
+					sed 's/./\l&/g;s/ (.*//') exists!" || \
+			    rclone move "/@media/microSDXC/audio/alyptik - ${REPLY}" \
+				    "dropbox:/edm/audio/$(<<<${REPLY/*- /} \
+				    sed 's/./\l&/g;s/ (.*//')" && \
+				    rmdir "/@media/microSDXC/audio/alyptik - ${REPLY}"
 		done
 	find /@media/microSDXC/wanderlust -maxdepth 1 -name "*Wanderlust Ep.*" -type d -print | \
 		while read -r; do
         		rclone move "$REPLY" \
 				'dropbox:/edm/wanderlust/'"${REPLY/*wanderlust\//}"  && \
 				rmdir "${REPLY}"
-	done
-
+		done
 	find /@media/microSDXC/wanderlust -maxdepth 1 -name "*alyptik*" -type d -print | \
-		sed 's/^.*\/alyptik - \(.*\)$/\1/' | while read -r; do
-                rclone lsd "dropbox:/edm/wanderlust/$(<<<${REPLY:l} sed 's/ (.*//')" 2>/dev/null && \
-			printf '\n \033[31m %s \n\033[0m' \
-				"Directory dropbox:/edm/wanderlust/$(<<<${REPLY/*- /} \
-				sed 's/./\l&/g;s/ (.*//') exists!" || \
-			rclone move "/@media/microSDXC/wanderlust/alyptik - ${REPLY}" \
-				"dropbox:/edm/wanderlust/$(<<<${REPLY/*- /} \
-				sed 's/./\l&/g;s/ (.*//')" && \
-				rmdir "/@media/microSDXC/wanderlust/alyptik - ${REPLY}"
+		sed 's/^.*\/alyptik - \(.*\)$/\1/' | \
+		while read -r; do
+		    rclone lsd "dropbox:/edm/wanderlust/$(<<<${REPLY:l} sed 's/ (.*//')" 2>/dev/null && {
+			    printf '\n \033[31m %s \n\033[0m' \
+				    "Directory dropbox:/edm/wanderlust/$(<<<${REPLY/*- /} \
+				    sed 's/./\l&/g;s/ (.*//') exists!"; } || {
+			    rclone move "/@media/microSDXC/wanderlust/alyptik - ${REPLY}" \
+				    "dropbox:/edm/wanderlust/$(<<<${REPLY/*- /} \
+				    sed 's/./\l&/g;s/ (.*//')" && \
+				    rmdir "/@media/microSDXC/wanderlust/alyptik - ${REPLY}"; }
 		done
 	#rclone sync /@media/microSDXC/audio/ dropbox:/EDM/audio/
 	rclone sync "/@media/microSDXC/Music/djzomg/" "dropbox:/EDM/djzomg/"
