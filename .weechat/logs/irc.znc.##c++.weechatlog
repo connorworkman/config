@@ -11604,3 +11604,1029 @@
 2016-09-19 20:15:14	-->	kw01f (~kw01f@merlin.mvtec.com) has joined ##c++
 2016-09-19 20:15:15	-->	josef_k (~Jeremy@210-10-222-98.mel.static-ipl.aapt.com.au) has joined ##c++
 2016-09-19 20:15:20	-->	ferdna (~ferdna@cpe-69-23-141-130.elp.res.rr.com) has joined ##c++
+2016-09-19 20:16:32	josef_k	Is arithmetic with bool values effectively integer arithmetic modulo 2? Or am I in for a surprise?
+2016-09-19 20:17:10	-->	Biokee (~BioKey@2a02:1205:506f:db70:c50a:d526:7dbd:b43) has joined ##c++
+2016-09-19 20:17:11	<--	Biokee (~BioKey@2a02:1205:506f:db70:c50a:d526:7dbd:b43) has quit (Max SendQ exceeded)
+2016-09-19 20:17:18	josef_k	{bool(0) - bool(1);}
+2016-09-19 20:17:19	geordi	<no output>
+2016-09-19 20:17:36	-->	Guest24686 (~BioKey@2a02:1205:506f:db70:c50a:d526:7dbd:b43) has joined ##c++
+2016-09-19 20:17:37	<--	Guest24686 (~BioKey@2a02:1205:506f:db70:c50a:d526:7dbd:b43) has quit (Max SendQ exceeded)
+2016-09-19 20:18:04	-->	Guest24686 (~BioKey@2a02:1205:506f:db70:c50a:d526:7dbd:b43) has joined ##c++
+2016-09-19 20:18:04	<--	Guest24686 (~BioKey@2a02:1205:506f:db70:c50a:d526:7dbd:b43) has quit (Max SendQ exceeded)
+2016-09-19 20:18:20	josef_k	<< bool(0) - bool(1);
+2016-09-19 20:18:21	geordi	-1
+2016-09-19 20:18:29	-->	Guest24686 (~BioKey@2a02:1205:506f:db70:c50a:d526:7dbd:b43) has joined ##c++
+2016-09-19 20:18:30	<--	Guest24686 (~BioKey@2a02:1205:506f:db70:c50a:d526:7dbd:b43) has quit (Max SendQ exceeded)
+2016-09-19 20:18:35	josef_k	<< bool(bool(0) - bool(1));
+2016-09-19 20:18:36	geordi	true
+2016-09-19 20:18:56	-->	Guest24686 (~BioKey@2a02:1205:506f:db70:c50a:d526:7dbd:b43) has joined ##c++
+2016-09-19 20:18:57	<--	Guest24686 (~BioKey@2a02:1205:506f:db70:c50a:d526:7dbd:b43) has quit (Max SendQ exceeded)
+2016-09-19 20:19:21	-->	Guest24686 (~BioKey@2a02:1205:506f:db70:c50a:d526:7dbd:b43) has joined ##c++
+2016-09-19 20:19:26	josef_k	Or rather, unsigned integer arithmetic modulo 2.
+2016-09-19 20:19:32	-->	funfunctor (~edward@203.44.10.68) has joined ##c++
+2016-09-19 20:19:40	-->	symm- (~symm-@86.127.152.32) has joined ##c++
+2016-09-19 20:20:38	funfunctor	Hi, quick question. Suppose I have a constructor to a class X that takes (Queue<IDeckLinkVideoInputFrame* >& q) as the argument and I wish to use 'q' as local state, what type should my private be?
+2016-09-19 20:21:35	<--	Saitama (~ShadowMas@112.215.173.93) has quit (Quit: .)
+2016-09-19 20:21:42	funfunctor	I thought it would be, Queue<IDeckLinkVideoInputFrame* >* local_q;  and this->local_q = q;  in my constructor but apparently not?
+2016-09-19 20:22:13	Kuukunen	josef_k: nah, pretty sure the bools are always promoted
+2016-09-19 20:22:24	-->	nullfxn (~nullFxn@107-147-108-164.res.bhn.net) has joined ##c++
+2016-09-19 20:22:24	-->	AquaL1te (~AquaL1te@unaffiliated/aqual1te) has joined ##c++
+2016-09-19 20:22:47	Kuukunen	if you start doing arithmetic
+2016-09-19 20:23:21	josef_k	Kuukunen: Yeah. Dang.
+2016-09-19 20:24:18	josef_k	Kuukunen: But I think it is effectively modulo 2 if the result is cast to a bool each time.
+2016-09-19 20:24:25	Kuukunen	josef_k: nah
+2016-09-19 20:24:41	Kuukunen	<< bool(bool(1) + bool(1))
+2016-09-19 20:24:41	geordi	true
+2016-09-19 20:24:51	-->	DingoSaar_ (~hagen@pD9E095FB.dip0.t-ipconnect.de) has joined ##c++
+2016-09-19 20:24:52	Kuukunen	josef_k: 0 is false, everything else is true
+2016-09-19 20:24:58	josef_k	hah, what was I thinking.
+2016-09-19 20:25:29	-->	firstdayonthejob (~firstdayo@cpc99346-croy26-2-0-cust153.19-2.cable.virginm.net) has joined ##c++
+2016-09-19 20:26:06	josef_k	Fortunately, my use case only has subtraction.
+2016-09-19 20:26:27	josef_k	So I think I'm safe.
+2016-09-19 20:26:29	<--	Pseudocrat (~quassel@unaffiliated/pseudocrat) has quit (Remote host closed the connection)
+2016-09-19 20:26:39	-->	jablo (~jablo@80.243.123.111) has joined ##c++
+2016-09-19 20:27:17	<--	Appleman1234 (~Appleman1@KD119104047049.au-net.ne.jp) has quit (Ping timeout: 265 seconds)
+2016-09-19 20:28:03	<--	DingoSaar (~hagen@pD9E08566.dip0.t-ipconnect.de) has quit (Ping timeout: 240 seconds)
+2016-09-19 20:29:22	-->	seishun (~Kakera@78.84.135.235) has joined ##c++
+2016-09-19 20:29:22		[20:29]
+2016-09-19 20:29:52	-->	pheenx (~pheenx@2a02:8071:b68a:1c00:225:22ff:fee7:7dc5) has joined ##c++
+2016-09-19 20:30:43	Kuukunen	josef_k: but... subtracting a single bool from another is just a xor :V
+2016-09-19 20:30:59	urdh	funfunctor, types must be the same, you can't assign a T to a T*
+2016-09-19 20:31:04	cbreak	subtraction with bool sounds idiotic.
+2016-09-19 20:31:06	Kuukunen	except you have to do a conversion back
+2016-09-19 20:31:12	Kuukunen	and it's silly
+2016-09-19 20:31:51	urdh	funfunctor, and you should use initializer lists with the constructor if possible
+2016-09-19 20:31:59	<--	SunnyD (~SunnyD@cpe-72-178-78-211.hot.res.rr.com) has quit (Quit: ChatZilla 0.9.90.1 [Firefox 30.0/20140605174243])
+2016-09-19 20:32:03	Kuukunen	josef_k: or well actually... bool a = bool(b - c); is the same as bool a = b != c;
+2016-09-19 20:33:20	RokerHRO	-.-
+2016-09-19 20:34:25	<--	systemfault (~rcyr@unaffiliated/rcyr) has quit (Quit: Bye!)
+2016-09-19 20:34:26	-->	fedepad (~fedepad@p4FE1264E.dip0.t-ipconnect.de) has joined ##c++
+2016-09-19 20:34:46	-->	kimundi (~Kimundi@p57BC65CB.dip0.t-ipconnect.de) has joined ##c++
+2016-09-19 20:35:08	<--	Guest24686 (~BioKey@2a02:1205:506f:db70:c50a:d526:7dbd:b43) has quit (Quit: Leaving)
+2016-09-19 20:35:30	-->	BioKey (~BioKey@2a02:1205:506f:db70:c50a:d526:7dbd:b43) has joined ##c++
+2016-09-19 20:35:44	w3z	<<(false-true)
+2016-09-19 20:36:00	geordi	-1
+2016-09-19 20:36:01	w3z	wake up gerodi ...
+2016-09-19 20:36:04	-->	calincru (~calin@c-73-231-85-3.hsd1.ca.comcast.net) has joined ##c++
+2016-09-19 20:36:10	w3z	geordi, slow poke
+2016-09-19 20:36:10	geordi	error: 'slow' does not name a type; did you mean 'pow'? (fix known)
+2016-09-19 20:36:31	<--	calincru (~calin@c-73-231-85-3.hsd1.ca.comcast.net) has quit (Read error: Connection reset by peer)
+2016-09-19 20:36:33	<--	firstdayonthejob (~firstdayo@cpc99346-croy26-2-0-cust153.19-2.cable.virginm.net) has quit (Ping timeout: 240 seconds)
+2016-09-19 20:36:38	-->	calincru (~calin@c-73-231-85-3.hsd1.ca.comcast.net) has joined ##c++
+2016-09-19 20:36:39	lh_mouse	!give w3z stdref integral promotion
+2016-09-19 20:36:46	w3z	der
+2016-09-19 20:37:21	<--	BioKey (~BioKey@2a02:1205:506f:db70:c50a:d526:7dbd:b43) has quit (Client Quit)
+2016-09-19 20:37:38	-->	mangolisk (~mangolisk@S0106848dc7ebaa06.vc.shawcable.net) has joined ##c++
+2016-09-19 20:37:41	-->	BioKey (~BioKey@2a02:1205:506f:db70:c50a:d526:7dbd:b43) has joined ##c++
+2016-09-19 20:37:41	lh_mouse	w3z, http://en.cppreference.com/w/cpp/language/implicit_conversion#Integral_promotion
+2016-09-19 20:37:57	<--	MicroCheapFx (~quassel@230-95-190-109.dsl.ovh.fr) has quit (Read error: Connection reset by peer)
+2016-09-19 20:37:59	lh_mouse	josef_k, read that.
+2016-09-19 20:38:06	w3z	shh, i was demonstrating sillyness
+2016-09-19 20:38:41	Kuukunen	w3z: yea, but that pretty much same thing was already done above!
+2016-09-19 20:38:42	Moto-chan	lh_mouse: The bot I have here doing stdref now doesn't have !give unfortunately. It'd cause nasty conflicting commands.
+2016-09-19 20:39:09	Moto-chan	Also, since google's API is gone now, it uses cppref's own search, which only searches the library, not the language. Also unfortunate.
+2016-09-19 20:39:33	-->	MicroCheapFx (~quassel@230-95-190-109.dsl.ovh.fr) has joined ##c++
+2016-09-19 20:40:30	<--	jaafar (~quassel@50-206-78-205-static.hfc.comcastbusiness.net) has quit (Ping timeout: 244 seconds)
+2016-09-19 20:40:42	-->	rriemann (~rriemann@dhcp-67-135.ixxi.ens-lyon.fr) has joined ##c++
+2016-09-19 20:40:52	-->	rmunoz (~ricardo@217.124.142.50) has joined ##c++
+2016-09-19 20:41:32	josef_k	Kuukunen: Yup, I had forgotten that identity, thanks.
+2016-09-19 20:42:16	<--	nikki93 (~nikki93@c-73-170-252-147.hsd1.ca.comcast.net) has quit (Ping timeout: 265 seconds)
+2016-09-19 20:42:42	-->	nikki93 (~nikki93@c-73-170-252-147.hsd1.ca.comcast.net) has joined ##c++
+2016-09-19 20:42:44	lh_mouse	Moto-chan, gotcha.
+2016-09-19 20:42:53	lh_mouse	!stdref integral promotion
+2016-09-19 20:42:53	refbot	Error: No results found
+2016-09-19 20:43:31	<--	somaReverse (~amos@124.16.128.66) has quit (Quit: WeeChat 1.5)
+2016-09-19 20:43:38	-->	FreeBirdLjj (~freebirdl@112.20.80.252) has joined ##c++
+2016-09-19 20:43:41	-->	Sceorem (~Sceorem@xbn44-3-82-232-76-9.fbx.proxad.net) has joined ##c++
+2016-09-19 20:43:51	Moto-chan	If there's an option I'm not aware of on cppreference to search the language aswell as the library, please do let me know. It'd be nice to be able to do.
+2016-09-19 20:44:41	-->	Zxpr1jk (~zxpr1jk@24.214.61.47) has joined ##c++
+2016-09-19 20:44:41		[20:44]
+2016-09-19 20:44:47	cbreak	Moto-chan: http://www.bing.com/search?q=integral+promotion+site:en.cppreference.com (he. he. he.)
+2016-09-19 20:45:03	cbreak	or https://duckduckgo.com/html/?q=integral+promotion+site:en.cppreference.com
+2016-09-19 20:45:21	Moto-chan	cbreak: Bing's API, like Google's now, costs money when you go above N requests afaik.
+2016-09-19 20:46:11	funfunctor	urdh: its more I am getting mixed up between when to use & and *
+2016-09-19 20:46:13	Moto-chan	Could always scrape their results pages I suppose.
+2016-09-19 20:46:31	funfunctor	urdh: a quick fix is to use the address operator &
+2016-09-19 20:47:13	urdh	funfunctor, I think you'll find that will break sooner or later
+2016-09-19 20:47:55	urdh	if you want to store a copy, pass a const reference like you do now and store an actual copy
+2016-09-19 20:49:19	urdh	if you want to store a pointer, pass a pointer and store a pointer like you do now (but ideally using a smart pointer if that makes sense)
+2016-09-19 20:49:24	funfunctor	urdh: I don't really want to copy anything
+2016-09-19 20:49:41	funfunctor	C++ is confusing, in C I just pass const void *
+2016-09-19 20:49:48	urdh	well, someone has to own the object
+2016-09-19 20:49:56	cbreak	Moto-chan: or just directly link to https://duckduckgo.com/?q=\site%3Acppreference.com+whatever
+2016-09-19 20:49:57	funfunctor	the call site
+2016-09-19 20:49:58	urdh	also what, const void* is horrible
+2016-09-19 20:50:05	urdh	what problem are you trying to solve anyway?
+2016-09-19 20:50:30	-->	drozdziak1 (~drozdziak@do-atman.cubiware.com) has joined ##c++
+2016-09-19 20:50:30	w3z	you arent *ing a void* in c either, and if youre confused between & and * ...you dont know c
+2016-09-19 20:50:32	cbreak	funfunctor: void *? What crazy talk are you thinking of?
+2016-09-19 20:50:46	cbreak	funfunctor: void * is very problematic in C
+2016-09-19 20:50:50	--	irc: disconnected from server
+2016-09-20 00:39:03	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined ##c++
+2016-09-20 00:39:03		[00:39]
+2016-09-20 00:39:03	--	Topic for ##c++ is "##C++ is a topical channel for discussing standard C++ specifications and code. || Current standard: ISO/IEC 14882:2014 (a.k.a. C++14) || https://isocpp.org/faq || pastes: http://melpon.org/wandbox"
+2016-09-20 00:39:03	--	Topic set by V-ille (~ville@81-175-149-170.bb.dnainternet.fi) on Fri, 18 Sep 2015 07:13:01
+2016-09-20 00:39:03	--	Channel ##c++: 985 nicks (0 ops, 0 voices, 985 normals)
+2016-09-20 00:39:03	***	Buffer Playback...
+2016-09-20 00:39:03	ville	[08:08:05] real teal-time as in hard real-time? or real-time like say games and whatnot [08:08:05]
+2016-09-20 00:39:03	k_sze[work]	[08:08:47] ville: suppose it's a video recorder, the video data comes in at 30 frames per second. [08:08:47]
+2016-09-20 00:39:03	ville	[08:09:00] ok so not real-time [08:09:00]
+2016-09-20 00:39:03	ville	[08:09:44] k_sze[work]: anyway that's a pretty common situation and you can google something like "single producer single consumer queue" [08:09:44]
+2016-09-20 00:39:03	k_sze[work]	[08:09:44] Anyway, obviously I'm going to use a while loop in each of the producer and consumer threads. [08:09:44]
+2016-09-20 00:39:03	ville	[08:10:17] also if you're new or new-ish to threads then absolutley get this: [08:10:17]
+2016-09-20 00:39:03	ville	[08:10:18] !williams [08:10:18]
+2016-09-20 00:39:03	nolyc	[08:10:21] C++ concurrency in action by Anthony Williams: http://www.manning.com/williams/ [08:10:21]
+2016-09-20 00:39:03	ville	[08:11:06] one of its many examples is a thread-safe queue [08:11:06]
+2016-09-20 00:39:03	cbreak	[08:11:28] there are pre-made ones too, in boost for example [08:11:28]
+2016-09-20 00:39:03	ville	[08:19:50] sure but i think this is one of those componenets that one has to write your self at least once, if not every now and then, just for the basics it teaches [08:19:50]
+2016-09-20 00:39:03	tgy	[08:31:51] i'm trying to use std::experimental::filesystem but i'm getting the following linking error [08:31:51]
+2016-09-20 00:39:03	tgy	[08:31:54] http://paste.awesom.eu/JoDc [08:31:54]
+2016-09-20 00:39:03	tgy	[08:32:08] #include <experimental/filesystem> seems to be working fine [08:32:08]
+2016-09-20 00:39:03	tgy	[08:32:20] i don't know what is happening :/ [08:32:20]
+2016-09-20 00:39:03	w3z	[08:33:10] ...youre not linking the library ... [08:33:10]
+2016-09-20 00:39:03	tgy	[08:35:30] w3z: i thought it was included in std [08:35:30]
+2016-09-20 00:39:03	tgy	[08:36:34] how do i link experimental/filesystem? i can't find anything on the net :/ [08:36:34]
+2016-09-20 00:39:03	w3z	[08:37:11] your ability to google is weaksauce: -lstdc++fs [08:37:11]
+2016-09-20 00:39:03	w3z	[08:37:37] for gcc, which is what youre using judging by your linker error post [08:37:37]
+2016-09-20 00:39:03	tgy	[08:39:05] thanks :/ don't know why i couldn't find it [08:39:05]
+2016-09-20 00:39:03	tgy	[08:50:42] w3z: i switched to clang, i'm trying to build my program using CMake http://paste.awesom.eu/nmxG [08:50:42]
+2016-09-20 00:39:03	tgy	[08:50:48] i get /usr/bin/ld: cannot find -lc++experimental [08:50:48]
+2016-09-20 00:39:03	w3z	[08:55:29] thats because its a gcc library [08:55:29]
+2016-09-20 00:39:03	tgy	[08:58:51] w3z: alright, i managed to do it simply with the target_link_libraries(train stdc++fs) one-liner [08:58:51]
+2016-09-20 00:39:03	tgy	[08:59:06] but i think it's not the proper way to do it with CMake [08:59:06]
+2016-09-20 00:39:03	w3z	[09:01:29] afaik clang has not packaged the fs ts in any official build, it may be in the repo though [09:01:29]
+2016-09-20 00:39:03	cbreak	[09:03:40] you can use boost::filesystem if you want to support current compilers [09:03:40]
+2016-09-20 00:39:03	cbreak	[09:03:51] without relying on pre-standard implementations of C++17 [09:03:51]
+2016-09-20 00:39:03	purplex88	[09:26:30] how can i use list:remove? http://ideone.com/9wJHl6 [09:26:30]
+2016-09-20 00:39:03	V-ille	[09:29:16] purplex88: like this http://ideone.com/27vI0s [09:29:16]
+2016-09-20 00:39:03	om3n	[09:41:02] hello [09:41:02]
+2016-09-20 00:39:03	Ecco	[10:00:33] class Foo { int i; }; -> Is there a way to get Foo to be treated as an integral type? [10:00:33]
+2016-09-20 00:39:03	cbreak	[10:01:18] Ecco: what context? [10:01:18]
+2016-09-20 00:39:03	Ecco	[10:01:45] for instance, to use Foo as the underlying type of an enum class [10:01:45]
+2016-09-20 00:39:03	cbreak	[10:01:56] :/ [10:01:56]
+2016-09-20 00:39:03	cbreak	[10:02:08] I doubt it. [10:02:08]
+2016-09-20 00:39:03	Ecco	[10:02:13] ok :) [10:02:13]
+2016-09-20 00:39:03	w3z	[10:07:28] that isnt going to happen, you can of course provide a conversion function for other use scenarios though [10:07:28]
+2016-09-20 00:39:03	richard_w	[10:29:09] is it somehow possible to wait for an std::future without blocking an entire thread? [10:29:09]
+2016-09-20 00:39:03	cbreak	[10:29:24] richard_w: timeout [10:29:24]
+2016-09-20 00:39:03	richard_w	[10:30:07] cbreak: i was thinking about something like a callback [10:30:07]
+2016-09-20 00:39:03	richard_w	[10:32:35] cbreak: right now i am wrapping std::future and std::promise but that seems overly complicated [10:32:35]
+2016-09-20 00:39:03	cbreak	[10:32:51] richard_w: no need to wrap them [10:32:51]
+2016-09-20 00:39:03	cbreak	[10:33:06] their whole point is that you can blocking wait for them [10:33:06]
+2016-09-20 00:39:03	richard_w	[10:36:23] cbreak: this is right when you're using conventional threads. i am using asio though and i have several program flows in a single thread [10:36:23]
+2016-09-20 00:39:03	cbreak	[10:36:41] then why futures / promises? [10:36:41]
+2016-09-20 00:39:03	richard_w	[10:38:24] cbreak: it is a useful abstraction. my network_interface::send_request method returns a future of the response [10:38:24]
+2016-09-20 00:39:03	cbreak	[10:38:39] why? [10:38:39]
+2016-09-20 00:39:03	cbreak	[10:38:45] it should take a callback as parameter [10:38:45]
+2016-09-20 00:39:03	***	Playback Complete.
+2016-09-20 00:39:09	cbreak	you're mixing different styles and that causes you problems
+2016-09-20 00:39:19	--	Channel created on Fri, 14 Sep 2001 17:15:35
+2016-09-20 00:39:42	richard_w	cbreak: it's more concise to give a future<foo> than define a param with the type std::function<void(std::exception_ptr, foo&&)>
+2016-09-20 00:39:55	cbreak	no
+2016-09-20 00:41:28	richard_w	cbreak: why not? scala uses this technique all over the place and it works fine
+2016-09-20 00:42:02	cbreak	richard_w: because it requires way more maintenance overhead
+2016-09-20 00:42:04	richard_w	javascript too (although this is really more of a counter-argument)
+2016-09-20 00:42:09	cbreak	richard_w: no
+2016-09-20 00:42:15	cbreak	richard_w: java script doesn't have multithreading
+2016-09-20 00:42:22	cbreak	it doesn't have anything like C++'s std::future
+2016-09-20 00:42:45	cbreak	std::future is for working with threads
+2016-09-20 00:43:09	cbreak	in javascript, everything is callback based
+2016-09-20 00:43:23	<--	rtkt (~rtkt@226.18-78-194.adsl-static.isp.belgacom.be) has quit (Ping timeout: 272 seconds)
+2016-09-20 00:43:23	cbreak	you couldn't block on a future result without breaking a lot
+2016-09-20 00:43:27	<--	justinabrahms (~justinabr@107.170.208.252) has quit (Quit: ZNC - http://znc.in)
+2016-09-20 00:43:58	richard_w	cbreak: std::future may be for threads only, but it would be a useful abstraction even without threads
+2016-09-20 00:44:08	cbreak	no
+2016-09-20 00:44:25	cbreak	without threads, blocking for a result to be available is pointless
+2016-09-20 00:44:58	velco	it's also a mechanism for lazy evaluation
+2016-09-20 00:45:04	cbreak	there's an other type of future inside std::future that's rarely used, and I don't think users can directly access
+2016-09-20 00:45:08	cbreak	for lazily computed values
+2016-09-20 00:45:18	cbreak	mainly used via async
+2016-09-20 00:45:23	cbreak	but that's not of use to you
+2016-09-20 00:45:53	richard_w	cbreak: so asio shouldn't use futures at all in your opinion?
+2016-09-20 00:46:52	-->	verm1n (~verm1n@209-6-236-59.c3-0.wrx-ubr1.sbo-wrx.ma.cable.rcn.com) has joined ##c++
+2016-09-20 00:46:59	cbreak	indeed.
+2016-09-20 00:47:07	cbreak	asio and future are different styles
+2016-09-20 00:47:43	-->	kw01f (~kw01f@merlin.mvtec.com) has joined ##c++
+2016-09-20 00:47:46	cbreak	with an asio based API, you wouldn't want to block
+2016-09-20 00:47:50	cbreak	with futures you would want to block
+2016-09-20 00:48:53	richard_w	because it's for multithreading
+2016-09-20 00:48:53	richard_w	and only for that
+2016-09-20 00:48:53	richard_w	although respected frameworks in other languages use futures to asynchronously handle requests?
+2016-09-20 00:48:53	richard_w	or waiting for db queries
+2016-09-20 00:49:03	-->	jamesaxl (~jamesaxl@176.98.129.195) has joined ##c++
+2016-09-20 00:49:12	<--	rmunoz (~ricardo@217.124.142.50) has quit (Ping timeout: 244 seconds)
+2016-09-20 00:49:12	<--	et (~et@85.131.246.150) has quit (Ping timeout: 244 seconds)
+2016-09-20 00:49:12	<--	meshugga (philip@amd.co.at) has quit (Ping timeout: 244 seconds)
+2016-09-20 00:49:28	-->	rmunoz (~ricardo@217.124.142.50) has joined ##c++
+2016-09-20 00:49:37	cbreak	richard_w: nope
+2016-09-20 00:49:39	cbreak	they don't
+2016-09-20 00:49:43	<--	bergesenha (~harald@90.149.192.21) has quit (Ping timeout: 244 seconds)
+2016-09-20 00:49:43	<--	di0_ (~di0_@unaffiliated/di0-/x-5053590) has quit (Ping timeout: 244 seconds)
+2016-09-20 00:49:51	-->	bergesenha (~harald@90.149.192.21) has joined ##c++
+2016-09-20 00:50:05	cbreak	futures are for synchronously using asynchronously generated values
+2016-09-20 00:50:14	<--	Munnu (~timo@91-158-145-247.elisa-laajakaista.fi) has quit (Ping timeout: 244 seconds)
+2016-09-20 00:50:14	<--	phlpp (~Philipp@rihanna.cb.uni-bonn.de) has quit (Ping timeout: 244 seconds)
+2016-09-20 00:50:23	-->	meshugga (philip@amd.co.at) has joined ##c++
+2016-09-20 00:50:32	-->	justinabrahms (~justinabr@107.170.208.252) has joined ##c++
+2016-09-20 00:50:42	cbreak	(or in the case of std::async, potentially synchronously generated)
+2016-09-20 00:50:58	-->	Munnu (~timo@91-158-145-247.elisa-laajakaista.fi) has joined ##c++
+2016-09-20 00:50:58	-->	di0_ (~di0_@unaffiliated/di0-/x-5053590) has joined ##c++
+2016-09-20 00:50:59	Olipro	...you can ask for a future and immediately return if it isn't available
+2016-09-20 00:51:04	-->	phlpp (~Philipp@rihanna.cb.uni-bonn.de) has joined ##c++
+2016-09-20 00:51:10	cbreak	Olipro: yes. Syncronously.
+2016-09-20 00:51:19	-->	et (~et@soohrt.org) has joined ##c++
+2016-09-20 00:51:25	cbreak	Olipro: you can not ask a future to call you back once the value is available
+2016-09-20 00:51:27	-->	HeroYoojin (~aaron@unaffiliated/heroyoojin) has joined ##c++
+2016-09-20 00:51:29	-->	B00100100 (~bf3@179.43.151.98) has joined ##c++
+2016-09-20 00:51:37	cbreak	I think in other languages' futures that is sometimes an option
+2016-09-20 00:51:45	cbreak	but not in C++'s
+2016-09-20 00:51:49	-->	swnc (~swnc@port-92-204-76-157.dynamic.qsc.de) has joined ##c++
+2016-09-20 00:52:03	Olipro	sure, it's a different model to a callback
+2016-09-20 00:52:05	-->	corsaere (~corsaere@unaffiliated/corsaere) has joined ##c++
+2016-09-20 00:52:07	richard_w	cbreak: It's an option everywhere *except* in C++
+2016-09-20 00:52:31	Olipro	if you don't have to synchronise on anything then clearly passing a callback is preferable
+2016-09-20 00:52:41	cbreak	Olipro: and then you don't need futures
+2016-09-20 00:53:11	cbreak	richard_w: first time I saw futures, 15 years ago, in eiffel, they didn't have callbacks either :)
+2016-09-20 00:53:29	<--	Gluesticky (~nobody@unaffiliated/gluesticky) has quit (Quit: This is the end. Goodbye cruel world!)
+2016-09-20 00:53:43	-->	gioerr (~gioerr@athedsl-4409952.home.otenet.gr) has joined ##c++
+2016-09-20 00:53:53	<--	FreeBirdLjj (~freebirdl@112.20.80.252) has quit (Ping timeout: 240 seconds)
+2016-09-20 00:53:55	-->	FreeBird_ (~freebirdl@112.20.80.252) has joined ##c++
+2016-09-20 00:54:21	-->	nikki93_ (~nikki93@c-73-170-252-147.hsd1.ca.comcast.net) has joined ##c++
+2016-09-20 00:54:21		[00:54]
+2016-09-20 00:54:24	richard_w	cbreak: Maybe. My point is that the future abstraction as understood by people with a functional programming background is more than just a synchronization primitive
+2016-09-20 00:54:24	Olipro	a future is basically a more concise and conceptually simpler mechanism of synchronising something between threads
+2016-09-20 00:54:33	<--	nikki93 (~nikki93@c-73-170-252-147.hsd1.ca.comcast.net) has quit (Read error: Connection reset by peer)
+2016-09-20 00:54:41	<--	xkpe (~xkpe@host86-151-105-229.range86-151.btcentralplus.com) has quit (Ping timeout: 240 seconds)
+2016-09-20 00:55:03	cbreak	with emphasis on synchronize
+2016-09-20 00:55:08	-->	xkpe (~xkpe@host86-151-105-229.range86-151.btcentralplus.com) has joined ##c++
+2016-09-20 00:55:29	cbreak	richard_w: that doesn't matter
+2016-09-20 00:55:34	cbreak	richard_w: C++ futures are not that.
+2016-09-20 00:55:52	cbreak	I recommend not mixing them with async style programming :)
+2016-09-20 00:55:54	richard_w	cbreak: they could be if it weren't for the missing kleisli-operator
+2016-09-20 00:55:57	cbreak	your choice.
+2016-09-20 00:56:11	cbreak	richard_w: no user defined weird-operators in C++
+2016-09-20 00:57:52	richard_w	cbreak: it's not c++ operator. it's basically a function with the signature "std::future<B> kleisli(std::future<A>&, std::function<B(A&)>)"
+2016-09-20 00:58:40	cbreak	sure, make one.
+2016-09-20 00:58:55	-->	athend_ (~athend@199.43.190.10) has joined ##c++
+2016-09-20 00:59:12	k_sze[work]	I have a `uint16_t *buffer` that is actually an aligned_alloc'ed array, what's wrong with doing `buffer[10] = (uint16_t)12.0;`?
+2016-09-20 00:59:44	k_sze[work]	clang++ is complaining about assigning to 'uint16_t *' (aka 'unsigned short *') from incompatible type 'uint16_t' (aka 'unsigned short')
+2016-09-20 01:00:17	k_sze[work]	I thought buffer[10] would be the correct way of accessing an element of the array?
+2016-09-20 01:01:00	<--	UnripeSuica_mobi (~UnlikeSui@223.62.212.34) has quit (Quit: RIP)
+2016-09-20 01:01:13	-->	UnlikeSuika_mobi (~UnlikeSui@147.46.113.63) has joined ##c++
+2016-09-20 01:01:49	-->	UnripeSuica_mobi (~UnlikeSui@223.62.212.34) has joined ##c++
+2016-09-20 01:02:02	<--	StyxAlso (~markg@120.88.147.168) has quit (Quit: StyxAlso)
+2016-09-20 01:02:35	-->	w3z (~w3z@173-169-121-88.res.bhn.net) has joined ##c++
+2016-09-20 01:02:36	<--	athend (~athend@199.43.186.25) has quit (Ping timeout: 276 seconds)
+2016-09-20 01:03:01	urdh	!give k_sze[work] testcase
+2016-09-20 01:03:01	<--	knamehost (~knameho@unaffiliated/knamehost) has quit (Read error: Connection reset by peer)
+2016-09-20 01:03:05	-->	athend (~athend@199.43.186.25) has joined ##c++
+2016-09-20 01:03:09	urdh	lolwut
+2016-09-20 01:03:21	urdh	anyway, post code
+2016-09-20 01:03:27	urdh	!testcase
+2016-09-20 01:03:28	nolyc	A testcase is the _least_ amount of code that replicates your problem, paste it to http://coliru.stacked-crooked.com and give us the link. Do _not_ paste code to the channel. See the testcase checklist at http://eel.is/iso-c++/testcase/
+2016-09-20 01:03:34	-->	nikki93 (~nikki93@166.170.39.20) has joined ##c++
+2016-09-20 01:03:39	<--	ibouvousaime (~ibouvousa@41.82.193.77) has quit (Ping timeout: 272 seconds)
+2016-09-20 01:03:47	cbreak	k_sze[work]: you try to assign to a pointer
+2016-09-20 01:03:54	<--	athend_ (~athend@199.43.190.10) has quit (Ping timeout: 276 seconds)
+2016-09-20 01:03:57	-->	ibouvousaime (~ibouvousa@41.82.193.77) has joined ##c++
+2016-09-20 01:03:59	cbreak	k_sze[work]: not a uint16_t value
+2016-09-20 01:04:02	k_sze[work]	nevermind
+2016-09-20 01:04:05	k_sze[work]	found the problem.
+2016-09-20 01:04:31	<--	tz (~tz@pestilence.tzarc.ninja) has quit (Ping timeout: 255 seconds)
+2016-09-20 01:04:31	<--	dv__ (~quassel@62.178.118.86) has quit (Ping timeout: 244 seconds)
+2016-09-20 01:04:38	-->	gagbo (~gagbo@unaffiliated/gagbo) has joined ##c++
+2016-09-20 01:04:44	-->	athend_ (~athend@199.43.190.10) has joined ##c++
+2016-09-20 01:05:37	promach	in gdb, how do I print out featMap as in https://github.com/jimmie33/MBS/blob/master/mex/MBS.cpp#L77  ?
+2016-09-20 01:05:45	<--	UnlikeSuika_mobi (~UnlikeSui@147.46.113.63) has quit (Ping timeout: 248 seconds)
+2016-09-20 01:06:46	-->	Gathis (~TheBlack@unaffiliated/gathis) has joined ##c++
+2016-09-20 01:07:07	cbreak	promach: by calling exec? :)
+2016-09-20 01:07:11	<--	nikki93_ (~nikki93@c-73-170-252-147.hsd1.ca.comcast.net) has quit (Ping timeout: 265 seconds)
+2016-09-20 01:07:13	<--	miklcct (michael@server.miklcct.csproject.org) has quit (Ping timeout: 255 seconds)
+2016-09-20 01:07:14	<--	HeroYoojin (~aaron@unaffiliated/heroyoojin) has left ##c++
+2016-09-20 01:07:25	<--	Aster (~Aster@april-fools/2013/ninth/aster) has quit (Remote host closed the connection)
+2016-09-20 01:07:35	-->	tz (~tz@pestilence.tzarc.ninja) has joined ##c++
+2016-09-20 01:07:35	<--	rsully (~rsully@unaffiliated/rsully) has quit (Ping timeout: 265 seconds)
+2016-09-20 01:07:53	promach	cbreak: what?
+2016-09-20 01:07:56	-->	Aster (~Aster@destrock.com) has joined ##c++
+2016-09-20 01:08:21	--	Aster is now known as Guest91491
+2016-09-20 01:08:38	-->	miklcct (michael@server.miklcct.csproject.org) has joined ##c++
+2016-09-20 01:08:43	-->	dv_ (~quassel@62.178.118.86) has joined ##c++
+2016-09-20 01:08:48	cbreak	you can ask gcc to call arbitrary code on your behalf
+2016-09-20 01:08:56	alex529	is there a better way of doing this ? http://melpon.org/wandbox/permlink/4RUCoY5yIktNSxw3
+2016-09-20 01:08:59	cbreak	I think it was something with e... exec... expr... something like that
+2016-09-20 01:09:06	<--	athend (~athend@199.43.186.25) has quit (Ping timeout: 276 seconds)
+2016-09-20 01:09:26	-->	rsully (~rsully@unaffiliated/rsully) has joined ##c++
+2016-09-20 01:09:26		[01:09]
+2016-09-20 01:09:34	-->	athend (~athend@199.43.186.25) has joined ##c++
+2016-09-20 01:09:41	-->	sphenxes02 (~sphenxes@192.164.150.155) has joined ##c++
+2016-09-20 01:09:43	<--	UnripeSuica_mobi (~UnlikeSui@223.62.212.34) has quit (Quit: RIP)
+2016-09-20 01:09:45	<--	athend_ (~athend@199.43.190.10) has quit (Ping timeout: 276 seconds)
+2016-09-20 01:09:55	-->	UnlikeSuika_mobi (~UnlikeSui@147.47.141.233) has joined ##c++
+2016-09-20 01:10:18	cbreak	alex529: what the hell is that supposed to be good for?
+2016-09-20 01:10:22	<--	Guest91491 (~Aster@destrock.com) has quit (Changing host)
+2016-09-20 01:10:22	-->	Guest91491 (~Aster@april-fools/2013/ninth/aster) has joined ##c++
+2016-09-20 01:10:24	-->	tocka_ (~tocka@78-56-107-170.static.zebra.lt) has joined ##c++
+2016-09-20 01:10:24	--	Guest91491 is now known as Aster
+2016-09-20 01:10:27	-->	Kn|t3_ (~agarwalvi@104.132.196.100) has joined ##c++
+2016-09-20 01:10:43	alex529	i want to reserve memory for the inner vector
+2016-09-20 01:11:06	cbreak	use reserve then
+2016-09-20 01:11:14	<--	tocka (~tocka@78-56-107-170.static.zebra.lt) has quit (Ping timeout: 244 seconds)
+2016-09-20 01:11:16	<--	Kn|t3 (~agarwalvi@104.132.196.76) has quit (Ping timeout: 255 seconds)
+2016-09-20 01:11:16	--	Kn|t3_ is now known as Kn|t3
+2016-09-20 01:11:47	cbreak	alex529: at the moment you actually resize the vectors in a weird way
+2016-09-20 01:11:56	<--	Carbonflux (~Bob@75-172-112-206.tukw.qwest.net) has quit (Quit: Leaving)
+2016-09-20 01:11:59	-->	jackhum (uid97400@gateway/web/irccloud.com/x-gpskbanxpfluwnmz) has joined ##c++
+2016-09-20 01:12:07	cbreak	(instead of calling resize, you assign a newly constructed vector)
+2016-09-20 01:12:14	cbreak	alex529: that's obviously inefficient
+2016-09-20 01:12:23	cbreak	even more inefficient than having nested vectors is already
+2016-09-20 01:12:30	alex529	basicaly i would want to make sometyhing like a[maxElement][count]
+2016-09-20 01:12:31	cbreak	alex529: if you only want to reserve, use reserve
+2016-09-20 01:12:40	cbreak	eeew
+2016-09-20 01:12:42	cbreak	!sillymatrix
+2016-09-20 01:12:43	nolyc	template<typename T> struct matrix { matrix(unsigned m, unsigned n) : m(m), n(n), vs(m*n) {} T& operator ()(unsigned i, unsigned j) { return vs[i + m * j]; } private: unsigned m; unsigned n; std::vector<T> vs; }; /* column-major/opengl: vs[i + m * j], row-major/c++: vs[n * i + j] */
+2016-09-20 01:12:52	alex529	and i do not want to dynamically allocate
+2016-09-20 01:13:09	<--	sphenxes01 (~sphenxes@81-5-240-95.hdsl.highway.telekom.at) has quit (Ping timeout: 272 seconds)
+2016-09-20 01:13:26	<--	Kn|t3 (~agarwalvi@104.132.196.100) has quit (Client Quit)
+2016-09-20 01:14:43	-->	Kn|t3 (~agarwalvi@104.132.196.76) has joined ##c++
+2016-09-20 01:14:44	alex529	ok im a little new to c++ so i have to ityerate thru the outer vector and after reserve for the inner isnt there an option where i can do something like a[len1][len2]?
+2016-09-20 01:15:26	alex529	i don't really need a vector i just need some sort of container for my strings
+2016-09-20 01:15:56	<--	eduardas_m (~eduardas_@213.197.143.19) has quit (Remote host closed the connection)
+2016-09-20 01:16:08	cbreak	alex529: use something like nolyc showed
+2016-09-20 01:17:10	<--	ScorpionJack (~Scorpion@unaffiliated/scorpionjack) has quit (Quit: ScorpionJack)
+2016-09-20 01:19:09	-->	UnripeSuica_mobi (~UnlikeSui@223.62.212.34) has joined ##c++
+2016-09-20 01:19:37	-->	qqz (~qqz@194-118-30-150.adsl.highway.telekom.at) has joined ##c++
+2016-09-20 01:19:56	-->	ScorpionJack (~Scorpion@unaffiliated/scorpionjack) has joined ##c++
+2016-09-20 01:20:05	qqz	when I read in with the >> operator multiple items at a time how does it indicate error conditions?
+2016-09-20 01:20:09	<--	kimundi (~Kimundi@dynip-129-217-065-035.wifi.tu-dortmund.de) has quit (Ping timeout: 265 seconds)
+2016-09-20 01:20:43	<--	Freze (~Freze@c-73-167-60-180.hsd1.ma.comcast.net) has quit (Ping timeout: 255 seconds)
+2016-09-20 01:20:44	cbreak	qqz: depends
+2016-09-20 01:20:57	-->	Sora (~quassel@197.17.18.137) has joined ##c++
+2016-09-20 01:20:59	cbreak	either via exception, or via you checking operator bool or similar
+2016-09-20 01:21:01	qqz	when I f.i. read ints?
+2016-09-20 01:21:18	qqz	cheking operator bool?
+2016-09-20 01:21:27	cbreak	if (stream >> x >> y >> z) { /* x y z read */ } else { ... }
+2016-09-20 01:21:28	<--	UnripeSuica_mobi (~UnlikeSui@223.62.212.34) has quit (Read error: Connection reset by peer)
+2016-09-20 01:21:28	qqz	it returns the stream not a bool?
+2016-09-20 01:21:33	-->	UnrightSuika_mob (~UnlikeSui@147.46.113.63) has joined ##c++
+2016-09-20 01:21:43	qqz	ahh
+2016-09-20 01:21:59	qqz	how does that work when I implement the >> myself
+2016-09-20 01:22:05	<--	UnlikeSuika_mobi (~UnlikeSui@147.47.141.233) has quit (Ping timeout: 265 seconds)
+2016-09-20 01:22:12	qqz	at the end the stream needs to convert into a boolean?
+2016-09-20 01:22:38	qqz	it can not return NULL at any time since then we would get a memory access error in the middle
+2016-09-20 01:23:52	cbreak	qqz: no
+2016-09-20 01:23:56	cbreak	just return the stream
+2016-09-20 01:24:03	qqz	I could imagine to use the ~ operator for checking error conditions:
+2016-09-20 01:24:12	cbreak	don't
+2016-09-20 01:24:16	qqz	so ~( stream >> x >> y >> z )
+2016-09-20 01:24:25	qqz	why not?
+2016-09-20 01:24:39	cbreak	because it's unreadable as hell
+2016-09-20 01:24:39		[01:24]
+2016-09-20 01:25:01	cbreak	also, not sure if ~ is even defined on streams
+2016-09-20 01:25:12	cbreak	use either bool conversion or !
+2016-09-20 01:25:15	qqz	well I can define any operator I like
+2016-09-20 01:25:18	cbreak	no
+2016-09-20 01:25:30	cbreak	streams exist outside your access area
+2016-09-20 01:25:39	cbreak	you're not allowed to fuck around with std :)
+2016-09-20 01:25:40	qqz	! would interfere with checking for NULL; that would be a bad idea
+2016-09-20 01:25:43	cbreak	no
+2016-09-20 01:25:50	-->	neurodrone (~neurodron@unaffiliated/neurodrone) has joined ##c++
+2016-09-20 01:25:54	cbreak	there is no NULL
+2016-09-20 01:25:59	cbreak	streams are not integers
+2016-09-20 01:26:09	cbreak	streams are not pointers
+2016-09-20 01:26:14	<--	Kn|t3 (~agarwalvi@104.132.196.76) has quit (Quit: Kn|t3)
+2016-09-20 01:26:26	cbreak	streams are objects which have an operator bool and an operator!
+2016-09-20 01:26:41	qqz	ok; class != *class but what if you forget the * one time and the ! operator did something different
+2016-09-20 01:26:53	cbreak	* is not needed
+2016-09-20 01:27:07	qqz	operator bool? how does it look like?
+2016-09-20 01:27:12	qqz	an empty functor?
+2016-09-20 01:27:18	<--	blackbeard420 (~blackbear@dynamic-acs-24-154-82-158.zoominternet.net) has quit (Quit: Lost terminal)
+2016-09-20 01:27:27	cbreak	somestream::operator bool() const ...
+2016-09-20 01:27:47	qqz	ok; thx; going to try this
+2016-09-20 01:27:58	cbreak	qqz: http://en.cppreference.com/w/cpp/io/basic_ios/operator_bool
+2016-09-20 01:28:42	<--	sammyg (~sammyg@h-13-10.a485.priv.bahnhof.se) has quit (Quit: Leaving)
+2016-09-20 01:28:46	cbreak	{ std::stringstream ss("1 2 3"); size_t a, b, c; if (ss >> a >> b >> c) { cout << "Got " << a << ", " << b << " -> " << c; } else { cout << "error"; } }
+2016-09-20 01:28:47	geordi	Got 1, 2 -> 3
+2016-09-20 01:28:53	cbreak	{ std::stringstream ss("1 23"); size_t a, b, c; if (ss >> a >> b >> c) { cout << "Got " << a << ", " << b << " -> " << c; } else { cout << "error"; } }
+2016-09-20 01:28:54	geordi	error
+2016-09-20 01:28:58	cbreak	qqz: got it?
+2016-09-20 01:29:52	qqz	yes
+2016-09-20 01:30:37	w3z	hah, why would you want the compliment, if you were that silly, you would need to force the conversion to bool first, only one implicit conversion jump is allowed
+2016-09-20 01:31:11	-->	zap0 (~moofy@14-201-222-143.tpgi.com.au) has joined ##c++
+2016-09-20 01:32:43	-->	josef__k (~jeremy@59.102.31.229) has joined ##c++
+2016-09-20 01:33:23	w3z	<<~(bool)(cout<<"silly=");
+2016-09-20 01:33:24	geordi	silly=-2
+2016-09-20 01:33:27	<--	forgottenone (~forgotten@176.43.2.35) has quit (Quit: Konversation terminated!)
+2016-09-20 01:33:38	promach	in gdb, how do I print out the matrix (Mat& featMap) as in https://github.com/jimmie33/MBS/blob/master/mex/MBS.cpp#L77  ?
+2016-09-20 01:33:55	qqz	I just did not know that C++ has an operator bool
+2016-09-20 01:33:58	qqz	I simply did not
+2016-09-20 01:33:59	<--	szulak (uid162164@gateway/web/irccloud.com/x-gidkguwxkgzrgumx) has quit (Quit: Connection closed for inactivity)
+2016-09-20 01:34:17	qqz	so stop making fun of it
+2016-09-20 01:34:33	-->	forgottenone (~forgotten@176.43.2.35) has joined ##c++
+2016-09-20 01:34:37	<--	forgottenone (~forgotten@176.43.2.35) has quit (Client Quit)
+2016-09-20 01:35:06	<--	oftc_ftw (~oftc_ftw@unaffiliated/oftc-ftw/x-3443471) has quit (Ping timeout: 276 seconds)
+2016-09-20 01:35:11	-->	incog (~still3@c-68-32-78-52.hsd1.mi.comcast.net) has joined ##c++
+2016-09-20 01:35:33	-->	UnlikeSuika (~UnlikeSui@147.46.113.63) has joined ##c++
+2016-09-20 01:35:34	-->	Tempesta (~Tempesta@unaffiliated/tempesta) has joined ##c++
+2016-09-20 01:35:40	-->	forgottenone (~forgotten@176.43.2.35) has joined ##c++
+2016-09-20 01:36:02	<--	Nik05 (~Nik05@unaffiliated/nik05) has quit (Remote host closed the connection)
+2016-09-20 01:36:30	-->	daniel-s (~daniel-s@bla31-1-82-241-231-138.fbx.proxad.net) has joined ##c++
+2016-09-20 01:36:57	<--	sigtrm (quassel@quassel.woboq.de) has quit (Ping timeout: 250 seconds)
+2016-09-20 01:37:14	cbreak	qqz: it's operator TYPEHERE, a conversion operator
+2016-09-20 01:37:18	<--	incog (~still3@c-68-32-78-52.hsd1.mi.comcast.net) has quit (Changing host)
+2016-09-20 01:37:19	-->	incog (~still3@unaffiliated/incog) has joined ##c++
+2016-09-20 01:38:36	-->	Nik05 (~Nik05@unaffiliated/nik05) has joined ##c++
+2016-09-20 01:38:44	<--	corsaere (~corsaere@unaffiliated/corsaere) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-09-20 01:39:27	-->	oftc_ftw (~oftc_ftw@unaffiliated/oftc-ftw/x-3443471) has joined ##c++
+2016-09-20 01:39:27	-->	serycjon (~jonas@20.53.broadband14.iol.cz) has joined ##c++
+2016-09-20 01:39:27	-->	Gluesticky (~IceChat9@unaffiliated/gluesticky) has joined ##c++
+2016-09-20 01:39:28	<--	neurodrone (~neurodron@unaffiliated/neurodrone) has quit (Quit: neurodrone)
+2016-09-20 01:39:59	serycjon	Hi, am I in the right channel if I need a little bit of help with C++?
+2016-09-20 01:39:59		[01:39]
+2016-09-20 01:40:15	-->	jkhl (~j@host86-182-59-122.range86-182.btcentralplus.com) has joined ##c++
+2016-09-20 01:40:22	m_ben	!topic
+2016-09-20 01:40:23	nolyc	Welcome to ##c++. This channel is for the discussion of standard C++, including potential and future standardizations. This channel is NOT for discussion of: development platforms (OSes and other tools not directly related to C++), non-standard libraries, programs written in C++, other programming languages, a/s/l, or anything else that isn't C++.
+2016-09-20 01:40:40	w3z	promach: with p, or the invocation of a function that prints Mat for you ...and youre off-topic
+2016-09-20 01:41:09	w3z	!give promach general
+2016-09-20 01:41:10	nolyc	promach: ##c++-general for algorithms, libraries, practices, projects, tools etc. yes two #s.
+2016-09-20 01:41:56	serycjon	nolyc: thanks, will try my luck there :)
+2016-09-20 01:41:59	<--	bx2 (~bx2@46.140.123.246) has quit (Remote host closed the connection)
+2016-09-20 01:42:47	w3z	that wasnt for you ...notice your nick wasnt in the message ...
+2016-09-20 01:43:08	w3z	!give serycjon basic
+2016-09-20 01:43:09	nolyc	serycjon: Please ask your question in ##C++-basic, as it involves the fundamental basics of the language.
+2016-09-20 01:43:17	m_ben	the earlier !general was for him
+2016-09-20 01:43:20	-->	whytrytofly (~whytrytof@dslb-094-223-012-212.094.223.pools.vodafone-ip.de) has joined ##c++
+2016-09-20 01:43:24	m_ben	I meant !topic
+2016-09-20 01:43:29	-->	Zunino (~Zunino@201.49.127.2) has joined ##c++
+2016-09-20 01:43:47	serycjon	yep, thanks I will go there.
+2016-09-20 01:43:54	-->	SoundlesDev (~soundless@2601:282:8080:1267:1c70:8739:6e64:4a4c) has joined ##c++
+2016-09-20 01:44:02	-->	mcan (~m@178.62.169.8) has joined ##c++
+2016-09-20 01:44:09	w3z	youre in a hurry to go somewhere, might as well be there
+2016-09-20 01:44:42	-->	bjz (~bjz@pa49-185-187-31.pa.vic.optusnet.com.au) has joined ##c++
+2016-09-20 01:45:33	-->	sigtrm (quassel@quassel.woboq.de) has joined ##c++
+2016-09-20 01:45:51	<--	mcan (~m@178.62.169.8) has quit (Changing host)
+2016-09-20 01:45:51	-->	mcan (~m@unaffiliated/mrcan) has joined ##c++
+2016-09-20 01:46:10	-->	jshjsh (~jshjsh@172.56.17.251) has joined ##c++
+2016-09-20 01:47:22	<--	Ecco (~user@unaffiliated/ecco) has left ##c++
+2016-09-20 01:47:37	<--	Tempesta (~Tempesta@unaffiliated/tempesta) has quit (Quit: See ya!)
+2016-09-20 01:47:47	<--	spindle (~spindle@27-33-39-55.static.tpgi.com.au) has quit (Read error: Connection reset by peer)
+2016-09-20 01:49:01	<--	meandrain (~meandrain@89.39.95.149) has quit (Read error: No route to host)
+2016-09-20 01:49:04	<--	SoundlesDev (~soundless@2601:282:8080:1267:1c70:8739:6e64:4a4c) has quit (Ping timeout: 255 seconds)
+2016-09-20 01:49:09	<--	JoshS (~jshjsh@172.56.17.251) has quit (Ping timeout: 265 seconds)
+2016-09-20 01:49:31	<--	Sceorem (~Sceorem@xbn44-3-82-232-76-9.fbx.proxad.net) has quit (Ping timeout: 255 seconds)
+2016-09-20 01:50:06	-->	rorro (~rorro@c-226-182.eduroam.liu.se) has joined ##c++
+2016-09-20 01:50:22	<--	scellow (~quassel@bly33-1-78-246-251-30.fbx.proxad.net) has quit (Remote host closed the connection)
+2016-09-20 01:52:37	<--	sigtrm (quassel@quassel.woboq.de) has quit (Ping timeout: 265 seconds)
+2016-09-20 01:52:45	<--	Galik (~galik@unaffiliated/galik) has quit (Ping timeout: 260 seconds)
+2016-09-20 01:52:52	-->	psychicist__ (~psychicis@ip127-8-212-87.adsl2.static.versatel.nl) has joined ##c++
+2016-09-20 01:52:59	<--	Lomex (~lomex@213.61.34.42) has quit
+2016-09-20 01:53:15	-->	unK_ (~drunK@dynamic-78-8-159-26.ssp.dialog.net.pl) has joined ##c++
+2016-09-20 01:53:15	-->	Tempesta (~Tempesta@unaffiliated/tempesta) has joined ##c++
+2016-09-20 01:53:25	-->	bx2 (~bx2@46.140.123.246) has joined ##c++
+2016-09-20 01:53:32	<--	yeticry (~yeticry@183.160.5.162) has quit (Ping timeout: 265 seconds)
+2016-09-20 01:54:02	-->	Mimic (~chatzilla@net-93-150-83-59.cust.vodafonedsl.it) has joined ##c++
+2016-09-20 01:54:18	<--	Sora (~quassel@197.17.18.137) has quit (Read error: Connection reset by peer)
+2016-09-20 01:54:59	<--	Mimic (~chatzilla@net-93-150-83-59.cust.vodafonedsl.it) has left ##c++
+2016-09-20 01:54:59		[01:54]
+2016-09-20 01:55:07	-->	Mimic (~chatzilla@net-93-150-83-59.cust.vodafonedsl.it) has joined ##c++
+2016-09-20 01:55:14	-->	yeticry (~yeticry@183.160.5.162) has joined ##c++
+2016-09-20 01:55:40	<--	KAHR-Alpha (~Alpha@AReims-652-1-187-168.w92-142.abo.wanadoo.fr) has quit (Ping timeout: 244 seconds)
+2016-09-20 01:55:45	<--	Mimic (~chatzilla@net-93-150-83-59.cust.vodafonedsl.it) has left ##c++
+2016-09-20 01:57:23	-->	Ropeney (~Ropeney@CPE-58-170-196-106.lns2.lon.bigpond.net.au) has joined ##c++
+2016-09-20 01:57:23	<--	Ropeney (~Ropeney@CPE-58-170-196-106.lns2.lon.bigpond.net.au) has quit (Client Quit)
+2016-09-20 01:59:09	-->	Freze (~Freze@c-73-167-60-180.hsd1.ma.comcast.net) has joined ##c++
+2016-09-20 01:59:24	-->	f10_ (~flo@2001:470:52af:1:242c:2fc9:d40d:50d3) has joined ##c++
+2016-09-20 01:59:25	<--	araml (~araml@unaffiliated/araml) has quit (Quit: WeeChat 1.0.1)
+2016-09-20 01:59:52	<--	simius (~simius@unaffiliated/simius) has quit (Ping timeout: 265 seconds)
+2016-09-20 02:00:23	-->	jaafar (~quassel@50-206-78-205-static.hfc.comcastbusiness.net) has joined ##c++
+2016-09-20 02:00:41	<--	forgottenone (~forgotten@176.43.2.35) has quit (Quit: Konversation terminated!)
+2016-09-20 02:00:48	-->	Sceorem (~Sceorem@xbn44-3-82-232-76-9.fbx.proxad.net) has joined ##c++
+2016-09-20 02:01:10	-->	corsaere (~corsaere@unaffiliated/corsaere) has joined ##c++
+2016-09-20 02:01:16	Olipro	is there anything in C++ that can allow me to create a capturing function/lambda and pass it to a dumb C function that takes a function pointer?
+2016-09-20 02:01:48	<--	psychicist__ (~psychicis@ip127-8-212-87.adsl2.static.versatel.nl) has quit (Quit: Lost terminal)
+2016-09-20 02:01:49	va	you can do that.
+2016-09-20 02:02:35	cbreak	Olipro: nope
+2016-09-20 02:02:38	w3z	not in the language basics no, youll have to use a dispatch function
+2016-09-20 02:02:49	cbreak	Olipro: you'll have to use some external library that synthesizes a new function for your stuff
+2016-09-20 02:03:10	cbreak	something like libffi or so
+2016-09-20 02:03:14	 *	cbreak has never used that thing
+2016-09-20 02:03:23	cbreak	or libjit? hmm...
+2016-09-20 02:03:29	cbreak	Olipro: anyway, it's a pain in the ass
+2016-09-20 02:03:35	-->	andrzejku (~Andrzej@90-156-117-46.internetia.net.pl) has joined ##c++
+2016-09-20 02:03:37	-->	forgottenone (~forgotten@176.43.2.35) has joined ##c++
+2016-09-20 02:03:37	cbreak	you should see if you can find a less shitty API
+2016-09-20 02:03:44	cbreak	one that at least gives you a user data pointer
+2016-09-20 02:04:14	w3z	i wouldnt go that far, the simplest solution is to provide a dispatch/swizzle function that knows about the instance of the lambda and calls it on the c routines behalf
+2016-09-20 02:04:35	w3z	there will of course be lifetime issues
+2016-09-20 02:05:22	Olipro	yeah, but, knowing about the instance of the lambda is the trick
+2016-09-20 02:05:51	Olipro	which I can only see a way out of by doing something gross like either a global/static member
+2016-09-20 02:07:31	cbreak	Olipro: you have to create a new function for every lambda
+2016-09-20 02:07:40	cbreak	you need runtime code generation
+2016-09-20 02:07:53	Olipro	essentially, yes
+2016-09-20 02:08:03	cbreak	otherwise you can not tell the C function pointer invocations appart
+2016-09-20 02:08:11	cbreak	I read that libffi or libjit can do it
+2016-09-20 02:08:22	cbreak	but I've not looked at it closely enough to find out how
+2016-09-20 02:08:27	-->	simius (~simius@unaffiliated/simius) has joined ##c++
+2016-09-20 02:08:46	<--	bjz (~bjz@pa49-185-187-31.pa.vic.optusnet.com.au) has quit (Quit: My MacBook Pro has gone to sleep. ZZZzzz…)
+2016-09-20 02:08:59	-->	kimundi (~Kimundi@dynip-129-217-065-035.wifi.tu-dortmund.de) has joined ##c++
+2016-09-20 02:09:36	-->	f10 (~flo@2001:470:52af:1:1883:b70e:19db:f1db) has joined ##c++
+2016-09-20 02:13:25	-->	Paralyz3d (~Meta@109.98.164.15) has joined ##c++
+2016-09-20 02:13:25		[02:13]
+2016-09-20 02:13:35	<--	whytrytofly (~whytrytof@dslb-094-223-012-212.094.223.pools.vodafone-ip.de) has quit (Remote host closed the connection)
+2016-09-20 02:14:51	<--	Paralyz3d (~Meta@109.98.164.15) has quit (Quit: Leaving)
+2016-09-20 02:14:51	<--	forgottenone (~forgotten@176.43.2.35) has quit (Ping timeout: 265 seconds)
+2016-09-20 02:14:58	-->	sigtrm (quassel@quassel.woboq.de) has joined ##c++
+2016-09-20 02:16:31	-->	GinoManWorks (~GinoMan@50-251-53-110-static.hfc.comcastbusiness.net) has joined ##c++
+2016-09-20 02:16:51	w3z	{int i; auto F=makeD([&i]{++i;}); void(*p)(decltype(F)*) = decltype(F)::cb; } template<class Fn> struct D:Fn { D(Fn&& f):Fn{f}{} static void cb(D* p) {p->operator()();}}; template<class Fn> D<Fn> makeD(Fn&& f){return {forward<Fn&&>(f)};}
+2016-09-20 02:16:52	geordi	<no output>
+2016-09-20 02:16:57	-->	rtkt (~rtkt@226.18-78-194.adsl-static.isp.belgacom.be) has joined ##c++
+2016-09-20 02:17:18	w3z	of course youll want void* as cb's param type andcast inside cb
+2016-09-20 02:17:22	<--	bergesenha (~harald@90.149.192.21) has left ##c++
+2016-09-20 02:17:47	-->	Lomex (~lomex@213.61.34.42) has joined ##c++
+2016-09-20 02:18:17	w3z	{int i; auto F=makeD([&i]{++i;}); void(*p)(void*) = decltype(F)::cb; } template<class Fn> struct D:Fn { D(Fn&& f):Fn{f}{} static void cb(void* p) {static_cast<D*>(p)->operator()();}}; template<class Fn> D<Fn> makeD(Fn&& f){return {forward<Fn&&>(f)};}
+2016-09-20 02:18:18	geordi	<no output>
+2016-09-20 02:18:27	-->	whytrytofly (~whytrytof@dslb-094-223-012-212.094.223.pools.vodafone-ip.de) has joined ##c++
+2016-09-20 02:18:52	-->	neurodrone (~neurodron@unaffiliated/neurodrone) has joined ##c++
+2016-09-20 02:18:54	w3z	is it better than an external lib, eh
+2016-09-20 02:19:13	<--	Guest22663 (~BioKey@183.253.6.85.dynamic.wline.res.cust.swisscom.ch) has quit (Read error: Connection reset by peer)
+2016-09-20 02:19:18	cbreak	w3z: don't think it'll work
+2016-09-20 02:19:44	<--	incog (~still3@unaffiliated/incog) has quit (K-Lined)
+2016-09-20 02:19:50	w3z	why not?
+2016-09-20 02:20:11	cbreak	w3z: you don't get a function pointer to give as callback
+2016-09-20 02:20:17	w3z	i do
+2016-09-20 02:20:25	w3z	void(*p)(void*) = decltype(F)::cb;
+2016-09-20 02:20:26	cbreak	you get a whole object with storage
+2016-09-20 02:20:51	cbreak	w3z: try with signature void(*)()
+2016-09-20 02:21:03	w3z	well the lifetime of D has to be managed until after the c api is done with it, but thats a different story
+2016-09-20 02:21:03	cbreak	w3z: if there was a userdata pointer there wouldn't be a problem in the first place
+2016-09-20 02:21:16	w3z	there would still be a problem
+2016-09-20 02:21:40	w3z	the capturing lambda isnt converible to a function pointer
+2016-09-20 02:21:49	Olipro	no, but it is convertible to an std::function
+2016-09-20 02:21:55	Olipro	and I could just pass a pointer to that
+2016-09-20 02:22:07	<--	corsaere (~corsaere@unaffiliated/corsaere) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-09-20 02:22:22	-->	lncog (~stillfree@74.51.208.46.dyn.plus.net) has joined ##c++
+2016-09-20 02:22:23	w3z	the c api would still need a swizzle for the function<>
+2016-09-20 02:22:30	<--	lncog (~stillfree@74.51.208.46.dyn.plus.net) has quit (K-Lined)
+2016-09-20 02:22:32	<--	whytrytofly (~whytrytof@dslb-094-223-012-212.094.223.pools.vodafone-ip.de) has quit (Remote host closed the connection)
+2016-09-20 02:22:36	cbreak	no
+2016-09-20 02:22:46	cbreak	a userdata pointer would be enough
+2016-09-20 02:22:56	cbreak	but some API is too crappy to have something like that :(
+2016-09-20 02:23:01	Olipro	no, you can just reinterpret_cast<std::function<...>*>(userdata)
+2016-09-20 02:23:13	w3z	a user data param AND a c entrypoint that casts back to the function
+2016-09-20 02:23:16	cbreak	I've had a few that actually only had a callback function, no userdata
+2016-09-20 02:23:32	Olipro	yeah, sadly this is my situation
+2016-09-20 02:23:33	w3z	no context data would be a pain, but eh
+2016-09-20 02:23:33	<--	GrayArea (~GrayArea@cpc73846-dals21-2-0-cust384.20-2.cable.virginm.net) has quit (Ping timeout: 240 seconds)
+2016-09-20 02:23:44	-->	lncog (~stillfree@2001:4801:7821:77:d925:a5ab:ff10:73ff) has joined ##c++
+2016-09-20 02:23:45	-->	kaleid0 (~kaleid0@184.sub-174-219-1.myvzw.com) has joined ##c++
+2016-09-20 02:23:48	cbreak	that's why I even considered libffi
+2016-09-20 02:24:01	cbreak	in the end I solved the problem by ignoring it
+2016-09-20 02:24:17	Olipro	I don't think libffi is usable
+2016-09-20 02:24:24	cbreak	not sure if that'll work for you
+2016-09-20 02:24:34	Olipro	it seems to be for a bunch of interpreted/JIT languages
+2016-09-20 02:24:35	<--	lncog (~stillfree@2001:4801:7821:77:d925:a5ab:ff10:73ff) has quit (K-Lined)
+2016-09-20 02:24:45	w3z	even crappy c apis give you a void* context, are you sure youre not missing somewhere to stuff user data ...
+2016-09-20 02:25:04	-->	bjz (~bjz@14-201-215-168.tpgi.com.au) has joined ##c++
+2016-09-20 02:25:16	Olipro	under normal conditions, yes, this is the Lua C API
+2016-09-20 02:25:39	Olipro	thing is that the library in my case doesn't know which Lua API it's getting so that's embedded in a class instance it needs to get
+2016-09-20 02:26:21	-->	josephnoir (~josephnoi@141.22.28.250) has joined ##c++
+2016-09-20 02:26:21	Olipro	usually, if you're working with just one lua, you'd push your function with the userdata as an "upvalue"... but you have to call lua API functions to retrieve that upvalue
+2016-09-20 02:26:24	-->	szulak (uid162164@gateway/web/irccloud.com/x-jsljspzzcrpsgrov) has joined ##c++
+2016-09-20 02:26:58	Olipro	I'm veering towards just storing the object in a static variable and be done with it
+2016-09-20 02:27:10	Olipro	stinks like hell but I don't see a better option
+2016-09-20 02:27:28	w3z	well you can always fallback on a function scope static, at least its better than namespace scope
+2016-09-20 02:27:28	cbreak	Olipro: lua works fine
+2016-09-20 02:27:40	cbreak	it gives userdata as much as you want
+2016-09-20 02:28:04	Olipro	yeah, except I have to call lua_touserdata() to get it
+2016-09-20 02:28:11	cbreak	you can store it somewhere in the registry, or somewhere else
+2016-09-20 02:28:24	cbreak	Olipro: sure. light or heavy userdata.
+2016-09-20 02:28:37	Olipro	thing is accessing all the Lua API functions are via a class instance
+2016-09-20 02:28:37		[02:28]
+2016-09-20 02:28:56	Olipro	as opposed to the standard situation where it's regular Lua and they're just statically declared functions in the root namespace
+2016-09-20 02:28:57	<--	qqz (~qqz@194-118-30-150.adsl.highway.telekom.at) has quit (Ping timeout: 248 seconds)
+2016-09-20 02:29:06	cbreak	so?
+2016-09-20 02:29:11	-->	JoshS (~jshjsh@172.56.17.251) has joined ##c++
+2016-09-20 02:29:20	Olipro	so, specifically, my Lua C function needs to receive the class instance reference
+2016-09-20 02:29:23	cbreak	I don't see any difference.
+2016-09-20 02:29:29	Olipro	because that class instance reference contains lua_touserdata
+2016-09-20 02:30:05	cbreak	make the class handle callbacks
+2016-09-20 02:30:33	Olipro	"handle" ?
+2016-09-20 02:30:39	cbreak	redirect
+2016-09-20 02:31:03	cbreak	the class obviously knows its own lua_touserdata function, so it doesn't need a metadata lookup for that
+2016-09-20 02:31:21	cbreak	you need one c handler per lua_touserdata
+2016-09-20 02:31:30	Olipro	the class does, but lua C API functions have to be static
+2016-09-20 02:31:32	cbreak	and the most convenient place is in that wrapper class
+2016-09-20 02:31:37	Olipro	int(*)(lua_State*)
+2016-09-20 02:32:16	<--	jshjsh (~jshjsh@172.56.17.251) has quit (Ping timeout: 255 seconds)
+2016-09-20 02:32:47	Olipro	yeah, I'm not following - imagine that I have a class called "LuaAPI" with instance methods that consist of Lua's C API functions
+2016-09-20 02:32:50	-->	corto (~simon@modemcable254.232-82-70.mc.videotron.ca) has joined ##c++
+2016-09-20 02:32:52	-->	Arlen0 (~Arlen0@38-103-219-200.alamobb.net) has joined ##c++
+2016-09-20 02:33:17	<--	tachoknight (~tachoknig@2601:241:102:60a6:8e70:5aff:fe24:3cb0) has quit (Ping timeout: 250 seconds)
+2016-09-20 02:33:19	Olipro	I then register a Lua C function via myLuaAPIinstance.lua_pushcclosure(L, <myfunc>, 0);
+2016-09-20 02:33:25	-->	achauvin (~achauvin@nat-wifi-etu-3.univ-rouen.fr) has joined ##c++
+2016-09-20 02:33:28	<--	Arlen0 (~Arlen0@38-103-219-200.alamobb.net) has quit (Client Quit)
+2016-09-20 02:33:32	Olipro	where <myfunc> is int(*)(lua_State*)
+2016-09-20 02:33:51	Olipro	when the lua VM calls <myfunc>, how is <myfunc> going to access myLuaAPIinstance
+2016-09-20 02:33:55	corto	what's an appropriate channel for discussing C++ libraries (comparision, suggestions, etc)
+2016-09-20 02:34:01	Olipro	without it, it can't call *any* Lua API functions
+2016-09-20 02:34:14	z16	!give corto general
+2016-09-20 02:34:16	nolyc	corto: ##c++-general for algorithms, libraries, practices, projects, tools etc. yes two #s.
+2016-09-20 02:34:24	corto	z16, thanks
+2016-09-20 02:34:46	-->	tachoknight (~tachoknig@2601:241:102:60a6:8e70:5aff:fe24:3cb0) has joined ##c++
+2016-09-20 02:35:13	Olipro	the only solution I see is to store a pointer to myLuaAPIinstance in static scope
+2016-09-20 02:35:24	-->	whytrytofly (~whytrytof@dslb-094-223-012-212.094.223.pools.vodafone-ip.de) has joined ##c++
+2016-09-20 02:35:27	-->	pavshn (~pavshn@ppp95-165-153-84.pppoe.spdop.ru) has joined ##c++
+2016-09-20 02:35:34	cbreak	Olipro: the lua functions are part of the type of that wrapper object
+2016-09-20 02:35:46	cbreak	there's no point having them as object member, only as class member
+2016-09-20 02:36:05	-->	jefcolbi (~Thunderbi@188.166.147.168) has joined ##c++
+2016-09-20 02:36:12	<--	tristanseifert (~tristanse@128.194.3.4) has quit (Ping timeout: 276 seconds)
+2016-09-20 02:36:35	Olipro	the functions are declared as pure-virtual in a base interface class
+2016-09-20 02:36:47	<--	tlaxkit (~Thunderbi@92.185.154.236) has quit (Read error: Connection reset by peer)
+2016-09-20 02:36:48	Olipro	with multiple implementing classes
+2016-09-20 02:37:03	<--	rriemann (~rriemann@dhcp-67-135.ixxi.ens-lyon.fr) has quit (Ping timeout: 240 seconds)
+2016-09-20 02:37:08	-->	rriemann_ (~rriemann@anyconnect174.insa-lyon.fr) has joined ##c++
+2016-09-20 02:37:08	Olipro	the type of myLuaAPIinstance is LuaInterface&
+2016-09-20 02:37:22	<--	Nilesh_ (uid116340@gateway/web/irccloud.com/x-dpskqufqxwwptypa) has quit (Quit: Connection closed for inactivity)
+2016-09-20 02:37:29	Olipro	(because we don't pick any implementing class)
+2016-09-20 02:37:49	Olipro	one implementing class could be Lua 5.1, another could be LuaJIT
+2016-09-20 02:37:51	<--	pavshn (~pavshn@ppp95-165-153-84.pppoe.spdop.ru) has quit (Client Quit)
+2016-09-20 02:37:54	cbreak	Olipro: all you need is to know in an implementing class how to get upvalues
+2016-09-20 02:37:59	-->	tlaxkit (~Thunderbi@92.185.154.236) has joined ##c++
+2016-09-20 02:38:08	cbreak	Olipro: and for that you don't need to have any object
+2016-09-20 02:38:19	Olipro	that's fine, but the implementing class isn't the one pushing lua C functions
+2016-09-20 02:38:21	cbreak	it's obvious the LuaJITWrapperThingie uses luajits calls
+2016-09-20 02:38:22	<--	whytrytofly (~whytrytof@dslb-094-223-012-212.094.223.pools.vodafone-ip.de) has quit (Remote host closed the connection)
+2016-09-20 02:38:28	Olipro	it's consumers that receive a LuaInterface&
+2016-09-20 02:38:42	cbreak	as I said above
+2016-09-20 02:38:46	cbreak	the wrapper should handle that
+2016-09-20 02:38:54	cbreak	it should register its own function as a callback
+2016-09-20 02:39:02	cbreak	it should unwrapp which ever userdata a user provided
+2016-09-20 02:39:07	cbreak	and then forward it to the user callback
+2016-09-20 02:39:10	Olipro	you haven't explained how this wrapper is going to obtain the myLuaAPIinstance
+2016-09-20 02:39:14	cbreak	I have
+2016-09-20 02:39:24	cbreak	I explained that that's not needed
+2016-09-20 02:39:32	cbreak	just 1 minute ago
+2016-09-20 02:39:55	<--	bjz (~bjz@14-201-215-168.tpgi.com.au) has quit (Read error: Connection reset by peer)
+2016-09-20 02:40:00	<--	jrolland-work (~jeff@155.92.176.224) has quit (Ping timeout: 260 seconds)
+2016-09-20 02:40:25	Olipro	no, it doesn't so here's the scenario, maybe you can give an actual example that neatly solves it
+2016-09-20 02:40:30	Olipro	ok, so let's say I have a function that is void(lua_State*, LuaInterface& int) - this function is going to register a Lua C API function via int.lua_pushcclosure()
+2016-09-20 02:40:30	-->	whytrytofly (~whytrytof@dslb-094-223-012-212.094.223.pools.vodafone-ip.de) has joined ##c++
+2016-09-20 02:40:33	<--	tachoknight (~tachoknig@2601:241:102:60a6:8e70:5aff:fe24:3cb0) has quit (Ping timeout: 272 seconds)
+2016-09-20 02:40:42	Olipro	how is the C function going to get access to "int"
+2016-09-20 02:40:53	Olipro	I can't use a lambda, because it can't capture
+2016-09-20 02:41:03	-->	bjz (~bjz@14-201-215-168.tpgi.com.au) has joined ##c++
+2016-09-20 02:41:30	cbreak	Olipro: what?
+2016-09-20 02:41:33	-->	merijn (~merijn@212.78.164.170) has joined ##c++
+2016-09-20 02:41:40	cbreak	you use your myAPIthingie.register(callback)
+2016-09-20 02:41:44	-->	tachoknight (~tachoknig@2601:241:102:60a6:8e70:5aff:fe24:3cb0) has joined ##c++
+2016-09-20 02:41:51	cbreak	the register function obviously has to be called differently
+2016-09-20 02:42:13	merijn	Ok, suppose I have a std::function and a legacy API I can't change that expects a function pointer, how would I go about obtaining a function pointer to call my std::function?
+2016-09-20 02:42:15	cbreak	but what it does is register a static member function of which ever API object type you happen to use
+2016-09-20 02:42:33	cbreak	Olipro: and it registers the object itself, and the userdata the user gave as userdata
+2016-09-20 02:42:41	cbreak	Olipro: in its own callback, it gets the userdata back
+2016-09-20 02:42:53	cbreak	because the callback function knows how to do that, that's easy
+2016-09-20 02:42:55	Olipro	OK, I see what you're saying now
+2016-09-20 02:42:57	cbreak	the rest should be simple
+2016-09-20 02:43:09	Olipro	the implementing class will wrap it essentially
+2016-09-20 02:43:09	cbreak	merijn: make one
+2016-09-20 02:43:18	cbreak	Olipro: yes
+2016-09-20 02:43:21	cbreak	Olipro: it has to
+2016-09-20 02:43:35	cbreak	it's the only place where you can neatly do it
+2016-09-20 02:43:59	Olipro	yep, and since the implementing classes must be singletons, this doesn't cause a problem
+2016-09-20 02:43:59		[02:43]
+2016-09-20 02:44:13	<--	navidr (uid112413@gateway/web/irccloud.com/x-yqjsnjtnfjqxydkb) has quit (Quit: Connection closed for inactivity)
+2016-09-20 02:44:16	merijn	cbreak: I'm not quite sure how I'd do that? Else I wouldn't ask :)
+2016-09-20 02:44:32	cbreak	merijn: write a function
+2016-09-20 02:44:43	cbreak	merijn: a plain free function, or a static member function
+2016-09-20 02:44:47	cbreak	that's your function pointer
+2016-09-20 02:44:51	cbreak	make it call your std::function
+2016-09-20 02:45:08	cbreak	the only problem is how to give your function the std::function
+2016-09-20 02:45:13	cbreak	usually this is done via userdata
+2016-09-20 02:45:21	cbreak	that requires your C API to not be shit.
+2016-09-20 02:45:40	merijn	cbreak: Yeah, which the API sadly doesn't allow. Although I suppose I can just have a top-level std::function and assign mine to that
+2016-09-20 02:45:43	w3z	ok, this conversation has been off-topic for a while, and boring even longer
+2016-09-20 02:47:01	-->	bsdnoob (~bsdnoobx@96.47.238.133) has joined ##c++
+2016-09-20 02:47:03	bsdnoob	hello
+2016-09-20 02:47:09	bsdnoob	can anyone help me add https://github.com/ocornut/imgui
+2016-09-20 02:47:13	bsdnoob	library to Clion ?
+2016-09-20 02:47:46	cbreak	what's a clion?
+2016-09-20 02:47:57	bsdnoob	cbreak, IDE
+2016-09-20 02:48:02	cbreak	get xcode.
+2016-09-20 02:48:05	cbreak	or cmake ;)
+2016-09-20 02:48:10	bsdnoob	which uses Cmake as build system
+2016-09-20 02:48:32	bsdnoob	cbreak, CMake is already on sir
+2016-09-20 02:48:50	cbreak	then ask in #cmake? :)
+2016-09-20 02:49:08	bsdnoob	let me try
+2016-09-20 02:49:31	<--	tlaxkit (~Thunderbi@92.185.154.236) has quit (Remote host closed the connection)
+2016-09-20 02:49:41	-->	tlaxkit (~Thunderbi@92.185.154.236) has joined ##c++
+2016-09-20 02:50:25	<--	tocka_ (~tocka@78-56-107-170.static.zebra.lt) has quit
+2016-09-20 02:50:41	<--	tachoknight (~tachoknig@2601:241:102:60a6:8e70:5aff:fe24:3cb0) has quit (Ping timeout: 272 seconds)
+2016-09-20 02:50:51	-->	Kn|t3 (~agarwalvi@49.207.53.8) has joined ##c++
+2016-09-20 02:52:00	-->	MulleDK19 (MulleDK19@unaffiliated/mulledk19) has joined ##c++
+2016-09-20 02:52:02	w3z	!give bsdnoob general
+2016-09-20 02:52:03	nolyc	bsdnoob: ##c++-general for algorithms, libraries, practices, projects, tools etc. yes two #s.
+2016-09-20 02:52:12	w3z	give everyone general!!
+2016-09-20 02:53:12	<--	bjz (~bjz@14-201-215-168.tpgi.com.au) has quit (Read error: Connection reset by peer)
+2016-09-20 02:53:49	-->	bjz (~bjz@14-201-215-168.tpgi.com.au) has joined ##c++
+2016-09-20 02:54:30	-->	Nilesh_ (uid116340@gateway/web/irccloud.com/x-ytqsznkneieeacvk) has joined ##c++
+2016-09-20 02:55:40	-->	jshjsh (~jshjsh@172.56.17.251) has joined ##c++
+2016-09-20 02:55:41	-->	psychicist__ (~psychicis@ip127-8-212-87.adsl2.static.versatel.nl) has joined ##c++
+2016-09-20 02:56:36	-->	ewanshin (~ewanshin@183.101.46.30) has joined ##c++
+2016-09-20 02:56:48	-->	seishun (~Kakera@87.110.123.166) has joined ##c++
+2016-09-20 02:57:13	-->	trigen (~MSX@studiovideo.org) has joined ##c++
+2016-09-20 02:58:49	<--	JoshS (~jshjsh@172.56.17.251) has quit (Ping timeout: 255 seconds)
+2016-09-20 02:59:53	<--	mfc (~mfc@unaffiliated/mfc) has quit (Read error: Connection reset by peer)
+2016-09-20 02:59:53		[02:59]
+2016-09-20 03:00:33	<--	sctt (~sctt@91.236.116.233) has quit (Ping timeout: 240 seconds)
+2016-09-20 03:00:51	-->	jrolland-work (~jeff@155.92.75.6) has joined ##c++
+2016-09-20 03:00:52	<--	oftc_ftw (~oftc_ftw@unaffiliated/oftc-ftw/x-3443471) has quit (Read error: Connection reset by peer)
+2016-09-20 03:01:19	-->	mfc (~mfc@unaffiliated/mfc) has joined ##c++
+2016-09-20 03:01:19	--	Thorn__ is now known as Thorn
+2016-09-20 03:01:29	<--	josef__k (~jeremy@59.102.31.229) has quit (Ping timeout: 248 seconds)
+2016-09-20 03:01:31	-->	nilof (~saolof@92-32-80-134.tn.glocalnet.net) has joined ##c++
+2016-09-20 03:02:28	-->	rriemann (~rriemann@dhcp-67-135.ixxi.ens-lyon.fr) has joined ##c++
+2016-09-20 03:02:33	<--	rriemann_ (~rriemann@anyconnect174.insa-lyon.fr) has quit (Ping timeout: 248 seconds)
+2016-09-20 03:03:29	-->	yong (~vayne@pD9E45D8A.dip0.t-ipconnect.de) has joined ##c++
+2016-09-20 03:03:56	-->	corsaere (~corsaere@unaffiliated/corsaere) has joined ##c++
+2016-09-20 03:04:37	<--	olly_c (~Thunderbi@pmpc1318.nerc-pml.ac.uk) has quit (Remote host closed the connection)
+2016-09-20 03:04:42	-->	tachoknight (~tachoknig@2601:241:102:60a6:8e70:5aff:fe24:3cb0) has joined ##c++
+2016-09-20 03:05:23	<--	whytrytofly (~whytrytof@dslb-094-223-012-212.094.223.pools.vodafone-ip.de) has quit (Remote host closed the connection)
+2016-09-20 03:06:31	<--	bjz (~bjz@14-201-215-168.tpgi.com.au) has quit (Read error: Connection reset by peer)
+2016-09-20 03:06:59	-->	whytrytofly (~whytrytof@dslb-094-223-012-212.094.223.pools.vodafone-ip.de) has joined ##c++
+2016-09-20 03:07:06	-->	bjz (~bjz@14-201-215-168.tpgi.com.au) has joined ##c++
+2016-09-20 03:07:42	<--	rtkt (~rtkt@226.18-78-194.adsl-static.isp.belgacom.be) has quit (Quit: Leaving)
+2016-09-20 03:07:44	-->	riksteri (~SpaceDino@62.102.148.177) has joined ##c++
+2016-09-20 03:08:50	-->	SecondForm_Glenn (~Thunderbi@97-102-42-24.res.bhn.net) has joined ##c++
+2016-09-20 03:09:02	-->	alexarnaud (~alexarnau@fsf/member/alexarnaud) has joined ##c++
+2016-09-20 03:09:28	<--	neurodrone (~neurodron@unaffiliated/neurodrone) has quit (Quit: neurodrone)
+2016-09-20 03:10:46	-->	slawas (~slawas@postfw01.ps01.plo.tdch.dk) has joined ##c++
+2016-09-20 03:10:52	-->	symm- (~symm-@86.127.152.32) has joined ##c++
+2016-09-20 03:10:57	<--	tachoknight (~tachoknig@2601:241:102:60a6:8e70:5aff:fe24:3cb0) has quit (Ping timeout: 272 seconds)
+2016-09-20 03:11:12	<--	alex529 (50efa501@gateway/web/freenode/ip.80.239.165.1) has quit (Quit: Page closed)
+2016-09-20 03:11:46	-->	tachoknight (~tachoknig@2601:241:102:60a6:8e70:5aff:fe24:3cb0) has joined ##c++
+2016-09-20 03:12:13	<--	yong (~vayne@pD9E45D8A.dip0.t-ipconnect.de) has quit (Quit: Bye~)
+2016-09-20 03:12:47	-->	shirt (~shirt@adsl-v01-3db14831dc15da1b.tau.ac.il) has joined ##c++
+2016-09-20 03:12:53	-->	shingshang (~shingshan@115-64-27-246.static.tpgi.com.au) has joined ##c++
+2016-09-20 03:13:14	-->	araml (~araml@unaffiliated/araml) has joined ##c++
+2016-09-20 03:14:50	<--	whytrytofly (~whytrytof@dslb-094-223-012-212.094.223.pools.vodafone-ip.de) has quit (Quit: Leaving)
+2016-09-20 03:15:25	-->	whytrytofly (~whytrytof@dslb-094-223-012-212.094.223.pools.vodafone-ip.de) has joined ##c++
+2016-09-20 03:15:25		[03:15]
+2016-09-20 03:15:41	-->	nilg (~user@77.70.2.229) has joined ##c++
+2016-09-20 03:15:44	-->	catern (~catern@catern.com) has joined ##c++
+2016-09-20 03:15:58	<--	whytrytofly (~whytrytof@dslb-094-223-012-212.094.223.pools.vodafone-ip.de) has quit (Client Quit)
+2016-09-20 03:15:58	catern	hello ##c++, I have a question
+2016-09-20 03:16:09	-->	forgottenone (~forgotten@195.142.65.127) has joined ##c++
+2016-09-20 03:16:17	-->	whytrytofly (~whytrytof@dslb-094-223-012-212.094.223.pools.vodafone-ip.de) has joined ##c++
+2016-09-20 03:16:42	fooobarrr	that is unacceptable
+2016-09-20 03:17:29	-->	qqz (~qqz@91-115-6-225.adsl.highway.telekom.at) has joined ##c++
+2016-09-20 03:17:53	catern	I am implementing a network protocol, which is divided into several layers (each nested within each other). I have a class A which implements the outmost layer (for a single TCP session). I was planning to have that class dispatch messages in the next layer to another class B which I would make a field of A.
+2016-09-20 03:18:28	fooobarrr	!give catern general
+2016-09-20 03:18:30	nolyc	catern: ##c++-general for algorithms, libraries, practices, projects, tools etc. yes two #s.
+2016-09-20 03:18:37	<--	cysm (cysm@unaffiliated/paracyst) has quit (Ping timeout: 255 seconds)
+2016-09-20 03:18:45	catern	hey, i'm not done, i'm a slow typist :)
+2016-09-20 03:19:04	<--	jefcolbi (~Thunderbi@188.166.147.168) has quit (Ping timeout: 255 seconds)
+2016-09-20 03:19:08	<--	josephnoir (~josephnoi@141.22.28.250) has quit (Quit: zzz ...)
+2016-09-20 03:19:30	-->	josephnoir (~josephnoi@141.22.28.250) has joined ##c++
+2016-09-20 03:19:39	<--	cjwelborn (cjwelborn@unaffiliated/cjwelborn) has quit (Ping timeout: 250 seconds)
+2016-09-20 03:19:45	-->	h_enke (252eb3f2@gateway/web/freenode/ip.37.46.179.242) has joined ##c++
+2016-09-20 03:19:50	catern	however, for B to actually send messages it needs to call a method of A which wraps B's messages in the higher level protocol, how might I do that when B is a field of A?
+2016-09-20 03:19:56	<--	josephnoir (~josephnoi@141.22.28.250) has quit (Client Quit)
+2016-09-20 03:20:18	-->	josephnoir (~josephnoi@141.22.28.250) has joined ##c++
+2016-09-20 03:20:25	<--	tachoknight (~tachoknig@2601:241:102:60a6:8e70:5aff:fe24:3cb0) has quit (Ping timeout: 255 seconds)
+2016-09-20 03:20:25	<--	f10_ (~flo@2001:470:52af:1:242c:2fc9:d40d:50d3) has quit (Ping timeout: 255 seconds)
+2016-09-20 03:20:44	<--	josephnoir (~josephnoi@141.22.28.250) has quit (Client Quit)
+2016-09-20 03:20:52	<--	f10 (~flo@2001:470:52af:1:1883:b70e:19db:f1db) has quit (Ping timeout: 255 seconds)
+2016-09-20 03:21:00	<--	slawas (~slawas@postfw01.ps01.plo.tdch.dk) has quit (Read error: Connection reset by peer)
+2016-09-20 03:21:05	-->	josephnoir (~josephnoi@141.22.28.250) has joined ##c++
+2016-09-20 03:21:32	<--	josephnoir (~josephnoi@141.22.28.250) has quit (Client Quit)
+2016-09-20 03:21:38	-->	regedit (uid150526@gateway/web/irccloud.com/x-nhtfbfzrsinugzwn) has joined ##c++
+2016-09-20 03:21:44	-->	cysm (cysm@unaffiliated/paracyst) has joined ##c++
+2016-09-20 03:22:00	<--	merijn (~merijn@212.78.164.170) has quit (Ping timeout: 260 seconds)
+2016-09-20 03:22:43	-->	cjwelborn (cjwelborn@unaffiliated/cjwelborn) has joined ##c++
+2016-09-20 03:22:47	-->	tachoknight (~tachoknig@2601:241:102:60a6:8e70:5aff:fe24:3cb0) has joined ##c++
+2016-09-20 03:23:17	-->	Valdaris (~Gabe@75-170-43-116.eugn.qwest.net) has joined ##c++
+2016-09-20 03:23:42	catern	(also I am much more familiar with C than C++ so maybe I am making some design error?)
+2016-09-20 03:24:01	<--	elh9 (~elh9___@110-175-114-60.tpgi.com.au) has quit (Ping timeout: 255 seconds)
+2016-09-20 03:24:18	<--	qqz (~qqz@91-115-6-225.adsl.highway.telekom.at) has quit (Ping timeout: 276 seconds)
+2016-09-20 03:24:39	<--	MicroCheapFx_ (~quassel@230-95-190-109.dsl.ovh.fr) has quit (Read error: Connection reset by peer)
+2016-09-20 03:24:44	-->	eez (~eez@cac94-8-82-245-27-76.fbx.proxad.net) has joined ##c++
+2016-09-20 03:25:00	<--	eez (~eez@cac94-8-82-245-27-76.fbx.proxad.net) has quit (Max SendQ exceeded)
+2016-09-20 03:25:25	-->	gobr1 (~gobr1@cac94-8-82-245-27-76.fbx.proxad.net) has joined ##c++
+2016-09-20 03:25:36	<--	gobr1 (~gobr1@cac94-8-82-245-27-76.fbx.proxad.net) has quit (Max SendQ exceeded)
+2016-09-20 03:25:52	<--	richard_w (~richard_w@109.73.24.204) has quit (Quit: WeeChat 1.5)
+2016-09-20 03:25:53	-->	MicroCheapFx (~quassel@230-95-190-109.dsl.ovh.fr) has joined ##c++
+2016-09-20 03:25:58	symm-	does B have to be a field of A? catern
+2016-09-20 03:26:36	-->	Mpskierbg (aedd0e78@gateway/web/freenode/ip.174.221.14.120) has joined ##c++
+2016-09-20 03:27:27	-->	olly_c (~Thunderbi@pmpc1318.nerc-pml.ac.uk) has joined ##c++
+2016-09-20 03:27:27	-->	josephnoir (~josephnoi@141.22.28.250) has joined ##c++
+2016-09-20 03:27:34	w3z	construct B with a reference to A ....
+2016-09-20 03:27:35	-->	eduardas_m (~eduardas_@213.197.143.19) has joined ##c++
+2016-09-20 03:27:43	-->	occamsblazer (~occamsbla@131.228.197.2) has joined ##c++
+2016-09-20 03:27:50	symm-	SO INEFFICIENT
+2016-09-20 03:28:05	symm-	(kidding)
+2016-09-20 03:28:37	-->	CEnnis91 (uid3543@gateway/web/irccloud.com/x-mvffqkljtvwgqfzf) has joined ##c++
+2016-09-20 03:28:46	symm-	catern: if you want to peek down the rabbit hole, https://yanniss.github.io/practical-fmtd.pdf
+2016-09-20 03:28:48	-->	Galik (~galik@unaffiliated/galik) has joined ##c++
+2016-09-20 03:28:49	fooobarrr	why cant B be a subclass of A
+2016-09-20 03:28:57	<--	decimad (~deci@ip5f5be505.dynamic.kabel-deutschland.de) has quit (Quit: Going offline, see ya! (www.adiirc.com))
+2016-09-20 03:29:44	w3z	you said B is a member of A ....
+2016-09-20 03:30:04	<--	achauvin (~achauvin@nat-wifi-etu-3.univ-rouen.fr) has quit (Quit: Textual IRC Client: www.textualapp.com)
+2016-09-20 03:30:12	<--	rriemann (~rriemann@dhcp-67-135.ixxi.ens-lyon.fr) has quit (Ping timeout: 265 seconds)
+2016-09-20 03:30:38	w3z	your thinking is as convoluted as your proposed design
+2016-09-20 03:30:38		[03:30]
+2016-09-20 03:30:42	<--	Mpskierbg (aedd0e78@gateway/web/freenode/ip.174.221.14.120) has quit (Ping timeout: 240 seconds)
+2016-09-20 03:31:22	fooobarrr	this is why i said #general
+2016-09-20 03:31:28	catern	symm-: is "mixin" the name for this design pattern?
+2016-09-20 03:31:42	fooobarrr	have you done any oop catern ?
+2016-09-20 03:32:12	-->	josef__k (~jeremy@59.102.31.229) has joined ##c++
+2016-09-20 03:32:13	catern	not really :)
+2016-09-20 03:32:26	w3z	anyway, B cant be a member of A and inherit from A, since A is incomplete
+2016-09-20 03:33:25	-->	merijn (~merijn@212.78.164.170) has joined ##c++
+2016-09-20 03:33:34	-->	jefcolbi (~Thunderbi@188.166.147.168) has joined ##c++
+2016-09-20 03:33:35	w3z	struct A{struct B{A& a_;}; B b_{*this};};
+2016-09-20 03:33:38	w3z	{} struct A{struct B{A& a_;}; B b_{*this};};
+2016-09-20 03:33:39	geordi	<no output>
+2016-09-20 03:33:45	<--	shirt (~shirt@adsl-v01-3db14831dc15da1b.tau.ac.il) has quit (Quit: Leaving)
+2016-09-20 03:34:03	-->	shirt (~shirt@adsl-v01-3db14831dc15da1b.tau.ac.il) has joined ##c++
+2016-09-20 03:34:28	catern	i never said B would inherit from A
+2016-09-20 03:34:36	-->	qqz (~qqz@91-115-6-225.adsl.highway.telekom.at) has joined ##c++
+2016-09-20 03:34:43	<--	qqz (~qqz@91-115-6-225.adsl.highway.telekom.at) has quit (Client Quit)
+2016-09-20 03:35:05	<--	Appleman1234 (~Appleman1@KD119104054143.au-net.ne.jp) has quit (Ping timeout: 240 seconds)
+2016-09-20 03:36:58	<--	hyacinth^timeout (~yhyacinth@61.111.255.109) has quit (Remote host closed the connection)
+2016-09-20 03:37:02	<--	corsaere (~corsaere@unaffiliated/corsaere) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-09-20 03:37:26	-->	de-facto (~de-facto@unaffiliated/de-facto) has joined ##c++
+2016-09-20 03:39:00	-->	esas (~esas@unaffiliated/esas) has joined ##c++
+2016-09-20 03:39:06	w3z	fooobarrr did, i confused you two
+2016-09-20 03:39:09	catern	anyway one reason why I want B to be a field of A, is so that A can be destroyed, B still hang around, and then another A can later be recreated with the same B
+2016-09-20 03:39:24	catern	(to implement persistent sessions across connection failures)
+2016-09-20 03:39:40	-->	narendraj9 (~user@157.119.170.52) has joined ##c++
+2016-09-20 03:39:48	<--	blablablub (~howlymowl@euler.ilr.tu-berlin.de) has quit (Quit: Konversation terminated!)
+2016-09-20 03:40:00	w3z	uhh. thats not a member of A then is it ..., thats an instance of B managed by A transiently
+2016-09-20 03:40:38	catern	is that not what a field of A would be?
+2016-09-20 03:40:48	<--	josephnoir (~josephnoi@141.22.28.250) has quit (Quit: bye ...)
+2016-09-20 03:41:11	w3z	no a member of A is tied directly to the lifetime of A, its a subobject of the A instance
+2016-09-20 03:41:17	<--	Gluesticky (~IceChat9@unaffiliated/gluesticky) has quit (Quit: This is the end. Goodbye cruel world!)
+2016-09-20 03:41:44	symm-	class A { B b; }; // b is a field
+2016-09-20 03:42:14	catern	okay, so what's the terminology for B *b then?
+2016-09-20 03:42:20	w3z	now the member of A of type B b could potentially be moved to another instance of a B
+2016-09-20 03:42:33	w3z	thats a member of type pointer to B
+2016-09-20 03:42:51	catern	okay :)
+2016-09-20 03:43:03	<--	jefcolbi (~Thunderbi@188.166.147.168) has quit (Ping timeout: 240 seconds)
+2016-09-20 03:43:33	<--	Vuks (~Vuks@unaffiliated/vuks69) has quit (Ping timeout: 240 seconds)
+2016-09-20 03:44:17	<--	bsdnoob (~bsdnoobx@96.47.238.133) has quit (Read error: Connection reset by peer)
+2016-09-20 03:44:22	<--	whytrytofly (~whytrytof@dslb-094-223-012-212.094.223.pools.vodafone-ip.de) has quit (Quit: Leaving)
+2016-09-20 03:46:09	-->	oftc_ftw (~oftc_ftw@unaffiliated/oftc-ftw/x-3443471) has joined ##c++
+2016-09-20 03:46:09		[03:46]
+2016-09-20 03:48:18	catern	so what do you recommend for letting A's member of type pointer to B call methods on A?
+2016-09-20 03:50:25	-->	francoisk (~francoisk@154.66.250.11) has joined ##c++
+2016-09-20 03:50:49	 *	zap0 gets confused and imagines  A Bee  flying around
+2016-09-20 03:50:55	-->	rendar (~I@95.239.179.96) has joined ##c++
+2016-09-20 03:50:56	<--	bjz (~bjz@14-201-215-168.tpgi.com.au) has quit (Read error: Connection reset by peer)
+2016-09-20 03:51:55	-->	bjz (~bjz@14-201-215-168.tpgi.com.au) has joined ##c++
+2016-09-20 03:52:21	-->	Appleman1234 (~Appleman1@KD119104054143.au-net.ne.jp) has joined ##c++
+2016-09-20 03:52:50	symm-	catern: class A { B b(this); }; // b now knows which A contains it
+2016-09-20 03:53:23	-->	GrayArea (~GrayArea@cpc73846-dals21-2-0-cust384.20-2.cable.virginm.net) has joined ##c++
+2016-09-20 03:54:25	<--	Akimb (~Akimb@88-119-138-154.static.zebra.lt) has quit (Read error: Connection reset by peer)
+2016-09-20 03:54:39	<--	tachoknight (~tachoknig@2601:241:102:60a6:8e70:5aff:fe24:3cb0) has quit (Ping timeout: 272 seconds)
+2016-09-20 03:55:16	w3z	i suggest you rethink your reuiqrements and design, while of course its possible for B instances to be created with a pointer to an A instance, youre going to run into lifetime issues
+2016-09-20 03:55:33	w3z	and you dont really seem prepared to handle them properly
+2016-09-20 03:55:46	catern	yeah, that is my concern with the "just give B a pointer to A" approach
+2016-09-20 03:55:50	w3z	what happens when another A instance adopts your B instance
+2016-09-20 03:55:51	-->	Freze_ (~Freze@dhcp-18-189-46-127.dyn.MIT.EDU) has joined ##c++
+2016-09-20 03:55:58	-->	tachoknight (~tachoknig@2601:241:102:60a6:8e70:5aff:fe24:3cb0) has joined ##c++
+2016-09-20 03:56:13	w3z	what happens when the old A instance is deleted
+2016-09-20 03:56:21	catern	right, lots of issues
+2016-09-20 03:56:25	<--	jrolland-work (~jeff@155.92.75.6) has quit (Ping timeout: 255 seconds)
+2016-09-20 03:56:25	<--	Freze (~Freze@c-73-167-60-180.hsd1.ma.comcast.net) has quit (Ping timeout: 248 seconds)
+2016-09-20 03:56:40	w3z	what happens to the new A instances previous B instance
+2016-09-20 03:57:26	w3z	do As and Bs always coexist or can Bs live independent of As
+2016-09-20 03:57:36	-->	Freze (~Freze@dhcp-18-189-11-249.dyn.mit.edu) has joined ##c++
+2016-09-20 03:57:59	w3z	anyway, its your design and off-topic here unless you have a question about the c++ language
+2016-09-20 03:58:02	<--	GenteelBen (~GenteelBe@cpc70133-lutn12-2-0-cust324.9-3.cable.virginm.net) has quit
+2016-09-20 03:58:03	w3z	!general
+2016-09-20 03:58:04	nolyc	##c++-general for algorithms, libraries, practices, projects, tools etc. yes two #s.
+2016-09-20 03:58:33	catern	okay :)
+2016-09-20 03:58:50	w3z	youll want to study up on ownership semantics, move semantics, shared_ptr perhaps etc, then come back with pointed questions
+2016-09-20 03:59:00	fooobarrr	!give catern books
+2016-09-20 03:59:01	nolyc	catern: A nice C++ book guide and list can be found at http://stackoverflow.com/q/388242/1090079
+2016-09-20 03:59:06	catern	sure, I'm familiar :)
+2016-09-20 03:59:14	fooobarrr	should probably learn C++ first
+2016-09-20 03:59:15	catern	that's why I don't want to do the "pointer to A" approach
+2016-09-20 04:00:22	<--	oftc_ftw (~oftc_ftw@unaffiliated/oftc-ftw/x-3443471) has quit (Ping timeout: 244 seconds)
+2016-09-20 04:00:42	<--	Freze_ (~Freze@dhcp-18-189-46-127.dyn.MIT.EDU) has quit (Ping timeout: 265 seconds)
+2016-09-20 04:01:29	-->	coventry (~user@192.64.64.26) has joined ##c++
+2016-09-20 04:01:29		[04:01]
+2016-09-20 04:02:10	coventry	Is there an easy way, in an enable_if, to check whether a typename T is some kind of integer?
+2016-09-20 04:03:22	-->	Brklyn (~truthbk@38.122.226.210) has joined ##c++
+2016-09-20 04:04:25	<--	bounce (bounce@unaffiliated/bounce) has quit (Ping timeout: 248 seconds)
+2016-09-20 04:04:57	-->	Freze_ (~Freze@dhcp-18-189-77-44.dyn.MIT.EDU) has joined ##c++
+2016-09-20 04:05:14	-->	meandrain (~meandrain@89.39.95.149) has joined ##c++
+2016-09-20 04:05:46	coventry	Ah, is_integral.
+2016-09-20 04:06:02	<--	andrzejku (~Andrzej@90-156-117-46.internetia.net.pl) has quit (Quit: This computer has gone to sleep)
+2016-09-20 04:06:18	<--	brendel (~brice@LAubervilliers-656-1-215-246.w217-128.abo.wanadoo.fr) has quit (Read error: Connection reset by peer)
+2016-09-20 04:07:03	<--	l2esonance (~l2esonanc@c-73-223-132-245.hsd1.ca.comcast.net) has quit (Ping timeout: 240 seconds)
+2016-09-20 04:07:04	-->	Gabe__ (~Gabe@75-170-43-116.eugn.qwest.net) has joined ##c++
+2016-09-20 04:07:15	-->	brendel (~brice@LAubervilliers-656-1-215-246.w217-128.abo.wanadoo.fr) has joined ##c++
+2016-09-20 04:07:50	-->	oftc_ftw (~oftc_ftw@unaffiliated/oftc-ftw/x-3443471) has joined ##c++
+2016-09-20 04:08:07	<--	ScorpionJack (~Scorpion@unaffiliated/scorpionjack) has quit (Quit: ScorpionJack)
+2016-09-20 04:08:47	<--	jablo (~jablo@80.243.123.111) has quit (Quit: jablo)
+2016-09-20 04:09:13	<--	Freze (~Freze@dhcp-18-189-11-249.dyn.mit.edu) has quit (Ping timeout: 272 seconds)
+2016-09-20 04:09:15	<--	ewanshin (~ewanshin@183.101.46.30) has quit (Quit: Leaving...)
+2016-09-20 04:09:21	<--	Freze_ (~Freze@dhcp-18-189-77-44.dyn.MIT.EDU) has quit (Client Quit)
+2016-09-20 04:10:22	<--	Valdaris (~Gabe@75-170-43-116.eugn.qwest.net) has quit (Ping timeout: 255 seconds)
+2016-09-20 04:10:34	<--	xnavor (~xnavor@vbg-gw.proceranetworks.com) has quit (Quit: This computer has gone to sleep)
+2016-09-20 04:10:51	<--	josef__k (~jeremy@59.102.31.229) has quit (Ping timeout: 265 seconds)
+2016-09-20 04:11:07	<--	tachoknight (~tachoknig@2601:241:102:60a6:8e70:5aff:fe24:3cb0) has quit (Ping timeout: 272 seconds)
+2016-09-20 04:11:18	<--	mss_cyclist (~MSe@89-250-189-210.tangos.nl) has quit (Ping timeout: 264 seconds)
+2016-09-20 04:11:26	-->	brendel_ (~brice@LAubervilliers-656-1-215-246.w217-128.abo.wanadoo.fr) has joined ##c++
+2016-09-20 04:12:01	-->	tachoknight (~tachoknig@2601:241:102:60a6:8e70:5aff:fe24:3cb0) has joined ##c++
+2016-09-20 04:12:12	-->	ScorpionJack (~Scorpion@unaffiliated/scorpionjack) has joined ##c++
+2016-09-20 04:13:22	-->	slavanap (~slavanap@5.145.251.251) has joined ##c++
+2016-09-20 04:13:42	-->	syem (~s@unaffiliated/syem) has joined ##c++
+2016-09-20 04:14:07	slavanap	{ cout << nextafter(10., 0.); }
+2016-09-20 04:14:09	geordi	10
+2016-09-20 04:14:25	-->	f10 (~flo@2001:470:52af:1:1883:b70e:19db:f1db) has joined ##c++
+2016-09-20 04:14:30	<--	brendel (~brice@LAubervilliers-656-1-215-246.w217-128.abo.wanadoo.fr) has quit (Ping timeout: 260 seconds)
+2016-09-20 04:14:33	-->	f10_ (~flo@2001:470:52af:1:242c:2fc9:d40d:50d3) has joined ##c++
+2016-09-20 04:15:13	<--	nikki93 (~nikki93@166.170.39.20) has quit (Remote host closed the connection)
+2016-09-20 04:15:23	<--	kw01f (~kw01f@merlin.mvtec.com) has quit
+2016-09-20 04:15:29	-->	ResidentBiscuit (~ResidentB@unaffiliated/residentbiscuit) has joined ##c++
+2016-09-20 04:16:00	<--	bjz (~bjz@14-201-215-168.tpgi.com.au) has quit (Read error: Connection reset by peer)
+2016-09-20 04:16:51	-->	gist (~jack@p5B1053A0.dip0.t-ipconnect.de) has joined ##c++
+2016-09-20 04:16:51		[04:16]
+2016-09-20 04:17:37	-->	it_ (~it_@212.243.190.164) has joined ##c++
+2016-09-20 04:17:41	-->	bjz (~bjz@14-201-215-168.tpgi.com.au) has joined ##c++
+2016-09-20 04:18:28	<--	tachoknight (~tachoknig@2601:241:102:60a6:8e70:5aff:fe24:3cb0) has quit (Ping timeout: 255 seconds)
+2016-09-20 04:18:40	-->	snowkidind (~textual@pool-96-255-207-158.washdc.fios.verizon.net) has joined ##c++
+2016-09-20 04:18:44	-->	tachoknight (~tachoknig@2601:241:102:60a6:8e70:5aff:fe24:3cb0) has joined ##c++
+2016-09-20 04:19:35	<--	f10_ (~flo@2001:470:52af:1:242c:2fc9:d40d:50d3) has quit (Remote host closed the connection)
+2016-09-20 04:19:46	<--	oftc_ftw (~oftc_ftw@unaffiliated/oftc-ftw/x-3443471) has quit (Read error: Connection reset by peer)
+2016-09-20 04:19:54	-->	f10_ (~flo@2001:470:52af:1:242c:2fc9:d40d:50d3) has joined ##c++
+2016-09-20 04:20:03	-->	h4k1m (83e3a56b@gateway/web/freenode/ip.131.227.165.107) has joined ##c++
+2016-09-20 04:20:29	h4k1m	Hi everyone
+2016-09-20 04:20:57	<--	rorro (~rorro@c-226-182.eduroam.liu.se) has quit (Ping timeout: 265 seconds)
+2016-09-20 04:21:30	<--	UnrightSuika_mob (~UnlikeSui@147.46.113.63) has quit (Ping timeout: 276 seconds)
+2016-09-20 04:21:34	<--	bjz (~bjz@14-201-215-168.tpgi.com.au) has quit (Read error: Connection reset by peer)
+2016-09-20 04:22:05	h4k1m	I noticed in OpenCV tutorial webpage that a matrix object is initialized with `Mat m(param1, param2 ...)`, is this the usual syntax to initialize objects in C++ (or is it specific to OpenCV)? I thought that objects instances are usually initialized with the `new` keyword...
+2016-09-20 04:22:06	-->	snover (~Adium@unaffiliated/snover) has joined ##c++
+2016-09-20 04:22:18	-->	bjz (~bjz@14-201-215-168.tpgi.com.au) has joined ##c++
+2016-09-20 04:22:41	-->	tristanseifert (~tristanse@128.194.3.4) has joined ##c++
+2016-09-20 04:22:45	slavanap	h4k1m, have you heard about class constructors?
+2016-09-20 04:22:58	h4k1m	slavanap: yes sure
+2016-09-20 04:23:40	slavanap	{ class  A { public: A(int x, int y) { } };              A a(1,2); /* simple sample */ }
+2016-09-20 04:23:41	geordi	<no output>
+2016-09-20 04:23:45	h4k1m	slavanap: but shouldn't we use the `new` keyword instead, or is the abovementioned syntax an alternative to the new keyword?
+2016-09-20 04:23:50	<--	zap0 (~moofy@14-201-222-143.tpgi.com.au) has quit (Quit: zap0)
+2016-09-20 04:24:09	slavanap	{ class  A { public: template<Args...> A(const Args...& args) { } };              A a(1,2,3); /* complicated sample */ }
+2016-09-20 04:24:09	geordi	error: invalid declaration of member template in local class
+2016-09-20 04:24:33	w3z	new indicates that the object should be allocated and constructed on the free store
+2016-09-20 04:24:44	-->	SpaceDanceCJ (~Sasha@178.121.24.88) has joined ##c++
+2016-09-20 04:24:44	slavanap	{ class  A { public: template<typename ... Args> A(const Args...& args) { } };              A a(1,2,3); /* complicated sample */ }
+2016-09-20 04:24:44	geordi	Same error.
+2016-09-20 04:25:08	slavanap	{ class  A { public: template<typename ... Args> A(const Args& ... args) { } };              A a(1,2,3); /* complicated sample */ }
+2016-09-20 04:25:09	geordi	Still same error.
+2016-09-20 04:25:09	h4k1m	w3z: doesn't the previous syntax allocate space for the variable?
+2016-09-20 04:25:21	w3z	slavanap: take it to private message
+2016-09-20 04:25:34	slavanap	w3z, okay.
+2016-09-20 04:25:55	h4k1m	w3z: slavanap: I meant what's the difference between the previous syntax and using `new`?
+2016-09-20 04:26:01	w3z	{int i(0); int* p = new int(0);}
+2016-09-20 04:26:02	geordi	<no output>
+2016-09-20 04:26:09	h4k1m	and which one should be preferred?
+2016-09-20 04:26:11	<--	ScorpionJack (~Scorpion@unaffiliated/scorpionjack) has quit (Quit: ScorpionJack)
+2016-09-20 04:26:28	-->	xasha (~astrode5@123.236.42.48) has joined ##c++
+2016-09-20 04:26:31	w3z	i is an automatic block scope instance of an integer, its lifetime is that of the {} block
+2016-09-20 04:26:32	slavanap	h4k1m, new keyword allocates a new chunk of memory from the heap and initializes the object there. A a(1,2); syntax allocates memory on stack and initializes object there.
+2016-09-20 04:26:52	w3z	p is a free store allocated integer its lifetime is independent of the {} block
+2016-09-20 04:26:58	<--	merijn (~merijn@212.78.164.170) has quit (Ping timeout: 272 seconds)
+2016-09-20 04:27:28	<--	Kimau (~bouncer@81.141.11.175) has quit (Ping timeout: 255 seconds)
+2016-09-20 04:27:47	<--	TreyG (~nobody@182.75.45.1) has quit (Quit: Lost terminal)
+2016-09-20 04:27:53	<--	symm- (~symm-@86.127.152.32) has quit (Ping timeout: 248 seconds)
+2016-09-20 04:27:55	h4k1m	w3z: slavanap: I see. Thanks very much ^^
+2016-09-20 04:28:05	w3z	so slavanap that isnt true exactly, and is a sloppy explanation
+2016-09-20 04:28:06	w3z	!book
+2016-09-20 04:28:08	nolyc	A nice C++ book guide and list can be found at http://stackoverflow.com/q/388242/1090079
+2016-09-20 04:28:25	<--	tachoknight (~tachoknig@2601:241:102:60a6:8e70:5aff:fe24:3cb0) has quit (Ping timeout: 248 seconds)
+2016-09-20 04:28:25	<--	buumi (~quassel@26.ip-51-254-211.eu) has quit (Remote host closed the connection)
+2016-09-20 04:28:57	slavanap	w3z, well that's still simple explanation.
+2016-09-20 04:29:01	w3z	{new S;} struct S{int i{0};}; //i is not allocated on the stack ... (and not on the heap, but on the free store)
+2016-09-20 04:29:02	geordi	<no output>
+2016-09-20 04:29:33	w3z	anyway
+2016-09-20 04:30:03	-->	bergesenha (~harald@90.149.192.21) has joined ##c++
+2016-09-20 04:30:22	-->	buumi (~quassel@26.ip-51-254-211.eu) has joined ##c++
+2016-09-20 04:30:30	-->	iik (~IIK@staticline-31-183-46-69.toya.net.pl) has joined ##c++
+2016-09-20 04:30:31	slavanap	w3z, S is allocated on the heap. int{0}  -- is a syntax sugar added in C++1x, which I not recommend to use. explicit constructors better imho.
+2016-09-20 04:30:44	slavanap	*int i{0}
+2016-09-20 04:31:32	w3z	1) its not the heap - its the free store
+2016-09-20 04:31:43	w3z	2) member initialization is c++11
+2016-09-20 04:31:56	-->	tachoknight (~tachoknig@2601:241:102:60a6:8e70:5aff:fe24:3cb0) has joined ##c++
+2016-09-20 04:31:56		[04:31]
+2016-09-20 04:32:01	w3z	3) the same syntax can be used in in initializer list
+2016-09-20 04:32:04	slavanap	h4k1m, don't forget to call delete for all your `new`. If you use `new`, then you are responsible for memory free action.
+2016-09-20 04:32:18	ppf	why's there such a fuzz about heap vs free store
+2016-09-20 04:32:39	w3z	because new doesnt necessarily use the c heap
+2016-09-20 04:32:40	-->	josh_ (~josh@c-67-182-242-240.hsd1.ut.comcast.net) has joined ##c++
+2016-09-20 04:32:46	slavanap	w3z, tell me the difference between heap and free store.
+2016-09-20 04:32:55	-->	Tempesta_ (~Tempesta@121.131.185.96) has joined ##c++
+2016-09-20 04:33:08	-->	tachokni_ (~tachoknig@c-73-246-129-13.hsd1.il.comcast.net) has joined ##c++
+2016-09-20 04:33:09	<--	tachoknight__ (~tachoknig@c-73-246-129-13.hsd1.il.comcast.net) has quit (Read error: Connection reset by peer)
+2016-09-20 04:33:17	slavanap	w3z, except they are using different methods.
+2016-09-20 04:33:20	w3z	the free store may be implemented on top of the os or c heap, but doesnt have to
