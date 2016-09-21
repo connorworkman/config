@@ -181,10 +181,21 @@ kvm() {
 	#format="${format/cow/qcow2}"
 	[[ -z "$2" ]] &&
 		qemu-system-x86_64 -boot menu=on -drive file="${1?No image specified!}",format="${format/cow/qcow2}" -enable-kvm \
+			-vga qxl -spice port=5930,disable-ticketing \
+			-spice unix,addr=/tmp/vm_spice.socket,disable-ticketing,playback-compression=off \
+			-device virtio-serial-pci -device virtserialport,chardev=spicechannel0,name=com.redhat.spice.0 \
+			-chardev spicevmc,id=spicechannel0,name=vdagent \
+			-usbdevice tablet -machine type=pc,accel=kvm -cpu host -smp \
 			-m "${3:-2048}" -net nic -net bridge,br=virbr0 ||
 		qemu-system-x86_64 -cdrom "${2}" -boot menu=on -drive file="${1?No image specified!}",format="${format/cow/qcow2}" -enable-kvm \
-	#qemu-system-x86_64 -cdrom ~/sdxc/install-amd64-minimal-20160915.iso -boot order=d -drive file=/@media/backup/gentoo.cow,format=qcow2 -enable-kvm -m 512 -net nic -net bridge,br=virbr0
+			-vga qxl -spice port=5930,disable-ticketing \
+			-spice unix,addr=/tmp/vm_spice.socket,disable-ticketing,playback-compression=off \
+			-device virtio-serial-pci -device virtserialport,chardev=spicechannel0,name=com.redhat.spice.0 \
+			-chardev spicevmc,id=spicechannel0,name=vdagent \
+			-usbdevice tablet -machine type=pc,accel=kvm -cpu host -smp \
 			-m "${3:-2048}" -net nic -net bridge,br=virbr0
+	#qemu-system-x86_64 -cdrom ~/sdxc/install-amd64-minimal-20160915.iso -boot order=d \
+	#-drive file=/@media/backup/gentoo.cow,format=qcow2 -enable-kvm -m 512 -net nic -net bridge,br=virbr0
 }
 ovmf-kvm() {
 	local format
@@ -192,10 +203,21 @@ ovmf-kvm() {
 	#format="${format/cow/qcow2}"
 	[[ -z "$2" ]] &&
 		qemu-system-x86_64 -boot menu=on -drive file="${1?No image specified!}",format="${format/cow/qcow2}" -enable-kvm \
+			-vga qxl -spice port=5930,disable-ticketing \
+			-spice unix,addr=/tmp/vm_spice.socket,disable-ticketing,playback-compression=off \
+			-device virtio-serial-pci -device virtserialport,chardev=spicechannel0,name=com.redhat.spice.0 \
+			-chardev spicevmc,id=spicechannel0,name=vdagent \
+			-usbdevice tablet -machine type=pc,accel=kvm -cpu host -smp \
 			-m "${3:-2048}" -net nic -net bridge,br=virbr0 -bios "${HOME}/ovmf_x64.bin" ||
 		qemu-system-x86_64 -cdrom "${2}" -boot menu=on -drive file="${1?No image specified!}",format="${format/cow/qcow2}" -enable-kvm \
+			-vga qxl -spice port=5930,disable-ticketing \
+			-spice unix,addr=/tmp/vm_spice.socket,disable-ticketing,playback-compression=off \
+			-device virtio-serial-pci -device virtserialport,chardev=spicechannel0,name=com.redhat.spice.0 \
+			-chardev spicevmc,id=spicechannel0,name=vdagent \
+			-usbdevice tablet -machine type=pc,accel=kvm -cpu host -smp \
 			-m "${3:-2048}" -net nic -net bridge,br=virbr0 -bios "${HOME}/ovmf_x64.bin"
-	#qemu-system-x86_64 -cdrom ~/sdxc/install-amd64-minimal-20160915.iso -boot menu=on -drive file=/@media/backup/gentoo.cow,format=qcow2 -enable-kvm -m 2048 -net nic -net bridge,br=virbr0
+	#qemu-system-x86_64 -cdrom ~/sdxc/install-amd64-minimal-20160915.iso -boot menu=on \
+	#-drive file=/@media/backup/gentoo.cow,format=qcow2 -enable-kvm -m 2048 -net nic -net bridge,br=virbr0
 }
 csox() { sox "$1" -C ${3:-10} "${1/wav/${2}}"; }
 gif() { ffmpeg -i "${1:?Error, no input file specified!}" "${2:-${1/.*/.gif}}" -threads 0; }

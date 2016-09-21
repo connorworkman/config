@@ -12153,3 +12153,58 @@
 2016-09-20 13:38:17	-->	e14 (~e14@2601:184:4100:b0ea:5de0:dc47:8ca7:600d) has joined #bash
 2016-09-20 13:41:03	-->	Gr33nW0lf (~Gr33nW0lf@189-92-116-77.3g.claro.net.br) has joined #bash
 2016-09-20 13:41:10	-->	mbk_88 (~mbk88_@200.85.108.10) has joined #bash
+2016-09-20 13:42:04	-->	jeffreylevesque (~chatzilla@static-70-109-50-84.clppva.fios.verizon.net) has joined #bash
+2016-09-20 13:43:03	<--	theOneWho (~tom@95.166.79.163) has quit (Read error: Connection reset by peer)
+2016-09-20 13:43:28	<--	nikivi (~nikivi@dhcp-077-250-172-150.chello.nl) has quit (Quit: irc)
+2016-09-20 13:43:30	<--	e14 (~e14@2601:184:4100:b0ea:5de0:dc47:8ca7:600d) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-09-20 13:43:58	-->	matt___ (~textual@cpe-98-148-225-16.socal.res.rr.com) has joined #bash
+2016-09-20 13:44:10	beantaxi	I have somewhat ugly strings, representing time intervals, which look like "# 2016-09-01T00:00:00Z/2016-10-01T00:00:00Z
+2016-09-20 13:44:47	-->	e14 (~e14@2601:184:4100:b0ea:5de0:dc47:8ca7:600d) has joined #bash
+2016-09-20 13:45:01	<--	pasteban (~pasteban@157.146.251.23.bc.googleusercontent.com) has quit (Remote host closed the connection)
+2016-09-20 13:45:33	-->	theOneWho (~tom@95.166.79.163) has joined #bash
+2016-09-20 13:45:59	beantaxi	". I am parsing that into 4 variables, via startDate startTime endDate endTime<<<$(perl -pe "my regex"). It works ok, but invoking perl for every line in the file is a little heavy.
+2016-09-20 13:46:10	-->	pasteban (~pasteban@157.146.251.23.bc.googleusercontent.com) has joined #bash
+2016-09-20 13:46:13	-->	kejoma (~kejoma@wsip-70-175-229-132.dc.dc.cox.net) has joined #bash
+2016-09-20 13:46:19	<--	Rapture (~textual@50-232-118-138-static.hfc.comcastbusiness.net) has quit (Quit: Textual IRC Client: www.textualapp.com)
+2016-09-20 13:46:37	beantaxi	Other than sucking it up, and doing a number of string manips to extract all the little year, month, hour etc fields and recombine them, does anything jump out?
+2016-09-20 13:47:14	-->	jass93 (~ifillj@rrcs-24-39-217-250.nys.biz.rr.com) has joined #bash
+2016-09-20 13:47:38	<--	jayjo (~jayjo@unaffiliated/jayjo) has quit (Ping timeout: 244 seconds)
+2016-09-20 13:47:43	-->	nicanaca0 (~nicanaca0@141.170.12.36) has joined #bash
+2016-09-20 13:47:43	beantaxi	Fyi each ugly time interval string, is a field in a row in a CSV, and I would like to replace each with the 4 fields above
+2016-09-20 13:48:26	hyphenated	you only really need to split on / and T
+2016-09-20 13:48:26		[13:48]
+2016-09-20 13:48:58	beantaxi	I need to get rid of all the punctuation as well, and emit each field as a number
+2016-09-20 13:49:11	<--	ArkaZeen (~ArkaZeen@rn-nat-129-97-131-0.dynamic.uwaterloo.ca) has quit (Ping timeout: 244 seconds)
+2016-09-20 13:49:26	twkm	i suggest you write it all in perl.
+2016-09-20 13:49:32	twkm	otherwise look at faq #1.
+2016-09-20 13:49:41	-->	lem0n (~lem0n@unaffiliated/lem0n) has joined #bash
+2016-09-20 13:50:02	<--	checkbot (~checkbot@157.146.251.23.bc.googleusercontent.com) has quit (Remote host closed the connection)
+2016-09-20 13:50:39	-->	checkbot (~checkbot@157.146.251.23.bc.googleusercontent.com) has joined #bash
+2016-09-20 13:51:15	-->	DolphinDream (~DolphinDr@pool-74-98-212-98.pitbpa.fios.verizon.net) has joined #bash
+2016-09-20 13:52:44	<--	jottr (~jottr@unaffiliated/jottr) has quit (Quit: WeeChat 1.5)
+2016-09-20 13:53:38	-->	jayjo (~jayjo@unaffiliated/jayjo) has joined #bash
+2016-09-20 13:54:17	<--	matt___ (~textual@cpe-98-148-225-16.socal.res.rr.com) has quit (Quit: Textual IRC Client: www.textualapp.com)
+2016-09-20 13:55:35	<--	e14 (~e14@2601:184:4100:b0ea:5de0:dc47:8ca7:600d) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-09-20 13:55:53	<--	snthsnth (~snthsnth@128.54.236.112) has quit (Ping timeout: 248 seconds)
+2016-09-20 13:56:43	<--	nitric (~nitric@unaffiliated/nitric) has quit (Ping timeout: 255 seconds)
+2016-09-20 13:56:56	beantaxi	Thanks ... Just writing it in perl was my my next stop, if there wasn't something simple in bash I was overlooking.
+2016-09-20 13:57:07	-->	wrath0r (~wrath0r@pool-100-0-94-141.bstnma.fios.verizon.net) has joined #bash
+2016-09-20 13:57:19	beantaxi	Also I just realized the following works: echo $s | tr T ' ' | tr -d -- '-' | tr -d ':' | tr -d Z | tr / ' '
+2016-09-20 13:57:20	-->	ma489 (~mansour@my83-216-95-45.cust.relish.net) has joined #bash
+2016-09-20 13:57:30	beantaxi	Which seems worse than just using perl
+2016-09-20 13:58:21	-->	e14 (~e14@2601:184:4100:b0ea:5de0:dc47:8ca7:600d) has joined #bash
+2016-09-20 13:58:40	beantaxi	Is perl a given on most systems, except maybe Rasberry Pi or similar devices?
+2016-09-20 13:59:21	twkm	survey the machines you are writing it for and find out.
+2016-09-20 13:59:23	_adb	for what it's worth, my pis seem to have perl on them
+2016-09-20 13:59:39	twkm	but in general you can't count on perl.  or even bash.
+2016-09-20 14:00:24	osse	# echo '2016-09-01T00:00:00Z/2016-10-01T00:00:00Z' | sed 's/[-:T/Z]/ /g'
+2016-09-20 14:00:25	shbot	osse: 2016 09 01 00 00 00  2016 10 01 00 00 00
+2016-09-20 14:00:28	osse	like that?
+2016-09-20 14:02:05	osse	seems like date -d understands each part on its own. but that's a gnuism i guess
+2016-09-20 14:02:47	<--	e14 (~e14@2601:184:4100:b0ea:5de0:dc47:8ca7:600d) has quit (Client Quit)
+2016-09-20 14:04:52	<--	ahmedelgabri (~ahmedelga@2a02:a441:9f5:0:68e3:839b:564f:3eee) has quit (Quit: WeeChat 1.5)
+2016-09-20 14:04:52		[14:04]
+2016-09-20 14:05:12	<--	ma489 (~mansour@my83-216-95-45.cust.relish.net) has quit (Quit: Ex-Chat)
+2016-09-20 14:05:23	<--	blizzow (~jburns@172.56.12.118) has quit (Ping timeout: 244 seconds)
+2016-09-20 14:05:35	-->	e14 (~e14@2601:184:4100:b0ea:5de0:dc47:8ca7:600d) has joined #bash
+2016-09-20 14:10:53	-->	`Cam (~textual@59.102.32.149) has joined #bash

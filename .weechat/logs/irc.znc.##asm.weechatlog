@@ -2785,3 +2785,73 @@
 2016-09-20 13:26:10	-->	Judge_Dredd (~Judge_Dre@unaffiliated/judge-dredd/x-2170742) has joined ##asm
 2016-09-20 13:32:00		[13:26]
 2016-09-20 13:40:59	-->	MyCuriosity (~MyCuriosi@unaffiliated/mycuriosity) has joined ##asm
+2016-09-20 13:41:53	-->	kbw (~KeyboardW@68-204-170-7.res.bhn.net) has joined ##asm
+2016-09-20 13:43:40	<--	dqi (~dqi@165-218-045-062.dynamic.caiway.nl) has quit (Ping timeout: 255 seconds)
+2016-09-20 13:47:45	-->	asm065 (4a5966e9@gateway/web/freenode/ip.74.89.102.233) has joined ##asm
+2016-09-20 13:47:45		[13:47]
+2016-09-20 13:49:43	asm065	Hi guy, I was here earlier asking about a snipet of code, and thought I understood it but realize that I still dont. So could someone help me out again. Here is the snipet. http://pastebin.com/4TpQzeKq What im confused about is why line 6 is even needed. And why there is nothing in the output feild. instead dest is put into the input one.
+2016-09-20 13:50:06	Jester01	that's broken code.
+2016-09-20 13:50:25	asm065	To give some background, the code takes a string. and uses the start index and end index to get a substring, which it stores into dest.
+2016-09-20 13:50:32	Jester01	it will possibly blow up in mysterious ways
+2016-09-20 13:50:48	asm065	Jester01: works just fine.
+2016-09-20 13:50:52	Jester01	accidental.
+2016-09-20 13:51:08	Jester01	it will break under circumstances
+2016-09-20 13:51:33	Jester01	it will break the rest of the program, actually.
+2016-09-20 13:52:06	asm065	hm, could you please expand on why this is the case
+2016-09-20 13:52:17	Jester01	it's changing registers without telling the compiler
+2016-09-20 13:52:47	Jester01	to make matters worse, it's changing callee-saved registers
+2016-09-20 13:53:38	asm065	Where is it changing registers without telling compiler
+2016-09-20 13:53:51	Jester01	movsb and stosb update esi and edi
+2016-09-20 13:54:01	asm065	right
+2016-09-20 13:54:03	Jester01	also rep updates ecx
+2016-09-20 13:54:06	-->	SunnyD (~SunnyD@cpe-72-178-78-211.hot.res.rr.com) has joined ##asm
+2016-09-20 13:54:09	asm065	mhmm
+2016-09-20 13:54:16	asm065	does the compiler never know this?
+2016-09-20 13:54:30	Jester01	nope, the compiler (gcc) does not analyze your asm code
+2016-09-20 13:54:40	Jester01	it relies on you to tell the proper inputs, outputs and clobbers
+2016-09-20 13:55:13	asm065	I thought it was weird that there were no outputs
+2016-09-20 13:55:45	Jester01	that, by itself, is not weird
+2016-09-20 13:56:13	asm065	how much dest is put into the input ones there?
+2016-09-20 13:56:15	Jester01	obviously it's also changing memory behind the compiler
+2016-09-20 13:56:36	Jester01	not sure I understand your question, dest is a pointer
+2016-09-20 13:58:00	asm065	So what that code should do is take a substring from src, and store it in dest
+2016-09-20 13:58:07	asm065	so shouldnt dest be in output
+2016-09-20 13:58:23	<--	control (~control@unaffiliated/control) has quit (Ping timeout: 250 seconds)
+2016-09-20 13:58:28	-->	dminuoso (~dminuoso@unaffiliated/dminuoso) has joined ##asm
+2016-09-20 13:59:47	Jester01	normally dest is not expected to be changed since it's a pointer
+2016-09-20 13:59:58	Jester01	it's only a side effect of this particular asm code that it gets changed
+2016-09-20 14:00:27	Jester01	memory pointed to by dest is expected to change, but that by itself is not cause to put it as output
+2016-09-20 14:00:34	Jester01	rather, you need to put a "memory" clobber
+2016-09-20 14:02:04	asm065	So is the only bad thing about this that it doesnt have clobber list?
+2016-09-20 14:03:17	<--	ARM9 (~ARM9@46-236-101-61.customer.t3.se) has quit (Quit: Leaving)
+2016-09-20 14:03:17		[14:03]
+2016-09-20 14:03:29	<--	dminuoso (~dminuoso@unaffiliated/dminuoso) has quit (Ping timeout: 240 seconds)
+2016-09-20 14:03:32	asm065	before i even begin to fix that persons code, i think itd help if i understood it
+2016-09-20 14:03:38	Jester01	yes
+2016-09-20 14:03:52	asm065	why does that person clear the eax register?
+2016-09-20 14:03:57	asm065	in line 6
+2016-09-20 14:04:06	Jester01	to put the terminating zero at the end of the copied string.
+2016-09-20 14:04:44	Jester01	could have just done mov $0, (%%edi) instead of xor+stosb
+2016-09-20 14:04:49	Jester01	movb
+2016-09-20 14:05:25	Jester01	that's probably faster and doesn't clobber eax :)
+2016-09-20 14:06:29	Jester01	also this code is inherently unsafe, because it assumes that the source string is at least as long as required
+2016-09-20 14:06:52	Jester01	for normal people a simple strncpy is fine
+2016-09-20 14:06:58	<--	WilburPB (~WilburPB@146.197.246.70) has quit (Quit: My Mac has gone to sleep. ZZZzzz…)
+2016-09-20 14:08:05	asm065	i understand how mov $0, (%%edi), would add a terminating 0, but his way of doing it confuses me
+2016-09-20 14:08:32	Jester01	well, you know xor zeroes, and stosb just does mov %al, (%%edi); inc %%edi
+2016-09-20 14:08:43	Jester01	of course we don't care about that inc
+2016-09-20 14:10:27	asm065	isnt the inc important tho?
+2016-09-20 14:10:35	Jester01	nope
+2016-09-20 14:10:43	Jester01	not in this case, obviously
+2016-09-20 14:10:53	asm065	how come?
+2016-09-20 14:10:59	Jester01	we just want the zero at the end, we don't care about the pointer being incremented afterwards
+2016-09-20 14:11:06	Jester01	we are gonna throw that away
+2016-09-20 14:11:46	asm065	right, i thought you were saying it wasnt important ever cuz i knw it reps it
+2016-09-20 14:11:55	Jester01	the rep was for movsb only
+2016-09-20 14:11:56	asm065	so it would be important at first to inc
+2016-09-20 14:12:10	Jester01	and yeah, there it's obviously important
+2016-09-20 14:12:25	Jester01	for the final stosb, it's not important because nothing uses it afterwards
+2016-09-20 14:12:43	Jester01	it's like  doing *dest=0; dest++;  and never using dest later
+2016-09-20 14:12:53	Jester01	so who cares if the ++ is there or not
+2016-09-20 14:13:05	asm065	yeah
+2016-09-20 14:13:11	asm065	makes sense
