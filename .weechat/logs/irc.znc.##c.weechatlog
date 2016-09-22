@@ -16446,3 +16446,59 @@
 2016-09-21 15:14:52	Malkrith	arctic
 2016-09-21 15:15:02	<--	mulvane (~mulvane@freebsd/user/mulvane) has quit (Quit: ZNC - http://znc.in)
 2016-09-21 15:15:04	catern	oh mighty gods of C! I've noticed that using compound literals can make usually-verbose function calls much more concise. the other thing that makes C verbose is doing a if (ret < 0) error(); after every function. is there some way to make that pain go away?
+2016-09-21 15:15:50	catern	hmm, i suppose i could be like rust, and define a try() macro
+2016-09-21 15:15:50		[15:15]
+2016-09-21 15:16:03	-->	snthsnth (~snthsnth@mbp.dynamic.ucsd.edu) has joined ##c
+2016-09-21 15:16:09	catern	yes
+2016-09-21 15:16:12	<--	mewmewmalazerbea (~mewmewmal@125-238-78-118.jetstream.xtra.co.nz) has quit (Changing host)
+2016-09-21 15:16:12	-->	mewmewmalazerbea (~mewmewmal@unaffiliated/mewmewmalazerbea) has joined ##c
+2016-09-21 15:16:13	catern	I definitely will do that
+2016-09-21 15:16:21	Malkrith	The gods of C speak unto thee
+2016-09-21 15:16:23	-->	arescorpio (~arescorpi@132-219-114-200.fibertel.com.ar) has joined ##c
+2016-09-21 15:16:30	catern	yes lord?!?!?
+2016-09-21 15:16:33	anonrate	I think I broke ideone...
+2016-09-21 15:16:34	Malkrith	From the ancient runes we have this message to give
+2016-09-21 15:16:38	Malkrith	"Git gud"
+2016-09-21 15:16:40	marchelzo	catern: bad idea
+2016-09-21 15:16:47	catern	shove off god!
+2016-09-21 15:16:54	Malkrith	God smites thee
+2016-09-21 15:17:05	catern	marchelzo: er not you. why is it a bad idea? I mean, there are just some errors I can't handle
+2016-09-21 15:17:19	catern	and so I just exit if I get an error like that
+2016-09-21 15:17:26	Malkrith	I actually have no idea what I am doing in C tbh
+2016-09-21 15:17:29	catern	but that makes things verbose
+2016-09-21 15:17:33	marchelzo	rust handles resource management (i.e., if you return early, all local objects will be drop()d automatically)
+2016-09-21 15:17:35	marchelzo	C doesn't
+2016-09-21 15:17:42	mamooth_ponyboy	anonrate, lol...
+2016-09-21 15:17:54	catern	oh, right - but my try() macro was just going to immediately exit, so nbd
+2016-09-21 15:17:55	anonrate	It was working until I hit run...
+2016-09-21 15:18:07	catern	marchelzo: also, I could be using annotations :)
+2016-09-21 15:18:07	anonrate	RIP ideone.
+2016-09-21 15:18:24	marchelzo	catern: then don't return < 0 in the first place. just exit.
+2016-09-21 15:18:28	-->	freakyfidlers (~freakyfid@ool-435018c7.dyn.optonline.net) has joined ##c
+2016-09-21 15:18:31	-->	k_sze[work] (daff8506@gateway/web/freenode/ip.218.255.133.6) has joined ##c
+2016-09-21 15:18:41	catern	marchelzo: no no, this is on system calls
+2016-09-21 15:18:47	Malkrith	today I learned that C does not take care of anything for me
+2016-09-21 15:18:49	Malkrith	Unlike perl
+2016-09-21 15:18:55	Malkrith	Which saddens me
+2016-09-21 15:19:19	<--	ShekharReddy (uid132367@gateway/web/irccloud.com/x-xrtqeqjykuhxvnif) has quit (Quit: Connection closed for inactivity)
+2016-09-21 15:19:22	<--	The_Prospector (~The_Prosp@unaffiliated/cornman) has quit (Quit: when in doubt, kernel panic)
+2016-09-21 15:19:29	marchelzo	Malkrith: you are a perl programmer?
+2016-09-21 15:19:46	anonrate	http://rextester.com/live/KXSG63631
+2016-09-21 15:19:50	<--	Wizznt (2ea5e8db@gateway/web/cgi-irc/kiwiirc.com/ip.46.165.232.219) has quit (Quit: http://www.kiwiirc.com/ - A hand crafted IRC client)
+2016-09-21 15:19:59	Malkrith	I am
+2016-09-21 15:20:09	catern	hmmmmmmmmmm this is tricky. I want a macro that can turn:
+2016-09-21 15:20:09	catern	val = try(syscall());
+2016-09-21 15:20:12	catern	into the equivalent of
+2016-09-21 15:20:31	mamooth_ponyboy	im totally clueless about this annotation thing - I better go search
+2016-09-21 15:20:31	catern	int ret = syscall(); if (ret < 0) exit(1); val = ret;
+2016-09-21 15:20:37	-->	The_Prospector (~The_Prosp@unaffiliated/cornman) has joined ##c
+2016-09-21 15:20:38	sjohnson	Malkrith: yep, C won't do anything automatic for you like higher-level languages like Perl, Python, PHP, etc.
+2016-09-21 15:20:55	Malkrith	I am quite aware of that now
+2016-09-21 15:20:58	marchelzo	Malkrith: is it because Larry Wall is religious?
+2016-09-21 15:21:04	catern	marchelzo: do you have a suggestion on how to do it? it seems kind of tricky because I want to actually return the value as well as check it
+2016-09-21 15:21:05	Hello71	catern: macros are *text*
+2016-09-21 15:21:08	sjohnson	Malkrith: the cost though with perl (or others) is slower code than C.
+2016-09-21 15:21:13	Malkrith	Who is larry wall
+2016-09-21 15:21:20	sjohnson	wow.
+2016-09-21 15:21:21	catern	Hello71: I am aware, yet this still may be possible
+2016-09-21 15:21:21	Hello71	lucky for you though you can implement that in a function
