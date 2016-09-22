@@ -34434,3 +34434,1806 @@
 2016-09-21 15:21:08	-->	X-dark (~X-dark@unaffiliated/x-dark) has joined #archlinux
 2016-09-21 15:21:13	nichego	it's most likely the encryption
 2016-09-21 15:21:17	<--	fckfreenode (~user@d49-194-132-12.meb2.vic.optusnet.com.au) has quit (Ping timeout: 244 seconds)
+2016-09-21 15:21:28	Arch_Coldfire	@doctorly, i havnt found anything inparticular, but keep in mind the mbp even though mine is a 2013 model, the spec and operational "correctness" is different. so there could be limitations as far as performance and validation are concerned. 
+2016-09-21 15:21:31	Flat	MacGyver: http://pastebin.com/nFrLX3xa also the rsync is finished so that shouldn't be using more memory and it should be flushing to disk
+2016-09-21 15:21:33	phrik	Title: MemTotal: 32964172 kB MemFree: 243120 kB MemAvailable: 233393 - Pastebin.com (at pastebin.com)
+2016-09-21 15:21:42	-->	xvtz (~xer0@103.235.198.145) has joined #archlinux
+2016-09-21 15:21:52	nichego	Flat: if it's anything it's the encryption
+2016-09-21 15:22:16	Flat	Yeah, I had a feeling it might be. I used luksipc before I realized cryptsetup-reencrypt was a thing.
+2016-09-21 15:23:36	MacGyver	It isn't for unencrypted partitions, though, is it?
+2016-09-21 15:23:50	Flat	You actually can use it with the --new flag MacGyver 
+2016-09-21 15:23:54	-->	SmokeyD (~SmokeyD@112.201.199.240) has joined #archlinux
+2016-09-21 15:24:09	Flat	I just read about it on the wiki today myself.
+2016-09-21 15:24:12	MacGyver	Ah, that's fairly recent then?
+2016-09-21 15:24:25	Flat	I believe so yes
+2016-09-21 15:24:34	doctorly	Arch_Coldfire: alright, thanks. I will try an install and see how it runs
+2016-09-21 15:24:38	Arch_Coldfire	doctorly: i dont believe you would run into any issues unless it was the lowest end model only becasue of the onboard validation
+2016-09-21 15:24:51	<--	quiliro (~ernesto@181.175.140.211) has quit (Quit: Leaving.)
+2016-09-21 15:24:57	<--	slester (~slester@cpe-76-88-5-21.san.res.rr.com) has quit
+2016-09-21 15:27:22	MacGyver	But yeah, there's not a lot of unevictable, but there's a large amount of writeback buffer there.
+2016-09-21 15:28:12	-->	gratidude (~gratidude@unaffiliated/gratidude) has joined #archlinux
+2016-09-21 15:28:24	MacGyver	Guess the disk hasn't kept up and you've set your vm_dirty_bytes or vm_dirty_ratio too high.
+2016-09-21 15:29:22	<--	maolang (~maolang@2a01:e35:2e6c:5620:c77e:c4ff:15e1:718) has quit (Remote host closed the connection)
+2016-09-21 15:29:22		[15:29]
+2016-09-21 15:29:32	Flat	Yeah its sure not an SSD, but I haven't touched vm_dirty_bytes or the ratio at all. They're set to default 0 and 20
+2016-09-21 15:29:32	<--	Crisco (~Crisco@unaffiliated/crisco) has quit (Read error: No route to host)
+2016-09-21 15:29:52	<--	wadadli (~user@unaffiliated/anu0) has quit (Quit: Lost terminal)
+2016-09-21 15:30:04	-->	wadadli (~user@unaffiliated/anu0) has joined #archlinux
+2016-09-21 15:30:36	<--	wadadli (~user@unaffiliated/anu0) has quit (Client Quit)
+2016-09-21 15:30:36	Flat	I'm guessing its something messy with luksipc, I guess we'll find out if I have a readable encrypted disk or not in about 10 minutes.
+2016-09-21 15:30:47	-->	wadadli (~user@unaffiliated/anu0) has joined #archlinux
+2016-09-21 15:31:18	-->	maolang (~maolang@2a01:e35:2e6c:5620:c77e:c4ff:15e1:718) has joined #archlinux
+2016-09-21 15:32:17	<--	iconz (~iconz@2.26.78.206) has quit (Ping timeout: 240 seconds)
+2016-09-21 15:33:09	-->	kotto_ (~kotto@200-103-123-94.cbace700.dsl.brasiltelecom.net.br) has joined #archlinux
+2016-09-21 15:33:41	<--	gratidude (~gratidude@unaffiliated/gratidude) has quit (Ping timeout: 244 seconds)
+2016-09-21 15:34:01	<--	tpowa (~tpowa@archlinux/developer/tpowa) has quit (Ping timeout: 244 seconds)
+2016-09-21 15:34:05	-->	kadosh (~kadosh@186.176.170.75) has joined #archlinux
+2016-09-21 15:34:06	-->	Engys_ (~Engys@p5DDB3CE0.dip0.t-ipconnect.de) has joined #archlinux
+2016-09-21 15:34:09	<--	maolang (~maolang@2a01:e35:2e6c:5620:c77e:c4ff:15e1:718) has quit (Remote host closed the connection)
+2016-09-21 15:34:11	-->	gratidude (~gratidude@unaffiliated/gratidude) has joined #archlinux
+2016-09-21 15:34:32	<--	wadadli (~user@unaffiliated/anu0) has quit (Client Quit)
+2016-09-21 15:34:37	-->	tpowa (~tpowa@archlinux/developer/tpowa) has joined #archlinux
+2016-09-21 15:34:43	-->	wadadli (~user@unaffiliated/anu0) has joined #archlinux
+2016-09-21 15:34:48	<--	lockdown (~lockdown@unaffiliated/lockdown) has quit (Quit: leaving)
+2016-09-21 15:34:49	-->	Crisco (~Crisco@unaffiliated/crisco) has joined #archlinux
+2016-09-21 15:35:15	<--	wadadli (~user@unaffiliated/anu0) has quit (Client Quit)
+2016-09-21 15:35:46	<--	mirkat (~miruoy@unaffiliated/miruoy) has quit (Quit: No Ping reply in 180 seconds.)
+2016-09-21 15:35:54	KKKrx	What are the chances my samsung printer drivers are in teh AUR?
+2016-09-21 15:35:57	<--	kotto (~kotto@201-41-112-5.cbace700.dsl.brasiltelecom.net.br) has quit (Ping timeout: 276 seconds)
+2016-09-21 15:36:01	<--	bmhm (~bmhm@unaffiliated/bmhm) has quit (Ping timeout: 265 seconds)
+2016-09-21 15:36:03	-->	wadadli (~user@unaffiliated/anu0) has joined #archlinux
+2016-09-21 15:36:08	<--	ChrisLane (~irc@cpc35-king10-2-0-cust144.19-1.cable.virginm.net) has quit (Remote host closed the connection)
+2016-09-21 15:36:17	-->	bmhm (~bmhm@unaffiliated/bmhm) has joined #archlinux
+2016-09-21 15:36:22	<--	wadadli (~user@unaffiliated/anu0) has quit (Client Quit)
+2016-09-21 15:36:43	-->	maolang (~maolang@2a01:e35:2e6c:5620:c77e:c4ff:15e1:718) has joined #archlinux
+2016-09-21 15:36:52	-->	iconz (~iconz@2.26.78.206) has joined #archlinux
+2016-09-21 15:37:00	-->	mirkat (~miruoy@unaffiliated/miruoy) has joined #archlinux
+2016-09-21 15:37:06	<--	Engys (~Engys@p5DDB3CEA.dip0.t-ipconnect.de) has quit (Ping timeout: 264 seconds)
+2016-09-21 15:37:15	-->	wadadli (~user@unaffiliated/anu0) has joined #archlinux
+2016-09-21 15:38:02	-->	ChrisLane (~irc@cpc35-king10-2-0-cust144.19-1.cable.virginm.net) has joined #archlinux
+2016-09-21 15:38:42	polyzen	!randpercent
+2016-09-21 15:38:42	phrik	27%
+2016-09-21 15:38:56	polyzen	https://www.facebook.com/wired/videos/10154013698188721/
+2016-09-21 15:38:58	phrik	Title: Kommentare (at www.facebook.com)
+2016-09-21 15:39:15	polyzen	shoes that tie themselves
+2016-09-21 15:39:19	<--	numero (~numero@2601:1c0:4002:4650:7358:8bd6:12f5:b2c0) has quit (Ping timeout: 250 seconds)
+2016-09-21 15:39:39	<--	herzmeister (~herzmeist@179.43.156.98) has quit (Quit: Leaving)
+2016-09-21 15:40:08	polyzen	takes 3 hours to charge
+2016-09-21 15:40:12	-->	herzmeister (~herzmeist@dslb-178-002-134-108.178.002.pools.vodafone-ip.de) has joined #archlinux
+2016-09-21 15:40:34	Flat	Hope the battery isn't made by samsung.
+2016-09-21 15:41:11	-->	Aph3x-WL (~Aph3x@shellie.darchoods.net) has joined #archlinux
+2016-09-21 15:41:36	<--	krabador (~krabador@unaffiliated/krabador) has quit (Remote host closed the connection)
+2016-09-21 15:42:33	-->	KingRiver (~Thunderbi@222.128.110.149) has joined #archlinux
+2016-09-21 15:43:12	-->	cspack (~cspack@162.216.46.61) has joined #archlinux
+2016-09-21 15:43:19	-->	ozmage (~javashin@unaffiliated/javashin) has joined #archlinux
+2016-09-21 15:43:19	<--	ozmage (~javashin@unaffiliated/javashin) has quit (Client Quit)
+2016-09-21 15:44:06	<--	kreig (~kreig@190.149.66.118) has quit (Remote host closed the connection)
+2016-09-21 15:44:21	KKKrx	hey look!
+2016-09-21 15:44:25	KKKrx	its in teh AUR!
+2016-09-21 15:44:25		[15:44]
+2016-09-21 15:44:59	nichego	Flat: in your dmesg, somewhat above the meminfo line, don't you happen to have a 'page allocation failure?'
+2016-09-21 15:45:41	MacGyver	KKKrx: What is?
+2016-09-21 15:45:52	nichego	their printer's driver
+2016-09-21 15:46:20	warsh	printers
+2016-09-21 15:46:25	 *	warsh shudders
+2016-09-21 15:46:48	KKKrx	Is splix or CUPS better?
+2016-09-21 15:47:05	KKKrx	in other words, there's a CUPS driver in the AUR for my printer model, or should I get the splix package in the official repos?
+2016-09-21 15:47:28	Flat	nichego: no page allocation failure that I see.. but I guess I should read logs. [38228.087409] budgie-wm invoked oom-killer: gfp_mask=0x24040c0(GFP_KERNEL|__GFP_COMP), order=3, oom_score_adj=0
+2016-09-21 15:47:43	<--	indeedwatson (~yama@host117.186-124-31.telecom.net.ar) has quit (Quit: bye)
+2016-09-21 15:48:27	-->	blunaxela (~alex@c-67-162-147-93.hsd1.co.comcast.net) has joined #archlinux
+2016-09-21 15:48:40	nichego	Flat: what's the value of your vm.swappiness sysctl?
+2016-09-21 15:48:51	-->	fs0ciety (~fs0ciety@fsociety.info) has joined #archlinux
+2016-09-21 15:48:58	Flat	nichego: 60
+2016-09-21 15:49:49	-->	Jumpf0rce (~alarm@unaffiliated/jumpforce) has joined #archlinux
+2016-09-21 15:49:54	MacGyver	KKKrx: splix is also a collection of cups drivers.
+2016-09-21 15:50:19	KKKrx	wut?
+2016-09-21 15:50:21	KKKrx	now im confused
+2016-09-21 15:50:24	KKKrx	so which should I get?
+2016-09-21 15:50:40	MacGyver	KKKrx: Whichever one works.
+2016-09-21 15:50:42	KKKrx	aur/samsung-m262x-m282x
+2016-09-21 15:50:49	MacGyver	KKKrx: I assume the AUR driver has reasons to exist.
+2016-09-21 15:50:50	KKKrx	or community/splix ?
+2016-09-21 15:50:55	KKKrx	oh okay, thanks
+2016-09-21 15:51:24	KKKrx	um, now what do i do?
+2016-09-21 15:51:38	KKKrx	i click print on a website, but it says, "what should I do with this file"
+2016-09-21 15:51:46	<--	Jumpforce (~alarm@unaffiliated/jumpforce) has quit (Ping timeout: 244 seconds)
+2016-09-21 15:51:46	<--	vee (~vee@unaffiliated/vee) has quit (Quit: WeeChat 1.6-dev)
+2016-09-21 15:51:52	-->	indeedwatson (~yama@host117.186-124-31.telecom.net.ar) has joined #archlinux
+2016-09-21 15:51:59	KKKrx	Do I have to restart my browser for it to work?
+2016-09-21 15:52:15	MacGyver	You still need to setup cups if you haven't done that yet.
+2016-09-21 15:52:21	-->	DarkFeather (~DarkFeath@96-41-230-196.dhcp.ftbg.wi.charter.com) has joined #archlinux
+2016-09-21 15:52:23	MacGyver	And then point it at the right printer.
+2016-09-21 15:52:50	horseface_	hey guys why after so long do certain applications run slow for me using i3wm?
+2016-09-21 15:52:57	horseface_	i do not understand...
+2016-09-21 15:52:59	KKKrx	setup cups?
+2016-09-21 15:53:00	<--	hotaronohanako (~user@unaffiliated/hotaronohanako) has quit (Remote host closed the connection)
+2016-09-21 15:53:01	KKKrx	this is confusing
+2016-09-21 15:53:07	KKKrx	horseface_: dwm is faster
+2016-09-21 15:53:08	<--	llinguini (~llinguini@mobile-130-126-255-245.near.illinois.edu) has quit (Ping timeout: 244 seconds)
+2016-09-21 15:53:11	MacGyver	Aaah, the joys of printing under linux.
+2016-09-21 15:53:14	KKKrx	horseface_: but i3 is pretty fast - i3 shouldn't be the issue
+2016-09-21 15:53:15	-->	dmoneyripcap (~dmoneyrip@gateway/vpn/privateinternetaccess/dmoneyripcap) has joined #archlinux
+2016-09-21 15:53:19	MacGyver	!aw cups
+2016-09-21 15:53:21	phrik	MacGyver: https://wiki.archlinux.org/index.php/CUPS
+2016-09-21 15:53:25	MacGyver	KKKrx: ^
+2016-09-21 15:53:28	KKKrx	thanks
+2016-09-21 15:53:30	horseface_	i just installed Trojitá email client and it runs slowly, so does firefox
+2016-09-21 15:53:39	KKKrx	horseface_: try palemoon - its faster
+2016-09-21 15:53:41	-->	thieh (~thieh-loc@CPEa84e3f42e993-CMa84e3f42e990.cpe.net.cable.rogers.com) has joined #archlinux
+2016-09-21 15:53:47	horseface_	i see hmm...
+2016-09-21 15:53:52	KKKrx	horseface_: is your computer slow, or just specific applications?
+2016-09-21 15:54:01	horseface_	only specific applications
+2016-09-21 15:54:04	<--	maolang (~maolang@2a01:e35:2e6c:5620:c77e:c4ff:15e1:718) has quit (Remote host closed the connection)
+2016-09-21 15:54:06	KKKrx	(don't actually install palemoon unless you want to try it out - chances are it won't make much of a difference)
+2016-09-21 15:54:11	KKKrx	um
+2016-09-21 15:54:13	KKKrx	try a memetest
+2016-09-21 15:54:25	horseface_	nah it is only certain applications
+2016-09-21 15:54:31	nichego	okay
+2016-09-21 15:54:31	horseface_	nothnig wrong with the hardware :/
+2016-09-21 15:54:33	nichego	here it is
+2016-09-21 15:54:43	nichego	Flat , MacGyver : https://bbs.archlinux.org/viewtopic.php?id=216716
+2016-09-21 15:54:43	phrik	Title: Kernel 4.7 and forth invokes oom-killer / Kernel & Hardware / Arch Linux Forums (at bbs.archlinux.org)
+2016-09-21 15:54:59	nichego	kernel regression
+2016-09-21 15:55:35	KKKrx	xD
+2016-09-21 15:55:38	KKKrx	do a memetest anyway
+2016-09-21 15:55:41	KKKrx	memetests are awesome xD
+2016-09-21 15:55:46	Flat	nichego: well.. that would do it.
+2016-09-21 15:55:53	<--	hardfalcon (~hardfalco@x4db591b5.dyn.telefonica.de) has quit (Ping timeout: 265 seconds)
+2016-09-21 15:56:07	sudokode	did someone say memetest
+2016-09-21 15:56:09	sudokode	( ͡° ͜ʖ ͡°)
+2016-09-21 15:56:22	nichego	this was the magic sauce: https://www.google.com/search?q=%22gfp_mask%3D0x24040c0%22
+2016-09-21 15:56:23	phrik	Title: "gfp_mask=0x24040c0" - Google-Suche (at www.google.com)
+2016-09-21 15:56:25	<--	fstd (~fstd@unaffiliated/fisted) has quit (Ping timeout: 255 seconds)
+2016-09-21 15:56:47	nichego	look like this stuff hits arch people first 
+2016-09-21 15:56:55	nichego	the guinea pigs of linux
+2016-09-21 15:57:18	Flat	Well, the more you know. Thanks for your assistance nichego and MacGyver. Maybe I'll try 4.8 and see what happens.
+2016-09-21 15:57:30	nichego	4.8 is in rc
+2016-09-21 15:57:32	<--	dmoneyripcap (~dmoneyrip@gateway/vpn/privateinternetaccess/dmoneyripcap) has quit (Client Quit)
+2016-09-21 15:57:33	<--	shauder (~shauder@107-188-180-227.slc.googlefiber.net) has quit (Ping timeout: 240 seconds)
+2016-09-21 15:57:36	Tobit	Is the linux vga console stuck with 480x640, 80x25, and ability to change fonts only, or is it possible to change it using the columns and row numbers, in the kernel console settings?
+2016-09-21 15:57:57	nichego	Flat: if the stuff doesn't hurt you too bad yet just wait for 4.8 to become stable
+2016-09-21 15:58:09	<--	KingRiver (~Thunderbi@222.128.110.149) has left #archlinux
+2016-09-21 15:58:16	MacGyver	Tobit: There's several different ways to change it.
+2016-09-21 15:58:18	<--	pks (~pks@x55b3ba8c.dyn.telefonica.de) has quit (Ping timeout: 265 seconds)
+2016-09-21 15:58:20	nichego	Tobit: vesa does not work for you?
+2016-09-21 15:58:32	nichego	i'm sure at least 80x50 is available with vga
+2016-09-21 15:58:37	-->	maolang (~maolang@2a01:e35:2e6c:5620:c77e:c4ff:15e1:718) has joined #archlinux
+2016-09-21 15:58:39	-->	sku1d (~sku1d@mail.entwicklerseite.de) has joined #archlinux
+2016-09-21 15:58:40	Flat	I think it was mostly just during this huge i/o intensive operation. I haven't noticed it even with my 16GB windows VM running all day, so I guess I can probably wait.
+2016-09-21 15:58:41	Tobit	I have the thing that places console on the frame buffer turned off atm
+2016-09-21 15:58:42	-->	LuckyRawApe (~LuckyRawA@ppp118-209-243-203.bras2.mel11.internode.on.net) has joined #archlinux
+2016-09-21 15:58:49	Tobit	just experimenting
+2016-09-21 15:58:51	<--	indeedwatson (~yama@host117.186-124-31.telecom.net.ar) has quit (Quit: bye)
+2016-09-21 15:58:52	MacGyver	vga kernel option, video kernel option, kms...
+2016-09-21 15:59:15	-->	indeedwatson (~yama@host117.186-124-31.telecom.net.ar) has joined #archlinux
+2016-09-21 15:59:22	-->	dmoneyripcap (~dmoneyrip@gateway/vpn/privateinternetaccess/dmoneyripcap) has joined #archlinux
+2016-09-21 15:59:34	<--	eric_lagergren (~eric_lage@c-73-225-199-152.hsd1.wa.comcast.net) has quit (Remote host closed the connection)
+2016-09-21 15:59:34		[15:59]
+2016-09-21 15:59:43	-->	kalentia (~kalentia@96-37-31-141.dhcp.gnvl.sc.charter.com) has joined #archlinux
+2016-09-21 15:59:55	Tobit	MacGyver: so can i put in 160x64 for 80x25 only, without changing anything else and have it work or will the system fail to boot?
+2016-09-21 16:00:46	nichego	Tobit: https://www.kernel.org/doc/Documentation/svga.txt
+2016-09-21 16:00:47	-->	pks (~pks@x55b38534.dyn.telefonica.de) has joined #archlinux
+2016-09-21 16:01:22	Tobit	nichego: thanks
+2016-09-21 16:01:31	<--	indeedwatson (~yama@host117.186-124-31.telecom.net.ar) has quit (Client Quit)
+2016-09-21 16:01:40	-->	Pie-jacker875 (~Pie-jacke@c-24-62-41-71.hsd1.ma.comcast.net) has joined #archlinux
+2016-09-21 16:01:52	-->	indeedwatson (~yama@host117.186-124-31.telecom.net.ar) has joined #archlinux
+2016-09-21 16:02:09	-->	GI_Jack (~GI_Jack@pdpc/supporter/active/gi-jack) has joined #archlinux
+2016-09-21 16:02:19	MacGyver	And, if the system fails to boot, simply edit the kernel commandline in the bootloader.
+2016-09-21 16:02:33	nichego	on grub menu press [e]
+2016-09-21 16:02:36	nichego	edit what you want
+2016-09-21 16:02:42	-->	Gfurst (~guiu@201.80.86.128) has joined #archlinux
+2016-09-21 16:02:46	nichego	then press [ctrl]+[x] to boot the new config
+2016-09-21 16:03:19	<--	indeedwatson (~yama@host117.186-124-31.telecom.net.ar) has quit (Client Quit)
+2016-09-21 16:03:34	<--	SmokeyD (~SmokeyD@112.201.199.240) has quit (Quit: Lost terminal)
+2016-09-21 16:03:42	KKKrx	is CUPS evil?
+2016-09-21 16:03:46	MacGyver	No.
+2016-09-21 16:03:54	ectospasm	The only thing made by Apple that isn't.
+2016-09-21 16:03:56	nichego	printers are evil
+2016-09-21 16:04:01	KKKrx	i just succesfully enabled my systemctl cups services
+2016-09-21 16:04:04	MacGyver	Printers are the spawn of satan.
+2016-09-21 16:04:09	MacGyver	But CUPS isn't evil.
+2016-09-21 16:04:10	KKKrx	and it says that its trademarked by Apple Inc...
+2016-09-21 16:04:10	-->	dave4925_ (~dave4925@unaffiliated/dave4925) has joined #archlinux
+2016-09-21 16:04:11	ectospasm	But necessary
+2016-09-21 16:04:14	<--	Pie-jacker875 (~Pie-jacke@c-24-62-41-71.hsd1.ma.comcast.net) has quit (Remote host closed the connection)
+2016-09-21 16:04:16	<--	thieh (~thieh-loc@CPEa84e3f42e993-CMa84e3f42e990.cpe.net.cable.rogers.com) has quit (Quit: Konversation terminated!)
+2016-09-21 16:04:16	-->	raijin (~raijin@unaffiliated/raijin) has joined #archlinux
+2016-09-21 16:04:19	-->	indeedwatson (~yama@host117.186-124-31.telecom.net.ar) has joined #archlinux
+2016-09-21 16:04:23	KKKrx	oh okay
+2016-09-21 16:04:26	KKKrx	xD
+2016-09-21 16:04:33	nichego	dead tree is rarely really necessary
+2016-09-21 16:04:37	nichego	not anymore
+2016-09-21 16:04:51	--	dave4925_ is now known as dave4925
+2016-09-21 16:04:51	ectospasm	Tell that to local governments.
+2016-09-21 16:04:52	<--	spiraliz (~spiraliz@126.62-97-246.bkkb.no) has quit (Quit: Leaving)
+2016-09-21 16:04:56	horseface_	hey guys I worked it out, if i install both the qt and gtk versions of wireshark, the qt one runs slowly...
+2016-09-21 16:05:07	KKKrx	horseface_: solution: use the gtk version
+2016-09-21 16:05:08	horseface_	while the gtk one is fine
+2016-09-21 16:05:09	nichego	yeah, they are in cahoots with dead-tree and printer makers, ectospasm :)
+2016-09-21 16:05:15	MacGyver	Here's a comic that explains it in more detail: (NSFW, also only funny if you speak Dutch) http://www.niconarsinferno.be/index.php?date=2015-04-13
+2016-09-21 16:05:16	phrik	Title: Niconars Inferno - Gebaseerd op afschuwelijke leugens (at www.niconarsinferno.be)
+2016-09-21 16:05:20	horseface_	yeah but firefox etc which uses qt runs slowly
+2016-09-21 16:05:28	horseface_	so how can I fix this? :/
+2016-09-21 16:05:31	Flat	Also luksipc failed miserably so I'd avoid that if anyone asks.
+2016-09-21 16:05:37	nichego	firefox does not use qt, horseface_ 
+2016-09-21 16:05:45	horseface_	hmm weird then wtf
+2016-09-21 16:05:46	MacGyver	Flat: :( well at least you have the backups right?
+2016-09-21 16:05:46	kalentia	yeah, firefox uses gtk
+2016-09-21 16:06:11	Arch_Coldfire	luakit dead?
+2016-09-21 16:06:16	Flat	Nah didn't bother with backups, wasn't anything super important on it. Just backups of my 3ds nand iirc. which I can dump again.
+2016-09-21 16:06:17	Arch_Coldfire	(browser)
+2016-09-21 16:06:34	Arch_Coldfire	guessing was replaced with dwb?
+2016-09-21 16:06:35	nichego	horseface_: your complaint is that firefox is slow? is it slow to start? what exactly is it doing slowly?
+2016-09-21 16:06:37	KKKrx	I'm currently at http://localhost:631/printers/ but it says no printers found, even though it should list my cups-pdf?
+2016-09-21 16:06:53	horseface_	no I mean, specific application will run slowly on my computer, i do not understand
+2016-09-21 16:07:07	nichego	horseface_: in what way does it run slowly?
+2016-09-21 16:07:13	MacGyver	KKKrx: Hmm, I've never installed cups-pdf and can print to pdf...
+2016-09-21 16:07:18	MacGyver	KKKrx: Anyway, don't worry about that.
+2016-09-21 16:07:23	-->	etskinner_ (~etskinner@97-91-90-225.dhcp.roch.mn.charter.com) has joined #archlinux
+2016-09-21 16:07:23	MacGyver	KKKrx: Just add the printer you want.
+2016-09-21 16:07:28	horseface_	firefox is slow, tor-browser-en is slow, wireshark-qt is slow, the whole interface is like lagging behind my actions by five seconds or more
+2016-09-21 16:07:41	horseface_	and then it jumps into present state
+2016-09-21 16:07:50	horseface_	and then it hangs again like a still frame
+2016-09-21 16:07:52	nichego	horseface_: what about a simple terminal?
+2016-09-21 16:07:53	horseface_	and then jumps
+2016-09-21 16:08:04	horseface_	some terminal emulators will run slowly
+2016-09-21 16:08:21	kalentia	hor
+2016-09-21 16:08:22	nichego	xterm. is it responsive?
+2016-09-21 16:08:24	-->	torgdor (~weechat@cpe-104-32-77-28.socal.res.rr.com) has joined #archlinux
+2016-09-21 16:08:26	horseface_	terminology the enlightenment te will run slowly
+2016-09-21 16:08:30	horseface_	xterm is fine
+2016-09-21 16:08:36	kalentia	horseface_› sounds like an installation problem of some sort
+2016-09-21 16:08:40	kalentia	or hardware
+2016-09-21 16:08:41	nichego	you type and it responds quickly?
+2016-09-21 16:08:46	sudokode	does that only happen on arch?
+2016-09-21 16:08:51	sudokode	or this install
+2016-09-21 16:08:51	horseface_	on most applications
+2016-09-21 16:08:51	<--	raijin (~raijin@unaffiliated/raijin) has quit (Ping timeout: 265 seconds)
+2016-09-21 16:08:56	KKKrx	Are there any good artcles that explain how monitor color (things like redshift) affect eyesight?
+2016-09-21 16:08:58	horseface_	no it has always happened
+2016-09-21 16:08:58	KKKrx	!redshift
+2016-09-21 16:08:59	phrik	Destroyer of data: http://arch.har-ikkje.net/gfx/redshift1.jpg
+2016-09-21 16:09:00	-->	vlitzer (~vlitzer@199.33.128.160) has joined #archlinux
+2016-09-21 16:09:00	horseface_	using i3wm
+2016-09-21 16:09:07	sudokode	hm..
+2016-09-21 16:09:11	horseface_	if i use enlightenment or something it is fine and everything runs fine
+2016-09-21 16:09:19	KKKrx	MacGyver: how do I do that?
+2016-09-21 16:09:19	sudokode	so it's not hardware
+2016-09-21 16:09:21	KKKrx	MacGyver: its not showing up
+2016-09-21 16:09:22	nichego	i3status is doing something bad
+2016-09-21 16:09:22	horseface_	nah
+2016-09-21 16:09:25	nichego	most likely
+2016-09-21 16:09:26	MacGyver	A more internationally oriented explanation of printers being the spawn of satan: http://theoatmeal.com/comics/printers
+2016-09-21 16:09:27	horseface_	hmm :/
+2016-09-21 16:09:27	phrik	Title: Why I Believe Printers Were Sent From Hell To Make Us Miserable - The Oatmeal (at theoatmeal.com)
+2016-09-21 16:09:37	-->	wuji2016 (~Thunderbi@61.132.138.217) has joined #archlinux
+2016-09-21 16:09:39	sudokode	come to think of it
+2016-09-21 16:09:42	MacGyver	KKKrx: How is the printer connected?
+2016-09-21 16:09:44	nichego	horseface_: sudo killall i3status
+2016-09-21 16:09:48	nichego	does it go fast after that?
+2016-09-21 16:09:49	sudokode	I think my work laptop may have a similar issue and i3status is running
+2016-09-21 16:09:55	sudokode	it doesn't always lag up, but sometimes it will
+2016-09-21 16:10:00	horseface_	i will try...
+2016-09-21 16:10:03	sudokode	I have i3 on this desktop, but no i3status
+2016-09-21 16:10:05	<--	eligos (~eligos@pc-25-251-30-200.cm.vtr.net) has quit (Quit: WeeChat 1.5)
+2016-09-21 16:10:07	-->	dt23_ (~horst@unaffiliated/dt23) has joined #archlinux
+2016-09-21 16:10:10	KKKrx	Are there any good artcles that explain how monitor color (things like redshift) affect eyesight?
+2016-09-21 16:10:13	KKKrx	MacGyver: wifi
+2016-09-21 16:10:14	horseface_	i see
+2016-09-21 16:10:24	nichego	KKKrx: ask your eye doctor
+2016-09-21 16:10:24	MacGyver	KKKrx: So, a network printer then.
+2016-09-21 16:10:31	KKKrx	MacGyver: im not much of a hardware guy so I don't know completely how it works though
+2016-09-21 16:10:38	KKKrx	nichego: good suggestion, I will next time I see him, thanks
+2016-09-21 16:10:44	MacGyver	KKKrx: Any idea what IP address it has and what protocol it speaks?
+2016-09-21 16:10:53	sudokode	i3status is really a piece of shit though
+2016-09-21 16:10:58	nichego	in all likelihood your doctor will say "no research on this"
+2016-09-21 16:11:08	horseface_	no it is still slow af
+2016-09-21 16:11:09	horseface_	with i3status killed off
+2016-09-21 16:11:26	MacGyver	There's some research on blue light and that sleepiness goo (technical term) in your bloodstream.
+2016-09-21 16:11:27	nichego	horseface_: pgrep -a i3
+2016-09-21 16:11:27	-->	vee (~vee@unaffiliated/vee) has joined #archlinux
+2016-09-21 16:11:30	nichego	what does it say?
+2016-09-21 16:11:43	kalentia	horseface_› try commenting out the bar area in your i3 config and restarting i3
+2016-09-21 16:11:50	-->	mahoff (~mahoff@unaffiliated/mahoff) has joined #archlinux
+2016-09-21 16:11:57	KKKrx	MacGyver: not sure, but its a samsung xpress 2825 i think
+2016-09-21 16:11:58	<--	Son_Goku (~ngompa@ool-457cbccd.dyn.optonline.net) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-09-21 16:11:58	polyzen	lol @ http://s3.amazonaws.com/theoatmeal-img/comics/printers/timing.png
+2016-09-21 16:12:07	MacGyver	KKKrx: Anyway, in the webinterface, you go to administration, add printer, and add the printer.
+2016-09-21 16:12:08	KKKrx	MacGyver: so I got the samsung-282x package
+2016-09-21 16:12:21	horseface_	says
+2016-09-21 16:12:24	horseface_	[frankenstein@localhost ~]$ pgrep -a i3
+2016-09-21 16:12:25	horseface_	843 i3
+2016-09-21 16:12:25	horseface_	852 i3bar --bar_id=bar-0 --socket=/run/user/1000/i3/ipc-socket.843
+2016-09-21 16:12:26	MacGyver	KKKrx: Forget the package for now. You need to tell the machine where to find the printer first.
+2016-09-21 16:12:31	KKKrx	Unable to add printer:      Forbidden
+2016-09-21 16:12:33	<--	dt23 (~horst@unaffiliated/dt23) has quit (Ping timeout: 240 seconds)
+2016-09-21 16:12:38	KKKrx	oh, do I need to make myself root?
+2016-09-21 16:12:39	Goatman	nice
+2016-09-21 16:12:41	nichego	horseface_: kill the bar as well
+2016-09-21 16:12:49	MacGyver	KKKrx: You may need to enter root's credentials, yes.
+2016-09-21 16:12:52	horseface_	hmm okay
+2016-09-21 16:12:54	KKKrx	awww
+2016-09-21 16:13:06	sudokode	!give KKKrx wtf system-config-printer
+2016-09-21 16:13:06	phrik	KKKrx: extra/system-config-printer
+2016-09-21 16:13:15	sudokode	horrible name, but it does what it says on the tin
+2016-09-21 16:13:18	sudokode	run with sudo
+2016-09-21 16:13:28	horseface_	no certain applications are still slow
+2016-09-21 16:13:31	horseface_	brb 1 sec
+2016-09-21 16:13:33	MacGyver	That doesn't actually make it easier if he doesn't know where the printer lives on the network, though, does it?
+2016-09-21 16:13:33	<--	vlitzer (~vlitzer@199.33.128.160) has quit (Ping timeout: 250 seconds)
+2016-09-21 16:13:41	KKKrx	Wut?
+2016-09-21 16:13:41	horseface_	oh dw
+2016-09-21 16:13:50	KKKrx	it configs a printer for your system?
+2016-09-21 16:13:55	KKKrx	it system's a printer for your config?
+2016-09-21 16:13:56	sudokode	that's just a workaround for entering root creds
+2016-09-21 16:13:57	KKKrx	this is soo confusing
+2016-09-21 16:14:00	KKKrx	xD xD
+2016-09-21 16:14:03	nichego	horseface_: did it get fixed?
+2016-09-21 16:14:03	KKKrx	okay
+2016-09-21 16:14:13	horseface_	nope nichego
+2016-09-21 16:14:15	horseface_	:/
+2016-09-21 16:14:17	horseface_	still slow
+2016-09-21 16:14:22	horseface_	only when I use i3wm though
+2016-09-21 16:14:30	horseface_	which is another similar, nice wm :/
+2016-09-21 16:14:31	horseface_	i can try
+2016-09-21 16:14:32	KKKrx	sudokode: okay, installed
+2016-09-21 16:14:39	<--	meurer (~meurer@a89-154-255-25.cpe.netcabo.pt) has quit (Ping timeout: 265 seconds)
+2016-09-21 16:14:39		[16:14]
+2016-09-21 16:14:43	KKKrx	horseface_: i doubt its your wm's problem
+2016-09-21 16:14:45	sudokode	there's no reason you should have to enter your root password into a web browser
+2016-09-21 16:14:51	<--	mahoff_ (~mahoff@unaffiliated/mahoff) has quit (Ping timeout: 250 seconds)
+2016-09-21 16:14:51	KKKrx	xD agreed
+2016-09-21 16:14:55	kalentia	horseface_› maybe try sway? it's a wayland based replacement for i3
+2016-09-21 16:14:59	nichego	horseface_: i3wm should work relatively well for most people. i don't know something that can replace it
+2016-09-21 16:15:07	MacGyver	I would've just stuck with cups and enter the root credentials.
+2016-09-21 16:15:13	MacGyver	Ah well.
+2016-09-21 16:15:14	horseface_	hmm
+2016-09-21 16:15:23	KKKrx	sudokode: should I get the libgnome keyring optional dep?
+2016-09-21 16:15:25	horseface_	yeah i would like to keep i3wm
+2016-09-21 16:15:30	sudokode	up to you
+2016-09-21 16:15:37	KKKrx	nichego: dwm isn't bad - i'm using it right now
+2016-09-21 16:15:37	horseface_	i just don't understand why certain things will run slowly in it
+2016-09-21 16:15:37	nichego	horseface_: in htop. do you see high cpu usage?
+2016-09-21 16:15:42	 *	MacGyver is off to bed.
+2016-09-21 16:15:48	 *	KKKrx waves goodbye to MacGyver 
+2016-09-21 16:15:57	horseface_	no, it is all 0.something to 2.something max
+2016-09-21 16:15:59	nichego	MacGyver: good sleep :)
+2016-09-21 16:16:20	horseface_	ie. 
+2016-09-21 16:16:33	nichego	horseface_: is that cpu % or system load?
+2016-09-21 16:16:43	horseface_	nah percentage
+2016-09-21 16:16:48	nichego	okay
+2016-09-21 16:17:00	nichego	so, run on your sluggish apps
+2016-09-21 16:17:02	horseface_	at this moment one of my processors are on 0.7%
+2016-09-21 16:17:06	nichego	keep looking at htop
+2016-09-21 16:17:11	horseface_	and the other three are on 0.0
+2016-09-21 16:17:17	horseface_	okay
+2016-09-21 16:17:25	warsh	okay
+2016-09-21 16:17:30	nichego	when it's start and it's responding sluggishly
+2016-09-21 16:17:38	nichego	see if htop shows anything unusual
+2016-09-21 16:17:46	nichego	s/start/started/
+2016-09-21 16:18:13	-->	raijin (~raijin@unaffiliated/raijin) has joined #archlinux
+2016-09-21 16:18:17	-->	gonz0_ (~gonz0@r122-pw-putura.ibys.com.br) has joined #archlinux
+2016-09-21 16:18:23	<--	gonz0 (~gonz0@r722-pf-anhumas.ibys.com.br) has quit (Ping timeout: 272 seconds)
+2016-09-21 16:18:28	KKKrx	um
+2016-09-21 16:18:35	KKKrx	its still saying "failed"
+2016-09-21 16:18:43	KKKrx	Unable to add printer:      Forbidden
+2016-09-21 16:18:46	horseface_	hmm it seems fine there nichego
+2016-09-21 16:18:48	<--	gonz0_ (~gonz0@r122-pw-putura.ibys.com.br) has quit (Remote host closed the connection)
+2016-09-21 16:18:55	horseface_	nothing seemingly unusual ....
+2016-09-21 16:18:55	sudokode	...
+2016-09-21 16:19:05	nichego	horseface_: high input lag but low cpu utilization
+2016-09-21 16:19:10	horseface_	yep
+2016-09-21 16:19:14	horseface_	pretty much guys...
+2016-09-21 16:19:15	-->	austrinus (~austrinus@50-200-254-243-static.hfc.comcastbusiness.net) has joined #archlinux
+2016-09-21 16:19:16	sudokode	network printer? could just be the printer responding?
+2016-09-21 16:19:22	sudokode	KKKrx: have you tried nmap?
+2016-09-21 16:19:23	KKKrx	sudokode: your package didn't fix the requirnment for a password
+2016-09-21 16:19:28	KKKrx	sudokode: nmap? no
+2016-09-21 16:19:29	<--	dviola (~diego@unaffiliated/diegoviola) has quit (Quit: WeeChat 1.5)
+2016-09-21 16:19:38	sudokode	you can discover hosts and then a simple port scan will reveal printers
+2016-09-21 16:19:41	sudokode	they're pretty obvious
+2016-09-21 16:20:00	MacGyver	sudokode: Probably a policykit-thing.
+2016-09-21 16:20:03	sudokode	hm
+2016-09-21 16:20:14	MacGyver	re: system-config-printer or whatever it's called.
+2016-09-21 16:20:24	KKKrx	What do I put for the "Make" section of my Virtual PDF printer?
+2016-09-21 16:20:27	horseface_	fuck i just do not understnd why i have this issue and no one else seems to when my install is nothing out of the ordinary
+2016-09-21 16:20:30	horseface_	:/
+2016-09-21 16:20:33	horseface_	so weird
+2016-09-21 16:20:37	nichego	horseface_: intel igp?
+2016-09-21 16:20:46	horseface_	igp?
+2016-09-21 16:20:48	<--	mpan (~mpan@85-222-0-229.dynamic.chello.pl) has quit (Ping timeout: 276 seconds)
+2016-09-21 16:20:50	sudokode	it's all cups in the end..
+2016-09-21 16:20:51	nichego	intel graphics
+2016-09-21 16:20:55	MacGyver	And KKKrx: Any decent network printer has some way of reporting its IP address to the user. Consult the manual.
+2016-09-21 16:20:59	sudokode	system-config-printer is just talking to the server
+2016-09-21 16:20:59	horseface_	oh i thought that;s what you meant
+2016-09-21 16:21:01	horseface_	yeah
+2016-09-21 16:21:05	nichego	horseface_: https://wiki.archlinux.org/index.php/Intel_graphics#SNA_issues
+2016-09-21 16:21:06	phrik	Title: Intel graphics - ArchWiki (at wiki.archlinux.org)
+2016-09-21 16:21:23	KKKrx	MacGyver: umm what happened?
+2016-09-21 16:21:27	horseface_	intel hd 6000 iirc
+2016-09-21 16:21:30	horseface_	the one in the latest i7s
+2016-09-21 16:21:33	KKKrx	whatever I just entered root credentials into localhost:631 and added it
+2016-09-21 16:21:49	 *	MacGyver is now really off to bed.
+2016-09-21 16:21:49	nichego	horseface_: https://bbs.archlinux.org/viewtopic.php?id=213533
+2016-09-21 16:21:50	phrik	Title: Firefox lag recently / Applications & Desktop Environments / Arch Linux Forums (at bbs.archlinux.org)
+2016-09-21 16:21:52	<--	dotcharge (~charge@r167-57-30-25.dialup.adsl.anteldata.net.uy) has quit
+2016-09-21 16:22:06	sudokode	meh
+2016-09-21 16:22:10	nichego	horseface_: follow solution offered there
+2016-09-21 16:22:18	<--	sud0 (~Death@unaffiliated/sud0) has quit (Remote host closed the connection)
+2016-09-21 16:22:55	horseface_	oh cool
+2016-09-21 16:22:55	horseface_	hmm let me see this
+2016-09-21 16:22:56	sudokode	I'm just glad I don't live in the days when you had to hunt for a printer driver
+2016-09-21 16:23:02	sudokode	hplip <3
+2016-09-21 16:23:40	nichego	horseface_: add the option enable_fbc=0 to your i915 driver parameters
+2016-09-21 16:23:41	-->	nando293921 (~Nando15@64.189.57.235) has joined #archlinux
+2016-09-21 16:23:47	nichego	horseface_: that's the solution
+2016-09-21 16:23:50	MacGyver	sudokode: Well look on the bright side.
+2016-09-21 16:24:00	sudokode	I thought I was =\
+2016-09-21 16:24:00	MacGyver	sudokode: At least getting scanners to work is still a complete PITA.
+2016-09-21 16:24:07	sudokode	oh that bright side
+2016-09-21 16:24:18	MacGyver	sudokode: There's still some of that genuine hardcore linux feeling in there.
+2016-09-21 16:24:24	sudokode	I just go with "scanners don't exist, it's all made up"
+2016-09-21 16:24:36	<--	zyxelthrone (~nepgear@2601:18a:c502:22d0:ffe1:9c99:873:e299) has quit (Quit: zyxelthrone)
+2016-09-21 16:24:40	horseface_	hmm i see nichego
+2016-09-21 16:24:43	MacGyver	I just use the office multifunctional which e-mails a PDF of the document.
+2016-09-21 16:24:44	horseface_	i get 
+2016-09-21 16:24:55	-->	zyxelthrone (~nepgear@2601:18a:c502:22d0:ffe1:9c99:873:e299) has joined #archlinux
+2016-09-21 16:25:00	sudokode	I just export to pdf and email it
+2016-09-21 16:25:11	horseface_	[frankenstein@localhost ~]$ lspci | grep -i vga
+2016-09-21 16:25:11	horseface_	00:02.0 VGA compatible controller: Intel Corporation HD Graphics 6000 (rev 09)
+2016-09-21 16:25:14	horseface_	when i run that btw
+2016-09-21 16:25:15	sudokode	I've never actually used the printer at work
+2016-09-21 16:25:21	MacGyver	Yeah assuming you have a paper document you actually need scanned.
+2016-09-21 16:25:27	MacGyver	Oh wait I was heading to bed.
+2016-09-21 16:25:28	sudokode	somehow I've gotten away with it
+2016-09-21 16:25:29	horseface_	let me see this nichego
+2016-09-21 16:25:33	nichego	horseface_: follow these steps
+2016-09-21 16:25:36	sudokode	MacGyver: magic!
+2016-09-21 16:25:40	horseface_	which file do i place that in?
+2016-09-21 16:25:58	nichego	horseface_: first in xorg configuration, test Option "AccelMethod" "uxa"
+2016-09-21 16:26:03	nichego	and restart xorg
+2016-09-21 16:26:10	nichego	if that solves your lag issue you're golden
+2016-09-21 16:26:50	KKKrx	Okay, its working now. Thanks everyone who helped!!!!!!!
+2016-09-21 16:26:52	KKKrx	MacGyver: gn
+2016-09-21 16:26:55	nichego	if that fails to solve it next step is to add i915.enable_fbc=0 to your boot parameters in /boot/grub/grub.cfg
+2016-09-21 16:27:01	<--	dmoneyripcap (~dmoneyrip@gateway/vpn/privateinternetaccess/dmoneyripcap) has quit (Quit: Leaving)
+2016-09-21 16:27:19	KKKrx	So, the "print" link on browsers won't work?
+2016-09-21 16:27:24	KKKrx	Do I have to rely on control-p?
+2016-09-21 16:27:25	-->	SmokeyD (~SmokeyD@180.190.69.164) has joined #archlinux
+2016-09-21 16:27:31	-->	sud0 (~Death@unaffiliated/sud0) has joined #archlinux
+2016-09-21 16:27:52	nichego	KKKrx: shouldn't they both go through the same browser code path eventually?
+2016-09-21 16:28:08	-->	KingRiver (~user@222.128.110.149) has joined #archlinux
+2016-09-21 16:28:19	KKKrx	nichego: well, control-p is working for me, the print link gives me a download button xD
+2016-09-21 16:28:45	nichego	KKKrx: which browser?
+2016-09-21 16:28:46	horseface_	hmm
+2016-09-21 16:28:48	sudokode	heh the only problem with using ctrl-p directly, you can't guarantee it will be the print media
+2016-09-21 16:28:53	KKKrx	nichego: palemoon (Fork of firefox)
+2016-09-21 16:28:53	horseface_	okay i will try this nichego
+2016-09-21 16:28:57	sudokode	so you may end up with an exact print of the website
+2016-09-21 16:29:01	-->	node9 (~node9@CPE0c473dd24701-CM0c473dd24700.cpe.net.cable.rogers.com) has joined #archlinux
+2016-09-21 16:29:04	sudokode	depends on what you're printing, I guess
+2016-09-21 16:29:08	nichego	i don't know why people would use palemoon
+2016-09-21 16:29:09	<--	Bermond (~Bermond@179.217.34.152) has quit (Remote host closed the connection)
+2016-09-21 16:29:10	-->	Lynolix (~Seacow@202-161-79-195.tpgi.com.au) has joined #archlinux
+2016-09-21 16:29:13	horseface_	where is this xorg config file again?
+2016-09-21 16:29:19	horseface_	nichego
+2016-09-21 16:29:24	KKKrx	hm, it says either download the file, or open with an excecutable. is there an exceutable that I can "open with" to print it?
+2016-09-21 16:29:24	sudokode	horseface_: /etc/X11/
+2016-09-21 16:29:45	nichego	does work nowadays work without any xorg config?
+2016-09-21 16:29:45		[16:29]
+2016-09-21 16:29:56	sudokode	horseface_: you're probably not gonna need a full xorg.conf
+2016-09-21 16:30:06	sudokode	generally you just use stubs in xorg.conf.d
+2016-09-21 16:30:07	<--	deur (~deur@180.214.233.72) has quit (Read error: Connection reset by peer)
+2016-09-21 16:30:12	horseface_	i see
+2016-09-21 16:30:14	KKKrx	would lp work?
+2016-09-21 16:30:22	sudokode	see /usr/share/X11/xorg.conf.d/ for examples
+2016-09-21 16:30:28	horseface_	yeah i found no such file as
+2016-09-21 16:30:33	horseface_	/etc/X11/xorg.conf
+2016-09-21 16:30:39	sudokode	horseface_: it doesn't exist by default
+2016-09-21 16:30:41	nichego	horseface_: https://wiki.archlinux.org/index.php/intel_graphics#Configuration
+2016-09-21 16:30:43	phrik	Title: Intel graphics - ArchWiki (at wiki.archlinux.org)
+2016-09-21 16:30:48	nichego	read that section
+2016-09-21 16:30:52	sudokode	it's not generally useful. only one driver I can think really requires it
+2016-09-21 16:30:59	sudokode	and it's not intel
+2016-09-21 16:30:59	nichego	create /etc/X11/xorg.conf.d/20-intel.conf
+2016-09-21 16:31:02	Flat	Is it possible to automount a luks encrypted drive from a keyfile in an encrypted home on login without just writing my own script to mount on login?
+2016-09-21 16:31:05	<--	KingRiver (~user@222.128.110.149) has quit (Client Quit)
+2016-09-21 16:31:44	KKKrx	umm
+2016-09-21 16:31:46	KKKrx	does lp work?
+2016-09-21 16:31:54	sudokode	sure
+2016-09-21 16:32:04	horseface_	i swear that I have tried switching the method back to the old one and I still had the same issue
+2016-09-21 16:32:06	KKKrx	no, imean like
+2016-09-21 16:32:07	horseface_	or it broke something else
+2016-09-21 16:32:15	KKKrx	in a web browser, selecting "open with lp" will print the file?
+2016-09-21 16:32:22	sudokode	oh no
+2016-09-21 16:32:24	horseface_	many people say that they've had luck in actually removing the intel driver...
+2016-09-21 16:32:33	sudokode	!give KKKrx g css media types
+2016-09-21 16:32:34	phrik	KKKrx: Media types - W3C: <https://www.w3.org/TR/CSS21/media.html>
+2016-09-21 16:32:40	sudokode	oh god w3
+2016-09-21 16:32:45	nichego	KKKrx: what the print link on a particular website does is not a fixed thing
+2016-09-21 16:32:47	KKKrx	What?
+2016-09-21 16:32:51	<--	herzmeister (~herzmeist@dslb-178-002-134-108.178.002.pools.vodafone-ip.de) has quit (Quit: Leaving)
+2016-09-21 16:32:52	KKKrx	what does css have to do with this?
+2016-09-21 16:33:04	-->	Stanley00 (~Stanley_0@unaffiliated/stanley00) has joined #archlinux
+2016-09-21 16:33:05	nichego	in most sane websites it should give you the 'print-friendly' version of the page
+2016-09-21 16:33:06	sudokode	KKKrx: when I mentioned print media, that's what I was referring to
+2016-09-21 16:33:07	KKKrx	noo noo noo
+2016-09-21 16:33:10	sudokode	what were you talking about
+2016-09-21 16:33:13	KKKrx	I meant like
+2016-09-21 16:33:13	nichego	which you then print off with the usual ctrl+[
+2016-09-21 16:33:18	-->	herzmeister (~herzmeist@179.43.169.226) has joined #archlinux
+2016-09-21 16:33:19	KKKrx	ctrl+[ ??
+2016-09-21 16:33:26	sudokode	oh opening the downloaded file with lp?
+2016-09-21 16:33:30	sudokode	never tried it
+2016-09-21 16:33:38	nichego	what's the name of the file, KKKrx?
+2016-09-21 16:33:40	KKKrx	hm
+2016-09-21 16:33:49	-->	Pupnik (~Pupnik@2001:44b8:41c4:ba00:de4b:12fa:8add:639a) has joined #archlinux
+2016-09-21 16:33:53	KKKrx	um
+2016-09-21 16:33:58	KKKrx	well, its google, so they have weird file names
+2016-09-21 16:34:10	nichego	the file that print link tries to save
+2016-09-21 16:34:16	KKKrx	DeVOm0pYUymgXkwtXPlkxHtqVr0SfoCGINVKTtez2p0m9U=.pdf
+2016-09-21 16:34:20	nichego	well there
+2016-09-21 16:34:22	nichego	it's pdf 
+2016-09-21 16:34:25	KKKrx	well, one of the I's might actually be a l
+2016-09-21 16:34:28	<--	alexandros_c (~alexandro@unaffiliated/alexandros-c/x-1684531) has quit (Quit: brb)
+2016-09-21 16:34:29	KKKrx	I can't realy tell...
+2016-09-21 16:34:31	nichego	open it with pdf viewer of your choice
+2016-09-21 16:34:35	KKKrx	okay
+2016-09-21 16:34:35	KKKrx	llpp
+2016-09-21 16:34:37	KKKrx	done
+2016-09-21 16:34:38	nichego	and tell it to print
+2016-09-21 16:34:48	nichego	lp is not a pdf viewer
+2016-09-21 16:34:52	KKKrx	i said llpp
+2016-09-21 16:34:55	KKKrx	not lp xD
+2016-09-21 16:35:00	<--	SuzieCue (~Suzeanne@99-103-96-198.lightspeed.iplsin.sbcglobal.net) has quit (Ping timeout: 260 seconds)
+2016-09-21 16:35:10	nichego	have never heard of llpp as a pdf viewer
+2016-09-21 16:35:20	KKKrx	Earnestly: recommeneded it to me
+2016-09-21 16:35:20	raijin	it's goog
+2016-09-21 16:35:21	nichego	if it does the job for you, go ahead
+2016-09-21 16:35:36	sudokode	what a goog!
+2016-09-21 16:35:36	-->	Doty1154 (~Doty1154@c-73-189-164-179.hsd1.ca.comcast.net) has joined #archlinux
+2016-09-21 16:35:36	<--	node9 (~node9@CPE0c473dd24701-CM0c473dd24700.cpe.net.cable.rogers.com) has quit (Quit: bye faggots)
+2016-09-21 16:35:57	<--	Goatman (~bronco51@64.106.111.38) has quit (Read error: Connection reset by peer)
+2016-09-21 16:36:07	nichego	it's in aur
+2016-09-21 16:36:11	nichego	didn't know
+2016-09-21 16:36:19	nichego	good recommendation i presume
+2016-09-21 16:36:57	<--	hualet_deepin (~hualet@118.184.15.164) has quit (Ping timeout: 250 seconds)
+2016-09-21 16:37:01	-->	jjafco (~nathan@198.8.80.42) has joined #archlinux
+2016-09-21 16:37:12	-->	drnutz (~drnutz@sugarb1-dhcp-220.greenmountainaccess.net) has joined #archlinux
+2016-09-21 16:37:18	drnutz	hi folks
+2016-09-21 16:37:27	-->	obZen (~quassel@173.44.55.155) has joined #archlinux
+2016-09-21 16:37:52	nichego	hi dr nutz
+2016-09-21 16:38:08	horseface_	hmm thanks for your help nichego and others
+2016-09-21 16:38:09	-->	Pie-jacker875 (~Pie-jacke@c-24-62-41-71.hsd1.ma.comcast.net) has joined #archlinux
+2016-09-21 16:38:16	horseface_	fucking i still am having problems though
+2016-09-21 16:38:17	nichego	horseface_: did it fix your problem?
+2016-09-21 16:38:24	horseface_	nah man
+2016-09-21 16:38:26	drnutz	ust got arch installed and its so nice and fast.
+2016-09-21 16:38:29	nichego	which solution did you apply?
+2016-09-21 16:38:50	horseface_	i cannot find where to place this, i have a while ago tried switching to sna from uxa or whatever
+2016-09-21 16:39:17	nichego	well, you should be able to try a bunch of steps
+2016-09-21 16:39:23	nichego	else you're stuck
+2016-09-21 16:39:47	<--	MarioWaza (~Mario@178-84-226-29.dynamic.upc.nl) has quit (Ping timeout: 244 seconds)
+2016-09-21 16:39:50	horseface_	brb 1 sec
+2016-09-21 16:39:53	<--	horseface_ (~horseface@188.227.224.110) has quit (Quit: Leaving)
+2016-09-21 16:40:09	<--	cspack (~cspack@162.216.46.61) has quit (Quit: Leaving)
+2016-09-21 16:40:12	-->	horseface_ (~horseface@188.227.224.110) has joined #archlinux
+2016-09-21 16:40:50	<--	lstieb (~lstieb@84-113-194-77.cable.dynamic.surfer.at) has quit (Ping timeout: 265 seconds)
+2016-09-21 16:41:45	-->	MarioWaza (~Mario@178-84-226-29.dynamic.upc.nl) has joined #archlinux
+2016-09-21 16:42:09	-->	prth (~prth@106.51.16.164) has joined #archlinux
+2016-09-21 16:42:29	<--	linux_dream (~linux_dre@unaffiliated/linux-dream/x-5839402) has quit (Quit: Leaving)
+2016-09-21 16:42:42	nichego	i'll hit the sack
+2016-09-21 16:42:54	nichego	good luck 
+2016-09-21 16:43:03	KKKrx	grrrr
+2016-09-21 16:43:08	KKKrx	i dont think llpp has a print option
+2016-09-21 16:43:19	KKKrx	is there a good in browser pdf viewer plugin?
+2016-09-21 16:43:28	nichego	firefox has one built-on
+2016-09-21 16:43:31	nichego	so does chromium
+2016-09-21 16:43:39	nichego	use evince for your desktop pdf work
+2016-09-21 16:43:50	drnutz	i dont think chromium does.
+2016-09-21 16:43:58	drnutz	nm
+2016-09-21 16:44:05	nichego	KKKrx: evince has a big print menu item, too
+2016-09-21 16:44:07	<--	weemsledeux (~textual@unaffiliated/weems) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-09-21 16:44:33	nichego	drnutz: Chromium PDF Viewer (2 files) (Disabled)
+2016-09-21 16:44:41	nichego	anyway, i'm out
+2016-09-21 16:45:24	-->	alexandros_c (~alexandro@unaffiliated/alexandros-c/x-1684531) has joined #archlinux
+2016-09-21 16:45:24		[16:45]
+2016-09-21 16:46:11	<--	drnutz (~drnutz@sugarb1-dhcp-220.greenmountainaccess.net) has quit (Quit: Leaving)
+2016-09-21 16:46:48	<--	zyga (~zyga@ubuntu/member/zyga) has quit (Ping timeout: 276 seconds)
+2016-09-21 16:47:28	-->	chandan (~chandan@122.166.159.72) has joined #archlinux
+2016-09-21 16:47:30	-->	occultus (~occultus@207.196.181.231) has joined #archlinux
+2016-09-21 16:47:38	KKKrx	nichego: evince?
+2016-09-21 16:47:42	<--	jjafco (~nathan@198.8.80.42) has quit (Quit: leaving)
+2016-09-21 16:47:46	-->	magruder (redurgam@gateway/shell/panicbnc/x-omnxrziwmatoiafr) has joined #archlinux
+2016-09-21 16:47:52	-->	zyga (~zyga@ubuntu/member/zyga) has joined #archlinux
+2016-09-21 16:47:54	<--	horseface (uid182765@gateway/web/irccloud.com/x-eqxewdlpmaebspqf) has quit (Quit: Connection closed for inactivity)
+2016-09-21 16:48:18	KKKrx	now im just sooo confused
+2016-09-21 16:48:23	sudokode	zathura is fine
+2016-09-21 16:48:23	KKKrx	grrr i cant print!!
+2016-09-21 16:48:31	KKKrx	grrr
+2016-09-21 16:48:32	sudokode	:print and you get the normal gtk print dialog
+2016-09-21 16:49:17	sudokode	KKKrx: they're all just ps/pdf viewers
+2016-09-21 16:49:27	<--	mrbanie (~mrbanie@unaffiliated/mrbanie) has quit (Ping timeout: 244 seconds)
+2016-09-21 16:49:27	-->	hualet_deepin (~hualet@118.184.15.164) has joined #archlinux
+2016-09-21 16:49:30	KKKrx	sudokode: :print isn't working
+2016-09-21 16:49:32	timotree	I am trying to get a proprietary app from the AUR but I would like to sandbox it in some way because I think it might snoop on me. Any tips of how to do this without a full-blown vm?
+2016-09-21 16:49:33	sudokode	pdf and ps and printers all go together
+2016-09-21 16:49:53	KKKrx	which pdf viewer is fast and hopefully easy to use (so like, keybinding oriented / lighweight so i'm not overwhelmed by buttons)
+2016-09-21 16:50:02	sudokode	KKKrx: I'm probably gonna blame cups here..
+2016-09-21 16:50:34	KKKrx	What?
+2016-09-21 16:50:43	KKKrx	:print command not found
+2016-09-21 16:50:47	KKKrx	llpp doesn't have that command
+2016-09-21 16:50:52	sudokode	that was for zathura
+2016-09-21 16:50:53	KKKrx	timotree: qemu
+2016-09-21 16:50:57	sudokode	I don't know what llpp does
+2016-09-21 16:51:03	KKKrx	timotree: run arch in qemu
+2016-09-21 16:51:07	KKKrx	sudokode: which pdf viwer do you use?
+2016-09-21 16:51:15	KKKrx	fast and hopefully easy to use (so like, keybinding oriented / lighweight so i'm not overwhelmed by buttons)
+2016-09-21 16:51:16	sudokode	firefox
+2016-09-21 16:51:18	sudokode	pdf.js
+2016-09-21 16:51:19	-->	mrbanie (~mrbanie@unaffiliated/mrbanie) has joined #archlinux
+2016-09-21 16:51:25	-->	lagothrix (~lagothrix@unaffiliated/lagothrix) has joined #archlinux
+2016-09-21 16:51:25	timotree	KKKrx: is that not a full blown vm?
+2016-09-21 16:51:26	sudokode	zathura if I must
+2016-09-21 16:51:37	KKKrx	timotree: o nvm
+2016-09-21 16:51:44	KKKrx	timotree: um, you can jail the app
+2016-09-21 16:51:46	<--	hexagoxel (~hexagoxel@p200300798F20DD00021E33FFFE2231E9.dip0.t-ipconnect.de) has quit (Ping timeout: 255 seconds)
+2016-09-21 16:51:53	KKKrx	timotree: run it in a jail
+2016-09-21 16:51:54	KKKrx	!jail
+2016-09-21 16:52:01	apokatastasis	iirc vim used to be just vi with more features. recently I have noticed that it is syntax highlghting my code and also has mouse support. how long has it done that?
+2016-09-21 16:52:04	sudokode	wtf is a jail
+2016-09-21 16:52:06	-->	therealGent (~theRealGe@unaffiliated/therealgent) has joined #archlinux
+2016-09-21 16:52:06	sudokode	this isn't bsd
+2016-09-21 16:52:10	timotree	KKKrx: what is jailing an app?
+2016-09-21 16:52:15	KKKrx	apokatastasis: are you running neovim by accident?
+2016-09-21 16:52:38	sudokode	timotree: sandboxing is tricky. what are you trying to prevent? all kinds of fuckery?
+2016-09-21 16:52:52	KKKrx	!sandbox
+2016-09-21 16:52:55	sudokode	because pretty much every sort of container thing on linux doesn't protect you from all the things
+2016-09-21 16:53:00	KKKrx	!sandboxie
+2016-09-21 16:53:02	KKKrx	umm.
+2016-09-21 16:53:12	sudokode	so there's docker, lxc, systemd containers
+2016-09-21 16:53:23	KKKrx	!sandboxie <reply is>http://www.sandboxie.com/index.php?StartCommandLine
+2016-09-21 16:53:30	<--	edgr_ (uid185716@gateway/web/irccloud.com/x-ongjbdvenwlnajhv) has quit (Quit: Connection closed for inactivity)
+2016-09-21 16:53:30	sudokode	a basic chroot.. which doesn't help at all
+2016-09-21 16:53:37	KKKrx	im dumb
+2016-09-21 16:53:39	KKKrx	wutever
+2016-09-21 16:53:41	KKKrx	!shrug
+2016-09-21 16:53:42	phrik	¯\_(ツ)_/¯
+2016-09-21 16:53:43	sudokode	lol
+2016-09-21 16:53:54	sudokode	foo is <reply|action>amazing thing
+2016-09-21 16:54:02	sudokode	action does /me
+2016-09-21 16:54:05	KKKrx	oh
+2016-09-21 16:54:06	<--	Pie-jacker875 (~Pie-jacke@c-24-62-41-71.hsd1.ma.comcast.net) has quit (Remote host closed the connection)
+2016-09-21 16:54:10	KKKrx	awesome thanks
+2016-09-21 16:54:13	sudokode	mhm
+2016-09-21 16:54:17	apokatastasis	KKKrx: nope, ls -l /bin/vim shows it didn't get somehow turned into a symlink
+2016-09-21 16:54:20	KKKrx	!sandboxie is <reply>http://www.sandboxie.com/index.php?StartCommandLine
+2016-09-21 16:54:29	timotree	sudokode: I am mostly just thinking of limiting what files it has access to so it can't access anything I don't want it to.
+2016-09-21 16:54:31	apokatastasis	guess I'll just go back to vi lol
+2016-09-21 16:54:36	<--	chjj (~chjj@unaffiliated/chjj) has quit (Ping timeout: 276 seconds)
+2016-09-21 16:54:38	sudokode	KKKrx: try no in front
+2016-09-21 16:54:44	<--	SmokeyD (~SmokeyD@180.190.69.164) has quit (Quit: Lost terminal)
+2016-09-21 16:54:53	sudokode	might have gotten created somehow..
+2016-09-21 16:54:57	-->	ak5 (~ak5@unaffiliated/ak5) has joined #archlinux
+2016-09-21 16:55:05	sudokode	!sandboxie
+2016-09-21 16:55:07	<--	lagothri1 (~lagothrix@unaffiliated/lagothrix) has quit (Ping timeout: 272 seconds)
+2016-09-21 16:55:14	--	KKKrx is now known as thepiercingarrow
+2016-09-21 16:55:19	sudokode	oh register
+2016-09-21 16:55:23	sudokode	login
+2016-09-21 16:55:27	sudokode	whatever
+2016-09-21 16:55:29	--	thepiercingarrow is now known as TPA
+2016-09-21 16:55:43	TPA	umm
+2016-09-21 16:55:45	sudokode	lol
+2016-09-21 16:55:48	TPA	bot keeps telling me Error: Your hostmask doesn't match or your password is wrong.
+2016-09-21 16:56:02	TPA	but i tried all my names..
+2016-09-21 16:56:06	sudokode	!give TPA help hostmask list
+2016-09-21 16:56:06	phrik	TPA: (hostmask list [<name>]) -- Returns the hostmasks of the user specified by <name>; if <name> isn't specified, returns the hostmasks of the user calling the command. 
+2016-09-21 16:56:10	<--	obZen (~quassel@173.44.55.155) has quit (Ping timeout: 244 seconds)
+2016-09-21 16:56:14	TPA	oh thanks
+2016-09-21 16:56:17	TPA	!hostmask list
+2016-09-21 16:56:24	sudokode	heh /q
+2016-09-21 16:56:36	--	TPA is now known as thepiercingarrow
+2016-09-21 16:56:49	sudokode	whooooo are you
+2016-09-21 16:56:54	sudokode	who who, who who
+2016-09-21 16:57:02	sudokode	!csi
+2016-09-21 16:57:03	phrik	( •_•) ( •_•)>⌐■-■ (⌐■_■) YEEEEAAAAAAAAAAAHHHHHHH!!!!!!!!
+2016-09-21 16:57:08	thepiercingarrow	OMG
+2016-09-21 16:57:13	thepiercingarrow	this is wayy too confusing
+2016-09-21 16:57:23	sudokode	heh ok
+2016-09-21 16:57:25	thepiercingarrow	hostmask add, blah blah blah
+2016-09-21 16:57:28	thepiercingarrow	whatever
+2016-09-21 16:57:29	thepiercingarrow	!shrug
+2016-09-21 16:57:29	phrik	¯\_(ツ)_/¯
+2016-09-21 16:57:51	sudokode	thepiercingarrow: lol is that nick even registered?
+2016-09-21 16:58:21	-->	mmhat_ (~mmh@x5f75a077.dyn.telefonica.de) has joined #archlinux
+2016-09-21 16:58:22	timotree	so do you have a suggestion?
+2016-09-21 16:58:56	<--	snthsnth (~snthsnth@mbp.dynamic.ucsd.edu) has quit (Ping timeout: 244 seconds)
+2016-09-21 16:59:03	sudokode	1. register with chanserv, 2. go to #freenode and get a real hostmask, 3. !register, 4. !hostmask add *!*@unaffiliated/yournick
+2016-09-21 16:59:13	thepiercingarrow	sudokode: yes
+2016-09-21 16:59:20	thepiercingarrow	ohh
+2016-09-21 16:59:24	thepiercingarrow	i cant do that
+2016-09-21 16:59:28	sudokode	:(
+2016-09-21 16:59:29	thepiercingarrow	im on webchat cause my ip is banned
+2016-09-21 16:59:37	thepiercingarrow	so im gonna be difference each time :(
+2016-09-21 16:59:40	thepiercingarrow	i think
+2016-09-21 16:59:50	sudokode	lol ok..
+2016-09-21 16:59:51	thepiercingarrow	wait what?
+2016-09-21 16:59:52	thepiercingarrow	ohhh
+2016-09-21 16:59:55	thepiercingarrow	i can get a hostmask
+2016-09-21 17:00:03	thepiercingarrow	wutever too confusing xD ill just not reg
+2016-09-21 17:00:03	<--	tasse (~tasse@x4db4562d.dyn.telefonica.de) has quit (Ping timeout: 240 seconds)
+2016-09-21 17:00:14	thepiercingarrow	timotree: whats wrong with a full blown vm
+2016-09-21 17:00:28	sudokode	you can register without one. I don't know if you need a register nick with nickserv actually
+2016-09-21 17:00:28		[17:00]
+2016-09-21 17:00:49	sudokode	probably not. you actually just register a username/password with phrik and can identify with that
+2016-09-21 17:00:57	sudokode	!help identify
+2016-09-21 17:00:57	phrik	sudokode: (identify <name> <password>) -- Identifies the user as <name>. This command (and all other commands that include a password) must be sent to the bot privately, not in a channel. 
+2016-09-21 17:01:04	<--	doctorly (~doctorly@97-127-34-107.mpls.qwest.net) has quit (Ping timeout: 265 seconds)
+2016-09-21 17:01:12	sudokode	!help register
+2016-09-21 17:01:12	phrik	sudokode: (register <name> <password>) -- Registers <name> with the given password <password> and the current hostmask of the person registering. You shouldn't register twice; if you're not recognized as a user but you've already registered, use the hostmask add command to add another hostmask to your already-registered user, or use the identify command to identify just for a session. This (1 more message)
+2016-09-21 17:01:20	<--	mmhat (~mmh@x5f759bbd.dyn.telefonica.de) has quit (Ping timeout: 244 seconds)
+2016-09-21 17:01:21	-->	SuzieCue (~Suzeanne@99-103-96-198.lightspeed.iplsin.sbcglobal.net) has joined #archlinux
+2016-09-21 17:01:48	timotree	thepiercingarrow: I need low latency and I think a full vm is overkill I would imagine there is some way to just restrict an apps access to files in my /home for example.
+2016-09-21 17:02:10	-->	tasse (~tasse@x4db3dc9b.dyn.telefonica.de) has joined #archlinux
+2016-09-21 17:02:43	thepiercingarrow	timotree: use kvm acceleration then
+2016-09-21 17:02:51	<--	iconz (~iconz@2.26.78.206) has quit (Quit: WeeChat 1.5)
+2016-09-21 17:03:04	thepiercingarrow	phrik: register tpa sudokoderocks
+2016-09-21 17:03:10	thepiercingarrow	!shrug
+2016-09-21 17:03:12	phrik	¯\_(ツ)_/¯
+2016-09-21 17:03:16	-->	mpan (~mpan@85-222-0-229.dynamic.chello.pl) has joined #archlinux
+2016-09-21 17:03:16	thepiercingarrow	!register tpa sudokoderocks
+2016-09-21 17:03:44	--	thepiercingarrow is now known as TPA
+2016-09-21 17:03:46	sudokode	lol
+2016-09-21 17:03:48	sudokode	not in here
+2016-09-21 17:04:07	sudokode	!register TPA hunter3
+2016-09-21 17:04:16	TPA	what?
+2016-09-21 17:04:19	TPA	oh
+2016-09-21 17:04:41	sudokode	TPA: http://bash.org/?244321
+2016-09-21 17:04:48	phrik	Title: QDB: Quote #244321 (at bash.org)
+2016-09-21 17:04:53	sudokode	meh hunter2
+2016-09-21 17:05:01	sudokode	only off by 1
+2016-09-21 17:05:08	-->	llinguini (~llinguini@c-98-215-1-225.hsd1.il.comcast.net) has joined #archlinux
+2016-09-21 17:05:59	-->	Crazylemon64 (~Crazylemo@207.62.170.215) has joined #archlinux
+2016-09-21 17:06:12	TPA	sudokode: is that legit?
+2016-09-21 17:06:13	TPA	HAHAHA
+2016-09-21 17:06:16	TPA	!roftlcopter
+2016-09-21 17:06:20	sudokode	supposedly
+2016-09-21 17:06:21	TPA	!roftl
+2016-09-21 17:06:27	TPA	OMG HAHAHAHAHAHAHA roftl
+2016-09-21 17:06:31	<--	raijin (~raijin@unaffiliated/raijin) has quit (Ping timeout: 272 seconds)
+2016-09-21 17:07:14	-->	izalove (~izabera@unaffiliated/izabera) has joined #archlinux
+2016-09-21 17:07:30	TPA	HAHAHAHAHAHA
+2016-09-21 17:07:33	TPA	i can't stop laughing
+2016-09-21 17:07:35	TPA	seriously
+2016-09-21 17:07:35	<--	izalove (~izabera@unaffiliated/izabera) has left #archlinux ("WeeChat 1.5")
+2016-09-21 17:07:38	TPA	!!! xD xD xD
+2016-09-21 17:07:54	sudokode	http://bash.org/?top
+2016-09-21 17:07:57	phrik	Title: QDB: Top 100 Quotes (at bash.org)
+2016-09-21 17:07:57	sudokode	that's actually #1
+2016-09-21 17:08:07	-->	rquid (~rquid@tdtsp.ru) has joined #archlinux
+2016-09-21 17:08:39	sudokode	#3 is great
+2016-09-21 17:08:49	sudokode	oh irc
+2016-09-21 17:09:24	TPA	xD
+2016-09-21 17:10:20	<--	niemal (~mein@unaffiliated/anoniem4l) has quit (Remote host closed the connection)
+2016-09-21 17:10:21	<--	wooparadog (~wooparado@116.231.27.112) has quit (Read error: Connection reset by peer)
+2016-09-21 17:10:32	TPA	HAHAHAHAHAHAHAHAHA
+2016-09-21 17:10:37	TPA	#3 is so funny!! xD xD xD
+2016-09-21 17:10:40	<--	xvtz (~xer0@103.235.198.145) has quit (Ping timeout: 255 seconds)
+2016-09-21 17:10:40	-->	wooparadog (~wooparado@116.231.27.112) has joined #archlinux
+2016-09-21 17:10:55	sudokode	http://bash.org/?287414
+2016-09-21 17:10:56	phrik	Title: QDB: Quote #287414 (at bash.org)
+2016-09-21 17:11:00	sudokode	by far my favorite
+2016-09-21 17:11:06	TPA	there' s a typo though
+2016-09-21 17:11:09	TPA	*my should be *by
+2016-09-21 17:11:34	sudokode	preserves the realism
+2016-09-21 17:12:03	-->	obZen (~quassel@198.203.28.43) has joined #archlinux
+2016-09-21 17:12:57	TPA	what?
+2016-09-21 17:13:01	TPA	what realism
+2016-09-21 17:13:09	sudokode	what
+2016-09-21 17:13:14	sudokode	what typo are you talking about
+2016-09-21 17:13:22	<--	SuzieCue (~Suzeanne@99-103-96-198.lightspeed.iplsin.sbcglobal.net) has quit (Ping timeout: 255 seconds)
+2016-09-21 17:13:44	<--	fs0ciety (~fs0ciety@fsociety.info) has quit (Ping timeout: 244 seconds)
+2016-09-21 17:13:44	<--	zrj (~raw_rw@84.240.17.161) has quit (Quit: leaving)
+2016-09-21 17:14:01	<--	NextHendrix (~chris@cpc106649-shef15-2-0-cust409.17-1.cable.virginm.net) has quit (Read error: Connection reset by peer)
+2016-09-21 17:14:32	-->	NextHendrix (~chris@cpc106649-shef15-2-0-cust409.17-1.cable.virginm.net) has joined #archlinux
+2016-09-21 17:14:36	-->	andrewSC (~andrewSC@unaffiliated/andrewsc) has joined #archlinux
+2016-09-21 17:14:36	<--	etskinner_ (~etskinner@97-91-90-225.dhcp.roch.mn.charter.com) has quit (Ping timeout: 265 seconds)
+2016-09-21 17:14:39	-->	zrj (~raw_rw@84.240.17.161) has joined #archlinux
+2016-09-21 17:15:03	<--	jrullo (~jonas@cpe-98-155-60-120.hawaii.res.rr.com) has quit (Quit: leaving)
+2016-09-21 17:15:13	TPA	#835030 is greta
+2016-09-21 17:15:16	TPA	greta
+2016-09-21 17:15:16	<--	NextHendrix (~chris@cpc106649-shef15-2-0-cust409.17-1.cable.virginm.net) has quit (Read error: Connection reset by peer)
+2016-09-21 17:15:18	TPA	great
+2016-09-21 17:15:31	TPA	*** BlackAdder has been kicked my t0rbad ( )
+2016-09-21 17:15:31		[17:15]
+2016-09-21 17:15:36	TPA	should be *be
+2016-09-21 17:15:39	TPA	*by
+2016-09-21 17:16:06	TPA	http://bash.org/?835030
+2016-09-21 17:16:07	phrik	Title: QDB: Quote #835030 (at bash.org)
+2016-09-21 17:16:21	sudokode	NOOOOOOO
+2016-09-21 17:16:23	sudokode	THEY LIED TO ME
+2016-09-21 17:16:50	<--	indeedwatson (~yama@host117.186-124-31.telecom.net.ar) has quit (Quit: bye)
+2016-09-21 17:17:05	<--	Vile` (~Vile@unaffiliated/vile/x-1886500) has quit (Ping timeout: 240 seconds)
+2016-09-21 17:17:11	<--	mmhat_ (~mmh@x5f75a077.dyn.telefonica.de) has quit (Quit: WeeChat 1.5)
+2016-09-21 17:18:02	-->	indeedwatson (~yama@host117.186-124-31.telecom.net.ar) has joined #archlinux
+2016-09-21 17:18:21	-->	raijin (~raijin@unaffiliated/raijin) has joined #archlinux
+2016-09-21 17:19:28	-->	NextHendrix (~chris@cpc106649-shef15-2-0-cust409.17-1.cable.virginm.net) has joined #archlinux
+2016-09-21 17:19:33	<--	andrewSC (~andrewSC@unaffiliated/andrewsc) has quit (Ping timeout: 240 seconds)
+2016-09-21 17:19:42	-->	MaoMaoChong (~MaoMaoCho@210.30.193.71) has joined #archlinux
+2016-09-21 17:20:25	<--	nerfquark (~nerfquark@cpe-24-198-125-42.maine.res.rr.com) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-09-21 17:20:59	TPA	WHAT THE FUCK
+2016-09-21 17:21:03	TPA	I can't control myself
+2016-09-21 17:21:10	TPA	reading http://bash.org/?111338 is literally cancer
+2016-09-21 17:21:15	phrik	Title: QDB: Quote #111338 (at bash.org)
+2016-09-21 17:21:17	TPA	I literally can't stop laughing for ANYTHING
+2016-09-21 17:21:21	TPA	sudokode: what happened?
+2016-09-21 17:21:23	TPA	THE KADE IS A LIE
+2016-09-21 17:21:26	TPA	CAKE
+2016-09-21 17:21:39	<--	NextHendrix (~chris@cpc106649-shef15-2-0-cust409.17-1.cable.virginm.net) has quit (Read error: Connection reset by peer)
+2016-09-21 17:21:54	<--	occultus (~occultus@207.196.181.231) has quit (Remote host closed the connection)
+2016-09-21 17:23:43	<--	timotree (~timotree@pool-108-30-243-30.nycmny.fios.verizon.net) has quit (Quit: timotree)
+2016-09-21 17:23:49	-->	JeanCarloMachado (~jean@152.252.186.78) has joined #archlinux
+2016-09-21 17:24:03	<--	brent__ (uid134494@gateway/web/irccloud.com/x-jwibcctripfsxelv) has quit (Quit: Connection closed for inactivity)
+2016-09-21 17:24:28	-->	NextHendrix (~chris@cpc106649-shef15-2-0-cust409.17-1.cable.virginm.net) has joined #archlinux
+2016-09-21 17:24:50	TPA	I can't handel this
+2016-09-21 17:25:13	-->	agregory (~agregory@cpe-98-27-61-138.nc.res.rr.com) has joined #archlinux
+2016-09-21 17:25:32	<--	alex1a (~alex1a@a81-84-38-221.cpe.netcabo.pt) has quit (Quit: Leaving)
+2016-09-21 17:25:47	-->	krs93 (~krs93@2605:6000:8b03:da00:5b4:159c:8202:aedc) has joined #archlinux
+2016-09-21 17:27:10	<--	Coldblackice (~anonz@unaffiliated/coldblackice) has quit
+2016-09-21 17:27:19	-->	kotto (~kotto@191.223.56.174) has joined #archlinux
+2016-09-21 17:27:29	sudokode	lol wat
+2016-09-21 17:28:23	-->	_fs0ciety_ (~user@unaffiliated/anu0) has joined #archlinux
+2016-09-21 17:29:00	-->	ChetManly (~chet@207.195.17.121) has joined #archlinux
+2016-09-21 17:29:07	sudokode	that site will consume your soul
+2016-09-21 17:29:15	sheep	what's a soul
+2016-09-21 17:29:19	-->	dmoneyripcap (~dmoneyrip@108.61.226.44) has joined #archlinux
+2016-09-21 17:29:49	<--	kotto_ (~kotto@200-103-123-94.cbace700.dsl.brasiltelecom.net.br) has quit (Ping timeout: 250 seconds)
+2016-09-21 17:30:04	<--	Miner_48er (~Miner_48e@68.67.255.139) has quit (Quit: Leaving)
+2016-09-21 17:30:26	polyzen	a city in Korea
+2016-09-21 17:30:26	sudokode	see
+2016-09-21 17:30:37	-->	SmokeyD (~SmokeyD@112.201.199.240) has joined #archlinux
+2016-09-21 17:30:37		[17:30]
+2016-09-21 17:30:38	sudokode	aww polyzen made a funny
+2016-09-21 17:30:43	polyzen	:3
+2016-09-21 17:30:50	<--	arescorpio (~arescorpi@132-219-114-200.fibertel.com.ar) has quit (Quit: Leaving.)
+2016-09-21 17:31:51	<--	wadadli (~user@unaffiliated/anu0) has quit (Ping timeout: 272 seconds)
+2016-09-21 17:32:53	-->	fs0ciety (~fs0ciety@fsociety.info) has joined #archlinux
+2016-09-21 17:34:00	-->	sleepercell13th (~sleeperce@115.178.211.224) has joined #archlinux
+2016-09-21 17:34:06	-->	lagothri1 (~lagothrix@unaffiliated/lagothrix) has joined #archlinux
+2016-09-21 17:34:07	<--	Akkarin (~Akkarin@bnc.basinmc.org) has quit (Quit: ZNC - 1.6.0 - http://znc.in)
+2016-09-21 17:34:46	-->	gopimn (~androirc@191.114.127.139) has joined #archlinux
+2016-09-21 17:35:45	-->	ElectricPrism (~ElectricP@unaffiliated/electricprism) has joined #archlinux
+2016-09-21 17:35:50	gopimn	Hii :)
+2016-09-21 17:35:52	<--	lagothrix (~lagothrix@unaffiliated/lagothrix) has quit (Ping timeout: 255 seconds)
+2016-09-21 17:36:03	gopimn	Anyone active?
+2016-09-21 17:36:20	<--	thrice (~ajb@unaffiliated/thrice/x-000000001) has quit (Quit: WeeChat 1.5)
+2016-09-21 17:36:27	ElectricPrism	Is there a way to upgrade to Gnome 3.22 via pacman presently?
+2016-09-21 17:36:43	MetaHertz	gopimn: yes, of course.
+2016-09-21 17:37:15	-->	chjj (~chjj@unaffiliated/chjj) has joined #archlinux
+2016-09-21 17:37:17	sheep	ElectricPrism: not yet
+2016-09-21 17:37:23	amcrae	well...
+2016-09-21 17:37:28	amcrae	not supported :P
+2016-09-21 17:37:37	gopimn	Anyone using arm architecture?
+2016-09-21 17:37:49	sheep	I think you want #archlinux-arm 
+2016-09-21 17:37:51	ElectricPrism	sheep, amcrae: ah okay, looking foreward
+2016-09-21 17:37:55	MetaHertz	Never used so far 
+2016-09-21 17:38:19	gopimn	Thx sheep :)
+2016-09-21 17:38:53	-->	raehik (~raehik@eduC13C.kent.ac.uk) has joined #archlinux
+2016-09-21 17:38:53	<--	krs93 (~krs93@2605:6000:8b03:da00:5b4:159c:8202:aedc) has quit (Read error: Connection reset by peer)
+2016-09-21 17:39:21	gopimn	I've been using arch on my computer since uffff since HAL xD
+2016-09-21 17:39:21	TPA	xD
+2016-09-21 17:39:25	TPA	I CANT STOP LAUGHING
+2016-09-21 17:39:27	--	TPA is now known as KKKrx
+2016-09-21 17:39:40	<--	ElectricPrism (~ElectricP@unaffiliated/electricprism) has quit (Remote host closed the connection)
+2016-09-21 17:40:30	-->	jim_carry (~jim_carry@unaffiliated/jim-carry/x-1372289) has joined #archlinux
+2016-09-21 17:40:35	-->	xvtz (~xer0@103.235.198.145) has joined #archlinux
+2016-09-21 17:40:57	<--	amcrae (~allan@archlinux/developer/allan) has quit (Quit: broken)
+2016-09-21 17:41:42	-->	cspack (~cspack@162.216.46.61) has joined #archlinux
+2016-09-21 17:41:47	gopimn	syslinux supports UEFI?
+2016-09-21 17:41:54	-->	Gnomethrower (~B@unaffiliated/gnomethrower) has joined #archlinux
+2016-09-21 17:41:57	<--	hosified (~hosified@unaffiliated/hosified) has quit (Quit: Leaving)
+2016-09-21 17:42:00	sheep	not realluy
+2016-09-21 17:42:01	<--	sleepercell13th (~sleeperce@115.178.211.224) has quit (Quit: leaving)
+2016-09-21 17:42:21	sheep	you can use it with UEFI but it doesn't support a lot of stuff like loading EFI images that aren't linux kernel images
+2016-09-21 17:42:44	-->	sleepercell13th (~sleeperce@115.178.211.224) has joined #archlinux
+2016-09-21 17:42:57	somaReverse	Hi, why does oom killer not do its job when memory usage gets very intense?
+2016-09-21 17:43:31	somaReverse	Xorg becomes D and I cannot cancel the probematic jobs
+2016-09-21 17:44:29	somaReverse	can I preserve enough memory for xorg?
+2016-09-21 17:44:39	<--	dave0x6d (uid183099@gateway/web/irccloud.com/x-utsmqlrkzfzxvvzn) has quit (Quit: Connection closed for inactivity)
+2016-09-21 17:45:23	gopimn	Hard question xD
+2016-09-21 17:45:37	<--	molgrum (~molgrum@unaffiliated/molgrum) has quit (Quit: ZNC 1.6.3+deb2+b1 - http://znc.in)
+2016-09-21 17:45:37		[17:45]
+2016-09-21 17:46:10	-->	Goatman (~bronco51@64.106.111.38) has joined #archlinux
+2016-09-21 17:46:17	<--	prth (~prth@106.51.16.164) has quit (Ping timeout: 244 seconds)
+2016-09-21 17:46:19	-->	abdulhakeem (~abdulhake@2605:6000:f545:7400:955e:b3ea:a0da:7874) has joined #archlinux
+2016-09-21 17:47:03	-->	Akkarin (~Akkarin@bnc.basinmc.org) has joined #archlinux
+2016-09-21 17:47:12	-->	matoro (~matoro@129.62.118.75) has joined #archlinux
+2016-09-21 17:47:23	-->	prth (~prth@106.51.16.164) has joined #archlinux
+2016-09-21 17:47:45	-->	node9 (~node9@CPE0c473dd24701-CM0c473dd24700.cpe.net.cable.rogers.com) has joined #archlinux
+2016-09-21 17:47:52	-->	drtintenfisch (~patrick@c-98-245-81-247.hsd1.co.comcast.net) has joined #archlinux
+2016-09-21 17:48:15	-->	numero (~numero@71-222-6-7.ptld.qwest.net) has joined #archlinux
+2016-09-21 17:49:03	-->	Vile` (~Vile@unaffiliated/vile/x-1886500) has joined #archlinux
+2016-09-21 17:50:14	<--	drtintenfisch (~patrick@c-98-245-81-247.hsd1.co.comcast.net) has quit (Remote host closed the connection)
+2016-09-21 17:50:35	-->	molgrum (~molgrum@unaffiliated/molgrum) has joined #archlinux
+2016-09-21 17:50:48	gopimn	Who's the mantainer of linux-firmware xD?
+2016-09-21 17:51:12	<--	KKKrx (6402ee9e@gateway/web/freenode/ip.100.2.238.158) has quit (Ping timeout: 240 seconds)
+2016-09-21 17:52:20	sudokode	you should probably consider getting more memory
+2016-09-21 17:52:35	somaReverse	sudokode: my laptop has a limit of 12GB
+2016-09-21 17:52:46	sudokode	damn what are you doing
+2016-09-21 17:52:54	-->	nerfquark (~nerfquark@cpe-24-198-125-42.maine.res.rr.com) has joined #archlinux
+2016-09-21 17:52:57	gopimn	Laurent Carlier is the maintainer
+2016-09-21 17:53:57	Llewelyn	gopimn: Have you tried looking it up? It is all there in the web site.
+2016-09-21 17:54:20	<--	NextHendrix (~chris@cpc106649-shef15-2-0-cust409.17-1.cable.virginm.net) has quit (Ping timeout: 260 seconds)
+2016-09-21 17:55:03	<--	Goatman (~bronco51@64.106.111.38) has quit (Read error: Connection reset by peer)
+2016-09-21 17:55:03	Llewelyn	Including a link to report bugs 
+2016-09-21 17:55:48	<--	sudokode (~root@unaffiliated/sudokode) has quit (Quit: peace)
+2016-09-21 17:55:55	<--	zrj (~raw_rw@84.240.17.161) has quit (Ping timeout: 272 seconds)
+2016-09-21 17:57:55	-->	dbadawi (b36f0be6@gateway/web/freenode/ip.179.111.11.230) has joined #archlinux
+2016-09-21 17:59:16	<--	raijin (~raijin@unaffiliated/raijin) has quit (Ping timeout: 255 seconds)
+2016-09-21 18:00:08	<--	kain (~kain@unaffiliated/mavick) has quit
+2016-09-21 18:00:32	<--	zyxelthrone (~nepgear@2601:18a:c502:22d0:ffe1:9c99:873:e299) has quit (Quit: zyxelthrone)
+2016-09-21 18:00:39	<--	dbadawi (b36f0be6@gateway/web/freenode/ip.179.111.11.230) has quit (Client Quit)
+2016-09-21 18:00:39		[18:00]
+2016-09-21 18:01:46	-->	zyxelthrone (~nepgear@2601:18a:c502:22d0:ffe1:9c99:873:e299) has joined #archlinux
+2016-09-21 18:02:14	-->	dave0x6d (uid183099@gateway/web/irccloud.com/x-cccxaozytcavowaw) has joined #archlinux
+2016-09-21 18:02:25	<--	indeedwatson (~yama@host117.186-124-31.telecom.net.ar) has quit (Ping timeout: 255 seconds)
+2016-09-21 18:03:00	<--	JeanCarloMachado (~jean@152.252.186.78) has quit (Ping timeout: 244 seconds)
+2016-09-21 18:03:42	-->	NextHendrix (~chris@cpc106649-shef15-2-0-cust409.17-1.cable.virginm.net) has joined #archlinux
+2016-09-21 18:03:48	<--	namyzarc (~namyzarc@2601:989:4200:331:3552:33f1:613a:441d) has quit (Quit: Leaving)
+2016-09-21 18:04:56	<--	node9 (~node9@CPE0c473dd24701-CM0c473dd24700.cpe.net.cable.rogers.com) has quit (Quit: bye faggots)
+2016-09-21 18:05:36	<--	zyxelthrone (~nepgear@2601:18a:c502:22d0:ffe1:9c99:873:e299) has quit (Client Quit)
+2016-09-21 18:06:09	-->	NextHend1ix (~chris@cpc106649-shef15-2-0-cust409.17-1.cable.virginm.net) has joined #archlinux
+2016-09-21 18:06:19	-->	zyxelthrone (~nepgear@2601:18a:c502:22d0:ffe1:9c99:873:e299) has joined #archlinux
+2016-09-21 18:06:32	<--	NextHendrix (~chris@cpc106649-shef15-2-0-cust409.17-1.cable.virginm.net) has quit (Client Quit)
+2016-09-21 18:06:46	<--	NextHend1ix (~chris@cpc106649-shef15-2-0-cust409.17-1.cable.virginm.net) has quit (Client Quit)
+2016-09-21 18:06:52	-->	node9 (~node9@CPE0c473dd24701-CM0c473dd24700.cpe.net.cable.rogers.com) has joined #archlinux
+2016-09-21 18:07:05	-->	NextHendrix (~chris@cpc106649-shef15-2-0-cust409.17-1.cable.virginm.net) has joined #archlinux
+2016-09-21 18:07:44	Trashlord	when trying to submit a new version of a package to the AUR, it seems to not work. "git push origin master" asks me for a password, and then says "Everything up to date" without actually pushing anything
+2016-09-21 18:08:14	sheep	are you sure the master branch is the one in use? and did you commit your changes?
+2016-09-21 18:08:23	Trashlord	oh, right. I forgot to commit. God damn it
+2016-09-21 18:08:26	Trashlord	thanks sheep, sec
+2016-09-21 18:08:30	<--	raehik (~raehik@eduC13C.kent.ac.uk) has quit (Ping timeout: 244 seconds)
+2016-09-21 18:09:10	<--	therealGent (~theRealGe@unaffiliated/therealgent) has quit (Ping timeout: 255 seconds)
+2016-09-21 18:09:24	-->	krs93 (~krs93@2605:6000:8b03:da00:e9f6:d9f2:d26d:51a6) has joined #archlinux
+2016-09-21 18:10:03	<--	node9 (~node9@CPE0c473dd24701-CM0c473dd24700.cpe.net.cable.rogers.com) has quit (Client Quit)
+2016-09-21 18:10:20	Trashlord	alright, updated
+2016-09-21 18:10:24	<--	urodna (~urodna@unaffiliated/urodna) has quit (Quit: urodna)
+2016-09-21 18:11:04	ChetManly	Im in vbox trying to install arch. When I try to arch-chroot /mnt   I get [root@archiso /]# 
+2016-09-21 18:17:00		[18:11]
+2016-09-21 18:59:09	--	irc: disconnected from server
+2016-09-21 18:59:09		[18:59]
+2016-09-21 19:07:00	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined #archlinux
+2016-09-21 19:07:00		[19:07]
+2016-09-21 19:07:00	--	Topic for #archlinux is "Welcome to Arch Linux World Domination, Inc. <+> Channel stats at <https://theos.kyriasis.com/~kyrias/stats/archlinux.html> Contact demize to opt out <+> Wanted to become an official Arch Tester? See https://lists.archlinux.org/pipermail/arch-dev-public/2016-July/028191.html <+> irssi security vulnerability: users should upgrade to 0.8.20 https://irssi.org/security/irssi_sa_2016.txt"
+2016-09-21 19:07:00	--	Topic set by tigrmesh on Wed, 21 Sep 2016 14:35:22
+2016-09-21 19:07:00	--	Channel #archlinux: 1609 nicks (2 ops, 0 voices, 1607 normals)
+2016-09-21 19:07:00	***	Buffer Playback...
+2016-09-21 19:07:00	somaReverse	[03:43:31] Xorg becomes D and I cannot cancel the probematic jobs [03:43:31]
+2016-09-21 19:07:00	somaReverse	[03:44:29] can I preserve enough memory for xorg? [03:44:29]
+2016-09-21 19:07:00	gopimn	[03:45:23] Hard question xD [03:45:23]
+2016-09-21 19:07:00	gopimn	[03:50:48] Who's the mantainer of linux-firmware xD? [03:50:48]
+2016-09-21 19:07:00	sudokode	[03:52:20] you should probably consider getting more memory [03:52:20]
+2016-09-21 19:07:00	somaReverse	[03:52:35] sudokode: my laptop has a limit of 12GB [03:52:35]
+2016-09-21 19:07:00	sudokode	[03:52:46] damn what are you doing [03:52:46]
+2016-09-21 19:07:00	gopimn	[03:52:57] Laurent Carlier is the maintainer [03:52:57]
+2016-09-21 19:07:00	Llewelyn	[03:53:57] gopimn: Have you tried looking it up? It is all there in the web site. [03:53:57]
+2016-09-21 19:07:00	Llewelyn	[03:55:03] Including a link to report bugs  [03:55:03]
+2016-09-21 19:07:00	Trashlord	[04:07:44] when trying to submit a new version of a package to the AUR, it seems to not work. "git push origin master" asks me for a password, and then says "Everything up to date" without actually pushing anything [04:07:44]
+2016-09-21 19:07:00	sheep	[04:08:14] are you sure the master branch is the one in use? and did you commit your changes? [04:08:14]
+2016-09-21 19:07:00	Trashlord	[04:08:23] oh, right. I forgot to commit. God damn it [04:08:23]
+2016-09-21 19:07:00	Trashlord	[04:08:26] thanks sheep, sec [04:08:26]
+2016-09-21 19:07:00	Trashlord	[04:10:20] alright, updated [04:10:20]
+2016-09-21 19:07:00	ChetManly	[04:11:04] Im in vbox trying to install arch. When I try to arch-chroot /mnt   I get [root@archiso /]#  [04:11:04]
+2016-09-21 19:07:00	sheep	[04:11:31] ChetManly: that is what you should see. [04:11:31]
+2016-09-21 19:07:00	ChetManly	[04:11:47] oh [04:11:47]
+2016-09-21 19:07:00	ChetManly	[04:12:14] shouldnt I be off the iso? [04:12:14]
+2016-09-21 19:07:00	sheep	[04:12:23] not yet [04:12:23]
+2016-09-21 19:07:00	sheep	[04:12:36] you're still running from the iso until you boot from the (virtual) hard disk [04:12:36]
+2016-09-21 19:07:00	sheep	[04:12:57] and the "archiso" you see there just means that the hostname is archiso. chroot doesn't change the hostname [04:12:57]
+2016-09-21 19:07:00	ChetManly	[04:13:13] thats what I was just going to ask lol [04:13:13]
+2016-09-21 19:07:00	ChetManly	[04:13:19] ok thanks [04:13:19]
+2016-09-21 19:07:00	The-Compiler	[04:16:35] Arch_Coldfire: both luakit and dwb are dead [04:16:35]
+2016-09-21 19:07:00	The-Compiler	[04:17:18] Arch_Coldfire: I'd dare to say dwb was replaced by https://www.qutebrowser.org/ but uzbl/vimb are other alternatives which at least have a little bit of activity [04:17:18]
+2016-09-21 19:07:00	Tobit	[04:23:59] i am bulding the linux kernel and using the config from /proc/config.gz and then updpkgsums, but it keeps aborting the the headers package, kernel package builds fine.  what should i do? [04:23:59]
+2016-09-21 19:07:00	Tobit	[04:24:11] building [04:24:11]
+2016-09-21 19:07:00	Tobit	[04:25:50] also im using makepkg to build [04:25:50]
+2016-09-21 19:07:00	@tigrmesh	[04:25:55] hi [04:25:55]
+2016-09-21 19:07:00	Tobit	[04:26:16] tigrmesh: howdey [04:26:16]
+2016-09-21 19:07:00	Tobit	[04:32:40] cp: cannot stat 'include/config/dvb/*.h': No such file or directory [04:32:40]
+2016-09-21 19:07:00	drtintenfisch	[04:32:50] Hello all, I am having a problem. I have 13Gb solid state drive in my laptop that is used for the OS. This also includes the packages, and with everything I want it gets really close to that limit. [04:32:50]
+2016-09-21 19:07:00	drtintenfisch	[04:33:06] Is there any way I can have selected packages placed on my larger main drive? [04:33:06]
+2016-09-21 19:07:00	abdulhakeem	[05:00:35] any programmers here? I'm stuck on this problem and I'm totally lost: https://www.reddit.com/r/cs50/comments/53xdpq/only_on_pset1_and_im_already_stuck/ [05:00:35]
+2016-09-21 19:07:00	grawity	[05:01:20] heftig: curious why gnome-unstable has so many "3.22.0+git" packages rather than just 3.22.0 – are they all waiting for 3.22.1? [05:01:20]
+2016-09-21 19:07:00	grawity	[05:01:57] drtintenfisch: what's the actual problem? [05:01:57]
+2016-09-21 19:07:00	grawity	[05:02:03] printing a pyramid thing? [05:02:03]
+2016-09-21 19:07:00	drtintenfisch	[05:02:36] grawity I'd like to have room to install new applications, because my root disk is full. [05:02:36]
+2016-09-21 19:07:00	abdulhakeem	[05:02:53] grawity: yeah. It requires a nested loop (2 actually, I think) and that's the part I;m having trouble with [05:02:53]
+2016-09-21 19:07:00	drtintenfisch	[05:03:31] To do that, I was wondering if there was a way to install packages (the biggest offender of space-consumption) to my main hard drive, rather than the teensy 13GB drive that my root partition occupies. [05:03:31]
+2016-09-21 19:07:00	Earnestly	[05:04:00] abdulhakeem: See what printf("%10s\n", "foo"); does [05:04:00]
+2016-09-21 19:07:00	grawity	[05:04:55] drtintenfisch: only if you move *all* of /usr to it; otherwise no [05:04:55]
+2016-09-21 19:07:00	abdulhakeem	[05:04:57] Earnestly: forgive my stupidity but at which point in the code? [05:04:57]
+2016-09-21 19:07:00	Earnestly	[05:05:08] abdulhakeem: Not in your code [05:05:08]
+2016-09-21 19:07:00	Earnestly	[05:05:16] abdulhakeem: Just see what it does on its own [05:05:16]
+2016-09-21 19:07:00	drtintenfisch	[05:05:37] Damn. That's really inconvenient. [05:05:37]
+2016-09-21 19:07:00	abdulhakeem	[05:05:37] Earnestly: just by itself? Okay [05:05:37]
+2016-09-21 19:07:00	Earnestly	[05:05:43] abdulhakeem: And read printf(3) [05:05:43]
+2016-09-21 19:07:00	drtintenfisch	[05:05:49] I suppose I'll have to pare down as much as possible :/  [05:05:49]
+2016-09-21 19:07:00	***	Playback Complete.
+2016-09-21 19:07:12	<--	stochastix (~stochasti@unaffiliated/stochastix) has quit (Ping timeout: 276 seconds)
+2016-09-21 19:07:27	-->	segurb (~segurb@unaffiliated/segurb) has joined #archlinux
+2016-09-21 19:07:30	--	Channel created on Sat, 14 Feb 2004 19:08:31
+2016-09-21 19:07:38	-->	shosca (~shosca@cpe-74-73-26-79.nyc.res.rr.com) has joined #archlinux
+2016-09-21 19:07:43	<--	tefter (~bmaxa@c-bg-d-p1-76.bvcom.net) has quit (Remote host closed the connection)
+2016-09-21 19:07:46	novilog	Just did the most haphazard system migration ever, but finally got arch running on my internal pci SSD instead of my external usb one. One problem I'm having right now, though, is that I didn't successfully migrate my user account/directory. I wound up just copying the old user directory into the new one, which obviously causes issues with permissions. So how to fix permissions so that the directory is 
+2016-09-21 19:07:52	novilog	associated with the new user account?
+2016-09-21 19:07:59	Earnestly	abdulhakeem: Then consider printf("%*s #\n", 10);
+2016-09-21 19:08:46	grawity	abdulhakeem: here's a hint; first define the maximum width of the pyramid's drawing area
+2016-09-21 19:08:48	-->	SpaceAce (~SpaceAce@124-170-148-24.dyn.iinet.net.au) has joined #archlinux
+2016-09-21 19:08:51	-->	Llewelyn (~derelict@50-46-217-106.evrt.wa.frontiernet.net) has joined #archlinux
+2016-09-21 19:08:59	grawity	abdulhakeem: then spaces = width - hashes
+2016-09-21 19:09:11	abdulhakeem	Earnestly: okay I think i understand that but it may be outside of the scope of the problem as we haven't learned that yet. I think they just want us to use printf to print the " " and "#" in a looped fashion
+2016-09-21 19:09:16	abdulhakeem	grawity: ^
+2016-09-21 19:09:32	grawity	abdulhakeem: ?
+2016-09-21 19:09:38	<--	boustrophedon (~boustroph@static.88-198-24-113.clients.your-server.de) has quit (Quit: leaving)
+2016-09-21 19:09:49	abdulhakeem	grawity: meant to reply to you as well as Earnestly
+2016-09-21 19:09:55	grawity	abdulhakeem: yes I get that
+2016-09-21 19:10:11	grawity	abdulhakeem: your reply doesn't seem to have anything to do with what I said
+2016-09-21 19:10:22	<--	novilog (~alden@unaffiliated/novilog) has left #archlinux
+2016-09-21 19:10:25	abdulhakeem	grawity: the maximum width is determined by the height, or h 
+2016-09-21 19:10:28	-->	novilog (~alden@unaffiliated/novilog) has joined #archlinux
+2016-09-21 19:10:30	abdulhakeem	I t hink
+2016-09-21 19:10:31	abdulhakeem	think*
+2016-09-21 19:10:37	Earnestly	(It's still no harm to read the printf manual, since it covers the ever useful snprintf too)
+2016-09-21 19:10:38	abdulhakeem	pretty sure
+2016-09-21 19:10:46	abdulhakeem	yeah doing that as well
+2016-09-21 19:10:51	<--	aaro (~aaro@unaffiliated/xyox/x-040147) has quit (Quit: Quit)
+2016-09-21 19:10:59	grawity	abdulhakeem: yes, it is, but have you actually determined it in your code?
+2016-09-21 19:11:15	abdulhakeem	yeah the first part asks the user for the height, which is assigned to variable h
+2016-09-21 19:11:24	abdulhakeem	http://pastebin.com/gapmxuaS
+2016-09-21 19:11:25	grawity	that's height. where's width?
+2016-09-21 19:11:25	phrik	Title: [C] Mario - Pastebin.com (at pastebin.com)
+2016-09-21 19:11:48	grawity	yes you can determine it off the height, but where are you doing that?
+2016-09-21 19:11:55	abdulhakeem	well the width would be the same as the height, because it'll eventually get to the last line of 8 hashes and no spaces, equal to the height
+2016-09-21 19:12:07	-->	boustrophedon (~boustroph@static.88-198-24-113.clients.your-server.de) has joined #archlinux
+2016-09-21 19:12:27	-->	Adbray (~Adbtay@2001:470:1f11:def:79a9:66d3:ec47:c860) has joined #archlinux
+2016-09-21 19:12:31	abdulhakeem	that pastebin link is the farthest I've gotten but it prints an upside-down pyramid and a blank line at the bottom
+2016-09-21 19:12:49	grawity	spoiler http://sprunge.us/YEXi?python
+2016-09-21 19:13:06	<--	timahvo1 (~rogue@197.237.134.7) has quit (Ping timeout: 264 seconds)
+2016-09-21 19:13:21	-->	AntonSpain (~yaaic@148.3.65.59) has joined #archlinux
+2016-09-21 19:13:25	grawity	if yours is upside-down, review the 'hash' calculation
+2016-09-21 19:13:27	abdulhakeem	this kinda stuff makes me think I just don't have the mental capacity to learn programming :/
+2016-09-21 19:13:28	novilog	Never mind, I don't know why I thought it was going to be so complicated. Literally just a chown fixed it.
+2016-09-21 19:14:11	Earnestly	abdulhakeem: Yeah, but that's not true, it's just practice and hard
+2016-09-21 19:14:16	-->	palasso (~quassel@palassopoulosge.ath.forthnet.gr) has joined #archlinux
+2016-09-21 19:14:17	<--	nando293921 (~Nando15@64.189.57.235) has quit (Ping timeout: 248 seconds)
+2016-09-21 19:14:36	-->	timahvo1 (~rogue@197.237.134.7) has joined #archlinux
+2016-09-21 19:14:43	Earnestly	abdulhakeem: No one is just 'good' at things
+2016-09-21 19:15:03	abdulhakeem	grawity: in your python code, why is width twice the height? aren't height and width supposed to be equal?
+2016-09-21 19:15:19	grawity	abdulhakeem: they cannot really be
+2016-09-21 19:15:27	-->	andrewSC (~andrewSC@unaffiliated/andrewsc) has joined #archlinux
+2016-09-21 19:15:35	grawity	abdulhakeem: if you want the pyramid to be symmetric, for every row it has to grow a # on the left, and a # on the right
+2016-09-21 19:16:04	grawity	you can have always odd or always even, but it's still ~2x wider than it is tall
+2016-09-21 19:16:09	abdulhakeem	grawity: oh no I'm sorry, the pyramid is supposed to be left-aligned, not centered
+2016-09-21 19:16:16	grawity	left-aligned?
+2016-09-21 19:16:21	grawity	then what do you need spaces for?
+2016-09-21 19:16:25	grawity	do you mean *right*-aligned?
+2016-09-21 19:16:29	Earnestly	grawity: He means right aligned
+2016-09-21 19:16:34	abdulhakeem	lol duh yeah sorry right aigned
+2016-09-21 19:16:36	abdulhakeem	aligned
+2016-09-21 19:16:48	abdulhakeem	my bad
+2016-09-21 19:17:21	<--	chandan (~chandan@122.166.159.72) has quit (Quit: WeeChat 1.5)
+2016-09-21 19:17:24	grawity	well then
+2016-09-21 19:17:30	grawity	spaces = width - hashes
+2016-09-21 19:17:37	grawity	gets as simple as that
+2016-09-21 19:17:47	abdulhakeem	yeah I think I got that
+2016-09-21 19:18:00	abdulhakeem	but as far as the nested loop that actually prints it is where I'm not following
+2016-09-21 19:18:09	abdulhakeem	Here's the problem: http://cdn.cs50.net/2016/x/psets/1/pset1/pset1.html#itsa_mario
+2016-09-21 19:18:10	Earnestly	There's no nested loop
+2016-09-21 19:18:22	grawity	redo it from zero
+2016-09-21 19:18:26	abdulhakeem	and here's what I have so far: http://pastebin.com/gapmxuaS
+2016-09-21 19:18:28	phrik	Title: [C] Mario - Pastebin.com (at pastebin.com)
+2016-09-21 19:18:38	-->	petejones (~petejones@pool-72-89-33-199.nycmny.fios.verizon.net) has joined #archlinux
+2016-09-21 19:18:57	grawity	really, throw out what you have and redo from zero
+2016-09-21 19:19:06	abdulhakeem	Earnestly: but...how am I supposed to repeat a character over and over without a loop?
+2016-09-21 19:19:08	abdulhakeem	:(
+2016-09-21 19:19:12	petejones	so i need to 'export STEAM_FRAME_FORCE_CLOSE=1' to steam, how can i do that with .xinitrc? it currently just has #!/bin/sh and that command
+2016-09-21 19:19:20	petejones	doesnt work
+2016-09-21 19:19:23	grawity	you have a line with width W, and it needs to have R+1 hashes on every row R
+2016-09-21 19:19:39	<--	glebihan_ (~glebihan@unaffiliated/glebihan) has quit (Read error: Connection reset by peer)
+2016-09-21 19:19:44	grawity	thus it'll have W - (R+1) spaces
+2016-09-21 19:19:50	-->	zshfu (~zshfu@unaffiliated/zshfu) has joined #archlinux
+2016-09-21 19:19:52	Earnestly	abdulhakeem: You still use a loop, it's just not nested
+2016-09-21 19:19:57	grawity	Earnestly: huh?
+2016-09-21 19:20:10	Earnestly	Oh right, no snprintf
+2016-09-21 19:20:16	<--	andrewSC (~andrewSC@unaffiliated/andrewsc) has quit (Ping timeout: 255 seconds)
+2016-09-21 19:20:28	grawity	Earnestly: if the task is to putchar() one at a time, there's a loop
+2016-09-21 19:20:33	-->	sabat (~sabat@c-73-164-233-14.hsd1.wa.comcast.net) has joined #archlinux
+2016-09-21 19:20:33	<--	MaoMaoChong (~MaoMaoCho@210.30.193.71) has quit (Quit: My Mac has gone to sleep. ZZZzzz…)
+2016-09-21 19:20:43	grawity	you can do it without nested loops but then it's a pain
+2016-09-21 19:20:49	<--	agregory (~agregory@cpe-98-27-61-138.nc.res.rr.com) has quit (Remote host closed the connection)
+2016-09-21 19:21:44	<--	meZee (SwedFTP@unaffiliated/swedftp) has quit (Ping timeout: 265 seconds)
+2016-09-21 19:22:00	abdulhakeem	so i think what I don't get is what my init, condition, and increment should be for the nested loop(s)
+2016-09-21 19:22:00		[19:22]
+2016-09-21 19:22:16	-->	dayguy (~shawn@pool-72-93-85-8.bstnma.fios.verizon.net) has joined #archlinux
+2016-09-21 19:22:30	Earnestly	grawity: (I don't see why it'd be a pain, thought it might be easier, but eh)
+2016-09-21 19:22:37	abdulhakeem	because everything is based off of the row number, so I don't think there needs to be an init, condition, or increment for the nested loops...right?
+2016-09-21 19:22:41	-->	chandan (~chandan@122.166.159.72) has joined #archlinux
+2016-09-21 19:22:58	grawity	abdulhakeem: the inner loops can be completely trivial
+2016-09-21 19:23:07	grawity	abdulhakeem: just the for() translation of "do this X times"
+2016-09-21 19:23:18	grawity	abdulhakeem: your first problem is how to calculate that X
+2016-09-21 19:23:19	<--	ashkan (~ashkan@unaffiliated/askywalker/x-0000002) has quit (Ping timeout: 272 seconds)
+2016-09-21 19:23:47	-->	lockdown (~lockdown@unaffiliated/lockdown) has joined #archlinux
+2016-09-21 19:23:48	grawity	once you have that, you don't need anything more than for(i=0; i<X; i++)
+2016-09-21 19:23:49	-->	glebihan_ (~glebihan@unaffiliated/glebihan) has joined #archlinux
+2016-09-21 19:24:04	-->	Goatman (~bronco51@64.106.111.38) has joined #archlinux
+2016-09-21 19:24:27	abdulhakeem	it's all based on row number. row number starts at 0 and increments by 1 until the height value, then spaces and hashes are calculated based on row number, i.e. hashes = (row + 2) and spaces = (height - hashes)
+2016-09-21 19:24:45	grawity	good
+2016-09-21 19:24:57	<--	dandels (~Dandels@unaffiliated/dandels) has quit (Ping timeout: 248 seconds)
+2016-09-21 19:25:07	abdulhakeem	but im just like...how do I turn that into printing the correct spaces and hashes because what i currently have does the opposite of what i want
+2016-09-21 19:25:08	grawity	so repeat "print a space" X times, where X = spaces
+2016-09-21 19:25:21	<--	AntonSpain (~yaaic@148.3.65.59) has quit (Quit: Yaaic - Yet another Android IRC client - http://www.yaaic.org)
+2016-09-21 19:25:22	grawity	then repeat "print a hash" X times, where X = hashes
+2016-09-21 19:25:24	abdulhakeem	well I thought i did with the first nested for loop
+2016-09-21 19:25:40	abdulhakeem	can I just for () with no init, cond, and increment?
+2016-09-21 19:25:47	-->	MaoMaoChong (~MaoMaoCho@210.30.193.71) has joined #archlinux
+2016-09-21 19:26:22	grawity	no
+2016-09-21 19:26:28	grawity	well you could but it'd be an infinite loop
+2016-09-21 19:26:36	-->	AntonSpain (~yaaic@148.3.65.59) has joined #archlinux
+2016-09-21 19:26:45	grawity	for(;;) is how some people type while(true), in fact
+2016-09-21 19:26:58	abdulhakeem	so that's my problem. if everything starts at row number and is calculated from there, then what do I set for my init, cond, and inc in my nested for loops?
+2016-09-21 19:27:17	grawity	just a simple counter
+2016-09-21 19:27:21	grawity	hell, I even gave you an example
+2016-09-21 19:27:50	-->	ashkan (~ashkan@unaffiliated/askywalker/x-0000002) has joined #archlinux
+2016-09-21 19:28:01	abdulhakeem	maybe I don't need two nested loops, only one?
+2016-09-21 19:28:15	<--	torgdor (~weechat@cpe-104-32-77-28.socal.res.rr.com) has quit (Quit: torgdor)
+2016-09-21 19:28:32	abdulhakeem	your example is in python but this is in C so I'm not sure if the syntax works the same way
+2016-09-21 19:28:48	grawity	I gave you a C example too
+2016-09-21 19:29:00	abdulhakeem	you did? can you re-post? I must have missed it sorry
+2016-09-21 19:29:10	-->	wuji2017 (~Thunderbi@223.104.18.78) has joined #archlinux
+2016-09-21 19:29:13	grawity	for (i = 0; i < x; i++)
+2016-09-21 19:29:18	grawity	where 'x' is the number of repetitions
+2016-09-21 19:29:57	<--	wuji2016 (~Thunderbi@61.132.138.217) has quit (Ping timeout: 265 seconds)
+2016-09-21 19:29:57	--	wuji2017 is now known as wuji2016
+2016-09-21 19:30:01	abdulhakeem	but the number of repetitons changes for each row though...
+2016-09-21 19:30:11	grawity	that's fine
+2016-09-21 19:30:11	-->	meZee (~SwedFTP@unaffiliated/swedftp) has joined #archlinux
+2016-09-21 19:30:17	abdulhakeem	*sobs quietly*
+2016-09-21 19:30:19	grawity	you've already calculated it
+2016-09-21 19:30:27	-->	dusted (~dusted@77.68.146.169) has joined #archlinux
+2016-09-21 19:30:30	abdulhakeem	hmm okay
+2016-09-21 19:30:30	grawity	so stick that variable in place of 'x'
+2016-09-21 19:30:37	grawity	http://sprunge.us/hNOU?c
+2016-09-21 19:30:43	abdulhakeem	so that would be height then, I guess?
+2016-09-21 19:30:51	grawity	no
+2016-09-21 19:30:58	grawity	that would be the number of spaces, when you're printing spaces
+2016-09-21 19:31:06	abdulhakeem	hmm okay
+2016-09-21 19:31:07	grawity	and the number of hashes, when you're printing hashes
+2016-09-21 19:31:11	abdulhakeem	looking at your example
+2016-09-21 19:31:16	-->	badbodh (~badbodh@unaffiliated/badbodh) has joined #archlinux
+2016-09-21 19:31:43	abdulhakeem	oh so I don't declare hashes and spaces outside of the loop? maybe that's another thing throwing it off
+2016-09-21 19:31:44	<--	dayguy (~shawn@pool-72-93-85-8.bstnma.fios.verizon.net) has left #archlinux
+2016-09-21 19:31:50	abdulhakeem	why is that?
+2016-09-21 19:31:57	grawity	it doesn't matter where you declare them
+2016-09-21 19:32:05	abdulhakeem	oh ok
+2016-09-21 19:32:26	grawity	it's just a habit to only declare stuff in the innermost loop, rather than everything globally
+2016-09-21 19:32:27	<--	Lynolix (~Seacow@202-161-79-195.tpgi.com.au) has quit (Ping timeout: 268 seconds)
+2016-09-21 19:32:39	grawity	focus on 1) where it's *assigned*, 2) what's assigned, 3) where it's used
+2016-09-21 19:32:54	abdulhakeem	ah ok
+2016-09-21 19:33:05	<--	novilog (~alden@unaffiliated/novilog) has quit (Quit: leaving)
+2016-09-21 19:33:15	-->	bocaneri (~bocaneri@about/linux/staff/sauvin) has joined #archlinux
+2016-09-21 19:33:56	grawity	so the main difference from your code is
+2016-09-21 19:34:06	grawity	your loop initializations are weird:
+2016-09-21 19:34:23	grawity	*why* does the loop start at that, and why does it end at that
+2016-09-21 19:34:25	abdulhakeem	yeah I agree, didn't really know what to put there
+2016-09-21 19:34:31	<--	petejones (~petejones@pool-72-89-33-199.nycmny.fios.verizon.net) has quit (Quit: Leaving)
+2016-09-21 19:34:41	grawity	it can work this way, but it's unnecessarily 'clever' at this point
+2016-09-21 19:35:01	abdulhakeem	for the init, because the value is based on a calculation that changes with each iteration so I thought I should put the calculation there
+2016-09-21 19:35:06	grawity	you want the simplest possible version: print X spaces, thus for (i=0; i<X; ...)
+2016-09-21 19:35:07	<--	willeponken (~willeponk@diderot.campus.ltu.se) has quit (Ping timeout: 255 seconds)
+2016-09-21 19:35:07	abdulhakeem	with the cond and inc, I just guessed
+2016-09-21 19:35:42	grawity	but why is that value used as init?
+2016-09-21 19:35:52	-->	mohabaks (~mohabaks@197.181.176.48) has joined #archlinux
+2016-09-21 19:36:32	abdulhakeem	because I thought it had to iterate based on the number of spaces and hashes for each line
+2016-09-21 19:36:35	abdulhakeem	which changes for each line
+2016-09-21 19:36:49	grawity	yes, but
+2016-09-21 19:36:49	abdulhakeem	so there's no one single value, it's the calculation of spaces = height - hashes
+2016-09-21 19:36:52	<--	sud0 (~Death@unaffiliated/sud0) has quit (Remote host closed the connection)
+2016-09-21 19:37:02	grawity	well, first, as an aside, you don't have to duplicate stuff in init
+2016-09-21 19:37:02		[19:37]
+2016-09-21 19:37:17	abdulhakeem	well I figured if I init at 0 it would be wrong
+2016-09-21 19:37:19	abdulhakeem	or any single value
+2016-09-21 19:37:24	<--	Doty1154 (~Doty1154@c-73-189-164-179.hsd1.ca.comcast.net) has quit (Read error: Connection reset by peer)
+2016-09-21 19:37:31	abdulhakeem	I thoguht it HAD to be a calculation to work right
+2016-09-21 19:38:00	grawity	well, *one* half of the loop – either the start or the end – has to be calculated, yes.
+2016-09-21 19:38:24	grawity	it can be either, depending on how you go about it
+2016-09-21 19:38:32	-->	wuji2017 (~Thunderbi@61.132.138.217) has joined #archlinux
+2016-09-21 19:38:40	abdulhakeem	what do you mean by half of the loop?
+2016-09-21 19:38:47	<--	AntonSpain (~yaaic@148.3.65.59) has quit
+2016-09-21 19:38:48	grawity	init or cond, let's say
+2016-09-21 19:39:33	<--	drtintenfisch (~patrick@178.162.211.226) has quit (Ping timeout: 240 seconds)
+2016-09-21 19:39:35	grawity	but anyway
+2016-09-21 19:39:40	<--	wuji2016 (~Thunderbi@223.104.18.78) has quit (Ping timeout: 265 seconds)
+2016-09-21 19:39:40	--	wuji2017 is now known as wuji2016
+2016-09-21 19:40:47	abdulhakeem	aah I think I'm following
+2016-09-21 19:40:52	abdulhakeem	looking at your C example
+2016-09-21 19:40:54	abdulhakeem	maybe...
+2016-09-21 19:41:17	abdulhakeem	this stuff literally makes me feel retarded like I don;t undersdtand basic math and logic lol
+2016-09-21 19:41:27	grawity	perhaps you don't
+2016-09-21 19:41:29	-->	drtintenfisch (~patrick@c-98-245-81-247.hsd1.co.comcast.net) has joined #archlinux
+2016-09-21 19:41:39	numero	anyone here
+2016-09-21 19:41:47	abdulhakeem	perhaps... :(
+2016-09-21 19:41:47	grawity	no, it's just ghosts talking.
+2016-09-21 19:42:01	<--	fhs (~fhs@2604:2000:1701:804e:c12:20cb:7e4c:2924) has quit (Ping timeout: 248 seconds)
+2016-09-21 19:42:11	numero	is the root parameter suppose to point to the device or the mapper when im booting and encrypted system
+2016-09-21 19:42:27	numero	the root parameter in the kernel that is
+2016-09-21 19:42:35	numero	an*
+2016-09-21 19:42:36	<--	frenchbeard (~frenchbea@2a01cb0883729e00faa2b3cd2dbe3316.ipv6.abo.wanadoo.fr) has quit (Quit: Leaving.)
+2016-09-21 19:42:41	grawity	numero: the mapper – the one that directly has your rootfs
+2016-09-21 19:42:57	numero	okay cool the wiki was slightly confusing
+2016-09-21 19:43:53	<--	wuji2016 (~Thunderbi@61.132.138.217) has quit (Ping timeout: 240 seconds)
+2016-09-21 19:44:05	<--	rquid (~rquid@tdtsp.ru) has quit (Remote host closed the connection)
+2016-09-21 19:44:08	<--	MaoMaoChong (~MaoMaoCho@210.30.193.71) has quit (Quit: My Mac has gone to sleep. ZZZzzz…)
+2016-09-21 19:44:34	grawity	abdulhakeem: try going through the loop in your mind, or better on paper
+2016-09-21 19:44:46	grawity	abdulhakeem: write down the value of 's' (or 'i' in my example) for every iteration
+2016-09-21 19:44:58	-->	MaoMaoChong (~MaoMaoCho@210.30.193.71) has joined #archlinux
+2016-09-21 19:45:13	kremlin	clang cross tools are some serious shit: http://ce.gl/freeb-build.png
+2016-09-21 19:45:30	kremlin	been running like this for over an hour, on a really expensive ec2 instance
+2016-09-21 19:45:31	<--	glebihan_ (~glebihan@unaffiliated/glebihan) has quit (Remote host closed the connection)
+2016-09-21 19:45:34	kremlin	whoops wrong buffer
+2016-09-21 19:45:48	<--	badbodh (~badbodh@unaffiliated/badbodh) has quit (Remote host closed the connection)
+2016-09-21 19:46:13	abdulhakeem	yeah looking at your example I think I follow. I just needed the additional counter variable i. What I was doing was doing the calculations twice... I think
+2016-09-21 19:46:35	grawity	abdulhakeem: no, you just got the loop conditions wrong
+2016-09-21 19:46:48	-->	rquid (~rquid@tdtsp.ru) has joined #archlinux
+2016-09-21 19:46:59	abdulhakeem	yeah because for it to make sense in my head, that extra counter i needed to be there
+2016-09-21 19:47:01	-->	badbodh (~badbodh@unaffiliated/badbodh) has joined #archlinux
+2016-09-21 19:47:08	abdulhakeem	I think
+2016-09-21 19:47:17	grawity	it can be done without an additional counter, certainly, but that's probably harder to understand
+2016-09-21 19:47:27	abdulhakeem	¯\_(ツ)_/¯
+2016-09-21 19:47:42	abdulhakeem	yeah I'm still pretty much brand new at this
+2016-09-21 19:47:46	grawity	I still want you to figure out why the *math* in your line 22 was wrong, though
+2016-09-21 19:48:43	grawity	for (s = START; s <= END; s++) will end up repeating the loop exactly (END-START) times
+2016-09-21 19:49:00	grawity	if your START is (h - n) and END is h, you get (h - (h - n)) repetitions
+2016-09-21 19:49:30	grawity	which simplifies to (h - h + n) and then to just (n)
+2016-09-21 19:49:34	grawity	so it's not repeating 's' times, it's repeating 'n' times
+2016-09-21 19:49:44	<--	snthsnth (~snthsnth@mbp.dynamic.ucsd.edu) has quit (Ping timeout: 265 seconds)
+2016-09-21 19:50:20	abdulhakeem	I was thinking that since START changes each time, it must be set as a calculation. But with your example it just counts from 0-spaces and 0-hashes because the number of spaces and hashes is already calculated in the top level for loop, rather than in the cond of the nested loops
+2016-09-21 19:50:29	grawity	well
+2016-09-21 19:50:33	abdulhakeem	...right?
+2016-09-21 19:50:37	<--	MaoMaoChong (~MaoMaoCho@210.30.193.71) has quit (Read error: Connection reset by peer)
+2016-09-21 19:51:07	-->	willeponken (~willeponk@diderot.campus.ltu.se) has joined #archlinux
+2016-09-21 19:51:25	-->	MaoMaoChong (~MaoMaoCho@210.30.193.71) has joined #archlinux
+2016-09-21 19:51:29	abdulhakeem	for lack of a more correct explanation, I was trying to do the calculation twice instead of just pointing the for loops towards the calculation that was already done
+2016-09-21 19:51:34	abdulhakeem	I think
+2016-09-21 19:51:35	<--	drtintenfisch (~patrick@c-98-245-81-247.hsd1.co.comcast.net) has quit (Ping timeout: 260 seconds)
+2016-09-21 19:51:59	grawity	no
+2016-09-21 19:52:07	-->	glebihan_ (~glebihan@unaffiliated/glebihan) has joined #archlinux
+2016-09-21 19:52:07		[19:52]
+2016-09-21 19:52:23	grawity	the part you got wrong is "START changes each time"
+2016-09-21 19:52:27	-->	stuh84 (~stuh84@cpc1-mfld15-2-0-cust600.13-1.cable.virginm.net) has joined #archlinux
+2016-09-21 19:52:31	abdulhakeem	right
+2016-09-21 19:53:08	grawity	it doesn't really matter if it's calculated before the loop or in the loop's init
+2016-09-21 19:53:08	abdulhakeem	because it actually doesn't, because the calculation is done in the top level for loop
+2016-09-21 19:53:11	grawity	or even, in this case, in the loop's cond
+2016-09-21 19:53:18	grawity	that's not the thing to focus on
+2016-09-21 19:53:45	grawity	something like "for (s = (h - n); s >= 0; s--)" would also have worked
+2016-09-21 19:54:04	grawity	you got the actual numbers wrong.
+2016-09-21 19:54:21	<--	itai86 (~indstwetr@541F7BCA.cm-5-8b.dynamic.ziggo.nl) has quit (Ping timeout: 272 seconds)
+2016-09-21 19:56:03	-->	monksam (~Thunderbi@203.202.232.178) has joined #archlinux
+2016-09-21 19:56:12	abdulhakeem	hmm okay
+2016-09-21 19:56:20	grawity	in the example I gave, "for (i = 0; i < (width - hashes); i++)" would also have worked
+2016-09-21 19:56:50	<--	galaux (~galaux@archlinux/developer/galaux) has quit (Ping timeout: 250 seconds)
+2016-09-21 19:56:56	abdulhakeem	yeah in the nested loops at first, the condition was based on the height and not the spaces/hashes count
+2016-09-21 19:57:01	abdulhakeem	...right?
+2016-09-21 19:57:05	abdulhakeem	like I was using the wrong balue
+2016-09-21 19:57:08	grawity	close
+2016-09-21 19:57:09	abdulhakeem	value*
+2016-09-21 19:57:31	-->	galaux (~galaux@archlinux/developer/galaux) has joined #archlinux
+2016-09-21 19:57:49	abdulhakeem	for the cond and inc on those first ones I really had no idea what to put so I just guessed
+2016-09-21 19:57:57	abdulhakeem	I didn't think I needed them at all
+2016-09-21 19:58:07	abdulhakeem	I just have a hard time following the logic
+2016-09-21 19:58:15	grawity	then work on the logic a bit
+2016-09-21 19:58:30	grawity	maybe forget how it's written in C for a moment
+2016-09-21 19:58:37	abdulhakeem	yeah I thought cs50 was supposed to help with that lol but then they throw this at me
+2016-09-21 19:58:42	abdulhakeem	on week 1
+2016-09-21 19:59:07	grawity	you start at X, end at Y – so it happens (Y - X) times
+2016-09-21 19:59:22	<--	MaoMaoChong (~MaoMaoCho@210.30.193.71) has quit (Read error: Connection reset by peer)
+2016-09-21 19:59:30	grawity	(I might be off by one, I often get the < vs <= wrong, but the general idea is still the same.)
+2016-09-21 19:59:37	<--	glebihan_ (~glebihan@unaffiliated/glebihan) has quit (Ping timeout: 248 seconds)
+2016-09-21 20:00:23	abdulhakeem	right
+2016-09-21 20:02:47	-->	momomo (~momomo@89-69-214-248.dynamic.chello.pl) has joined #archlinux
+2016-09-21 20:02:49	<--	rquid (~rquid@tdtsp.ru) has quit (Ping timeout: 265 seconds)
+2016-09-21 20:03:07	grawity	the rest is math
+2016-09-21 20:03:20	grawity	you want it to happen (h - n) times; that part was correct
+2016-09-21 20:03:32	grawity	so fill it in
+2016-09-21 20:03:39	-->	17WAAO334 (~yetanubun@cb-8021x-nat-134-109.net.uni-frankfurt.de) has joined #archlinux
+2016-09-21 20:03:43	<--	Gfurst (~guiu@201.80.86.128) has quit (Quit: Konversation terminated!)
+2016-09-21 20:03:45	<--	Case_Of (~Case_Of@unaffiliated/itruc) has quit (Ping timeout: 276 seconds)
+2016-09-21 20:04:06	grawity	one variant would be to start at 0, end at (h - n)
+2016-09-21 20:04:06	abdulhakeem	well now I think my calculation is still wrong somewhere because it's still not printing right. the last line is correct but everythign above it is off by 1
+2016-09-21 20:04:27	grawity	well, that's another issue
+2016-09-21 20:04:52	grawity	you use "hashes = row + 2"?
+2016-09-21 20:05:08	abdulhakeem	yeah lemme share what I got
+2016-09-21 20:05:10	grawity	then it needs "width = height + 1"
+2016-09-21 20:05:13	abdulhakeem	something is off by 1 somewhere
+2016-09-21 20:05:21	-->	parchd (~parchd@unaffiliated/parchd) has joined #archlinux
+2016-09-21 20:05:24	grawity	since the +2 is adding one extra column
+2016-09-21 20:05:33	grawity	so you need to account for it in the width
+2016-09-21 20:06:09	-->	SysGhost (~sysghost@217.21.233.251) has joined #archlinux
+2016-09-21 20:06:31	abdulhakeem	yeah that would work but I think there is no 'width' value for the scope of the problem
+2016-09-21 20:06:46	abdulhakeem	at least their walkthrough doesn't mention it, idk
+2016-09-21 20:07:22	<--	badbodh (~badbodh@unaffiliated/badbodh) has left #archlinux
+2016-09-21 20:07:22		[20:07]
+2016-09-21 20:07:25	grawity	there is; it's just currently implied to be the same as height
+2016-09-21 20:07:40	grawity	instead of that, explicitly make a new variable for it
+2016-09-21 20:07:57	grawity	start with "w = h" or "width = height" or whatever, then replace 'h' with 'w' in those space/hash calculations
+2016-09-21 20:08:04	grawity	since after all they're based on width, not height
+2016-09-21 20:08:29	<--	sleepercell13th (~sleeperce@115.178.211.224) has quit (Remote host closed the connection)
+2016-09-21 20:08:46	<--	stuh84 (~stuh84@cpc1-mfld15-2-0-cust600.13-1.cable.virginm.net) has quit (Quit: Textual IRC Client: www.textualapp.com)
+2016-09-21 20:09:20	-->	itai86 (~indstwetr@ip5653247c.direct-adsl.nl) has joined #archlinux
+2016-09-21 20:09:39	grawity	then the off-by-one can be fixed by just adjusting "w = h" --> "w = h+1"
+2016-09-21 20:09:40	-->	Case_Of (~Case_Of@unaffiliated/itruc) has joined #archlinux
+2016-09-21 20:10:32	<--	minimalism (~minimalis@unaffiliated/minimalism) has quit (Quit: minimalism)
+2016-09-21 20:10:42	abdulhakeem	aaah in this the width and height aren't equal
+2016-09-21 20:10:48	abdulhakeem	I assumed they were but I'm wrong
+2016-09-21 20:11:07	abdulhakeem	there's an extra column so width = height + 1
+2016-09-21 20:11:09	grawity	yes
+2016-09-21 20:11:28	grawity	normally it would be "hashes = row + 1" for a plain triangle
+2016-09-21 20:11:43	grawity	0th row => 1 hash; 1st row => 2 hashes; etc.
+2016-09-21 20:11:51	abdulhakeem	yeah
+2016-09-21 20:11:56	grawity	but mario has an extra column
+2016-09-21 20:11:59	abdulhakeem	but the first row starting with two ## throws it off
+2016-09-21 20:12:02	abdulhakeem	yeah
+2016-09-21 20:12:13	-->	glebihan_ (~glebihan@unaffiliated/glebihan) has joined #archlinux
+2016-09-21 20:12:27	<--	wooparadog (~wooparado@116.231.27.112) has quit (Ping timeout: 265 seconds)
+2016-09-21 20:12:29	abdulhakeem	so then how do I represent that without a width variable...
+2016-09-21 20:12:37	grawity	you *should* have a width variable
+2016-09-21 20:12:45	grawity	but, it doesn't matter to the calculations
+2016-09-21 20:12:49	heftig	grawity: we're swiching over to build everything from git
+2016-09-21 20:12:52	abdulhakeem	yeah but I don't think I'm supposed to for the scope of the problem
+2016-09-21 20:13:00	-->	therue (~therue@1-162-68-41.dynamic.hinet.net) has joined #archlinux
+2016-09-21 20:13:08	grawity	if you have "width = height + 1" and then "spaces = width - hashes"
+2016-09-21 20:13:08	abdulhakeem	I agree that it would help
+2016-09-21 20:13:12	-->	firstdayonthejob (~firstdayo@cpc99346-croy26-2-0-cust153.19-2.cable.virginm.net) has joined #archlinux
+2016-09-21 20:13:14	-->	rquid (~rquid@tdtsp.ru) has joined #archlinux
+2016-09-21 20:13:16	grawity	just insert the value of 'width' in place of the actual 'width
+2016-09-21 20:13:24	abdulhakeem	well idk I'm not sure if there's any other way to do it really
+2016-09-21 20:13:27	grawity	i.e. "spaces = (height + 1) - hashes"
+2016-09-21 20:13:29	-->	andrewSC (~andrewSC@unaffiliated/andrewsc) has joined #archlinux
+2016-09-21 20:13:30	heftig	grawity: so expect packages using untagged commits from the stable branches to become much more common
+2016-09-21 20:13:31	abdulhakeem	yeah
+2016-09-21 20:13:34	grawity	since that's kinda what the '=' means
+2016-09-21 20:13:55	grawity	heftig: ah I was more wondering about the 'untagged commit' part
+2016-09-21 20:14:09	<--	Moondhum (moondhum@gateway/shell/insomnia247/x-vktspvqvewsgeflq) has quit (Ping timeout: 276 seconds)
+2016-09-21 20:14:25	-->	Moondhum (moondhum@gateway/shell/insomnia247/x-ludezolwlyfzwzuh) has joined #archlinux
+2016-09-21 20:15:11	-->	Gi0 (~Gi0@unaffiliated/gi0) has joined #archlinux
+2016-09-21 20:15:31	abdulhakeem	woo I got it
+2016-09-21 20:15:32	abdulhakeem	finally
+2016-09-21 20:15:42	abdulhakeem	just did spaces = ((height - hashes) + 1)
+2016-09-21 20:15:51	grawity	same thing
+2016-09-21 20:15:52	-->	wooparadog (~wooparado@116.231.27.112) has joined #archlinux
+2016-09-21 20:16:13	abdulhakeem	thanks for the help broseph I know how frustrating it is to try to explain thing to someone that just doesn't get it
+2016-09-21 20:16:27	grawity	you're welcome, but don't fucking call me 'broseph'
+2016-09-21 20:16:55	abdulhakeem	alright Bro Rogan
+2016-09-21 20:17:08	 *	grawity casts abdulhakeem to (void*)
+2016-09-21 20:17:14	<--	javaisnom (~javaisnom@71.189.251.43) has quit (Quit: leaving)
+2016-09-21 20:17:22	abdulhakeem	haa
+2016-09-21 20:17:29	<--	rquid (~rquid@tdtsp.ru) has quit (Ping timeout: 240 seconds)
+2016-09-21 20:17:38	-->	Valicek1 (~Thunderbi@55-125-149-46.synanet.cz) has joined #archlinux
+2016-09-21 20:18:00	-->	andrewchen (~andrew@125-237-146-174.jetstream.xtra.co.nz) has joined #archlinux
+2016-09-21 20:18:45	<--	andrewSC (~andrewSC@unaffiliated/andrewsc) has quit (Ping timeout: 265 seconds)
+2016-09-21 20:19:05	<--	krombopulos (~matthew@59.167.234.97) has quit (Quit: leaving)
+2016-09-21 20:19:22	parchd	morning
+2016-09-21 20:20:00	-->	fredson (~user@p578F21AB.dip0.t-ipconnect.de) has joined #archlinux
+2016-09-21 20:22:07	<--	mavrix (~mavrix@unaffiliated/mavrix) has quit (Ping timeout: 265 seconds)
+2016-09-21 20:23:55	-->	mavrix (~mavrix@unaffiliated/mavrix) has joined #archlinux
+2016-09-21 20:23:55		[20:23]
+2016-09-21 20:24:05	-->	rquid (~rquid@tdtsp.ru) has joined #archlinux
+2016-09-21 20:24:06	abdulhakeem	good morning
+2016-09-21 20:24:17	abdulhakeem	it's way past my bedtime
+2016-09-21 20:24:27	grawity	best time to program
+2016-09-21 20:25:02	-->	melkor333 (~manjaro-k@46.245.145.146) has joined #archlinux
+2016-09-21 20:25:17	-->	javaisnom (~javaisnom@71.189.251.43) has joined #archlinux
+2016-09-21 20:26:38	-->	kelnoky (~shao@ip1f10693b.dynamic.kabel-deutschland.de) has joined #archlinux
+2016-09-21 20:27:08	<--	ptrxyz (~json@2a00:1398:4:0:8d88:60aa:3aa8:2b07) has quit (Quit: Leaving.)
+2016-09-21 20:28:46	-->	fhs (~fhs@2604:2000:1701:804e:c12:20cb:7e4c:2924) has joined #archlinux
+2016-09-21 20:28:58	-->	N3cr0m4nc3r (~N3cr0m4nc@unaffiliated/n3cr0m4nc3r) has joined #archlinux
+2016-09-21 20:29:11	-->	Ryp (~ryp@laf94-4-88-190-202-176.fbxo.proxad.net) has joined #archlinux
+2016-09-21 20:30:31	<--	abdulhakeem (~abdulhake@2605:6000:f545:7400:955e:b3ea:a0da:7874) has quit (Ping timeout: 250 seconds)
+2016-09-21 20:30:46	-->	dandels (~Dandels@unaffiliated/dandels) has joined #archlinux
+2016-09-21 20:30:59	-->	abdulhakeem (~abdulhake@cpe-70-122-9-201.austin.res.rr.com) has joined #archlinux
+2016-09-21 20:31:46	-->	oxhak (~OxHaK@unaffiliated/oxhak) has joined #archlinux
+2016-09-21 20:31:53	<--	hendry (~hendry@888.dabase.com) has quit (Ping timeout: 240 seconds)
+2016-09-21 20:32:17	<--	easo2k (~a@unaffiliated/easo2k) has quit (Ping timeout: 244 seconds)
+2016-09-21 20:32:30	-->	hendry (~hendry@888.dabase.com) has joined #archlinux
+2016-09-21 20:32:51	<--	icebal (~icebal@ip70-178-104-100.ks.ks.cox.net) has quit (Remote host closed the connection)
+2016-09-21 20:33:20	-->	emas (~emas@unaffiliated/emas) has joined #archlinux
+2016-09-21 20:34:41	<--	brogon (~brogon@unaffiliated/brogon) has quit (Quit: WeeChat 1.5)
+2016-09-21 20:35:33	-->	brogon (~brogon@unaffiliated/brogon) has joined #archlinux
+2016-09-21 20:36:41	-->	kiao2938 (~mj@p3E9BC464.dip0.t-ipconnect.de) has joined #archlinux
+2016-09-21 20:36:45	-->	ptrxyz (~json@2a00:1398:4:0:8d88:60aa:3aa8:2b07) has joined #archlinux
+2016-09-21 20:37:54	-->	icebal (~icebal@ip70-178-104-100.ks.ks.cox.net) has joined #archlinux
+2016-09-21 20:38:12	-->	Holzhaus (~jan@lak-73-14.wohnheime.ruhr-uni-bochum.de) has joined #archlinux
+2016-09-21 20:38:31	<--	mohabaks (~mohabaks@197.181.176.48) has quit (Ping timeout: 244 seconds)
+2016-09-21 20:38:41	<--	Gnea (~gnea@unaffiliated/gnea) has quit (Ping timeout: 240 seconds)
+2016-09-21 20:38:58	-->	Valicek2 (~Thunderbi@55-125-149-46.synanet.cz) has joined #archlinux
+2016-09-21 20:38:58		[20:38]
+2016-09-21 20:39:01	<--	jiggie (~joe@cpe-69-133-125-108.cinci.res.rr.com) has quit (Ping timeout: 255 seconds)
+2016-09-21 20:39:11	-->	z4kst4r (~z4kst4r@124.124.72.13) has joined #archlinux
+2016-09-21 20:39:24	z4kst4r	If I get the message "debug1: Skipping ssh-dss key ....user_dsa for not in PubkeyAcceptedKeyTypes" should I add "PubkeyAcceptedKeyTypes +ssh-dss" in client /etc/ssh/sshd_config or on the remote host?
+2016-09-21 20:39:38	sheep	you should not use dss/dsa anymore
+2016-09-21 20:39:49	<--	NeverDie (~NeverDie@181.28.99.177) has quit (Quit: http://radiux.io/)
+2016-09-21 20:39:59	z4kst4r	sheep: lets say for now I dont have an option.
+2016-09-21 20:40:05	sheep	why not?
+2016-09-21 20:40:35	<--	TH3-G0D5 (~joe@unaffiliated/th3-g0d5) has quit (Ping timeout: 244 seconds)
+2016-09-21 20:40:41	<--	nightfeather (~nightfeat@220-133-162-2.HINET-IP.hinet.net) has quit (Quit: leaving)
+2016-09-21 20:40:41	<--	Valicek1 (~Thunderbi@55-125-149-46.synanet.cz) has quit (Ping timeout: 240 seconds)
+2016-09-21 20:40:41	--	Valicek2 is now known as Valicek1
+2016-09-21 20:41:03	<--	ptrxyz (~json@2a00:1398:4:0:8d88:60aa:3aa8:2b07) has quit (Client Quit)
+2016-09-21 20:41:30	-->	Lowl3v3l (~Lowl3v3l@ipservice-092-208-080-178.092.208.pools.vodafone-ip.de) has joined #archlinux
+2016-09-21 20:41:34	z4kst4r	sheep: because the device is in production under an ISP(our customer). on one firmware it works fine whereas on the other firmware it doesnt.
+2016-09-21 20:41:37	<--	kiao2938 (~mj@p3E9BC464.dip0.t-ipconnect.de) has quit (Ping timeout: 244 seconds)
+2016-09-21 20:41:56	-->	nightfeather (~nightfeat@220-133-162-2.HINET-IP.hinet.net) has joined #archlinux
+2016-09-21 20:42:09	z4kst4r	sheep: they want all devices to have consistent configs
+2016-09-21 20:42:22	<--	blueness (~blueness@gentoo/developer/blueness) has quit (Quit: blueness)
+2016-09-21 20:42:24	<--	kerberizer (~luchesar@wikipedia/Iliev) has quit (Read error: Connection reset by peer)
+2016-09-21 20:42:29	-->	stuh84 (~stuh84@cpc1-mfld15-2-0-cust600.13-1.cable.virginm.net) has joined #archlinux
+2016-09-21 20:42:36	-->	hardfalcon (~hardfalco@176.7.92.24) has joined #archlinux
+2016-09-21 20:42:50	sheep	you should look into upgrading those devices since DSA is not longer considered sufficiently secure. however, you can add ssh-dss as an accepted key type on the server in the way you described
+2016-09-21 20:43:33	sheep	you might need to add it to ssh_config instead of sshd_config though
+2016-09-21 20:43:34	-->	sigtrm (~sigtrm@quassel.woboq.de) has joined #archlinux
+2016-09-21 20:43:39	-->	cdown (~cdown@82-132-235-67.dab.02.net) has joined #archlinux
+2016-09-21 20:44:39	<--	dave0x6d (uid183099@gateway/web/irccloud.com/x-cccxaozytcavowaw) has quit (Quit: Connection closed for inactivity)
+2016-09-21 20:44:42	-->	blueness (~blueness@gentoo/developer/blueness) has joined #archlinux
+2016-09-21 20:44:54	<--	inflames (~syg@47.148.213.154) has quit (Ping timeout: 255 seconds)
+2016-09-21 20:45:04	-->	edh (~edh1@ip-95-222-198-184.hsi15.unitymediagroup.de) has joined #archlinux
+2016-09-21 20:46:00	<--	firstdayonthejob (~firstdayo@cpc99346-croy26-2-0-cust153.19-2.cable.virginm.net) has quit (Ping timeout: 276 seconds)
+2016-09-21 20:46:04	z4kst4r	It is added still I get the same message.
+2016-09-21 20:46:09	z4kst4r	sheep: ^
+2016-09-21 20:46:15	z4kst4r	now I also added inssh_config
+2016-09-21 20:46:20	-->	Valicek2 (~Thunderbi@55-125-149-46.synanet.cz) has joined #archlinux
+2016-09-21 20:46:23	z4kst4r	but no difference.
+2016-09-21 20:47:03	<--	hardfalcon (~hardfalco@176.7.92.24) has quit (Ping timeout: 240 seconds)
+2016-09-21 20:47:22	sheep	it'what about on the server you're connecting to?
+2016-09-21 20:47:29	<--	Valicek1 (~Thunderbi@55-125-149-46.synanet.cz) has quit (Ping timeout: 240 seconds)
+2016-09-21 20:47:29	--	Valicek2 is now known as Valicek1
+2016-09-21 20:47:54	-->	jiggie (~joe@cpe-69-133-125-108.cinci.res.rr.com) has joined #archlinux
+2016-09-21 20:48:21	<--	icebal (~icebal@ip70-178-104-100.ks.ks.cox.net) has quit (Quit: only the logs can hear you now)
+2016-09-21 20:48:36	<--	dusted (~dusted@77.68.146.169) has quit (Quit: Leaving)
+2016-09-21 20:49:22	<--	nejni-marji (~matthew@2601:246:0:3450:276f:264e:67d6:39bf) has quit (Ping timeout: 255 seconds)
+2016-09-21 20:49:41	-->	Amado (~Amado@189.157.5.102) has joined #archlinux
+2016-09-21 20:49:49	<--	A124 (~Username@unaffiliated/a124) has quit (Ping timeout: 255 seconds)
+2016-09-21 20:50:55	-->	cdown_ (~cdown@199.201.66.3) has joined #archlinux
+2016-09-21 20:51:25	-->	Gnea (~gnea@unaffiliated/gnea) has joined #archlinux
+2016-09-21 20:51:34	-->	ShapeShifter499 (~ShapeShif@unaffiliated/shapeshifter499) has joined #archlinux
+2016-09-21 20:51:58	z4kst4r	sheep: I have two devices with old firmware x and newer firmware x++ and a server. I am able to connect through firmware x to the server but cant connect through firmware x++ to the server. If I am able to connect to the server from one device(x) with current server's config then I should be able to connect through x++. I am guessing this is because there is a flaw in x++
+2016-09-21 20:52:25	-->	vlatkoB_ (~IRC_clien@unaffiliated/vlatkob) has joined #archlinux
+2016-09-21 20:52:26	sheep	what error is x++ giving?
+2016-09-21 20:52:54	-->	likevinyl (~freebeer@unaffiliated/likevinyl) has joined #archlinux
+2016-09-21 20:52:55	-->	icebal (~icebal@ip70-178-104-100.ks.ks.cox.net) has joined #archlinux
+2016-09-21 20:53:35	z4kst4r	both x and x++ have same configs. x++ is going for the next method i.e password.
+2016-09-21 20:53:39	z4kst4r	sheep: ^
+2016-09-21 20:53:53	sheep	you'll probably need two keys then, but send both
+2016-09-21 20:53:53	-->	hardfalcon (~hardfalco@176.5.124.107) has joined #archlinux
+2016-09-21 20:53:53	<--	cdown (~cdown@82-132-235-67.dab.02.net) has quit (Ping timeout: 272 seconds)
+2016-09-21 20:53:55	--	cdown_ is now known as cdown
+2016-09-21 20:54:00	sheep	by default ssh tries to send every key it has
+2016-09-21 20:54:00		[20:54]
+2016-09-21 20:54:02	-->	taurgal (~taurgal@mac71-h01-31-33-31-250.dsl.sta.abo.bbox.fr) has joined #archlinux
+2016-09-21 20:54:45	sheep	assuming that the issue is that x accepts ssh-dss and x++ doesn't, then you should just need to have the existing ssh-dss keys plus corresponding ssh-rsa keys
+2016-09-21 20:55:19	-->	eduardas_m (~eduardas_@213.197.143.19) has joined #archlinux
+2016-09-21 20:56:41	<--	Valicek1 (~Thunderbi@55-125-149-46.synanet.cz) has quit (Ping timeout: 240 seconds)
+2016-09-21 20:57:03	<--	vlatkoB (~IRC_clien@unaffiliated/vlatkob) has quit (Ping timeout: 272 seconds)
+2016-09-21 20:57:17	-->	fernie (~jarkko@84-230-9-138.elisa-mobile.fi) has joined #archlinux
+2016-09-21 20:57:34	<--	viscera (~bmc@unaffiliated/viscera) has quit (Quit: WeeChat 1.5)
+2016-09-21 20:58:08	<--	MetaHertz (~user@84.237.54.170) has quit (Quit: Всем пока! // Goodbye everyone!)
+2016-09-21 20:58:20	-->	Drunkwizard (~bakchod@unaffiliated/drunkwizard) has joined #archlinux
+2016-09-21 20:59:19	-->	david89 (~david89@unaffiliated/david89) has joined #archlinux
+2016-09-21 20:59:42	-->	MetaHertz (~user@84.237.54.170) has joined #archlinux
+2016-09-21 20:59:54	david89	Good morning. Does out firefox support widevine yet?
+2016-09-21 21:00:21	sheep	not yet, apparently
+2016-09-21 21:00:52	<--	chowbok (~chowbok@207-181-247-115.c3-0.lem-ubr1.chi-lem.il.cable.rcn.com) has quit (Ping timeout: 265 seconds)
+2016-09-21 21:01:00	sheep	someone here was using the package in the extra repo for firefox 49 and it wasn't working, but it worked with the firefox beta binary froim AUR for 49
+2016-09-21 21:01:12	sheep	though that's just one case and something might have been wrong with his configuration
+2016-09-21 21:02:11	z4kst4r	sheep: now I created rsa keys with on client "ssh-keygen -t rsa" and copy pasted what was in client "~/.ssh/id_rsa" to server "~/.ssh/authorized_keys" still I am unable to get in.
+2016-09-21 21:02:31	sheep	is the server even configured to accept public key auth?
+2016-09-21 21:02:33	<--	hardfalcon (~hardfalco@176.5.124.107) has quit (Ping timeout: 248 seconds)
+2016-09-21 21:02:38	z4kst4r	does this suggest problem with sshd ?
+2016-09-21 21:02:48	sheep	also, you do mean the id_rsa.pub, right?
+2016-09-21 21:02:54	david89	sheep: any build differences between extra and AUR?
+2016-09-21 21:02:54	sheep	because if not, you just copied the private key
+2016-09-21 21:03:17	-->	itokatsu (~itk@2a01:e35:8b07:da60:10f9:7b7a:79d1:b84d) has joined #archlinux
+2016-09-21 21:03:27	<--	KJ4IPS|Gone (~KJ4IPS@68-119-116-168.dhcp.jcsn.tn.charter.com) has quit (Ping timeout: 250 seconds)
+2016-09-21 21:03:27	sheep	david89: yes. extra is built from source by arch. that AUR package is a prebuilt binary from mozilla
+2016-09-21 21:03:31	<--	morlog (~morlog@unaffiliated/morlog) has quit (Quit: time to go eat more crayons)
+2016-09-21 21:03:44	z4kst4r	oh yes I meant id_rsa_pub
+2016-09-21 21:03:52	z4kst4r	sheep: ^
+2016-09-21 21:03:58	-->	clarjon1 (~clarjon1@unaffiliated/clarjon1) has joined #archlinux
+2016-09-21 21:04:05	sheep	are you sure the server is configued to accept public key auth?
+2016-09-21 21:04:23	z4kst4r	it should because I am able to get in from x
+2016-09-21 21:05:07	-->	KJ4IPS|Gone (~KJ4IPS@68-119-116-168.dhcp.jcsn.tn.charter.com) has joined #archlinux
+2016-09-21 21:05:12	sheep	chcheck that publickey is listed in the AuthenticationMethods in the server's sshd_config
+2016-09-21 21:05:37	<--	sigtrm (~sigtrm@quassel.woboq.de) has quit (Ping timeout: 250 seconds)
+2016-09-21 21:06:14	-->	prth (~prth@119.82.127.2) has joined #archlinux
+2016-09-21 21:06:30	-->	feigned (~son1dow@unaffiliated/son1dow) has joined #archlinux
+2016-09-21 21:06:39	<--	Ryp (~ryp@laf94-4-88-190-202-176.fbxo.proxad.net) has quit (Quit: Konversation terminated!)
+2016-09-21 21:07:12	-->	kerberizer (~luchesar@wikipedia/Iliev) has joined #archlinux
+2016-09-21 21:07:22	sheep	you could also check what happens with ssh -v
+2016-09-21 21:07:33	z4kst4r	sheep: Yes I do see "RSAAuthentication yes" in server sshd_config
+2016-09-21 21:07:35	<--	fhs (~fhs@2604:2000:1701:804e:c12:20cb:7e4c:2924) has quit (Ping timeout: 265 seconds)
+2016-09-21 21:07:42	sheep	that's not what you think it is
+2016-09-21 21:08:08	ChetManly	wow is  the install guide ever missing alot of stuff
+2016-09-21 21:08:19	sheep	you want PubkeyAuthentication
+2016-09-21 21:08:33	-->	sigtrm (quassel@quassel.woboq.de) has joined #archlinux
+2016-09-21 21:08:45	z4kst4r	sheep: It has also got "PubkeyAuthentication yes"
+2016-09-21 21:08:50	-->	davcri (~Davide@151.26.133.187) has joined #archlinux
+2016-09-21 21:08:57	sheep	what about AuthenticationMethods
+2016-09-21 21:09:36	<--	davcri (~Davide@151.26.133.187) has quit (Client Quit)
+2016-09-21 21:09:36		[21:09]
+2016-09-21 21:10:07	-->	chowbok (~chowbok@207-181-247-115.c3-0.lem-ubr1.chi-lem.il.cable.rcn.com) has joined #archlinux
+2016-09-21 21:10:15	z4kst4r	sheep: nothing such as "AuthenticationMethods" in server sshd_config
+2016-09-21 21:10:26	-->	Hi-Angel (~constanti@81.177.240.238) has joined #archlinux
+2016-09-21 21:10:47	-->	kylethebaker (~KYLEtheBA@unaffiliated/kylethebaker) has joined #archlinux
+2016-09-21 21:10:55	ChetManly	so at the end of my install I tried to umount /mnt but it said /mnt wasnt mounted
+2016-09-21 21:11:11	sheep	ChetManly: exit then try
+2016-09-21 21:11:24	<--	Sakara (~Sakara@F01xxxxcomm1aus.net.sas.com) has quit (Quit: leaving)
+2016-09-21 21:11:28	sheep	z4kst4r: in that case it goes with the defaults, which should include publickey. what happens with ssh -v?
+2016-09-21 21:11:30	ChetManly	oh
+2016-09-21 21:11:53	fbt	The beginner's guide discussion on the ML is pretty amusing
+2016-09-21 21:11:56	ChetManly	I just asked vbox to restart
+2016-09-21 21:12:10	sheep	I mean use the command "exit" then try umount
+2016-09-21 21:12:27	ChetManly	yes I think I forgot to do that
+2016-09-21 21:12:43	ChetManly	the install works regardless
+2016-09-21 21:14:10	-->	kiao2938 (~mj@p3E9BC464.dip0.t-ipconnect.de) has joined #archlinux
+2016-09-21 21:15:08	-->	lod__ (~lod@212.185.27.114) has joined #archlinux
+2016-09-21 21:15:17	z4kst4r	sheep: this is the ssh -vvv on x++ (faulty) https://ptpb.pw/R2c4
+2016-09-21 21:16:11	sheep	... where the heck is it getting /pl2/pl2/system-conf/user_dsa ?
+2016-09-21 21:16:44	<--	Stanley00 (~Stanley_0@unaffiliated/stanley00) has quit (Remote host closed the connection)
+2016-09-21 21:17:09	z4kst4r	that is the location of dss on the device :)
+2016-09-21 21:17:29	sheep	so that's configured through ssh_config?
+2016-09-21 21:18:00	-->	davcri (~davcri@151.26.133.187) has joined #archlinux
+2016-09-21 21:18:01	sheep	you'll probably want to create user_rsa and user_rsa.pub under /pl2/pl2 and edit ssh_config to try sending that first
+2016-09-21 21:19:26	-->	horseface (~horseface@188.227.224.110) has joined #archlinux
+2016-09-21 21:19:43	<--	kiao2938 (~mj@p3E9BC464.dip0.t-ipconnect.de) has quit (Ping timeout: 265 seconds)
+2016-09-21 21:19:48	horseface	hey guys how am I able to run two separate instances of privoxy?
+2016-09-21 21:20:14	sheep	horseface: create a systemd unit to run the second instance using a different config file and port. see man systemd.service
+2016-09-21 21:20:23	horseface	i am looking at its service file and I am wondering if I am permitted to simply create a second service unit file
+2016-09-21 21:20:30	horseface	and i see yeah cool
+2016-09-21 21:20:31	horseface	:)
+2016-09-21 21:20:35	sheep	you can as long as it has a different name
+2016-09-21 21:20:39	horseface	awesome, i thought that
+2016-09-21 21:20:44	horseface	yeah cool man
+2016-09-21 21:20:45	z4kst4r	ok. I will copy user_rsa and user_rsa.pub to /pl2/pl2/system-conf/. and about ssh_config editing, request you to let me know how I tell it to send that?
+2016-09-21 21:20:49	z4kst4r	sheep: ^
+2016-09-21 21:21:03	sheep	z4kst4r: in the same place where you're telling it to send user_dsa
+2016-09-21 21:21:15	-->	x4u3n (~x4u3n@unaffiliated/x4w3) has joined #archlinux
+2016-09-21 21:21:19	<--	sabat (~sabat@c-73-164-233-14.hsd1.wa.comcast.net) has quit (Remote host closed the connection)
+2016-09-21 21:21:21	horseface	I will just call the second service file privoxy_i2p and then I will rename the other to privoxy_tor :)
+2016-09-21 21:21:24	<--	sigtrm (quassel@quassel.woboq.de) has quit (Remote host closed the connection)
+2016-09-21 21:21:27	horseface	should work nicely i suppose...
+2016-09-21 21:21:32	sheep	horseface: do not rename the existing file.
+2016-09-21 21:21:35	sheep	or edit it
+2016-09-21 21:21:45	sheep	instead put your edited versions in /etc/systemd/system
+2016-09-21 21:21:56	horseface	hmm no need to edit it but I would like to rename it
+2016-09-21 21:21:57	horseface	i see
+2016-09-21 21:22:20	sheep	z4kst4r: you probably just need to add another IdentityFile line, assuming it's openssh
+2016-09-21 21:22:30	horseface	okay whatever I will leave one as privoxy.service...
+2016-09-21 21:22:31	horseface	for now
+2016-09-21 21:22:44	-->	doskoi (~doskoi@2a01:e34:ef00:c100:1dba:b55c:7431:d034) has joined #archlinux
+2016-09-21 21:22:53	horseface	so when I do 'systemctl edit --full privoxy.service' it will automatically create my edit of the file at that path, right?
+2016-09-21 21:23:00	horseface	just to get things straight...
+2016-09-21 21:23:10	horseface	i was under the impression that this is done automatically...
+2016-09-21 21:23:14	sheep	it will create a new file, and systemd will read that file in addition to the existing one
+2016-09-21 21:23:29	<--	davetk (~davetk@c-83-233-47-20.cust.bredband2.com) has quit (Remote host closed the connection)
+2016-09-21 21:24:03	horseface	yeah I see, but I am saying... When I edit a file, it automatically places the modified copy of the file at the address you specified right?
+2016-09-21 21:24:18	tortib	hey horseface!
+2016-09-21 21:24:22	sheep	not at that place, no
+2016-09-21 21:24:27	horseface	oh hmm
+2016-09-21 21:24:30	horseface	hi torlib
+2016-09-21 21:24:32	sheep	it creates a new directory and dumps it in there
+2016-09-21 21:24:38	horseface	i see
+2016-09-21 21:24:38		[21:24]
+2016-09-21 21:24:39	tortib	Does anyone know where I can get retail price list for cell phones?
+2016-09-21 21:24:41	sheep	usually /etc/systemd/system/<unit>.d
+2016-09-21 21:24:59	-->	bastianilso (~bastianil@h214.natout.aau.dk) has joined #archlinux
+2016-09-21 21:25:00	-->	sigtrm (quassel@quassel.woboq.de) has joined #archlinux
+2016-09-21 21:25:12	horseface	fuck my system is eating up 3.01G of 7.71G of my ram lol
+2016-09-21 21:25:14	horseface	:|
+2016-09-21 21:25:18	horseface	looking at htop
+2016-09-21 21:25:20	parchd	I think there is a bug in devtools... when building a package with a specific custom licence (e.g. "custom:myterms"), it still stubbornly complains that it didn't find the licence in, e.g. "custom:pkgname"
+2016-09-21 21:25:44	-->	rtlnx (~rtlnx@79.126.113.142) has joined #archlinux
+2016-09-21 21:25:58	<--	rtlnx (~rtlnx@79.126.113.142) has left #archlinux
+2016-09-21 21:26:00	parchd	s/custom:pkgname/usr/share/licenses/pkgname/g
+2016-09-21 21:26:05	<--	chowbok (~chowbok@207-181-247-115.c3-0.lem-ubr1.chi-lem.il.cable.rcn.com) has quit (Ping timeout: 260 seconds)
+2016-09-21 21:26:24	sheep	doesn't the package have to put the license at usr/share/licenses/pkgname?
+2016-09-21 21:26:25	parchd	screw it, too early for me to use sed
+2016-09-21 21:26:48	<--	jangho_p (~jangho@ec2-54-199-212-169.ap-northeast-1.compute.amazonaws.com) has quit (Quit: znc)
+2016-09-21 21:27:17	parchd	sheep: if package a3 uses the same license as package a, and specifies as such, shouldn't it look at usr/share/licenses/a ?
+2016-09-21 21:27:33	sheep	yes, but I'm not sure
+2016-09-21 21:28:09	<--	lonewulf` (~lonewulf@unaffiliated/lonewulf/x-3292126) has quit (Read error: Connection reset by peer)
+2016-09-21 21:28:16	-->	jangho (~jangho@ec2-54-199-212-169.ap-northeast-1.compute.amazonaws.com) has joined #archlinux
+2016-09-21 21:28:58	<--	iWaldo (iWaldo___@unaffiliated/iwaldo) has quit (Ping timeout: 255 seconds)
+2016-09-21 21:29:52	parchd	sheep: I've just reread https://wiki.archlinux.org/index.php/PKGBUILD#license and I guess I can interpret the experienced behaviour to be in line with that if I make an effort, but it still seems unintuitive and not at all correct
+2016-09-21 21:29:53	phrik	Title: PKGBUILD - ArchWiki (at wiki.archlinux.org)
+2016-09-21 21:31:21	-->	chowbok (~chowbok@207-181-247-115.c3-0.lem-ubr1.chi-lem.il.cable.rcn.com) has joined #archlinux
+2016-09-21 21:31:23	-->	darkrow (~D4rKr0W@unaffiliated/d4rkr0w) has joined #archlinux
+2016-09-21 21:32:04	<--	sigtrm (quassel@quassel.woboq.de) has quit (Ping timeout: 240 seconds)
+2016-09-21 21:32:35	-->	fhs (~fhs@2604:2000:1701:804e:c12:20cb:7e4c:2924) has joined #archlinux
+2016-09-21 21:32:47	-->	sigtrm (quassel@quassel.woboq.de) has joined #archlinux
+2016-09-21 21:34:08	<--	ailu1 (~a1lu@dslb-178-005-087-029.178.005.pools.vodafone-ip.de) has quit (Ping timeout: 265 seconds)
+2016-09-21 21:34:10	z4kst4r	sheep: so "PubkeyAcceptedKeyTypes +ssh-dss,ssh-rsa" on server. but still same
+2016-09-21 21:34:50	z4kst4r	also tried "PubkeyAcceptedKeyTypes +ssh-dss,+ssh-rsa" 
+2016-09-21 21:35:36	<--	j12t (~j12t@c-50-131-55-96.hsd1.ca.comcast.net) has quit (Remote host closed the connection)
+2016-09-21 21:35:47	z4kst4r	by another identity file do you mean "PubkeyAcceptedKeyTypes +ssh-dss" and then the following line "PubkeyAcceptedKeyTypes +ssh-rsa" ?
+2016-09-21 21:35:59	-->	emmedemme (~emmedemme@ip-94-140-163-33.reverse.destiny.be) has joined #archlinux
+2016-09-21 21:36:03	z4kst4r	sheep: ^
+2016-09-21 21:36:05	-->	j12t (~j12t@c-50-131-55-96.hsd1.ca.comcast.net) has joined #archlinux
+2016-09-21 21:37:03	<--	monksam (~Thunderbi@203.202.232.178) has quit (Ping timeout: 240 seconds)
+2016-09-21 21:37:21	<--	enderst (~enderst@unaffiliated/enderst) has quit (Ping timeout: 276 seconds)
+2016-09-21 21:38:13	-->	xarthna (~xarthna@99-189-175-144.lightspeed.sntcca.sbcglobal.net) has joined #archlinux
+2016-09-21 21:38:51	<--	xarthna (~xarthna@99-189-175-144.lightspeed.sntcca.sbcglobal.net) has quit (Quit: leaving)
+2016-09-21 21:39:11	-->	enderst (~enderst@unaffiliated/enderst) has joined #archlinux
+2016-09-21 21:40:03	<--	chowbok (~chowbok@207-181-247-115.c3-0.lem-ubr1.chi-lem.il.cable.rcn.com) has quit (Ping timeout: 240 seconds)
+2016-09-21 21:40:03		[21:40]
+2016-09-21 21:40:28	-->	robattila256 (~robattila@S0106f0f24908d2a3.vf.shawcable.net) has joined #archlinux
+2016-09-21 21:40:29	-->	Avonis (~Avonis@unaffiliated/avonis) has joined #archlinux
+2016-09-21 21:40:40	<--	j12t (~j12t@c-50-131-55-96.hsd1.ca.comcast.net) has quit (Ping timeout: 260 seconds)
+2016-09-21 21:40:42	-->	lstieb (~lstieb@80-110-32-172.static.upcbusiness.at) has joined #archlinux
+2016-09-21 21:42:08	-->	SpinTensor (~SpinTenso@i5387502C.versanet.de) has joined #archlinux
+2016-09-21 21:42:14	-->	Asandari (~Asandari@24-212-254-4.cable.teksavvy.com) has joined #archlinux
+2016-09-21 21:42:17	<--	ak5 (~ak5@unaffiliated/ak5) has quit (Ping timeout: 240 seconds)
+2016-09-21 21:42:33	-->	eeelvis (50a04b0a@gateway/web/cgi-irc/kiwiirc.com/ip.80.160.75.10) has joined #archlinux
+2016-09-21 21:42:52	<--	eeelvis (50a04b0a@gateway/web/cgi-irc/kiwiirc.com/ip.80.160.75.10) has quit (Quit: http://www.kiwiirc.com/ - A hand crafted IRC client)
+2016-09-21 21:43:06	--	irc: disconnected from server
+2016-09-22 00:23:53	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined #archlinux
+2016-09-22 00:23:53		[00:23]
+2016-09-22 00:23:53	--	Topic for #archlinux is "Welcome to Arch Linux World Domination, Inc. <+> Channel stats at <https://theos.kyriasis.com/~kyrias/stats/archlinux.html> Contact demize to opt out <+> Wanted to become an official Arch Tester? See https://lists.archlinux.org/pipermail/arch-dev-public/2016-July/028191.html <+> irssi security vulnerability: users should upgrade to 0.8.20 https://irssi.org/security/irssi_sa_2016.txt"
+2016-09-22 00:23:53	--	Topic set by tigrmesh on Wed, 21 Sep 2016 14:35:22
+2016-09-22 00:23:53	--	Channel #archlinux: 1653 nicks (2 ops, 0 voices, 1651 normals)
+2016-09-22 00:23:53	***	Buffer Playback...
+2016-09-22 00:23:53	pcv	[09:44:43] ok  [09:44:43]
+2016-09-22 00:23:53	Earnestly	[09:45:04] BrainDamage: I find it's less of an issue because things are usually fairly static once configured, but it is a point [09:45:04]
+2016-09-22 00:23:53	BrainDamage	[09:47:02] i hope that users won't find confusing that there'd be 3 ways to put a service "down", the down file, the one that removes the symlink, and sv down which disable autostart only for current session ... [09:47:02]
+2016-09-22 00:23:53	pcv	[09:53:16] MrElendig sir please see this link. http://i.imgur.com/9i4Ujyp.png [09:53:16]
+2016-09-22 00:23:53	jessidvelez_	[09:55:53] Hello, people. Perhaps some of you could help me: I hace created a simple program in GTK3 that displays an image an when clicking on it, some points are drawn and it works well in one PC. I have tryed it on another pc, with archlinux too, but the dots are not drawn until I move the GtkWindow. Some advice???? [09:55:53]
+2016-09-22 00:23:53	pcv	[10:00:23] is MrElendig  here? [10:00:23]
+2016-09-22 00:23:53	promach	[10:02:05] is https://dpaste.de/cshb/raw alright for http://opencircuitdesign.com/irsim/ ? [10:02:05]
+2016-09-22 00:23:53	phrik	[10:02:06] Title: IRSIM (at opencircuitdesign.com) [10:02:06]
+2016-09-22 00:23:53	Khorne	[10:04:52] promach, doesnt look too bad, does it work locally? [10:04:52]
+2016-09-22 00:23:53	MrElendig	[10:06:25] remove all the empty stuff [10:06:25]
+2016-09-22 00:23:53	MrElendig	[10:06:48] and ofcourse fill in the required bits [10:06:48]
+2016-09-22 00:23:53	pcv	[10:07:02] Who me? [10:07:02]
+2016-09-22 00:23:53	MrElendig	[10:07:09] promach [10:07:09]
+2016-09-22 00:23:53	pcv	[10:07:29] MrElendig do you see imgur link? [10:07:29]
+2016-09-22 00:23:53	MrElendig	[10:07:41] pcv: start by nuking xcompgmr, it is utter crap [10:07:41]
+2016-09-22 00:23:53	MrElendig	[10:07:53] if you want a compositor then use compton [10:07:53]
+2016-09-22 00:23:53	MrElendig	[10:08:12] xcompmgr was never ment to be used, it was just a tech demo basically [10:08:12]
+2016-09-22 00:23:53	pcv	[10:08:12] sir  [10:08:12]
+2016-09-22 00:23:53	MrElendig	[10:08:25] also xchat died a decade ago, use hexchat [10:08:25]
+2016-09-22 00:23:53	pcv	[10:08:42] ok  [10:08:42]
+2016-09-22 00:23:53	MrElendig	[10:08:58] that doesn't look like the output from when you are doing capture though [10:08:58]
+2016-09-22 00:23:53	pcv	[10:08:58] for xcompgmr  [10:08:58]
+2016-09-22 00:23:53	MrElendig	[10:09:18] also don't randomly use root [10:09:18]
+2016-09-22 00:23:53	pcv	[10:09:40] you really fast type i must translate english to my native language  [10:09:40]
+2016-09-22 00:23:53	pcv	[10:09:45] please wait  [10:09:45]
+2016-09-22 00:23:53	pcv	[10:10:37] i have nere install xcompmgr, i installed compton on i3 and use it  [10:10:37]
+2016-09-22 00:23:53	Earnestly	[10:10:55] BrainDamage: They will, until they read the manual [10:10:55]
+2016-09-22 00:23:53	ChetManly	[10:10:58] so what is yarout for now? non free apps? [10:10:58]
+2016-09-22 00:23:53	MrElendig	[10:11:20] ChetManly: confusing you and breaking your system [10:11:20]
+2016-09-22 00:23:53	MrElendig	[10:11:45] ChetManly: and making you fail to spell yogurt in french [10:11:45]
+2016-09-22 00:23:53	cdown	[10:11:52] Context on "breaking your system"? [10:11:52]
+2016-09-22 00:23:53	MrElendig	[10:12:35] ChetManly: don't use an aur helper until you know how aur and makepkg works [10:12:35]
+2016-09-22 00:23:53	ChetManly	[10:13:12] for example I am familiar with extra repos but couldnt one just enable something like this for pacman? [10:13:12]
+2016-09-22 00:23:53	MrElendig	[10:13:20] not for aur, no [10:13:20]
+2016-09-22 00:23:53	MrElendig	[10:13:31] thankfully aur doesn't host binaries, only build scripts [10:13:31]
+2016-09-22 00:23:53	pcv	[10:13:47] MrElendig I check xcompmgr with pacman , xcompmgr is not install om my archlinux [10:13:47]
+2016-09-22 00:23:53	ChetManly	[10:15:18] MrElendig: how do I find out how those work> [10:15:18]
+2016-09-22 00:23:53	Lartza	[10:16:01] !aurnoob [10:16:01]
+2016-09-22 00:23:53	phrik	[10:16:03] http://wiki.archlinux.org/index.php/Makepkg https://wiki.archlinux.org/index.php/Arch_User_Repository http://wiki.archlinux.org/index.php/Pacman [10:16:03]
+2016-09-22 00:23:53	ChetManly	[10:21:00] may i have a few examples of software available in aur [10:21:00]
+2016-09-22 00:23:53	Namarrgon	[10:21:15] use the search function on the AUR website [10:21:15]
+2016-09-22 00:23:53	ChetManly	[10:22:03] to use search dont I need something to query? [10:22:03]
+2016-09-22 00:23:53	Namarrgon	[10:22:37] no [10:22:37]
+2016-09-22 00:23:53	cdown	[10:22:48] MrElendig: As a yaourt user who is fairly familiar with makepkg + "how aur works" generally, I'd be curious to hear what you meant about yaourt being dangerous. [10:22:48]
+2016-09-22 00:23:53	cdown	[10:23:04] Not saying it's not, just that I've heard such things before but without much detail to explain why. [10:23:04]
+2016-09-22 00:23:53	Earnestly	[10:23:09] cdown: See https://wiki.archlinux.org/index.php/AUR_helpers#Comparison_table [10:23:09]
+2016-09-22 00:23:53	phrik	[10:23:11] Title: AUR helpers - ArchWiki (at wiki.archlinux.org) [10:23:11]
+2016-09-22 00:23:53	MrElendig	[10:23:17] cdown: stupid defaults, runs arbitary code before you get a chance to react [10:23:17]
+2016-09-22 00:23:53	cdown	[10:23:34] MrElendig: The PKGBUILD? [10:23:34]
+2016-09-22 00:23:53	cdown	[10:23:46] :( [10:23:46]
+2016-09-22 00:23:53	***	Playback Complete.
+2016-09-22 00:24:07	Earnestly	cdown: It fails in every category, and executes remote arbitrary code on -Si
+2016-09-22 00:24:08	cdown	oh my, info_from_aur
+2016-09-22 00:24:17	MrElendig	people who have no idea what aur even is gets told to just use aur and end up breaking their system by installing crap
+2016-09-22 00:24:24	MrElendig	or doing -Sy foobar
+2016-09-22 00:24:24	--	Channel created on Sat, 14 Feb 2004 19:08:31
+2016-09-22 00:24:27	cdown	Note to self, migrate from yaourt.
+2016-09-22 00:24:52	Namarrgon	ChetManly: click on the AUR link and let your curiosity lead you
+2016-09-22 00:25:01	Earnestly	cdown: The only aur helper which is remotely the right design is aurutils
+2016-09-22 00:25:41	<--	bootkiller (~bootkille@a89-154-162-166.cpe.netcabo.pt) has quit (Quit: KVIrc 4.9.2 Aria http://www.kvirc.net/)
+2016-09-22 00:25:57	GaivsIvlivs	Anyone know of an alternative to btsync?
+2016-09-22 00:26:01	homerj	all AUR helpers run arbitrary code as root
+2016-09-22 00:26:03	homerj	that's kind of the point
+2016-09-22 00:26:12	MrElendig	homerj: no
+2016-09-22 00:26:16	-->	Da_Coynul (~PzaBkr@user-0c90n9u.cable.mindspring.com) has joined #archlinux
+2016-09-22 00:26:47	MrElendig	some of them won't even run as root at all
+2016-09-22 00:27:25	ChetManly	what im trying to say is there any point in aur to have a functional system comparable to ubuntu  install? 
+2016-09-22 00:27:37	MrElendig	ChetManly: you don't need aur for that
+2016-09-22 00:27:42	-->	_mirko_ (~mirko@unaffiliated/-mirko-/x-2946915) has joined #archlinux
+2016-09-22 00:27:48	Namarrgon	comparable to what?
+2016-09-22 00:27:48	-->	meurer (~meurer@a89-154-255-25.cpe.netcabo.pt) has joined #archlinux
+2016-09-22 00:28:16	Namarrgon	does ubuntu have a comparable system to the AUR?
+2016-09-22 00:28:26	MrElendig	Namarrgon: ppa, sort of, but not really
+2016-09-22 00:28:47	Namarrgon	ChetManly: i don't you grok the concept yet
+2016-09-22 00:28:52	<--	yetanubuntuuser (~yetanubun@cb-8021x-nat-134-109.net.uni-frankfurt.de) has quit (Quit: Lost terminal)
+2016-09-22 00:29:21	Namarrgon	+think
+2016-09-22 00:29:37	cdown	homerj: The point isn't about running arbitrary code, but about executing it before any point of review.
+2016-09-22 00:29:50	<--	Earnestly (~Earnestly@unaffiliated/earnestly) has quit (Ping timeout: 260 seconds)
+2016-09-22 00:29:55	<--	Stanley00 (~Stanley_0@unaffiliated/stanley00) has quit (Quit: Ex Chat)
+2016-09-22 00:30:13	ChetManly	so it isnt needed for drivers, codecs or online applications?
+2016-09-22 00:30:18	<--	Phenox_ (~phenox_@195.82.49.140) has quit (Remote host closed the connection)
+2016-09-22 00:30:19	MrElendig	what?
+2016-09-22 00:30:36	<--	Bad_Advice_Cat (~Happy@unaffiliated/featheredserpent) has left #archlinux ("You can pretend to care about your users and help them run old versions of software or you can actually care about them and give them incentive to upgrade. Do the responsible thing, run supported software and encourage your users to as well. - ircmaxеll")
+2016-09-22 00:30:43	-->	xvtz (~xer0@103.235.198.145) has joined #archlinux
+2016-09-22 00:30:47	ChetManly	aur
+2016-09-22 00:30:48	GaivsIvlivs	What?
+2016-09-22 00:30:49	MrElendig	pretty much all you need is in the official repos
+2016-09-22 00:31:10	ChetManly	oh ok, just lots of "guides" say to use it
+2016-09-22 00:31:16	Namarrgon	the AUR can contain almost anything, whether _you_ need it is not something we can answer
+2016-09-22 00:31:19	<--	pcv (~pcv@151.246.199.29) has quit (Remote host closed the connection)
+2016-09-22 00:31:22	MrElendig	ChetManly: don't read random shitty guides on the intertubes
+2016-09-22 00:31:28	MrElendig	specially not 5 year old ones
+2016-09-22 00:31:55	MrElendig	and the whole point of online applications are that they are online and not local
+2016-09-22 00:32:06	Namarrgon	long live the cloud!
+2016-09-22 00:32:26	Namarrgon	especially that sheep-shaped one
+2016-09-22 00:32:35	-->	Joshua^Dunamis (~manjaro-k@host58-249-dynamic.117-80-r.retail.telecomitalia.it) has joined #archlinux
+2016-09-22 00:32:44	ChetManly	lol
+2016-09-22 00:33:19	-->	dsub (~dsub@c-439a70d5.040-144-67626713.cust.bredbandsbolaget.se) has joined #archlinux
+2016-09-22 00:34:01	<--	meurer (~meurer@a89-154-255-25.cpe.netcabo.pt) has quit (Ping timeout: 265 seconds)
+2016-09-22 00:34:53	ChetManly	is chrome in the official repos?
+2016-09-22 00:34:56	Namarrgon	the AUR isn't a fastfood restaurant, it's a cookbook, with recipes for things you might need or things you might want
+2016-09-22 00:34:59	GaivsIvlivs	Down with the Cloud!
+2016-09-22 00:35:10	Namarrgon	ChetManly: no
+2016-09-22 00:35:16	GaivsIvlivs	ChetManly chromium is, the official Google branded Chrome is in AUR because of its licensing
+2016-09-22 00:35:17	homerj	the AUR isn't a big truck
+2016-09-22 00:35:20	homerj	it's a series of tubes
+2016-09-22 00:36:12	<--	interki (~arch_@WOPR-p-144-134-32-216.prem.tmns.net.au) has quit (Quit: Going offline, see ya! (www.adiirc.com))
+2016-09-22 00:36:25	homerj	oh no, pacman is thinking
+2016-09-22 00:36:31	homerj	I hate it when pacman thinks
+2016-09-22 00:36:52	ChetManly	Namarrgon: i think thats a good analogy :-)
+2016-09-22 00:36:54	homerj	oh ok, nothing major
+2016-09-22 00:37:07	GaivsIvlivs	So the systemd service of miniupnpd does not like starting
+2016-09-22 00:37:16	homerj	when my pacman has to think a bit, it's usually a KDE or kernel update and I have to reboot
+2016-09-22 00:37:45	homerj	this was a wayland update
+2016-09-22 00:37:47	ChetManly	so its kind of like the build scripts in slack?
+2016-09-22 00:37:54	-->	Makaveli7 (~Makaveli7@88.247.118.243) has joined #archlinux
+2016-09-22 00:39:25	Namarrgon	yes
+2016-09-22 00:39:25		[00:39]
+2016-09-22 00:39:30	-->	magnum (~magnum@121.54.44.133) has joined #archlinux
+2016-09-22 00:39:31	<--	codfection (~codfectio@unaffiliated/codfection) has quit (Quit: Leaving)
+2016-09-22 00:39:33	magnum	hi, is it possible to show netspeed in tint2?
+2016-09-22 00:39:34	<--	mongy (~dean@unaffiliated/duffydack) has quit (Quit: leaving)
+2016-09-22 00:39:38	-->	chuff (~pcwormald@gateway/vpn/privateinternetaccess/chuff) has joined #archlinux
+2016-09-22 00:40:29	-->	poljar1 (~poljar@93-141-135-177.adsl.net.t-com.hr) has joined #archlinux
+2016-09-22 00:40:34	ChetManly	ok got cha now thanks
+2016-09-22 00:40:56	homerj	man, I miss slackware
+2016-09-22 00:41:02	homerj	that was my first linux distro
+2016-09-22 00:41:18	homerj	it would have been redhat, but it didn't like my cdrom drive for some reason
+2016-09-22 00:41:23	GaivsIvlivs	Mine was Ubuntu. I don't miss it.
+2016-09-22 00:41:40	BrainDamage	mandrake here
+2016-09-22 00:41:48	homerj	oh, when I first installed Linux, Ubuntu wasn't even a glimmer in someone's eye yet
+2016-09-22 00:41:49	d0x1p2	Backtrack... back when I dreamed of being a scriptkiddie.
+2016-09-22 00:42:00	-->	Valicek1 (~Thunderbi@147.229.63.131) has joined #archlinux
+2016-09-22 00:42:09	GaivsIvlivs	homerj you old
+2016-09-22 00:42:10	homerj	that was back when a good portion of your setup was built from source
+2016-09-22 00:42:17	<--	poljar (~poljar@93-143-233-213.adsl.net.t-com.hr) has quit (Ping timeout: 250 seconds)
+2016-09-22 00:42:23	GaivsIvlivs	Go back inside, Dad.
+2016-09-22 00:42:23	<--	Joshua^Dunamis (~manjaro-k@host58-249-dynamic.117-80-r.retail.telecomitalia.it) has quit (Read error: Connection reset by peer)
+2016-09-22 00:42:30	d0x1p2	lol
+2016-09-22 00:42:37	homerj	new xfree86
+2016-09-22 00:42:39	homerj	make world
+2016-09-22 00:42:45	homerj	then come back in 8 hours
+2016-09-22 00:42:59	-->	Joshua^Dunamis (~manjaro-k@host58-249-dynamic.117-80-r.retail.telecomitalia.it) has joined #archlinux
+2016-09-22 00:43:12	GaivsIvlivs	make homerj && install assisted-living-facility
+2016-09-22 00:43:38	-->	Velho (~Velho@wapice.com) has joined #archlinux
+2016-09-22 00:43:44	ChetManly	hahahha

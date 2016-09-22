@@ -40,7 +40,7 @@ alias sdwim='antigen-bundle oknowton/zsh-dwim '
 #alias sdwim='. /usr/share/zsh-dwim/init.zsh '
 alias ptpb='curl https://ptpb.pw -F c=@- '
 alias fptpb='pbpst -S#f '
-alias qemu='qemu-system-x86_64 -enable-kvm -net tap -net nic,model=virtio -usb -device usb-host,hostbus=3,hostaddr=2 -vga vmware -spice port=5930,disable-ticketing,addr=::1 -m 1024 deb8subvols.qcow2  '
+alias qemu='qemu-system-x86_64 -enable-kvm -net nic -net bridge,br=br0 -usbdevice tablet -vga virtio -m 2048 -drive file=/@media/backup/gentoo.cow,format=qcow2 '
 alias kindle='kindlegen -c0 -verbose '
 alias icast='sudo icecast -b -c /etc/icecast.xml '
 alias v='vim -p '
@@ -196,11 +196,40 @@ web_search_custom() {
 	fi
 	open_command "$url"
 }
+brkvm() {
+	local format
+	declare -a args
+	args=( "$1" )
+	for ((i=1;i<=${#}+1;i++)) shift && args+="$1"
+	format="${args[1]##*.}"
+	format="${format/cow/qcow2}"
+	[[ -z "$args[2]" || "$args[2]" == "null" ]] && {
+		qemu-system-x86_64 -boot menu=on -drive file="${args[1]?No image specified!}",format="$format" -enable-kvm \
+			-usbdevice tablet -machine type=pc,accel=kvm -cpu host -smp 4 \
+			-m "${args[3]:-2048}" -net nic -net bridge,br=br0,smb=/mnt/shared \
+			-vga "${args[4]:-vmware}"; } || {
+			#-spice port=5930,disable-ticketing \
+			#-device "${4:-vmware}"-serial-pci -device virtserialport,chardev=spicechannel0,name=com.redhat.spice.0 \
+			#-chardev spicevmc,id=spicechannel0,name=vdagent \
+			#-spice unix,addr=/tmp/vm_spice.socket,disable-ticketing,playback-compression=off; } || {
+	#format="${format/cow/qcow2}"
+		qemu-system-x86_64 -cdrom "${args[2]}" -boot order=d \
+			-drive file="${args[1]?No image specified!}",format="$format" -enable-kvm \
+			-usbdevice tablet -machine type=pc,accel=kvm -cpu host -smp 4 \
+			-m "${args[3]:-2048}" -net nic -net bridge,br=br0,smb=/mnt/shared \
+			-vga "${args[4]:-vmware}"; }
+			#-spice port=5930,disable-ticketing \
+			#-device "${4:-vmware}"-serial-pci -device virtserialport,chardev=spicechannel0,name=com.redhat.spice.0 \
+			#-chardev spicevmc,id=spicechannel0,name=vdagent \
+			#-spice unix,addr=/tmp/vm_spice.socket,disable-ticketing,playback-compression=off; }
+	#qemu-system-x86_64 -cdrom ~/sdxc/install-amd64-minimal-20160915.iso -boot order=d \
+	#-drive file=/@media/backup/gentoo.cow,format=qcow2 -enable-kvm -m 512 -net nic -net bridge,br=virbr0
+}
 kvm() {
 	local format
 	declare -a args
 	args=( "$1" )
-	for ((i=1;i<${#}+1;i++)) shift && args+="$1"
+	for ((i=1;i<=${#}+1;i++)) shift && args+="$1"
 	format="${args[1]##*.}"
 	format="${format/cow/qcow2}"
 	[[ -z "$args[2]" || "$args[2]" == "null" ]] && {
@@ -229,7 +258,7 @@ ovmf-kvm() {
 	local format
 	declare -a args
 	args=( "$1" )
-	for ((i=1;i<${#}+1;i++)) shift && args+="$1"
+	for ((i=1;i<=${#}+1;i++)) shift && args+="$1"
 	format="${args[1]##*.}"
 	format="${format/cow/qcow2}"
 	args[3]="${args[3]/null/2048}"
@@ -300,13 +329,32 @@ vkfix() {
     done
 
     find . -maxdepth 1 -name "*.mp3" -print0 | while IFS= read -r -d '' first; do
+	printf '"%s" ' "${first}"; printf \"; printf "${first}" | sed  -n 's/\bem\([A-Za-z0-9\;\#]*\)em/\1/gp'; printf "\"\n"
+    done | \
+	awk '! /\"\"/ {print}'  | while read -r final; do eval "mv --verbose ${final}"
+    done
+
+    find . -maxdepth 1 -name "*.mp3" -print0 | while IFS= read -r -d '' first; do
 	printf '"%s" ' "${first}"; printf \"; printf "${first}" | sed -n 's/ [Ff][Ee][Aa][Tt][\.]* / ft\. /gp'; printf "\"\n"
     done | \
 	awk '! /\"\"/ {print}'  | while read -r final; do eval "mv --verbose ${final}"
     done
 
     find . -maxdepth 1 -name "*.mp3" -print0 | while IFS= read -r -d '' first; do
-	printf '"%s" ' "${first}"; printf \"; printf "${first}" | sed -n 's/ [Vv][Ss][\.]* / vs\. /gp'; printf "\"\n"
+	printf '"%s" ' "${first}"; printf \"; printf "${first}" | sed -n 's/ [Vv]S[\.]* / vs\. /gp'; printf "\"\n"
+    done | \
+	awk '! /\"\"/ {print}'  | while read -r final; do eval "mv --verbose ${final}"
+    done
+
+    find . -maxdepth 1 -name "*.mp3" -print0 | while IFS= read -r -d '' first; do
+	printf '"%s" ' "${first}"; printf \"; printf "${first}" | sed -n 's/ V[Ss][\.]* / vs\. /gp'; printf "\"\n"
+    done | \
+	awk '! /\"\"/ {print}'  | while read -r final; do eval "mv --verbose ${final}"
+    done
+
+
+    find . -maxdepth 1 -name "*.mp3" -print0 | while IFS= read -r -d '' first; do
+	printf '"%s" ' "${first}"; printf \"; printf "${first}" | sed -n 's/ presents / pres\. /gp'; printf "\"\n"
     done | \
 	awk '! /\"\"/ {print}'  | while read -r final; do eval "mv --verbose ${final}"
     done
