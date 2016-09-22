@@ -2855,3 +2855,1018 @@
 2016-09-20 14:12:53	Jester01	so who cares if the ++ is there or not
 2016-09-20 14:13:05	asm065	yeah
 2016-09-20 14:13:11	asm065	makes sense
+2016-09-20 14:14:28	asm065	so where does movsb move the stuff too?
+2016-09-20 14:14:37	Jester01	from *esi to *edi
+2016-09-20 14:14:46	asm065	ah okie
+2016-09-20 14:15:02	asm065	and then stosb does it from edi to dest?
+2016-09-20 14:16:20	Jester01	no stosb just writes al into *edi
+2016-09-20 14:16:48	asm065	oh
+2016-09-20 14:16:54	asm065	so thts whts storing the null?
+2016-09-20 14:16:58	Jester01	yes
+2016-09-20 14:17:12	asm065	interesting
+2016-09-20 14:17:51	asm065	does stosb use eax by default?
+2016-09-20 14:18:09	Jester01	al, yes.
+2016-09-20 14:18:19	asm065	right sorry
+2016-09-20 14:18:19		[14:18]
+2016-09-20 14:19:12	asm065	wow youre making this very easy to understand thanks so much
+2016-09-20 14:20:00	asm065	question i noticed that the count doesnt work as intended in the sense that it gives 1 iteration more than it has to
+2016-09-20 14:20:12	asm065	so lets say your starting index is 2 and ending index is 3
+2016-09-20 14:20:27	asm065	it copies every character in the string from index 2 to 4
+2016-09-20 14:20:34	asm065	doesnt stop at 3
+2016-09-20 14:20:36	asm065	why is that
+2016-09-20 14:20:39	Jester01	this function takes a count argument ... how you calculate it is up to you.
+2016-09-20 14:21:15	asm065	every time you movsb it inc count right?
+2016-09-20 14:21:17	Jester01	there is no "ending index" here.
+2016-09-20 14:21:28	asm065	sorry the ending index would be count
+2016-09-20 14:21:31	Jester01	it decrements the count.
+2016-09-20 14:21:38	Jester01	and no, count is not an index.
+2016-09-20 14:21:47	Jester01	it's a count.
+2016-09-20 14:21:55	Jester01	if it's 3, that means copy 3 bytes
+2016-09-20 14:22:08	Jester01	and if the start is 2, then yes, that means copy 2,3,4
+2016-09-20 14:22:22	asm065	ohhh
+2016-09-20 14:23:37	asm065	wow this makes so much sense now
+2016-09-20 14:23:54	asm065	so i just need to make sure i add a clobber list
+2016-09-20 14:24:31	asm065	otherwise compiler will never know
+2016-09-20 14:25:02	Jester01	clobber for eax, and possibly dummy output for esi and edi (some compiler versions don't allow clobber for inputs)
+2016-09-20 14:25:20	Jester01	or, you know, just turn this into C :)
+2016-09-20 14:26:47	asm065	Yeah it def would be easier to do this in C, but im jus trying to learn inline assembly so i thought this simple exercise would be good practice x3
+2016-09-20 14:26:56	Jester01	okay :)
+2016-09-20 14:27:12	Jester01	1st rule of inline asm: avoid if you can :)
+2016-09-20 14:27:33	asm065	Yeah I hear that a lot xD
+2016-09-20 14:27:35	Jester01	(applies to gcc inline asm more than other types)
+2016-09-20 14:28:11	asm065	btw is it rly needed to add eax to clobber list if i use the mov instead or xor? i thought you said mov wouldnt clobber it
+2016-09-20 14:28:28	Jester01	right, if you use the mov then you don't need to list eax
+2016-09-20 14:29:36	asm065	what would be an example of a dummy output?
+2016-09-20 14:29:49	asm065	just randomly add like ecx?
+2016-09-20 14:29:55	Jester01	no :)
+2016-09-20 14:30:27	Jester01	since your variables are local and not used, you can write the values back
+2016-09-20 14:31:02	Jester01	such as "=S" (src), "=D" (dest), "=c" (count)
+2016-09-20 14:31:22	Jester01	for dest and count you could use read-write constraint
+2016-09-20 14:31:51	asm065	wouldnt it be better to do s_idx and count only ?
+2016-09-20 14:32:00	<--	MarkX (~MarkX@2607:fb90:a29f:e086:9ee:1657:7dd6:f5ed) has quit (Read error: Connection reset by peer)
+2016-09-20 14:32:01	asm065	since src and dest are pointers
+2016-09-20 14:32:09	-->	MarkX (~MarkX@2607:fb90:a29f:e086:9ee:1657:7dd6:f5ed) has joined ##asm
+2016-09-20 14:32:12	asm065	not just local vars
+2016-09-20 14:32:50	Jester01	not sure why ... you load dest into edi so it makes a lot of sense to write it back into edi too
+2016-09-20 14:32:59	Jester01	erm, dest
+2016-09-20 14:33:26	asm065	oh i was under the impression that it does
+2016-09-20 14:33:26		[14:33]
+2016-09-20 14:33:39	Jester01	?
+2016-09-20 14:34:24	asm065	Sorry if im being confusing I know my english is not the best. let me try again
+2016-09-20 14:36:26	asm065	So you're saying we load dest into edi. meaning edi now points to dest no? so when we do movsb, it moves the stuff from esi to edi. which also means dest also gets written back to no?
+2016-09-20 14:36:45	Jester01	no, edi points to wherever dest pointed to
+2016-09-20 14:36:51	Jester01	it does not point to dest
+2016-09-20 14:36:54	Jester01	dest itself is loaded.
+2016-09-20 14:36:56	Jester01	edi=dest
+2016-09-20 14:37:04	asm065	yes sorry thats what i meant
+2016-09-20 14:37:05	Jester01	it's not edi=&dest
+2016-09-20 14:37:42	Jester01	movsb increments the pointers, and copies memory.
+2016-09-20 14:37:57	Jester01	also, the compiler still has no idea that happened unless you tell it
+2016-09-20 14:38:08	Jester01	which is what you can do with an output or a clobber
+2016-09-20 14:39:49	--	You are now known as blue
+2016-09-20 14:40:10	asm065	" not sure why ... you load dest into edi so it makes a lot of sense to write it back into dest too" when you say write back to dest, what would you want to write back?
+2016-09-20 14:40:19	asm065	since dest is already pointing to the right place
+2016-09-20 14:40:19	--	You are now known as Guest66035
+2016-09-20 14:40:22	<--	MarkX (~MarkX@2607:fb90:a29f:e086:9ee:1657:7dd6:f5ed) has quit (Ping timeout: 255 seconds)
+2016-09-20 14:40:38	Jester01	we need to inform the compiler that edi has been changed
+2016-09-20 14:40:52	asm065	right
+2016-09-20 14:40:53	Jester01	we only need a dummy output, we don't care about the value here
+2016-09-20 14:41:05	<--	King_Hual (~failed@unaffiliated/king-hual/x-1207580) has quit (Read error: Connection reset by peer)
+2016-09-20 14:41:12	Jester01	since dest is a local variable, and it's not used anymore, you can just use it for the output
+2016-09-20 14:41:12	--	You are now known as alyptik
+2016-09-20 14:41:29	Jester01	instead of creating a dummy variable for the specific purpose
+2016-09-20 14:42:12	asm065	oh i think im begining to understand now
+2016-09-20 14:42:16	asm065	okay
+2016-09-20 14:42:32	Jester01	as I said, some compiler versions (maybe clang? IDK) do allow for clobbered inputs
+2016-09-20 14:42:33	asm065	so i can either add edi to clobber list to let compiler know or just put it in the output
+2016-09-20 14:43:00	Jester01	outputs work always, but a little more typing :)
+2016-09-20 14:43:12	Jester01	clobber may or may not be accepted by your compiler
+2016-09-20 14:43:21	asm065	gotcha ill do output to be safe :)
+2016-09-20 14:44:57	asm065	Wish you wrote an assembly book xD, i'd buy it
+2016-09-20 14:45:55	asm065	So now something like this would be safer coding. http://pastebin.com/v58WwEUi
+2016-09-20 14:46:10	Jester01	delete the stosb
+2016-09-20 14:46:20	Jester01	and the mov should be movb
+2016-09-20 14:46:29	<--	Burgundy (~burgundy@86.121.178.118) has quit (Ping timeout: 250 seconds)
+2016-09-20 14:46:33	<--	yokel (~yokel@unaffiliated/contempt) has quit (Ping timeout: 240 seconds)
+2016-09-20 14:46:49	Jester01	also cld is not needed either
+2016-09-20 14:47:01	Jester01	and you need a "memory" clobber.
+2016-09-20 14:47:05	-->	yokel (~yokel@unaffiliated/contempt) has joined ##asm
+2016-09-20 14:47:28	asm065	i thought cld should always be done just to be safe? and isnt stosb needed to store the null?
+2016-09-20 14:47:39	Jester01	movb $0 stores the null ...
+2016-09-20 14:47:49	Jester01	that was the whole point of adding it ;)
+2016-09-20 14:47:51	asm065	oh god
+2016-09-20 14:47:53	asm065	yes xD
+2016-09-20 14:47:55	asm065	sorry
+2016-09-20 14:48:03	<--	kbw (~KeyboardW@68-204-170-7.res.bhn.net) has quit (Quit: My MacBook Air has gone to sleep. ZZZzzz…)
+2016-09-20 14:48:20	Jester01	direction flag must be clear at function entry, but if it isn't and you change it, all hell will break loose anyway
+2016-09-20 14:48:24	asm065	i think i jus did whts called zoned out xD
+2016-09-20 14:48:48	-->	kbw (~KeyboardW@68-204-170-7.res.bhn.net) has joined ##asm
+2016-09-20 14:48:48		[14:48]
+2016-09-20 14:48:59	-->	Girafferson (~Giraffers@2601:281:8001:663d:e234:b24c:6011:64f4) has joined ##asm
+2016-09-20 14:49:33	-->	a3f (~a3f@unaffiliated/a3f) has joined ##asm
+2016-09-20 14:52:23	asm065	Jester01: Is memory clobber really just as simple as writing "memory"
+2016-09-20 14:52:28	Jester01	yes
+2016-09-20 14:55:56	asm065	Jester01: how come Movsb requires a memory clobber but ordinary mov doesnt?
+2016-09-20 14:56:51	Jester01	who said it didn't :)
+2016-09-20 14:57:11	Jester01	if you randomly write into memory using whatever means, you need a memory clobber
+2016-09-20 14:57:35	Jester01	otherwise the compiler might be caching an old value somewhere (unlikely, but can happen)
+2016-09-20 14:58:42	asm065	ah that makes sense, but you said movb $0, (%%edi) doesnt require clobber is that because edi is a stack?
+2016-09-20 14:59:02	Jester01	the code does not require the eax clobber if you use that instead of the xor
+2016-09-20 14:59:08	Jester01	because you don't change eax
+2016-09-20 14:59:14	-->	dminuoso (~dminuoso@unaffiliated/dminuoso) has joined ##asm
+2016-09-20 14:59:16	asm065	oh
+2016-09-20 14:59:42	asm065	okay i now understand this
+2016-09-20 14:59:48	asm065	i should write this all down
+2016-09-20 15:00:00	Jester01	it still needs the memory clobber, but you only need to list that once and so you are covered
+2016-09-20 15:00:27	asm065	C is starting to look more and more beautiful
+2016-09-20 15:05:43	<--	dminuoso (~dminuoso@unaffiliated/dminuoso) has quit (Ping timeout: 265 seconds)
+2016-09-20 15:05:43		[15:05]
+2016-09-20 15:06:05	<--	yokel (~yokel@unaffiliated/contempt) has quit (Ping timeout: 260 seconds)
+2016-09-20 15:06:45	asm065	seem to get a seg fault intereting
+2016-09-20 15:08:09	-->	mi100hael (~mi100hael@unaffiliated/mi100hael) has joined ##asm
+2016-09-20 15:09:02	Jester01	in 64 bit mode accidentally? :)
+2016-09-20 15:09:25	<--	MDude (~MDude@c-73-187-225-46.hsd1.pa.comcast.net) has quit (Remote host closed the connection)
+2016-09-20 15:10:06	asm065	nope :o, a random part of my other code is seg faulting now even tho it worked before xD
+2016-09-20 15:10:26	asm065	i must have done something wrong
+2016-09-20 15:12:31	-->	yokel (~yokel@unaffiliated/contempt) has joined ##asm
+2016-09-20 15:12:56	<--	deselect (~deselect@188.123.241.122) has quit (Ping timeout: 265 seconds)
+2016-09-20 15:14:07	-->	MDude (~MDude@c-73-187-225-46.hsd1.pa.comcast.net) has joined ##asm
+2016-09-20 15:14:10	-->	Coldseeker (~Frosty@adsl-per-1-241.ozonline.com.au) has joined ##asm
+2016-09-20 15:20:00		[15:14]
+2016-09-20 15:20:25	-->	Gilfoyle (~hatter@unaffiliated/church-) has joined ##asm
+2016-09-20 15:20:49	--	Gilfoyle is now known as Guest13477
+2016-09-20 15:22:24	<--	a3f (~a3f@unaffiliated/a3f) has quit (Read error: Connection reset by peer)
+2016-09-20 15:24:56	asm065	Jester01: Seems to seg fault at the start of the asm code also
+2016-09-20 15:25:31	<--	Xylitol (~temari@unaffiliated/xylitol) has quit (Quit: Sharpen your sickle at sunset)
+2016-09-20 15:26:04	asm065	Jester01: http://pastebin.com/bP0AD29R
+2016-09-20 15:26:20	Jester01	that IS 64 bit mode!
+2016-09-20 15:26:58	Jester01	change movb $0, (%%edi) to movb $0, (%%rdi)
+2016-09-20 15:27:26	Jester01	better yet, change it to movb $0, (%1)
+2016-09-20 15:27:35	Jester01	then it will work in 32 and 64 bit both
+2016-09-20 15:27:51	asm065	oh crap i forgot i was using the wrong virtual machine
+2016-09-20 15:29:37	<--	kbw (~KeyboardW@68-204-170-7.res.bhn.net) has quit (Quit: My MacBook Air has gone to sleep. ZZZzzz…)
+2016-09-20 15:29:49	Jester01	by the way, the debug info for inline asm is not line accurate, you need to disasm the actual address to see the faulting instruction
+2016-09-20 15:31:07	asm065	could you explain the %1
+2016-09-20 15:31:20	Jester01	argument 1
+2016-09-20 15:31:46	-->	kbw (~KeyboardW@68-204-170-7.res.bhn.net) has joined ##asm
+2016-09-20 15:32:04	asm065	i thought argument 1 was src
+2016-09-20 15:32:13	Jester01	we count from 0 ;)
+2016-09-20 15:32:38	asm065	ah that makes sense x3
+2016-09-20 15:34:27	asm065	Jester01: Hm when i print dest in the main it comes up empty now
+2016-09-20 15:37:10	asm065	Jester01: http://pastebin.com/wQesmSqd
+2016-09-20 15:37:10		[15:37]
+2016-09-20 15:38:58	-->	safe (~safe@unaffiliated/safe) has joined ##asm
+2016-09-20 15:39:21	Jester01	$ ./a.out 12345678 2 3
+2016-09-20 15:39:21	Jester01	d2 345
+2016-09-20 15:39:26	Jester01	works fine here, what did you try?
+2016-09-20 15:39:46	-->	kirotawa1 (~kirotawa@187-40-146-210.user.veloxzone.com.br) has joined ##asm
+2016-09-20 15:40:15	Jester01	ah something is broken
+2016-09-20 15:40:49	Jester01	you removed the volatile
+2016-09-20 15:41:06	asm065	whoops it works
+2016-09-20 15:41:09	asm065	i compild wrong one
+2016-09-20 15:41:17	asm065	is the volatile needed?
+2016-09-20 15:41:19	Jester01	yes.
+2016-09-20 15:41:24	--	Guest13477 is now known as aleph-
+2016-09-20 15:41:31	Jester01	turn optimization on, and you'll see it's needed :)
+2016-09-20 15:42:19	asm065	Okay lemme try brb ^_^
+2016-09-20 15:42:47	Jester01	contrary to popular belief, I do need to sleep, so cya! :)
+2016-09-20 15:44:29	asm065	Jester01: Sleep well! thanks so much! <3
+2016-09-20 15:44:50	-->	arescorpio (~arescorpi@221-27-245-190.fibertel.com.ar) has joined ##asm
+2016-09-20 15:50:00		[15:44]
+2016-09-20 15:53:06	-->	Ropeney (~Ropeney@tank.mindvision.com.au) has joined ##asm
+2016-09-20 15:53:43	<--	Girafferson (~Giraffers@2601:281:8001:663d:e234:b24c:6011:64f4) has quit (Quit: Leaving)
+2016-09-20 15:54:14	<--	navidr (uid112413@gateway/web/irccloud.com/x-fzumgbqjryjzeppb) has quit (Quit: Connection closed for inactivity)
+2016-09-20 16:00:00		[15:54]
+2016-09-20 16:01:43	-->	dminuoso (~dminuoso@unaffiliated/dminuoso) has joined ##asm
+2016-09-20 16:03:42	-->	araml (~araml@unaffiliated/araml) has joined ##asm
+2016-09-20 16:05:52	<--	aleph- (~hatter@unaffiliated/church-) has quit (Ping timeout: 255 seconds)
+2016-09-20 16:07:06	<--	dminuoso (~dminuoso@unaffiliated/dminuoso) has quit (Ping timeout: 264 seconds)
+2016-09-20 16:07:38	-->	zap0 (~moofy@14-201-222-143.tpgi.com.au) has joined ##asm
+2016-09-20 16:10:37	-->	Goplat (~goplat@reactos/developer/Goplat) has joined ##asm
+2016-09-20 16:11:34	-->	Girafferson (~Giraffers@2601:281:8001:663d:e234:b24c:6011:64f4) has joined ##asm
+2016-09-20 16:17:00		[16:11]
+2016-09-20 16:20:55	-->	aleph- (~hatter@unaffiliated/church-) has joined ##asm
+2016-09-20 16:23:14	-->	AndyBotwin (~Gustavo@unaffiliated/andybotwin) has joined ##asm
+2016-09-20 16:27:17	<--	MrFahrenheit (~hamzadis@unaffiliated/rageofthou) has quit (Ping timeout: 244 seconds)
+2016-09-20 16:30:01	<--	kirotawa1 (~kirotawa@187-40-146-210.user.veloxzone.com.br) has quit (Ping timeout: 248 seconds)
+2016-09-20 16:30:01	<--	`Ivan (~tapz@stalkr.net) has quit (Ping timeout: 248 seconds)
+2016-09-20 16:31:07	-->	kirotawa1 (~kirotawa@187-40-146-210.user.veloxzone.com.br) has joined ##asm
+2016-09-20 16:33:42	<--	asm065 (4a5966e9@gateway/web/freenode/ip.74.89.102.233) has quit (Ping timeout: 240 seconds)
+2016-09-20 16:33:42		[16:33]
+2016-09-20 16:36:04	-->	`Ivan (~tapz@stalkr.net) has joined ##asm
+2016-09-20 16:37:47	-->	MarkX (~MarkX@172.58.143.109) has joined ##asm
+2016-09-20 16:41:36	-->	MarkX_ (~MarkX@172.58.139.97) has joined ##asm
+2016-09-20 16:43:52	<--	gaffa (~none@unaffiliated/gaffa) has quit (Quit: Leaving)
+2016-09-20 16:43:53	<--	MarkX (~MarkX@172.58.143.109) has quit (Ping timeout: 265 seconds)
+2016-09-20 16:45:15	<--	mi100hael (~mi100hael@unaffiliated/mi100hael) has quit (Ping timeout: 260 seconds)
+2016-09-20 16:45:56	<--	veXx (~veXx@unaffiliated/vexx) has quit (Quit: Leaving)
+2016-09-20 16:47:19	<--	MarkX_ (~MarkX@172.58.139.97) has quit (Ping timeout: 272 seconds)
+2016-09-20 16:48:33	<--	akaWolf (~akaWolf@unaffiliated/akawolf) has quit (Ping timeout: 240 seconds)
+2016-09-20 16:52:00	<--	MyCuriosity (~MyCuriosi@unaffiliated/mycuriosity) has quit (Remote host closed the connection)
+2016-09-20 16:52:00		[16:52]
+2016-09-20 16:56:03	<--	Heasummn (~Heasummn@2601:246:802:d0c1:ee97:c29:3aa1:8a88) has quit (Ping timeout: 250 seconds)
+2016-09-20 16:56:34	<--	NeoGeo64 (~linux@2604:2d80:881a:0:b4a3:be16:d6fd:8559) has quit (Remote host closed the connection)
+2016-09-20 17:01:01	-->	SwiftMatt (~Objective@130.253.27.194) has joined ##asm
+2016-09-20 17:02:30	-->	dminuoso (~dminuoso@unaffiliated/dminuoso) has joined ##asm
+2016-09-20 17:07:21	<--	dminuoso (~dminuoso@unaffiliated/dminuoso) has quit (Ping timeout: 248 seconds)
+2016-09-20 17:07:21		[17:07]
+2016-09-20 17:09:32	-->	Heasummn (~Heasummn@c-98-206-255-48.hsd1.il.comcast.net) has joined ##asm
+2016-09-20 17:11:48	-->	MarkX_ (~MarkX@mike41.asianfreshproduce.com) has joined ##asm
+2016-09-20 17:15:10	-->	NeoGeo64 (~linux@2604:2d80:881a:0:b4a3:be16:d6fd:8559) has joined ##asm
+2016-09-20 17:16:08	<--	kbw (~KeyboardW@68-204-170-7.res.bhn.net) has quit (Quit: Textual IRC Client: www.textualapp.com)
+2016-09-20 17:19:09	--	MarkX_ is now known as MarkX
+2016-09-20 17:23:36	<--	CheckDavid (uid14990@gateway/web/irccloud.com/x-jlirhthakzmwgusr) has quit (Quit: Connection closed for inactivity)
+2016-09-20 17:23:36		[17:23]
+2016-09-20 17:25:24	<--	king_jah (~jah@S0106503955715ed3.ss.shawcable.net) has quit (Ping timeout: 276 seconds)
+2016-09-20 17:31:00		[17:25]
+2016-09-20 17:36:28	-->	pimlu (~pimlu@128.172.35.9) has joined ##asm
+2016-09-20 17:36:42	<--	Heasummn (~Heasummn@c-98-206-255-48.hsd1.il.comcast.net) has quit (Ping timeout: 244 seconds)
+2016-09-20 17:42:00		[17:36]
+2016-09-20 17:45:03	<--	CodFection (~CodFectio@unaffiliated/codfection) has quit (Ping timeout: 240 seconds)
+2016-09-20 17:45:29	-->	CodFection (~CodFectio@unaffiliated/codfection) has joined ##asm
+2016-09-20 17:46:45	<--	hoe` (~hoe@c-71-237-236-28.hsd1.or.comcast.net) has quit (Ping timeout: 250 seconds)
+2016-09-20 17:48:07	<--	SwiftMatt (~Objective@130.253.27.194) has quit (Quit: My MacBook Pro has gone to sleep. ZZZzzz…)
+2016-09-20 17:49:08	-->	GNUUB1 (~GNUUB@182.57.44.246) has joined ##asm
+2016-09-20 17:55:00		[17:49]
+2016-09-20 18:02:23	-->	booboojio (~yaaic@c-f78472d5.043-274-73746f25.cust.bredbandsbolaget.se) has joined ##asm
+2016-09-20 18:03:15	-->	dminuoso (~dminuoso@unaffiliated/dminuoso) has joined ##asm
+2016-09-20 18:04:43	<--	booboojio (~yaaic@c-f78472d5.043-274-73746f25.cust.bredbandsbolaget.se) has quit (Read error: Connection reset by peer)
+2016-09-20 18:06:43	-->	SwiftMatt (~Objective@130.253.27.194) has joined ##asm
+2016-09-20 18:07:13	<--	SwiftMatt (~Objective@130.253.27.194) has quit (Client Quit)
+2016-09-20 18:08:54	<--	dminuoso (~dminuoso@unaffiliated/dminuoso) has quit (Ping timeout: 264 seconds)
+2016-09-20 18:10:03	<--	kirotawa1 (~kirotawa@187-40-146-210.user.veloxzone.com.br) has quit (Ping timeout: 240 seconds)
+2016-09-20 18:10:03		[18:10]
+2016-09-20 18:14:04	-->	Zardoz_gnoobot (~vignesh@182.57.44.246) has joined ##asm
+2016-09-20 18:14:14	 *	Zardoz_gnoobot says hi to all 
+2016-09-20 18:16:49	-->	hzjd (~Adium@18.189.45.86) has joined ##asm
+2016-09-20 18:22:00		[18:16]
+2016-09-20 18:24:28	-->	SwiftMatt (~Objective@027-194.eduroam-public.du.edu) has joined ##asm
+2016-09-20 18:28:37	<--	SwiftMatt (~Objective@027-194.eduroam-public.du.edu) has quit (Quit: My MacBook Pro has gone to sleep. ZZZzzz…)
+2016-09-20 18:31:05	<--	MulleDK19 (MulleDK19@unaffiliated/mulledk19) has quit (Ping timeout: 248 seconds)
+2016-09-20 18:34:49	<--	SunnyD (~SunnyD@cpe-72-178-78-211.hot.res.rr.com) has quit (Quit: ChatZilla 0.9.90.1 [Firefox 30.0/20140605174243])
+2016-09-20 18:40:00		[18:34]
+2016-09-20 18:41:42	<--	hzjd (~Adium@18.189.45.86) has quit (Quit: Leaving.)
+2016-09-20 18:41:51	-->	SwiftMatt (~Objective@130.253.27.194) has joined ##asm
+2016-09-20 18:42:26	-->	booboojio (~yaaic@host-95-195-212-141.mobileonline.telia.com) has joined ##asm
+2016-09-20 18:42:50	<--	SwiftMatt (~Objective@130.253.27.194) has quit (Client Quit)
+2016-09-20 18:48:00		[18:42]
+2016-09-20 18:48:31	<--	OxFEEDBACC (~what@unaffiliated/oxfeedbacc) has quit (Quit: quit pro quo)
+2016-09-20 18:48:44	-->	blackwind_123 (~IceChat9@117.192.142.2) has joined ##asm
+2016-09-20 18:49:33	-->	dminuoso (~dminuoso@unaffiliated/dminuoso) has joined ##asm
+2016-09-20 18:52:35	--	irc: disconnected from server
+2016-09-20 18:53:12	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined ##asm
+2016-09-20 18:53:12	--	Topic for ##asm is "Assembly programming channel, all architectures welcome (please specify). Don't ask to ask! Use a pastebin if appropriate! Check your manuals! More information: http://goo.gl/vZ4xwd *** AT&T vs Intel flamers will be banned."
+2016-09-20 18:53:12	--	Topic set by Jester01 (~Jester01@62.100.244.69) on Mon, 18 Jan 2016 06:23:59
+2016-09-20 18:53:12	--	Channel ##asm: 285 nicks (0 ops, 0 voices, 285 normals)
+2016-09-20 18:53:12	***	Buffer Playback...
+2016-09-20 18:53:12	asm065	[00:47:54] sorry [00:47:54]
+2016-09-20 18:53:12	Jester01	[00:48:19] direction flag must be clear at function entry, but if it isn't and you change it, all hell will break loose anyway [00:48:19]
+2016-09-20 18:53:12	asm065	[00:48:23] i think i jus did whts called zoned out xD [00:48:23]
+2016-09-20 18:53:12	asm065	[00:52:22] Jester01: Is memory clobber really just as simple as writing "memory" [00:52:22]
+2016-09-20 18:53:12	Jester01	[00:52:27] yes [00:52:27]
+2016-09-20 18:53:12	asm065	[00:55:55] Jester01: how come Movsb requires a memory clobber but ordinary mov doesnt? [00:55:55]
+2016-09-20 18:53:12	Jester01	[00:56:50] who said it didn't :) [00:56:50]
+2016-09-20 18:53:12	Jester01	[00:57:10] if you randomly write into memory using whatever means, you need a memory clobber [00:57:10]
+2016-09-20 18:53:12	Jester01	[00:57:34] otherwise the compiler might be caching an old value somewhere (unlikely, but can happen) [00:57:34]
+2016-09-20 18:53:12	asm065	[00:58:41] ah that makes sense, but you said movb $0, (%%edi) doesnt require clobber is that because edi is a stack? [00:58:41]
+2016-09-20 18:53:12	Jester01	[00:59:01] the code does not require the eax clobber if you use that instead of the xor [00:59:01]
+2016-09-20 18:53:12	Jester01	[00:59:07] because you don't change eax [00:59:07]
+2016-09-20 18:53:12	asm065	[00:59:15] oh [00:59:15]
+2016-09-20 18:53:12	asm065	[00:59:41] okay i now understand this [00:59:41]
+2016-09-20 18:53:12	asm065	[00:59:48] i should write this all down [00:59:48]
+2016-09-20 18:53:12	Jester01	[00:59:59] it still needs the memory clobber, but you only need to list that once and so you are covered [00:59:59]
+2016-09-20 18:53:12	asm065	[01:00:26] C is starting to look more and more beautiful [01:00:26]
+2016-09-20 18:53:12	asm065	[01:06:45] seem to get a seg fault intereting [01:06:45]
+2016-09-20 18:53:12	Jester01	[01:09:02] in 64 bit mode accidentally? :) [01:09:02]
+2016-09-20 18:53:12	asm065	[01:10:06] nope :o, a random part of my other code is seg faulting now even tho it worked before xD [01:10:06]
+2016-09-20 18:53:12	asm065	[01:10:26] i must have done something wrong [01:10:26]
+2016-09-20 18:53:12	asm065	[01:24:55] Jester01: Seems to seg fault at the start of the asm code also [01:24:55]
+2016-09-20 18:53:12	asm065	[01:26:03] Jester01: http://pastebin.com/bP0AD29R [01:26:03]
+2016-09-20 18:53:12	Jester01	[01:26:20] that IS 64 bit mode! [01:26:20]
+2016-09-20 18:53:12	Jester01	[01:26:58] change movb $0, (%%edi) to movb $0, (%%rdi) [01:26:58]
+2016-09-20 18:53:12	Jester01	[01:27:26] better yet, change it to movb $0, (%1) [01:27:26]
+2016-09-20 18:53:12	Jester01	[01:27:35] then it will work in 32 and 64 bit both [01:27:35]
+2016-09-20 18:53:12	asm065	[01:27:51] oh crap i forgot i was using the wrong virtual machine [01:27:51]
+2016-09-20 18:53:12	Jester01	[01:29:49] by the way, the debug info for inline asm is not line accurate, you need to disasm the actual address to see the faulting instruction [01:29:49]
+2016-09-20 18:53:12	asm065	[01:31:07] could you explain the %1 [01:31:07]
+2016-09-20 18:53:12	Jester01	[01:31:20] argument 1 [01:31:20]
+2016-09-20 18:53:12	asm065	[01:32:04] i thought argument 1 was src [01:32:04]
+2016-09-20 18:53:12	Jester01	[01:32:13] we count from 0 ;) [01:32:13]
+2016-09-20 18:53:12	asm065	[01:32:38] ah that makes sense x3 [01:32:38]
+2016-09-20 18:53:12	asm065	[01:34:27] Jester01: Hm when i print dest in the main it comes up empty now [01:34:27]
+2016-09-20 18:53:12	asm065	[01:37:10] Jester01: http://pastebin.com/wQesmSqd [01:37:10]
+2016-09-20 18:53:12	Jester01	[01:39:21] $ ./a.out 12345678 2 3 [01:39:21]
+2016-09-20 18:53:12	Jester01	[01:39:21] d2 345 [01:39:21]
+2016-09-20 18:53:12	Jester01	[01:39:26] works fine here, what did you try? [01:39:26]
+2016-09-20 18:53:12	Jester01	[01:40:15] ah something is broken [01:40:15]
+2016-09-20 18:53:12	Jester01	[01:40:49] you removed the volatile [01:40:49]
+2016-09-20 18:53:12	asm065	[01:41:06] whoops it works [01:41:06]
+2016-09-20 18:53:12	asm065	[01:41:09] i compild wrong one [01:41:09]
+2016-09-20 18:53:12	asm065	[01:41:17] is the volatile needed? [01:41:17]
+2016-09-20 18:53:12	Jester01	[01:41:19] yes. [01:41:19]
+2016-09-20 18:53:12	Jester01	[01:41:31] turn optimization on, and you'll see it's needed :) [01:41:31]
+2016-09-20 18:53:12	asm065	[01:42:19] Okay lemme try brb ^_^ [01:42:19]
+2016-09-20 18:53:12	Jester01	[01:42:47] contrary to popular belief, I do need to sleep, so cya! :) [01:42:47]
+2016-09-20 18:53:12	asm065	[01:44:29] Jester01: Sleep well! thanks so much! <3 [01:44:29]
+2016-09-20 18:53:12	 *	Zardoz_gnoobot [04:14:13] says hi to all  [04:14:13]
+2016-09-20 18:53:12	***	Playback Complete.
+2016-09-20 18:54:20	-->	bkboggy (~bkboggy@cpe-172-250-147-60.socal.res.rr.com) has joined ##asm
+2016-09-20 18:54:22	--	Channel created on Sun, 27 May 2007 05:31:12
+2016-09-20 18:55:15	-->	slidercrank (~slidercra@unaffiliated/slidercrank) has joined ##asm
+2016-09-20 18:58:37	<--	X-Scale (~ARM@2001:0:53aa:64c:0:fbf7:b176:3a49) has quit (Quit:  HydraIRC -> http://www.hydrairc.com <- Organize your IRC)
+2016-09-20 18:59:28	-->	Beetny (~Beetny@14-202-48-200.tpgi.com.au) has joined ##asm
+2016-09-20 19:00:39	-->	hzjd (~Adium@18.189.45.86) has joined ##asm
+2016-09-20 19:06:00		[19:00]
+2016-09-20 19:08:12	-->	frkazoid0223 (~Administr@pool-108-52-4-99.phlapa.fios.verizon.net) has joined ##asm
+2016-09-20 19:11:21	<--	freakazoid0223 (~Administr@pool-108-52-4-99.phlapa.fios.verizon.net) has quit (Ping timeout: 276 seconds)
+2016-09-20 19:12:08	-->	S3MA (~adsfaf@74.197.112.180) has joined ##asm
+2016-09-20 19:12:11	<--	S3MA (~adsfaf@74.197.112.180) has left ##asm
+2016-09-20 19:17:32	<--	dminuoso (~dminuoso@unaffiliated/dminuoso) has quit (Ping timeout: 265 seconds)
+2016-09-20 19:18:25	<--	arescorpio (~arescorpi@221-27-245-190.fibertel.com.ar) has quit (Quit: Leaving.)
+2016-09-20 19:20:23	-->	MyCuriosity (~MyCuriosi@unaffiliated/mycuriosity) has joined ##asm
+2016-09-20 19:21:40	<--	hzjd (~Adium@18.189.45.86) has quit (Quit: Leaving.)
+2016-09-20 19:21:40		[19:21]
+2016-09-20 19:22:05	<--	Judge_Dredd (~Judge_Dre@unaffiliated/judge-dredd/x-2170742) has quit (Quit: Leaving.)
+2016-09-20 19:26:14	<--	pimlu (~pimlu@128.172.35.9) has quit (Ping timeout: 244 seconds)
+2016-09-20 19:30:22	-->	SwiftMatt (~Objective@130.253.27.194) has joined ##asm
+2016-09-20 19:34:14	<--	GNUUB1 (~GNUUB@182.57.44.246) has quit (Quit: Leaving)
+2016-09-20 19:34:37	<--	Moose (~moose@unaffiliated/moose) has quit (Quit: Leaving)
+2016-09-20 19:40:00		[19:34]
+2016-09-20 19:43:03	<--	Deesl (~bsdboy@redhat/deesl) has quit (Quit: Textual IRC Client: www.textualapp.com)
+2016-09-20 19:44:25	-->	hzjd (~Adium@18.189.45.86) has joined ##asm
+2016-09-20 19:46:51	<--	SwiftMatt (~Objective@130.253.27.194) has quit (Quit: My MacBook Pro has gone to sleep. ZZZzzz…)
+2016-09-20 19:52:00		[19:46]
+2016-09-20 19:58:05	<--	MarkX (~MarkX@mike41.asianfreshproduce.com) has quit (Ping timeout: 244 seconds)
+2016-09-20 19:59:57	-->	dminuoso (~dminuoso@unaffiliated/dminuoso) has joined ##asm
+2016-09-20 20:03:20	<--	safe (~safe@unaffiliated/safe) has quit (Read error: Connection reset by peer)
+2016-09-20 20:08:25	-->	StereoBucket (~StereoBuc@31.223.131.167) has joined ##asm
+2016-09-20 20:08:25		[20:08]
+2016-09-20 20:20:17	<--	dminuoso (~dminuoso@unaffiliated/dminuoso) has quit (Ping timeout: 240 seconds)
+2016-09-20 20:23:15	-->	Burgundy (~burgundy@86.121.178.118) has joined ##asm
+2016-09-20 20:24:20	-->	rendar (~rendar@host170-104-dynamic.61-82-r.retail.telecomitalia.it) has joined ##asm
+2016-09-20 20:24:20		[20:24]
+2016-09-20 20:26:41	<--	AverageJ0e (~joe@ip68-3-197-107.ph.ph.cox.net) has quit (Ping timeout: 244 seconds)
+2016-09-20 20:27:10	-->	dminuoso (~dminuoso@unaffiliated/dminuoso) has joined ##asm
+2016-09-20 20:33:00		[20:27]
+2016-09-20 20:36:34	-->	sigtrm (quassel@quassel.woboq.de) has joined ##asm
+2016-09-20 20:42:00		[20:36]
+2016-09-20 20:42:51	-->	SwiftMatt (~Objective@162.242.95.120) has joined ##asm
+2016-09-20 20:47:46	<--	dminuoso (~dminuoso@unaffiliated/dminuoso) has quit (Remote host closed the connection)
+2016-09-20 20:50:36	-->	MarkX (~MarkX@2607:fb90:1d31:392b:a99a:6be5:1854:106d) has joined ##asm
+2016-09-20 20:50:57	<--	SwiftMatt (~Objective@162.242.95.120) has quit (Quit: Textual IRC Client: www.textualapp.com)
+2016-09-20 20:56:00		[20:50]
+2016-09-20 21:00:13	<--	nullmark (~mark@unserver.de) has left ##asm ("WeeChat 1.4")
+2016-09-20 21:02:18	<--	minus273c (~androirc@197.76.217.114) has quit (Read error: Connection reset by peer)
+2016-09-20 21:02:30	-->	minus273c (~androirc@197.76.207.196) has joined ##asm
+2016-09-20 21:06:46	-->	dminuoso (~dminuoso@unaffiliated/dminuoso) has joined ##asm
+2016-09-20 21:07:07	-->	kXw|2 (~inV@remote.imess.com) has joined ##asm
+2016-09-20 21:12:09	<--	jornt (~jornt@3vande8.nl) has quit (Ping timeout: 248 seconds)
+2016-09-20 21:12:09		[21:12]
+2016-09-20 21:26:40	<--	Chloe (~Chloe@unaffiliated/chloe) has quit (Quit: .)
+2016-09-20 21:27:41	-->	jornt (~jornt@3vande8.nl) has joined ##asm
+2016-09-20 21:27:41		[21:27]
+2016-09-20 21:27:57	-->	dqi (~dqi@165-218-045-062.dynamic.caiway.nl) has joined ##asm
+2016-09-20 21:32:50	<--	sigtrm (quassel@quassel.woboq.de) has quit (Ping timeout: 265 seconds)
+2016-09-20 21:33:28	<--	minus273c (~androirc@197.76.207.196) has quit (Remote host closed the connection)
+2016-09-20 21:39:00		[21:33]
+2016-09-20 21:40:13	<--	MarkX (~MarkX@2607:fb90:1d31:392b:a99a:6be5:1854:106d) has quit (Ping timeout: 255 seconds)
+2016-09-20 21:41:28	-->	MarkX (~MarkX@172.56.11.49) has joined ##asm
+2016-09-20 21:47:00		[21:41]
+2016-09-20 21:50:52	-->	MarkX_ (~MarkX@2607:fb90:1d9d:5aab:f1e9:b2a2:daa7:2049) has joined ##asm
+2016-09-20 21:51:41	<--	jornt (~jornt@3vande8.nl) has quit (Ping timeout: 265 seconds)
+2016-09-20 21:51:41	<--	MarkX (~MarkX@172.56.11.49) has quit (Read error: Connection reset by peer)
+2016-09-20 21:51:47	-->	jornt (~jornt@3vande8.nl) has joined ##asm
+2016-09-20 21:53:02	-->	hawes (uid158378@gateway/web/irccloud.com/x-jtfrwkatccrnzegi) has joined ##asm
+2016-09-20 21:59:00		[21:53]
+2016-09-20 21:59:25	-->	sigtrm (quassel@quassel.woboq.de) has joined ##asm
+2016-09-20 22:00:59	<--	GinoManWorks (~GinoMan@50-251-53-110-static.hfc.comcastbusiness.net) has quit (Read error: Connection reset by peer)
+2016-09-20 22:06:00		[22:00]
+2016-09-20 22:12:02	<--	hzjd (~Adium@18.189.45.86) has quit (Quit: Leaving.)
+2016-09-20 22:18:00		[22:12]
+2016-09-20 22:21:23	<--	Goplat (~goplat@reactos/developer/Goplat) has quit (Remote host closed the connection)
+2016-09-20 22:23:54	<--	dqi (~dqi@165-218-045-062.dynamic.caiway.nl) has quit (Ping timeout: 264 seconds)
+2016-09-20 22:26:03	--	MarkX_ is now known as MarkX
+2016-09-20 22:26:17	<--	hmmmm (~sdfgsf@72.79.173.52) has quit (Remote host closed the connection)
+2016-09-20 22:27:51	-->	sophia7 (~sophia7@unaffiliated/sophia7) has joined ##asm
+2016-09-20 22:29:54	<--	sigtrm (quassel@quassel.woboq.de) has quit (Ping timeout: 265 seconds)
+2016-09-20 22:30:37	<--	Ropeney (~Ropeney@tank.mindvision.com.au) has quit (Ping timeout: 255 seconds)
+2016-09-20 22:32:09	-->	sigtrm (quassel@quassel.woboq.de) has joined ##asm
+2016-09-20 22:38:00		[22:32]
+2016-09-20 22:42:41	-->	dqi (~dqi@165-218-045-062.dynamic.caiway.nl) has joined ##asm
+2016-09-20 22:48:00		[22:42]
+2016-09-20 22:49:35	<--	dqi (~dqi@165-218-045-062.dynamic.caiway.nl) has quit (Ping timeout: 272 seconds)
+2016-09-20 22:52:09	<--	bkboggy (~bkboggy@cpe-172-250-147-60.socal.res.rr.com) has quit (Quit: Leaving)
+2016-09-20 22:57:19	-->	sanct (~sanct@212.35.67.11) has joined ##asm
+2016-09-20 23:03:00		[22:57]
+2016-09-20 23:09:35	<--	zap0 (~moofy@14-201-222-143.tpgi.com.au) has quit (Quit: zap0)
+2016-09-20 23:14:55	-->	yuta_ (ba261803@gateway/web/freenode/ip.186.38.24.3) has joined ##asm
+2016-09-20 23:14:57	-->	Secret-Fire (~Secret-Fi@c-73-190-64-60.hsd1.wa.comcast.net) has joined ##asm
+2016-09-20 23:15:01	yuta_	hello
+2016-09-20 23:15:40	yuta_	i need help to compile visual studio syntax assembly code on gcc, anyone can help me?
+2016-09-20 23:16:43	-->	Fiki (~Fiki@2a02:8388:1808:1280:91de:305b:17a9:2045) has joined ##asm
+2016-09-20 23:17:06	yuta_	friki
+2016-09-20 23:18:46	<--	MarkX (~MarkX@2607:fb90:1d9d:5aab:f1e9:b2a2:daa7:2049) has quit (Ping timeout: 255 seconds)
+2016-09-20 23:18:46		[23:18]
+2016-09-20 23:19:41	-->	XOCK_STREAM (~XOCKET@unaffiliated/xocket) has joined ##asm
+2016-09-20 23:21:08	archivist	yuta_, set intel syntax
+2016-09-20 23:21:29	-->	XOCKET (~XOCKET@unaffiliated/xocket) has joined ##asm
+2016-09-20 23:22:19	yuta_	is there anyway to compile that code in gcc or i need to translate the code to intel syntax?
+2016-09-20 23:23:53	boru	You can specify a flag to gcc/gas to instruct it to use intel syntax, or you can use an assembler directive in your listing.
+2016-09-20 23:24:14	yuta_	do you know what flag is it?
+2016-09-20 23:24:25	<--	XOCK_STREAM (~XOCKET@unaffiliated/xocket) has quit (Ping timeout: 248 seconds)
+2016-09-20 23:24:46	boru	`-masm=intel` iirc. It's in the documentation.
+2016-09-20 23:25:21	boru	And the directive is `.intel_syntax` or something like that. I haven't touched any intel code in a long time, so it may have changed.
+2016-09-20 23:30:22	yuta_	this will work?
+2016-09-20 23:30:24	yuta_		asm 	(".intel_syntax noprefix\       MOV eax, dword ptr[chatinfo]\       MOV ecx, dword ptr[eax]\       PUSH 0\       PUSH textColor\       PUSH 0\       PUSH text\       PUSH 8\       CALL func");
+2016-09-20 23:31:24	archivist	try it!
+2016-09-20 23:31:32	boru	You're probably better enforcing via your build system, else that code will not compile with an assembler which doesn't understand `.intel_syntax`
+2016-09-20 23:31:51	<--	StereoBucket (~StereoBuc@31.223.131.167) has quit (Read error: Connection reset by peer)
+2016-09-20 23:32:23	yuta_	Error: junk at end of the line, first unrecognized character is 'M'
+2016-09-20 23:33:00	<--	sigtrm (quassel@quassel.woboq.de) has quit (Ping timeout: 260 seconds)
+2016-09-20 23:33:05	roxfan	those \ shopuld be \n probably
+2016-09-20 23:35:55	yuta_	yes, now it works, but i get "undefined reference" to the parameters.
+2016-09-20 23:35:55		[23:35]
+2016-09-20 23:37:33	-->	sigtrm (quassel@quassel.woboq.de) has joined ##asm
+2016-09-20 23:41:01	<--	XOCKET (~XOCKET@unaffiliated/xocket) has quit (Disconnected by services)
+2016-09-20 23:41:01	-->	XOCK_STREAM (~XOCKET@unaffiliated/xocket) has joined ##asm
+2016-09-20 23:41:32	<--	Secret-Fire (~Secret-Fi@c-73-190-64-60.hsd1.wa.comcast.net) has quit (Remote host closed the connection)
+2016-09-20 23:47:00		[23:41]
+2016-09-20 23:48:43	<--	XOCK_STREAM (~XOCKET@unaffiliated/xocket) has quit (Ping timeout: 244 seconds)
+2016-09-20 23:49:08	-->	XOCKET (~XOCKET@unaffiliated/xocket) has joined ##asm
+2016-09-20 23:51:20	-->	King_Hual (~failed@unaffiliated/king-hual/x-1207580) has joined ##asm
+2016-09-20 23:52:42	<--	yuta_ (ba261803@gateway/web/freenode/ip.186.38.24.3) has quit (Ping timeout: 240 seconds)
+2016-09-20 23:54:56	<--	XOCKET (~XOCKET@unaffiliated/xocket) has quit (Read error: Connection reset by peer)
+2016-09-20 23:55:23	-->	XOCKET (~XOCKET@unaffiliated/xocket) has joined ##asm
+2016-09-20 23:59:17	<--	MyCuriosity (~MyCuriosi@unaffiliated/mycuriosity) has quit (Ping timeout: 265 seconds)
+2016-09-21 00:01:02	-->	GeDaMo (~GeDaMo@212.225.83.199) has joined ##asm
+2016-09-21 00:02:03	<--	XOCKET (~XOCKET@unaffiliated/xocket) has quit (Ping timeout: 240 seconds)
+2016-09-21 00:02:03		[00:02]
+2016-09-21 00:07:21	-->	XOCKET (~XOCKET@unaffiliated/xocket) has joined ##asm
+2016-09-21 00:07:33	<--	Demon_Fox (~Demon_Fox@71.94.3.176) has quit (Quit: Leaving)
+2016-09-21 00:07:51	<--	XOCKET (~XOCKET@unaffiliated/xocket) has quit (Max SendQ exceeded)
+2016-09-21 00:08:50	-->	XOCKET (~XOCKET@unaffiliated/xocket) has joined ##asm
+2016-09-21 00:09:49	-->	MyCuriosity (~MyCuriosi@unaffiliated/mycuriosity) has joined ##asm
+2016-09-21 00:11:11	<--	XOCKET (~XOCKET@unaffiliated/xocket) has quit (Max SendQ exceeded)
+2016-09-21 00:12:01	-->	XOCKET (~XOCKET@unaffiliated/xocket) has joined ##asm
+2016-09-21 00:12:45	-->	dqi (~dqi@ip-145-116-176-187.wlan-int.ru.nl) has joined ##asm
+2016-09-21 00:15:34	<--	XOCKET (~XOCKET@unaffiliated/xocket) has quit (Disconnected by services)
+2016-09-21 00:15:35	-->	XOCK_STREAM (~XOCKET@unaffiliated/xocket) has joined ##asm
+2016-09-21 00:18:35	-->	XOCKET (~XOCKET@unaffiliated/xocket) has joined ##asm
+2016-09-21 00:18:35		[00:18]
+2016-09-21 00:20:52	<--	XOCK_STREAM (~XOCKET@unaffiliated/xocket) has quit (Ping timeout: 260 seconds)
+2016-09-21 00:24:46	-->	lowin (~lowin@31.57.149.175) has joined ##asm
+2016-09-21 00:24:47	<--	lowin (~lowin@31.57.149.175) has quit (Max SendQ exceeded)
+2016-09-21 00:25:13	-->	lowin (~lowin@31.57.149.175) has joined ##asm
+2016-09-21 00:27:02	<--	XOCKET (~XOCKET@unaffiliated/xocket) has quit (Disconnected by services)
+2016-09-21 00:27:02	-->	XOCK_STREAM (~XOCKET@unaffiliated/xocket) has joined ##asm
+2016-09-21 00:27:22	--	XOCK_STREAM is now known as XOCKET
+2016-09-21 00:31:22	-->	zap0 (~moofy@14-201-222-143.tpgi.com.au) has joined ##asm
+2016-09-21 00:34:17	<--	XOCKET (~XOCKET@unaffiliated/xocket) has quit (Read error: Connection reset by peer)
+2016-09-21 00:34:17		[00:34]
+2016-09-21 00:37:43	<--	CodFection (~CodFectio@unaffiliated/codfection) has quit (Quit: Leaving)
+2016-09-21 00:40:55	-->	rtkt (~rtkt@226.18-78-194.adsl-static.isp.belgacom.be) has joined ##asm
+2016-09-21 00:46:00		[00:40]
+2016-09-21 00:49:18	-->	XOCKET (~XOCKET@unaffiliated/xocket) has joined ##asm
+2016-09-21 00:52:12	<--	kXw|2 (~inV@remote.imess.com) has quit (Read error: Connection reset by peer)
+2016-09-21 00:54:07	-->	StereoBucket (~StereoBuc@31.223.131.167) has joined ##asm
+2016-09-21 00:55:19	-->	genpaku (~genpaku@107.191.100.185) has joined ##asm
+2016-09-21 01:01:00		[00:55]
+2016-09-21 01:08:56	<--	rtkt (~rtkt@226.18-78-194.adsl-static.isp.belgacom.be) has quit (Quit: Leaving)
+2016-09-21 01:10:37	-->	Chloe (~Chloe@unaffiliated/chloe) has joined ##asm
+2016-09-21 01:16:00		[01:10]
+2016-09-21 01:28:57	-->	ggole (~ggole@124.149.106.69) has joined ##asm
+2016-09-21 01:34:00		[01:28]
+2016-09-21 01:40:00	-->	shaynox (~shaynox@AMontpellier-652-1-78-117.w109-210.abo.wanadoo.fr) has joined ##asm
+2016-09-21 01:45:00		[01:40]
+2016-09-21 01:55:46	-->	rnsanchez (~rnsanchez@177.156.226.230) has joined ##asm
+2016-09-21 02:01:00		[01:55]
+2016-09-21 02:01:05	-->	jan64 (~jan64@agad109.neoplus.adsl.tpnet.pl) has joined ##asm
+2016-09-21 02:01:48	<--	booboojio (~yaaic@host-95-195-212-141.mobileonline.telia.com) has quit (Quit: Yaaic - Yet another Android IRC client - http://www.yaaic.org)
+2016-09-21 02:02:04	-->	booboojio (~yaaic@host-95-195-212-141.mobileonline.telia.com) has joined ##asm
+2016-09-21 02:08:00		[02:02]
+2016-09-21 02:11:33	<--	Beetny (~Beetny@14-202-48-200.tpgi.com.au) has quit (Ping timeout: 240 seconds)
+2016-09-21 02:17:00		[02:11]
+2016-09-21 02:22:47	-->	CodFection (~CodFectio@unaffiliated/codfection) has joined ##asm
+2016-09-21 02:28:00		[02:22]
+2016-09-21 02:30:29	<--	Chloe (~Chloe@unaffiliated/chloe) has quit (Quit: .)
+2016-09-21 02:32:00	<--	CodFection (~CodFectio@unaffiliated/codfection) has quit (Quit: Leaving)
+2016-09-21 02:35:27	-->	akaWolf (~akaWolf@unaffiliated/akawolf) has joined ##asm
+2016-09-21 02:41:00		[02:35]
+2016-09-21 02:48:10	-->	MrFahrenheit (~hamzadis@unaffiliated/rageofthou) has joined ##asm
+2016-09-21 02:50:17	-->	gl (~p@hack.tf) has joined ##asm
+2016-09-21 02:56:00		[02:50]
+2016-09-21 03:16:23	<--	gl (~p@hack.tf) has left ##asm
+2016-09-21 03:16:23		[03:16]
+2016-09-21 03:17:27	<--	Zardoz_gnoobot (~vignesh@182.57.44.246) has quit (Ping timeout: 250 seconds)
+2016-09-21 03:22:22	<--	Fiki (~Fiki@2a02:8388:1808:1280:91de:305b:17a9:2045) has quit (Ping timeout: 265 seconds)
+2016-09-21 03:24:40	-->	NightQuest (NQ@c-71-236-158-254.hsd1.or.comcast.net) has joined ##asm
+2016-09-21 03:28:07	<--	XOCKET (~XOCKET@unaffiliated/xocket) has quit (Ping timeout: 265 seconds)
+2016-09-21 03:30:15	-->	CheckDavid (uid14990@gateway/web/irccloud.com/x-xoshbhchmttcvpat) has joined ##asm
+2016-09-21 03:34:12	-->	bobross (~bobross@162.216.46.55) has joined ##asm
+2016-09-21 03:34:12		[03:34]
+2016-09-21 03:35:51	-->	cylon512 (~i_cylon51@nat2-nj02.vmpanel.net) has joined ##asm
+2016-09-21 03:41:00		[03:35]
+2016-09-21 03:41:06	-->	OxFEEDBACC (~what@unaffiliated/oxfeedbacc) has joined ##asm
+2016-09-21 03:41:21	-->	Ox4 (~user@unaffiliated/zloy) has joined ##asm
+2016-09-21 03:41:57	-->	osa1 (~omer@156-56-64-242.dhcp-bl.indiana.edu) has joined ##asm
+2016-09-21 03:41:57	<--	osa1 (~omer@156-56-64-242.dhcp-bl.indiana.edu) has quit (Changing host)
+2016-09-21 03:41:57	-->	osa1 (~omer@haskell/developer/osa1) has joined ##asm
+2016-09-21 03:43:04	-->	rnsanchez_ (~rnsanchez@179.177.211.160.dynamic.adsl.gvt.net.br) has joined ##asm
+2016-09-21 03:45:20	-->	control (~control@unaffiliated/control) has joined ##asm
+2016-09-21 03:45:29	<--	rnsanchez (~rnsanchez@177.156.226.230) has quit (Ping timeout: 265 seconds)
+2016-09-21 03:47:46	-->	_rnsanchez_ (~rnsanchez@177.18.49.60) has joined ##asm
+2016-09-21 03:49:30	-->	Zardoz_gnoobot (~vignesh@182.57.44.246) has joined ##asm
+2016-09-21 03:50:24	<--	rnsanchez_ (~rnsanchez@179.177.211.160.dynamic.adsl.gvt.net.br) has quit (Ping timeout: 265 seconds)
+2016-09-21 03:50:28	-->	X-Scale (~ARM@2001:0:53aa:64c:0:fbf5:b176:3a49) has joined ##asm
+2016-09-21 03:52:25	--	_rnsanchez_ is now known as rnsanchez
+2016-09-21 03:57:12	<--	sanct (~sanct@212.35.67.11) has quit (Ping timeout: 276 seconds)
+2016-09-21 03:57:12		[03:57]
+2016-09-21 04:06:57	<--	booboojio (~yaaic@host-95-195-212-141.mobileonline.telia.com) has quit (Ping timeout: 276 seconds)
+2016-09-21 04:10:03	-->	gaffa (~none@unaffiliated/gaffa) has joined ##asm
+2016-09-21 04:12:49	-->	mi100hael (~mi100hael@unaffiliated/mi100hael) has joined ##asm
+2016-09-21 04:12:49		[04:12]
+2016-09-21 04:13:30	-->	Fiki (~Fiki@80-109-242-183.cable.dynamic.surfer.at) has joined ##asm
+2016-09-21 04:16:52	-->	XOCKET (~XOCKET@unaffiliated/xocket) has joined ##asm
+2016-09-21 04:20:27	<--	Coldseeker (~Frosty@adsl-per-1-241.ozonline.com.au) has quit (Quit: The one good thing about repeating your mistakes is that you know when to cringe.)
+2016-09-21 04:20:57	<--	Aph3x-WL (Aph3x@2600:3c03::f03c:91ff:fe6e:5ed9) has quit (Ping timeout: 248 seconds)
+2016-09-21 04:21:53	-->	booboojio (~yaaic@host-95-195-212-141.mobileonline.telia.com) has joined ##asm
+2016-09-21 04:23:21	<--	feliwir (Elite16673@gateway/shell/elitebnc/x-xorwkpivtvfjccpo) has quit (Ping timeout: 250 seconds)
+2016-09-21 04:27:26	-->	GNUUBUS123 (~vignesh@182.57.55.41) has joined ##asm
+2016-09-21 04:28:52	-->	sanct (~sanct@212.35.67.11) has joined ##asm
+2016-09-21 04:28:52		[04:28]
+2016-09-21 04:30:10	<--	sanct (~sanct@212.35.67.11) has quit (Max SendQ exceeded)
+2016-09-21 04:30:57	<--	Zardoz_gnoobot (~vignesh@182.57.44.246) has quit (Ping timeout: 265 seconds)
+2016-09-21 04:31:07	-->	sanct (~sanct@212.35.67.11) has joined ##asm
+2016-09-21 04:33:41	<--	shaynox (~shaynox@AMontpellier-652-1-78-117.w109-210.abo.wanadoo.fr) has quit
+2016-09-21 04:33:41	-->	kXw|2 (~inV@87.138.95.68) has joined ##asm
+2016-09-21 04:36:14	<--	dminuoso (~dminuoso@unaffiliated/dminuoso) has quit (Ping timeout: 265 seconds)
+2016-09-21 04:40:26	<--	Rotab (~Rotab@2001:2002:4e47:9822:589b:69de:5531:b9db) has quit (Read error: Connection reset by peer)
+2016-09-21 04:40:57	paule32	how do i code in 64 bit: "2 + 3 * 4" ?
+2016-09-21 04:41:10	paule32	as double
+2016-09-21 04:42:27	-->	Rotab (~Rotab@2001:2002:4e47:9822:589b:69de:5531:b9db) has joined ##asm
+2016-09-21 04:44:15	GeDaMo	On 64 bit, floating point usually uses SSE instructions
+2016-09-21 04:44:15		[04:44]
+2016-09-21 04:44:36	-->	liquidfl0ppy (~Christoph@c-73-245-165-7.hsd1.fl.comcast.net) has joined ##asm
+2016-09-21 04:44:36	<--	liquidfl0ppy (~Christoph@c-73-245-165-7.hsd1.fl.comcast.net) has quit (Client Quit)
+2016-09-21 04:45:12	GeDaMo	Look at mulsd and addsd
+2016-09-21 04:46:18	-->	pimlu (~pimlu@128.172.35.9) has joined ##asm
+2016-09-21 04:46:25	-->	dminuoso (~dminuoso@unaffiliated/dminuoso) has joined ##asm
+2016-09-21 04:47:00	-->	lapinozz (~lapinozz@45.74.164.117) has joined ##asm
+2016-09-21 04:48:28	-->	m8 (~m8@unaffiliated/m8) has joined ##asm
+2016-09-21 04:50:22	<--	booboojio (~yaaic@host-95-195-212-141.mobileonline.telia.com) has left ##asm
+2016-09-21 04:55:37	<--	XOCKET (~XOCKET@unaffiliated/xocket) has quit (Disconnected by services)
+2016-09-21 04:55:37	-->	XOCK_STREAM (~XOCKET@unaffiliated/xocket) has joined ##asm
+2016-09-21 04:56:52	<--	GNUUBUS123 (~vignesh@182.57.55.41) has quit (Quit: Lost terminal)
+2016-09-21 04:57:03	-->	slavanap (~slavanap@37.44.46.25) has joined ##asm
+2016-09-21 04:57:19	slavanap	Hello. Anyone alive here?
+2016-09-21 04:57:56	slavanap	I'm researching FBSTP FPU command. What is m80dec representation?
+2016-09-21 04:58:12	slavanap	x86 architecture.
+2016-09-21 04:58:21	<--	tecamac (~tecamac@99.70.211.130.bc.googleusercontent.com) has left ##asm
+2016-09-21 05:01:21	GeDaMo	80 bit decimal?
+2016-09-21 05:01:21		[05:01]
+2016-09-21 05:02:17	slavanap	looks like found one description here http://www.intel.com/content/dam/www/public/us/en/documents/manuals/64-ia-32-architectures-software-developer-manual-325462.pdf
+2016-09-21 05:02:24	slavanap	GeDaMo, yes.
+2016-09-21 05:02:26	-->	hmmmm (~sdfgsf@72.79.173.52) has joined ##asm
+2016-09-21 05:02:33	GeDaMo	I only see m80bcd in relation to fbstp
+2016-09-21 05:03:43	slavanap	GeDaMo, than what is m80bcd representation and limits?
+2016-09-21 05:04:10	<--	sophia7 (~sophia7@unaffiliated/sophia7) has quit (Quit: sophia7)
+2016-09-21 05:04:20	GeDaMo	"18-digit packed BCD integer"
+2016-09-21 05:04:51	GeDaMo	https://en.wikipedia.org/wiki/Binary-coded_decimal#Packed_BCD
+2016-09-21 05:05:50	slavanap	GeDaMo, I wonder about exponent representation actually. For instance, how 0.001f would look in BCD.
+2016-09-21 05:06:35	-->	sametsisartenep (~sametsisa@106.pool85-53-34.dynamic.orange.es) has joined ##asm
+2016-09-21 05:06:48	slavanap	GeDaMo, or FBSTP just using integer part of the float?
+2016-09-21 05:07:34	<--	dminuoso (~dminuoso@unaffiliated/dminuoso) has quit (Remote host closed the connection)
+2016-09-21 05:08:12	-->	CodFection (~CodFectio@unaffiliated/codfection) has joined ##asm
+2016-09-21 05:11:02	slavanap	agh. I haven't used pure asm for so long. Never setup it in MSVS2015. First time is always hard
+2016-09-21 05:14:27	-->	King_Hual` (~failed@94.26.28.68) has joined ##asm
+2016-09-21 05:14:53	<--	zerd (~quassel@bat.slash.no) has quit (Ping timeout: 250 seconds)
+2016-09-21 05:17:19	<--	King_Hual (~failed@unaffiliated/king-hual/x-1207580) has quit (Ping timeout: 265 seconds)
+2016-09-21 05:17:19		[05:17]
+2016-09-21 05:18:44	-->	dminuoso (~dminuoso@unaffiliated/dminuoso) has joined ##asm
+2016-09-21 05:19:26	-->	zerd (~quassel@bat.slash.no) has joined ##asm
+2016-09-21 05:19:36	slavanap	GeDaMo, `FBSTP DWORD PTR [EAX]` fails with invalid operand size. How to define pointer to ten bytes? (simlar to DT) ?
+2016-09-21 05:20:08	-->	kaleid0 (~kaleid0@238.sub-174-219-142.myvzw.com) has joined ##asm
+2016-09-21 05:20:12	-->	happy-dude (uid62780@gateway/web/irccloud.com/x-jfjyvfginuffwgmr) has joined ##asm
+2016-09-21 05:20:15	-->	Indecipherable (~Howl@41.162.59.11) has joined ##asm
+2016-09-21 05:20:53	<--	kaleid0 (~kaleid0@238.sub-174-219-142.myvzw.com) has quit (Client Quit)
+2016-09-21 05:21:39	<--	kXw|2 (~inV@87.138.95.68) has quit (Quit: KVIrc 4.2.0 Equilibrium http://www.kvirc.net/)
+2016-09-21 05:21:42	-->	kaleid0 (~kaleid0@238.sub-174-219-142.myvzw.com) has joined ##asm
+2016-09-21 05:22:22	<--	pimlu (~pimlu@128.172.35.9) has quit (Ping timeout: 255 seconds)
+2016-09-21 05:22:38	<--	kaleid0 (~kaleid0@238.sub-174-219-142.myvzw.com) has quit (Client Quit)
+2016-09-21 05:24:10	<--	zerd (~quassel@bat.slash.no) has quit (Ping timeout: 260 seconds)
+2016-09-21 05:26:39	slavanap	How to day TENBYTES PTR [EAX] in MASM. What I should replace TENBYTES WITH?
+2016-09-21 05:28:18	-->	sgwarnog (~yaaic@188.146.134.248.nat.umts.dynamic.t-mobile.pl) has joined ##asm
+2016-09-21 05:32:36	slavanap	FOUND IT. REAL10 PTR
+2016-09-21 05:32:36		[05:32]
+2016-09-21 05:32:39	-->	Ropeney (~Ropeney@CPE-58-170-196-106.lns2.lon.bigpond.net.au) has joined ##asm
+2016-09-21 05:34:05	<--	Ropeney (~Ropeney@CPE-58-170-196-106.lns2.lon.bigpond.net.au) has quit (Client Quit)
+2016-09-21 05:34:58	slavanap	GeDaMo, yes, FBSTP converts to bcd only integer part of the float.
+2016-09-21 05:36:56	-->	WilburPB (~WilburPB@146.197.246.70) has joined ##asm
+2016-09-21 05:37:10	<--	dqi (~dqi@ip-145-116-176-187.wlan-int.ru.nl) has quit (Ping timeout: 265 seconds)
+2016-09-21 05:39:55	<--	dminuoso (~dminuoso@unaffiliated/dminuoso) has quit (Ping timeout: 260 seconds)
+2016-09-21 05:39:57	-->	Chloe (~Chloe@unaffiliated/chloe) has joined ##asm
+2016-09-21 05:40:12	-->	MulleDK19 (~MulleDK19@unaffiliated/mulledk19) has joined ##asm
+2016-09-21 05:40:47	-->	hoe` (~hoe@c-71-237-236-28.hsd1.or.comcast.net) has joined ##asm
+2016-09-21 05:42:24	-->	StereoBucket_ (~StereoBuc@31.223.131.225) has joined ##asm
+2016-09-21 05:45:43	<--	StereoBucket (~StereoBuc@31.223.131.167) has quit (Ping timeout: 244 seconds)
+2016-09-21 05:48:49	<--	sgwarnog (~yaaic@188.146.134.248.nat.umts.dynamic.t-mobile.pl) has quit (Ping timeout: 265 seconds)
+2016-09-21 05:48:49		[05:48]
+2016-09-21 05:49:46	<--	silverfox_ (silver@os.brasucas.net) has quit (Remote host closed the connection)
+2016-09-21 05:51:24	-->	silverf0x (silver@os.brasucas.net) has joined ##asm
+2016-09-21 05:51:25	<--	silverf0x (silver@os.brasucas.net) has quit (Changing host)
+2016-09-21 05:51:25	-->	silverf0x (silver@unaffiliated/silverf0x) has joined ##asm
+2016-09-21 05:52:24	-->	MoZu4k_ (~MoZu4k@c-50-142-183-133.hsd1.tn.comcast.net) has joined ##asm
+2016-09-21 05:55:58	-->	XOCKET (~XOCKET@unaffiliated/xocket) has joined ##asm
+2016-09-21 05:56:12	-->	sophia7 (~sophia7@unaffiliated/sophia7) has joined ##asm
+2016-09-21 05:57:03	-->	freakazoid0223 (~Administr@pool-108-52-4-99.phlapa.fios.verizon.net) has joined ##asm
+2016-09-21 05:57:35	<--	silverf0x (silver@unaffiliated/silverf0x) has quit (Remote host closed the connection)
+2016-09-21 05:58:33	<--	osa1 (~omer@haskell/developer/osa1) has quit (Ping timeout: 248 seconds)
+2016-09-21 05:58:56	-->	silverf0x (silver@os.brasucas.net) has joined ##asm
+2016-09-21 05:58:56	<--	silverf0x (silver@os.brasucas.net) has quit (Changing host)
+2016-09-21 05:58:56	-->	silverf0x (silver@unaffiliated/silverf0x) has joined ##asm
+2016-09-21 05:59:51	<--	XOCK_STREAM (~XOCKET@unaffiliated/xocket) has quit (Ping timeout: 265 seconds)
+2016-09-21 06:00:33	<--	frkazoid0223 (~Administr@pool-108-52-4-99.phlapa.fios.verizon.net) has quit (Ping timeout: 240 seconds)
+2016-09-21 06:01:10	-->	AverageJ0e (~joe@ip68-3-197-107.ph.ph.cox.net) has joined ##asm
+2016-09-21 06:01:15	-->	zerd (~quassel@bat.slash.no) has joined ##asm
+2016-09-21 06:01:40	-->	dminuoso (~dminuoso@unaffiliated/dminuoso) has joined ##asm
+2016-09-21 06:05:34	-->	king_jah (~jah@S0106503955715ed3.ss.shawcable.net) has joined ##asm
+2016-09-21 06:05:34		[06:05]
+2016-09-21 06:07:08	-->	daku_ (~daku@65.113.233.19) has joined ##asm
+2016-09-21 06:09:19	<--	CodFection (~CodFectio@unaffiliated/codfection) has quit (Read error: Connection reset by peer)
+2016-09-21 06:14:10	-->	osa1 (~omer@50-253-193-254-static.hfc.comcastbusiness.net) has joined ##asm
+2016-09-21 06:14:11	<--	osa1 (~omer@50-253-193-254-static.hfc.comcastbusiness.net) has quit (Changing host)
+2016-09-21 06:14:11	-->	osa1 (~omer@haskell/developer/osa1) has joined ##asm
+2016-09-21 06:20:00		[06:14]
+2016-09-21 06:20:41	<--	StereoBucket_ (~StereoBuc@31.223.131.225) has quit (Read error: Connection reset by peer)
+2016-09-21 06:21:09	<--	blackwind_123 (~IceChat9@117.192.142.2) has quit (Ping timeout: 272 seconds)
+2016-09-21 06:22:03	-->	blackwind_123 (~IceChat9@117.192.145.198) has joined ##asm
+2016-09-21 06:23:33	<--	osa1 (~omer@haskell/developer/osa1) has quit (Ping timeout: 240 seconds)
+2016-09-21 06:23:37	-->	osa1_ (~omer@50-253-193-254-static.hfc.comcastbusiness.net) has joined ##asm
+2016-09-21 06:25:11	-->	hzjd (~Adium@18.189.45.86) has joined ##asm
+2016-09-21 06:25:18	<--	zap0 (~moofy@14-201-222-143.tpgi.com.au) has quit (Quit: zap0)
+2016-09-21 06:27:17	<--	hzjd (~Adium@18.189.45.86) has quit (Client Quit)
+2016-09-21 06:31:18	<--	osa1_ (~omer@50-253-193-254-static.hfc.comcastbusiness.net) has quit (Ping timeout: 265 seconds)
+2016-09-21 06:35:33	-->	ropeney (~ropeney@CPE-58-170-196-106.lns2.lon.bigpond.net.au) has joined ##asm
+2016-09-21 06:35:33		[06:35]
+2016-09-21 06:35:35	-->	codfection (~codfectio@unaffiliated/codfection) has joined ##asm
+2016-09-21 06:35:46	-->	osa1 (~omer@50-253-193-254-static.hfc.comcastbusiness.net) has joined ##asm
+2016-09-21 06:35:47	<--	osa1 (~omer@50-253-193-254-static.hfc.comcastbusiness.net) has quit (Changing host)
+2016-09-21 06:35:47	-->	osa1 (~omer@haskell/developer/osa1) has joined ##asm
+2016-09-21 06:41:00		[06:35]
+2016-09-21 06:41:18	-->	osa1_ (~omer@50-253-193-254-static.hfc.comcastbusiness.net) has joined ##asm
+2016-09-21 06:41:33	<--	osa1 (~omer@haskell/developer/osa1) has quit (Ping timeout: 240 seconds)
+2016-09-21 06:41:46	-->	rnsanchez_ (~rnsanchez@189.58.226.44.dynamic.adsl.gvt.net.br) has joined ##asm
+2016-09-21 06:42:01	-->	MoALTz (~no@78-11-247-26.static.ip.netia.com.pl) has joined ##asm
+2016-09-21 06:43:32	<--	codfection (~codfectio@unaffiliated/codfection) has quit (Quit: Leaving)
+2016-09-21 06:43:50	-->	codfection (~codfectio@unaffiliated/codfection) has joined ##asm
+2016-09-21 06:44:21	<--	rnsanchez (~rnsanchez@177.18.49.60) has quit (Ping timeout: 265 seconds)
+2016-09-21 06:44:21	<--	slidercrank (~slidercra@unaffiliated/slidercrank) has quit (Ping timeout: 265 seconds)
+2016-09-21 06:46:49	<--	osa1_ (~omer@50-253-193-254-static.hfc.comcastbusiness.net) has quit (Ping timeout: 265 seconds)
+2016-09-21 06:48:45	<--	slavanap (~slavanap@37.44.46.25) has quit (Ping timeout: 265 seconds)
+2016-09-21 06:49:47	<--	codfection (~codfectio@unaffiliated/codfection) has quit (Quit: Leaving)
+2016-09-21 06:55:00		[06:49]
+2016-09-21 06:55:55	<--	XOCKET (~XOCKET@unaffiliated/xocket) has quit (Disconnected by services)
+2016-09-21 06:55:55	-->	XOCK_STREAM (~XOCKET@unaffiliated/xocket) has joined ##asm
+2016-09-21 06:57:07	-->	phinxy (~tehhhd@unaffiliated/phinxy) has joined ##asm
+2016-09-21 06:57:13	<--	freakazoid0223 (~Administr@pool-108-52-4-99.phlapa.fios.verizon.net) has quit (Quit: Leaving)
+2016-09-21 06:57:34	-->	freakazoid0223 (~Administr@pool-108-52-4-99.phlapa.fios.verizon.net) has joined ##asm
+2016-09-21 06:58:47	-->	osa1_ (~omer@50-253-193-254-static.hfc.comcastbusiness.net) has joined ##asm
+2016-09-21 06:58:55	-->	codfection (~codfectio@unaffiliated/codfection) has joined ##asm
+2016-09-21 07:03:44	-->	shaynox (~shaynox@AMontpellier-652-1-78-117.w109-210.abo.wanadoo.fr) has joined ##asm
+2016-09-21 07:05:16	-->	a3f (~a3f@unaffiliated/a3f) has joined ##asm
+2016-09-21 07:05:21	-->	pimlu (~pimlu@128.172.35.15) has joined ##asm
+2016-09-21 07:08:52	-->	metachr0n (~nobody@78.1.broadband13.iol.cz) has joined ##asm
+2016-09-21 07:10:26	<--	metachr0n (~nobody@78.1.broadband13.iol.cz) has quit (Client Quit)
+2016-09-21 07:10:26		[07:10]
+2016-09-21 07:13:26	-->	metachr0n (~nobody@78.1.broadband13.iol.cz) has joined ##asm
+2016-09-21 07:14:14	-->	Ilushka (~Ilushka@dsl212-143-41-238.bb.netvision.net.il) has joined ##asm
+2016-09-21 07:14:52	<--	AndyBotwin (~Gustavo@unaffiliated/andybotwin) has quit (Quit: Leaving)
+2016-09-21 07:14:54	-->	TurboBorland (~GrandmaEu@unaffiliated/turboborland) has joined ##asm
+2016-09-21 07:15:16	<--	MoZu4k_ (~MoZu4k@c-50-142-183-133.hsd1.tn.comcast.net) has quit (Quit: MoZu4k_)
+2016-09-21 07:15:27	-->	dqi (~dqi@165-218-045-062.dynamic.caiway.nl) has joined ##asm
+2016-09-21 07:16:30	<--	ggole (~ggole@124.149.106.69) has quit
+2016-09-21 07:17:42	-->	dqi_ (~dqi@165-218-045-062.dynamic.caiway.nl) has joined ##asm
+2016-09-21 07:18:49	-->	Judge_Dredd (~Judge_Dre@unaffiliated/judge-dredd/x-2170742) has joined ##asm
+2016-09-21 07:20:02	-->	cagmz (~cagmz@cpe-107-185-130-191.socal.res.rr.com) has joined ##asm
+2016-09-21 07:20:16	<--	dqi (~dqi@165-218-045-062.dynamic.caiway.nl) has quit (Ping timeout: 255 seconds)
+2016-09-21 07:22:42	<--	Ox4 (~user@unaffiliated/zloy) has quit (Ping timeout: 264 seconds)
+2016-09-21 07:28:00		[07:22]
+2016-09-21 07:28:27	<--	XOCK_STREAM (~XOCKET@unaffiliated/xocket) has quit (Ping timeout: 276 seconds)
+2016-09-21 07:30:46	-->	slavanap (~slavanap@5.145.251.251) has joined ##asm
+2016-09-21 07:31:29	<--	metachr0n (~nobody@78.1.broadband13.iol.cz) has quit (Quit: WeeChat 1.5)
+2016-09-21 07:31:42	<--	sophia7 (~sophia7@unaffiliated/sophia7) has quit (Quit: sophia7)
+2016-09-21 07:34:40	<--	Fiki (~Fiki@80-109-242-183.cable.dynamic.surfer.at) has quit (Ping timeout: 265 seconds)
+2016-09-21 07:39:03	<--	pimlu (~pimlu@128.172.35.15) has quit (Ping timeout: 240 seconds)
+2016-09-21 07:40:37	<--	a3f (~a3f@unaffiliated/a3f) has quit (Quit: bb)
+2016-09-21 07:40:57	-->	ARM9 (~ARM9@46-236-101-61.customer.t3.se) has joined ##asm
+2016-09-21 07:42:25	-->	metachr0n (~nobody@78.1.broadband13.iol.cz) has joined ##asm
+2016-09-21 07:48:00		[07:42]
+2016-09-21 07:49:40	<--	metachr0n (~nobody@78.1.broadband13.iol.cz) has quit (Quit: WeeChat 1.5)
+2016-09-21 07:50:52	-->	metachr0n (~nobody@78.1.broadband13.iol.cz) has joined ##asm
+2016-09-21 07:56:00		[07:50]
+2016-09-21 07:59:09	<--	Indecipherable (~Howl@41.162.59.11) has quit (Quit: http://i.imgur.com/rWAnqP3.jpg)
+2016-09-21 08:00:27	-->	slither (~jesus@2.24.22.148) has joined ##asm
+2016-09-21 08:01:37	<--	slavanap (~slavanap@5.145.251.251) has left ##asm ("Leaving")
+2016-09-21 08:02:50	<--	ARM9 (~ARM9@46-236-101-61.customer.t3.se) has quit (Quit: Leaving)
+2016-09-21 08:03:54	<--	ropeney (~ropeney@CPE-58-170-196-106.lns2.lon.bigpond.net.au) has quit (Quit: Leaving)
+2016-09-21 08:08:02	-->	|DM| (~|DM|@109-93-207-240.dynamic.isp.telekom.rs) has joined ##asm
+2016-09-21 08:10:41	<--	lapinozz (~lapinozz@45.74.164.117) has quit (Ping timeout: 240 seconds)
+2016-09-21 08:14:01	-->	ARM9 (~ARM9@46-236-101-61.customer.t3.se) has joined ##asm
+2016-09-21 08:14:01		[08:14]
+2016-09-21 08:18:52	-->	Xylitol (~temari@unaffiliated/xylitol) has joined ##asm
+2016-09-21 08:20:20	<--	Girafferson (~Giraffers@2601:281:8001:663d:e234:b24c:6011:64f4) has quit (Remote host closed the connection)
+2016-09-21 08:26:00		[08:20]
+2016-09-21 08:31:09	<--	dqi_ (~dqi@165-218-045-062.dynamic.caiway.nl) has quit (Ping timeout: 265 seconds)
+2016-09-21 08:31:50	-->	XOCKET (~XOCKET@unaffiliated/xocket) has joined ##asm
+2016-09-21 08:32:08	<--	sh4 (~sh4@unaffiliated/sh4) has quit (Ping timeout: 265 seconds)
+2016-09-21 08:33:27	<--	mikkqu (~mikkqu@212.44.150.238) has left ##asm
+2016-09-21 08:34:17	-->	sh4 (~sh4@unaffiliated/sh4) has joined ##asm
+2016-09-21 08:35:18	--	B00100100 is now known as cd80
+2016-09-21 08:36:49	<--	TurboBorland (~GrandmaEu@unaffiliated/turboborland) has quit (Quit: \x0a\x0a\x00)
+2016-09-21 08:39:47	<--	cd80 (~bf3@179.43.151.98) has quit (Quit: Reconnecting)
+2016-09-21 08:40:07	-->	cd80 (~bf3@179.43.151.98) has joined ##asm
+2016-09-21 08:45:14	-->	slash^ (~unknown@2001:a61:1143:401:a9e4:3588:edf8:381c) has joined ##asm
+2016-09-21 08:45:14		[08:45]
+2016-09-21 08:46:35	<--	rnsanchez_ (~rnsanchez@189.58.226.44.dynamic.adsl.gvt.net.br) has quit (Ping timeout: 260 seconds)
+2016-09-21 08:47:09	-->	dqi_ (~dqi@165-218-045-062.dynamic.caiway.nl) has joined ##asm
+2016-09-21 08:48:25	-->	rnsanchez_ (~rnsanchez@177.156.61.246) has joined ##asm
+2016-09-21 08:49:04	--	cd80 is now known as CD80
+2016-09-21 08:49:33	<--	CD80 (~bf3@179.43.151.98) has quit (Quit: leaving)
+2016-09-21 08:49:48	-->	cd80 (~bf3@179.43.151.98) has joined ##asm
+2016-09-21 08:51:00	<--	zerd (~quassel@bat.slash.no) has quit (Ping timeout: 276 seconds)
+2016-09-21 08:52:18	<--	XOCKET (~XOCKET@unaffiliated/xocket) has quit (Ping timeout: 276 seconds)
+2016-09-21 08:55:38	-->	XOCKET (~XOCKET@unaffiliated/xocket) has joined ##asm
+2016-09-21 08:55:55	<--	XOCKET (~XOCKET@unaffiliated/xocket) has quit (Max SendQ exceeded)
+2016-09-21 08:56:23	-->	XOCKET (~XOCKET@unaffiliated/xocket) has joined ##asm
+2016-09-21 08:56:54	<--	XOCKET (~XOCKET@unaffiliated/xocket) has quit (Max SendQ exceeded)
+2016-09-21 08:57:24	-->	XOCKET (~XOCKET@unaffiliated/xocket) has joined ##asm
+2016-09-21 08:57:37	<--	XOCKET (~XOCKET@unaffiliated/xocket) has quit (Max SendQ exceeded)
+2016-09-21 08:58:57	<--	codfection (~codfectio@unaffiliated/codfection) has quit (Read error: Connection reset by peer)
+2016-09-21 08:59:18	-->	zerd (~quassel@bat.slash.no) has joined ##asm
+2016-09-21 08:59:57	<--	NeoGeo64 (~linux@2604:2d80:881a:0:b4a3:be16:d6fd:8559) has quit (Remote host closed the connection)
+2016-09-21 09:02:33	-->	codfection (~codfectio@unaffiliated/codfection) has joined ##asm
+2016-09-21 09:02:33		[09:02]
+2016-09-21 09:04:38	<--	Judge_Dredd (~Judge_Dre@unaffiliated/judge-dredd/x-2170742) has quit (Quit: Leaving.)
+2016-09-21 09:05:33	-->	Guest5316 (~santosh@117.241.218.126) has joined ##asm
+2016-09-21 09:08:35	<--	cd80 (~bf3@179.43.151.98) has quit (Quit: leaving)
+2016-09-21 09:09:17	Guest5316	?
+2016-09-21 09:09:26	GeDaMo	!
+2016-09-21 09:09:40	-->	SMandrew|afk (SMandrewa@ip70-174-136-126.dc.dc.cox.net) has joined ##asm
+2016-09-21 09:10:01	--	SMandrew|afk is now known as SuperMandrew
+2016-09-21 09:11:02	-->	cd80 (~bf3@gateway/vpn/privateinternetaccess/emul16) has joined ##asm
+2016-09-21 09:16:50	<--	codfection (~codfectio@unaffiliated/codfection) has quit (Quit: Leaving)
+2016-09-21 09:18:52	-->	Fiki (~Fiki@80-109-242-183.cable.dynamic.surfer.at) has joined ##asm
+2016-09-21 09:18:52		[09:18]
+2016-09-21 09:26:55	<--	Guest5316 (~santosh@117.241.218.126) has quit (Quit: ircII EPIC5-1.1.11 -- Are we there yet?)
+2016-09-21 09:28:46	-->	pimlu (~pimlu@128.172.35.15) has joined ##asm
+2016-09-21 09:29:31	-->	hzjd (~Adium@18.189.45.86) has joined ##asm
+2016-09-21 09:30:02	-->	codfection (~codfectio@unaffiliated/codfection) has joined ##asm
+2016-09-21 09:31:37	-->	crankslider (~slidercra@unaffiliated/slidercrank) has joined ##asm
+2016-09-21 09:36:23	<--	|DM| (~|DM|@109-93-207-240.dynamic.isp.telekom.rs) has quit (Quit: Leaving)
+2016-09-21 09:36:23		[09:36]
+2016-09-21 09:41:46	-->	Demon_Fox (~Demon_Fox@71.94.3.176) has joined ##asm
+2016-09-21 09:41:55	<--	MarshMelo (~MarshMelo@37.48.82.3) has quit (Ping timeout: 272 seconds)
+2016-09-21 09:43:27	-->	Jesin (~Jesin@pool-108-28-56-201.washdc.fios.verizon.net) has joined ##asm
+2016-09-21 09:44:31	-->	nejm (~Thunderbi@ip51cfc7e6.direct-adsl.nl) has joined ##asm
+2016-09-21 09:44:41	<--	pimlu (~pimlu@128.172.35.15) has quit (Ping timeout: 265 seconds)
+2016-09-21 09:45:52	<--	cd80 (~bf3@gateway/vpn/privateinternetaccess/emul16) has quit (Quit: leaving)
+2016-09-21 09:45:55	<--	slash^ (~unknown@2001:a61:1143:401:a9e4:3588:edf8:381c) has quit (Read error: Connection reset by peer)
+2016-09-21 09:46:20	kaos	!!!!!!!!!!!!!!!!!!!!!
+2016-09-21 09:46:49	<--	sanct (~sanct@212.35.67.11) has quit (Ping timeout: 244 seconds)
+2016-09-21 09:49:41	--	rnsanchez_ is now known as rnsanchez
+2016-09-21 09:51:09	<--	sametsisartenep (~sametsisa@106.pool85-53-34.dynamic.orange.es) has quit (Quit: leaving)
+2016-09-21 09:51:17	-->	arguros (~arguros@12.172.180.2) has joined ##asm
+2016-09-21 09:52:58	<--	MoALTz (~no@78-11-247-26.static.ip.netia.com.pl) has quit (Quit: Leaving)
+2016-09-21 09:52:58		[09:52]
+2016-09-21 09:56:18	<--	[Awaxx] (~while@unaffiliated/awaxx/x-0928682) has quit (Quit: "paradox, my friend")
+2016-09-21 09:58:35	-->	cd80 (~bf3@gateway/vpn/privateinternetaccess/emul16) has joined ##asm
+2016-09-21 09:58:38	-->	sanct (~sanct@212.35.67.11) has joined ##asm
+2016-09-21 09:59:01	<--	WilburPB (~WilburPB@146.197.246.70) has quit (Quit: Textual IRC Client: www.textualapp.com)
+2016-09-21 10:02:06	<--	nejm (~Thunderbi@ip51cfc7e6.direct-adsl.nl) has quit (Quit: nejm)
+2016-09-21 10:04:34	<--	shaynox (~shaynox@AMontpellier-652-1-78-117.w109-210.abo.wanadoo.fr) has quit
+2016-09-21 10:05:06	-->	WilburPB (~WilburPB@146.197.246.70) has joined ##asm
+2016-09-21 10:05:37	<--	darkapex (darkapex@gateway/shell/elitebnc/x-hswqjdatikblqfia) has left ##asm ("WeeChat 1.5")
+2016-09-21 10:06:03	AverageJ0e	vulture, https://pbs.twimg.com/media/Cs5zWjIUsAAxqs6.jpg
+2016-09-21 10:06:23	AverageJ0e	see what they're doing? rdtsc, jump to self
+2016-09-21 10:06:29	-->	MarshMelo (~MarshMelo@37.48.82.3) has joined ##asm
+2016-09-21 10:07:39	roxfan	probably detecting emulators or tracing
+2016-09-21 10:09:27	roxfan	too many cycles between two rdtsc ->infinite loop
+2016-09-21 10:09:27		[10:09]
+2016-09-21 10:10:57	AverageJ0e	so it turns out theres more than 1 way to jump to self in 2 bytes. I thought there was only eb fe, but theres 7f fe, 7c fe,
+2016-09-21 10:10:59	AverageJ0e	makes sense
+2016-09-21 10:11:18	<--	MulleDK19 (~MulleDK19@unaffiliated/mulledk19) has quit
+2016-09-21 10:12:39	AverageJ0e	i guess 7e would work too
+2016-09-21 10:12:53	AverageJ0e	wheres that damn intel opcode manual when i need one?
+2016-09-21 10:13:15	-->	MulleDK19 (MulleDK19@unaffiliated/mulledk19) has joined ##asm
+2016-09-21 10:13:57	GeDaMo	http://sandpile.org/ ?
+2016-09-21 10:16:58	-->	ted_ (~tehhhd@78-68-207-219-no225.tbcn.telia.com) has joined ##asm
+2016-09-21 10:17:24	roxfan	well, jg etc. only works if the flags are set up accordingly
+2016-09-21 10:17:40	roxfan	eb fe works in any situation
+2016-09-21 10:18:07	-->	Freze_ (~Freze@dhcp-18-189-123-6.dyn.mit.edu) has joined ##asm
+2016-09-21 10:18:14	<--	ted_ (~tehhhd@78-68-207-219-no225.tbcn.telia.com) has quit (Read error: Connection reset by peer)
+2016-09-21 10:18:15	kaos	you mean c3 99
+2016-09-21 10:18:16	AverageJ0e	eb, e9, e8
+2016-09-21 10:18:21	kaos	23 0e
+2016-09-21 10:18:41	Freze_	For example take `x + 1` where x is a float is the additional instruction to convert 1 to a float `vcvtsi2sdq`
+2016-09-21 10:18:56	Freze_	expensive
+2016-09-21 10:20:19	<--	phinxy (~tehhhd@unaffiliated/phinxy) has quit (Ping timeout: 264 seconds)
+2016-09-21 10:20:20	Freze_	under -O3  I still have the additional instruction
+2016-09-21 10:21:00	GeDaMo	Try x + 1.0
+2016-09-21 10:21:16	GeDaMo	Or x + 1f
+2016-09-21 10:21:20	Freze_	The question is if that's a worth optimization
+2016-09-21 10:21:34	Freze_	I.e. is the `vcvtsi2sdq`  instruction expensive enough to warrant a change?
+2016-09-21 10:21:43	Freze_	for numerics
+2016-09-21 10:22:13	AverageJ0e	lets see...if i do a hex replace of 7f fe with 90 90, let's see if im as smart as i think i am
+2016-09-21 10:22:59	roxfan	if it's stupid but works, it's not stupid
+2016-09-21 10:23:35	AverageJ0e	i need that on a shirt roxfan
+2016-09-21 10:23:36	Freze_	haha I love that
+2016-09-21 10:25:11	roxfan	AverageJ0e: zazzle or whatever
+2016-09-21 10:25:11		[10:25]
+2016-09-21 10:27:59	<--	GeDaMo (~GeDaMo@212.225.83.199) has quit (Remote host closed the connection)
+2016-09-21 10:30:26	<--	WilburPB (~WilburPB@146.197.246.70) has quit (Quit: My Mac has gone to sleep. ZZZzzz…)
+2016-09-21 10:35:07	<--	slither (~jesus@2.24.22.148) has quit (Ping timeout: 255 seconds)
+2016-09-21 10:35:46	-->	WilburPB (~WilburPB@146.197.246.70) has joined ##asm
+2016-09-21 10:41:00		[10:35]
+2016-09-21 10:44:45	<--	gdx90 (gdx90@gateway/shell/fnordserver.eu/x-fyvnpeqrbzumsvsu) has quit (Remote host closed the connection)
+2016-09-21 10:45:38	AverageJ0e	the fuck is this? https://files.catbox.moe/yrl5ey.PNG
+2016-09-21 10:46:35	AverageJ0e	loop is contingent on ecx for count, where is it set?
+2016-09-21 10:51:49	-->	XOCKET (~XOCKET@unaffiliated/xocket) has joined ##asm
+2016-09-21 10:52:05	<--	Freze_ (~Freze@dhcp-18-189-123-6.dyn.mit.edu) has quit (Quit: Leaving)
+2016-09-21 10:55:03	<--	zerd (~quassel@bat.slash.no) has quit (Ping timeout: 240 seconds)
+2016-09-21 11:00:59	vulture	AverageJ0e: looks like standard anti-singlestep-code
+2016-09-21 11:00:59		[11:00]
+2016-09-21 11:01:06	vulture	on your first pic
+2016-09-21 11:01:16	AverageJ0e	welcome
+2016-09-21 11:01:32	vulture	ecx probably set by caller
+2016-09-21 11:01:47	-->	zerd (~quassel@bat.slash.no) has joined ##asm
+2016-09-21 11:03:45	-->	StereoBucket (~StereoBuc@31.223.131.225) has joined ##asm
+2016-09-21 11:07:34	-->	phinxy (~tehhhd@78.68.207.219) has joined ##asm
+2016-09-21 11:07:43	<--	phinxy (~tehhhd@78.68.207.219) has quit (Changing host)
+2016-09-21 11:07:43	-->	phinxy (~tehhhd@unaffiliated/phinxy) has joined ##asm
+2016-09-21 11:09:10	-->	navidr (uid112413@gateway/web/irccloud.com/x-cpzzimbtwwpqurqn) has joined ##asm
+2016-09-21 11:12:01	-->	gdx90 (gdx90@gateway/shell/fnordserver.eu/x-awfxazfipfytvtyf) has joined ##asm
+2016-09-21 11:12:03	<--	rendar (~rendar@host170-104-dynamic.61-82-r.retail.telecomitalia.it) has quit (Ping timeout: 240 seconds)
+2016-09-21 11:13:35	<--	zerd (~quassel@bat.slash.no) has quit (Ping timeout: 260 seconds)
+2016-09-21 11:17:29	-->	feliwir (Elite16673@gateway/shell/elitebnc/x-muypuooyfoiaotys) has joined ##asm
+2016-09-21 11:17:29		[11:17]
+2016-09-21 11:17:48	-->	zerd (~quassel@bat.slash.no) has joined ##asm
+2016-09-21 11:18:14	-->	Suchorski (regex@unaffiliated/suchorski) has joined ##asm
+2016-09-21 11:19:54	<--	sigtrm (quassel@quassel.woboq.de) has quit (Ping timeout: 265 seconds)
+2016-09-21 11:21:15	<--	freakazoid0223 (~Administr@pool-108-52-4-99.phlapa.fios.verizon.net) has quit (Quit: Leaving)
+2016-09-21 11:22:49	-->	freakazoid0223 (~Administr@pool-108-52-4-99.phlapa.fios.verizon.net) has joined ##asm
+2016-09-21 11:24:35	<--	m8 (~m8@unaffiliated/m8) has quit (Read error: Connection reset by peer)
+2016-09-21 11:24:44	-->	rendar (~rendar@host90-90-dynamic.181-80-r.retail.telecomitalia.it) has joined ##asm
+2016-09-21 11:28:17	<--	Suchorski (regex@unaffiliated/suchorski) has quit
+2016-09-21 11:30:20	<--	dminuoso (~dminuoso@unaffiliated/dminuoso) has quit (Ping timeout: 244 seconds)
+2016-09-21 11:30:26	-->	Judge_Dredd (~Judge_Dre@unaffiliated/judge-dredd/x-2170742) has joined ##asm
+2016-09-21 11:31:11	<--	zerd (~quassel@bat.slash.no) has quit (Ping timeout: 244 seconds)
+2016-09-21 11:33:28	<--	XOCKET (~XOCKET@unaffiliated/xocket) has quit (Disconnected by services)
+2016-09-21 11:33:28		[11:33]
+2016-09-21 11:33:29	-->	XOCK_STREAM (~XOCKET@unaffiliated/xocket) has joined ##asm
+2016-09-21 11:34:17	-->	[Awaxx] (~while@unaffiliated/awaxx/x-0928682) has joined ##asm
+2016-09-21 11:35:53	-->	lapinozz (~lapinozz@45.74.164.117) has joined ##asm
+2016-09-21 11:40:14	-->	zerd (~quassel@bat.slash.no) has joined ##asm
+2016-09-21 11:40:37	<--	sanct (~sanct@212.35.67.11) has quit (Ping timeout: 265 seconds)
+2016-09-21 11:45:20	<--	Chloe (~Chloe@unaffiliated/chloe) has quit (Quit: .)
+2016-09-21 11:49:06	<--	osa1_ (~omer@50-253-193-254-static.hfc.comcastbusiness.net) has quit (Ping timeout: 264 seconds)
+2016-09-21 11:49:06		[11:49]
+2016-09-21 11:56:27	<--	boru (~boru@unaffiliated/boru) has quit (Quit: Patching. Brb.)
+2016-09-21 11:56:49	-->	boru (~boru@unaffiliated/boru) has joined ##asm
+2016-09-21 11:57:29	<--	NightQuest (NQ@c-71-236-158-254.hsd1.or.comcast.net) has quit (Ping timeout: 248 seconds)
+2016-09-21 11:57:36	-->	NightQuest (NQ@c-71-236-158-254.hsd1.or.comcast.net) has joined ##asm
+2016-09-21 11:59:20	<--	rnsanchez (~rnsanchez@177.156.61.246) has quit (Quit: Exit 1)
+2016-09-21 12:02:04	-->	XOCKET (~XOCKET@unaffiliated/xocket) has joined ##asm
+2016-09-21 12:03:05	<--	XOCK_STREAM (~XOCKET@unaffiliated/xocket) has quit (Ping timeout: 250 seconds)
+2016-09-21 12:03:58	-->	shamis (~AndChat31@pool-108-48-26-27.washdc.fios.verizon.net) has joined ##asm
+2016-09-21 12:06:24	--	irc: disconnected from server
+2016-09-21 12:06:24		[12:06]
+2016-09-21 12:41:33	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined ##asm
+2016-09-21 12:41:33		[12:41]
+2016-09-21 12:41:33	--	Topic for ##asm is "Assembly programming channel, all architectures welcome (please specify). Don't ask to ask! Use a pastebin if appropriate! Check your manuals! More information: http://goo.gl/vZ4xwd *** AT&T vs Intel flamers will be banned."
+2016-09-21 12:41:33	--	Topic set by Jester01 (~Jester01@62.100.244.69) on Mon, 18 Jan 2016 06:23:59
+2016-09-21 12:41:33	--	Channel ##asm: 300 nicks (0 ops, 0 voices, 300 normals)
+2016-09-21 12:41:33	***	Buffer Playback...
+2016-09-21 12:41:33	GeDaMo	[15:01:21] 80 bit decimal? [15:01:21]
+2016-09-21 12:41:33	slavanap	[15:02:17] looks like found one description here http://www.intel.com/content/dam/www/public/us/en/documents/manuals/64-ia-32-architectures-software-developer-manual-325462.pdf [15:02:17]
+2016-09-21 12:41:33	slavanap	[15:02:24] GeDaMo, yes. [15:02:24]
+2016-09-21 12:41:33	GeDaMo	[15:02:32] I only see m80bcd in relation to fbstp [15:02:32]
+2016-09-21 12:41:33	slavanap	[15:03:43] GeDaMo, than what is m80bcd representation and limits? [15:03:43]
+2016-09-21 12:41:33	GeDaMo	[15:04:20] "18-digit packed BCD integer" [15:04:20]
+2016-09-21 12:41:33	GeDaMo	[15:04:51] https://en.wikipedia.org/wiki/Binary-coded_decimal#Packed_BCD [15:04:51]
+2016-09-21 12:41:33	slavanap	[15:05:50] GeDaMo, I wonder about exponent representation actually. For instance, how 0.001f would look in BCD. [15:05:50]
+2016-09-21 12:41:33	slavanap	[15:06:48] GeDaMo, or FBSTP just using integer part of the float? [15:06:48]
+2016-09-21 12:41:33	slavanap	[15:11:02] agh. I haven't used pure asm for so long. Never setup it in MSVS2015. First time is always hard [15:11:02]
+2016-09-21 12:41:33	slavanap	[15:19:36] GeDaMo, `FBSTP DWORD PTR [EAX]` fails with invalid operand size. How to define pointer to ten bytes? (simlar to DT) ? [15:19:36]
+2016-09-21 12:41:33	slavanap	[15:26:39] How to day TENBYTES PTR [EAX] in MASM. What I should replace TENBYTES WITH? [15:26:39]
+2016-09-21 12:41:33	slavanap	[15:32:36] FOUND IT. REAL10 PTR [15:32:36]
+2016-09-21 12:41:33	slavanap	[15:34:58] GeDaMo, yes, FBSTP converts to bcd only integer part of the float. [15:34:58]
+2016-09-21 12:41:33	Guest5316	[19:09:17] ? [19:09:17]
+2016-09-21 12:41:33	GeDaMo	[19:09:26] ! [19:09:26]
+2016-09-21 12:41:33	kaos	[19:46:20] !!!!!!!!!!!!!!!!!!!!! [19:46:20]
+2016-09-21 12:41:33	AverageJ0e	[20:06:03] vulture, https://pbs.twimg.com/media/Cs5zWjIUsAAxqs6.jpg [20:06:03]
+2016-09-21 12:41:33	AverageJ0e	[20:06:23] see what they're doing? rdtsc, jump to self [20:06:23]
+2016-09-21 12:41:33	roxfan	[20:07:39] probably detecting emulators or tracing [20:07:39]
+2016-09-21 12:41:33	roxfan	[20:09:27] too many cycles between two rdtsc ->infinite loop [20:09:27]
+2016-09-21 12:41:33	AverageJ0e	[20:10:57] so it turns out theres more than 1 way to jump to self in 2 bytes. I thought there was only eb fe, but theres 7f fe, 7c fe, [20:10:57]
+2016-09-21 12:41:33	AverageJ0e	[20:10:59] makes sense [20:10:59]
+2016-09-21 12:41:33	AverageJ0e	[20:12:39] i guess 7e would work too [20:12:39]
+2016-09-21 12:41:33	AverageJ0e	[20:12:53] wheres that damn intel opcode manual when i need one? [20:12:53]
+2016-09-21 12:41:33	GeDaMo	[20:13:57] http://sandpile.org/ ? [20:13:57]
+2016-09-21 12:41:33	roxfan	[20:17:24] well, jg etc. only works if the flags are set up accordingly [20:17:24]
+2016-09-21 12:41:33	roxfan	[20:17:40] eb fe works in any situation [20:17:40]
+2016-09-21 12:41:33	kaos	[20:18:15] you mean c3 99 [20:18:15]
+2016-09-21 12:41:33	AverageJ0e	[20:18:16] eb, e9, e8 [20:18:16]
+2016-09-21 12:41:33	kaos	[20:18:21] 23 0e [20:18:21]
+2016-09-21 12:41:33	Freze_	[20:18:41] For example take `x + 1` where x is a float is the additional instruction to convert 1 to a float `vcvtsi2sdq` [20:18:41]
+2016-09-21 12:41:34	Freze_	[20:18:56] expensive [20:18:56]
+2016-09-21 12:41:34	Freze_	[20:20:20] under -O3  I still have the additional instruction [20:20:20]
+2016-09-21 12:41:34	GeDaMo	[20:21:00] Try x + 1.0 [20:21:00]
+2016-09-21 12:41:34	GeDaMo	[20:21:16] Or x + 1f [20:21:16]
+2016-09-21 12:41:34	Freze_	[20:21:20] The question is if that's a worth optimization [20:21:20]
+2016-09-21 12:41:34	Freze_	[20:21:34] I.e. is the `vcvtsi2sdq`  instruction expensive enough to warrant a change? [20:21:34]
+2016-09-21 12:41:34	Freze_	[20:21:43] for numerics [20:21:43]
+2016-09-21 12:41:34	AverageJ0e	[20:22:13] lets see...if i do a hex replace of 7f fe with 90 90, let's see if im as smart as i think i am [20:22:13]
+2016-09-21 12:41:34	roxfan	[20:22:59] if it's stupid but works, it's not stupid [20:22:59]
+2016-09-21 12:41:34	AverageJ0e	[20:23:35] i need that on a shirt roxfan [20:23:35]
+2016-09-21 12:41:34	Freze_	[20:23:36] haha I love that [20:23:36]
+2016-09-21 12:41:34	roxfan	[20:25:11] AverageJ0e: zazzle or whatever [20:25:11]
+2016-09-21 12:41:34	AverageJ0e	[20:45:38] the fuck is this? https://files.catbox.moe/yrl5ey.PNG [20:45:38]
+2016-09-21 12:41:34	AverageJ0e	[20:46:35] loop is contingent on ecx for count, where is it set? [20:46:35]
+2016-09-21 12:41:34	vulture	[21:00:59] AverageJ0e: looks like standard anti-singlestep-code [21:00:59]
+2016-09-21 12:41:34	vulture	[21:01:06] on your first pic [21:01:06]
+2016-09-21 12:41:34	AverageJ0e	[21:01:16] welcome [21:01:16]
+2016-09-21 12:41:34	vulture	[21:01:32] ecx probably set by caller [21:01:32]
+2016-09-21 12:41:34	***	Playback Complete.
+2016-09-21 12:41:39	--	Channel created on Sun, 27 May 2007 05:31:12
+2016-09-21 12:43:10	<--	hzjd (~Adium@18.189.45.86) has quit (Quit: Leaving.)
+2016-09-21 12:46:56	-->	sneakers (~sneakers@unaffiliated/sneakerhead) has joined ##asm
+2016-09-21 12:52:00		[12:46]
+2016-09-21 12:54:04	<--	king_jah (~jah@S0106503955715ed3.ss.shawcable.net) has quit (Read error: Connection reset by peer)
+2016-09-21 12:54:10	<--	Fiki (~Fiki@80-109-242-183.cable.dynamic.surfer.at) has quit (Remote host closed the connection)
+2016-09-21 12:54:47	-->	frkazoid0223 (~Administr@pool-108-52-4-99.phlapa.fios.verizon.net) has joined ##asm
+2016-09-21 12:58:07	<--	Ilushka (~Ilushka@dsl212-143-41-238.bb.netvision.net.il) has quit (Read error: Connection reset by peer)
+2016-09-21 12:58:26	<--	freakazoid0223 (~Administr@pool-108-52-4-99.phlapa.fios.verizon.net) has quit (Ping timeout: 265 seconds)
+2016-09-21 13:01:30	<--	phinxy (~tehhhd@unaffiliated/phinxy) has quit (Quit: Leaving)
+2016-09-21 13:02:26	<--	Judge_Dredd (~Judge_Dre@unaffiliated/judge-dredd/x-2170742) has quit (Quit: Leaving.)
+2016-09-21 13:03:04	<--	crakrjak (merc@unaffiliated/crakrjak) has quit (Quit: merc - out!)
+2016-09-21 13:03:37	<--	MarkX (~MarkX@2607:fb90:a232:b5b4:60a4:3e55:c4d:cc8b) has quit (Ping timeout: 255 seconds)
+2016-09-21 13:09:00		[13:03]
+2016-09-21 13:09:22	<--	Burgundy (~burgundy@86.121.178.118) has left ##asm
+2016-09-21 13:09:50	-->	Burgundy (~burgundy@86.121.178.118) has joined ##asm
+2016-09-21 13:14:06	-->	MarkX (~MarkX@2607:fb90:a2bd:ea7d:6d8c:74eb:8813:76ee) has joined ##asm
+2016-09-21 13:19:39	<--	amitan (uid133034@gateway/web/irccloud.com/x-btgcfdhsbdrpehlt) has quit (Quit: Connection closed for inactivity)
+2016-09-21 13:20:49	M4GNV5	is there any library that takes (x64-)asm code (in text form) and writes the assembled opcodes to an executable mmap'ed buffer? and preferably allows custom symbol resolving?
+2016-09-21 13:21:18	M4GNV5	s/opcodes/instructions
+2016-09-21 13:21:43	<--	ptx0 (~cheesus_c@unaffiliated/ptx0) has quit (Read error: Connection reset by peer)
+2016-09-21 13:22:53	-->	Judge_Dredd (~Judge_Dre@unaffiliated/judge-dredd/x-2170742) has joined ##asm
+2016-09-21 13:23:48	<--	daku_ (~daku@65.113.233.19) has quit (Quit: Leaving)
+2016-09-21 13:26:45	<--	King_Hual_ (~failed@94.26.28.68) has quit (Read error: Connection reset by peer)
+2016-09-21 13:26:45		[13:26]
+2016-09-21 13:27:54	-->	dminuoso (~dminuoso@unaffiliated/dminuoso) has joined ##asm
+2016-09-21 13:29:43	-->	ptx0 (~cheesus_c@unaffiliated/ptx0) has joined ##asm
+2016-09-21 13:33:45	<--	dminuoso (~dminuoso@unaffiliated/dminuoso) has quit (Ping timeout: 276 seconds)
+2016-09-21 13:35:49	-->	veXx (~veXx@unaffiliated/vexx) has joined ##asm
+2016-09-21 13:38:09	<--	ptx0 (~cheesus_c@unaffiliated/ptx0) has quit (Ping timeout: 272 seconds)
+2016-09-21 13:44:00		[13:38]
+2016-09-21 13:44:19	-->	safe (~safe@unaffiliated/safe) has joined ##asm
+2016-09-21 13:49:34	<--	WilburPB (~WilburPB@146.197.246.70) has quit (Quit: My Mac has gone to sleep. ZZZzzz…)
+2016-09-21 13:51:07	-->	ptx0 (~cheesus_c@unaffiliated/ptx0) has joined ##asm
+2016-09-21 13:51:26	-->	|DM| (~|DM|@109-93-207-240.dynamic.isp.telekom.rs) has joined ##asm
+2016-09-21 13:52:42	<--	jan64 (~jan64@agad109.neoplus.adsl.tpnet.pl) has quit (Quit: Leaving)
+2016-09-21 13:56:11	<--	arguros (~arguros@12.172.180.2) has quit (Quit: arguros)
+2016-09-21 13:57:08	-->	pimlu (~pimlu@128.172.35.12) has joined ##asm
+2016-09-21 13:57:51	-->	bandit145 (~bandit@24-151-12-38.dhcp.nwtn.ct.charter.com) has joined ##asm
+2016-09-21 14:00:30	<--	nisstyre (~yourstrul@oftn/oswg-member/Nisstyre) has quit (Read error: Connection reset by peer)
+2016-09-21 14:00:30		[14:00]
+2016-09-21 14:04:13	<--	navidr (uid112413@gateway/web/irccloud.com/x-cpzzimbtwwpqurqn) has quit (Quit: Connection closed for inactivity)
+2016-09-21 14:07:34	-->	MarkX_ (~MarkX@172.58.143.55) has joined ##asm
+2016-09-21 14:07:37	<--	MarkX (~MarkX@2607:fb90:a2bd:ea7d:6d8c:74eb:8813:76ee) has quit (Ping timeout: 248 seconds)
+2016-09-21 14:10:57	-->	feliwir (Elite16673@gateway/shell/elitebnc/x-jtcpdkhjlobzachk) has joined ##asm
+2016-09-21 14:14:42	-->	MarkX (~MarkX@172.58.136.184) has joined ##asm
+2016-09-21 14:16:58	<--	skeezix-hf (~skeezix-h@2001:4980:1000:1f01:ffff:49:52:43) has quit (Ping timeout: 255 seconds)
+2016-09-21 14:16:58		[14:16]
+2016-09-21 14:17:14	<--	magz0r (~magz0r@2001:4980:1000:1f01:ffff:49:52:43) has quit (Ping timeout: 265 seconds)
+2016-09-21 14:18:03	<--	MarkX_ (~MarkX@172.58.143.55) has quit (Ping timeout: 272 seconds)
+2016-09-21 14:20:34	-->	magz0r (~magz0r@2001:4980:1000:1f01:ffff:49:52:43) has joined ##asm
+2016-09-21 14:23:09	-->	skeezix-hf (~skeezix-h@2001:4980:1000:1f01:ffff:49:52:43) has joined ##asm
+2016-09-21 14:23:12	-->	kirotawa1 (~kirotawa@187-40-146-210.user.veloxzone.com.br) has joined ##asm
+2016-09-21 14:27:05	<--	Judge_Dredd (~Judge_Dre@unaffiliated/judge-dredd/x-2170742) has quit (Quit: Leaving.)
+2016-09-21 14:27:24	<--	MarkX (~MarkX@172.58.136.184) has quit (Read error: Connection reset by peer)
+2016-09-21 14:28:41	-->	dminuoso (~dminuoso@unaffiliated/dminuoso) has joined ##asm
+2016-09-21 14:29:49	-->	kbw (~KeyboardW@68-204-170-7.res.bhn.net) has joined ##asm
+2016-09-21 14:34:15	<--	dminuoso (~dminuoso@unaffiliated/dminuoso) has quit (Ping timeout: 260 seconds)
+2016-09-21 14:34:15		[14:34]
+2016-09-21 14:39:04	-->	bkboggy (~bkboggy@cpe-172-250-147-60.socal.res.rr.com) has joined ##asm
+2016-09-21 14:40:33	<--	control (~control@unaffiliated/control) has quit (Ping timeout: 240 seconds)
+2016-09-21 14:46:00		[14:40]
+2016-09-21 14:47:12	<--	kbw (~KeyboardW@68-204-170-7.res.bhn.net) has quit (Quit: My MacBook Air has gone to sleep. ZZZzzz…)
+2016-09-21 14:51:29	<--	mi100hael (~mi100hael@unaffiliated/mi100hael) has quit (Ping timeout: 240 seconds)
+2016-09-21 14:56:59	-->	kbw (~KeyboardW@68-204-170-7.res.bhn.net) has joined ##asm
+2016-09-21 14:57:55	<--	sneakers (~sneakers@unaffiliated/sneakerhead) has quit (Ping timeout: 255 seconds)
+2016-09-21 15:03:00		[14:57]
+2016-09-21 15:03:39	<--	kbw (~KeyboardW@68-204-170-7.res.bhn.net) has quit (Quit: My MacBook Air has gone to sleep. ZZZzzz…)
+2016-09-21 15:04:11	-->	kbw (~KeyboardW@68-204-170-7.res.bhn.net) has joined ##asm
+2016-09-21 15:05:42	<--	bandit145 (~bandit@24-151-12-38.dhcp.nwtn.ct.charter.com) has quit (Read error: Connection reset by peer)
+2016-09-21 15:07:05	-->	osa1_ (~omer@50-253-193-254-static.hfc.comcastbusiness.net) has joined ##asm
+2016-09-21 15:08:00	<--	osa1 (~omer@haskell/developer/osa1) has quit (Ping timeout: 276 seconds)
+2016-09-21 15:08:01	<--	kbw (~KeyboardW@68-204-170-7.res.bhn.net) has quit (Client Quit)

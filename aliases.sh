@@ -12,6 +12,12 @@ alias ohmyzsh='pushd ${ZSH} '
 
 ## Custom aliases
 
+alias archchroot='mount --rbind /sys sys/ && mount --make-rslave sys/ && mount --rbind /dev dev/ && mount --make-rslave dev/ && mount -t proc proc proc/ && chroot '
+alias ws='web_search_custom '
+alias reddit='web_search_custom reddit '
+alias google='web_search_custom google '
+alias aw='arch-wiki '
+
 alias sefi="sed 's@/boot/@EFI/arch/@g' /boot/refind_linux.conf | sudo tee /boot/efi/EFI/arch/refind_linux.conf "
 alias vrc='sudo vim /etc/vimrc '
 alias cm='chromium '
@@ -34,9 +40,7 @@ alias sdwim='antigen-bundle oknowton/zsh-dwim '
 #alias sdwim='. /usr/share/zsh-dwim/init.zsh '
 alias ptpb='curl https://ptpb.pw -F c=@- '
 alias fptpb='pbpst -S#f '
-alias qemu='qemu-system-x86_64 -enable-kvm -net tap -net nic,model=virtio -usb -device \
-usb-host,hostbus=3,hostaddr=2 -vga vmware -spice \
-port=5930,disable-ticketing,addr=::1 -m 1024 deb8subvols.qcow2  '
+alias qemu='qemu-system-x86_64 -enable-kvm -net tap -net nic,model=virtio -usb -device usb-host,hostbus=3,hostaddr=2 -vga vmware -spice port=5930,disable-ticketing,addr=::1 -m 1024 deb8subvols.qcow2  '
 alias kindle='kindlegen -c0 -verbose '
 alias icast='sudo icecast -b -c /etc/icecast.xml '
 alias v='vim -p '
@@ -175,47 +179,80 @@ alias ald='ld -I/lib64/ld-linux-x86-64.so.2 /usr/lib/crt1.o /usr/lib/crti.o -lc 
 
 ## shell functions
 
+web_search_custom() {
+	emulate -L zsh
+	typeset -A urls
+	urls=(reddit "https://www.google.com/search?q=site:reddit.com+" google "https://www.google.com/search?q=" bing "https://www.bing.com/search?q=" yahoo "https://search.yahoo.com/search?p=" duckduckgo "https://www.duckduckgo.com/?q=" yandex "https://yandex.ru/yandsearch?text=" github "https://github.com/search?q=" baidu "https://www.baidu.com/s?wd=" ecosia "https://www.ecosia.org/search?q=")
+	if [[ -z "$urls[$1]" ]]
+	then
+		echo "Search engine $1 not supported."
+		return 1
+	fi
+	if [[ $# -gt 1 ]]
+	then
+		url="${urls[$1]}${(j:+:)@[2,-1]}"
+	else
+		url="${(j://:)${(s:/:)urls[$1]}[1,2]}"
+	fi
+	open_command "$url"
+}
 kvm() {
 	local format
-	format="${1##*.}"
+	declare -a args
+	args=( "$1" )
+	for ((i=1;i<${#}+1;i++)) shift && args+="$1"
+	format="${args[1]##*.}"
+	format="${format/cow/qcow2}"
+	[[ -z "$args[2]" || "$args[2]" == "null" ]] && {
+		qemu-system-x86_64 -boot menu=on -drive file="${args[1]?No image specified!}",format="$format" -enable-kvm \
+			-usbdevice tablet -machine type=pc,accel=kvm -cpu host -smp 4 \
+			-m "${args[3]:-2048}" -net nic -net bridge,br=virbr0,smb=/mnt/shared \
+			-vga "${args[4]:-vmware}"; } || {
+			#-spice port=5930,disable-ticketing \
+			#-device "${4:-vmware}"-serial-pci -device virtserialport,chardev=spicechannel0,name=com.redhat.spice.0 \
+			#-chardev spicevmc,id=spicechannel0,name=vdagent \
+			#-spice unix,addr=/tmp/vm_spice.socket,disable-ticketing,playback-compression=off; } || {
 	#format="${format/cow/qcow2}"
-	[[ -z "$2" ]] &&
-		qemu-system-x86_64 -boot menu=on -drive file="${1?No image specified!}",format="${format/cow/qcow2}" -enable-kvm \
-			-vga qxl -spice port=5930,disable-ticketing \
-			-spice unix,addr=/tmp/vm_spice.socket,disable-ticketing,playback-compression=off \
-			-device virtio-serial-pci -device virtserialport,chardev=spicechannel0,name=com.redhat.spice.0 \
-			-chardev spicevmc,id=spicechannel0,name=vdagent \
-			-usbdevice tablet -machine type=pc,accel=kvm -cpu host -smp \
-			-m "${3:-2048}" -net nic -net bridge,br=virbr0 ||
-		qemu-system-x86_64 -cdrom "${2}" -boot menu=on -drive file="${1?No image specified!}",format="${format/cow/qcow2}" -enable-kvm \
-			-vga qxl -spice port=5930,disable-ticketing \
-			-spice unix,addr=/tmp/vm_spice.socket,disable-ticketing,playback-compression=off \
-			-device virtio-serial-pci -device virtserialport,chardev=spicechannel0,name=com.redhat.spice.0 \
-			-chardev spicevmc,id=spicechannel0,name=vdagent \
-			-usbdevice tablet -machine type=pc,accel=kvm -cpu host -smp \
-			-m "${3:-2048}" -net nic -net bridge,br=virbr0
+		qemu-system-x86_64 -cdrom "${args[2]}" -boot order=d \
+			-drive file="${args[1]?No image specified!}",format="$format" -enable-kvm \
+			-usbdevice tablet -machine type=pc,accel=kvm -cpu host -smp 4 \
+			-m "${args[3]:-2048}" -net nic -net bridge,br=virbr0,smb=/mnt/shared \
+			-vga "${args[4]:-vmware}"; }
+			#-spice port=5930,disable-ticketing \
+			#-device "${4:-vmware}"-serial-pci -device virtserialport,chardev=spicechannel0,name=com.redhat.spice.0 \
+			#-chardev spicevmc,id=spicechannel0,name=vdagent \
+			#-spice unix,addr=/tmp/vm_spice.socket,disable-ticketing,playback-compression=off; }
 	#qemu-system-x86_64 -cdrom ~/sdxc/install-amd64-minimal-20160915.iso -boot order=d \
 	#-drive file=/@media/backup/gentoo.cow,format=qcow2 -enable-kvm -m 512 -net nic -net bridge,br=virbr0
 }
 ovmf-kvm() {
 	local format
-	format="${1##*.}"
+	declare -a args
+	args=( "$1" )
+	for ((i=1;i<${#}+1;i++)) shift && args+="$1"
+	format="${args[1]##*.}"
+	format="${format/cow/qcow2}"
+	args[3]="${args[3]/null/2048}"
+	args[4]="${args[4]/null/vmware}"
+	[[ -z "$args[2]" || "$args[2]" == "null" ]] && {
+		qemu-system-x86_64 -boot menu=on -drive file="${args[1]?No image specified!}",format="$format" -enable-kvm \
+			-usbdevice tablet -machine type=pc,accel=kvm -cpu host -smp 4 \
+			-m "${args[3]:-2048}" -net nic -net bridge,br=virbr0,smb=/mnt/shared \
+			-vga "${args[4]:-vmware}" -bios "${HOME}/ovmf_x64.bin"; } || {
+			#-spice port=5930,disable-ticketing \
+			#-device "${4:-vmware}"-serial-pci -device virtserialport,chardev=spicechannel0,name=com.redhat.spice.0 \
+			#-chardev spicevmc,id=spicechannel0,name=vdagent \
+			#-spice unix,addr=/tmp/vm_spice.socket,disable-ticketing,playback-compression=off; } || {
 	#format="${format/cow/qcow2}"
-	[[ -z "$2" ]] &&
-		qemu-system-x86_64 -boot menu=on -drive file="${1?No image specified!}",format="${format/cow/qcow2}" -enable-kvm \
-			-vga qxl -spice port=5930,disable-ticketing \
-			-spice unix,addr=/tmp/vm_spice.socket,disable-ticketing,playback-compression=off \
-			-device virtio-serial-pci -device virtserialport,chardev=spicechannel0,name=com.redhat.spice.0 \
-			-chardev spicevmc,id=spicechannel0,name=vdagent \
-			-usbdevice tablet -machine type=pc,accel=kvm -cpu host -smp \
-			-m "${3:-2048}" -net nic -net bridge,br=virbr0 -bios "${HOME}/ovmf_x64.bin" ||
-		qemu-system-x86_64 -cdrom "${2}" -boot menu=on -drive file="${1?No image specified!}",format="${format/cow/qcow2}" -enable-kvm \
-			-vga qxl -spice port=5930,disable-ticketing \
-			-spice unix,addr=/tmp/vm_spice.socket,disable-ticketing,playback-compression=off \
-			-device virtio-serial-pci -device virtserialport,chardev=spicechannel0,name=com.redhat.spice.0 \
-			-chardev spicevmc,id=spicechannel0,name=vdagent \
-			-usbdevice tablet -machine type=pc,accel=kvm -cpu host -smp \
-			-m "${3:-2048}" -net nic -net bridge,br=virbr0 -bios "${HOME}/ovmf_x64.bin"
+		qemu-system-x86_64 -cdrom "${args[2]}" -boot order=d \
+			-drive file="${args[1]?No image specified!}",format="$format" -enable-kvm \
+			-usbdevice tablet -machine type=pc,accel=kvm -cpu host -smp 4 \
+			-m "${args[3]:-2048}" -net nic -net bridge,br=virbr0,smb=/mnt/shared \
+			-vga "${args[4]:-vmware}" -bios "${HOME}/ovmf_x64.bin"; }
+			#-spice port=5930,disable-ticketing \
+			#-device "${4:-vmware}"-serial-pci -device virtserialport,chardev=spicechannel0,name=com.redhat.spice.0 \
+			#-chardev spicevmc,id=spicechannel0,name=vdagent \
+			#-spice unix,addr=/tmp/vm_spice.socket,disable-ticketing,playback-compression=off; }
 	#qemu-system-x86_64 -cdrom ~/sdxc/install-amd64-minimal-20160915.iso -boot menu=on \
 	#-drive file=/@media/backup/gentoo.cow,format=qcow2 -enable-kvm -m 2048 -net nic -net bridge,br=virbr0
 }
@@ -234,7 +271,6 @@ dloader() { node /@media/microSDXC/deezloader/app.js & disown; }
 tpanning() {
     #xrandr -q | grep "eDP1" | grep "panning"
     #xrandr --fb 4096x2560 --output eDP1 --mode 2160x1440 --panning 4096x2560+0+0/4096x2560+0+0/0/0/0/0
-
     local vres
     ## check if force arg is given
     [[ ! -z "$1" ]] && {
@@ -502,7 +538,7 @@ tmpcurl() {
 		[Yy]*|'') : ;; ## Continue
 		[Nn]*) printf " \033[31m %s \n\033[0m" "Exiting..."; return 1 ;;
 		*) printf " \033[31m %s \n\033[0m" "Invalid input..."; return 1 ;;
-	esac 
+	esac
 	curl -O "${url}"
 	return 0; }
 }
@@ -515,7 +551,7 @@ shcurl() {
 		[Yy]*|'') : ;; ## Continue
 		[Nn]*) printf " \033[31m %s \n\033[0m" "Exiting..."; return 1 ;;
 		*) printf " \033[31m %s \n\033[0m" "Invalid input..."; return 1 ;;
-	esac 
+	esac
 	sh -c "$(curl -fsSL ${url})"
 	return 0; }
 }
@@ -732,7 +768,7 @@ dssign () {
 	  return 0; }
 	else
  	  IFSold=${IFS}
-	  IFS=$'\n' 
+	  IFS=$'\n'
  	  printf '%b\n\t' \
 	  	'signing zone(s): ' "${@}" '\rstarting script...'
  	  IFS=${IFSold}
@@ -923,8 +959,8 @@ prompt_confirm() {
       [yY]) echo ; return 0 ;;
       [nN]) echo ; return 1 ;;
       *) printf " \033[31m %s \n\033[0m" "invalid input"
-    esac 
-  done  
+    esac
+  done
   return 2 # Nothing executed past this point
 
   ## Example usage
@@ -1048,11 +1084,11 @@ ufs(){
 	return 0; }
 }
 sfs() {
-	[[ -z `find /mnt -maxdepth 1 -fstype "fuse.sshfs" -print` ]] && { 
+	[[ -z `find /mnt -maxdepth 1 -fstype "fuse.sshfs" -print` ]] && {
 		sshfs "192.168.1.99:/home/alyptik" "/mnt/arch"
 		sshfs "192.168.1.99:/mnt/windows" "/mnt/windows"
 		sshfs "192.168.1.99:/mnt/windows/Users/Administrator/Desktop/stuff" "/mnt/winserver"
-		return 0; } || { ufs; return 1; } 
+		return 0; } || { ufs; return 1; }
 }
 sfs2() {
 	true || {
@@ -1075,7 +1111,7 @@ sfs2() {
 	#mounted=`find /mnt -maxdepth 1 -fstype "fuse.sshfs" -exec sudo umount "{}" \; -print`
 	#mpid="$mpid `ps aux | grep $! | grep -v grep`"
 	#trap ' { find /mnt -maxdepth 1 -fstype "fuse.sshfs" -print0 | \
-	#xargs -t0 -I{} sudo umount "{}"; 
+	#xargs -t0 -I{} sudo umount "{}";
 	#ps aux | grep $mpid | grep -v grep
 }
 

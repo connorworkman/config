@@ -4145,3 +4145,1418 @@
 2016-09-20 14:04:52	<--	ahmedelgabri (~ahmedelga@2a02:a441:9f5:0:68e3:839b:564f:3eee) has quit (Quit: WeeChat 1.5)
 2016-09-20 14:06:44	<--	P1RATEZ (piratez@unaffiliated/p1ratez) has quit (Quit: shawarma craving)
 2016-09-20 14:12:00		[14:06]
+2016-09-20 14:15:12	<--	aw1 (~aw1@unaffiliated/aw1) has quit (Read error: Connection reset by peer)
+2016-09-20 14:19:06	-->	ussher_ (~thinkpad@240b:10:9200:2900:4a5b:39ff:feac:14f4) has joined #regex
+2016-09-20 14:19:13	-->	stranglerfish (63f8cb6f@gateway/web/freenode/ip.99.248.203.111) has joined #regex
+2016-09-20 14:19:16	stranglerfish	hello
+2016-09-20 14:19:21	+OnlineCop	Hi.
+2016-09-20 14:21:15	stranglerfish	I'm hoping someone can give me a hand with a regex crossword. I've gotten a fair bit into this site but it offers little explanation, and I'm confused about a certain part. the regex is (.)(.)\2\1 and I don't understand what the \2\1 signify
+2016-09-20 14:21:23	stranglerfish	https://regexcrossword.com/challenges/experienced/puzzles/3
+2016-09-20 14:21:44	<--	morenoh149 (~harry@69.12.26.166) has quit (Ping timeout: 244 seconds)
+2016-09-20 14:21:48	stranglerfish	that's the puzzle I'm working on, i've got basically the 1st quadrant of it complete, the simple parts
+2016-09-20 14:22:11	+Zarthus	hehe, (.)(.) will never get old
+2016-09-20 14:22:56	-->	karakedi (~eAC53C340@unaffiliated/orphan) has joined #regex
+2016-09-20 14:22:57	+Zarthus	(.)(.) matches two any characters, the first capturing group is \1, the second capturing group is \2
+2016-09-20 14:23:20	+Zarthus	so if your string is "saas", it'll match. if it's "sasa" it won't.
+2016-09-20 14:23:45	stranglerfish	one sec i gotta look up capturing group lol
+2016-09-20 14:24:22	+Zarthus	(.)(.)\2\1 on test string "abba" basically will transform the string/regex into (.)(.)ba
+2016-09-20 14:24:36	+Zarthus	if you don't know capturing groups, I wouldn't worry about how \2 \1 works
+2016-09-20 14:24:50	+Zarthus	(they're a bit more advanced than just capturing groups alone)
+2016-09-20 14:24:52	stranglerfish	hehe, what should I brush up on then
+2016-09-20 14:25:17	stranglerfish	hmm, maybe youtube would have a good visual example?
+2016-09-20 14:25:28	+Zarthus	do you not understand my explanation?
+2016-09-20 14:25:42	stranglerfish	nope
+2016-09-20 14:25:55	+Zarthus	okay, let's ease it up
+2016-09-20 14:26:12	stranglerfish	sounds good to me
+2016-09-20 14:26:23	+Zarthus	your regex is ([ab])\1  -- you've already learned [ab] matches either a or b
+2016-09-20 14:26:49	-->	ctcrnitv (~textual@96-90-249-25-static.hfc.comcastbusiness.net) has joined #regex
+2016-09-20 14:26:57	+Zarthus	the capturing group takes note of which character was captured (if the first letter is an 'a', it matches a, if it's 'b' b, and c and beyond don't match)
+2016-09-20 14:26:59	<--	tazjin (~tazjin@127.9.199.104.bc.googleusercontent.com) has quit (Remote host closed the connection)
+2016-09-20 14:27:48	+Zarthus	with \1 you look back at what the first capturing group had (for this example, let's go with 'a') - the next character now has to be 'a'
+2016-09-20 14:27:48		[14:27]
+2016-09-20 14:28:13	+Zarthus	so aa matches, bb matches, but ab or ba doesn't.
+2016-09-20 14:29:29	-->	tazjin (~tazjin@71.15.199.104.bc.googleusercontent.com) has joined #regex
+2016-09-20 14:29:34	+OnlineCop	stranglerfish: A capture group tells the regex that you want to save what you matched into one slot of an array. Each group of parens creates one more array lot, and stores anything that matches into the corresponding array index.
+2016-09-20 14:30:30	+OnlineCop	If you have a single capture group, like  (abc)   then when it matches 'abc' somewhere in the text, it stores that value of  'abc'  in the first array:  MyCaptures[1]
+2016-09-20 14:30:39	<--	Elektrode13 (~Elektrode@wsip-72-215-244-100.br.br.cox.net) has quit (Quit: Elektrode13)
+2016-09-20 14:30:54	+OnlineCop	If you add another capture group, it will add another array element:  (abc)(def)  will save  MyCaptures[1] = 
+2016-09-20 14:30:56	+OnlineCop	'abc'
+2016-09-20 14:31:01	+OnlineCop	and MyCaptures[2] = 'def'
+2016-09-20 14:31:21	-->	aw1 (~aw1@unaffiliated/aw1) has joined #regex
+2016-09-20 14:31:32	+OnlineCop	The more groups you add, the more array elements get added.
+2016-09-20 14:31:51	+OnlineCop	If you want to refer to the stuff inside of one of the groups, you can use   \1  or  \2  or whatever to access it.
+2016-09-20 14:32:07	+OnlineCop	So if you captured   (abc)(def)  and then wanted the  MyCaptures[2]   you would use  \2  to refer to 'def'
+2016-09-20 14:32:40	+OnlineCop	When you have   (.)(.)\2\1   it says  MyCaptures[1] = '.', MyCaptures[2] = '.'
+2016-09-20 14:32:54	+OnlineCop	Where ('.') is actually any single character: a letter, a space, or whatever.
+2016-09-20 14:33:41	+OnlineCop	When it says   \2  then it wants the same value that's in  MyCaptures[2]  to match, so   'abba'  will have  MyCaptures[1] = 'a' and MyCaptures[2] = 'b', so  it matches   MyCaptures[1], MyCaptures[2], MyCaptures[2], and then MyCaptures[1]  in that order.
+2016-09-20 14:34:21	<--	ash_workz (~chatzilla@2601:681:302:ee0:d081:754b:a9f4:8029) has quit (Ping timeout: 250 seconds)
+2016-09-20 14:35:01	stranglerfish	sorry got distracted, i'm back
+2016-09-20 14:37:35	stranglerfish	aaaaah
+2016-09-20 14:37:54	stranglerfish	wow man, thanks. you broke that down very well, appreciate your help :)
+2016-09-20 14:38:02	+OnlineCop	:)
+2016-09-20 14:39:19	stranglerfish	so then say (b)(a)(n)\2\3\2
+2016-09-20 14:39:23	stranglerfish	banana
+2016-09-20 14:39:24	stranglerfish	?
+2016-09-20 14:39:30	+OnlineCop	Yes.
+2016-09-20 14:39:33	stranglerfish	YAY
+2016-09-20 14:39:42	stranglerfish	you teach me to banana with regex, i love you
+2016-09-20 14:39:49	--	You are now known as blue
+2016-09-20 14:39:54	+OnlineCop	!regex ban banard banana bananas /(b)(a)(n)\2\3\2/g
+2016-09-20 14:39:55	+pork	[Result: 2] [0:12-17: banana] [1:12-12: b] [2:13-13: a] [3:14-14: n] [4:19-19: b] [5:20-20: a] [6:21-21: n]
+2016-09-20 14:40:19	--	You are now known as Guest66035
+2016-09-20 14:40:53	+OnlineCop	!regex ban banard banana bananas /((b)(a)(n)\3\4\3)/g
+2016-09-20 14:40:54	+pork	[Result: 2] [0:12-17: banana] [1:12-17: banana] [2:12-12: b] [3:13-13: a] [4:14-14: n] [5:19-24: banana] [6:19-19: b] [7:20-20: a] [8:21-21: n]
+2016-09-20 14:41:12	--	You are now known as alyptik
+2016-09-20 14:41:23	+OnlineCop	Notice that I added another '(' at the beginning of the pattern, which shifted all the rest of the array elements down by one.
+2016-09-20 14:41:32	+OnlineCop	So  \3\4\3  had to be used instead of  \2\3\2
+2016-09-20 14:41:41	stranglerfish	so with (.)T*E*\1 from that crossword. is it the (.) that is the first capture group? not the E*, right?
+2016-09-20 14:41:50	+OnlineCop	That's correct.
+2016-09-20 14:42:17	+OnlineCop	So it pretty much means that the first and last character is going to be the same character.
+2016-09-20 14:42:27	+OnlineCop	But there can be any number of T's followed by any number of E's.
+2016-09-20 14:44:40	<--	JohnDoe2 (~johndoe2@regex.cf) has quit (Quit: bye)
+2016-09-20 14:44:40		[14:44]
+2016-09-20 14:44:55	<--	ctcrnitv (~textual@96-90-249-25-static.hfc.comcastbusiness.net) has left #regex ("Textual IRC Client: www.textualapp.com")
+2016-09-20 14:46:34	<--	souther (~souther@2605:6400:1:fed5:22:1ac:61c0:e24e) has quit (Ping timeout: 248 seconds)
+2016-09-20 14:47:18	<--	jeffreylevesque (~chatzilla@static-70-109-50-84.clppva.fios.verizon.net) has quit (Ping timeout: 264 seconds)
+2016-09-20 14:47:23	-->	JohnDoe2 (~johndoe2@regex.cf) has joined #regex
+2016-09-20 14:47:23	--	Mode #regex [+v JohnDoe2] by ChanServ
+2016-09-20 14:47:23	stranglerfish	awesome, thanks again. a lotta people can be hella rude when asked for help, so i appreciate that you took the time to explain that to me fully :D
+2016-09-20 14:47:33	-->	souther (~souther@2605:6400:1:fed5:22:1ac:61c0:e24e) has joined #regex
+2016-09-20 14:47:36	+OnlineCop	My pleasure.
+2016-09-20 14:47:42	+OnlineCop	Feel free to ask in here anytime you need it.
+2016-09-20 14:48:04	stranglerfish	:) Will do!
+2016-09-20 14:48:08	-->	skweek (~skweek@68-200-146-225.res.bhn.net) has joined #regex
+2016-09-20 14:48:59	-->	Girafferson (~Giraffers@2601:281:8001:663d:e234:b24c:6011:64f4) has joined #regex
+2016-09-20 14:52:29	stranglerfish	so * means 0 or more right? (.)T*E*\1 could be (.)EE(.) or (.)TT(.) or (.)TE(.) but not (.)ET(.), correct?
+2016-09-20 14:52:44	+OnlineCop	Correct.
+2016-09-20 14:53:30	stranglerfish	kk. yeah this crossword probably isn't the best learning resource, it doesn't actually explain it just has a reference on the side. so i've been guessing and just figuring out sort of like it's a sudoku, which taught me some stuff but some other stuff i needed to clarify clearly ;)
+2016-09-20 14:59:00		[14:53]
+2016-09-20 15:03:20	<--	JohnDoe2 (~johndoe2@regex.cf) has quit (Quit: bye)
+2016-09-20 15:04:45	<--	Mitch-_- (~Mitch@d149-67-206-235.try.wideopenwest.com) has quit (Quit: This computer has gone to sleep)
+2016-09-20 15:06:15	<--	souther (~souther@2605:6400:1:fed5:22:1ac:61c0:e24e) has quit (Ping timeout: 265 seconds)
+2016-09-20 15:10:35	-->	JohnDoe2 (~johndoe2@regex.cf) has joined #regex
+2016-09-20 15:10:35	--	Mode #regex [+v JohnDoe2] by ChanServ
+2016-09-20 15:12:22	-->	souther (~souther@2605:6400:1:fed5:22:1ac:61c0:e24e) has joined #regex
+2016-09-20 15:18:00		[15:12]
+2016-09-20 15:20:55	-->	PCLine__ (~PCLine_@98.29.181.95) has joined #regex
+2016-09-20 15:22:42	<--	stranglerfish (63f8cb6f@gateway/web/freenode/ip.99.248.203.111) has quit (Ping timeout: 240 seconds)
+2016-09-20 15:28:00		[15:22]
+2016-09-20 15:38:58	-->	safe (~safe@unaffiliated/safe) has joined #regex
+2016-09-20 15:44:00		[15:38]
+2016-09-20 15:52:06	<--	skweek (~skweek@68-200-146-225.res.bhn.net) has quit (Ping timeout: 265 seconds)
+2016-09-20 15:53:43	<--	Girafferson (~Giraffers@2601:281:8001:663d:e234:b24c:6011:64f4) has quit (Quit: Leaving)
+2016-09-20 15:54:14	<--	navidr (uid112413@gateway/web/irccloud.com/x-fzumgbqjryjzeppb) has quit (Quit: Connection closed for inactivity)
+2016-09-20 16:00:00		[15:54]
+2016-09-20 16:01:45	<--	Drullkus (~Drullkus@c-67-180-188-243.hsd1.ca.comcast.net) has quit (Ping timeout: 265 seconds)
+2016-09-20 16:06:17	-->	morenoh149 (~harry@69.12.26.166) has joined #regex
+2016-09-20 16:07:25	-->	Drullkus (~Drullkus@c-67-180-188-243.hsd1.ca.comcast.net) has joined #regex
+2016-09-20 16:11:01	<--	morenoh149 (~harry@69.12.26.166) has quit (Ping timeout: 265 seconds)
+2016-09-20 16:11:34	-->	Girafferson (~Giraffers@2601:281:8001:663d:e234:b24c:6011:64f4) has joined #regex
+2016-09-20 16:14:07	-->	regex101-5079 (cb7e828c@gateway/web/freenode/ip.203.126.130.140) has joined #regex
+2016-09-20 16:14:24	<--	regex101-5079 (cb7e828c@gateway/web/freenode/ip.203.126.130.140) has quit (Client Quit)
+2016-09-20 16:20:00		[16:14]
+2016-09-20 16:23:56	<--	eliasr (uid27497@gateway/web/irccloud.com/x-ysmrebborxwtwivx) has quit (Quit: Connection closed for inactivity)
+2016-09-20 16:26:12	-->	regex101-0019 (49dc6d52@gateway/web/freenode/ip.73.220.109.82) has joined #regex
+2016-09-20 16:26:56	regex101-0019	!rehelp
+2016-09-20 16:26:56	+perlbot	Please post your regex attempt and sample string(s) at https://regex101.com/, then click Save (ctrl+s) and post the link here. You should indicate what language/platform you are using and, where possible, provide examples of both what should and should not match.
+2016-09-20 16:29:11	<--	ExeciN (~nicexe@bnc.stormbit.net) has quit (Ping timeout: 250 seconds)
+2016-09-20 16:29:36	<--	Arieh (sbnc@isdb.nl) has quit (Ping timeout: 272 seconds)
+2016-09-20 16:30:29	<--	marlinc (~marlinc@unaffiliated/marlinc) has quit (Ping timeout: 250 seconds)
+2016-09-20 16:32:20	-->	marlinc (~marlinc@unaffiliated/marlinc) has joined #regex
+2016-09-20 16:33:35	-->	Arieh (sbnc@isdb.nl) has joined #regex
+2016-09-20 16:38:22	<--	regex101-0019 (49dc6d52@gateway/web/freenode/ip.73.220.109.82) has quit (Quit: Page closed)
+2016-09-20 16:38:22		[16:38]
+2016-09-20 16:54:49	<--	Muzer (~muzer@cpc96772-rdng27-2-0-cust294.15-3.cable.virginm.net) has quit (Ping timeout: 244 seconds)
+2016-09-20 16:54:49		[16:54]
+2016-09-20 16:58:58	<--	gde33 (~Gaby@546A1135.cm-12-3a.dynamic.ziggo.nl) has quit (Ping timeout: 255 seconds)
+2016-09-20 17:01:19	-->	SwiftMatt (~Objective@130.253.27.194) has joined #regex
+2016-09-20 17:02:04	-->	aavrug (~gaurav@117.240.170.130) has joined #regex
+2016-09-20 17:02:56	<--	aavrug (~gaurav@117.240.170.130) has quit (Max SendQ exceeded)
+2016-09-20 17:03:27	-->	aavrug (~gaurav@117.240.170.130) has joined #regex
+2016-09-20 17:04:22	-->	ferdna (~ferdna@cpe-69-23-141-130.elp.res.rr.com) has joined #regex
+2016-09-20 17:10:00		[17:04]
+2016-09-20 17:12:24	<--	_slade_ (~Slade@fq-130-49-42-31.wireless.pitt.edu) has quit (Remote host closed the connection)
+2016-09-20 17:13:43	-->	gde33 (~Gaby@546A1135.cm-12-3a.dynamic.ziggo.nl) has joined #regex
+2016-09-20 17:19:00		[17:13]
+2016-09-20 17:22:59	-->	Mitch-_- (~Mitch@d149-67-206-235.try.wideopenwest.com) has joined #regex
+2016-09-20 17:24:11	-->	ExeciN (~nicexe@bnc.stormbit.net) has joined #regex
+2016-09-20 17:27:53	-->	TheDcoder (~TheDcoder@unaffiliated/thedcoder) has joined #regex
+2016-09-20 17:33:00		[17:27]
+2016-09-20 17:48:07	<--	SwiftMatt (~Objective@130.253.27.194) has quit (Quit: My MacBook Pro has gone to sleep. ZZZzzz…)
+2016-09-20 17:48:07		[17:48]
+2016-09-20 17:53:52	<--	reveredge (~reveredge@115.110.126.75) has quit (Ping timeout: 255 seconds)
+2016-09-20 17:54:34	<--	Nyterax (~Nyterax@unaffiliated/nyterax) has quit (Remote host closed the connection)
+2016-09-20 17:55:09	-->	morenoh149 (~harry@69.12.26.166) has joined #regex
+2016-09-20 17:59:45	<--	morenoh149 (~harry@69.12.26.166) has quit (Ping timeout: 250 seconds)
+2016-09-20 18:05:00		[17:59]
+2016-09-20 18:06:21	-->	reveredge (~reveredge@111.119.209.219) has joined #regex
+2016-09-20 18:06:30	-->	regex101-3700 (1b22061e@gateway/web/freenode/ip.27.34.6.30) has joined #regex
+2016-09-20 18:06:32	<--	regex101-3700 (1b22061e@gateway/web/freenode/ip.27.34.6.30) has quit (Client Quit)
+2016-09-20 18:06:38	-->	SwiftMatt (~Objective@130.253.27.194) has joined #regex
+2016-09-20 18:07:13	<--	SwiftMatt (~Objective@130.253.27.194) has quit (Client Quit)
+2016-09-20 18:13:00		[18:07]
+2016-09-20 18:24:00	-->	SwiftMatt (~Objective@027-194.eduroam-public.du.edu) has joined #regex
+2016-09-20 18:27:10	-->	nilg (~user@77.70.2.229) has joined #regex
+2016-09-20 18:28:37	<--	SwiftMatt (~Objective@027-194.eduroam-public.du.edu) has quit (Quit: My MacBook Pro has gone to sleep. ZZZzzz…)
+2016-09-20 18:28:37		[18:28]
+2016-09-20 18:37:42	<--	bcow (~bcowing@104.192.46.2) has quit (Ping timeout: 264 seconds)
+2016-09-20 18:41:49	-->	SwiftMatt (~Objective@130.253.27.194) has joined #regex
+2016-09-20 18:41:53	-->	regex101-3782 (5b8f7fc4@gateway/web/freenode/ip.91.143.127.196) has joined #regex
+2016-09-20 18:42:37	regex101-3782	Hi all... Hope someone can help.... I need a simple regex which extract the first 6 digits number in text..... But how?
+2016-09-20 18:42:50	<--	SwiftMatt (~Objective@130.253.27.194) has quit (Client Quit)
+2016-09-20 18:42:50	+OnlineCop	First 6 digits of what kind of text?
+2016-09-20 18:43:14	+OnlineCop	Text contain a lot more digits, or only the first 6 characters of the string, which should all be digits instead of something else?
+2016-09-20 18:45:37	regex101-3782	Like: "Account number 	234123  Lid: 123i12"  where it needs to extract 234123
+2016-09-20 18:45:37		[18:45]
+2016-09-20 18:45:59	+OnlineCop	 \b(\d{6})\b
+2016-09-20 18:46:14	+OnlineCop	!regex  Account number 234123  Lid: 123i12  /\b(\d{6})\b/g
+2016-09-20 18:46:14	+pork	[Result: 1] [0:16-21: 234123] [1:16-21: 234123]
+2016-09-20 18:46:56	regex101-3782	Perfect Thanks!!!
+2016-09-20 18:47:02	+OnlineCop	My pleasure
+2016-09-20 18:48:57	-->	Muzer (~muzer@cpc96772-rdng27-2-0-cust294.15-3.cable.virginm.net) has joined #regex
+2016-09-20 18:49:39	regex101-3782	One think..... It must only take the first hit... 
+2016-09-20 18:49:54	+OnlineCop	^.*?\b(\d{6})\b
+2016-09-20 18:50:00	regex101-3782	sorry.... nevermind
+2016-09-20 18:50:01	+OnlineCop	Use with the  /m  flag.
+2016-09-20 18:50:08	+OnlineCop	  /^.*?\b(\d{6})\b/gm
+2016-09-20 18:51:01	-->	SwiftMatt (~Objective@130.253.27.194) has joined #regex
+2016-09-20 18:51:25	+OnlineCop	https://regex101.com/r/bW6tQ7/1
+2016-09-20 18:52:37	--	irc: disconnected from server
+2016-09-20 18:53:19	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined #regex
+2016-09-20 18:53:19	--	Topic for #regex is "Need help? Type '!rehelp' | Trying to regex HTML? Type '!html' | Home: https://regex101.com/ | Tutorial: http://bit.ly/1mXMXbr"
+2016-09-20 18:53:19	--	Topic set by digitok on Fri, 11 Mar 2016 03:45:46
+2016-09-20 18:53:19	--	Channel #regex: 319 nicks (1 op, 19 voices, 299 normals)
+2016-09-20 18:53:19	***	Buffer Playback...
+2016-09-20 18:53:19	+OnlineCop	[00:31:50] If you want to refer to the stuff inside of one of the groups, you can use   \1  or  \2  or whatever to access it. [00:31:50]
+2016-09-20 18:53:19	+OnlineCop	[00:32:06] So if you captured   (abc)(def)  and then wanted the  MyCaptures[2]   you would use  \2  to refer to 'def' [00:32:06]
+2016-09-20 18:53:19	+OnlineCop	[00:32:39] When you have   (.)(.)\2\1   it says  MyCaptures[1] = '.', MyCaptures[2] = '.' [00:32:39]
+2016-09-20 18:53:19	+OnlineCop	[00:32:53] Where ('.') is actually any single character: a letter, a space, or whatever. [00:32:53]
+2016-09-20 18:53:19	+OnlineCop	[00:33:40] When it says   \2  then it wants the same value that's in  MyCaptures[2]  to match, so   'abba'  will have  MyCaptures[1] = 'a' and MyCaptures[2] = 'b', so  it matches   MyCaptures[1], MyCaptures[2], MyCaptures[2], and then MyCaptures[1]  in that order. [00:33:40]
+2016-09-20 18:53:19	stranglerfish	[00:35:00] sorry got distracted, i'm back [00:35:00]
+2016-09-20 18:53:19	stranglerfish	[00:37:34] aaaaah [00:37:34]
+2016-09-20 18:53:19	stranglerfish	[00:37:54] wow man, thanks. you broke that down very well, appreciate your help :) [00:37:54]
+2016-09-20 18:53:19	+OnlineCop	[00:38:01] :) [00:38:01]
+2016-09-20 18:53:19	stranglerfish	[00:39:18] so then say (b)(a)(n)\2\3\2 [00:39:18]
+2016-09-20 18:53:19	stranglerfish	[00:39:22] banana [00:39:22]
+2016-09-20 18:53:19	stranglerfish	[00:39:23] ? [00:39:23]
+2016-09-20 18:53:19	+OnlineCop	[00:39:29] Yes. [00:39:29]
+2016-09-20 18:53:19	stranglerfish	[00:39:32] YAY [00:39:32]
+2016-09-20 18:53:19	stranglerfish	[00:39:41] you teach me to banana with regex, i love you [00:39:41]
+2016-09-20 18:53:19	+OnlineCop	[00:39:53] !regex ban banard banana bananas /(b)(a)(n)\2\3\2/g [00:39:53]
+2016-09-20 18:53:19	+pork	[00:39:54] [Result: 2] [0:12-17: banana] [1:12-12: b] [2:13-13: a] [3:14-14: n] [4:19-19: b] [5:20-20: a] [6:21-21: n] [00:39:54]
+2016-09-20 18:53:19	+OnlineCop	[00:40:52] !regex ban banard banana bananas /((b)(a)(n)\3\4\3)/g [00:40:52]
+2016-09-20 18:53:19	+pork	[00:40:53] [Result: 2] [0:12-17: banana] [1:12-17: banana] [2:12-12: b] [3:13-13: a] [4:14-14: n] [5:19-24: banana] [6:19-19: b] [7:20-20: a] [8:21-21: n] [00:40:53]
+2016-09-20 18:53:19	+OnlineCop	[00:41:22] Notice that I added another '(' at the beginning of the pattern, which shifted all the rest of the array elements down by one. [00:41:22]
+2016-09-20 18:53:19	+OnlineCop	[00:41:31] So  \3\4\3  had to be used instead of  \2\3\2 [00:41:31]
+2016-09-20 18:53:19	stranglerfish	[00:41:40] so with (.)T*E*\1 from that crossword. is it the (.) that is the first capture group? not the E*, right? [00:41:40]
+2016-09-20 18:53:19	+OnlineCop	[00:41:49] That's correct. [00:41:49]
+2016-09-20 18:53:19	+OnlineCop	[00:42:16] So it pretty much means that the first and last character is going to be the same character. [00:42:16]
+2016-09-20 18:53:19	+OnlineCop	[00:42:26] But there can be any number of T's followed by any number of E's. [00:42:26]
+2016-09-20 18:53:19	stranglerfish	[00:47:22] awesome, thanks again. a lotta people can be hella rude when asked for help, so i appreciate that you took the time to explain that to me fully :D [00:47:22]
+2016-09-20 18:53:19	+OnlineCop	[00:47:35] My pleasure. [00:47:35]
+2016-09-20 18:53:19	+OnlineCop	[00:47:41] Feel free to ask in here anytime you need it. [00:47:41]
+2016-09-20 18:53:19	stranglerfish	[00:48:03] :) Will do! [00:48:03]
+2016-09-20 18:53:19	stranglerfish	[00:52:28] so * means 0 or more right? (.)T*E*\1 could be (.)EE(.) or (.)TT(.) or (.)TE(.) but not (.)ET(.), correct? [00:52:28]
+2016-09-20 18:53:19	+OnlineCop	[00:52:43] Correct. [00:52:43]
+2016-09-20 18:53:19	stranglerfish	[00:53:29] kk. yeah this crossword probably isn't the best learning resource, it doesn't actually explain it just has a reference on the side. so i've been guessing and just figuring out sort of like it's a sudoku, which taught me some stuff but some other stuff i needed to clarify clearly ;) [00:53:29]
+2016-09-20 18:53:19	regex101-0019	[02:26:56] !rehelp [02:26:56]
+2016-09-20 18:53:19	+perlbot	[02:26:56] Please post your regex attempt and sample string(s) at https://regex101.com/, then click Save (ctrl+s) and post the link here. You should indicate what language/platform you are using and, where possible, provide examples of both what should and should not match. [02:26:56]
+2016-09-20 18:53:19	regex101-3782	[04:42:37] Hi all... Hope someone can help.... I need a simple regex which extract the first 6 digits number in text..... But how? [04:42:37]
+2016-09-20 18:53:19	+OnlineCop	[04:42:50] First 6 digits of what kind of text? [04:42:50]
+2016-09-20 18:53:19	+OnlineCop	[04:43:14] Text contain a lot more digits, or only the first 6 characters of the string, which should all be digits instead of something else? [04:43:14]
+2016-09-20 18:53:19	regex101-3782	[04:45:37] Like: "Account number 	234123  Lid: 123i12"  where it needs to extract 234123 [04:45:37]
+2016-09-20 18:53:19	+OnlineCop	[04:45:59]  \b(\d{6})\b [04:45:59]
+2016-09-20 18:53:19	+OnlineCop	[04:46:14] !regex  Account number 234123  Lid: 123i12  /\b(\d{6})\b/g [04:46:14]
+2016-09-20 18:53:19	+pork	[04:46:14] [Result: 1] [0:16-21: 234123] [1:16-21: 234123] [04:46:14]
+2016-09-20 18:53:19	regex101-3782	[04:46:56] Perfect Thanks!!! [04:46:56]
+2016-09-20 18:53:19	+OnlineCop	[04:47:02] My pleasure [04:47:02]
+2016-09-20 18:53:19	regex101-3782	[04:49:39] One think..... It must only take the first hit...  [04:49:39]
+2016-09-20 18:53:19	+OnlineCop	[04:49:54] ^.*?\b(\d{6})\b [04:49:54]
+2016-09-20 18:53:19	regex101-3782	[04:50:00] sorry.... nevermind [04:50:00]
+2016-09-20 18:53:19	+OnlineCop	[04:50:01] Use with the  /m  flag. [04:50:01]
+2016-09-20 18:53:19	+OnlineCop	[04:50:08]   /^.*?\b(\d{6})\b/gm [04:50:08]
+2016-09-20 18:53:19	+OnlineCop	[04:51:25] https://regex101.com/r/bW6tQ7/1 [04:51:25]
+2016-09-20 18:53:19	+OnlineCop	[04:52:52] https://regex101.com/r/bW6tQ7/2 has additional examples. [04:52:52]
+2016-09-20 18:53:19	***	Playback Complete.
+2016-09-20 18:55:12	--	Channel created on Sat, 25 Nov 2006 20:43:02
+2016-09-20 19:00:54	+OnlineCop	https://regex101.com/r/bW6tQ7/3 is almost unreadable, but faster (change the  *+   to just  *  and notice how many steps it takes).
+2016-09-20 19:00:54		[19:00]
+2016-09-20 19:02:17	<--	krizoek (~krizoek@vmi24145.contabo.host) has quit (Ping timeout: 240 seconds)
+2016-09-20 19:02:54	<--	Vile` (~Vile@unaffiliated/vile/x-1886500) has quit (Ping timeout: 264 seconds)
+2016-09-20 19:03:19	<--	Mitch-_- (~Mitch@d149-67-206-235.try.wideopenwest.com) has quit (Quit: This computer has gone to sleep)
+2016-09-20 19:03:58	<--	gde33 (~Gaby@546A1135.cm-12-3a.dynamic.ziggo.nl) has quit (Ping timeout: 265 seconds)
+2016-09-20 19:07:37	-->	snarwade (snarwade@nat/redhat/x-uminlkhbmrjbmglb) has joined #regex
+2016-09-20 19:08:33	-->	krizoek (~krizoek@vmi24145.contabo.host) has joined #regex
+2016-09-20 19:14:00		[19:08]
+2016-09-20 19:18:11	<--	evilman_work (~evilman@87.244.6.228) has quit (Remote host closed the connection)
+2016-09-20 19:19:27	-->	shahinism (~shahinism@unaffiliated/shahinism) has joined #regex
+2016-09-20 19:21:47	-->	pijiu (~pijiu@unaffiliated/pijiu) has joined #regex
+2016-09-20 19:24:26	-->	evilman_work (~evilman@87.244.6.228) has joined #regex
+2016-09-20 19:25:07	<--	shahinism (~shahinism@unaffiliated/shahinism) has quit (Ping timeout: 250 seconds)
+2016-09-20 19:26:23	-->	P1RATEZ (piratez@unaffiliated/p1ratez) has joined #regex
+2016-09-20 19:26:27	<--	evilman_work (~evilman@87.244.6.228) has quit (Remote host closed the connection)
+2016-09-20 19:28:08	-->	evilman_work (~evilman@87.244.6.228) has joined #regex
+2016-09-20 19:30:42	-->	SwiftMatt (~Objective@130.253.27.194) has joined #regex
+2016-09-20 19:30:42		[19:30]
+2016-09-20 19:31:53	<--	jorj (~jorj@162.220.240.216) has quit (Ping timeout: 248 seconds)
+2016-09-20 19:32:55	<--	zenguy_pc (~zenguy_pc@162.245.216.41) has quit (Ping timeout: 244 seconds)
+2016-09-20 19:34:12	<--	regex101-3782 (5b8f7fc4@gateway/web/freenode/ip.91.143.127.196) has quit (Ping timeout: 240 seconds)
+2016-09-20 19:34:19	-->	zenguy_pc (~zenguy_pc@162.245.216.41) has joined #regex
+2016-09-20 19:37:59	-->	shahinism (~shahinism@unaffiliated/shahinism) has joined #regex
+2016-09-20 19:38:48	<--	evilman_work (~evilman@87.244.6.228) has quit (Remote host closed the connection)
+2016-09-20 19:39:45	-->	evilman_work (~evilman@87.244.6.228) has joined #regex
+2016-09-20 19:44:02	-->	morenoh149 (~harry@69.12.26.166) has joined #regex
+2016-09-20 19:46:51	<--	SwiftMatt (~Objective@130.253.27.194) has quit (Quit: My MacBook Pro has gone to sleep. ZZZzzz…)
+2016-09-20 19:46:51		[19:46]
+2016-09-20 19:48:55	<--	morenoh149 (~harry@69.12.26.166) has quit (Ping timeout: 265 seconds)
+2016-09-20 19:54:00		[19:48]
+2016-09-20 19:57:45	<--	karakedi (~eAC53C340@unaffiliated/orphan) has quit (Ping timeout: 244 seconds)
+2016-09-20 19:58:11	<--	rbr (~RTG@5419601D.cm-5-2b.dynamic.ziggo.nl) has quit (Ping timeout: 265 seconds)
+2016-09-20 19:59:48	-->	rbr (~RTG@5419601D.cm-5-2b.dynamic.ziggo.nl) has joined #regex
+2016-09-20 20:03:20	<--	safe (~safe@unaffiliated/safe) has quit (Read error: Connection reset by peer)
+2016-09-20 20:05:55	<--	BadboyKAS (~pap00se@2a01:258:f000:6:216:3eff:fef2:7a42) has quit (Ping timeout: 265 seconds)
+2016-09-20 20:08:39	-->	BadboyKAS (~pap00se@2a01:258:f000:6:216:3eff:fef2:7a42) has joined #regex
+2016-09-20 20:12:35	-->	Deusdeorum (~Deusdeoru@82.209.178.201) has joined #regex
+2016-09-20 20:12:35		[20:12]
+2016-09-20 20:12:51	<--	Deusdeorum (~Deusdeoru@82.209.178.201) has quit (Client Quit)
+2016-09-20 20:12:55	<--	Drullkus (~Drullkus@c-67-180-188-243.hsd1.ca.comcast.net) has quit (Remote host closed the connection)
+2016-09-20 20:18:00		[20:12]
+2016-09-20 20:18:01	<--	ferdna (~ferdna@cpe-69-23-141-130.elp.res.rr.com) has quit (Quit: Leaving)
+2016-09-20 20:22:28	--	Deusdeorum|away is now known as Deusdeorum
+2016-09-20 20:22:52	-->	dan2k3k4 (~dan2k3k4@unaffiliated/dan2k3k4) has joined #regex
+2016-09-20 20:28:00		[20:22]
+2016-09-20 20:28:11	<--	dan2k3k4 (~dan2k3k4@unaffiliated/dan2k3k4) has quit (Quit: -)
+2016-09-20 20:34:00		[20:28]
+2016-09-20 20:36:34	-->	sigtrm (quassel@quassel.woboq.de) has joined #regex
+2016-09-20 20:39:02	-->	dan2k3k4 (~dan2k3k4@unaffiliated/dan2k3k4) has joined #regex
+2016-09-20 20:43:14	-->	SwiftMatt (~Objective@162.242.95.120) has joined #regex
+2016-09-20 20:47:03	-->	ahmedelgabri (~ahmedelga@2a02:a441:9f5:0:65a0:5fe5:ff3d:cf41) has joined #regex
+2016-09-20 20:50:30	<--	ahmedelgabri (~ahmedelga@2a02:a441:9f5:0:65a0:5fe5:ff3d:cf41) has quit (Client Quit)
+2016-09-20 20:50:30		[20:50]
+2016-09-20 20:50:57	<--	SwiftMatt (~Objective@162.242.95.120) has quit (Quit: Textual IRC Client: www.textualapp.com)
+2016-09-20 20:52:40	-->	stiivo (~steven@ltea-047-065-044-174.pools.arcor-ip.net) has joined #regex
+2016-09-20 20:54:12	<--	stivo (~steven@ltea-047-066-214-141.pools.arcor-ip.net) has quit (Ping timeout: 265 seconds)
+2016-09-20 20:57:19	<--	pitastrudl (~quassel@unaffiliated/pitastrudl) has quit (Remote host closed the connection)
+2016-09-20 20:58:09	-->	pitastrudl (~quassel@unaffiliated/pitastrudl) has joined #regex
+2016-09-20 20:59:34	-->	ctcrnitv (~textual@96-90-249-25-static.hfc.comcastbusiness.net) has joined #regex
+2016-09-20 21:00:11	ctcrnitv	anyone know what happened to debuggex.com? 
+2016-09-20 21:00:32	<--	P1RATEZ (piratez@unaffiliated/p1ratez) has quit
+2016-09-20 21:00:32	ctcrnitv	I'm getting some error about an unsecure connection. Has it possibly been compromised?
+2016-09-20 21:00:48	+OnlineCop	It's possible. It means its certificate doesn't match the host name.
+2016-09-20 21:01:10	+OnlineCop	Basically, don't submit or share anything to it if you value its privacy.
+2016-09-20 21:01:23	+OnlineCop	But generic data should probably be okay-ish. :P
+2016-09-20 21:02:55	-->	regex101-2334 (4f6235d2@gateway/web/freenode/ip.79.98.53.210) has joined #regex
+2016-09-20 21:03:18	<--	regex101-2334 (4f6235d2@gateway/web/freenode/ip.79.98.53.210) has quit (Client Quit)
+2016-09-20 21:05:28	-->	guiverc (~guiverc@58-7-135-204.dyn.iinet.net.au) has joined #regex
+2016-09-20 21:11:00		[21:05]
+2016-09-20 21:18:30	--	TheDcoder is now known as `
+2016-09-20 21:19:00	--	` is now known as Guest47790
+2016-09-20 21:19:34	--	Guest47790 is now known as TheDcoder
+2016-09-20 21:20:20	<--	_xor (~xor@50.216.161.66.DED-DSL.fuse.net) has quit (Quit: Leaving)
+2016-09-20 21:23:57	<--	ctcrnitv (~textual@96-90-249-25-static.hfc.comcastbusiness.net) has quit (Quit: Textual IRC Client: www.textualapp.com)
+2016-09-20 21:29:00		[21:23]
+2016-09-20 21:32:50	<--	sigtrm (quassel@quassel.woboq.de) has quit (Ping timeout: 265 seconds)
+2016-09-20 21:32:54	-->	morenoh149 (~harry@69.12.26.166) has joined #regex
+2016-09-20 21:33:16	<--	qtax^^w (~qtax@gw.ateles.se) has quit (Read error: Connection reset by peer)
+2016-09-20 21:36:20	-->	nschoe (~nschoe@AStLambert-651-1-7-201.w86-217.abo.wanadoo.fr) has joined #regex
+2016-09-20 21:37:42	<--	morenoh149 (~harry@69.12.26.166) has quit (Ping timeout: 265 seconds)
+2016-09-20 21:40:10	nschoe	Hi all, I'm trying to write a regex that should match a pattern one or more time, so it's the '+' quantifier. But the pattern is "complex", how do I "group" it? What characters should I use to enclose my complex expression to suffix with '+'?
+2016-09-20 21:40:33	nschoe	I've tried ( and ), but this is for remembering a match, so I guess I'm doing something wrong
+2016-09-20 21:41:01	amenorrhea	(?: and ) will allow you to group but not remember the match.
+2016-09-20 21:41:02	nschoe	I've written this so far: https://regex101.com/r/gE6jB1/1 
+2016-09-20 21:42:29	nschoe	amenorrhea, thanks for answering. Yes I've seen that, and tried it. Indeed it doesn't remember the match, but that doesn't work either. In my example, the '.Mycompany', '.SomethingElse' and '.AgainSomethingElse' should be matched by the same "pattern", this is the patter nthat I want to repeat
+2016-09-20 21:43:26	nschoe	For information, I'm trying to write a regex to match a dBus interface, so it's this form. There must be at least a dot, so that's why I use -
+2016-09-20 21:43:35	nschoe	that's why I used '+' and not '*'
+2016-09-20 21:44:37	nschoe	But regex101 shows that my whole string is entirely blue, so it seems to be matched by a '\w*' which doesn't make sense: it should not match dots, right?
+2016-09-20 21:44:37		[21:44]
+2016-09-20 21:44:41	nschoe	\w is alphanumeric
+2016-09-20 21:46:11	amenorrhea	I think the colour of the test string has nothing to do with the colours in the expression. 
+2016-09-20 21:46:42	amenorrhea	I think there is just colour (light blue) and it highlights the portion(s) of the test string that are matched by the expression.
+2016-09-20 21:46:50	amenorrhea	just one colour**
+2016-09-20 21:52:00		[21:46]
+2016-09-20 21:52:24	nschoe	amenorrhea, hum okay, seems you're right!
+2016-09-20 21:53:53	nschoe	amenorrhea, thanks! Damn, since yesterday I had the right regex, I just thought the colors should match!
+2016-09-20 21:59:00		[21:53]
+2016-09-20 21:59:25	-->	sigtrm (quassel@quassel.woboq.de) has joined #regex
+2016-09-20 22:03:24	<--	OnlineCop (~OnlineCop@unaffiliated/onlinecop) has quit (Quit: OnlineCop)
+2016-09-20 22:09:00		[22:03]
+2016-09-20 22:13:16	<--	TheDcoder (~TheDcoder@unaffiliated/thedcoder) has quit (Quit: Rebooting into lakka)
+2016-09-20 22:13:44	-->	regex101-2144 (d95bb5f9@gateway/web/freenode/ip.217.91.181.249) has joined #regex
+2016-09-20 22:14:54	<--	spiki (~spiki@188.117.232.239) has quit (Ping timeout: 264 seconds)
+2016-09-20 22:15:17	<--	aw1 (~aw1@unaffiliated/aw1) has quit (Read error: Connection reset by peer)
+2016-09-20 22:17:42	<--	regex101-2144 (d95bb5f9@gateway/web/freenode/ip.217.91.181.249) has quit (Ping timeout: 240 seconds)
+2016-09-20 22:17:44	-->	regex101-1222 (b64be94e@gateway/web/freenode/ip.182.75.233.78) has joined #regex
+2016-09-20 22:18:35	regex101-1222	hey i need regex for searching text 'console.log' but that shouldn't match //console.log
+2016-09-20 22:18:37	regex101-1222	anyone help
+2016-09-20 22:18:56	regex101-1222	i tried negative-lookahead ^(?!//console.log)
+2016-09-20 22:19:01	regex101-1222	that doesn't worked out
+2016-09-20 22:19:34	regex101-1222	anyone?
+2016-09-20 22:20:03	+lopid	https://regex101.com/r/dO2sF7/1
+2016-09-20 22:20:36	+lopid	forgot to add the g, but it still works
+2016-09-20 22:21:38	regex101-1222	but it's matching for strings like '// console.log' space after //
+2016-09-20 22:21:58	+lopid	that's what you said
+2016-09-20 22:21:59	-->	spiki (~spiki@static-213-198-237-210.adsl.eunet.rs) has joined #regex
+2016-09-20 22:22:43	regex101-1222	yeah, however that regex is fine... I am curios to know how could we made that to work for all cases
+2016-09-20 22:23:03	+lopid	why don't you add all the cases to the test string and we can see?
+2016-09-20 22:23:22	regex101-1222	sure
+2016-09-20 22:23:24	-->	mrded (~mrded@84.207.252.242) has joined #regex
+2016-09-20 22:25:40	regex101-1222	i gave 5 test cases but that's only matching first one
+2016-09-20 22:25:40		[22:25]
+2016-09-20 22:25:45	regex101-1222	am new to regex101
+2016-09-20 22:25:47	regex101-1222	plz guide
+2016-09-20 22:26:07	+lopid	press the save icon on the left, mouseover says "Update regex"
+2016-09-20 22:26:58	+lopid	that really needs to be intuitive (Lindrian(?))
+2016-09-20 22:27:11	Lindrian	?
+2016-09-20 22:27:19	regex101-1222	I did https://regex101.com/r/dO2sF7/2
+2016-09-20 22:27:22	+lopid	the thing that provides the url
+2016-09-20 22:28:41	regex101-1222	I think it's only matching the very first correct string, if I give first string illegal, it's moving to next string, when it found correct one it's stopping there
+2016-09-20 22:29:05	+lopid	add the g modifier
+2016-09-20 22:29:19	regex101-1222	ohh yeah... worked
+2016-09-20 22:29:22	+lopid	just so the site will search the whole test strings
+2016-09-20 22:29:54	<--	sigtrm (quassel@quassel.woboq.de) has quit (Ping timeout: 265 seconds)
+2016-09-20 22:30:15	regex101-1222	can you see this now... it's matching strings like this '//    console.log'
+2016-09-20 22:30:16	regex101-1222	https://regex101.com/r/hC6wY2/3
+2016-09-20 22:30:16	-->	goom (~goom@cpe-66-25-153-174.satx.res.rr.com) has joined #regex
+2016-09-20 22:30:27	+lopid	ok
+2016-09-20 22:30:35	<--	Oatmeal (~Suzeanne@99-103-96-198.lightspeed.iplsin.sbcglobal.net) has quit (Ping timeout: 260 seconds)
+2016-09-20 22:30:43	+lopid	you basically just want uncommented log commands 
+2016-09-20 22:31:26	regex101-1222	yes
+2016-09-20 22:31:29	regex101-1222	exactly
+2016-09-20 22:31:37	regex101-1222	am using atom
+2016-09-20 22:31:58	+lopid	and the // could be anywhere on the line, ahead of console.log
+2016-09-20 22:31:58	-->	aw1 (~aw1@unaffiliated/aw1) has joined #regex
+2016-09-20 22:32:09	-->	sigtrm (quassel@quassel.woboq.de) has joined #regex
+2016-09-20 22:32:16	+lopid	but what if it's in a quoted string? :-o
+2016-09-20 22:32:42	regex101-1222	I am not that much particular, just need uncommented ones
+2016-09-20 22:33:42	regex101-1222	in the negative look ahead can't we specify spaces , any number of times just like [0-9]+
+2016-09-20 22:34:01	+Doqnach	I wonder if inverting colours on the save button would help
+2016-09-20 22:34:30	+lopid	imo it should be a "provide url/link" or something, not "save"
+2016-09-20 22:34:34	+Doqnach	even though it already lights up when you have content to save
+2016-09-20 22:35:08	+Doqnach	don't agree with you on that tbh, also because when you are logged in it is definitely a "save" feature
+2016-09-20 22:35:35	+lopid	i've never used it to save a regex, always to get a link to copypaste
+2016-09-20 22:36:03	+Doqnach	"save" is a very common and clear message, and nice and short
+2016-09-20 22:36:07	-->	regex101-9069 (b752760b@gateway/web/freenode/ip.183.82.118.11) has joined #regex
+2016-09-20 22:36:17	<--	regex101-9069 (b752760b@gateway/web/freenode/ip.183.82.118.11) has quit (Client Quit)
+2016-09-20 22:36:23	+Doqnach	otherwise you would end up with something like "Permalink" when you are not logged in
+2016-09-20 22:36:34	+lopid	and doesn't give any indication that it will give an url
+2016-09-20 22:36:55	+Doqnach	that is true
+2016-09-20 22:36:58	+lopid	usually when i press save buttons, whatever it is is just saved and that's it
+2016-09-20 22:37:21	-->	TheDcoder (~TheDcoder@unaffiliated/thedcoder) has joined #regex
+2016-09-20 22:37:28	+lopid	and why does it have a reload icon? heh
+2016-09-20 22:42:30	<--	goom (~goom@cpe-66-25-153-174.satx.res.rr.com) has quit (Quit: Leaving)
+2016-09-20 22:42:30		[22:42]
+2016-09-20 22:47:35	-->	NeoID (~NeoID@62.141.130.47) has joined #regex
+2016-09-20 22:49:00	NeoID	hi, I'm looking for a way to tell regex "remove all parenthesis from string except when the string inside the parenthesis matches *Disc*". Any simple way to extend my regex? https://regex101.com/r/nO2uB8/1
+2016-09-20 22:52:38	<--	regex101-1222 (b64be94e@gateway/web/freenode/ip.182.75.233.78) has quit (Quit: Page closed)
+2016-09-20 22:55:32	+go|dfish	NeoID: perhaps something along the lines of https://regex101.com/r/nO2uB8/2
+2016-09-20 22:56:21	+Doqnach	reload icon?
+2016-09-20 22:56:24	NeoID	go|dfish, ah, thanks!
+2016-09-20 22:56:30	+Doqnach	ow after the first save?
+2016-09-20 22:56:56	-->	Oatmeal (~Suzeanne@99-103-96-198.lightspeed.iplsin.sbcglobal.net) has joined #regex
+2016-09-20 22:56:56	+Doqnach	because then it's an "update", not a new save
+2016-09-20 22:57:19	-->	sanct (~sanct@212.35.67.11) has joined #regex
+2016-09-20 22:57:22	+lopid	an update is a save
+2016-09-20 22:57:47	+Doqnach	yup, true. it's an UX choice
+2016-09-20 22:57:47		[22:57]
+2016-09-20 22:58:35	+Doqnach	thing is, it is more a "save-as with context" than an actual "save"
+2016-09-20 22:58:48	+Doqnach	since you save it as a new version of an existing one
+2016-09-20 22:59:02	+Doqnach	you don't replace the old one
+2016-09-20 22:59:20	+Doqnach	personally I understand this choice and have nothing against it
+2016-09-20 23:00:12	+lopid	i think from the user's perspective, they use that button in order to send a link to someone else, not really to save it for later use. that it happens to save it behind the scenes is just a means to the user's end
+2016-09-20 23:01:50	-->	regex101-6879 (5b7e8026@gateway/web/freenode/ip.91.126.128.38) has joined #regex
+2016-09-20 23:02:08	<--	regex101-6879 (5b7e8026@gateway/web/freenode/ip.91.126.128.38) has quit (Client Quit)
+2016-09-20 23:02:19	+Doqnach	don't have analytics to show what the average user uses it for
+2016-09-20 23:03:22	+Doqnach	a point can be made to maybe label the button as "Create Permalink" & "Update Permalink" when not logged in, and "save" & "update" when logged in?
+2016-09-20 23:03:45	+Doqnach	you could file an issue for it if you feel strongly about it. everything that helps improve it is great.
+2016-09-20 23:03:53	+Me-me	the new one gets a deletion link. I'm just chuffed for that.
+2016-09-20 23:07:48	-->	regex101-8374 (5154f28f@gateway/web/freenode/ip.81.84.242.143) has joined #regex
+2016-09-20 23:08:21	<--	regex101-8374 (5154f28f@gateway/web/freenode/ip.81.84.242.143) has quit (Client Quit)
+2016-09-20 23:09:47	-->	notebox (~textual@217.138.7.242) has joined #regex
+2016-09-20 23:13:00	-->	stivo (~steven@ltea-047-065-049-240.pools.arcor-ip.net) has joined #regex
+2016-09-20 23:13:00		[23:13]
+2016-09-20 23:13:52	+lopid	maybe (was just in a meeting)
+2016-09-20 23:14:16	+lopid	delete? what have you got to hide, Me-me?
+2016-09-20 23:14:47	+Me-me	nuu~thing
+2016-09-20 23:15:05	<--	stiivo (~steven@ltea-047-065-044-174.pools.arcor-ip.net) has quit (Ping timeout: 240 seconds)
+2016-09-20 23:16:57	-->	regex101-1171 (c4cf30bf@gateway/web/freenode/ip.196.207.48.191) has joined #regex
+2016-09-20 23:17:27	<--	regex101-1171 (c4cf30bf@gateway/web/freenode/ip.196.207.48.191) has quit (Client Quit)
+2016-09-20 23:19:41	-->	XOCK_STREAM (~XOCKET@unaffiliated/xocket) has joined #regex
+2016-09-20 23:20:42	<--	olspookishmagus (~pookie@snf-137798.vm.okeanos.grnet.gr) has quit (Ping timeout: 265 seconds)
+2016-09-20 23:20:49	-->	olspookishmagus (~pookie@snf-137798.vm.okeanos.grnet.gr) has joined #regex
+2016-09-20 23:21:03	<--	danemacmillan (~danemacmi@unaffiliated/danemacmillan) has quit (Ping timeout: 240 seconds)
+2016-09-20 23:21:29	-->	XOCKET (~XOCKET@unaffiliated/xocket) has joined #regex
+2016-09-20 23:21:44	-->	morenoh149 (~harry@69.12.26.166) has joined #regex
+2016-09-20 23:22:22	<--	PCLine__ (~PCLine_@98.29.181.95) has quit (Ping timeout: 255 seconds)
+2016-09-20 23:24:25	<--	XOCK_STREAM (~XOCKET@unaffiliated/xocket) has quit (Ping timeout: 248 seconds)
+2016-09-20 23:25:07	-->	Repox (~textual@188.180.110.150) has joined #regex
+2016-09-20 23:26:29	<--	morenoh149 (~harry@69.12.26.166) has quit (Ping timeout: 244 seconds)
+2016-09-20 23:32:00		[23:26]
+2016-09-20 23:32:54	<--	stivo (~steven@ltea-047-065-049-240.pools.arcor-ip.net) has quit (Ping timeout: 264 seconds)
+2016-09-20 23:33:00	<--	sigtrm (quassel@quassel.woboq.de) has quit (Ping timeout: 260 seconds)
+2016-09-20 23:33:52	-->	jorj (~jorj@162.220.240.216) has joined #regex
+2016-09-20 23:37:33	-->	sigtrm (quassel@quassel.woboq.de) has joined #regex
+2016-09-20 23:41:01	<--	XOCKET (~XOCKET@unaffiliated/xocket) has quit (Disconnected by services)
+2016-09-20 23:41:01	-->	XOCK_STREAM (~XOCKET@unaffiliated/xocket) has joined #regex
+2016-09-20 23:44:02	-->	thevishy (~thevishy@111.93.187.34) has joined #regex
+2016-09-20 23:45:20	-->	stivo (~steven@p54B99A22.dip0.t-ipconnect.de) has joined #regex
+2016-09-20 23:46:04	-->	regex101-4818 (6f5d9efa@gateway/web/freenode/ip.111.93.158.250) has joined #regex
+2016-09-20 23:46:37	<--	regex101-4818 (6f5d9efa@gateway/web/freenode/ip.111.93.158.250) has quit (Client Quit)
+2016-09-20 23:47:41	-->	eliasr (uid27497@gateway/web/irccloud.com/x-zspcmcvszkiakfcr) has joined #regex
+2016-09-20 23:47:41		[23:47]
+2016-09-20 23:48:43	<--	XOCK_STREAM (~XOCKET@unaffiliated/xocket) has quit (Ping timeout: 244 seconds)
+2016-09-20 23:49:08	-->	XOCKET (~XOCKET@unaffiliated/xocket) has joined #regex
+2016-09-20 23:54:56	<--	XOCKET (~XOCKET@unaffiliated/xocket) has quit (Read error: Connection reset by peer)
+2016-09-20 23:55:23	-->	XOCKET (~XOCKET@unaffiliated/xocket) has joined #regex
+2016-09-20 23:56:49	<--	shahinism (~shahinism@unaffiliated/shahinism) has quit (Ping timeout: 250 seconds)
+2016-09-20 23:57:09	-->	fuchstronaut (~fuchstron@unaffiliated/fuchstronaut) has joined #regex
+2016-09-20 23:58:26	-->	shahinism (~shahinism@unaffiliated/shahinism) has joined #regex
+2016-09-20 23:58:32	<--	mrded (~mrded@84.207.252.242) has quit (Read error: Connection reset by peer)
+2016-09-20 23:59:11	-->	mrded (~mrded@84.207.252.242) has joined #regex
+2016-09-21 00:02:03	<--	XOCKET (~XOCKET@unaffiliated/xocket) has quit (Ping timeout: 240 seconds)
+2016-09-21 00:04:27	<--	NeoID (~NeoID@62.141.130.47) has left #regex ("Leaving")
+2016-09-21 00:04:27		[00:04]
+2016-09-21 00:07:13	<--	notebox (~textual@217.138.7.242) has quit (Ping timeout: 250 seconds)
+2016-09-21 00:07:21	-->	XOCKET (~XOCKET@unaffiliated/xocket) has joined #regex
+2016-09-21 00:07:51	<--	XOCKET (~XOCKET@unaffiliated/xocket) has quit (Max SendQ exceeded)
+2016-09-21 00:08:50	-->	XOCKET (~XOCKET@unaffiliated/xocket) has joined #regex
+2016-09-21 00:09:50	<--	netcarver (~netcarver@241.30.115.87.dyn.plus.net) has quit (Quit: Leaving)
+2016-09-21 00:10:21	<--	TheAvatar (~TheAvatar@crew.eushells.com) has quit (Ping timeout: 276 seconds)
+2016-09-21 00:11:11	<--	XOCKET (~XOCKET@unaffiliated/xocket) has quit (Max SendQ exceeded)
+2016-09-21 00:11:39	<--	Snuupy (~Snuupy@unaffiliated/snuupy) has quit (Ping timeout: 276 seconds)
+2016-09-21 00:12:01	-->	XOCKET (~XOCKET@unaffiliated/xocket) has joined #regex
+2016-09-21 00:12:25	<--	skvedula (~skvedula@182.72.88.250) has quit (Quit: Leaving)
+2016-09-21 00:13:46	-->	regex101-4843 (0e8d69b2@gateway/web/freenode/ip.14.141.105.178) has joined #regex
+2016-09-21 00:13:55	regex101-4843	Hello everyone!!
+2016-09-21 00:13:59	+Doqnach	hi
+2016-09-21 00:14:21	regex101-4843	I need a regular expression for extracting variable declarations
+2016-09-21 00:14:25	regex101-4843	from Java class
+2016-09-21 00:14:35	regex101-4843	I need a regular expression for extracting variable declarations or definitions
+2016-09-21 00:14:37	+Doqnach	doesn't java have reflection?
+2016-09-21 00:15:21	+Doqnach	https://docs.oracle.com/javase/tutorial/reflect/
+2016-09-21 00:15:34	<--	XOCKET (~XOCKET@unaffiliated/xocket) has quit (Disconnected by services)
+2016-09-21 00:15:35	-->	XOCK_STREAM (~XOCKET@unaffiliated/xocket) has joined #regex
+2016-09-21 00:15:57	-->	Quirion (c1b82bc2@gateway/web/freenode/ip.193.184.43.194) has joined #regex
+2016-09-21 00:17:08	regex101-4843	It's not actually Java. It's a java like language
+2016-09-21 00:18:35	-->	XOCKET (~XOCKET@unaffiliated/xocket) has joined #regex
+2016-09-21 00:20:52	<--	XOCK_STREAM (~XOCKET@unaffiliated/xocket) has quit (Ping timeout: 260 seconds)
+2016-09-21 00:20:52		[00:20]
+2016-09-21 00:24:01	-->	ogny (~orkun@unaffiliated/ogny) has joined #regex
+2016-09-21 00:24:36	Quirion	Hello. I have the following regex:   \bFLOAT\b. How can I make it so that it doesn't trigger on \b-FLOAT\b ?
+2016-09-21 00:26:04	+lopid	\b(?!-)FLOAT\b
+2016-09-21 00:26:25	+lyxia	you mean (?<!-)
+2016-09-21 00:26:39	-->	qtax^w (~qtax@gw.ateles.se) has joined #regex
+2016-09-21 00:26:48	+lopid	yes :/
+2016-09-21 00:27:02	<--	XOCKET (~XOCKET@unaffiliated/xocket) has quit (Disconnected by services)
+2016-09-21 00:27:02	-->	XOCK_STREAM (~XOCKET@unaffiliated/xocket) has joined #regex
+2016-09-21 00:27:22	--	XOCK_STREAM is now known as XOCKET
+2016-09-21 00:27:24	+Doqnach	!rehelp @ regex101-4843
+2016-09-21 00:27:24	+perlbot	regex101-4843: Please post your regex attempt and sample string(s) at https://regex101.com/, then click Save (ctrl+s) and post the link here. You should indicate what language/platform you are using and, where possible, provide examples of both what should and should not match.
+2016-09-21 00:29:29	-->	ahmedelgabri (~ahmedelga@212.123.217.154) has joined #regex
+2016-09-21 00:30:04	Quirion	Thanks lopid and lyxia !
+2016-09-21 00:31:33	-->	KindOne_ (kindone@freenude/topless/kindone) has joined #regex
+2016-09-21 00:34:06	<--	KindOne (kindone@freenude/topless/kindone) has quit (Ping timeout: 264 seconds)
+2016-09-21 00:34:17	<--	XOCKET (~XOCKET@unaffiliated/xocket) has quit (Read error: Connection reset by peer)
+2016-09-21 00:35:48	--	KindOne_ is now known as KindOne
+2016-09-21 00:41:00		[00:35]
+2016-09-21 00:44:30	<--	stivo (~steven@p54B99A22.dip0.t-ipconnect.de) has quit (Read error: Connection reset by peer)
+2016-09-21 00:44:45	<--	shahinism (~shahinism@unaffiliated/shahinism) has quit (Ping timeout: 265 seconds)
+2016-09-21 00:48:45	<--	TheDcoder (~TheDcoder@unaffiliated/thedcoder) has quit (Quit: Gonna test something in lakka)
+2016-09-21 00:49:18	-->	XOCKET (~XOCKET@unaffiliated/xocket) has joined #regex
+2016-09-21 00:49:47	<--	fuchstronaut (~fuchstron@unaffiliated/fuchstronaut) has quit
+2016-09-21 00:49:51	-->	fuchstronaut (~fuchstron@unaffiliated/fuchstronaut) has joined #regex
+2016-09-21 00:53:41	-->	ShekharReddy (uid132367@gateway/web/irccloud.com/x-mnlmhfiqiojlvkks) has joined #regex
+2016-09-21 00:54:23	<--	doppo (doppo@2604:180::e0fc:a07f) has quit (Quit: leaving)
+2016-09-21 00:55:20	-->	doppo (doppo@2604:180::e0fc:a07f) has joined #regex
+2016-09-21 00:56:01	-->	shahinism (~shahinism@unaffiliated/shahinism) has joined #regex
+2016-09-21 00:56:01		[00:56]
+2016-09-21 00:59:23	<--	ShekharReddy (uid132367@gateway/web/irccloud.com/x-mnlmhfiqiojlvkks) has quit
+2016-09-21 01:00:38	-->	ahmed_elgabri (~ahmedelga@212.123.217.154) has joined #regex
+2016-09-21 01:00:54	-->	zjhxmjl (~zjhxmjl@49.79.191.75) has joined #regex
+2016-09-21 01:03:05	<--	MikeBones (~MikeBones@ip68-225-220-186.ph.ph.cox.net) has quit (Ping timeout: 248 seconds)
+2016-09-21 01:03:13	<--	ahmedelgabri (~ahmedelga@212.123.217.154) has quit (Ping timeout: 272 seconds)
+2016-09-21 01:05:19	-->	MikeBones (~MikeBones@ip68-225-220-186.ph.ph.cox.net) has joined #regex
+2016-09-21 01:10:41	-->	morenoh149 (~harry@69.12.26.166) has joined #regex
+2016-09-21 01:10:44	<--	DolphinDream (~DolphinDr@pool-74-98-212-98.pitbpa.fios.verizon.net) has quit (Quit: DolphinDream)
+2016-09-21 01:13:07	<--	foRei (~ViT@0x4dd7b24d.adsl.cybercity.dk) has quit (Read error: Connection reset by peer)
+2016-09-21 01:13:07		[01:13]
+2016-09-21 01:14:49	-->	foRei (~ViT@0x4dd7b24d.adsl.cybercity.dk) has joined #regex
+2016-09-21 01:15:53	<--	morenoh149 (~harry@69.12.26.166) has quit (Ping timeout: 272 seconds)
+2016-09-21 01:21:00		[01:15]
+2016-09-21 01:21:24	<--	fuchstronaut (~fuchstron@unaffiliated/fuchstronaut) has quit (Remote host closed the connection)
+2016-09-21 01:22:20	-->	TheDcoder (~TheDcoder@unaffiliated/thedcoder) has joined #regex
+2016-09-21 01:27:46	<--	Repox (~textual@188.180.110.150) has quit (Ping timeout: 265 seconds)
+2016-09-21 01:33:00		[01:27]
+2016-09-21 01:38:35	<--	dan2k3k4 (~dan2k3k4@unaffiliated/dan2k3k4) has quit (Quit: -)
+2016-09-21 01:40:31	<--	nilg (~user@77.70.2.229) has quit (Remote host closed the connection)
+2016-09-21 01:41:56	-->	dan2k3k4 (~dan2k3k4@unaffiliated/dan2k3k4) has joined #regex
+2016-09-21 01:44:20	<--	rbr (~RTG@5419601D.cm-5-2b.dynamic.ziggo.nl) has quit (Disconnected by services)
+2016-09-21 01:44:44	-->	rbr (~RTG@5419601D.cm-5-2b.dynamic.ziggo.nl) has joined #regex
+2016-09-21 01:45:26	-->	fuchstronaut (~fuchstron@unaffiliated/fuchstronaut) has joined #regex
+2016-09-21 01:46:00	<--	abernix (~abernix@unaffiliated/abernix) has quit (Quit: Bye)
+2016-09-21 01:51:00		[01:46]
+2016-09-21 01:52:24	<--	ahmed_elgabri (~ahmedelga@212.123.217.154) has quit (Ping timeout: 276 seconds)
+2016-09-21 01:53:36	-->	DolphinDream (~DolphinDr@pool-74-98-212-98.pitbpa.fios.verizon.net) has joined #regex
+2016-09-21 01:55:09	<--	mateusz (~mateusz@2a01:6e60:10:15cb::1) has quit (Ping timeout: 272 seconds)
+2016-09-21 02:01:00		[01:55]
+2016-09-21 02:01:50	-->	regex101-7893 (b2d2d723@gateway/web/freenode/ip.178.210.215.35) has joined #regex
+2016-09-21 02:02:07	<--	regex101-7893 (b2d2d723@gateway/web/freenode/ip.178.210.215.35) has quit (Client Quit)
+2016-09-21 02:03:32	<--	dan2k3k4 (~dan2k3k4@unaffiliated/dan2k3k4) has quit (Quit: -)
+2016-09-21 02:05:12	-->	mateusz (~mateusz@2a01:6e60:10:15cb::1) has joined #regex
+2016-09-21 02:05:37	--	mateusz is now known as Guest86531
+2016-09-21 02:06:38	<--	DolphinDream (~DolphinDr@pool-74-98-212-98.pitbpa.fios.verizon.net) has quit (Quit: DolphinDream)
+2016-09-21 02:12:00		[02:06]
+2016-09-21 02:13:39	-->	ash_workz (~chatzilla@50-243-5-153-static.hfc.comcastbusiness.net) has joined #regex
+2016-09-21 02:16:33	<--	Alina-malina (~Alina-mal@unaffiliated/alina-malina) has quit (Ping timeout: 265 seconds)
+2016-09-21 02:19:43	-->	regex101-9977 (2e11c934@gateway/web/freenode/ip.46.17.201.52) has joined #regex
+2016-09-21 02:20:12	regex101-9977	!html
+2016-09-21 02:20:12	+perlbot	Do NOT regex HTML! (http://bit.ly/1G8p6VH) - Instead, consider using a DOM parser in your programming language of choice.
+2016-09-21 02:20:14	-->	ahmed_elgabri (~ahmedelga@212.123.217.154) has joined #regex
+2016-09-21 02:20:31	<--	regex101-9977 (2e11c934@gateway/web/freenode/ip.46.17.201.52) has quit (Client Quit)
+2016-09-21 02:20:56	-->	Vile` (~Vile@unaffiliated/vile/x-1886500) has joined #regex
+2016-09-21 02:21:18	-->	Alina-malina (~Alina-mal@37.157.216.188) has joined #regex
+2016-09-21 02:24:56	<--	Alina-malina (~Alina-mal@37.157.216.188) has quit (Changing host)
+2016-09-21 02:24:56	-->	Alina-malina (~Alina-mal@unaffiliated/alina-malina) has joined #regex
+2016-09-21 02:25:44	-->	ShekharReddy (uid132367@gateway/web/irccloud.com/x-cvpaasbhqspihxwl) has joined #regex
+2016-09-21 02:25:58	<--	Oatmeal (~Suzeanne@99-103-96-198.lightspeed.iplsin.sbcglobal.net) has quit (Ping timeout: 255 seconds)
+2016-09-21 02:26:19	-->	trapped (~trapped@pellero.it) has joined #regex
+2016-09-21 02:30:46	-->	it_ (~it_@212.243.190.164) has joined #regex
+2016-09-21 02:30:46		[02:30]
+2016-09-21 02:32:28	<--	aavrug (~gaurav@117.240.170.130) has quit (Read error: Connection reset by peer)
+2016-09-21 02:32:36	-->	AirOnSkin (~AirOnSkin@srv-clst-301-data4.zhaw.ch) has joined #regex
+2016-09-21 02:32:58	-->	dan2k3k4 (~dan2k3k4@unaffiliated/dan2k3k4) has joined #regex
+2016-09-21 02:34:52	-->	regex101-6434 (2e17c9f2@gateway/web/freenode/ip.46.23.201.242) has joined #regex
+2016-09-21 02:35:03	regex101-6434	hello
+2016-09-21 02:35:31	<--	ash_workz (~chatzilla@50-243-5-153-static.hfc.comcastbusiness.net) has quit (Quit: ChatZilla 0.9.92 [Firefox 48.0/20160728204513])
+2016-09-21 02:37:25	-->	ash_workz (~chatzilla@50-243-5-153-static.hfc.comcastbusiness.net) has joined #regex
+2016-09-21 02:37:33	-->	bcow (~bcowing@104.192.46.2) has joined #regex
+2016-09-21 02:39:41	-->	Momogi (~ricky@110.137.219.25) has joined #regex
+2016-09-21 02:41:05	<--	regex101-4843 (0e8d69b2@gateway/web/freenode/ip.14.141.105.178) has quit (Quit: Page closed)
+2016-09-21 02:45:37	<--	regex101-6434 (2e17c9f2@gateway/web/freenode/ip.46.23.201.242) has quit (Quit: Page closed)
+2016-09-21 02:45:43	<--	dan2k3k4 (~dan2k3k4@unaffiliated/dan2k3k4) has quit (Quit: -)
+2016-09-21 02:47:50	<--	Vile` (~Vile@unaffiliated/vile/x-1886500) has quit (Ping timeout: 260 seconds)
+2016-09-21 02:47:50		[02:47]
+2016-09-21 02:48:28	<--	it_ (~it_@212.243.190.164) has quit (Quit: Nettalk6 - www.ntalk.de)
+2016-09-21 02:52:15	-->	Oatmeal (~Suzeanne@99-103-96-198.lightspeed.iplsin.sbcglobal.net) has joined #regex
+2016-09-21 02:56:03	-->	dan2k3k4 (~dan2k3k4@unaffiliated/dan2k3k4) has joined #regex
+2016-09-21 02:56:35	<--	reev (~reev@123.63.166.181) has quit (Ping timeout: 260 seconds)
+2016-09-21 02:59:32	-->	morenoh149 (~harry@69.12.26.166) has joined #regex
+2016-09-21 03:02:05	-->	TheAvatar (TheAvatar@crew.eushells.com) has joined #regex
+2016-09-21 03:04:33	<--	morenoh149 (~harry@69.12.26.166) has quit (Ping timeout: 276 seconds)
+2016-09-21 03:04:33		[03:04]
+2016-09-21 03:04:57	-->	regex101-4385 (90205ea1@gateway/web/freenode/ip.144.32.94.161) has joined #regex
+2016-09-21 03:06:42	<--	Quirion (c1b82bc2@gateway/web/freenode/ip.193.184.43.194) has quit (Ping timeout: 240 seconds)
+2016-09-21 03:11:39	<--	TheDcoder (~TheDcoder@unaffiliated/thedcoder) has quit (Quit: Restarting windows...)
+2016-09-21 03:13:39	<--	dan2k3k4 (~dan2k3k4@unaffiliated/dan2k3k4) has quit (Quit: -)
+2016-09-21 03:15:25	<--	regex101-4385 (90205ea1@gateway/web/freenode/ip.144.32.94.161) has quit (Quit: Page closed)
+2016-09-21 03:16:14	-->	TheDcoder (~TheDcoder@unaffiliated/thedcoder) has joined #regex
+2016-09-21 03:16:36	-->	BetaFrey (b8b952c3@gateway/web/cgi-irc/kiwiirc.com/ip.184.185.82.195) has joined #regex
+2016-09-21 03:19:15	-->	sheep_ (~Mutter@236-199-62-37.mobileinternet.proximus.be) has joined #regex
+2016-09-21 03:21:17	<--	cylon512__ (~i_cylon51@nat2-nj02.vmpanel.net) has quit (Ping timeout: 272 seconds)
+2016-09-21 03:21:17		[03:21]
+2016-09-21 03:21:29	-->	dan2k3k4 (~dan2k3k4@unaffiliated/dan2k3k4) has joined #regex
+2016-09-21 03:24:31	-->	NeoID (~NeoID@62.141.130.47) has joined #regex
+2016-09-21 03:25:06	-->	jeffreylevesque (~chatzilla@129.6.45.20) has joined #regex
+2016-09-21 03:25:06	-->	Rasly (~Rasly4@port-92-195-111-144.dynamic.qsc.de) has joined #regex
+2016-09-21 03:25:33	-->	regex101-8100 (d9218e22@gateway/web/freenode/ip.217.33.142.34) has joined #regex
+2016-09-21 03:25:36	<--	regex101-8100 (d9218e22@gateway/web/freenode/ip.217.33.142.34) has quit (Client Quit)
+2016-09-21 03:25:37	<--	sheep_ (~Mutter@236-199-62-37.mobileinternet.proximus.be) has quit (Remote host closed the connection)
+2016-09-21 03:28:07	<--	XOCKET (~XOCKET@unaffiliated/xocket) has quit (Ping timeout: 265 seconds)
+2016-09-21 03:32:54	-->	karakedi (~eAC53C340@unaffiliated/orphan) has joined #regex
+2016-09-21 03:35:01	-->	cylon512 (~i_cylon51@nat2-nj02.vmpanel.net) has joined #regex
+2016-09-21 03:35:58	-->	Mitch-_- (~Mitch@d149-67-206-235.try.wideopenwest.com) has joined #regex
+2016-09-21 03:41:00		[03:35]
+2016-09-21 03:42:45	<--	Al3xG0 (~unix@unaffiliated/al3xg0) has quit (Remote host closed the connection)
+2016-09-21 03:42:59	-->	Al3xG0 (~unix@200-140-35-131.gnace701.dsl.brasiltelecom.net.br) has joined #regex
+2016-09-21 03:42:59	<--	Al3xG0 (~unix@200-140-35-131.gnace701.dsl.brasiltelecom.net.br) has quit (Changing host)
+2016-09-21 03:42:59	-->	Al3xG0 (~unix@unaffiliated/al3xg0) has joined #regex
+2016-09-21 03:43:18	-->	Vile` (~Vile@unaffiliated/vile/x-1886500) has joined #regex
+2016-09-21 03:44:52	-->	regex101-6262 (a7dcee82@gateway/web/freenode/ip.167.220.238.130) has joined #regex
+2016-09-21 03:45:46	<--	regex101-6262 (a7dcee82@gateway/web/freenode/ip.167.220.238.130) has quit (Client Quit)
+2016-09-21 03:45:53	<--	Rasly (~Rasly4@port-92-195-111-144.dynamic.qsc.de) has quit (Quit: Leaving)
+2016-09-21 03:51:00		[03:45]
+2016-09-21 03:52:59	<--	AirOnSkin (~AirOnSkin@srv-clst-301-data4.zhaw.ch) has quit (Quit: Leaving)
+2016-09-21 03:55:30	-->	bowhunter (~textual@168-215-167-148.static.twtelecom.net) has joined #regex
+2016-09-21 03:55:35	<--	ussher_ (~thinkpad@240b:10:9200:2900:4a5b:39ff:feac:14f4) has quit (Quit: Konversation terminated!)
+2016-09-21 03:57:07	-->	le_melomane (~the_melom@a12-2.nat.iastate.edu) has joined #regex
+2016-09-21 03:57:12	<--	sanct (~sanct@212.35.67.11) has quit (Ping timeout: 276 seconds)
+2016-09-21 03:58:40	-->	danemacmillan (~danemacmi@unaffiliated/danemacmillan) has joined #regex
+2016-09-21 04:03:52	-->	regex101-9181 (b91f98f9@gateway/web/freenode/ip.185.31.152.249) has joined #regex
+2016-09-21 04:03:57	<--	regex101-9181 (b91f98f9@gateway/web/freenode/ip.185.31.152.249) has quit (Client Quit)
+2016-09-21 04:04:54	NeoID	hm.. trying to select parentheses containing a comma... while it works with a-z, it doesn't with comma..: \s*?(?:\([a-zA-z]+\))
+2016-09-21 04:05:42	NeoID	so for example matching (foo,bar), but not (foobar)
+2016-09-21 04:05:49	+Ouims	\s*?(?:\([a-zA-z]*,[a-zA-z]*\))
+2016-09-21 04:05:51	+lyxia	\([^)]*,.*?\)
+2016-09-21 04:06:41	NeoID	lyxia, thank you!
+2016-09-21 04:06:41		[04:06]
+2016-09-21 04:07:28	+lyxia	Ouims is going to be jealous.
+2016-09-21 04:07:43	+Ouims	already am
+2016-09-21 04:07:53	NeoID	sorry, thanks to you too Ouims. Very much appreciated :)
+2016-09-21 04:08:34	<--	rbr (~RTG@5419601D.cm-5-2b.dynamic.ziggo.nl) has quit (Ping timeout: 255 seconds)
+2016-09-21 04:09:42	-->	rbr (~RTG@5419601D.cm-5-2b.dynamic.ziggo.nl) has joined #regex
+2016-09-21 04:11:53	-->	marc_v92 (~marc_v92@unaffiliated/marc-v92/x-6202358) has joined #regex
+2016-09-21 04:12:47	-->	rismoney1 (~rismoney1@pool-108-41-106-114.nycmny.fios.verizon.net) has joined #regex
+2016-09-21 04:13:53	-->	regex101-1085 (3db75186@gateway/web/freenode/ip.61.183.81.134) has joined #regex
+2016-09-21 04:13:54	<--	regex101-1085 (3db75186@gateway/web/freenode/ip.61.183.81.134) has quit (Client Quit)
+2016-09-21 04:16:03	-->	Pap0ose (~pap00se@2a01:258:f000:6:216:3eff:fef2:7a42) has joined #regex
+2016-09-21 04:16:52	-->	XOCKET (~XOCKET@unaffiliated/xocket) has joined #regex
+2016-09-21 04:16:59	<--	BadboyKAS (~pap00se@2a01:258:f000:6:216:3eff:fef2:7a42) has quit (Ping timeout: 265 seconds)
+2016-09-21 04:22:00		[04:16]
+2016-09-21 04:23:56	-->	Snuupy (~Snuupy@unaffiliated/snuupy) has joined #regex
+2016-09-21 04:25:05	<--	guiverc (~guiverc@58-7-135-204.dyn.iinet.net.au) has quit (Quit: Leaving)
+2016-09-21 04:26:31	<--	Pyrogerg (~Gregory@192.67.133.204) has quit (Ping timeout: 272 seconds)
+2016-09-21 04:28:52	-->	sanct (~sanct@212.35.67.11) has joined #regex
+2016-09-21 04:29:02	-->	Pyrogerg (~Gregory@192.67.133.204) has joined #regex
+2016-09-21 04:30:10	<--	sanct (~sanct@212.35.67.11) has quit (Max SendQ exceeded)
+2016-09-21 04:31:07	-->	sanct (~sanct@212.35.67.11) has joined #regex
+2016-09-21 04:32:13	<--	rbr (~RTG@5419601D.cm-5-2b.dynamic.ziggo.nl) has quit (Ping timeout: 272 seconds)
+2016-09-21 04:36:11	<--	trapped (~trapped@pellero.it) has quit (Read error: Connection reset by peer)
+2016-09-21 04:36:33	-->	morenoh149 (~harry@69.12.26.166) has joined #regex
+2016-09-21 04:36:35	-->	notebox (~textual@217.138.7.242) has joined #regex
+2016-09-21 04:39:05	<--	Momogi (~ricky@110.137.219.25) has quit (Ping timeout: 248 seconds)
+2016-09-21 04:39:05		[04:39]
+2016-09-21 04:42:38	-->	rbr (~RTG@5419601D.cm-5-2b.dynamic.ziggo.nl) has joined #regex
+2016-09-21 04:47:36	--	Deusdeorum is now known as Deusdeorum|away
+2016-09-21 04:51:13	<--	notebox (~textual@217.138.7.242) has quit (Ping timeout: 272 seconds)
+2016-09-21 04:53:56	<--	marc_v92 (~marc_v92@unaffiliated/marc-v92/x-6202358) has quit (Quit: Probably either lunch time or home time.)
+2016-09-21 04:55:10	<--	Pyrogerg (~Gregory@192.67.133.204) has quit (Ping timeout: 265 seconds)
+2016-09-21 04:55:10		[04:55]
+2016-09-21 04:55:37	<--	XOCKET (~XOCKET@unaffiliated/xocket) has quit (Disconnected by services)
+2016-09-21 04:55:38	-->	XOCK_STREAM (~XOCKET@unaffiliated/xocket) has joined #regex
+2016-09-21 04:55:55	<--	egp (~eric@216.9.30.85) has quit (Quit: egp)
+2016-09-21 04:56:35	-->	Pyrogerg (~Gregory@192.67.133.204) has joined #regex
+2016-09-21 04:58:19	<--	jmnk (jargonmonk@gateway/shell/blinkenshell.org/x-kvecepuxxriikifz) has quit (Quit: jmnk)
+2016-09-21 04:59:15	-->	regex101-8811 (a374065c@gateway/web/freenode/ip.163.116.6.92) has joined #regex
+2016-09-21 04:59:41	-->	jargonmonk (jargonmonk@gateway/shell/blinkenshell.org/x-slxftateroumxuwx) has joined #regex
+2016-09-21 05:02:30	--	jargonmonk is now known as jmnk
+2016-09-21 05:03:31	<--	regex101-8811 (a374065c@gateway/web/freenode/ip.163.116.6.92) has quit (Client Quit)
+2016-09-21 05:09:00		[05:03]
+2016-09-21 05:12:43	-->	ejb (~ejb@unaffiliated/ejb) has joined #regex
+2016-09-21 05:18:00		[05:12]
+2016-09-21 05:18:35	-->	Nyterax (~Nyterax@unaffiliated/nyterax) has joined #regex
+2016-09-21 05:20:26	-->	happy-dude (uid62780@gateway/web/irccloud.com/x-jfjyvfginuffwgmr) has joined #regex
+2016-09-21 05:22:47	-->	regex101-3383 (be0e9f0a@gateway/web/freenode/ip.190.14.159.10) has joined #regex
+2016-09-21 05:23:04	regex101-3383	no soy un perro, soy un arbol
+2016-09-21 05:23:17	regex101-3383	necesito una expresion regular para eso
+2016-09-21 05:24:22	<--	regex101-3383 (be0e9f0a@gateway/web/freenode/ip.190.14.159.10) has quit (Client Quit)
+2016-09-21 05:26:24	+genio	de que tu hablas?
+2016-09-21 05:26:30	+genio	oh, nevermind
+2016-09-21 05:27:22	<--	dan2k3k4 (~dan2k3k4@unaffiliated/dan2k3k4) has quit (Quit: -)
+2016-09-21 05:27:38	+genio	"I'm not a dog, I'm a tree"  "I need a regular expression for that"     o.O
+2016-09-21 05:29:24	<--	mrded (~mrded@84.207.252.242) has quit (Read error: Connection reset by peer)
+2016-09-21 05:29:25	<--	Pyrogerg (~Gregory@192.67.133.204) has quit (Ping timeout: 260 seconds)
+2016-09-21 05:30:17	-->	mrded (~mrded@84.207.252.242) has joined #regex
+2016-09-21 05:30:30	<--	rbr (~RTG@5419601D.cm-5-2b.dynamic.ziggo.nl) has quit (Ping timeout: 264 seconds)
+2016-09-21 05:31:02	-->	rbr (~RTG@5419601D.cm-5-2b.dynamic.ziggo.nl) has joined #regex
+2016-09-21 05:31:12	-->	ferdna (~ferdna@cpe-69-23-141-130.elp.res.rr.com) has joined #regex
+2016-09-21 05:31:29	<--	mrded (~mrded@84.207.252.242) has quit (Read error: Connection reset by peer)
+2016-09-21 05:31:42	-->	afx_ (~afx_@adsl-200.37.6.247.tellas.gr) has joined #regex
+2016-09-21 05:32:12	-->	mrded (~mrded@84.207.252.242) has joined #regex
+2016-09-21 05:33:17	jeffreylevesque	how can i adjust:  startingstrig[ |\t|=]*(^dontmatch)
+2016-09-21 05:33:17		[05:33]
+2016-09-21 05:33:45	jeffreylevesque	trying to make sure i don't have an ending of `dontmatch`
+2016-09-21 05:35:27	+lyxia	what
+2016-09-21 05:35:49	+lyxia	startingstrig = dontmatch
+2016-09-21 05:35:55	+lyxia	startingstrig = dontmatch cat
+2016-09-21 05:36:04	+lyxia	should these match
+2016-09-21 05:36:19	jeffreylevesque	just the first
+2016-09-21 05:36:52	jeffreylevesque	i mean i could always ad `$` at the end of the solution to have better enforcement
+2016-09-21 05:37:02	jeffreylevesque	but i don't have a working solution yet for either cases
+2016-09-21 05:37:36	-->	Momogi (~ricky@36.82.199.206) has joined #regex
+2016-09-21 05:37:49	+lyxia	you said "to make sure i don't have an ending of `dontmatch`"
+2016-09-21 05:37:55	+lyxia	and then you say the first one matches
+2016-09-21 05:38:01	+lyxia	but it ends in dontmatch
+2016-09-21 05:38:06	+lyxia	isn't that contradictory
+2016-09-21 05:38:20	jeffreylevesque	the second shouldn't match
+2016-09-21 05:38:29	+lyxia	why not
+2016-09-21 05:38:57	jeffreylevesque	i mean only the second should match
+2016-09-21 05:38:59	jeffreylevesque	sorry
+2016-09-21 05:39:10	+lyxia	ok that makes more sense.
+2016-09-21 05:39:27	+lyxia	startingstrig[ \t=]*.*(?<!dontmatch)$
+2016-09-21 05:39:41	+lyxia	startingstrig.*(?<!dontmatch)$
+2016-09-21 05:40:47	<--	doxinho_ (~doxinho@dox.la) has left #regex ("Leaving")
+2016-09-21 05:40:58	jeffreylevesque	howcome i can't replace `?<!` with `^`?
+2016-09-21 05:41:20	+lyxia	(^ ) does not mean anything
+2016-09-21 05:41:29	jeffreylevesque	i thought that was negation
+2016-09-21 05:41:34	jeffreylevesque	does it only work in []?
+2016-09-21 05:41:40	+lyxia	yes
+2016-09-21 05:41:45	jeffreylevesque	ooh
+2016-09-21 05:43:44	jeffreylevesque	i wish i could do: startingstrig[ \t=]*(?<!dontmatch)$
+2016-09-21 05:44:06	+lyxia	why
+2016-09-21 05:44:24	jeffreylevesque	i don't like matching any characters in the middle
+2016-09-21 05:44:43	jeffreylevesque	i was hoping only spaces or tabs before and after =
+2016-09-21 05:45:12	<--	shahinism (~shahinism@unaffiliated/shahinism) has quit (Ping timeout: 244 seconds)
+2016-09-21 05:45:26	+lyxia	Can't there be more stuff between = "dontmatch"
+2016-09-21 05:45:28	+lyxia	?
+2016-09-21 05:45:48	jeffreylevesque	just matching absolute case
+2016-09-21 05:46:28	+lyxia	I don't know what that means
+2016-09-21 05:47:21	jeffreylevesque	startingstrig = dontmatch, returns nothing. startingstrig = somematch returns
+2016-09-21 05:48:37	jeffreylevesque	sorry
+2016-09-21 05:48:37		[05:48]
+2016-09-21 05:48:42	jeffreylevesque	i'm going to bpaste
+2016-09-21 05:49:30	+lyxia	startingstrig = cat dontmatch
+2016-09-21 05:49:34	+lyxia	is what I'm asking about
+2016-09-21 05:50:02	+lyxia	Can't there be more stuff between "=" and "dontmatch"?
+2016-09-21 05:50:31	jeffreylevesque	this is my original code - https://bpaste.net/show/a70767211905
+2016-09-21 05:51:18	jeffreylevesque	so basically, im trying to add 'startingstring = attribute' line, if there exists a line 'startingstring                 = notattribute'
+2016-09-21 05:51:47	jeffreylevesque	it replaces "matches" with what's defined in "line"
+2016-09-21 05:52:08	jeffreylevesque	have to escape twice for special chars in puppet
+2016-09-21 05:52:17	jeffreylevesque	once for puppet
+2016-09-21 05:52:41	jeffreylevesque	i didn't escape my paste properly, but it's not right anyways
+2016-09-21 05:53:54	jeffreylevesque	i guess the gears aren't turning in my head
+2016-09-21 05:53:58	jeffreylevesque	your solution is good
+2016-09-21 05:54:32	jeffreylevesque	startingstrig[ \t=]*.*(?<!dontmatch)$
+2016-09-21 05:54:56	-->	ahmedelgabri (~ahmedelga@212.123.217.154) has joined #regex
+2016-09-21 05:55:00	<--	ahmedelgabri (~ahmedelga@212.123.217.154) has quit (Client Quit)
+2016-09-21 05:55:58	-->	XOCKET (~XOCKET@unaffiliated/xocket) has joined #regex
+2016-09-21 05:56:55	<--	ahmed_elgabri (~ahmedelga@212.123.217.154) has quit (Ping timeout: 250 seconds)
+2016-09-21 05:57:52	-->	dan2k3k4 (~dan2k3k4@unaffiliated/dan2k3k4) has joined #regex
+2016-09-21 05:57:59	+lyxia	startingstrig[ \t=]*+(?!dontmatch$)  perhaps? But that's only if you do not expect there to be anything other than whitespace between = and dontmatch
+2016-09-21 05:59:51	<--	XOCK_STREAM (~XOCKET@unaffiliated/xocket) has quit (Ping timeout: 265 seconds)
+2016-09-21 05:59:54	<--	Momogi (~ricky@36.82.199.206) has quit (Read error: Connection reset by peer)
+2016-09-21 06:00:01	<--	BetaFrey (b8b952c3@gateway/web/cgi-irc/kiwiirc.com/ip.184.185.82.195) has quit (Quit: http://www.kiwiirc.com/ - A hand crafted IRC client)
+2016-09-21 06:05:13	-->	regex101-6752 (3e605a52@gateway/web/freenode/ip.62.96.90.82) has joined #regex
+2016-09-21 06:05:13		[06:05]
+2016-09-21 06:05:27	<--	regex101-6752 (3e605a52@gateway/web/freenode/ip.62.96.90.82) has quit (Client Quit)
+2016-09-21 06:07:44	-->	OnlineCop (~OnlineCop@unaffiliated/onlinecop) has joined #regex
+2016-09-21 06:07:44	--	Mode #regex [+v OnlineCop] by ChanServ
+2016-09-21 06:10:43	-->	Liquide (Liquide@78-68-12-187-no29.tbcn.telia.com) has joined #regex
+2016-09-21 06:15:12	<--	fuchstronaut (~fuchstron@unaffiliated/fuchstronaut) has quit (Remote host closed the connection)
+2016-09-21 06:15:15	<--	aw1 (~aw1@unaffiliated/aw1) has quit (Read error: Connection reset by peer)
+2016-09-21 06:15:55	--	MuffinMedic is now known as Evan
+2016-09-21 06:16:11	--	Evan is now known as MuffinMedic
+2016-09-21 06:17:26	jeffreylevesque	thank you lyxia 
+2016-09-21 06:23:00		[06:17]
+2016-09-21 06:25:17	-->	Pyrogerg (~Gregory@192.67.133.204) has joined #regex
+2016-09-21 06:29:30	<--	thevishy (~thevishy@111.93.187.34) has quit (Ping timeout: 260 seconds)
+2016-09-21 06:29:32	<--	TheDcoder (~TheDcoder@unaffiliated/thedcoder) has quit (Quit: Gonna test SASL EXTERNAL)
+2016-09-21 06:30:00	-->	TheDcoder (~TheDcoder@106.51.218.126) has joined #regex
+2016-09-21 06:30:24	--	TheDcoder is now known as Guest94143
+2016-09-21 06:30:26	<--	Guest94143 (~TheDcoder@106.51.218.126) has quit (Remote host closed the connection)
+2016-09-21 06:31:05	-->	The_Dcoder (~TheDcoder@unaffiliated/thedcoder) has joined #regex
+2016-09-21 06:32:59	-->	aw1 (~aw1@unaffiliated/aw1) has joined #regex
+2016-09-21 06:33:11	--	The_Dcoder is now known as TheDcoder
+2016-09-21 06:34:06	<--	afx_ (~afx_@adsl-200.37.6.247.tellas.gr) has quit (Ping timeout: 244 seconds)
+2016-09-21 06:40:00		[06:34]
+2016-09-21 06:40:28	-->	turlutton (~turlutton@unaffiliated/turlutton) has joined #regex
+2016-09-21 06:40:28	--	Mode #regex [+v turlutton] by ChanServ
+2016-09-21 06:41:01	<--	Nyterax (~Nyterax@unaffiliated/nyterax) has quit (Remote host closed the connection)
+2016-09-21 06:41:26	-->	skweek (~skweek@2607:fe50:0:810b:bcae:516b:24e:ed39) has joined #regex
+2016-09-21 06:44:48	<--	rismoney1 (~rismoney1@pool-108-41-106-114.nycmny.fios.verizon.net) has quit (Ping timeout: 265 seconds)
+2016-09-21 06:47:42	<--	ogny (~orkun@unaffiliated/ogny) has quit (Ping timeout: 265 seconds)
+2016-09-21 06:50:16	<--	mrded (~mrded@84.207.252.242) has quit (Remote host closed the connection)
+2016-09-21 06:50:31	-->	afx_ (~afx_@adsl-200.37.6.247.tellas.gr) has joined #regex
+2016-09-21 06:50:42	<--	zjhxmjl (~zjhxmjl@49.79.191.75) has quit (Quit: WeeChat 1.2)
+2016-09-21 06:52:54	<--	felixjet (~felixjet@96.red-81-39-224.dynamicip.rima-tde.net) has quit (Quit: Leaving)
+2016-09-21 06:55:55	<--	XOCKET (~XOCKET@unaffiliated/xocket) has quit (Disconnected by services)
+2016-09-21 06:55:55		[06:55]
+2016-09-21 06:55:55	-->	XOCK_STREAM (~XOCKET@unaffiliated/xocket) has joined #regex
+2016-09-21 06:56:33	-->	nikivi (~nikivi@dhcp-077-250-172-150.chello.nl) has joined #regex
+2016-09-21 07:02:00		[06:56]
+2016-09-21 07:04:03	<--	turlutton (~turlutton@unaffiliated/turlutton) has quit (Quit: leaving)
+2016-09-21 07:06:20	-->	Drullkus (~Drullkus@130.65.109.119) has joined #regex
+2016-09-21 07:07:20	<--	nschoe (~nschoe@AStLambert-651-1-7-201.w86-217.abo.wanadoo.fr) has quit (Quit: Program. Terminated.)
+2016-09-21 07:08:52	-->	metachr0n (~nobody@78.1.broadband13.iol.cz) has joined #regex
+2016-09-21 07:09:01	<--	dan2k3k4 (~dan2k3k4@unaffiliated/dan2k3k4) has quit (Quit: -)
+2016-09-21 07:10:26	<--	metachr0n (~nobody@78.1.broadband13.iol.cz) has quit (Client Quit)
+2016-09-21 07:13:26	-->	metachr0n (~nobody@78.1.broadband13.iol.cz) has joined #regex
+2016-09-21 07:15:17	-->	dan2k3k4 (~dan2k3k4@unaffiliated/dan2k3k4) has joined #regex
+2016-09-21 07:15:34	-->	fuchstronaut (~fuchstron@unaffiliated/fuchstronaut) has joined #regex
+2016-09-21 07:17:07	ash_workz	is there a way to do something like, "match [^_] or nothing
+2016-09-21 07:17:07		[07:17]
+2016-09-21 07:17:15	ash_workz	so like
+2016-09-21 07:17:27	OCPoser	([^_]|)
+2016-09-21 07:17:29	ash_workz	keyword[^_]? or something
+2016-09-21 07:17:31	OCPoser	Yes.
+2016-09-21 07:17:43	OCPoser	[^_]? is valid.
+2016-09-21 07:18:06	-->	felixjet (~felixjet@96.red-81-39-224.dynamicip.rima-tde.net) has joined #regex
+2016-09-21 07:18:08	ash_workz	but doesn't do what I want
+2016-09-21 07:18:11	ash_workz	in fact
+2016-09-21 07:18:26	ash_workz	neither does ([^_]|)
+2016-09-21 07:18:33	+OnlineCop	If  [^_]  cannot match because it's at the end of a string OR if there's a  _  character right there, the  ?  will make it succeed.
+2016-09-21 07:19:00	+OnlineCop	But then any regex after it may be where it fails.
+2016-09-21 07:19:18	<--	ShekharReddy (uid132367@gateway/web/irccloud.com/x-cvpaasbhqspihxwl) has quit (Quit: Connection closed for inactivity)
+2016-09-21 07:19:25	<--	morenoh149 (~harry@69.12.26.166) has quit (Ping timeout: 272 seconds)
+2016-09-21 07:19:44	+OnlineCop	!regex keyword_ keywords keyword /(keyword[^_]?)/g
+2016-09-21 07:19:44	+pork	[Result: 3] [0:1-7: keyword] [1:1-7: keyword] [2:10-17: keywords] [3:19-25: keyword]
+2016-09-21 07:20:01	ash_workz	https://regex101.com/r/wG5cG9/1 .. I don't understand why the first matches and the second doesn;t
+2016-09-21 07:20:02	+OnlineCop	Notice that it still matches 'keyword' in 'keyword_' but left off the '_'
+2016-09-21 07:20:10	ash_workz	right
+2016-09-21 07:20:14	+OnlineCop	The newline.
+2016-09-21 07:20:15	ash_workz	that's not my objective
+2016-09-21 07:20:16	<--	fuchstronaut (~fuchstron@unaffiliated/fuchstronaut) has quit (Ping timeout: 255 seconds)
+2016-09-21 07:20:19	+OnlineCop	[^_] is matching a newline.
+2016-09-21 07:20:32	+OnlineCop	Wrap a capture group around it and take a look at MATCH INFORMATION.
+2016-09-21 07:20:41	+OnlineCop	https://regex101.com/r/wG5cG9/2
+2016-09-21 07:20:42	ash_workz	well, I don't know that \n is available in something like sed or grep so...
+2016-09-21 07:20:57	+OnlineCop	It never hurts to include it with sed/grep.
+2016-09-21 07:21:00	+OnlineCop	[^\n_]
+2016-09-21 07:21:29	+OnlineCop	https://regex101.com/r/wG5cG9/3
+2016-09-21 07:21:37	ash_workz	well
+2016-09-21 07:21:41	ash_workz	my problem is reverse
+2016-09-21 07:21:45	ash_workz	the*
+2016-09-21 07:21:47	ash_workz	like
+2016-09-21 07:21:53	ash_workz	I *want* to match the first line
+2016-09-21 07:21:58	ash_workz	but I don't know if it will
+2016-09-21 07:22:14	ash_workz	because of this: https://regex101.com/r/wG5cG9/4
+2016-09-21 07:22:28	+OnlineCop	Did you use the  ?  at the end?
+2016-09-21 07:22:29	ash_workz	(meaning, I don't think I can *count* on the newline)
+2016-09-21 07:22:43	+OnlineCop	Also remember that you can use  $  to mean the end-of-line in most of those examples.
+2016-09-21 07:22:44	ash_workz	that will defeat the purpose of the [^_]
+2016-09-21 07:22:57	ash_workz	right, but I dont' want to stop at $
+2016-09-21 07:23:09	ash_workz	and $ doesn't work in [^] right?
+2016-09-21 07:23:13	ash_workz	oh
+2016-09-21 07:23:17	ash_workz	but maybe |
+2016-09-21 07:23:35	ash_workz	yeah
+2016-09-21 07:23:47	+OnlineCop	'grep -v keyword_'  :D
+2016-09-21 07:24:05	+OnlineCop	Are you using PCRE grep?   grep -P  or similar?
+2016-09-21 07:24:14	<--	ejb (~ejb@unaffiliated/ejb) has quit (Quit: Textual IRC Client: www.textualapp.com)
+2016-09-21 07:24:20	<--	TheDcoder (~TheDcoder@unaffiliated/thedcoder) has quit (Quit: Good night!)
+2016-09-21 07:25:05	+OnlineCop	https://regex101.com/r/wG5cG9/6
+2016-09-21 07:25:24	+OnlineCop	Or even simpler:   (keyword[^\n_]*$)
+2016-09-21 07:25:39	ash_workz	I am using egrep
+2016-09-21 07:25:44	+OnlineCop	Unless you can accept a  _  down the line but just not immediately after 'keyword'
+2016-09-21 07:26:15	+OnlineCop	https://regex101.com/r/wG5cG9/7
+2016-09-21 07:26:30	+OnlineCop	That will support  'keyword with_in_the_line'
+2016-09-21 07:26:41	+OnlineCop	Just not   'keyword_ with_in_the_line'
+2016-09-21 07:27:06	ash_workz	grr
+2016-09-21 07:27:19	ash_workz	I mean, some of this is just exercise
+2016-09-21 07:27:37	+OnlineCop	Everybody Jazzercise!
+2016-09-21 07:28:12	ash_workz	but I wanted to grep `CREATE TABLE foo (` without knowing exactly how they wrote it and eliminating CREATE TABLE foo_bar
+2016-09-21 07:28:27	<--	XOCK_STREAM (~XOCKET@unaffiliated/xocket) has quit (Ping timeout: 276 seconds)
+2016-09-21 07:28:32	ash_workz	and I did it with find -exec so piping is just making things harder
+2016-09-21 07:28:34	ash_workz	nayway
+2016-09-21 07:28:36	ash_workz	anyway*
+2016-09-21 07:28:40	ash_workz	I don't know why it failed
+2016-09-21 07:28:59	+OnlineCop	'grep -o'
+2016-09-21 07:29:03	-->	regex101-5378 (bb8b5cea@gateway/web/freenode/ip.187.139.92.234) has joined #regex
+2016-09-21 07:29:07	ash_workz	oh
+2016-09-21 07:29:09	ash_workz	yeah I do know
+2016-09-21 07:29:14	ash_workz	< idiot
+2016-09-21 07:29:30	ash_workz	I was doing create.*foo[^_]
+2016-09-21 07:29:39	ash_workz	and still getting create table foo_bar
+2016-09-21 07:29:54	ash_workz	because the whole line is create table foo_bar using foo
+2016-09-21 07:30:01	ash_workz	~>~
+2016-09-21 07:30:03	ash_workz	~.~*
+2016-09-21 07:30:05	+OnlineCop	That could do it.
+2016-09-21 07:30:06	<--	regex101-5378 (bb8b5cea@gateway/web/freenode/ip.187.139.92.234) has quit (Client Quit)
+2016-09-21 07:30:10	ash_workz	¬.¬ *
+2016-09-21 07:30:16	-->	regex101-0472 (cc1c7e56@gateway/web/freenode/ip.204.28.126.86) has joined #regex
+2016-09-21 07:30:16	-->	lexileo (~lexii@202.149.205.17) has joined #regex
+2016-09-21 07:30:28	 *	ash_workz feels like a numbskull
+2016-09-21 07:31:03	ash_workz	if find didn't kill the highlighting I would've noticed
+2016-09-21 07:31:16	+OnlineCop	--color=always
+2016-09-21 07:31:29	<--	metachr0n (~nobody@78.1.broadband13.iol.cz) has quit (Quit: WeeChat 1.5)
+2016-09-21 07:31:35	+OnlineCop	Although that introduces color characters into the rest of the output, which throws off the regex.
+2016-09-21 07:31:37	ash_workz	I know, but I am a numbskull, remember?
+2016-09-21 07:31:39	-->	kbdkode (~kbdkode@unaffiliated/kbdkode) has joined #regex
+2016-09-21 07:31:58	ash_workz	well, yeah, but not in the same command
+2016-09-21 07:32:13	ash_workz	ie grep --color=always 'regex' wont throw off regex... right?
+2016-09-21 07:32:13		[07:32]
+2016-09-21 07:32:20	ash_workz	egrep*
+2016-09-21 07:32:30	+OnlineCop	No; just its output.
+2016-09-21 07:32:50	+OnlineCop	The the output that IT provides back to whatever receives it (the terminal, another grep operation, etc.) would receive those color codes.
+2016-09-21 07:33:16	ash_workz	can you do sed -n 'last,last+number' ?
+2016-09-21 07:33:34	+OnlineCop	I think awk supports math like that; I doubt sed can.
+2016-09-21 07:33:50	+OnlineCop	But I'm not an expert on either sed or awk.
+2016-09-21 07:33:54	ash_workz	yeah
+2016-09-21 07:34:08	ash_workz	 /join #sed
+2016-09-21 07:35:11	ash_workz	thanks OnlineCop !
+2016-09-21 07:35:17	+OnlineCop	No problem.
+2016-09-21 07:35:30	ash_workz	I get tired of praising you because I feel almost like, "yeah yeah"
+2016-09-21 07:35:33	ash_workz	heh
+2016-09-21 07:35:42	<--	regex101-0472 (cc1c7e56@gateway/web/freenode/ip.204.28.126.86) has quit (Ping timeout: 240 seconds)
+2016-09-21 07:36:02	kbdkode	hallo. I have a lot of regex expressions that get evaluated for my irc bot in succession (for various parts of the raw irc message that get deconstructed and stored into a dict essentially). I was trying to think of a way to speed this up, and my conclusion was to (before the string gets compiled into a regex object when the event handler is being created), try to find the first letter of what the regex object
+2016-09-21 07:36:05	kbdkode	would be (if it can be evaluated) and I just wanted to do it right. For example, if it (stupidly) starts with '^', then I could strip that off. If it starts with '.', then I would know that the first character cannot be evaluated. I just wanted to do it right, so what are all of the possibilities for first characters that are unable to be evaluated, if you will?
+2016-09-21 07:36:14	+OnlineCop	I don't mind answering questions. If I minded (or when I'm busy), I simply don't log into IRC that day/week.
+2016-09-21 07:36:30	kbdkode	if someone has a better idea, then I would gladly take that into consideration.
+2016-09-21 07:38:01	+OnlineCop	kbdkode: So your script takes several regexes as input, and you want to essentially combine them into a single pass so it doesn't keep re-evaluating similar anchors and requirements that always return the same result?
+2016-09-21 07:39:36	+OnlineCop	Does your regex script allow the (?x) modifier to allow whitespace and comments?
+2016-09-21 07:40:50	kbdkode	for example there must be at least 70 or so (currently and growing) compiled reg. expressions (when the bot loads them) for the "message" part raw irc message (when you do "PRIVMSG nick/#chan :message here"). A lot of them start with the '!' or '@' or '.' characters, while some of them (very few) begin with something else. Some of the "message" attributes are not evaluated immediately (if they have "%nick%" -
+2016-09-21 07:40:52	kbdkode	the bots current nick in the string before regex evaluation), but that is irrelevant. Hopefully that makes more sense
+2016-09-21 07:41:05	-->	ahmedelgabri (~ahmedelga@2a02:a441:9f5:0:cd9e:ba3e:8fc:3c07) has joined #regex
+2016-09-21 07:41:40	kbdkode	my main concern is something like `message = "(msg1|othermsg2)"
+2016-09-21 07:41:50	+OnlineCop	Sure. But you're trying to see whether a few regexes can have certain characters removed?  "^.*stuff"  "^.*different stuff"   where the  ^  can be ignored in the 2nd regex?
+2016-09-21 07:42:25	-->	metachr0n (~nobody@78.1.broadband13.iol.cz) has joined #regex
+2016-09-21 07:42:25	-->	ShekharReddy (uid132367@gateway/web/irccloud.com/x-lpksrfaypvmglmjy) has joined #regex
+2016-09-21 07:42:37	kbdkode	no. I am trying to find a way to (if I don't have to) not evaluate a reg. ex. (because I believe it to be a lot slower than checking to see if a string starts with a certain character)
+2016-09-21 07:43:28	kbdkode	so I was trying to figure out how to evaluate the potential first characters. Like re. exp. `(hello|bye)` would produce `['h', 'b']`
+2016-09-21 07:43:55	-->	regex101-7877 (596ef067@gateway/web/freenode/ip.89.110.240.103) has joined #regex
+2016-09-21 07:43:55	kbdkode	(of course this is before the regular expression is compiled, so it's just representative//
+2016-09-21 07:44:00	<--	regex101-7877 (596ef067@gateway/web/freenode/ip.89.110.240.103) has quit (Client Quit)
+2016-09-21 07:44:23	+OnlineCop	That would be problematic, I think.
+2016-09-21 07:44:36	+OnlineCop	(,|!|.|?)
+2016-09-21 07:44:39	+OnlineCop	Whoops:
+2016-09-21 07:44:42	+OnlineCop	(,|!|.|\?)
+2016-09-21 07:44:59	+OnlineCop	This should actually be evaluated as  ([,!?]|.)
+2016-09-21 07:45:11	+OnlineCop	since the '.' is actually 'any character' in this cas.
+2016-09-21 07:45:13	+OnlineCop	*case
+2016-09-21 07:45:15	kbdkode	but I would like to do it (when the bot loads all of this - rather than evaluating 300+ regular expressions). Ok. And what about '|'s and '()'s
+2016-09-21 07:45:45	kbdkode	those can change the first character as well. This is why I was hoping that someone could help me find all the "gotchas"
+2016-09-21 07:46:34	kbdkode	I would even be ok with just keeping something with parens because most of the regexs don't have parens :)
+2016-09-21 07:47:01	-->	crayon (~user@108.61.117.164) has joined #regex
+2016-09-21 07:47:08	<--	crayon (~user@108.61.117.164) has quit (Max SendQ exceeded)
+2016-09-21 07:47:25	+OnlineCop	What you're doing is a bit too abstract for my brain.
+2016-09-21 07:47:25		[07:47]
+2016-09-21 07:47:47	+OnlineCop	I have to see concrete examples so I can figure out regex patterns for optimizations.
+2016-09-21 07:48:10	kbdkode	hm. I think I can do it, though. :) Maybe I will just try myself. I can give you an example if you give me 30 min to write it. :D
+2016-09-21 07:48:47	+OnlineCop	That's fine. The link would help others in the channel here who might be able to think along different lines and figure out a good solution, too.
+2016-09-21 07:49:40	<--	metachr0n (~nobody@78.1.broadband13.iol.cz) has quit (Quit: WeeChat 1.5)
+2016-09-21 07:50:52	-->	metachr0n (~nobody@78.1.broadband13.iol.cz) has joined #regex
+2016-09-21 07:53:42	kbdkode	ok great. And so you know, I am writing the test case in python3, so it should be easy to follow
+2016-09-21 07:53:58	+OnlineCop	I don't know Python, but I'm sure I could figure it out.
+2016-09-21 07:56:23	<--	ahmedelgabri (~ahmedelga@2a02:a441:9f5:0:cd9e:ba3e:8fc:3c07) has quit (Quit: WeeChat 1.5)
+2016-09-21 07:57:23	<--	Mitch-_- (~Mitch@d149-67-206-235.try.wideopenwest.com) has quit (Quit: This computer has gone to sleep)
+2016-09-21 07:58:25	-->	shahinism (~shahinism@unaffiliated/shahinism) has joined #regex
+2016-09-21 07:59:43	-->	morenoh149 (~harry@69.12.26.166) has joined #regex
+2016-09-21 08:05:00		[07:59]
+2016-09-21 08:05:01	-->	fuchstronaut (~fuchstron@unaffiliated/fuchstronaut) has joined #regex
+2016-09-21 08:09:31	<--	fuchstronaut (~fuchstron@unaffiliated/fuchstronaut) has quit (Ping timeout: 250 seconds)
+2016-09-21 08:10:11	-->	sheep_ (~Mutter@d54C3AD50.access.telenet.be) has joined #regex
+2016-09-21 08:11:39	-->	gde33 (~Gaby@546A1135.cm-12-3a.dynamic.ziggo.nl) has joined #regex
+2016-09-21 08:12:54	<--	guampa (~guampa@unaffiliated/guampa) has quit (Quit: quit)
+2016-09-21 08:13:10	-->	jameswf (uid27319@gateway/web/irccloud.com/x-lcnmftleuuqyqcns) has joined #regex
+2016-09-21 08:14:29	-->	ahmedelgabri (~ahmedelga@2a02:a441:9f5:0:6cc6:1333:3677:44e9) has joined #regex
+2016-09-21 08:14:49	-->	Mitch-_- (~Mitch@96.27.240.202) has joined #regex
+2016-09-21 08:15:07	-->	flargnarf (~flargnarf@68.140.239.132) has joined #regex
+2016-09-21 08:15:52	-->	regex101-2843 (c2efce6d@gateway/web/freenode/ip.194.239.206.109) has joined #regex
+2016-09-21 08:16:15	regex101-2843	!html
+2016-09-21 08:16:15	+perlbot	Do NOT regex HTML! (http://bit.ly/1G8p6VH) - Instead, consider using a DOM parser in your programming language of choice.
+2016-09-21 08:17:09	+lopid	i should get myself a t-shirt: i regex html daily
+2016-09-21 08:17:47	+OnlineCop	 /<html>/
+2016-09-21 08:18:14	+OnlineCop	I regex regex regexes.
+2016-09-21 08:18:20	<--	dan2k3k4 (~dan2k3k4@unaffiliated/dan2k3k4) has quit (Quit: -)
+2016-09-21 08:18:21	+lopid	ooh
+2016-09-21 08:18:48	+OnlineCop	 /I (regex) \1 \1es/    may be better.
+2016-09-21 08:19:20	<--	regex101-2843 (c2efce6d@gateway/web/freenode/ip.194.239.206.109) has quit (Client Quit)
+2016-09-21 08:19:20	jelly	amateur, you can save two characters by including ' ' in ()!!!!1
+2016-09-21 08:19:38	-->	netcarver (~netcarver@241.30.115.87.dyn.plus.net) has joined #regex
+2016-09-21 08:19:53	+lopid	might as well reference the spaces, too
+2016-09-21 08:20:01	 *	jelly has the xkcd tee instead
+2016-09-21 08:20:01		[08:20]
+2016-09-21 08:20:14	+OnlineCop	The "Stand back; I know perl" one?
+2016-09-21 08:20:20	<--	Girafferson (~Giraffers@2601:281:8001:663d:e234:b24c:6011:64f4) has quit (Remote host closed the connection)
+2016-09-21 08:20:30	jelly	s/perl/regular expressions/, yes
+2016-09-21 08:21:23	jelly	don't dare state knowing of perl
+2016-09-21 08:22:36	<--	sheep_ (~Mutter@d54C3AD50.access.telenet.be) has quit (Ping timeout: 244 seconds)
+2016-09-21 08:22:59	kbdkode	jelly == jelle?
+2016-09-21 08:23:16	jelly	no, jelle is a different person
+2016-09-21 08:23:18	-->	crayon (~user@108.61.117.164) has joined #regex
+2016-09-21 08:23:25	<--	crayon (~user@108.61.117.164) has quit (Max SendQ exceeded)
+2016-09-21 08:23:32	+OnlineCop	There's always room for jelly!
+2016-09-21 08:24:20	jelly	he has an inferior nickserv account of "jelly1", having registered two months later
+2016-09-21 08:29:06	-->	guampa (~guampa@unaffiliated/guampa) has joined #regex
+2016-09-21 08:31:11	kbdkode	mm yes I know jelle a bit
+2016-09-21 08:31:17	kbdkode	that's funny
+2016-09-21 08:31:25	kbdkode	almost done with example
+2016-09-21 08:31:50	-->	XOCKET (~XOCKET@unaffiliated/xocket) has joined #regex
+2016-09-21 08:35:12	-->	regex101-3009 (0c0adbe2@gateway/web/freenode/ip.12.10.219.226) has joined #regex
+2016-09-21 08:35:12		[08:35]
+2016-09-21 08:35:48	regex101-3009	!rehelp
+2016-09-21 08:35:48	+perlbot	Please post your regex attempt and sample string(s) at https://regex101.com/, then click Save (ctrl+s) and post the link here. You should indicate what language/platform you are using and, where possible, provide examples of both what should and should not match.
+2016-09-21 08:36:27	regex101-3009	I need regex to capture {"GR_File_Details":[
+2016-09-21 08:36:39	+OnlineCop	(\{[^\[]*\[)
+2016-09-21 08:36:53	regex101-3009	I used ({\"GR_File_Details\":\[) but not workking
+2016-09-21 08:36:54	+OnlineCop	!regex {"GR_File_Details":[ /(\{[^\[]*\[)/
+2016-09-21 08:36:55	+pork	[Result: 1] [0:1-20: {"GR_File_Details":[] [1:1-20: {"GR_File_Details":[]
+2016-09-21 08:37:05	<--	ferdna (~ferdna@cpe-69-23-141-130.elp.res.rr.com) has quit (Quit: Leaving)
+2016-09-21 08:37:34	+OnlineCop	You need to escape the  {  and  [  characters.
+2016-09-21 08:37:51	+lopid	would be nice if that was in colour
+2016-09-21 08:37:53	+OnlineCop	You've escaped   \[  at the end, but need to also escape  \{
+2016-09-21 08:38:01	+OnlineCop	In color here in chat, or in color in regex101?
+2016-09-21 08:38:16	+lopid	in chat
+2016-09-21 08:38:26	+OnlineCop	You need to escape the  {  and  [  characters.
+2016-09-21 08:38:37	regex101-3009	({\"GR_File_Details\":\[) both having escape charecter, right?
+2016-09-21 08:38:43	+lopid	the !regex trigger
+2016-09-21 08:38:46	kbdkode	ok idk how complicated this is because I have been the one staring at it for about a week now, but I hope you all can understand. I commented the crap out of it. Have any questions ask. http://pastebin.com/ur2JGGrp
+2016-09-21 08:39:04	+lopid	because i saw {"GR_File_Details":[] and wondered where the ] came from
+2016-09-21 08:39:12	+OnlineCop	regex101-3009: ({\"G   change it to   (\{\"G
+2016-09-21 08:39:18	kbdkode	the part I am concerned about is at the end (in the process(..) method), where it says "this is what I would like to avoid")
+2016-09-21 08:39:45	kbdkode	oops I haven't even run it yet, but it should work
+2016-09-21 08:41:14	regex101-3009	my test is like {"GR_File_Details":[{"Process_Identifier":"681252"
+2016-09-21 08:41:33	+OnlineCop	regex101-3009: Can you save your examples on regex101 and post the link here?
+2016-09-21 08:41:50	regex101-3009	I want to capture {"GR_File_Details":[
+2016-09-21 08:42:13	+OnlineCop	   \{"GR_File_Details":\[
+2016-09-21 08:42:31	+OnlineCop	Does the text "GR_File_Details" change, or will that always be there?
+2016-09-21 08:42:59	+OnlineCop	regex101-3009: Which regex engine/language is this for?
+2016-09-21 08:43:01	<--	skweek (~skweek@2607:fe50:0:810b:bcae:516b:24e:ed39) has quit (Ping timeout: 272 seconds)
+2016-09-21 08:44:11	regex101-3009	is working....I am trying in perl
+2016-09-21 08:44:28	-->	Repox (~textual@188.114.169.186) has joined #regex
+2016-09-21 08:44:35	kbdkode	nvm I am making some adjustments. one moment
+2016-09-21 08:45:11	-->	skweek (~skweek@2607:fe50:0:810b:bcae:516b:24e:ed39) has joined #regex
+2016-09-21 08:45:52	<--	skweek (~skweek@2607:fe50:0:810b:bcae:516b:24e:ed39) has quit (Max SendQ exceeded)
+2016-09-21 08:46:12	-->	skweek (~skweek@2607:fe50:0:810b:bcae:516b:24e:ed39) has joined #regex
+2016-09-21 08:47:46	kbdkode	ok I made it a lot simpler and it works. http://pastebin.com/Sf3KEzmj
+2016-09-21 08:48:17	-->	ctcrnitv (~textual@96-90-248-245-static.hfc.comcastbusiness.net) has joined #regex
+2016-09-21 08:48:20	kbdkode	I might recommend looking at the EventHandler first (specifically the process method) :)
+2016-09-21 08:49:30	-->	dan2k3k4 (~dan2k3k4@unaffiliated/dan2k3k4) has joined #regex
+2016-09-21 08:50:04	regex101-3009	thanks for the help...also I like to capture    }] from a text ....,"err_severity":"WARN"}]}]} it is end of the file
+2016-09-21 08:50:21	kbdkode	hm and you can ignore that first comment in the process method ("make replacements if necessary") .. lingering comment
+2016-09-21 08:50:21		[08:50]
+2016-09-21 08:50:27	regex101-3009	I used (\]\}$) but not capturing
+2016-09-21 08:51:20	ctcrnitv	does anyone here know if something happened to debuggex?
+2016-09-21 08:51:24	ctcrnitv	debuggex.com
+2016-09-21 08:51:34	ctcrnitv	I keep getting an "insecure connection" error
+2016-09-21 08:52:18	<--	XOCKET (~XOCKET@unaffiliated/xocket) has quit (Ping timeout: 276 seconds)
+2016-09-21 08:54:00	+OnlineCop	You may want to see if https://twitter.com/debuggex knows what's going on.
+2016-09-21 08:55:39	-->	XOCKET (~XOCKET@unaffiliated/xocket) has joined #regex
+2016-09-21 08:55:55	<--	XOCKET (~XOCKET@unaffiliated/xocket) has quit (Max SendQ exceeded)
+2016-09-21 08:58:32	-->	naftilos76 (~naftilos7@212.50.118.252) has joined #regex
+2016-09-21 08:58:41	kbdkode	my other solution is to add a function attribute like "message_start" which would say that the "message" part would have to start with a certain string
+2016-09-21 08:59:04	kbdkode	lol I could just do that but that's toooo ez and boring :D
+2016-09-21 08:59:32	<--	dan2k3k4 (~dan2k3k4@unaffiliated/dan2k3k4) has quit (Quit: -)
+2016-09-21 09:00:25	<--	naftilos76 (~naftilos7@212.50.118.252) has quit (Read error: Connection reset by peer)
+2016-09-21 09:01:06	-->	naftilos76 (~naftilos7@212.50.118.252) has joined #regex
+2016-09-21 09:03:15	+Zarthus	ctcrnitv: No huge worry, but their certificate expired yesterday
+2016-09-21 09:03:51	+Zarthus	It's still a problem, of course. Just one of the less problematic ones.
+2016-09-21 09:03:56	<--	naftilos76 (~naftilos7@212.50.118.252) has quit (Read error: Connection reset by peer)
+2016-09-21 09:04:03	<--	TinkerTyper (~TinkerTyp@71.69.172.245) has quit (Ping timeout: 240 seconds)
+2016-09-21 09:05:51	-->	fuchstronaut (~fuchstron@unaffiliated/fuchstronaut) has joined #regex
+2016-09-21 09:05:51		[09:05]
+2016-09-21 09:07:50	-->	TinkerTyper (~TinkerTyp@71.69.172.245) has joined #regex
+2016-09-21 09:09:45	<--	netcarver (~netcarver@241.30.115.87.dyn.plus.net) has quit (Quit: Leaving)
+2016-09-21 09:10:11	<--	fuchstronaut (~fuchstron@unaffiliated/fuchstronaut) has quit (Ping timeout: 250 seconds)
+2016-09-21 09:12:33	<--	aw1 (~aw1@unaffiliated/aw1) has quit (Ping timeout: 240 seconds)
+2016-09-21 09:17:54	-->	naftilos76 (~naftilos7@212.50.118.252) has joined #regex
+2016-09-21 09:18:44	<--	afx_ (~afx_@adsl-200.37.6.247.tellas.gr) has quit (Quit: Leaving)
+2016-09-21 09:19:29	<--	naftilos76 (~naftilos7@212.50.118.252) has quit (Read error: Connection reset by peer)
+2016-09-21 09:20:05	-->	naftilos76 (~naftilos7@212.50.118.252) has joined #regex
+2016-09-21 09:21:36	<--	naftilos76 (~naftilos7@212.50.118.252) has quit (Read error: Connection reset by peer)
+2016-09-21 09:21:36		[09:21]
+2016-09-21 09:21:46	<--	skweek (~skweek@2607:fe50:0:810b:bcae:516b:24e:ed39) has quit (Ping timeout: 255 seconds)
+2016-09-21 09:22:02	-->	naftilos76 (~naftilos7@212.50.118.252) has joined #regex
+2016-09-21 09:23:48	<--	Oatmeal (~Suzeanne@99-103-96-198.lightspeed.iplsin.sbcglobal.net) has quit (Ping timeout: 244 seconds)
+2016-09-21 09:26:50	<--	naftilos76 (~naftilos7@212.50.118.252) has quit (Read error: Connection reset by peer)
+2016-09-21 09:30:27	<--	ctcrnitv (~textual@96-90-248-245-static.hfc.comcastbusiness.net) has quit (Quit: Textual IRC Client: www.textualapp.com)
+2016-09-21 09:31:33	-->	aw1 (~aw1@unaffiliated/aw1) has joined #regex
+2016-09-21 09:31:35	<--	flargnarf (~flargnarf@68.140.239.132) has quit (Remote host closed the connection)
+2016-09-21 09:34:01	<--	bowhunter (~textual@168-215-167-148.static.twtelecom.net) has quit (Ping timeout: 248 seconds)
+2016-09-21 09:35:47	kbdkode	wow I just tested str.startswith vs re.match. str.startswith is over twice as fast. I guess I will just implement the ..._start stuff
+2016-09-21 09:36:03	<--	shahinism (~shahinism@unaffiliated/shahinism) has quit (Ping timeout: 240 seconds)
+2016-09-21 09:36:09	<--	OnlineCop (~OnlineCop@unaffiliated/onlinecop) has quit (Quit: OnlineCop)
+2016-09-21 09:41:48	-->	AL_ (~al@unaffiliated/al-/x-5135750) has joined #regex
+2016-09-21 09:41:48		[09:41]
+2016-09-21 09:46:08	<--	aw1 (~aw1@unaffiliated/aw1) has quit (Ping timeout: 265 seconds)
+2016-09-21 09:46:49	<--	sanct (~sanct@212.35.67.11) has quit (Ping timeout: 244 seconds)
+2016-09-21 09:47:12	<--	regex101-3009 (0c0adbe2@gateway/web/freenode/ip.12.10.219.226) has quit (Ping timeout: 240 seconds)
+2016-09-21 09:48:54	-->	regex101-9894 (32530d2d@gateway/web/freenode/ip.50.83.13.45) has joined #regex
+2016-09-21 09:49:12	<--	Chunjee (d0582004@gateway/web/freenode/ip.208.88.32.4) has quit (Ping timeout: 240 seconds)
+2016-09-21 09:51:52	-->	Nic336 (~Thunderbi@108.63.65.189) has joined #regex
+2016-09-21 09:53:24	<--	Nic335 (~Thunderbi@216-167-248-178.eastlink.ca) has quit (Ping timeout: 276 seconds)
+2016-09-21 09:53:24	--	Nic336 is now known as Nic335
+2016-09-21 09:56:00	-->	crayon (~user@46.166.138.165) has joined #regex
+2016-09-21 09:56:15	<--	crayon (~user@46.166.138.165) has quit (Changing host)
+2016-09-21 09:56:15	-->	crayon (~user@unaffiliated/button) has joined #regex
+2016-09-21 09:58:38	-->	sanct (~sanct@212.35.67.11) has joined #regex
+2016-09-21 09:58:38		[09:58]
+2016-09-21 09:58:41	-->	aw1 (~aw1@unaffiliated/aw1) has joined #regex
+2016-09-21 10:00:12	-->	regex101-6046 (5b97894b@gateway/web/freenode/ip.91.151.137.75) has joined #regex
+2016-09-21 10:00:16	-->	skweek (~skweek@USF-Gold-Wifi-nat-56.laptops.usf.edu) has joined #regex
+2016-09-21 10:00:23	regex101-6046	!rehelp
+2016-09-21 10:00:23	+perlbot	Please post your regex attempt and sample string(s) at https://regex101.com/, then click Save (ctrl+s) and post the link here. You should indicate what language/platform you are using and, where possible, provide examples of both what should and should not match.
+2016-09-21 10:00:46	regex101-6046	hi guys 
+2016-09-21 10:00:53	regex101-6046	anyone helpme?
+2016-09-21 10:02:26	+Ouims	just ask
+2016-09-21 10:02:54	<--	aw1 (~aw1@unaffiliated/aw1) has quit (Max SendQ exceeded)
+2016-09-21 10:03:21	-->	aw1 (~aw1@unaffiliated/aw1) has joined #regex
+2016-09-21 10:03:56	regex101-6046	preg_match_all('|swfobject.embedSWF(.*?)"|si',$ok,$item_6,PREG_SET_ORDER); 
+2016-09-21 10:04:06	regex101-6046	('http://kiwzi.net/store/games/11/barbie-princess-hairstyles/barbie-princess-hairstyles.swf',
+2016-09-21 10:04:23	regex101-6046	i dont want (' on link how to make this
+2016-09-21 10:05:01	preaction	regex101-6046: add \(\' and \'\) to your match perhaps?
+2016-09-21 10:05:27	regex101-6046	ok now try
+2016-09-21 10:05:54	-->	kegster (~kegster@unaffiliated/kegster) has joined #regex
+2016-09-21 10:06:27	<--	le_melomane (~the_melom@a12-2.nat.iastate.edu) has quit (Ping timeout: 244 seconds)
+2016-09-21 10:06:35	-->	fuchstronaut (~fuchstron@unaffiliated/fuchstronaut) has joined #regex
+2016-09-21 10:07:49	regex101-6046	how to add im begginer can u help me
+2016-09-21 10:10:35	<--	sagerdearia (~necrodear@unaffiliated/necrodearia) has quit (Ping timeout: 260 seconds)
+2016-09-21 10:11:21	<--	fuchstronaut (~fuchstron@unaffiliated/fuchstronaut) has quit (Ping timeout: 248 seconds)
+2016-09-21 10:12:40	<--	skweek (~skweek@USF-Gold-Wifi-nat-56.laptops.usf.edu) has quit (Ping timeout: 265 seconds)
+2016-09-21 10:15:23	preaction	regex101-6046: this sounds more like a problem with quoting in your language. perhaps ##php can help?
+2016-09-21 10:15:23		[10:15]
+2016-09-21 10:16:34	-->	flargnarf (~flargnarf@68.140.239.132) has joined #regex
+2016-09-21 10:20:50	regex101-6046	'!html'
+2016-09-21 10:20:55	regex101-6046	!html
+2016-09-21 10:20:55	+perlbot	Do NOT regex HTML! (http://bit.ly/1G8p6VH) - Instead, consider using a DOM parser in your programming language of choice.
+2016-09-21 10:23:39	<--	step1step2 (~step1step@p57A455B6.dip0.t-ipconnect.de) has quit (Ping timeout: 244 seconds)
+2016-09-21 10:25:42	<--	regex101-9894 (32530d2d@gateway/web/freenode/ip.50.83.13.45) has quit (Ping timeout: 240 seconds)
+2016-09-21 10:26:28	-->	wojtekson16 (~wojtekson@91.223.64.243) has joined #regex
+2016-09-21 10:27:42	<--	regex101-6046 (5b97894b@gateway/web/freenode/ip.91.151.137.75) has quit (Ping timeout: 240 seconds)
+2016-09-21 10:31:30	-->	Maxel (~Maxel@66.87.138.5) has joined #regex
+2016-09-21 10:31:30		[10:31]
+2016-09-21 10:34:45	-->	gelignite (~gelignite@x4db64318.dyn.telefonica.de) has joined #regex
+2016-09-21 10:34:56	-->	rgrinberg (~rgrinberg@c-73-200-99-80.hsd1.md.comcast.net) has joined #regex
+2016-09-21 10:37:40	-->	Time-Warp (anonymouse@mirbsd/fan/time-warp) has joined #regex
+2016-09-21 10:39:13	-->	step1step2 (~step1step@p57A442E9.dip0.t-ipconnect.de) has joined #regex
+2016-09-21 10:39:14	Time-Warp	!rehelp
+2016-09-21 10:39:14	+perlbot	Please post your regex attempt and sample string(s) at https://regex101.com/, then click Save (ctrl+s) and post the link here. You should indicate what language/platform you are using and, where possible, provide examples of both what should and should not match.
+2016-09-21 10:40:14	<--	karakedi (~eAC53C340@unaffiliated/orphan) has quit (Read error: Connection reset by peer)
+2016-09-21 10:41:36	<--	Time-Warp (anonymouse@mirbsd/fan/time-warp) has left #regex ("WeeChat 1.5")
+2016-09-21 10:43:39	<--	jeffreylevesque (~chatzilla@129.6.45.20) has quit (Ping timeout: 265 seconds)
+2016-09-21 10:47:25	-->	nilg (~user@95-42-153-159.ip.btc-net.bg) has joined #regex
+2016-09-21 10:47:25		[10:47]
+2016-09-21 10:49:20	<--	ShekharReddy (uid132367@gateway/web/irccloud.com/x-lpksrfaypvmglmjy) has quit (Quit: Connection closed for inactivity)
+2016-09-21 10:49:26	<--	aw1 (~aw1@unaffiliated/aw1) has quit (Quit: Leaving)
+2016-09-21 10:53:34	<--	nikivi (~nikivi@dhcp-077-250-172-150.chello.nl) has quit (Quit: zzz)
+2016-09-21 10:55:54	+Zarthus	!explain \c
+2016-09-21 10:55:55	+pork	Invalid character in: here -»\c
+2016-09-21 10:56:05	-->	nikivi (~nikivi@dhcp-077-250-172-150.chello.nl) has joined #regex
+2016-09-21 10:56:26	-->	karakedi (~eAC53C340@unaffiliated/orphan) has joined #regex
+2016-09-21 10:58:20	wojtekson16	can someone help me https://regex101.com/r/zH9nK3/1
+2016-09-21 10:59:57	+lopid	what about it?
+2016-09-21 11:00:34	+lopid	oh. /me reads it O:)
+2016-09-21 11:00:53	<--	karakedi (~eAC53C340@unaffiliated/orphan) has quit (Ping timeout: 244 seconds)
+2016-09-21 11:01:12	+lopid	https://regex101.com/r/zH9nK3/2
+2016-09-21 11:01:40	<--	nikivi (~nikivi@dhcp-077-250-172-150.chello.nl) has quit (Quit: zzz)
+2016-09-21 11:02:21	wojtekson16	@lopid, thanks :D
+2016-09-21 11:02:39	+lopid	"@"??
+2016-09-21 11:02:39		[11:02]
+2016-09-21 11:06:10	<--	nilg (~user@95-42-153-159.ip.btc-net.bg) has quit (Remote host closed the connection)
+2016-09-21 11:07:26	-->	fuchstronaut (~fuchstron@p2003005BED2C0E007C8D214BBD14E6E9.dip0.t-ipconnect.de) has joined #regex
+2016-09-21 11:07:43	<--	fuchstronaut (~fuchstron@p2003005BED2C0E007C8D214BBD14E6E9.dip0.t-ipconnect.de) has quit (Changing host)
+2016-09-21 11:07:43	-->	fuchstronaut (~fuchstron@unaffiliated/fuchstronaut) has joined #regex
+2016-09-21 11:08:08	+Zarthus	it's an addressing-towards symbol, in places other than irc :)
+2016-09-21 11:08:33	+lopid	:|
+2016-09-21 11:09:06	-->	navidr (uid112413@gateway/web/irccloud.com/x-cpzzimbtwwpqurqn) has joined #regex
+2016-09-21 11:10:13	+Zarthus	crazy, right
+2016-09-21 11:11:37	<--	fuchstronaut (~fuchstron@unaffiliated/fuchstronaut) has quit (Ping timeout: 248 seconds)
+2016-09-21 11:16:02	-->	kikuchi (kikuchi@cust-139-38-111-94.dyn.as47377.net) has joined #regex
+2016-09-21 11:16:11	<--	gelignite (~gelignite@x4db64318.dyn.telefonica.de) has quit (Quit: http://bit.ly/1kso8Ta)
+2016-09-21 11:17:53	<--	kikuchi` (kikuchi@cust-134-171-111-94.dyn.as47377.net) has quit (Ping timeout: 240 seconds)
+2016-09-21 11:17:53		[11:17]
+2016-09-21 11:18:14	-->	Suchorski (regex@unaffiliated/suchorski) has joined #regex
+2016-09-21 11:19:54	<--	sigtrm (quassel@quassel.woboq.de) has quit (Ping timeout: 265 seconds)
+2016-09-21 11:24:20	-->	XOCKET (~XOCKET@unaffiliated/xocket) has joined #regex
+2016-09-21 11:24:41	<--	ash_workz (~chatzilla@50-243-5-153-static.hfc.comcastbusiness.net) has quit (Ping timeout: 265 seconds)
+2016-09-21 11:28:17	<--	Suchorski (regex@unaffiliated/suchorski) has quit
+2016-09-21 11:29:36	<--	ujjain (~ujjain@unaffiliated/ujjain) has quit (Ping timeout: 276 seconds)
+2016-09-21 11:30:45	-->	ujjain (~ujjain@static.10.147.9.5.clients.your-server.de) has joined #regex
+2016-09-21 11:30:45	<--	ujjain (~ujjain@static.10.147.9.5.clients.your-server.de) has quit (Changing host)
+2016-09-21 11:30:45	-->	ujjain (~ujjain@unaffiliated/ujjain) has joined #regex
+2016-09-21 11:33:28	<--	XOCKET (~XOCKET@unaffiliated/xocket) has quit (Disconnected by services)
+2016-09-21 11:33:28		[11:33]
+2016-09-21 11:33:29	-->	XOCK_STREAM (~XOCKET@unaffiliated/xocket) has joined #regex
+2016-09-21 11:35:10	-->	skweek (~skweek@68-200-146-225.res.bhn.net) has joined #regex
+2016-09-21 11:40:37	<--	sanct (~sanct@212.35.67.11) has quit (Ping timeout: 265 seconds)
+2016-09-21 11:40:50	-->	MikiSoft (6d5c0876@gateway/web/freenode/ip.109.92.8.118) has joined #regex
+2016-09-21 11:41:30	MikiSoft	hi, i'm using python to filter some strings with this regex: ^[\s\w.-]+$
+2016-09-21 11:41:55	+Ouims	andddd?
+2016-09-21 11:41:55	MikiSoft	it allow only alphanumeric characters along with . and -
+2016-09-21 11:42:03	MikiSoft	but it allows the _ character too
+2016-09-21 11:42:07	MikiSoft	and i don't want that
+2016-09-21 11:42:13	MikiSoft	how should i fix it?
+2016-09-21 11:42:26	+Ouims	you can just put the content of \w
+2016-09-21 11:42:31	+Ouims	!explain \w
+2016-09-21 11:42:31	+pork	 +--» \w Word character [a-zA-Z_\d]
+2016-09-21 11:42:34	+Ouims	without _
+2016-09-21 11:42:45	MikiSoft	okay, thanks
+2016-09-21 11:42:52	MikiSoft	so it's the equivalent to that regex
+2016-09-21 11:42:57	+Ouims	yes
+2016-09-21 11:43:00	MikiSoft	will it work for unicode too?
+2016-09-21 11:43:06	MikiSoft	unicode alpha chars
+2016-09-21 11:43:07	+Ouims	yes
+2016-09-21 11:43:12	MikiSoft	okay, thanks
+2016-09-21 11:43:14	+Ouims	well
+2016-09-21 11:43:17	+Ouims	i don't know for python
+2016-09-21 11:43:25	MikiSoft	i'll test it now
+2016-09-21 11:43:26	+Ouims	but if python support unicode yeah
+2016-09-21 11:43:32	MikiSoft	it does support, yes
+2016-09-21 11:43:39	MikiSoft	it's by default in version 3
+2016-09-21 11:44:05	+Ouims	use the /u modifier
+2016-09-21 11:44:12	MikiSoft	what does that mean?
+2016-09-21 11:44:15	MikiSoft	oh
+2016-09-21 11:44:16	MikiSoft	i know
+2016-09-21 11:44:20	MikiSoft	i could either use that
+2016-09-21 11:44:25	MikiSoft	or re.UNICODE argument
+2016-09-21 11:44:28	MikiSoft	after the regex expression
+2016-09-21 11:45:28	MikiSoft	rx = re.compile('^[a-zA-Z\s\d.-]+$',re.UNICODE)
+2016-09-21 11:45:36	MikiSoft	is this correct?
+2016-09-21 11:45:42	+Ouims	no idea
+2016-09-21 11:45:48	MikiSoft	it doesn't work now for any of the strings i specify
+2016-09-21 11:46:15	MikiSoft	it worked with \w
+2016-09-21 11:46:27	+Ouims	oh...
+2016-09-21 11:46:32	+Ouims	i see now lol
+2016-09-21 11:46:34	MikiSoft	but damn it be, it included the _ char
+2016-09-21 11:48:47	+Ouims	^[[^\w_].-]+$
+2016-09-21 11:48:47		[11:48]
+2016-09-21 11:49:27	+Ouims	^[[^\W_].-]+$
+2016-09-21 11:50:51	-->	TeamTerradactyl (~Team@67-60-91-29.cpe.cableone.net) has joined #regex
+2016-09-21 11:51:12	MikiSoft	nope, both don't seem work. i was partially wrong about the last command i've pasted above, it works, but not when unicode alpha chars are included
+2016-09-21 11:51:24	+Ouims	!rehelp
+2016-09-21 11:51:24	+perlbot	Please post your regex attempt and sample string(s) at https://regex101.com/, then click Save (ctrl+s) and post the link here. You should indicate what language/platform you are using and, where possible, provide examples of both what should and should not match.
+2016-09-21 11:51:29	+Ouims	put your example here
+2016-09-21 11:52:56	MikiSoft	https://regex101.com/r/aU8cH3/1
+2016-09-21 11:53:15	MikiSoft	you see, it works once you remove the unicode chars
+2016-09-21 11:53:23	TeamTerradactyl	[a-zA-Z] is not a unicode character
+2016-09-21 11:53:40	MikiSoft	i was afraid of that, too
+2016-09-21 11:54:03	MikiSoft	so how to use \w and exclude _ from its char range?
+2016-09-21 11:54:09	TeamTerradactyl	 [^\W_]
+2016-09-21 11:54:29	TeamTerradactyl	anything not a NON-word, also not a _
+2016-09-21 11:55:03	MikiSoft	^[^\W_]+$
+2016-09-21 11:55:08	MikiSoft	it doesn't work
+2016-09-21 11:55:09	MikiSoft	hm
+2016-09-21 11:55:20	MikiSoft	oh
+2016-09-21 11:55:22	TeamTerradactyl	https://regex101.com/r/aU8cH3/2
+2016-09-21 11:55:32	MikiSoft	i have to include also \d, \s and . - there
+2016-09-21 11:55:36	TeamTerradactyl	what do you want it to match, and what do you NOT want it to match?
+2016-09-21 11:55:45	TeamTerradactyl	 \w already includes \d
+2016-09-21 11:56:41	MikiSoft	i want to match all alphanumeric characters (including unicode), with \s (space) and . - chars
+2016-09-21 11:56:58	MikiSoft	excluding _ of course
+2016-09-21 11:57:11	MikiSoft	but the problem is, when i use \w it matches that char too
+2016-09-21 11:57:17	TeamTerradactyl	https://regex101.com/r/aU8cH3/3
+2016-09-21 11:57:56	MikiSoft	thank you! :)
+2016-09-21 11:58:01	TeamTerradactyl	The text `This line is contains _ which is invalid` does not match
+2016-09-21 11:58:09	TeamTerradactyl	https://regex101.com/r/aU8cH3/4
+2016-09-21 11:58:40	MikiSoft	great
+2016-09-21 11:58:52	MikiSoft	it of course works when i put it in python :)
+2016-09-21 11:58:59	MikiSoft	i just have one more question
+2016-09-21 11:59:36	-->	ShekharReddy (uid132367@gateway/web/irccloud.com/x-xrtqeqjykuhxvnif) has joined #regex
+2016-09-21 12:00:11	TeamTerradactyl	how much wood can a woodchuck chuck?
+2016-09-21 12:00:18	MikiSoft	will it be complicated to make another condition for matching, as i want to always to have some letters from the alphabet in the string, else to not match it if it only consists of other characters
+2016-09-21 12:00:48	MikiSoft	e.g. to match: Miki - Soft
+2016-09-21 12:01:04	MikiSoft	but not to match: -.....----000341
+2016-09-21 12:01:12	TeamTerradactyl	^(?=.*-stuff)(?!.*----)
+2016-09-21 12:01:32	TeamTerradactyl	add look-aheads right after the  ^  to say that some things are valid and others are invalid.
+2016-09-21 12:02:04	-->	XOCKET (~XOCKET@unaffiliated/xocket) has joined #regex
+2016-09-21 12:02:13	<--	ahmedelgabri (~ahmedelga@2a02:a441:9f5:0:6cc6:1333:3677:44e9) has quit (Quit: WeeChat 1.5)
+2016-09-21 12:02:20	MikiSoft	hm, seems complicated
+2016-09-21 12:02:56	MikiSoft	but just to let you know what i'm exactly doing
+2016-09-21 12:03:05	<--	XOCK_STREAM (~XOCKET@unaffiliated/xocket) has quit (Ping timeout: 250 seconds)
+2016-09-21 12:03:11	MikiSoft	i want for user to specify business/company name
+2016-09-21 12:03:38	MikiSoft	so it has to always consists of some letters from the alphabet, and optional it can have . - and numeric chars
+2016-09-21 12:03:44	MikiSoft	*optionally
+2016-09-21 12:06:26	--	irc: disconnected from server
+2016-09-21 12:06:26		[12:06]
+2016-09-21 12:41:38	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined #regex
+2016-09-21 12:41:38		[12:41]
+2016-09-21 12:41:38	--	Topic for #regex is "Need help? Type '!rehelp' | Trying to regex HTML? Type '!html' | Home: https://regex101.com/ | Tutorial: http://bit.ly/1mXMXbr"
+2016-09-21 12:41:38	--	Topic set by digitok on Fri, 11 Mar 2016 03:45:46
+2016-09-21 12:41:38	--	Channel #regex: 318 nicks (1 op, 17 voices, 300 normals)
+2016-09-21 12:41:38	***	Buffer Playback...
+2016-09-21 12:41:38	MikiSoft	[21:55:09] hm [21:55:09]
+2016-09-21 12:41:38	MikiSoft	[21:55:20] oh [21:55:20]
+2016-09-21 12:41:38	TeamTerradactyl	[21:55:22] https://regex101.com/r/aU8cH3/2 [21:55:22]
+2016-09-21 12:41:38	MikiSoft	[21:55:32] i have to include also \d, \s and . - there [21:55:32]
+2016-09-21 12:41:38	TeamTerradactyl	[21:55:36] what do you want it to match, and what do you NOT want it to match? [21:55:36]
+2016-09-21 12:41:38	TeamTerradactyl	[21:55:45]  \w already includes \d [21:55:45]
+2016-09-21 12:41:38	MikiSoft	[21:56:41] i want to match all alphanumeric characters (including unicode), with \s (space) and . - chars [21:56:41]
+2016-09-21 12:41:38	MikiSoft	[21:56:58] excluding _ of course [21:56:58]
+2016-09-21 12:41:38	MikiSoft	[21:57:11] but the problem is, when i use \w it matches that char too [21:57:11]
+2016-09-21 12:41:38	TeamTerradactyl	[21:57:17] https://regex101.com/r/aU8cH3/3 [21:57:17]
+2016-09-21 12:41:38	MikiSoft	[21:57:56] thank you! :) [21:57:56]
+2016-09-21 12:41:38	TeamTerradactyl	[21:58:01] The text `This line is contains _ which is invalid` does not match [21:58:01]
+2016-09-21 12:41:38	TeamTerradactyl	[21:58:09] https://regex101.com/r/aU8cH3/4 [21:58:09]
+2016-09-21 12:41:38	MikiSoft	[21:58:40] great [21:58:40]
+2016-09-21 12:41:38	MikiSoft	[21:58:52] it of course works when i put it in python :) [21:58:52]
+2016-09-21 12:41:38	MikiSoft	[21:58:59] i just have one more question [21:58:59]
+2016-09-21 12:41:38	TeamTerradactyl	[22:00:11] how much wood can a woodchuck chuck? [22:00:11]
+2016-09-21 12:41:38	MikiSoft	[22:00:18] will it be complicated to make another condition for matching, as i want to always to have some letters from the alphabet in the string, else to not match it if it only consists of other characters [22:00:18]
+2016-09-21 12:41:38	MikiSoft	[22:00:48] e.g. to match: Miki - Soft [22:00:48]
+2016-09-21 12:41:38	MikiSoft	[22:01:04] but not to match: -.....----000341 [22:01:04]
+2016-09-21 12:41:38	TeamTerradactyl	[22:01:11] ^(?=.*-stuff)(?!.*----) [22:01:11]
+2016-09-21 12:41:38	TeamTerradactyl	[22:01:32] add look-aheads right after the  ^  to say that some things are valid and others are invalid. [22:01:32]
+2016-09-21 12:41:38	MikiSoft	[22:02:20] hm, seems complicated [22:02:20]
+2016-09-21 12:41:38	MikiSoft	[22:02:56] but just to let you know what i'm exactly doing [22:02:56]
+2016-09-21 12:41:38	MikiSoft	[22:03:11] i want for user to specify business/company name [22:03:11]
+2016-09-21 12:41:38	MikiSoft	[22:03:38] so it has to always consists of some letters from the alphabet, and optional it can have . - and numeric chars [22:03:38]
+2016-09-21 12:41:38	MikiSoft	[22:03:44] *optionally [22:03:44]
+2016-09-21 12:41:38	TeamTerradactyl	[22:07:11] ^(?!.*_)[\w.-]+$ [22:07:11]
+2016-09-21 12:41:38	TeamTerradactyl	[22:07:50] https://regex101.com/r/aU8cH3/5 [22:07:50]
+2016-09-21 12:41:38	TeamTerradactyl	[22:08:55] ^(?![^\n_]*_)([\w\t .-]+)$ is only 46 steps [22:08:55]
+2016-09-21 12:41:38	TeamTerradactyl	[22:08:59] https://regex101.com/r/aU8cH3/6 [22:08:59]
+2016-09-21 12:41:38	MikiSoft	[22:09:46] but it will match, for example this: ..-.-0 [22:09:46]
+2016-09-21 12:41:38	MikiSoft	[22:09:52] which is invalid company name [22:09:52]
+2016-09-21 12:41:38	MikiSoft	[22:09:58] i've found something now: /^[.@&]?[a-zA-Z0-9 ]+[ !.@&()]?[ a-zA-Z0-9!()]+/ [22:09:58]
+2016-09-21 12:41:38	TeamTerradactyl	[22:10:16] except that it doesn't support unicode characters [22:10:16]
+2016-09-21 12:41:38	MikiSoft	[22:10:17] maybe this would help [22:10:17]
+2016-09-21 12:41:38	MikiSoft	[22:10:19] yeah [22:10:19]
+2016-09-21 12:41:38	MikiSoft	[22:10:22] it should be modified [22:10:22]
+2016-09-21 12:41:38	TeamTerradactyl	[22:11:30] why is that an invalid company name? [22:11:30]
+2016-09-21 12:41:38	TeamTerradactyl	[22:11:37] from a regex standpoint, that is [22:11:37]
+2016-09-21 12:41:38	MikiSoft	[22:13:51] ^(?!\s)(?!.*\s$)(?=.*[a-zA-Z0-9])[a-zA-Z0-9 '~?!]{2,}$ [22:13:51]
+2016-09-21 12:41:38	MikiSoft	[22:13:58] this is better regex [22:13:58]
+2016-09-21 12:41:38	MikiSoft	[22:14:05] but it still doesn't work with unicode chars [22:14:05]
+2016-09-21 12:41:38	MikiSoft	[22:14:26] https://regex101.com/r/xL4tD3/5 [22:14:26]
+2016-09-21 12:41:38	regex101-5429	[22:29:01] Anybody can help me match the first two lines, but not last two of this example in JS? [22:29:01]
+2016-09-21 12:41:38	regex101-5429	[22:29:07] campaign/dynamicstring/ campaign/icanbeanythings campaign/anythingsatall/random1 campaign/somanythings/random2 [22:29:07]
+2016-09-21 12:41:38	regex101-5429	[22:29:30] this is what I got so far: ^campaign\/\S+\/+$ [22:29:30]
+2016-09-21 12:41:38	regex101-5429	[22:30:04] https://regex101.com/r/qF6nS6/1 [22:30:04]
+2016-09-21 12:41:38	+Ouims	[22:32:42] https://regex101.com/r/qF6nS6/2 [22:32:42]
+2016-09-21 12:41:38	regex101-5429	[22:33:24] you rock [22:33:24]
+2016-09-21 12:41:38	***	Playback Complete.
+2016-09-21 12:42:39	--	Channel created on Sat, 25 Nov 2006 20:43:02
+2016-09-21 12:43:54	-->	LeBlaaanc (~LeBlaaanc@199.115.166.10) has joined #regex
+2016-09-21 12:49:00		[12:43]
+2016-09-21 12:51:10	<--	wojtekson16 (~wojtekson@91.223.64.243) has quit
+2016-09-21 12:52:14	-->	nehaljwa1i (~nehaljwan@182.64.122.32) has joined #regex
+2016-09-21 12:52:20	<--	nehaljwa1i (~nehaljwan@182.64.122.32) has left #regex
+2016-09-21 12:52:33	-->	new_student (~nehaljwan@182.64.122.32) has joined #regex
+2016-09-21 12:52:50	new_student	Hi! Can someone please help me add caputuring groups into this: https://regex101.com/r/mY9iY6/1
+2016-09-21 12:54:26	new_student	I want to match if the string is any of: m/M/s/S/h/H/d/D/w/W/seconds/days/minutes/hours/weeks
+2016-09-21 12:54:57	+Zarthus	/(m|s|h|d|w|seconds?|days?|minutes?|hours?|weeks?)/i
+2016-09-21 12:55:05	<--	Deele (~Deele@89.201.47.107) has quit (Ping timeout: 250 seconds)
+2016-09-21 12:56:15	+Zarthus	you probably want it reversed, actually
+2016-09-21 12:56:26	+Zarthus	(seconds?|days?|minutes?|hours?|weeks?|s|m|h|d|w)
+2016-09-21 12:56:43	+Zarthus	https://regex101.com/r/mY9iY6/2
+2016-09-21 12:57:07	+Zarthus	can be used like so: https://regex101.com/r/mY9iY6/3
+2016-09-21 12:57:54	new_student	Gotcha. Thanks
+2016-09-21 12:59:27	new_student	Zarthus: if I allow caps: https://regex101.com/r/mY9iY6/4
+2016-09-21 12:59:54	new_student	in a lang where /i is not supported
+2016-09-21 13:00:01	+Zarthus	Every language supports i afaik
+2016-09-21 13:00:16	new_student	C ?
+2016-09-21 13:00:22	+Zarthus	what library?
+2016-09-21 13:00:42	new_student	hm.. nevermind
+2016-09-21 13:00:53	+Zarthus	even posix standard supports i afaik
+2016-09-21 13:01:39	+Zarthus	and if it comes to it, you could lowercase the entire string
+2016-09-21 13:01:44	-->	Deele (~Deele@89.201.47.107) has joined #regex
+2016-09-21 13:03:58	new_student	Zarthus: Actually, I am adding a new basictype to http://libvirt.org/git/?p=libvirt.git;a=blob;f=docs/schemas/basictypes.rng
+2016-09-21 13:04:14	new_student	So, I am not sure how the pattern should look like, to show that I mean case insensitive
+2016-09-21 13:04:14		[13:04]
+2016-09-21 13:04:38	+Zarthus	i can't be bothered to look through this
+2016-09-21 13:05:03	+Zarthus	(?i) before the expression might help
+2016-09-21 13:05:11	+Zarthus	you'd have to compile and test to see if it works i guess
+2016-09-21 13:06:10	<--	Maxel (~Maxel@66.87.138.5) has quit (Ping timeout: 260 seconds)
+2016-09-21 13:08:55	-->	fuchstronaut (~fuchstron@unaffiliated/fuchstronaut) has joined #regex
+2016-09-21 13:13:13	<--	fuchstronaut (~fuchstron@unaffiliated/fuchstronaut) has quit (Ping timeout: 248 seconds)
+2016-09-21 13:19:00		[13:13]
+2016-09-21 13:19:05	<--	morenoh149 (~harry@69.12.26.166) has quit (Ping timeout: 248 seconds)
+2016-09-21 13:20:46	<--	Mitch-_- (~Mitch@96.27.240.202) has quit (Quit: This computer has gone to sleep)
+2016-09-21 13:26:00		[13:20]
+2016-09-21 13:26:02	<--	Repox (~textual@188.114.169.186) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-09-21 13:28:34	-->	ctcrnitv (~textual@96-90-248-245-static.hfc.comcastbusiness.net) has joined #regex
+2016-09-21 13:30:00	-->	skweek (~skweek@2607:fe50:0:810b:bcae:516b:24e:ed39) has joined #regex
+2016-09-21 13:33:12	-->	nikivi (~nikivi@dhcp-077-250-172-150.chello.nl) has joined #regex
+2016-09-21 13:39:00		[13:33]
+2016-09-21 13:41:17	<--	nikivi (~nikivi@dhcp-077-250-172-150.chello.nl) has quit (Quit: irc)
+2016-09-21 13:41:33	<--	lexileo (~lexii@202.149.205.17) has quit (Ping timeout: 276 seconds)
+2016-09-21 13:44:19	-->	safe (~safe@unaffiliated/safe) has joined #regex
+2016-09-21 13:50:00		[13:44]
+2016-09-21 13:54:26	<--	flargnarf (~flargnarf@68.140.239.132) has quit
+2016-09-21 13:59:54	-->	PCLine__ (~PCLine_@98.29.181.95) has joined #regex
+2016-09-21 14:00:44	-->	ferdna (~ferdna@cpe-69-23-141-130.elp.res.rr.com) has joined #regex
+2016-09-21 14:04:14	<--	navidr (uid112413@gateway/web/irccloud.com/x-cpzzimbtwwpqurqn) has quit (Quit: Connection closed for inactivity)
+2016-09-21 14:05:06	-->	Oatmeal (~Suzeanne@99-103-96-198.lightspeed.iplsin.sbcglobal.net) has joined #regex
+2016-09-21 14:05:06		[14:05]
+2016-09-21 14:08:04	--	Oatmeal is now known as SuzieCue
+2016-09-21 14:09:43	-->	fuchstronaut (~fuchstron@unaffiliated/fuchstronaut) has joined #regex
+2016-09-21 14:13:05	<--	Deele (~Deele@89.201.47.107) has quit (Ping timeout: 240 seconds)
+2016-09-21 14:14:01	<--	fuchstronaut (~fuchstron@unaffiliated/fuchstronaut) has quit (Ping timeout: 248 seconds)
+2016-09-21 14:20:00		[14:14]
+2016-09-21 14:20:18	<--	kikuchi (kikuchi@cust-139-38-111-94.dyn.as47377.net) has quit
+2016-09-21 14:20:25	<--	LeBlaaanc (~LeBlaaanc@199.115.166.10) has quit (Quit: My Mac has gone to sleep. ZZZzzz…)
+2016-09-21 14:21:33	-->	Deele (~Deele@89.201.47.107) has joined #regex
+2016-09-21 14:26:03	<--	Deele (~Deele@89.201.47.107) has quit (Ping timeout: 240 seconds)
+2016-09-21 14:28:19	<--	bcow (~bcowing@104.192.46.2) has quit (Ping timeout: 265 seconds)
+2016-09-21 14:30:48	-->	Deele (~Deele@89.201.47.107) has joined #regex
+2016-09-21 14:36:00		[14:30]
+2016-09-21 14:37:19	-->	P1RATEZ (piratez@unaffiliated/p1ratez) has joined #regex
+2016-09-21 14:41:42	<--	genio (~eu@p3m/member/CapoeiraB) has quit (Quit: reboot)
+2016-09-21 14:44:11	-->	genio (~eu@p3m/member/CapoeiraB) has joined #regex
+2016-09-21 14:44:11	--	Mode #regex [+v genio] by ChanServ
+2016-09-21 14:46:01	<--	skweek (~skweek@2607:fe50:0:810b:bcae:516b:24e:ed39) has quit (Ping timeout: 250 seconds)
+2016-09-21 14:48:21	-->	Miner_48er (~Miner_48e@68.67.255.139) has joined #regex
+2016-09-21 14:54:00		[14:48]
+2016-09-21 14:54:00	<--	ctcrnitv (~textual@96-90-248-245-static.hfc.comcastbusiness.net) has quit (Quit: Textual IRC Client: www.textualapp.com)
+2016-09-21 15:03:35	-->	morenoh149 (~harry@69.12.26.166) has joined #regex
+2016-09-21 15:08:07	<--	morenoh149 (~harry@69.12.26.166) has quit (Ping timeout: 250 seconds)
+2016-09-21 15:09:53	<--	Drullkus (~Drullkus@130.65.109.119) has quit (Remote host closed the connection)
+2016-09-21 15:09:53		[15:09]
+2016-09-21 15:10:30	-->	fuchstronaut (~fuchstron@unaffiliated/fuchstronaut) has joined #regex
