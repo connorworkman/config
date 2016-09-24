@@ -8,6 +8,7 @@ bind "TAB:menu-complete"; bind "set show-all-if-ambiguous on"
 #bind "TAB:complete"; bind "set show-all-if-ambiguous off"
 bind "set menu-complete-display-prefix on"
 
+#[ ! -e "${HOME}"/aliases.sh ] || . "${HOME}"/aliases.sh 
 
 if [ -f %{/usr/lib/bash-git-prompt/gitprompt.sh ]; then
    # To only show the git prompt in or under a repository directory
@@ -23,9 +24,9 @@ source /usr/share/doc/find-the-command/ftc.bash
 homepushdcheck() {
 	echo -n '[Move to home folder? (Y/n)] '; read -r
 	case ${REPLY} in
-	 [Yy]*| [Yy]*|'' ) eval "pushd . ; pushd ${HOME}" >/dev/null; return 0;;
+	 [Yy]*| [Yy]*|'' ) { pushd .; pushd ${HOME}; } >/dev/null; return 130;;
 	 [Nn]*| [Nn]* ) return 1;;
-	 * ) eval "pushd . ; pushd ${HOME}" >/dev/null; return 130;;
+	 * ) { pushd .; pushd ${HOME}; } >/dev/null; return 130;;
 	esac
 	return 131
 }
@@ -40,9 +41,9 @@ else
 fi
 
 # Start the gpg-agent if not already running
- if ! pgrep -x -u "${USER}" gpg-agent >/dev/null 2>&1; then
-   gpg-connect-agent /bye >/dev/null 2>&1
-fi
+#if ! pgrep -x -u "${USER}" gpg-agent >/dev/null 2>&1; then
+#   gpg-connect-agent /bye >/dev/null 2>&1
+#fi
 
 # Set SSH to use gpg-agent
 unset SSH_AGENT_PID
@@ -61,14 +62,14 @@ GPG_TTY=$(tty)
 export GPG_TTY
 
 # Refresh gpg-agent tty in case user switches into an X session
-gpg-connect-agent updatestartuptty /bye >/dev/null
+#gpg-connect-agent updatestartuptty /bye >/dev/null
 
 export SSH_KEY_PATH="/home/alyptik/.ssh/identity"
 #eval $(keychain --eval id_4rsa2)
 #exec 2>&4; eval $(keychain --eval --agents ssh,gpg id_4rsa2 2>&4); exec 2>${ZSH_ERROR}
 #{ eval $(keychain --eval --agents ssh,gpg identity id_rsa id_ecdsa); } 2>&1 | tee /dev/tty &>>${ZSH_ERROR}
 #{ eval $(keychain --eval --agents ssh,gpg identity id_rsa id_ecdsa); } 2>&1 | tee /dev/tty &>>${ZSH_ERROR}
-{ eval $(keychain --eval --agents ssh,gpg identity id_rsa id_ecdsa); } &>/dev/tty
+#{ eval $(keychain --eval --agents ssh,gpg identity id_rsa id_ecdsa); } &>/dev/tty
 
 #envoy -t ssh-agent -a id_4rsa2
 #source <(envoy -p)
@@ -119,41 +120,6 @@ set_prompt () {
     PS1+="$Blue\\w \\\$$Reset "
 }
 
-#DO NOT USE RAW ESCAPES, USE TPUT
-creset=$(tput sgr0)
-cred=$(tput setaf 1)
-cblue=$(tput setaf 4)
-cgreen=$(tput setaf 2)
-
-#export TERM="xterm-256color"
-[[ ${TERM:=xterm} =~ "^screen.*$" ]] && export TERM="screen-256color" || \
-export TERM=`sed -r 's_(rxvt-unicode|[:alphanum:]+)-?.*_\1-256color_'<<<${TERM}`
-# Add vim as default editor
-export EDITOR="vim"
-#export TERMINAL="terminator"
-export TERMINAL="konsole"
-#export BROWSER="firefox"
-export BROWSER="google-chrome-stable"
-# Gtk themes
-export GTK2_RC_FILES="$HOME/.gtkrc-2.0"
-export TERM=xterm-256color
-export PYTHONSTARTUP="/home/alyptik/.pyrc"
-export PATH=${HOME}/bin:/store/local/Wolfram/CDFPlayer/10.3/Executables:/store/local/bin:${HOME}/GNUstep/Tools:/store/local/Wolfram/CDFPlayer/10.3/Executables:/usr/local/sbin:/usr/local/bin:/bin:/sbin:/usr/bin:/usr/bin/site_perl:/usr/bin/vendor_perl:/usr/bin/core_perl
-#export PATH=/home/alyptik/GNUstep/Tools:/bin:/sbin:/usr/local/sbin:/usr/local/bin:/usr/bin:/usr/lib/jvm/default/bin:/usr/bin/site_perl:/usr/bin/vendor_perl:/usr/bin/core_perl
-export PATH=${PATH}:/opt/openresty/bin/:/opt/openresty/nginx/sbin/ #Automatically added by openresty package
-#export MANPATH="/usr/local/man:${MANPATH}"
-export PATH=${HOME}/.linuxbrew/bin:${PATH}
-export MANPATH=${HOME}/.linuxbrew/share/man:${MANPATH}
-export INFOPATH=${HOME}/.linuxbrew/share/info:${INFOPATH}
-#export SYSTEMD_LESS=FRXMK journalctl
-# Color man pages
-#export GROFF_NO_SGR=1 LESS_TERMCAP_se=$'\E[0m' LESS_TERMCAP_so=$'\033[38;5;35m' LESS_TERMCAP_md=$'\E[01;31m' LESS_TERMCAP_me=$'\E[0m'
-#export LESS_TERMCAP_us=$'\033[38;5;35m' LESS_TERMCAP_ue=$'\E[0m' LESS_TERMCAP_so=$'\E[30;43m' LESS_TERMCAP_md=$'\E[01;31m'
-## Color man pages
-export SYSTEMD_LESS=FRXMK journalctl
-## support colors in less
-export LESS=FRMsw GROFF_NO_SGR=1 man man
-# to have the indication of cursor's location and line numbers
 export LESS_TERMCAP_se=$'\E[0m' LESS_TERMCAP_so=$'\E[38;5;35m' LESS_TERMCAP_md=$'\E[1;31m' LESS_TERMCAP_me=$'\E[0m'
 export LESS_TERMCAP_us=$'\E[4;32;4;132m' LESS_TERMCAP_ue=$'\E[0m' LESS_TERMCAP_so=$'\E[30;43m' LESS_TERMCAP_md=$'\E[1;31m'
 
@@ -199,7 +165,8 @@ export PS1 PROMPT_COMMAND
 [ -r /etc/profile.d/cnf.sh ] && . /etc/profile.d/cnf.sh
 
 ## Source aliases
-[ -r ${HOME}/aliases.sh ] && source ${HOME}/aliases.sh
+[ ! -f ${HOME}/aliases.sh ] || source ${HOME}/aliases.sh
+[ ! -f ${HOME}/.profile ] || source ${HOME}/.profile
 #[ -r ${HOME}/baliases.sh ] && source ${HOME}/baliases.sh || source ${HOME}/aliases.sh
 #true || { [ -r ${HOME}/aliases.sh ] && . ${HOME}/baliases.sh; }
 
