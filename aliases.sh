@@ -680,7 +680,7 @@ certfp() {
 }
 ## Alternate man functions
 
-man() { /bin/man "$@"; return 0; }
+# man() { /bin/man "$@"; return 0; }
 
 man2() {
     local width=$(tput cols)
@@ -996,8 +996,7 @@ unalias history >/dev/null 2>&1
 
 h() { if [ -z "$*" ]; then tail ${HISTFILE}; else egrep --color=auto "$*" "${HISTFILE}"; fi; }
 
-history() { fc -fl -"$*"; }
-
+# history() { fc -fl -"$*"; }
 
 scrs() {
 	sudo parallel systemctl ::: restart status ::: "${@}"
