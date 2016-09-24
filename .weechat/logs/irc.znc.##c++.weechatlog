@@ -25563,3 +25563,103 @@
 2016-09-23 16:09:30	<--	trw (~twa@184.250.139.97) has quit (Ping timeout: 264 seconds)
 2016-09-23 16:09:43	<--	fogbank (~foggy@78-134-104-13.v4.ngi.it) has quit (Ping timeout: 244 seconds)
 2016-09-23 16:12:06	et	catern: does the function call delete on the pointer when it's done?
+2016-09-23 16:13:37	<--	SwiftMatt (~Objective@162.242.94.102) has quit (Quit: My MacBook Pro has gone to sleep. ZZZzzz…)
+2016-09-23 16:13:44	<--	Haruno (~Haruno@unaffiliated/haruno) has quit (Read error: Connection reset by peer)
+2016-09-23 16:14:12	-->	blueness (~blueness@gentoo/developer/blueness) has joined ##c++
+2016-09-23 16:14:53	slavanap	catern, if you std::move std::unique_ptr to a function, your std::unique_ptr instance becomes nullptr, with that moving, you're moving your ownership of that pointer.
+2016-09-23 16:16:36	<--	MethCat- (~ruzhen@192.210.231.214) has quit (Quit: Lost terminal)
+2016-09-23 16:16:39	catern	et: yes
+2016-09-23 16:17:12	-->	YungRaj (~YungRaj@50-24-71-159.bcstcmtk01.res.dyn.suddenlink.net) has joined ##c++
+2016-09-23 16:17:13	et	then just release it when passing to the function (but the function should accept a unique_ptr instead ;))
+2016-09-23 16:17:21	slavanap	{ std::unique_ptr<int> p(new int(1)); f(std::move()); cout << "p in main: " << (p == nullptr) ? "nullptr" : "some pointer"; } void f(const std::unique_ptr& p) { cout << "p in f :" << *p << ', '; }
+2016-09-23 16:17:21	geordi	error: invalid use of template-name 'unique_ptr' without an argument list
+2016-09-23 16:17:27	-->	fogbank (~foggy@78-134-104-13.v4.ngi.it) has joined ##c++
+2016-09-23 16:17:32	slavanap	{ std::unique_ptr<int> p(new int(1)); f(std::move()); cout << "p in main: " << (p == nullptr) ? "nullptr" : "some pointer"; } void f(const std::unique_ptr<int>& p) { cout << "p in f :" << *p << ', '; }
+2016-09-23 16:17:32	geordi	error: no matching function for call to 'move()'
+2016-09-23 16:17:40	slavanap	{ std::unique_ptr<int> p(new int(1)); f(std::move(p)); cout << "p in main: " << (p == nullptr) ? "nullptr" : "some pointer"; } void f(const std::unique_ptr<int>& p) { cout << "p in f :" << *p << ', '; }
+2016-09-23 16:17:41	geordi	warning: multi-character character constant
+2016-09-23 16:17:48	catern	slavanap: there's no need for the spam, I understand
+2016-09-23 16:17:56	slavanap	sorry
+2016-09-23 16:17:59	slavanap	{ std::unique_ptr<int> p(new int(1)); f(std::move(p)); cout << "p in main: " << (p == nullptr) ? "nullptr" : "some pointer"; } void f(const std::unique_ptr<int>& p) { cout << "p in f :" << *p << ", "; }
+2016-09-23 16:18:00	geordi	p in f :1, p in main: false
+2016-09-23 16:18:14	slavanap	oh
+2016-09-23 16:18:41	slavanap	 << has lower priority than ?
+2016-09-23 16:18:41	geordi	error: 'has' was not declared in this scope
+2016-09-23 16:19:07	et	slavanap: notice that it would have printed "some pointer"
+2016-09-23 16:19:07		[16:19]
+2016-09-23 16:19:30	<--	esas (~esas@unaffiliated/esas) has quit
+2016-09-23 16:19:32	<--	fogb (~foggy@78-134-104-13.v4.ngi.it) has quit (Ping timeout: 244 seconds)
+2016-09-23 16:20:05	-->	SwiftMatt (~Objective@162.242.94.102) has joined ##c++
+2016-09-23 16:23:20	slavanap	{ unique_ptr<int> p(new int(1)); f(move(p)); print(p); g(std::move(p)); print(p); } void f(const std::unique_ptr<int>& p) { cout << "p in f: " << *p << "; "; } void g(std::unique_ptr<int> p) { cout << "p in g: " << *p << "; "; } void print(const std::unique_ptr<int>& p) { cout << "p in main: " << ((p == nullptr) ? "nullptr" : "some pointer") << ", "; }
+2016-09-23 16:23:21	geordi	p in f: 1; p in main: some pointer, p in g: 1; p in main: nullptr,
+2016-09-23 16:23:26	-->	karakedi (~eAC53C340@unaffiliated/orphan) has joined ##c++
+2016-09-23 16:23:31	slavanap	et, ^ depends on a function.
+2016-09-23 16:24:00	slavanap	et, yeah, move sometime does not move (or moving the reference)...
+2016-09-23 16:24:33	<--	SwiftMatt (~Objective@162.242.94.102) has quit (Quit: My MacBook Pro has gone to sleep. ZZZzzz…)
+2016-09-23 16:24:38	slavanap	catern, ^^^
+2016-09-23 16:26:07	<--	illerucis (~illerucis@2620:10d:c090:180::1:b7e0) has quit (Ping timeout: 255 seconds)
+2016-09-23 16:28:34	-->	fogb (~foggy@78-134-104-13.v4.ngi.it) has joined ##c++
+2016-09-23 16:29:31	<--	chachasmooth (~chachasmo@unaffiliated/chachasmooth) has quit (Ping timeout: 250 seconds)
+2016-09-23 16:30:54	<--	fogbank (~foggy@78-134-104-13.v4.ngi.it) has quit (Ping timeout: 244 seconds)
+2016-09-23 16:32:22	-->	xaxxon (~xaxxon@c-24-18-184-142.hsd1.wa.comcast.net) has joined ##c++
+2016-09-23 16:32:24	-->	chachasmooth (~chachasmo@unaffiliated/chachasmooth) has joined ##c++
+2016-09-23 16:32:49	-->	hexagoxel (~hexagoxel@p200300798F210800021E33FFFE2231E9.dip0.t-ipconnect.de) has joined ##c++
+2016-09-23 16:32:57	-->	DigiByteDev (~JT2@220.241.252.65) has joined ##c++
+2016-09-23 16:35:05	<--	DigiByteDev (~JT2@220.241.252.65) has quit (Client Quit)
+2016-09-23 16:35:05		[16:35]
+2016-09-23 16:37:28	-->	zys1990 (~zys@183.240.129.105) has joined ##c++
+2016-09-23 16:37:39	-->	fogbank (~foggy@78-134-104-13.v4.ngi.it) has joined ##c++
+2016-09-23 16:37:49	-->	Goplat (~goplat@reactos/developer/Goplat) has joined ##c++
+2016-09-23 16:38:09	<--	KAHR-Alpha (~Alpha@AReims-652-1-187-168.w92-142.abo.wanadoo.fr) has quit (Ping timeout: 244 seconds)
+2016-09-23 16:39:29	-->	SecondForm_Glenn (~Thunderbi@97-102-42-24.res.bhn.net) has joined ##c++
+2016-09-23 16:39:41	<--	fogb (~foggy@78-134-104-13.v4.ngi.it) has quit (Ping timeout: 244 seconds)
+2016-09-23 16:39:59	<--	bsdbeard (~none@unaffiliated/bsdbeard) has quit
+2016-09-23 16:40:01	-->	ARCADIVS (~RMM@97.84.20.251) has joined ##c++
+2016-09-23 16:41:32	AmR|EiSa	Can I ask about RegEx ?
+2016-09-23 16:42:00	xaxxon	you can ask about the API here, or you can ask about specific regex's in ##c++-general if you need help crafting one
+2016-09-23 16:42:19	-->	dj_pi (~dj@c-73-191-212-56.hsd1.mi.comcast.net) has joined ##c++
+2016-09-23 16:42:57	<--	blb (~b@unaffiliated/bryno) has quit (Quit: brb!)
+2016-09-23 16:43:22	<--	LightYagami (~CanIHazMe@unaffiliated/canihazmemecats) has quit (Ping timeout: 265 seconds)
+2016-09-23 16:43:38	<--	Markow (~Markow@176.122.215.103) has quit (Remote host closed the connection)
+2016-09-23 16:43:50	<--	m_ben (~m_ben@unaffiliated/m-ben/x-5917362) has quit (Ping timeout: 244 seconds)
+2016-09-23 16:44:17	<--	AmR|EiSa (~amr@41.38.25.233) has quit (Remote host closed the connection)
+2016-09-23 16:46:19	-->	calincru_ (~calin@c-73-231-85-3.hsd1.ca.comcast.net) has joined ##c++
+2016-09-23 16:47:23	<--	logan_e_ (uid164592@gateway/web/irccloud.com/x-wpejfrqvusvonlug) has quit (Quit: Connection closed for inactivity)
+2016-09-23 16:47:34	<--	dj_pi (~dj@c-73-191-212-56.hsd1.mi.comcast.net) has quit (Ping timeout: 240 seconds)
+2016-09-23 16:47:58	-->	AmR|EiSa (~amr@41.38.25.233) has joined ##c++
+2016-09-23 16:49:07	-->	asc232 (~Keith@179.38.203.21) has joined ##c++
+2016-09-23 16:49:31	<--	hexagoxel (~hexagoxel@p200300798F210800021E33FFFE2231E9.dip0.t-ipconnect.de) has quit (Ping timeout: 255 seconds)
+2016-09-23 16:49:39	<--	araml (~araml@unaffiliated/araml) has quit (Quit: WeeChat 1.0.1)
+2016-09-23 16:50:34	<--	zys1990 (~zys@183.240.129.105) has quit (Quit: Konversation terminated!)
+2016-09-23 16:50:34		[16:50]
+2016-09-23 16:52:04	<--	Suchorski (regex@unaffiliated/suchorski) has quit
+2016-09-23 16:52:26	<--	asc232 (~Keith@179.38.203.21) has quit (Remote host closed the connection)
+2016-09-23 16:52:38	-->	matkatmusic (~matkatmus@pool-108-54-229-138.nycmny.fios.verizon.net) has joined ##c++
+2016-09-23 16:52:45	-->	fogb (~foggy@78-134-104-13.v4.ngi.it) has joined ##c++
+2016-09-23 16:53:17	-->	EricWF (~EricwF@207-170-229-104.static.twtelecom.net) has joined ##c++
+2016-09-23 16:54:23	<--	davidstone (~davidston@75-166-170-107.hlrn.qwest.net) has quit (Quit: Leaving)
+2016-09-23 16:54:46	-->	asc232 (~Keith@179.38.203.21) has joined ##c++
+2016-09-23 16:54:52	<--	snover (~Adium@unaffiliated/snover) has quit (Quit: Leaving.)
+2016-09-23 16:55:11	<--	fogbank (~foggy@78-134-104-13.v4.ngi.it) has quit (Ping timeout: 244 seconds)
+2016-09-23 16:56:21	-->	hexagoxel (~hexagoxel@p5B29A29D.dip0.t-ipconnect.de) has joined ##c++
+2016-09-23 16:56:37	-->	funfunctor (~edward@1.129.96.208) has joined ##c++
+2016-09-23 16:56:52	<--	asc232 (~Keith@179.38.203.21) has quit (Client Quit)
+2016-09-23 16:57:25	<--	matkatmusic (~matkatmus@pool-108-54-229-138.nycmny.fios.verizon.net) has quit (Ping timeout: 272 seconds)
+2016-09-23 16:59:42	<--	Winslow_ (~Winslow_@bnc.unknowncheats.me) has quit (Excess Flood)
+2016-09-23 16:59:43	-->	mwehner_ (~martin@adsl-89-217-7-11.adslplus.ch) has joined ##c++
+2016-09-23 16:59:58	-->	ortseam (~nexus@190.198.239.91) has joined ##c++
+2016-09-23 17:00:42	ortseam	hi everyone!
+2016-09-23 17:01:09	<--	carado (~carado@bea44-1-78-193-226-57.fbxo.proxad.net) has quit (Ping timeout: 250 seconds)
+2016-09-23 17:01:33	ortseam	do you know how i fix this: "en.cpp:11:22: aviso: ISO C++ forbids converting a string constant to �char*�"?
+2016-09-23 17:01:41	ortseam	http://docs.opencv.org/2.4/doc/tutorials/imgproc/histograms/template_matching/template_matching.html#template-matching
+2016-09-23 17:01:54	<--	mwehner (~martin@li910-8.members.linode.com) has quit (Ping timeout: 276 seconds)
+2016-09-23 17:02:41	-->	Winslow_ (~Winslow_@bnc.unknowncheats.me) has joined ##c++
+2016-09-23 17:02:49	xaxxon	ortseam:  const char *?
+2016-09-23 17:03:16	ortseam	i have try that
+2016-09-23 17:03:21	-->	Zxpr1jk (~zxpr1jk@24.214.61.47) has joined ##c++
+2016-09-23 17:03:25	ortseam	hm i will try again
+2016-09-23 17:03:32	xaxxon	ortseam:  post your code somewhere and link it here
+2016-09-23 17:04:12	ortseam	en.cpp:32:26: aviso: ISO C++ forbids converting a string constant to �char*�
+2016-09-23 17:04:18	vdamewood	xaxxon: It's in the link he provided.
+2016-09-23 17:04:26	vdamewood	char* image_window = "Source Image";
+2016-09-23 17:04:37	ortseam	there were 3 errors now i just have "1"
