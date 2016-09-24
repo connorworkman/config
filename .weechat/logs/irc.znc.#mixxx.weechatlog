@@ -1685,3 +1685,633 @@
 2016-09-22 00:30:00		[00:24]
 2016-09-22 00:34:07	<--	bullicon (~bullicon@132.185.153.6) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
 2016-09-22 00:39:22	-->	kLOs (~Giggity@ab191124.dynamic.ppp.asahi-net.or.jp) has joined #mixxx
+2016-09-22 00:44:26	-->	bullicon (~bullicon@132.185.153.6) has joined #mixxx
+2016-09-22 00:50:00		[00:44]
+2016-09-22 01:12:56	-->	C-S-B (~C-S-B@cpc95894-rdng25-2-0-cust824.15-3.cable.virginm.net) has joined #mixxx
+2016-09-22 01:12:56		[01:12]
+2016-09-22 01:51:13	-->	JosepMa (~JosepMa@213.143.48.224) has joined #mixxx
+2016-09-22 01:51:13		[01:51]
+2016-09-22 01:55:27	JosepMa	@be_ @M-rryan and others: I think i found a strange bug regarding controller scripting and the control "sync_enabled".
+2016-09-22 01:55:44	JosepMa	Happens on 2.0 and in latest 2.1 alpha for windows (from july)
+2016-09-22 01:57:11	JosepMa	If I press the button and do a setparameter when the song is stopped, the value is changed on both, Mixxx and the reported value from a following getParameter
+2016-09-22 01:57:52	JosepMa	If i do the same while the song is playing, the value is changed on Mixxx, but the following getParameter still reports the value 0.
+2016-09-22 01:58:16	JosepMa				engine.log("Old State: " + engine.getParameter(group, "sync_enabled"));
+2016-09-22 01:58:16	JosepMa				// sync_enabled acts as a switch so we set the opposite of the value that it has.
+2016-09-22 01:58:17	JosepMa				engine.setParameter(group, "sync_enabled", !engine.getParameter(group, "sync_enabled"));
+2016-09-22 01:58:17	JosepMa				engine.log("New State: " + engine.getParameter(group, "sync_enabled"));
+2016-09-22 01:58:29	JosepMa	song stopped:
+2016-09-22 01:58:30	JosepMa	Debug [Controller]: "Old State: 1"
+2016-09-22 01:58:30	JosepMa	Debug [Controller]: "New State: 0"
+2016-09-22 01:58:36	JosepMa	song playing:
+2016-09-22 01:58:37	JosepMa	Debug [Controller]: "Old State: 0"
+2016-09-22 01:58:37	JosepMa	Debug [Controller]: "New State: 0"
+2016-09-22 02:04:00		[01:58]
+2016-09-22 02:06:11	JosepMa	mmm...
+2016-09-22 02:06:16	JosepMa	Debug [Controller]: "Old State: 0"
+2016-09-22 02:06:16	JosepMa	Debug [Controller]: "Going to set: true"
+2016-09-22 02:06:16	JosepMa	Debug [Controller]: "typeof: number"
+2016-09-22 02:06:16	JosepMa	Debug [Controller]: "New State: 1"
+2016-09-22 02:06:38	JosepMa	will change that true for a 1 and see if that works better...
+2016-09-22 02:09:32	JosepMa				engine.log("Old State: " + engine.getParameter(group, "sync_enabled"));
+2016-09-22 02:09:32	JosepMa				// sync_enabled acts as a switch so we set the opposite of the value that it has.
+2016-09-22 02:09:32	JosepMa				var newval = (engine.getParameter(group, "sync_enabled") > 0) ? 0 : 1;
+2016-09-22 02:09:32	JosepMa				engine.log("Going to set: "+ newval);
+2016-09-22 02:09:32	JosepMa				engine.log("typeof: " + typeof newval);
+2016-09-22 02:09:32	JosepMa				engine.setParameter(group, "sync_enabled", newval);
+2016-09-22 02:09:32	JosepMa				engine.log("New State: " + engine.getParameter(group, "sync_enabled"));
+2016-09-22 02:09:50	JosepMa	Debug [Controller]: "Old State: 0"
+2016-09-22 02:09:50	JosepMa	Debug [Controller]: "Going to set: 1"
+2016-09-22 02:09:50	JosepMa	Debug [Controller]: "typeof: number"
+2016-09-22 02:09:50	JosepMa	Debug [Controller]: "New State: 0"
+2016-09-22 02:10:01	JosepMa	Definitely, it has to be something internal.
+2016-09-22 02:11:05	be_	yikes that's not good
+2016-09-22 02:11:17	be_	there's also the bug with soft takeover not working with setParameter
+2016-09-22 02:11:22	be_	clearly it needs some work
+2016-09-22 02:12:02	be_	this is something we should have an automated test for
+2016-09-22 02:12:26	be_	there may be one already, but perhaps something strange is going on with sync_enabled in particular
+2016-09-22 02:12:38	be_	can you replicate this with set/getValue?
+2016-09-22 02:13:05	JosepMa	Will try it now. I guess it might be a specific thing for sync_enabled, due to its special nature
+2016-09-22 02:13:21	<--	bullicon (~bullicon@132.185.153.6) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-09-22 02:14:48	be_	also please use a pasting service rather than pasting multiple lines into IRC
+2016-09-22 02:15:48	JosepMa	Ok, sorry.
+2016-09-22 02:15:52	be_	http://pastebin.com/ would work
+2016-09-22 02:16:08	JosepMa	as for the test, same result, when the song is playing, the value reported is 0 instead of 1
+2016-09-22 02:17:08	be_	hm, so it seems to be an issue with sync_enabled rather than get/setParameter
+2016-09-22 02:18:14	JosepMa	yes.
+2016-09-22 02:18:14	be_	maybe it's a race condition?
+2016-09-22 02:18:21	be_	what if you try to retrieve the value not immediately after setting it?
+2016-09-22 02:18:28	JosepMa	mm
+2016-09-22 02:19:03	be_	in which case it may be an issue with the scripting engine rather than that CO
+2016-09-22 02:19:03		[02:19]
+2016-09-22 02:19:09	JosepMa	It might be something around those lines. let me paste one thing
+2016-09-22 02:19:42	JosepMa	http://pastebin.com/x5X9YYKG
+2016-09-22 02:20:12	JosepMa	That is a log from the opposite state
+2016-09-22 02:20:21	JosepMa	i.e. when the sync is enabled, in order to disable it
+2016-09-22 02:21:13	JosepMa	First: the value "New state" has not changed (it remains 1 instead of setting to 0), and later on, there is a "value: 0". That is a getValue done from delayed timer
+2016-09-22 02:21:40	JosepMa	so yes, it seems that if the song is playing, the sync_enabled is not done in the same thread, or it takes longer to change.
+2016-09-22 02:22:31	JosepMa	I will modify the code so as to not depend on the getParameter, since i know which value it should have
+2016-09-22 02:23:25	be_	what is the functionality you're trying to implement?
+2016-09-22 02:24:02	JosepMa	i am mimmicking the UI functionality, i.e. to activate master sync if i keep it pressed for 400 millis
+2016-09-22 02:24:49	JosepMa	bbl.. lunch is ready.
+2016-09-22 02:30:00		[02:24]
+2016-09-22 02:52:02	JosepMa	http://pastebin.com/MvXL4pJR
+2016-09-22 02:52:02		[02:52]
+2016-09-22 02:52:03	JosepMa	:)
+2016-09-22 02:58:00		[02:52]
+2016-09-22 03:04:41	be_	that behavior is already available via XML :/
+2016-09-22 03:05:03	be_	(personally I don't like it so I've just been toggling sync_enabled)
+2016-09-22 03:06:24	be_	also Chloe made a little library with objects for buttons that behave differently on press vs press and hold
+2016-09-22 03:06:35	be_	I haven't read through it too thoroughly
+2016-09-22 03:07:03	be_	https://github.com/DJChloe/mixxx/blob/aebf6b2cf13dcb5db5c3cc39cbcbea5fe9be54aa/res/controllers/Reloop-Beatpad-scripts.js
+2016-09-22 03:10:39	-->	bullicon (~bullicon@132.185.153.6) has joined #mixxx
+2016-09-22 03:12:23	-->	_rgb_ (~rgb@173.227.65.138) has joined #mixxx
+2016-09-22 03:18:00		[03:12]
+2016-09-22 03:24:06	<--	fqtw__ (~me@x4db00312.dyn.telefonica.de) has quit (Ping timeout: 244 seconds)
+2016-09-22 03:30:00		[03:24]
+2016-09-22 03:32:31	-->	fqtw (~me@x4db00312.dyn.telefonica.de) has joined #mixxx
+2016-09-22 03:38:00		[03:32]
+2016-09-22 03:41:19	-->	ms49434 (~ms49434@p5088CE1D.dip0.t-ipconnect.de) has joined #mixxx
+2016-09-22 03:47:00		[03:41]
+2016-09-22 04:00:14	-->	luuuciano (~luuuciano@unaffiliated/luuuciano) has joined #mixxx
+2016-09-22 04:06:00		[04:00]
+2016-09-22 04:06:28	--	Notice(mixxx-commits): [mixxx] daschuer pushed 11 new commits to master: https://git.io/vi5Vu
+2016-09-22 04:06:29	--	Notice(mixxx-commits): mixxx/master 0e6e61f Juan Pedro Bolívar Puente: Add Mixco based controller mappings for Novation Twitch...
+2016-09-22 04:06:29	--	Notice(mixxx-commits): mixxx/master d8268d3 Juan Pedro Bolívar Puente: Add Mixco based controller mappings for Korg Nanokontrol 2...
+2016-09-22 04:06:29	--	Notice(mixxx-commits): mixxx/master 7cc16b1 Juan Pedro Bolívar Puente: Add Mixco based controller mapping for M-Audio Xponent...
+2016-09-22 04:12:00		[04:06]
+2016-09-22 04:28:26	<--	kLOs (~Giggity@ab191124.dynamic.ppp.asahi-net.or.jp) has quit (Quit: My MacBook Pro has gone to sleep. ZZZzzz…)
+2016-09-22 04:28:26		[04:28]
+2016-09-22 04:34:27	<--	joshontheweb (~joshonthe@223.205.206.206) has quit (Read error: Connection reset by peer)
+2016-09-22 04:35:37	-->	joshontheweb (~joshonthe@223.205.206.206) has joined #mixxx
+2016-09-22 04:36:10	<--	magnicida (~raskolnik@2a02:8109:8c80:231:ea39:dfff:fe4d:275b) has quit (Quit: Leaving.)
+2016-09-22 04:37:19	-->	dhonnie_ (~dhonnie_@pa49-181-168-29.pa.nsw.optusnet.com.au) has joined #mixxx
+2016-09-22 04:41:15	<--	dhon_ (~dhonnie_@124-171-40-26.dyn.iinet.net.au) has quit (Ping timeout: 260 seconds)
+2016-09-22 04:43:07	-->	dhon_ (~dhonnie_@124-171-40-26.dyn.iinet.net.au) has joined #mixxx
+2016-09-22 04:43:14	<--	dhonnie_ (~dhonnie_@pa49-181-168-29.pa.nsw.optusnet.com.au) has quit (Read error: Connection reset by peer)
+2016-09-22 04:49:00		[04:43]
+2016-09-22 04:56:44	<--	bullicon (~bullicon@132.185.153.6) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-09-22 05:02:00		[04:56]
+2016-09-22 05:02:06	-->	bullicon (~bullicon@132.185.153.6) has joined #mixxx
+2016-09-22 05:08:00		[05:02]
+2016-09-22 05:09:37	-->	luyikei (~quassel@2607:ea00:105:1c08:5c55:f301:50ec:331d) has joined #mixxx
+2016-09-22 05:11:35	<--	bullicon (~bullicon@132.185.153.6) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-09-22 05:12:58	-->	Pegasus_RPG (~Icedove@47.142.200.28) has joined #mixxx
+2016-09-22 05:18:00		[05:12]
+2016-09-22 05:18:04	-->	bullicon (~bullicon@132.185.153.6) has joined #mixxx
+2016-09-22 05:24:00		[05:18]
+2016-09-22 05:24:36	<--	bullicon (~bullicon@132.185.153.6) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-09-22 05:30:00		[05:24]
+2016-09-22 05:31:05	-->	bullicon (~bullicon@132.185.153.6) has joined #mixxx
+2016-09-22 05:31:52	<--	Pegasus_RPG (~Icedove@47.142.200.28) has quit (Remote host closed the connection)
+2016-09-22 05:32:00	-->	diogogeo (~diogo@177.148.224.146) has joined #mixxx
+2016-09-22 05:32:01	<--	diogogeo (~diogo@177.148.224.146) has quit (Changing host)
+2016-09-22 05:32:01	-->	diogogeo (~diogo@unaffiliated/diogogeo) has joined #mixxx
+2016-09-22 05:32:27	-->	Pegasus_RPG (~Icedove@47.142.200.28) has joined #mixxx
+2016-09-22 05:33:01	<--	bullicon (~bullicon@132.185.153.6) has quit (Client Quit)
+2016-09-22 05:39:00		[05:33]
+2016-09-22 05:39:58	<--	Pegasus_RPG (~Icedove@47.142.200.28) has quit (Remote host closed the connection)
+2016-09-22 05:40:36	-->	Pegasus_RPG (~Icedove@47.142.200.28) has joined #mixxx
+2016-09-22 05:44:09	-->	bullicon (~bullicon@132.185.153.6) has joined #mixxx
+2016-09-22 05:50:00		[05:44]
+2016-09-22 05:55:43	<--	luyikei (~quassel@2607:ea00:105:1c08:5c55:f301:50ec:331d) has quit (Remote host closed the connection)
+2016-09-22 06:01:00		[05:55]
+2016-09-22 06:17:01	<--	bullicon (~bullicon@132.185.153.6) has quit (Quit: Textual IRC Client: www.textualapp.com)
+2016-09-22 06:17:01		[06:17]
+2016-09-22 06:34:59	<--	JosepMa (~JosepMa@213.143.48.224) has quit (Read error: Connection reset by peer)
+2016-09-22 06:34:59		[06:34]
+2016-09-22 06:36:28	-->	JosepMa (~JosepMa@213.143.48.224) has joined #mixxx
+2016-09-22 06:37:38	<--	chiral (~chiral@rhizome.fm) has quit (Quit: No Ping reply in 180 seconds.)
+2016-09-22 06:38:11	<--	joshontheweb (~joshonthe@223.205.206.206) has quit (Read error: No route to host)
+2016-09-22 06:39:01	-->	chiral (~chiral@rhizome.fm) has joined #mixxx
+2016-09-22 06:40:14	-->	joshonth_ (~joshonthe@ppp-27-55-68-111.revip3.asianet.co.th) has joined #mixxx
+2016-09-22 06:44:03	--	Notice(mixxx-commits): [mixxx] schnitzeltony opened pull request #1017: coverart.cpp: fix build (master...master) https://git.io/videW
+2016-09-22 06:49:44	-->	datura (~datura@unaffiliated/datura) has joined #mixxx
+2016-09-22 06:51:25	JosepMa	Some noob question... I want to make a new pull request to upload the changes to the controller script.
+2016-09-22 06:51:25		[06:51]
+2016-09-22 06:51:57	JosepMa	back then, during 2.0 beta cycle, i forked the branch 1.12 and did the changes there.
+2016-09-22 06:52:09	JosepMa	do i need to create a new fork from the master now?
+2016-09-22 06:55:17	be_	no
+2016-09-22 06:55:25	be_	just a new branch from your existing fork
+2016-09-22 06:56:02	be_	first pull changes from master into your fork
+2016-09-22 06:56:20	be_	checkout the master branch, then 'git checkout -b new_branch_name'
+2016-09-22 06:56:45	be_	to create your new branch and switch to it
+2016-09-22 06:57:17	be_	pull changes from upstream/master into origin/master that is
+2016-09-22 06:57:53	JosepMa	Mm... ok.. will try that now.
+2016-09-22 07:03:00		[06:57]
+2016-09-22 07:19:02	<--	zezic (~zezic@193.150.108.224) has quit (Quit: Leaving.)
+2016-09-22 07:19:02		[07:19]
+2016-09-22 07:33:13	JosepMa	ermm... i think i'm on my fork's master...not on mixxx's master..  i did a git checkout master
+2016-09-22 07:33:23	JosepMa	should it have been origin/master?
+2016-09-22 07:35:04	be_	if you didn't specify origin, you went to origin/master
+2016-09-22 07:35:04		[07:35]
+2016-09-22 07:43:36	JosepMa	then, something is not right...
+2016-09-22 07:44:03	JosepMa	i don't have locally my version of the controller, but instead a three year old one that existed previously
+2016-09-22 07:44:31	JosepMa	https://github.com/JosepMaJAZ/mixxx  <and this says "this branch is 1793 commits behind mixxxdj:master"
+2016-09-22 07:45:14	be_	you need to merge upstream/master with origin/master
+2016-09-22 07:46:23	JosepMa	git merge?
+2016-09-22 07:46:55	be_	https://help.github.com/articles/configuring-a-remote-for-a-fork/
+2016-09-22 07:47:25	be_	configure your upstream remote, then git pull from your master branch
+2016-09-22 07:47:51	JosepMa	E:\programacio\mixxx\mixxx [master ≡ +64 ~0 -0 !]> git remote -v
+2016-09-22 07:47:51	JosepMa	mixxxdj https://github.com/mixxxdj/mixxx.git (fetch)
+2016-09-22 07:47:51	JosepMa	mixxxdj https://github.com/mixxxdj/mixxx.git (push)
+2016-09-22 07:47:51	JosepMa	origin  https://github.com/JosepMaJAZ/mixxx.git (fetch)
+2016-09-22 07:47:51	JosepMa	origin  https://github.com/JosepMaJAZ/mixxx.git (push)
+2016-09-22 07:47:54	be_	I'll add that page to the Using Git wiki
+2016-09-22 07:48:13	JosepMa	so it was not origin/master that i needed, maybe.. i'll continue reading
+2016-09-22 07:49:09	be_	https://help.github.com/articles/syncing-a-fork/
+2016-09-22 07:49:14	-->	zezic (~zezic@193.150.108.224) has joined #mixxx
+2016-09-22 07:55:00		[07:49]
+2016-09-22 07:55:52	be_	git pull is just a shortcut for git fetch && git merge
+2016-09-22 07:56:08	JosepMa	phew.. i think i got it now
+2016-09-22 07:56:35	<--	joshonth_ (~joshonthe@ppp-27-55-68-111.revip3.asianet.co.th) has quit (Read error: Connection reset by peer)
+2016-09-22 07:58:30	-->	joshontheweb (~joshonthe@223.205.206.206) has joined #mixxx
+2016-09-22 07:59:34	<--	steve-_-1 (~Adium@p2003008B8F241300E9EB95694D94E9C6.dip0.t-ipconnect.de) has quit (Quit: Leaving.)
+2016-09-22 08:01:46	<--	zezic (~zezic@193.150.108.224) has quit (Remote host closed the connection)
+2016-09-22 08:02:43	JosepMa	https://github.com/JosepMaJAZ/mixxx :  This branch is even with mixxxdj:master.
+2016-09-22 08:03:12	JosepMa	Ermm.. you mentioned creating a branch, which i haven't done.. what was the purpose of doing so?
+2016-09-22 08:04:51	be_	strictly speaking you don't need to but it's a good idea
+2016-09-22 08:05:25	be_	branches allow you to work on different sets of changes and propose them for inclusion independently
+2016-09-22 08:06:00	JosepMa	Mmm..ok, i understand. But it's better that i create it now taht i'm sincronized, isn't it?
+2016-09-22 08:06:05	be_	yes
+2016-09-22 08:06:34	JosepMa	fine, then i think  i am set up. Thanks
+2016-09-22 08:06:47	be_	you can create them with git branch, or you can automatically create and switch to a branch with git checkout -b
+2016-09-22 08:12:00		[08:06]
+2016-09-22 09:01:41	--	Notice(mixxx-commits): [mixxx] JosepMaJAZ opened pull request #1018: New version of DJ console 4mx mapping (master...dj_console_v3) https://git.io/vid8B
+2016-09-22 09:01:41		[09:01]
+2016-09-22 09:01:54	JosepMa	^_^
+2016-09-22 09:03:38	<--	ms49434 (~ms49434@p5088CE1D.dip0.t-ipconnect.de) has left #mixxx ("Leaving")
+2016-09-22 09:07:50	<--	JosepMa (~JosepMa@213.143.48.224) has quit (Quit: Leaving.)
+2016-09-22 09:13:00		[09:07]
+2016-09-22 09:14:15	<--	datura (~datura@unaffiliated/datura) has quit (Ping timeout: 272 seconds)
+2016-09-22 09:20:00		[09:14]
+2016-09-22 09:32:36	-->	JosepMa (~JosepMa@213.143.48.224) has joined #mixxx
+2016-09-22 09:34:12	<--	JosepMa (~JosepMa@213.143.48.224) has left #mixxx
+2016-09-22 09:40:00		[09:34]
+2016-09-22 10:00:42	-->	datura (~datura@unaffiliated/datura) has joined #mixxx
+2016-09-22 10:00:42		[10:00]
+2016-09-22 10:36:41	-->	brot_ (4fe4fed7@gateway/web/freenode/ip.79.228.254.215) has joined #mixxx
+2016-09-22 10:36:41		[10:36]
+2016-09-22 10:37:59	brot_	hi, if id like two have two mixxx instances, what are my chances making one deck of each instance absolutely syncronous two the other (like in playback position, eq, etc)
+2016-09-22 10:38:15	brot_	is midi my only option?
+2016-09-22 10:42:52	brot_	my goal is to have each deck of those two decks outputting exactly the same signal so i can use a mixer with crossfade to switch from one laptop to the other without any audible change. like this i kind of "passed" the current running song to the others computer mixxx instance where the other person can take over the situation
+2016-09-22 10:43:04	brot_	you get what i mean?
+2016-09-22 10:44:54	brot_	the two computers share the same music files
+2016-09-22 10:44:57	theBear	traditionally djs just swap at a song transition :)
+2016-09-22 10:46:29	brot_	well we are no professional DJs, we just want to play together, each on their own computer, but still being able to use features light sync to make easier beatmatching
+2016-09-22 10:49:43	theBear	mm indeed... unfortunately i never considered it so you have to wait till someone else arrives
+2016-09-22 10:50:36	brot_	i think i could make it possible using midi. though it seems to be quite a hassle
+2016-09-22 10:51:04	brot_	just want to know if there is an alternative to midi before trying it
+2016-09-22 10:51:20	brot_	or maybe somebody already tried such an exotic thing
+2016-09-22 10:51:22	theBear	if it can be done that is the most likely way it'll work
+2016-09-22 10:51:36	<--	diogogeo (~diogo@unaffiliated/diogogeo) has quit (Quit: .:| o-o' .:-)
+2016-09-22 10:53:26	theBear	mmm, the sync part alone, which would let you use two machines/copies as if they were the same one, could be handy for things like adding a netbook to a setup for an extra screen/deck worth
+2016-09-22 10:53:26		[10:53]
+2016-09-22 11:35:35	brot_	ill give it a try, looking back here for replies occasionally
+2016-09-22 11:35:35		[11:35]
+2016-09-22 11:37:00	<--	chiral (~chiral@rhizome.fm) has quit (*.net *.split)
+2016-09-22 11:37:00	<--	dhon_ (~dhonnie_@124-171-40-26.dyn.iinet.net.au) has quit (*.net *.split)
+2016-09-22 11:37:02	<--	Sycon4ut (~viper@c-c24ee055.015-499-6b6c6d1.cust.bredbandsbolaget.se) has quit (*.net *.split)
+2016-09-22 11:37:09	<--	aalex (~aalex@64.187.177.58) has quit (*.net *.split)
+2016-09-22 11:37:09	<--	M-rryan (rryanmat1@gateway/shell/matrix.org/x-iyuactigwejpuwbh) has quit (*.net *.split)
+2016-09-22 11:37:17	<--	discopatrick (sid138124@gateway/web/irccloud.com/x-gvxxwnwuelneqkpv) has quit (*.net *.split)
+2016-09-22 11:37:17	<--	lasconic (sid4376@gateway/web/irccloud.com/x-ggusdiwacebqijnb) has quit (*.net *.split)
+2016-09-22 11:37:17	<--	Guigui (~quassel@2a01:e34:ee00:15b0:92e6:baff:fe2e:be5c) has quit (*.net *.split)
+2016-09-22 11:37:17	<--	thefinn93 (finn@unaffiliated/thefinn93) has quit (*.net *.split)
+2016-09-22 11:37:22	<--	Fohlen (~Fohlen@v22016022923731626.happysrv.de) has quit (*.net *.split)
+2016-09-22 11:37:26	<--	kmicu (~kmicu@176.56.237.191) has quit (*.net *.split)
+2016-09-22 11:37:29	<--	mixxx-builds (~PircBotx@38.125.197.67) has quit (*.net *.split)
+2016-09-22 11:37:30	<--	bgola (~bgola@bgo.la) has quit (*.net *.split)
+2016-09-22 11:37:31	<--	thomas (~thomas@freenode/staff/thomas) has quit (*.net *.split)
+2016-09-22 11:37:33	<--	lbotos_ (sid34239@gateway/web/irccloud.com/x-enpcahcacxknwsep) has quit (*.net *.split)
+2016-09-22 11:37:35	<--	jusics_ (~jusic@hattara.sainio.de) has quit (*.net *.split)
+2016-09-22 11:37:35	<--	dracman (~draco@55d47527.access.ecotel.net) has quit (*.net *.split)
+2016-09-22 11:37:36	<--	DrCode (~DrCode@5.28.134.3) has quit (*.net *.split)
+2016-09-22 11:37:38	<--	CME (~CME@ip9234d04d.dynamic.kabel-deutschland.de) has quit (*.net *.split)
+2016-09-22 11:37:40	<--	dreamer (~henk@unaffiliated/dreamer) has quit (*.net *.split)
+2016-09-22 11:37:43	<--	naught101_ (~naught101@14-202-176-150.static.tpgi.com.au) has quit (*.net *.split)
+2016-09-22 11:37:46	<--	MyIgel (~MyIgel@maya.caleano.com) has quit (*.net *.split)
+2016-09-22 11:37:50	<--	M-ywwg (ywwgmatrix@gateway/shell/matrix.org/x-lgggwowpnotfbkjd) has quit (*.net *.split)
+2016-09-22 11:37:50	<--	neuromute (~neuromute@185.38.14.221) has quit (*.net *.split)
+2016-09-22 11:37:57	<--	kadamwhite (kadamwhite@ec2-54-165-100-204.compute-1.amazonaws.com) has quit (*.net *.split)
+2016-09-22 11:37:57	<--	GeekShadow (~antoine@reactos/tester/GeekShadow) has quit (*.net *.split)
+2016-09-22 11:37:59	<--	relrod (~relrod@redhat/relrod) has quit (*.net *.split)
+2016-09-22 11:37:59	<--	alip (~alip@tchaikovsky.exherbo.org) has quit (*.net *.split)
+2016-09-22 11:37:59	<--	be_ (~be_@c-73-246-91-230.hsd1.il.comcast.net) has quit (*.net *.split)
+2016-09-22 11:37:59	<--	simon_-_ (~quassel@bender.ebg13powered.net) has quit (*.net *.split)
+2016-09-22 11:38:05	<--	fred`` (fred@2001:4dd0:ff00:8ea1::2500) has quit (*.net *.split)
+2016-09-22 11:38:05	<--	brot_ (4fe4fed7@gateway/web/freenode/ip.79.228.254.215) has quit (*.net *.split)
+2016-09-22 11:38:06	<--	joshontheweb (~joshonthe@223.205.206.206) has quit (*.net *.split)
+2016-09-22 11:38:11	<--	plasma (plasma@antiquos.technopagans.com) has quit (*.net *.split)
+2016-09-22 11:38:12	<--	yepla (~quassel@cro34-h04-89-86-14-45.dsl.sta.abo.bbox.fr) has quit (*.net *.split)
+2016-09-22 11:38:13	<--	phschafft (~phschafft@people.loewenfelsen.net) has quit (*.net *.split)
+2016-09-22 11:38:15	<--	mithro (sid24875@gateway/web/irccloud.com/x-rqqptlaamlfxtxjq) has quit (*.net *.split)
+2016-09-22 11:38:22	<--	greeter (fresh@2604:180:2:117:cafe:babe:dead:beef) has quit (*.net *.split)
+2016-09-22 11:38:24	<--	AAA_awright (~aaa@2607:5300:60:7d4::1) has quit (*.net *.split)
+2016-09-22 11:38:25	<--	ne1 (~nobody@2001:41d0:e:45e::1) has quit (*.net *.split)
+2016-09-22 11:38:25	<--	y007ghg7 (y007ghg7@fluttershy.is.best.pony.rcfreak0.com) has quit (*.net *.split)
+2016-09-22 11:38:27	<--	_rgb_ (~rgb@173.227.65.138) has quit (*.net *.split)
+2016-09-22 11:38:31	<--	p2-mate (~p2@emantra.psychaos.be) has quit (*.net *.split)
+2016-09-22 11:38:32	<--	roflin (~dennis@alexstrasza.kassala.de) has quit (*.net *.split)
+2016-09-22 11:38:37	<--	hfk (hfk@galaxy.forbanna.net) has quit (*.net *.split)
+2016-09-22 11:38:43	<--	datura (~datura@unaffiliated/datura) has quit (*.net *.split)
+2016-09-22 11:38:43	<--	luuuciano (~luuuciano@unaffiliated/luuuciano) has quit (*.net *.split)
+2016-09-22 11:38:43	<--	fqtw (~me@x4db00312.dyn.telefonica.de) has quit (*.net *.split)
+2016-09-22 11:38:44	<--	metastableB (~metastabl@139.59.5.125) has quit (*.net *.split)
+2016-09-22 11:38:46	<--	theBear (i_am@unaffiliated/thebear) has quit (*.net *.split)
+2016-09-22 11:38:48	<--	iaglium (~i@45.63.97.181) has quit (*.net *.split)
+2016-09-22 11:38:52	<--	metastableB_ (metastable@fiona.nas-admin.org) has quit (*.net *.split)
+2016-09-22 11:38:52	<--	SianaGearz (~siana@unaffiliated/sianagearz) has quit (*.net *.split)
+2016-09-22 11:38:54	<--	C-S-B (~C-S-B@cpc95894-rdng25-2-0-cust824.15-3.cable.virginm.net) has quit (*.net *.split)
+2016-09-22 11:38:55	<--	M-Pegasus_RPG (pegasusrpg@gateway/shell/matrix.org/x-yxdxesfbyytctptz) has quit (*.net *.split)
+2016-09-22 11:38:58	<--	_marc` (~marc@2001:41d0:8:5527::8) has quit (*.net *.split)
+2016-09-22 11:38:59	<--	Tiktalik (~tiktalik@unaffiliated/tiktalik) has quit (*.net *.split)
+2016-09-22 11:39:05	<--	leonardo (znc@2a01:4f8:d13:2640::2) has quit (*.net *.split)
+2016-09-22 11:39:06	<--	Pegasus_RPG (~Icedove@47.142.200.28) has quit (*.net *.split)
+2016-09-22 11:39:06	<--	asantoni (~Santoni@135-23-211-134.cpe.pppoe.ca) has quit (*.net *.split)
+2016-09-22 11:39:07	<--	sydney_untangle (~sydney@supertux/sydney) has quit (*.net *.split)
+2016-09-22 11:39:07	<--	rafaelmartins (~rafael@gentoo/developer/rafaelmartins) has quit (*.net *.split)
+2016-09-22 11:39:08	<--	Tiger (~tiger@unaffiliated/tiger) has quit (*.net *.split)
+2016-09-22 11:39:09	<--	dwindle (~dwindle@205.185.115.95) has quit (*.net *.split)
+2016-09-22 11:39:10	<--	wrl (~wrl@naphtha.ix.illest.net) has quit (*.net *.split)
+2016-09-22 11:39:10	<--	m0r13 (~m0r13@mail.yellow-ray.de) has quit (*.net *.split)
+2016-09-22 11:39:15	<--	midzer (~quassel@p57B45688.dip0.t-ipconnect.de) has quit (*.net *.split)
+2016-09-22 11:39:22	<--	sjtoik_ (~sjtoik@85-23-207-206.co.dnainternet.fi) has quit (*.net *.split)
+2016-09-22 11:39:24	<--	CruX| (~jozo@mcw.student.utc.sk) has quit (*.net *.split)
+2016-09-22 11:39:32	<--	alyptik (~alyptik@unaffiliated/alyptik) has left #mixxx
+2016-09-22 11:39:32	--	irc: disconnected from server
+2016-09-22 11:44:20	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined #mixxx
+2016-09-22 11:44:20		[11:44]
+2016-09-22 11:44:20	--	Topic for #mixxx is "Interested in Google Summer of Code? https://www.mixxx.org/wiki/doku.php/gsocadvice | Mixxx 2.0 Released! http://mixxx.org/download | http://www.mixxx.org | wiki - http://mixxx.org/wiki/ | bugs - https://bugs.launchpad.net/mixxx | Go ahead and ask a question, we'll respond eventually!"
+2016-09-22 11:44:20	--	Topic set by ywwg (~owen@2620:15c:6:fd00:74fc:8696:2a03:ed2c) on Tue, 15 Mar 2016 10:47:01
+2016-09-22 11:44:20	--	Channel #mixxx: 68 nicks (0 ops, 0 voices, 68 normals)
+2016-09-22 11:44:37	--	URL for #mixxx: http://mixxx.org/
+2016-09-22 11:45:18	--	Channel created on Wed, 06 Dec 2006 23:46:45
+2016-09-22 11:49:26	<--	dhon_ (~dhonnie_@124-171-40-26.dyn.iinet.net.au) has quit (Quit: dhon_)
+2016-09-22 11:55:00		[11:49]
+2016-09-22 11:58:37	-->	mithro (sid24875@gateway/web/irccloud.com/x-fxutopztqucoigpd) has joined #mixxx
+2016-09-22 12:00:01	-->	discopatrick (sid138124@gateway/web/irccloud.com/x-gnpctrmehtfrzvvq) has joined #mixxx
+2016-09-22 12:06:00		[12:00]
+2016-09-22 12:09:42	<--	brot_ (4fe4fed7@gateway/web/freenode/ip.79.228.254.215) has quit (Ping timeout: 240 seconds)
+2016-09-22 12:15:00		[12:09]
+2016-09-22 12:46:15	-->	magnicida (~raskolnik@2a02:8109:8c80:231:ea39:dfff:fe4d:275b) has joined #mixxx
+2016-09-22 12:46:15		[12:46]
+2016-09-22 13:20:57	<--	fred`` (fred@2001:4dd0:ff00:8ea1::2500) has quit (Quit: +++ATH0)
+2016-09-22 13:20:57		[13:20]
+2016-09-22 13:44:27	-->	fred`` (fred@earthli.ng) has joined #mixxx
+2016-09-22 13:44:27		[13:44]
+2016-09-22 14:00:51	<--	_rgb_ (~rgb@173.227.65.138) has quit (Quit: Leaving.)
+2016-09-22 14:00:51		[14:00]
+2016-09-22 14:32:35	<--	Pegasus_RPG (~Icedove@47.142.200.28) has quit (Quit: Pegasus_RPG)
+2016-09-22 14:32:35		[14:32]
+2016-09-22 14:41:16	<--	datura (~datura@unaffiliated/datura) has quit (Ping timeout: 244 seconds)
+2016-09-22 14:47:00		[14:41]
+2016-09-22 14:54:45	-->	kLOs (~Giggity@ab191124.dynamic.ppp.asahi-net.or.jp) has joined #mixxx
+2016-09-22 15:00:00		[14:54]
+2016-09-22 15:08:21	-->	dh64 (~dh64@174-21-74-162.tukw.qwest.net) has joined #mixxx
+2016-09-22 15:09:54	<--	dh64 (~dh64@174-21-74-162.tukw.qwest.net) has quit (Remote host closed the connection)
+2016-09-22 15:10:19	-->	mesamoo (~dh64@174-21-74-162.tukw.qwest.net) has joined #mixxx
+2016-09-22 15:11:54	<--	dracman (~draco@55d47527.access.ecotel.net) has quit (Ping timeout: 244 seconds)
+2016-09-22 15:12:00	<--	mesamoo (~dh64@174-21-74-162.tukw.qwest.net) has quit (Client Quit)
+2016-09-22 15:12:23	-->	mesamoo (~dh64@174-21-74-162.tukw.qwest.net) has joined #mixxx
+2016-09-22 15:16:02	<--	magnicida (~raskolnik@2a02:8109:8c80:231:ea39:dfff:fe4d:275b) has quit (Ping timeout: 265 seconds)
+2016-09-22 15:16:02		[15:16]
+2016-09-22 15:18:02	-->	dracman (~draco@55d47d7d.access.ecotel.net) has joined #mixxx
+2016-09-22 15:24:00		[15:18]
+2016-09-22 16:30:03	-->	fqtw_ (~me@x590cd9b7.dyn.telefonica.de) has joined #mixxx
+2016-09-22 16:30:03		[16:30]
+2016-09-22 16:33:23	<--	fqtw (~me@x4db00312.dyn.telefonica.de) has quit (Ping timeout: 244 seconds)
+2016-09-22 16:39:00		[16:33]
+2016-09-22 17:34:32	--	naught101_ is now known as naught101
+2016-09-22 17:34:32		[17:34]
+2016-09-22 18:06:43	-->	luyikei (~quassel@2607:ea00:105:1c08:e4c7:651:3cd1:f0f7) has joined #mixxx
+2016-09-22 18:06:43		[18:06]
+2016-09-22 18:57:02	<--	luuuciano (~luuuciano@unaffiliated/luuuciano) has quit (Remote host closed the connection)
+2016-09-22 18:57:02		[18:57]
+2016-09-22 19:32:11	-->	Kakurady (~nekoyasha@108-162-166-72.cable.teksavvy.com) has joined #mixxx
+2016-09-22 19:32:11		[19:32]
+2016-09-22 19:41:17	--	Notice(mixxx-commits): [mixxx] sblaisot commented on pull request #1014 17209bd: tab indentation -> spaces https://git.io/viF4g
+2016-09-22 19:42:13	--	Notice(mixxx-commits): [mixxx] sblaisot commented on pull request #1014 17209bd: indentation problem https://git.io/viF4Q
+2016-09-22 19:42:23	--	Notice(mixxx-commits): [mixxx] sblaisot commented on pull request #1014 17209bd: indentation problem https://git.io/viF4b
+2016-09-22 19:47:03	--	Notice(mixxx-commits): [mixxx] sblaisot commented on pull request #1014 17209bd: isn't bpm an undefined variable ? https://git.io/viFBc
+2016-09-22 19:51:20	--	Notice(mixxx-commits): [mixxx] sblaisot commented on pull request #1014 17209bd: shouldn't the second be OFF ? https://git.io/viFRi
+2016-09-22 19:51:20		[19:51]
+2016-09-22 19:56:02	--	Notice(mixxx-commits): [mixxx] sblaisot commented on pull request #1014 17209bd: You can use soft takeover in pure XML: ... https://git.io/viFR7
+2016-09-22 19:57:22	--	Notice(mixxx-commits): [mixxx] sblaisot commented on pull request #1014 17209bd: Why don't you use the built-in soft-takeover ?... https://git.io/viFRF
+2016-09-22 19:58:48	--	Notice(mixxx-commits): [mixxx] sblaisot commented on pull request #1014 17209bd: extra spaces at end of line ? https://git.io/viFRh
+2016-09-22 20:00:03	--	Notice(mixxx-commits): [mixxx] sblaisot commented on pull request #1014 17209bd: this comment becomes a single-line comment, so please switch to // https://git.io/viF0J
+2016-09-22 20:03:19	--	Notice(mixxx-commits): [mixxx] sblaisot commented on pull request #1014 17209bd: You should use /track_samples/ instead of /duration/ as duration can change when you adjust pitch ubless you want to activate PFL on pitch adjustment. https://git.io/viF0Y
+2016-09-22 20:03:29	--	Notice(mixxx-commits): [mixxx] sblaisot commented on pull request #1014 17209bd: You should use /track_samples/ instead of /duration/ as duration can change when you adjust pitch unless you want to activate PFL on pitch adjustment. https://git.io/viF0Y
+2016-09-22 20:09:00		[20:03]
+2016-09-22 20:34:19	--	Notice(mixxx-commits): [mixxx] illuusio commented on pull request #1014 17209bd: Channel 2 Strip Instant FX Off.. what does that mean? https://git.io/viFuI
+2016-09-22 20:34:19		[20:34]
+2016-09-22 20:38:27	-->	datura (~datura@unaffiliated/datura) has joined #mixxx
+2016-09-22 20:44:00		[20:38]
+2016-09-22 21:02:55	<--	kLOs (~Giggity@ab191124.dynamic.ppp.asahi-net.or.jp) has quit (Quit: so long...)
+2016-09-22 21:02:55		[21:02]
+2016-09-22 21:03:40	-->	steve-_-1 (~Adium@p2003008B8F240A0054A9EAE26AA9A8AA.dip0.t-ipconnect.de) has joined #mixxx
+2016-09-22 21:09:00		[21:03]
+2016-09-22 21:39:41	<--	datura (~datura@unaffiliated/datura) has quit (Remote host closed the connection)
+2016-09-22 21:39:41		[21:39]
+2016-09-22 22:23:11	-->	datura (~datura@unaffiliated/datura) has joined #mixxx
+2016-09-22 22:23:11		[22:23]
+2016-09-22 22:35:08	<--	naught101 (~naught101@14-202-176-150.static.tpgi.com.au) has quit (Read error: Connection reset by peer)
+2016-09-22 22:41:00		[22:35]
+2016-09-22 22:48:43	--	sjtoik_ is now known as sjtoik
+2016-09-22 22:54:00		[22:48]
+2016-09-22 23:42:42	-->	bullicon (~bullicon@2a00:23c4:1802:1100:9837:e756:7c1f:93) has joined #mixxx
+2016-09-22 23:42:42		[23:42]
+2016-09-22 23:57:19	-->	magnicida (~raskolnik@2a02:8109:8c80:231:ea39:dfff:fe4d:275b) has joined #mixxx
+2016-09-23 00:03:00		[23:57]
+2016-09-23 00:03:30	<--	bullicon (~bullicon@2a00:23c4:1802:1100:9837:e756:7c1f:93) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-09-23 00:04:46	-->	bullicon (~bullicon@2a00:23c4:1802:1100:9837:e756:7c1f:93) has joined #mixxx
+2016-09-23 00:05:51	<--	bullicon (~bullicon@2a00:23c4:1802:1100:9837:e756:7c1f:93) has quit (Client Quit)
+2016-09-23 00:07:09	<--	steve-_-1 (~Adium@p2003008B8F240A0054A9EAE26AA9A8AA.dip0.t-ipconnect.de) has quit (Quit: Leaving.)
+2016-09-23 00:08:36	-->	steve-_-1 (~Adium@p2003008B8F240A00DCE096BF62D431B0.dip0.t-ipconnect.de) has joined #mixxx
+2016-09-23 00:10:11	-->	bullicon (~bullicon@2a00:23c4:1802:1100:9837:e756:7c1f:93) has joined #mixxx
+2016-09-23 00:12:17	<--	Kakurady (~nekoyasha@108-162-166-72.cable.teksavvy.com) has quit (Ping timeout: 240 seconds)
+2016-09-23 00:18:00		[00:12]
+2016-09-23 00:20:30	--	Notice(7GHAAC9Q0): [mixxx] djsteph commented on pull request #1014 17209bd: Ok, noted https://git.io/viF9N
+2016-09-23 00:20:30	--	Notice(92AAAC4ES): [mixxx] djsteph commented on pull request #1014 17209bd: The headphones LED is set on one channel. When you load on the other deck, the LED switches to the opposite state with that code. I tested physically on the controller, and LED behavior is good. https://git.io/viF9p
+2016-09-23 00:23:22	--	Notice(mixxx-commits): [mixxx] djsteph commented on pull request #1014 17209bd: > You can probably merge NumarkMixtrack3.TrebleKnob NumarkMixtrack3.MiddleKnob and NumarkMixtrack3.BassKnob into one function to avoid code duplication... https://git.io/viFH8
+2016-09-23 00:24:08	<--	bullicon (~bullicon@2a00:23c4:1802:1100:9837:e756:7c1f:93) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-09-23 00:24:43	-->	bullicon (~bullicon@2a00:23c4:1802:1100:9837:e756:7c1f:93) has joined #mixxx
+2016-09-23 00:28:27	-->	yepla (~quassel@cro34-h04-89-86-14-45.dsl.sta.abo.bbox.fr) has joined #mixxx
+2016-09-23 00:34:00		[00:28]
+2016-09-23 00:40:33	<--	bullicon (~bullicon@2a00:23c4:1802:1100:9837:e756:7c1f:93) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-09-23 00:45:24	--	Notice(mixxx-commits): [mixxx] djsteph commented on pull request #1014 17209bd: The headphones LED is set on one channel. When you load on the other deck, the LED switches to the opposite state with that code. I tested physically on the controller, and LED behavior is good. https://git.io/viF9p
+2016-09-23 00:51:00		[00:45]
+2016-09-23 00:56:05	--	Notice(mixxx-commits): [mixxx] djsteph commented on pull request #1014 17209bd: I just tried that switch to use track_samples and the feature stopped working. I also tested modifying the pitch while the other track had PFL on, and no adverse effects occured (activate PFL on pitch adjustment.) https://git.io/viF5M
+2016-09-23 00:56:24	--	Notice(mixxx-commits): [mixxx] djsteph commented on pull request #1014 17209bd: I just tried that switch to use /track_samples/ instead of /duration/ and the feature stopped working. I also tested modifying the pitch while the other track had PFL on, and no adverse effects occured (activate PFL on pitch adjustment.) https://git.io/viF5M
+2016-09-23 01:02:00		[00:56]
+2016-09-23 01:03:19	-->	bullicon (~bullicon@2a00:23c4:1802:1100:9837:e756:7c1f:93) has joined #mixxx
+2016-09-23 01:05:08	<--	bullicon (~bullicon@2a00:23c4:1802:1100:9837:e756:7c1f:93) has quit (Client Quit)
+2016-09-23 01:11:00		[01:05]
+2016-09-23 01:13:31	-->	bullicon (~bullicon@host86-137-126-172.range86-137.btcentralplus.com) has joined #mixxx
+2016-09-23 01:16:59	<--	bullicon (~bullicon@host86-137-126-172.range86-137.btcentralplus.com) has quit (Client Quit)
+2016-09-23 01:18:30	-->	bullicon (~bullicon@host86-137-126-172.range86-137.btcentralplus.com) has joined #mixxx
+2016-09-23 01:20:45	<--	magnicida (~raskolnik@2a02:8109:8c80:231:ea39:dfff:fe4d:275b) has quit (Ping timeout: 265 seconds)
+2016-09-23 01:26:00		[01:20]
+2016-09-23 01:26:00	<--	bullicon (~bullicon@host86-137-126-172.range86-137.btcentralplus.com) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-09-23 01:36:13	-->	bullicon (~bullicon@2a00:23c4:1802:1100:9837:e756:7c1f:93) has joined #mixxx
+2016-09-23 01:40:14	<--	bullicon (~bullicon@2a00:23c4:1802:1100:9837:e756:7c1f:93) has quit (Client Quit)
+2016-09-23 01:46:00		[01:40]
+2016-09-23 01:48:54	-->	bullicon (~bullicon@2a00:23c4:1802:1100:9837:e756:7c1f:93) has joined #mixxx
+2016-09-23 01:51:39	<--	bullicon (~bullicon@2a00:23c4:1802:1100:9837:e756:7c1f:93) has quit (Client Quit)
+2016-09-23 01:52:38	-->	bullicon (~bullicon@2a00:23c4:1802:1100:9837:e756:7c1f:93) has joined #mixxx
+2016-09-23 01:55:11	<--	bullicon (~bullicon@2a00:23c4:1802:1100:9837:e756:7c1f:93) has quit (Client Quit)
+2016-09-23 01:56:08	-->	bullicon (~bullicon@2a00:23c4:1802:1100:9837:e756:7c1f:93) has joined #mixxx
+2016-09-23 01:57:07	<--	bullicon (~bullicon@2a00:23c4:1802:1100:9837:e756:7c1f:93) has quit (Client Quit)
+2016-09-23 01:58:05	-->	bullicon (~bullicon@2a00:23c4:1802:1100:9837:e756:7c1f:93) has joined #mixxx
+2016-09-23 02:00:09	-->	zezic (~zezic@193.150.108.224) has joined #mixxx
+2016-09-23 02:06:00		[02:00]
+2016-09-23 02:23:28	--	Notice(mixxx-commits): [mixxx] sblaisot commented on pull request #1014 17209bd: Oh, so just declare it in the jshint configuration block on top of file ;) https://git.io/viFhz
+2016-09-23 02:23:28		[02:23]
+2016-09-23 02:26:48	<--	joshontheweb (~joshonthe@223.205.206.206) has quit (Quit: Textual IRC Client: http://www.textualapp.com/)
+2016-09-23 02:30:00	-->	joshontheweb (~joshonthe@223.205.206.206) has joined #mixxx
+2016-09-23 02:35:00		[02:30]
+2016-09-23 02:35:58	--	Notice(mixxx-commits): [mixxx] sblaisot commented on pull request #1014 17209bd: You can use the "control" parameter which handles the midino of the control to select which parameter you move. https://git.io/viFj7
+2016-09-23 02:36:51	--	fqtw_ is now known as fqtw
+2016-09-23 02:41:36	<--	joshontheweb (~joshonthe@223.205.206.206) has quit (Quit: Computer has gone to sleep.)
+2016-09-23 02:43:07	--	Notice(mixxx-commits): [mixxx] Be-ing commented on pull request #1014 17209bd: Augh. This bug should really be fixed for 2.1... https://git.io/vibel
+2016-09-23 02:49:00		[02:43]
+2016-09-23 02:50:36	-->	joshontheweb (~joshonthe@223.205.206.206) has joined #mixxx
+2016-09-23 02:52:23	<--	bullicon (~bullicon@2a00:23c4:1802:1100:9837:e756:7c1f:93) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-09-23 02:53:22	-->	magnicida (~raskolnik@2a02:8109:8c80:231:ea39:dfff:fe4d:275b) has joined #mixxx
+2016-09-23 02:54:09	-->	bullicon (~bullicon@host86-137-126-172.range86-137.btcentralplus.com) has joined #mixxx
+2016-09-23 02:54:18	-->	fqtw_ (~me@x590c71a7.dyn.telefonica.de) has joined #mixxx
+2016-09-23 02:56:43	<--	bullicon (~bullicon@host86-137-126-172.range86-137.btcentralplus.com) has quit (Client Quit)
+2016-09-23 02:57:37	<--	fqtw (~me@x590cd9b7.dyn.telefonica.de) has quit (Ping timeout: 272 seconds)
+2016-09-23 02:58:00	-->	bullicon (~bullicon@host86-137-126-172.range86-137.btcentralplus.com) has joined #mixxx
+2016-09-23 02:59:48	<--	bullicon (~bullicon@host86-137-126-172.range86-137.btcentralplus.com) has quit (Client Quit)
+2016-09-23 03:00:47	-->	bullicon (~bullicon@2a00:23c4:1802:1100:9837:e756:7c1f:93) has joined #mixxx
+2016-09-23 03:02:00	<--	joshontheweb (~joshonthe@223.205.206.206) has quit (Quit: Computer has gone to sleep.)
+2016-09-23 03:02:29	<--	bullicon (~bullicon@2a00:23c4:1802:1100:9837:e756:7c1f:93) has quit (Client Quit)
+2016-09-23 03:03:32	--	Notice(mixxx-commits): [mixxx] Be-ing commented on pull request #1014 17209bd: Why is `i` in brackets? https://git.io/vibfS
+2016-09-23 03:04:32	-->	bullicon (~bullicon@host86-137-126-172.range86-137.btcentralplus.com) has joined #mixxx
+2016-09-23 03:04:32		[03:04]
+2016-09-23 03:06:29	<--	bullicon (~bullicon@host86-137-126-172.range86-137.btcentralplus.com) has quit (Client Quit)
+2016-09-23 03:12:00		[03:06]
+2016-09-23 03:12:13	-->	bullicon (~bullicon@2a00:23c4:1802:1100:9837:e756:7c1f:93) has joined #mixxx
+2016-09-23 03:15:37	<--	bullicon (~bullicon@2a00:23c4:1802:1100:9837:e756:7c1f:93) has quit (Client Quit)
+2016-09-23 03:19:28	-->	bullicon (~bullicon@host86-137-126-172.range86-137.btcentralplus.com) has joined #mixxx
+2016-09-23 03:21:12	-->	_rgb_ (~rgb@173.227.65.138) has joined #mixxx
+2016-09-23 03:21:54	-->	datura_ (~datura@unaffiliated/datura) has joined #mixxx
+2016-09-23 03:25:23	<--	datura (~datura@unaffiliated/datura) has quit (Ping timeout: 265 seconds)
+2016-09-23 03:31:00		[03:25]
+2016-09-23 03:32:17	-->	joshontheweb (~joshonthe@223.205.206.206) has joined #mixxx
+2016-09-23 03:38:00		[03:32]
+2016-09-23 03:41:14	<--	joshontheweb (~joshonthe@223.205.206.206) has quit (Quit: Computer has gone to sleep.)
+2016-09-23 03:47:00		[03:41]
+2016-09-23 03:48:45	-->	fqtw__ (~me@x4db00a8d.dyn.telefonica.de) has joined #mixxx
+2016-09-23 03:52:43	<--	fqtw_ (~me@x590c71a7.dyn.telefonica.de) has quit (Ping timeout: 272 seconds)
+2016-09-23 03:52:49	<--	magnicida (~raskolnik@2a02:8109:8c80:231:ea39:dfff:fe4d:275b) has quit (Quit: Leaving.)
+2016-09-23 03:56:01	-->	Kakurady (~nekoyasha@108-162-166-72.cable.teksavvy.com) has joined #mixxx
+2016-09-23 03:57:53	-->	fqtw_ (~me@x4db114d6.dyn.telefonica.de) has joined #mixxx
+2016-09-23 04:00:55	<--	fqtw__ (~me@x4db00a8d.dyn.telefonica.de) has quit (Ping timeout: 255 seconds)
+2016-09-23 04:01:14	-->	luuuciano (~luuuciano@unaffiliated/luuuciano) has joined #mixxx
+2016-09-23 04:06:58	<--	bullicon (~bullicon@host86-137-126-172.range86-137.btcentralplus.com) has quit (Quit: Textual IRC Client: www.textualapp.com)
+2016-09-23 04:06:58		[04:06]
+2016-09-23 04:14:40	-->	bullicon (~bullicon@host86-137-126-172.range86-137.btcentralplus.com) has joined #mixxx
+2016-09-23 04:16:31	<--	bullicon (~bullicon@host86-137-126-172.range86-137.btcentralplus.com) has quit (Client Quit)
+2016-09-23 04:22:00		[04:16]
+2016-09-23 04:27:26	-->	bullicon (~bullicon@2a00:23c4:1802:1100:9837:e756:7c1f:93) has joined #mixxx
+2016-09-23 04:30:02	<--	bullicon (~bullicon@2a00:23c4:1802:1100:9837:e756:7c1f:93) has quit (Read error: No route to host)
+2016-09-23 04:30:37	-->	bullicon (~bullicon@host86-137-126-172.range86-137.btcentralplus.com) has joined #mixxx
+2016-09-23 04:30:49	<--	yepla (~quassel@cro34-h04-89-86-14-45.dsl.sta.abo.bbox.fr) has quit (Remote host closed the connection)
+2016-09-23 04:31:06	<--	bullicon (~bullicon@host86-137-126-172.range86-137.btcentralplus.com) has quit (Client Quit)
+2016-09-23 04:35:00	-->	bullicon (~bullicon@host86-137-126-172.range86-137.btcentralplus.com) has joined #mixxx
+2016-09-23 04:38:35	-->	magnicida (~raskolnik@2a02:8109:8c80:231:ea39:dfff:fe4d:275b) has joined #mixxx
+2016-09-23 04:38:35		[04:38]
+2016-09-23 04:39:28	<--	bullicon (~bullicon@host86-137-126-172.range86-137.btcentralplus.com) has quit (Client Quit)
+2016-09-23 04:45:00		[04:39]
+2016-09-23 04:46:54	-->	fqtw (~me@x590e1bf9.dyn.telefonica.de) has joined #mixxx
+2016-09-23 04:48:31	-->	bullicon (~bullicon@host86-137-126-172.range86-137.btcentralplus.com) has joined #mixxx
+2016-09-23 04:49:00	<--	magnicida (~raskolnik@2a02:8109:8c80:231:ea39:dfff:fe4d:275b) has quit (Ping timeout: 265 seconds)
+2016-09-23 04:49:28	<--	fqtw_ (~me@x4db114d6.dyn.telefonica.de) has quit (Ping timeout: 265 seconds)
+2016-09-23 04:50:24	-->	fqtw_ (~me@x590e0a39.dyn.telefonica.de) has joined #mixxx
+2016-09-23 04:51:53	<--	mesamoo (~dh64@174-21-74-162.tukw.qwest.net) has quit (Ping timeout: 244 seconds)
+2016-09-23 04:52:56	<--	fqtw (~me@x590e1bf9.dyn.telefonica.de) has quit (Ping timeout: 265 seconds)
+2016-09-23 04:55:56	-->	Pegasus_RPG (~Icedove@47.142.200.28) has joined #mixxx
+2016-09-23 05:01:00		[04:55]
+2016-09-23 05:44:17	-->	magnicida (~raskolnik@ip5b41d3af.dynamic.kabel-deutschland.de) has joined #mixxx
+2016-09-23 05:44:17		[05:44]
+2016-09-23 05:52:07	<--	bullicon (~bullicon@host86-137-126-172.range86-137.btcentralplus.com) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-09-23 05:54:37	-->	bullicon (~bullicon@host86-137-126-172.range86-137.btcentralplus.com) has joined #mixxx
+2016-09-23 05:56:24	<--	bullicon (~bullicon@host86-137-126-172.range86-137.btcentralplus.com) has quit (Client Quit)
+2016-09-23 05:56:52	-->	bullicon (~bullicon@2a00:23c4:1802:1100:9837:e756:7c1f:93) has joined #mixxx
+2016-09-23 06:02:00		[05:56]
+2016-09-23 06:08:33	<--	_rgb_ (~rgb@173.227.65.138) has quit (Read error: Connection reset by peer)
+2016-09-23 06:12:12	-->	_rgb_ (~rgb@173.227.65.138) has joined #mixxx
+2016-09-23 06:16:35	<--	bullicon (~bullicon@2a00:23c4:1802:1100:9837:e756:7c1f:93) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-09-23 06:22:00		[06:16]
+2016-09-23 06:23:36	-->	bullicon (~bullicon@2a00:23c4:1802:1100:9837:e756:7c1f:93) has joined #mixxx
+2016-09-23 06:28:41	<--	bullicon (~bullicon@2a00:23c4:1802:1100:9837:e756:7c1f:93) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-09-23 06:34:00		[06:28]
+2016-09-23 06:36:43	-->	bullicon (~bullicon@host86-137-126-172.range86-137.btcentralplus.com) has joined #mixxx
+2016-09-23 06:39:45	<--	bullicon (~bullicon@host86-137-126-172.range86-137.btcentralplus.com) has quit (Client Quit)
+2016-09-23 06:42:20	-->	bullicon (~bullicon@2a00:23c4:1802:1100:9837:e756:7c1f:93) has joined #mixxx
+2016-09-23 06:48:00		[06:42]
+2016-09-23 06:49:05	<--	bullicon (~bullicon@2a00:23c4:1802:1100:9837:e756:7c1f:93) has quit (Read error: No route to host)
+2016-09-23 06:55:00		[06:49]
+2016-09-23 06:59:43	<--	Pegasus_RPG (~Icedove@47.142.200.28) has quit (Read error: Connection reset by peer)
+2016-09-23 06:59:50	-->	bullicon (~bullicon@2a00:23c4:1802:1100:9837:e756:7c1f:93) has joined #mixxx
+2016-09-23 07:03:32	-->	Pegasus_RPG (~Icedove@47.142.200.28) has joined #mixxx
+2016-09-23 07:07:32	<--	bullicon (~bullicon@2a00:23c4:1802:1100:9837:e756:7c1f:93) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-09-23 07:13:00		[07:07]
+2016-09-23 07:29:32	<--	fqtw_ (~me@x590e0a39.dyn.telefonica.de) has quit (Ping timeout: 265 seconds)
+2016-09-23 07:29:32		[07:29]
+2016-09-23 07:31:42	-->	fqtw (~me@x590e0a39.dyn.telefonica.de) has joined #mixxx
+2016-09-23 07:36:34	-->	_rgb_1 (~rgb@173.227.65.138) has joined #mixxx
+2016-09-23 07:39:41	<--	_rgb_ (~rgb@173.227.65.138) has quit (Ping timeout: 265 seconds)
+2016-09-23 07:45:00		[07:39]
+2016-09-23 07:49:09	-->	bullicon (~bullicon@host86-137-126-172.range86-137.btcentralplus.com) has joined #mixxx
+2016-09-23 07:55:00		[07:49]
+2016-09-23 08:38:15	<--	bullicon (~bullicon@host86-137-126-172.range86-137.btcentralplus.com) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-09-23 08:38:15		[08:38]
+2016-09-23 09:00:34	<--	datura_ (~datura@unaffiliated/datura) has quit (Ping timeout: 240 seconds)
+2016-09-23 09:00:34		[09:00]
+2016-09-23 09:01:13	<--	_rgb_1 (~rgb@173.227.65.138) has quit (Quit: Leaving.)
+2016-09-23 09:07:00		[09:01]
+2016-09-23 09:32:29	--	Notice(mixxx-commits): [mixxx] daschuer pushed 2 new commits to master: https://git.io/viNJc
+2016-09-23 09:32:29		[09:32]
+2016-09-23 09:32:29	--	Notice(mixxx-commits): mixxx/master 2437e6a Andreas Müller: coverart.cpp: fix build...
+2016-09-23 09:32:29	--	Notice(mixxx-commits): mixxx/master be3bc53 Daniel Schürmann: Merge pull request #1017 from schnitzeltony/master...
+2016-09-23 09:41:02	--	Notice(mixxx-commits): [mixxx] daschuer pushed 1 new commit to master: https://git.io/viNUQ
+2016-09-23 09:41:02	--	Notice(mixxx-commits): mixxx/master 14e10b2 Daniel Schürmann: Added Andreas Müller to contributor list. Thank you very much.
+2016-09-23 09:47:00		[09:41]
+2016-09-23 09:51:33	<--	asantoni (~Santoni@135-23-211-134.cpe.pppoe.ca) has quit (Ping timeout: 240 seconds)
+2016-09-23 09:57:00		[09:51]
+2016-09-23 11:43:42	<--	magnicida (~raskolnik@ip5b41d3af.dynamic.kabel-deutschland.de) has quit (Quit: Leaving.)
+2016-09-23 11:43:42		[11:43]
+2016-09-23 11:59:32	-->	magnicida (~raskolnik@2a02:8109:8c80:231:ea39:dfff:fe4d:275b) has joined #mixxx
+2016-09-23 11:59:32		[11:59]
+2016-09-23 12:21:06	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined #mixxx
+2016-09-23 12:21:06		[12:21]
+2016-09-23 12:21:06	--	Topic for #mixxx is "Interested in Google Summer of Code? https://www.mixxx.org/wiki/doku.php/gsocadvice | Mixxx 2.0 Released! http://mixxx.org/download | http://www.mixxx.org | wiki - http://mixxx.org/wiki/ | bugs - https://bugs.launchpad.net/mixxx | Go ahead and ask a question, we'll respond eventually!"
+2016-09-23 12:21:06	--	Topic set by ywwg (~owen@2620:15c:6:fd00:74fc:8696:2a03:ed2c) on Tue, 15 Mar 2016 10:47:01
+2016-09-23 12:21:06	--	Channel #mixxx: 68 nicks (0 ops, 0 voices, 68 normals)
+2016-09-23 12:21:06	***	Buffer Playback...
+2016-09-23 12:21:06	JosepMa	[18:03:12] Ermm.. you mentioned creating a branch, which i haven't done.. what was the purpose of doing so? [18:03:12]
+2016-09-23 12:21:06	be_	[18:04:51] strictly speaking you don't need to but it's a good idea [18:04:51]
+2016-09-23 12:21:06	be_	[18:05:25] branches allow you to work on different sets of changes and propose them for inclusion independently [18:05:25]
+2016-09-23 12:21:06	JosepMa	[18:06:00] Mmm..ok, i understand. But it's better that i create it now taht i'm sincronized, isn't it? [18:06:00]
+2016-09-23 12:21:06	be_	[18:06:05] yes [18:06:05]
+2016-09-23 12:21:06	JosepMa	[18:06:34] fine, then i think  i am set up. Thanks [18:06:34]
+2016-09-23 12:21:06	be_	[18:06:47] you can create them with git branch, or you can automatically create and switch to a branch with git checkout -b [18:06:47]
+2016-09-23 12:21:06	--	Notice(mixxx-commits): [19:01:41] [mixxx] JosepMaJAZ opened pull request #1018: New version of DJ console 4mx mapping (master...dj_console_v3) https://git.io/vid8B [19:01:41]
+2016-09-23 12:21:06	JosepMa	[19:01:54] ^_^ [19:01:54]
+2016-09-23 12:21:06	brot_	[20:37:59] hi, if id like two have two mixxx instances, what are my chances making one deck of each instance absolutely syncronous two the other (like in playback position, eq, etc) [20:37:59]
+2016-09-23 12:21:06	brot_	[20:38:15] is midi my only option? [20:38:15]
+2016-09-23 12:21:06	brot_	[20:42:52] my goal is to have each deck of those two decks outputting exactly the same signal so i can use a mixer with crossfade to switch from one laptop to the other without any audible change. like this i kind of "passed" the current running song to the others computer mixxx instance where the other person can take over the situation [20:42:52]
+2016-09-23 12:21:06	brot_	[20:43:04] you get what i mean? [20:43:04]
+2016-09-23 12:21:06	brot_	[20:44:54] the two computers share the same music files [20:44:54]
+2016-09-23 12:21:06	theBear	[20:44:57] traditionally djs just swap at a song transition :) [20:44:57]
+2016-09-23 12:21:06	brot_	[20:46:29] well we are no professional DJs, we just want to play together, each on their own computer, but still being able to use features light sync to make easier beatmatching [20:46:29]
+2016-09-23 12:21:06	theBear	[20:49:43] mm indeed... unfortunately i never considered it so you have to wait till someone else arrives [20:49:43]
+2016-09-23 12:21:06	brot_	[20:50:36] i think i could make it possible using midi. though it seems to be quite a hassle [20:50:36]
+2016-09-23 12:21:06	brot_	[20:51:04] just want to know if there is an alternative to midi before trying it [20:51:04]
+2016-09-23 12:21:06	brot_	[20:51:20] or maybe somebody already tried such an exotic thing [20:51:20]
+2016-09-23 12:21:06	theBear	[20:51:22] if it can be done that is the most likely way it'll work [20:51:22]
+2016-09-23 12:21:06	theBear	[20:53:26] mmm, the sync part alone, which would let you use two machines/copies as if they were the same one, could be handy for things like adding a netbook to a setup for an extra screen/deck worth [20:53:26]
+2016-09-23 12:21:06	brot_	[21:35:35] ill give it a try, looking back here for replies occasionally [21:35:35]
+2016-09-23 12:21:06	--	Notice(mixxx-commits): [05:41:15] [mixxx] sblaisot commented on pull request #1014 17209bd: tab indentation -> spaces https://git.io/viF4g [05:41:15]
+2016-09-23 12:21:06	--	Notice(mixxx-commits): [05:42:12] [mixxx] sblaisot commented on pull request #1014 17209bd: indentation problem https://git.io/viF4Q [05:42:12]
+2016-09-23 12:21:06	--	Notice(mixxx-commits): [05:42:22] [mixxx] sblaisot commented on pull request #1014 17209bd: indentation problem https://git.io/viF4b [05:42:22]
+2016-09-23 12:21:06	--	Notice(mixxx-commits): [05:47:02] [mixxx] sblaisot commented on pull request #1014 17209bd: isn't bpm an undefined variable ? https://git.io/viFBc [05:47:02]
+2016-09-23 12:21:06	--	Notice(mixxx-commits): [05:51:19] [mixxx] sblaisot commented on pull request #1014 17209bd: shouldn't the second be OFF ? https://git.io/viFRi [05:51:19]
+2016-09-23 12:21:06	--	Notice(mixxx-commits): [05:56:01] [mixxx] sblaisot commented on pull request #1014 17209bd: You can use soft takeover in pure XML: ... https://git.io/viFR7 [05:56:01]
+2016-09-23 12:21:06	--	Notice(mixxx-commits): [05:57:21] [mixxx] sblaisot commented on pull request #1014 17209bd: Why don't you use the built-in soft-takeover ?... https://git.io/viFRF [05:57:21]
+2016-09-23 12:21:06	--	Notice(mixxx-commits): [05:58:47] [mixxx] sblaisot commented on pull request #1014 17209bd: extra spaces at end of line ? https://git.io/viFRh [05:58:47]
+2016-09-23 12:21:06	--	Notice(mixxx-commits): [06:00:02] [mixxx] sblaisot commented on pull request #1014 17209bd: this comment becomes a single-line comment, so please switch to // https://git.io/viF0J [06:00:02]
+2016-09-23 12:21:06	--	Notice(mixxx-commits): [06:03:18] [mixxx] sblaisot commented on pull request #1014 17209bd: You should use /track_samples/ instead of /duration/ as duration can change when you adjust pitch ubless you want to activate PFL on pitch adjustment. https://git.io/viF0Y [06:03:18]
+2016-09-23 12:21:06	--	Notice(mixxx-commits): [06:03:28] [mixxx] sblaisot commented on pull request #1014 17209bd: You should use /track_samples/ instead of /duration/ as duration can change when you adjust pitch unless you want to activate PFL on pitch adjustment. https://git.io/viF0Y [06:03:28]
+2016-09-23 12:21:06	--	Notice(mixxx-commits): [06:34:18] [mixxx] illuusio commented on pull request #1014 17209bd: Channel 2 Strip Instant FX Off.. what does that mean? https://git.io/viFuI [06:34:18]
+2016-09-23 12:21:06	--	Notice(7GHAAC9Q0): [10:20:29] [mixxx] djsteph commented on pull request #1014 17209bd: Ok, noted https://git.io/viF9N [10:20:29]
+2016-09-23 12:21:06	--	Notice(92AAAC4ES): [10:20:29] [mixxx] djsteph commented on pull request #1014 17209bd: The headphones LED is set on one channel. When you load on the other deck, the LED switches to the opposite state with that code. I tested physically on the controller, and LED behavior is good. https://git.io/viF9p [10:20:29]
+2016-09-23 12:21:06	--	Notice(mixxx-commits): [10:23:21] [mixxx] djsteph commented on pull request #1014 17209bd: > You can probably merge NumarkMixtrack3.TrebleKnob NumarkMixtrack3.MiddleKnob and NumarkMixtrack3.BassKnob into one function to avoid code duplication... https://git.io/viFH8 [10:23:21]
+2016-09-23 12:21:06	--	Notice(mixxx-commits): [10:45:23] [mixxx] djsteph commented on pull request #1014 17209bd: The headphones LED is set on one channel. When you load on the other deck, the LED switches to the opposite state with that code. I tested physically on the controller, and LED behavior is good. https://git.io/viF9p [10:45:23]
+2016-09-23 12:21:06	--	Notice(mixxx-commits): [10:56:04] [mixxx] djsteph commented on pull request #1014 17209bd: I just tried that switch to use track_samples and the feature stopped working. I also tested modifying the pitch while the other track had PFL on, and no adverse effects occured (activate PFL on pitch adjustment.) https://git.io/viF5M [10:56:04]
+2016-09-23 12:21:06	--	Notice(mixxx-commits): [10:56:23] [mixxx] djsteph commented on pull request #1014 17209bd: I just tried that switch to use /track_samples/ instead of /duration/ and the feature stopped working. I also tested modifying the pitch while the other track had PFL on, and no adverse effects occured (activate PFL on pitch adjustment.) https://git.io/viF5M [10:56:23]
+2016-09-23 12:21:07	--	Notice(mixxx-commits): [12:23:27] [mixxx] sblaisot commented on pull request #1014 17209bd: Oh, so just declare it in the jshint configuration block on top of file ;) https://git.io/viFhz [12:23:27]
+2016-09-23 12:21:07	--	Notice(mixxx-commits): [12:35:57] [mixxx] sblaisot commented on pull request #1014 17209bd: You can use the "control" parameter which handles the midino of the control to select which parameter you move. https://git.io/viFj7 [12:35:57]
+2016-09-23 12:21:07	--	Notice(mixxx-commits): [12:43:06] [mixxx] Be-ing commented on pull request #1014 17209bd: Augh. This bug should really be fixed for 2.1... https://git.io/vibel [12:43:06]
+2016-09-23 12:21:07	--	Notice(mixxx-commits): [13:03:31] [mixxx] Be-ing commented on pull request #1014 17209bd: Why is `i` in brackets? https://git.io/vibfS [13:03:31]
+2016-09-23 12:21:07	--	Notice(mixxx-commits): [19:32:28] [mixxx] daschuer pushed 2 new commits to master: https://git.io/viNJc [19:32:28]
+2016-09-23 12:21:07	--	Notice(mixxx-commits): [19:32:28] mixxx/master 2437e6a Andreas Müller: coverart.cpp: fix build... [19:32:28]
+2016-09-23 12:21:07	--	Notice(mixxx-commits): [19:32:28] mixxx/master be3bc53 Daniel Schürmann: Merge pull request #1017 from schnitzeltony/master... [19:32:28]
+2016-09-23 12:21:07	--	Notice(mixxx-commits): [19:41:01] [mixxx] daschuer pushed 1 new commit to master: https://git.io/viNUQ [19:41:01]
+2016-09-23 12:21:07	--	Notice(mixxx-commits): [19:41:01] mixxx/master 14e10b2 Daniel Schürmann: Added Andreas Müller to contributor list. Thank you very much. [19:41:01]
+2016-09-23 12:21:07	***	Playback Complete.
+2016-09-23 12:21:47	--	Channel created on Wed, 06 Dec 2006 23:46:45
+2016-09-23 12:27:00		[12:21]
+2016-09-23 12:30:30	<--	Kakurady (~nekoyasha@108-162-166-72.cable.teksavvy.com) has quit (Ping timeout: 264 seconds)
+2016-09-23 12:32:15	<--	steve-_-1 (~Adium@p2003008B8F240A00DCE096BF62D431B0.dip0.t-ipconnect.de) has quit (Quit: Leaving.)
+2016-09-23 12:38:00		[12:32]
+2016-09-23 12:55:18	<--	fqtw (~me@x590e0a39.dyn.telefonica.de) has quit (Ping timeout: 265 seconds)
+2016-09-23 12:55:18		[12:55]
+2016-09-23 13:13:33	-->	Kakurady (~nekoyasha@108.162.166.72) has joined #mixxx
+2016-09-23 13:13:33		[13:13]
+2016-09-23 13:22:12	<--	be_ (~be_@c-73-246-91-230.hsd1.il.comcast.net) has quit (Ping timeout: 276 seconds)
+2016-09-23 13:25:13	-->	be_ (~be_@2001:558:6033:5c:69bb:8893:2b8a:f93a) has joined #mixxx
+2016-09-23 13:31:00		[13:25]
+2016-09-23 13:54:53	-->	luuciano (~luuuciano@unaffiliated/luuuciano) has joined #mixxx
+2016-09-23 13:54:53		[13:54]
+2016-09-23 13:55:53	<--	luuuciano (~luuuciano@unaffiliated/luuuciano) has quit (Ping timeout: 248 seconds)
+2016-09-23 13:58:38	<--	luuciano (~luuuciano@unaffiliated/luuuciano) has quit (Read error: Connection reset by peer)
+2016-09-23 14:01:25	-->	luuuciano (~luuuciano@unaffiliated/luuuciano) has joined #mixxx
+2016-09-23 14:07:00		[14:01]
+2016-09-23 14:14:00	-->	yepla (~quassel@cro34-h04-89-86-14-45.dsl.sta.abo.bbox.fr) has joined #mixxx
+2016-09-23 14:15:58	<--	Kakurady (~nekoyasha@108.162.166.72) has quit (Quit: Konversation terminated!)
+2016-09-23 14:21:00		[14:15]
+2016-09-23 14:39:04	-->	naught101 (~naught101@n114-74-83-1.sbr2.nsw.optusnet.com.au) has joined #mixxx
+2016-09-23 14:39:04		[14:39]
+2016-09-23 14:43:30	<--	magnicida (~raskolnik@2a02:8109:8c80:231:ea39:dfff:fe4d:275b) has quit (Ping timeout: 265 seconds)
+2016-09-23 14:49:00		[14:43]
+2016-09-23 14:51:22	-->	joshontheweb (~joshonthe@223.205.206.206) has joined #mixxx
+2016-09-23 14:57:00		[14:51]
+2016-09-23 15:04:50	<--	luuuciano (~luuuciano@unaffiliated/luuuciano) has quit (Ping timeout: 265 seconds)
+2016-09-23 15:10:00		[15:04]
+2016-09-23 15:11:51	<--	dracman (~draco@55d47d7d.access.ecotel.net) has quit (Ping timeout: 244 seconds)
+2016-09-23 15:17:00		[15:11]
+2016-09-23 15:18:18	-->	dracman (~draco@55d47149.access.ecotel.net) has joined #mixxx
+2016-09-23 15:24:00		[15:18]
