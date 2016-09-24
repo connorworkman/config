@@ -24252,3 +24252,60 @@
 2016-09-23 20:34:17	-->	blackwind_123 (~IceChat9@117.192.151.163) has joined ##c
 2016-09-23 20:34:20	izalove	memcpy(buffer, str1, strlen(str1));  memcpy(buffer+strlen(str1), str2, strlen(str2)+1);
 2016-09-23 20:34:21	omx	izalove, how?
+2016-09-23 20:35:54	dreamon_	morning. is there a C IDE for console out there?
+2016-09-23 20:36:56	omx	izalove, Thx, you did it!
+2016-09-23 20:37:23	<--	SwiftMatt (~Objective@162.242.94.102) has quit (Quit: My MacBook Pro has gone to sleep. ZZZzzz…)
+2016-09-23 20:37:26	-->	disgusting[m] (disgusting@gateway/shell/matrix.org/x-dcjdtbicccfwcmue) has joined ##c
+2016-09-23 20:38:46	-->	wdouglas (~user@c-73-25-153-212.hsd1.or.comcast.net) has joined ##c
+2016-09-23 20:39:00	-->	cmbrnt (~cmbrnt@85.11.62.2) has joined ##c
+2016-09-23 20:39:48	-->	ap0c_ (~ap0c@98.3.244.176) has joined ##c
+2016-09-23 20:40:18	<--	chan20 (~quassel@124.123.81.196) has quit (Ping timeout: 276 seconds)
+2016-09-23 20:40:41	<--	ap0c (~ap0c@unaffiliated/ap0c) has quit (Ping timeout: 248 seconds)
+2016-09-23 20:40:44	<--	noethics (~noethics@gateway/vpn/privateinternetaccess/ebonics) has quit (Quit: Leaving)
+2016-09-23 20:41:53	<--	zis (~zis@unaffiliated/zis) has quit (Quit: leaving)
+2016-09-23 20:42:15	omx	Should I always use strlen instead of sizeof when it comes to strings/chars ?
+2016-09-23 20:42:34	izalove	no, you should understand the difference
+2016-09-23 20:42:49	izalove	you're taking the sizeof of a pointer
+2016-09-23 20:43:06	-->	chan20 (~quassel@124.123.81.196) has joined ##c
+2016-09-23 20:43:08	izalove	which doesn't depend on the string in that position
+2016-09-23 20:43:28	izalove	,cc char *x = "helloworld"; sizeof x;
+2016-09-23 20:43:30	@candide	izalove: no output: sizeof x = 8; x = 0x5555555573a0 "helloworld"
+2016-09-23 20:44:06	<--	cmbrnt (~cmbrnt@85.11.62.2) has quit (Ping timeout: 244 seconds)
+2016-09-23 20:45:17	-->	cmbrnt (~cmbrnt@85.11.62.2) has joined ##c
+2016-09-23 20:45:30	<--	vqrs (~vqrs@learnprogramming/regular/vqrs) has quit (Ping timeout: 265 seconds)
+2016-09-23 20:46:57	<--	ap0c_ (~ap0c@98.3.244.176) has quit (Ping timeout: 265 seconds)
+2016-09-23 20:46:57		[20:46]
+2016-09-23 20:47:02	-->	vqrs (~vqrs@learnprogramming/regular/vqrs) has joined ##c
+2016-09-23 20:47:47	<--	glenda (~glenda@mischief-1-pt.tunnel.tserv29.fmt1.ipv6.he.net) has quit (Ping timeout: 250 seconds)
+2016-09-23 20:48:03	-->	nwmcsween__ (~nwmcsween@209.52.88.41) has joined ##c
+2016-09-23 20:48:05	-->	glenda (~glenda@mischief-1-pt.tunnel.tserv29.fmt1.ipv6.he.net) has joined ##c
+2016-09-23 20:48:20	ryu0	vs this, which is the only time sizeof will produce something close:
+2016-09-23 20:48:32	ryu0	,cc char x[] = "helloworld"; sizeof x;
+2016-09-23 20:48:34	@candide	ryu0: no output: sizeof x = 11; x = "helloworld"
+2016-09-23 20:48:35	-->	eremitah (~int@unaffiliated/eremitah) has joined ##c
+2016-09-23 20:49:09	-->	nibble_zero (~chatzilla@37.244.252.145) has joined ##c
+2016-09-23 20:49:32	ryu0	omx: always use strlen to find the length of an unknown null-terminated string.
+2016-09-23 20:50:02	SomeJuan	has anybody here used libpng?
+2016-09-23 20:50:05	twkm	as an aside, with a termination character it isn't a string.
+2016-09-23 20:50:09	twkm	err, without a ...
+2016-09-23 20:50:18	-->	hyphenated (~hyphenate@103.26.17.55) has joined ##c
+2016-09-23 20:50:19	omx	when it is an array use strlen and if not sizeof?
+2016-09-23 20:50:44	ryu0	omx: always use strlen. the array is fixed size and will return its whole size, regardless of how long the string actually is.
+2016-09-23 20:50:45	omx	SomeJuan, use stb
+2016-09-23 20:50:48	<--	cmbrnt (~cmbrnt@85.11.62.2) has quit (Ping timeout: 244 seconds)
+2016-09-23 20:50:56	SomeJuan	https://gist.github.com/anonymous/9aa1cb1044513db49c77715d3aec2f98
+2016-09-23 20:51:15	<--	nwmcsween_ (~nwmcsween@66.51.139.245.erx-static.cipherkey.com) has quit (Ping timeout: 250 seconds)
+2016-09-23 20:51:44	ryu0	omx: what i showed you only works in the case where the array perfectly fits the string, but it also counts the null terminator.
+2016-09-23 20:51:53	-->	cmbrnt (~cmbrnt@85.11.62.2) has joined ##c
+2016-09-23 20:51:57	-->	Hun (~Hun@x4d07434a.dyn.telefonica.de) has joined ##c
+2016-09-23 20:51:57	ryu0	example:
+2016-09-23 20:51:57	<--	eremitah (~int@unaffiliated/eremitah) has quit (Remote host closed the connection)
+2016-09-23 20:52:01	ryu0	,cc char x[256] = "helloworld"; sizeof x;
+2016-09-23 20:52:03	@candide	ryu0: no output: sizeof x = 256; x = "helloworld"
+2016-09-23 20:52:17	<--	chan20 (~quassel@124.123.81.196) has quit (Ping timeout: 265 seconds)
+2016-09-23 20:52:18	<--	nwmcsween__ (~nwmcsween@209.52.88.41) has quit (Read error: Connection reset by peer)
+2016-09-23 20:52:22	<--	vqrs (~vqrs@learnprogramming/regular/vqrs) has quit (Ping timeout: 244 seconds)
+2016-09-23 20:52:28	-->	nwmcsween__ (~nwmcsween@66.51.139.245.erx-static.cipherkey.com) has joined ##c
+2016-09-23 20:52:28	<--	LoneHerm_ (~lonehermi@199.231.245.197) has quit (Remote host closed the connection)
+2016-09-23 20:52:35	<--	differential (~different@unaffiliated/differential) has quit (Quit: leaving)
+2016-09-23 20:53:04	-->	vdamewood (~vdamewood@unaffiliated/vdamewood) has joined ##c

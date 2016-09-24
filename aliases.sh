@@ -12,6 +12,7 @@ alias ohmyzsh='pushd ${ZSH} '
 
 ## Custom aliases
 
+alias kpulse='systemctl --user stop pulseaudio.socket && pulseaudio --kill || pulseaudio --kill '
 alias archchroot='mount --rbind /sys /mnt/genoo/sys/ && mount --make-rslave /mnt/gentoo/sys/ && mount --rbind /dev /mnt/gentoo/dev/ && mount --make-rslave /mnt/gentoo/dev/ && mount -t proc proc /mnt/gentoo/proc/ && chroot '
 alias ws='web_search_custom '
 alias reddit='web_search_custom reddit '
@@ -178,7 +179,6 @@ alias sld='ld -s -I/lib64/ld-linux-x86-64.so.2 /usr/lib/crt1.o /usr/lib/crti.o -
 alias ald='ld -I/lib64/ld-linux-x86-64.so.2 /usr/lib/crt1.o /usr/lib/crti.o -lc /usr/lib/crtn.o '
 
 ## shell functions
-
 
 web_search_custom() {
 	emulate -L zsh
