@@ -179,6 +179,7 @@ alias ald='ld -I/lib64/ld-linux-x86-64.so.2 /usr/lib/crt1.o /usr/lib/crti.o -lc 
 
 ## shell functions
 
+
 web_search_custom() {
 	emulate -L zsh
 	typeset -A urls
@@ -196,6 +197,7 @@ web_search_custom() {
 	fi
 	open_command "$url"
 }
+
 brkvm() {
 	local format
 	declare -a args
@@ -226,6 +228,7 @@ brkvm() {
 	#qemu-system-x86_64 -cdrom ~/sdxc/install-amd64-minimal-20160915.iso -boot order=d \
 	#-drive file=/@media/backup/gentoo.cow,format=qcow2 -enable-kvm -m 512 -net nic -net bridge,br=virbr0
 }
+
 kvm() {
 	local format
 	declare -a args
@@ -258,6 +261,7 @@ kvm() {
 	#qemu-system-x86_64 -cdrom ~/sdxc/install-amd64-minimal-20160915.iso -boot order=d \
 	#-drive file=/@media/backup/gentoo.cow,format=qcow2 -enable-kvm -m 512 -net nic -net bridge,br=virbr0
 }
+
 ovmf-kvm() {
 	local format
 	declare -a args
@@ -291,18 +295,27 @@ ovmf-kvm() {
 	#-drive file=/@media/backup/gentoo.cow,format=qcow2 -enable-kvm -m 2048 -net nic -net bridge,br=virbr0
 }
 
+
 csox() { sox "$1" -C ${3:-10} "${1/wav/${2}}"; }
+
 gif() { ffmpeg -i "${1:?Error, no input file specified!}" "${2:-${1/.*/.gif}}" -threads 0; }
+
 test256() { (x=`tput op` y=`printf %76s`;for i in {0..256};do o=00$i;echo -e ${o:${#o}-3:3} `tput setaf $i;tput setab $i`${y// /=}$x;done); }
+
 so() { chromium "http://stackoverflow.com/search?q=${*}"; }
+
 hexconv() { printf "${1:/dev/stdin}" | sed 's/0x//;s/\(..\)\(..\)\(..\)\(..\)/\\x\4\\x\3\\x\2\\x\1/'; echo; }
+
 lsupd() { checkupdates; cower -ub; }
+
 ytconv() {
 	[ -r "out.avi" ] && printf "\n \033[31m %s \n\033[0m" "Error \'out.mp4\' exists..." || \
 		ffmpeg -loop 1 -y -i "$1" -i "$2" -acodec copy -vcodec libx264 -shortest out.avi
 		#ffmpeg -loop 1 -i "${1}" -i "${2}" -c:v libx264 -tune stillimage -c:a aac -strict experimental -b:a 192k -pix_fmt yuv420p -shortest out.mp4
 }
+
 dloader() { node /@media/microSDXC/deezloader/app.js & disown; }
+
 tpanning() {
     #xrandr -q | grep "eDP1" | grep "panning"
     #xrandr --fb 4096x2560 --output eDP1 --mode 2160x1440 --panning 4096x2560+0+0/4096x2560+0+0/0/0/0/0
@@ -315,6 +328,7 @@ tpanning() {
     xrandr --fb "$vres" --output eDP1 --panning "${vres}+0+0/${vres}+0+0/0/0/0/0/"
     #xrandr --fb 2160x1440 --output eDP1 --panning 2160x1440+0+0/2160x1440+0+0/0/0/0/0/
 }
+
 eurl() {
     local LC_ALL=C c
     while IFS= read -r -n1 -d '' c
@@ -327,6 +341,7 @@ eurl() {
         fi
     done
 }
+
 vkfix() {
     find . -maxdepth 1 -name "*.mp3" -print0 | while IFS= read -r -d '' first; do
 	printf '"%s" ' "${first}"; printf \"; printf "${first}" | sed  -n 's/\bem\([A-Za-z0-9\;\#]*\)em\b/\1/gp'; printf "\"\n"
@@ -400,18 +415,22 @@ vkfix() {
 	awk '! /\"\"/ {print}'  | while read -r final; do eval "mv --verbose ${final}"
     done
 }
-share(){
+
+share() {
 	curl -F"file=@${*}" https://0x0.st
 }
-short(){
+
+short() {
 	curl -F"shorten=${*}" https://0x0.st
 }
+
 dirlinks() {
 	[[ -z "$1" ]] && dlist=( "${PWD}" ) || dlist=( "${@}" )
 	for ((i=1;i<$((${#dlist[@]}+1));i++)); do
 		echo find "$dlist[$i]" -maxdepth 1 -type l -exec ls {} \;
 	done
 }
+
 rpt() {
 	local pidlist
 	pidlist=$(for i in "$@"; do
@@ -427,6 +446,7 @@ rpt() {
 		printf '\n%s\n' "$pidlist"
 	fi
 }
+
 ajack() {
 	#alsa_out -j DeckA_Out -d "hw:2,0" &> /dev/null &
 	#alsa_in -j DeckA_In -d "hw:2,0" &> /dev/null &
@@ -444,10 +464,13 @@ ajack() {
 	#alsa_in -j Cue_In -d "hw:4,0" &>/dev/null &
 	#alsa_in -j Cue_In -d "hw:5,0" &>/dev/null &
 }
+
 tgv() {
     [[ -z "$(pgrep -fx "gvim --servername GVIM")" ]] || gvim --servername GVIM
     [[ -z "$1" ]] || gvim --servername GVIM --remote-tab-silent "${@}"
 }
+
+
 setup-scg() {
 	[[ "$PWD" != /store/config ]] && pushd /store/config &>/dev/null || local DIRVAR=1
 	#git init .
@@ -455,6 +478,17 @@ setup-scg() {
 	git remote set-url origin git+ssh://git@github.com/alyptik/config.git
 	(($DIRVAR)) || popd &>/dev/null
 }
+
+
+pscg() {
+	[[ "$PWD" != /store/config ]] && pushd /store/config &>/dev/null || local DIRVAR=1
+	git pull &&
+		printf "\n \033[32m %s \n\033[0m" "Pull successful!" || \
+		printf "\n \033[31m %s \n\033[0m" "Error during pull..."
+	(($DIRVAR)) || popd &>/dev/null
+}
+
+
 scg() {
 	[[ "$PWD" != /store/config ]] && pushd /store/config &>/dev/null || local DIRVAR=1
 	git add .
@@ -466,11 +500,13 @@ scg() {
 		printf "\n \033[31m %s \n\033[0m" "Nothing to commit..."; }
 	(($DIRVAR)) || popd &>/dev/null
 }
+
 par() {
 	! pulseaudio --check || pulseaudio --kill
 	sleep 1
 	pulseaudio --start --realtime
 }
+
 kattach() {
 	( printf "%s\n" \
 	    "Subject: " \
@@ -480,6 +516,7 @@ kattach() {
 	    "Content-Transfer-Encoding: base64" \
 	    ""; base64 ${1} ) | sendmail "alyptik@kindle.com"
 }
+
 dbr() {
 	find /@media/microSDXC/audio -maxdepth 1 -name "*TSL*" -type d -print | \
 		sed 's/^.*\/\(TSL.*\)$/\1/' | \
@@ -522,16 +559,19 @@ dbr() {
 	rclone move "/@media/microSDXC/Practice Mixes/" "dropbox:/EDM/practice/"
 	#rclone move /@media/microSDXC/Practice\ Mixes/ dropbox:/EDM/practice/
 }
+
 gs-pdf() {
 	printf '%b' "Input file: $1\nOutput file: $(<<<"$1" sed 's/^\(.*\)\.pdf$/\1-gs.pdf/')\n"
 	gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=/screen \
 	-dNOPAUSE -dQUIET -dBATCH -sOutputFile=$(<<<"$1" sed 's/^\(.*\)\.pdf$/\1-gs.pdf/') "$1"
 }
+
 mgif() {
 	[[ -z "$1" ]] && echo "No file specified." || \
 	ffmpeg -i "$1" -s 480x360 -pix_fmt rgb24 -r 24 -f gif - |\
 	gifsicle --unoptimize --dither --delay=4 > "$1.gif"
 }
+
 vk() {
 	local search="$1"
 	while [[ ! -z "$2" ]]; do shift && search="$search+$1"; done
@@ -539,9 +579,11 @@ vk() {
 	#xdg-open "$vkurl"
 	open_command "$vkurl"
 }
+
 fpastebin() {
 	curl F -c=@$(<<<${1} sed -r 's/^\/(.*)/\1/')  https://ptpb.pw
 }
+
 colortput() {
 	local colorcount=${1:-25}
 	for ((i=0;i<${colorcount};i++)); do
@@ -552,6 +594,7 @@ colortput() {
 	    printf '\t%s' "\e[38;4;29m\n[%d]$(tput sgr0)$(tput setaf $i)%s"
 	done
 }
+
 ctput() {
 	## List Termcap colors'
 	local colorcount=${1:-25}
@@ -562,6 +605,7 @@ ctput() {
 		printf "\e[38;4;29m\n[%d]$(tput sgr0)$(tput setaf $i)%s" "$i" "derp"; }
 	done
 }
+
 ldas() {
         [[ ${#} -ne 3 ]] && { printf " \033[31m %s \n\033[0m" "Need 3 arguments..."; return 1; } || {
                 nasm -f elf64 "$1" -o "$2"
@@ -571,6 +615,7 @@ ldas() {
                 printf " \033[32m %s \033[0m\n" "Done, created \"${PWD}/${3}\""'!'
                 return 0; }
 }
+
 ldas() {
         [[ ${#} -ne 3 ]] && { printf " \033[31m %s \n\033[0m" "Need 3 arguments..."; return 1; } || {
                 as "$1" -o "$2"
@@ -582,6 +627,7 @@ ldas() {
                 printf " \033[32m %s \033[0m\n" "Done, created \"${PWD}/${3}\""'!'
                 return 0; }
 }
+
 tmpcurl() {
     [[ ${#} -lt 1 ]] && { printf " \033[31m %s \n\033[0m" "Error, no arguments..."; return 1; } || {
 	local url="$1"
@@ -595,6 +641,7 @@ tmpcurl() {
 	curl -O "${url}"
 	return 0; }
 }
+
 shcurl() {
     [[ ${#} -lt 1 ]] && { printf "\033[31m %s \n\033[0m" "Error, no arguments..."; return 1; } || {
 	local url=${1}
@@ -609,6 +656,7 @@ shcurl() {
 	return 0; }
 }
 ## Btrfs balance with -dusage filter
+
 bd-btrfs() {
 	[[ ${#} -ge 1 ]] && local dpercent="$1" || local dpercent=100
 	[[ ${#} -ge 2 ]] && local mpercent="$2" || local mpercent=0
@@ -617,6 +665,7 @@ bd-btrfs() {
 	sudo btrfs balance start -v -dusage="${dpercent}" -musage="${mpercent}" "${target}"
 	return 0
 }
+
 certfp() {
 	pushd . &>/dev/null
 	cd "${HOME}/certs/irc"
@@ -630,7 +679,9 @@ certfp() {
 	popd &>/dev/null
 }
 ## Alternate man functions
+
 man() { /bin/man "$@"; return 0; }
+
 man2() {
     local width=$(tput cols)
     [[ "$width" -gt "$MANWIDTH" ]] || width="$MANWIDTH"
@@ -638,6 +689,7 @@ man2() {
     		man "$@"
     return 0
 }
+
 man3() {
     local width=$(tput cols)
     [[ "$width" -gt "$MANWIDTH" ]] || width="$MANWIDTH"
@@ -668,6 +720,7 @@ man3() {
 }
 
 ## Complicated functions
+
 sslpkeygen() {
   echo -n '[input directory to store certificates:] ' ; read keydir
    #([~.]|${HOME})/*[^/]+ ) echo 'using "'"${keydir}"'/private".'  | sed -r 's@\/\/+@\/@g' ;;
@@ -751,6 +804,7 @@ sslpkeygen() {
   ls -l "${keydir}"
   popd
 }
+
 chud() {
 	#killall conky && sleep 2
 	#conky -c /home/alyptik/.conky/.clockconky
@@ -766,12 +820,14 @@ chud() {
 	conky -c /home/alyptik/.conky/.conkyrc2;
 
 }
+
 vbinit() {
 	sudo modprobe vboxnetadp vboxnetflt vboxpci vboxdrv ;
 	sudo vboxreload ;
 	#VBoxManage hostonlyif create ;
 	#VBoxManage natnetwork start --netname vbnat ;
 }
+
 szexpac() {
 	echo -n "$@" '[perform size-sorted search for:] ' ; read ans
 	expac -s "%-30n %m" | sort -hk 2 | awk '{printf "%s %.0f MiB\n", $1, $2/1024/1024}' | column -t | grep "$ans" ;
@@ -780,39 +836,43 @@ szexpac() {
          #) return 0 ;;
 	#esac
 }
+
 dtexpac() {
 	echo -n "$@" '[# of recently installed entries to list:] ' ; read ans
 	expac --timefmt='%y-%m-%d %T' '%l\t%n' | sort | tail "-$ans" ;
 	#expac --timefmt=%s '%l\t%n' | sort -n | tail -20 | grep "$ans" ;
 }
+
 abexpac() {
 	echo -n "$@" '[perform alphabetical search for:] ' ; read ans
-	expac -s "%-25n %v" | grep "$ans" ;
+	expac -s "%-25n %v" | grep "$ans"
 }
+
 dsgenkey () {
         if [[ ! "${1}" > /dev/null ]] ; then
          printf '%s\n' 'No zone specified!' ;
         else
          pushd /etc/bind ;
          sudo dnssec-keygen -a NSEC3RSASHA1 -b 2048 \
-         -K /etc/bind/private -n ZONE "$1" ;
+	     -K /etc/bind/private -n ZONE "$1"
          sudo dnssec-keygen -f KSK -a NSEC3RSASHA1 \
-         -b 4096  -K /etc/bind/private -n ZONE "$1" ;
+	     -b 4096  -K /etc/bind/private -n ZONE "$1"
          for key in `ls /etc/bind/private/K"$1"*.key`; do
-          sudo echo "\$INCLUDE /etc/bind/private/${key}">>/etc/bind/db."$1" ;
+          sudo echo "\$INCLUDE /etc/bind/private/${key}">>/etc/bind/db."$1"
          done
          sudo dnssec-signzone -A -3 \
-         $(head -c 1000 /dev/random | sha1sum | cut -b 1-16) \
-         -N INCREMENT -K ./private -o "$1" -S -t db."$1" ;
+	     $(head -c 1000 /dev/random | sha1sum | cut -b 1-16) \
+	     -N INCREMENT -K ./private -o "$1" -S -t db."$1"
          popd;
         fi
 }
+
 dssign () {
 	[[ ${PWD} != /etc/bind ]] && pushd . >/dev/null 2>&1
 	cd "/etc/bind"
 	if [[ ! ${1} ]]; then
-         printf '%b' 'no zone specified!\nsign "alyptik.xyz"? (Y/n)' ; read ans
-         [[ ${ans} =~ ([ \t]*[Yy].*|) ]] && { popd >/dev/null 2>&1; dssign 'alyptik.xyz'; return 0; }
+         printf '%b' 'no zone specified!\nsign "alyp.tk"? (Y/n)' ; read ans
+         [[ ${ans} =~ ([ \t]*[Yy].*|) ]] && { popd >/dev/null 2>&1; dssign 'alyp.tk'; return 0; }
           echo -n "\r\nenter zone(s) to sign: " ; read ans2
 	  [[ -z ${ans2} ]] && { echo "exiting..."; return 2; } || \
 	  { zarray=(`<<<$ans2`);
@@ -840,6 +900,7 @@ dssign () {
 	popd >/dev/null 2>&1
 	return 0
 }
+
 lpackages() {
 	#echo -n "$@" '[search all locally-installed packages for:] ' ; read ans
 	printf '%s' '[search all locally-installed packages for:] ' ; read ans
@@ -850,6 +911,7 @@ lpackages() {
 	 #\0) /usr/local/bin/all-packages | less -R ;;
 	#esac
 }
+
 snft () {
         if [[ ! -e "/tmp/nft" ]] ; then
          printf '%s\n' 'Writing nftables ruleset to /tmp/nft.'
@@ -860,6 +922,7 @@ snft () {
          printf '%s\n' '/tmp/nft exists!' ;
         fi
 }
+
 csu() {
 	[[ ${#} -ge 1 ]] && {
 		echo " [running:] su -c \""${*}"\" ";
@@ -926,30 +989,40 @@ unalias h >/dev/null 2>&1
 unalias history >/dev/null 2>&1
 
 ## Fix zsh annoying history behavior
+
 # h() { if [ -z "${@}" ]; then history 10; else history | egrep "$*"; fi; }
+
 # h() { if [ -z "${@}" ]; then history 10; return 1; fi; if [[ ${#1} -le 2 ]]; then history ${1}; return 2; else history | egrep ${@}; fi; }
+
 h() { if [ -z "$*" ]; then tail ${HISTFILE}; else egrep --color=auto "$*" "${HISTFILE}"; fi; }
+
 history() { fc -fl -"$*"; }
+
 
 scrs() {
 	sudo parallel systemctl ::: restart status ::: "${@}"
 }
+
 uscrs() {
 	parallel systemctl --user ::: restart status ::: "${@}"
 }
 
+
 scrs2() {
     sudo systemctl restart "${@}"; systemctl status --full --no-pager "${@}"; echo -n "\n"
 }
+
 uscrs2() {
 	systemctl --user restart "${@}"; systemctl --user status --full --no-pager "${@}"; echo -n "\n"
 }
+
 
 scrs3() {
     for i in "$@"; do
 	sudo systemctl restart "$i"; systemctl status --full --no-pager "$i"; echo -n "\n"
     done
 }
+
 uscrs3() {
     for i in "$@"; do
 	systemctl --user restart "$i"; systemctl --user status --full --no-pager "$i"; echo -n "\n"
@@ -963,16 +1036,21 @@ uscrs3() {
 #compdef '_systemctl ' uscrs2
 #compdef '_systemctl_status ' scrs2
 #compdef '_systemctl_status ' uscrs2
+
 # wd() { . "${ZSH}"/plugins/wd.sh; }
 ## Resume a background job
+
 bfg() {	if [ ${#1} -ne 1 ]; then echo 'attempting to resume job "%1"'; j=1; else j=${1}; fi; %${j} & }
 ## Alternate which`fucntionality
 # alias which='alias | /usr/bin/which --tty-only --read-alias --show-dot --show-tilde '
+
 # which() { (alias; declare -f) | /bin/which --tty-only --read-alias --read-functions --show-tilde --show-dot $@; }
 # export -f which
-define(){ IFS='\n' read -r -d '' ${1} || true; }
+
+define() { IFS='\n' read -r -d '' ${1} || true; }
 ## Custom shell functions
 ## Btrfs recursive filesystem defragment
+
 dgbtrfs() {
 	echo "Starting system defragment..."
 	sudo btrfs filesystem defragment -r -v / &
@@ -980,7 +1058,9 @@ dgbtrfs() {
 	find / -xdev -type d -print -exec sudo btrfs filesystem defragment -r -v -clzo "{}" \; &
 }
 ## alias defrag='sudo find / -xdev -type d -print -exec btrfs filesystem defragment "{}" \; '
+
 odkms() { for i in /var/lib/dkms/*/[^k]*/source; do [ -e "$i" ] || echo "$i"; done; }
+
 colortest() {
         local fgc bgc vals seq0
 
@@ -1005,6 +1085,7 @@ colortest() {
                 echo; echo
         done
 }
+
 prompt_confirm() {
   while true; do
     read -r -n 1 -p "${1:-Continue?} [y/n]: " REPLY
@@ -1026,6 +1107,7 @@ prompt_confirm() {
   [[ $REPLY =~ ^(yes|y)$ ]] && true || false
 }
 ## Safety nets - originally commented out to build good habits
+
 safetytoggle() {
     ## usage variable containing help/command usage
     local usagedoc="\n"'Usage: safetytoggle [option(s)]
@@ -1131,11 +1213,13 @@ The options are:
   printf "Remaining arguments are: %s\n$*"
   return 255; }
 }
-ufs(){
+
+ufs() {
 	[[ -z `find /mnt -maxdepth 1 -fstype "fuse.sshfs" -print` ]] || {
 	find /mnt -maxdepth 1 -fstype "fuse.sshfs" -print0 | xargs -t0 -I{} sudo umount "{}"
 	return 0; }
 }
+
 sfs() {
 	[[ -z `find /mnt -maxdepth 1 -fstype "fuse.sshfs" -print` ]] && {
 		sshfs "192.168.1.99:/home/alyptik" "/mnt/arch"
@@ -1143,6 +1227,7 @@ sfs() {
 		sshfs "192.168.1.99:/mnt/windows/Users/Administrator/Desktop/stuff" "/mnt/winserver"
 		return 0; } || { ufs; return 1; }
 }
+
 sfs2() {
 	true || {
 	sshfs -f "192.168.1.99:/home/alyptik" "/mnt/arch"
@@ -1288,6 +1373,7 @@ alias catblackarch='sudo pacman -Sg | grep blackarch'
 
 #alias newvnc="sudo x11vnc -bg -auth guess -forever -shared -display :0 -autoport -6 -rfbauth /etc/x11vnc.pass -ncache 10 -ncache_cr -ssldir /home/alyptik/certs/vnc -ssl /home/alyptik/certs/vnc/server-vencrypt.pem -vencrypt support:nox509 -anontls support:nox509 -dhparams /home/alyptik/certs/vnc/dh.pem -rmflag /var/run/x11vnc.pid && sudo sed -i '2,$ d; s/^.*$/`ps wwaux | grep x11vnc | awk ' { if ($1=="root") print $2 } ' | paste -s -d ' '`/' /var/run/x11vnc.pid "
 #alias newvnc='sudo x11vnc -bg -auth guess -forever -shared -display :0 -autoport -6 -rfbauth /etc/x11vnc.pass -ncache 10 -ncache_cr -ssldir /home/alyptik/certs/vnc -ssl /home/alyptik/certs/vnc/server-vencrypt.pem -vencrypt support:nox509 -anontls support:nox509 -dhparams /home/alyptik/certs/vnc/dh.pem -rmflag /var/run/x11vnc.pid '
+
 #newvnc() { x11vnc -env FD_SDDM=1 -auth /tmp/xauth-1000-_0 -forever -shared -display :0 -autoport -6 -rfbauth /etc/x11vnc.pass -ncache 10 -ncache_cr -ssldir /home/alyptik/certs/vnc -ssl /home/alyptik/certs/vnc/server-vencrypt.pem -vencrypt support:nox509 -anontls support:nox509 -dhparams /home/alyptik/certs/vnc/dh.pem -noxdamage -noxkb -noxfixes -rmflag /tmp/x11vnc-alyptik.pid & }
 alias newvnc='x11vnc -env FD_SDDM=1 -auth /tmp/xauth-1000-_0 -forever -shared -display :0 -autoport -6 -rfbauth /etc/x11vnc.pass -ncache 10 -ncache_cr -ssldir /home/alyptik/certs/vnc -ssl /home/alyptik/certs/vnc/server-vencrypt.pem -vencrypt support:nox509 -anontls support:nox509 -dhparams /home/alyptik/certs/vnc/dh.pem -noxdamage -noxkb -noxfixes -rmflag /tmp/x11vnc-alyptik.pid & '
 alias sedvnc="sudo sed -i '2,$ d; s/^.*$/$(pgrep x11vnc | paste -s -d " " | awk '{ print $NF }')/' /var/run/x11vnc.pid "
