@@ -129,6 +129,7 @@ nnoremap <Leader>; :q!<CR>
 nnoremap <Leader>' :w!<CR>
 nnoremap <Leader>" mzI# <Esc>`z
 nnoremap <Leader>h :silent !cat /store/config/mappings-vim.txt \| sed 's/^[ ]*//' \| less<CR>:redraw!<CR>
+nnoremap <Leader>v :silent !cat /store/config/100vimcommands.txt \| sed 's/^[ ]*//' \| less<CR>:redraw!<CR>
 
 " nnoremap <Leader>" mzI" <Esc>`z
 nnoremap <Leader>- <Esc>:set nu!<CR>
