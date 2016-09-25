@@ -20,8 +20,8 @@ xrdb "/home/alyptik/.Xresources"
 
 #yeahconsole -rv &
 #yeahconsole
-#urxvtc -kuake-hotkey F13
-#compton -cCGfF -b -i 1.90
+#urxvtc -kuake-hotkey F12
+#compton -cCGfF -b -i .90 &
 #feh --bg-scale /home/alyptik/Wallpapers/fifths.png
 #feh --bg-scale "/home/alyptik/Wallpapers/modes.png"
 

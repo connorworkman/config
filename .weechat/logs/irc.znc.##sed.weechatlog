@@ -3360,3 +3360,859 @@
 2016-09-23 20:43:53	<--	Avasz (~DCrawler@pgl-110.173.190-100.primenet.in) has quit (Changing host)
 2016-09-23 20:43:53	-->	Avasz (~DCrawler@unaffiliated/avasz) has joined ##sed
 2016-09-23 20:49:13	<--	Avasz (~DCrawler@unaffiliated/avasz) has quit (Ping timeout: 248 seconds)
+2016-09-23 20:55:00		[20:49]
+2016-09-23 20:58:36	<--	shbot1 (~shbot@37.139.2.101) has quit (Remote host closed the connection)
+2016-09-23 20:58:50	-->	shbot (~shbot@37.139.2.101) has joined ##sed
+2016-09-23 21:04:00		[20:58]
+2016-09-23 21:06:43	--	irc: disconnected from server
+2016-09-24 00:33:54	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined ##sed
+2016-09-24 00:33:54		[00:33]
+2016-09-24 00:33:54	--	Topic for ##sed is "The Stream EDitor | Paste at: http://sprunge.us (/msg greybot sprunge) | FAQ: http://sed.sf.net/sedfaq.html | Intro/Tutorial: http://xrl.us/sedintro#uh-0 | POSIX: http://xrl.us/sedstd | Reference: http://xrl.us/gnused | Regex: #regex | Do NOT try to parse markup (html, xml, etc) with sed! /msg greybot html | Please ask your question and be patient, someone will get to you soon"
+2016-09-24 00:33:54	--	Topic set by e36freak (~daniel.mi@auriga.kiwilight.com) on Wed, 21 Aug 2013 16:29:09
+2016-09-24 00:33:54	--	Channel ##sed: 124 nicks (0 ops, 0 voices, 124 normals)
+2016-09-24 00:33:54	***	Buffer Playback...
+2016-09-24 00:33:54	jayjo	[12:50:41] is that the "matched" operator [12:50:41]
+2016-09-24 00:33:54	Petter	[12:52:32] You haven't tried it? [12:52:32]
+2016-09-24 00:33:54	ash_workz	[17:35:00] can sed reference the last number and append perform math on it in sed -n; like sed -n '5648,last+10' ? [17:35:00]
+2016-09-24 00:33:54	gnomon	[17:35:45] ash_workz, it's _technically_ possible to convince sed to perform math, but: don't. [17:35:45]
+2016-09-24 00:33:54	gnomon	[17:36:08] ash_workz, here's why: http://sed.sourceforge.net/grabbag/scripts/dc.sed [17:36:08]
+2016-09-24 00:33:54	gnomon	[17:36:49] ash_workz, related to that same piece of code, see also http://sed.sourceforge.net/grabbag/scripts/dc_intro.txt and http://sed.sourceforge.net/grabbag/scripts/dc_overview.htm , via http://sed.sourceforge.net/grabbag/scripts/ [17:36:49]
+2016-09-24 00:33:54	Mmike	[21:13:44] Hi, lads. I got a file which has, among other lines, line like this: "nonce: 1234-abcd-foo-boo-booya". Can I use sed to replace everything that's after "nonce: " with my desired string, only in a line where ^nonce: ? [21:13:44]
+2016-09-24 00:33:54	Riviera	[21:29:49] Mmike: sed 's/^nonce: .*/nonce: your desired string/' [21:29:49]
+2016-09-24 00:33:54	_val_	[21:35:56] # printf '%s\n' 'nonce: foo-bar' 'more nonce: and nonsence' | sed  's/\(^nonce: \).*/\1 whateveryoulike in here/g' [21:35:56]
+2016-09-24 00:33:54	shbot	[21:35:58] _val_: nonce:  whateveryoulike in here [21:35:58]
+2016-09-24 00:33:54	shbot	[21:35:58] _val_: more nonce: and nonsence [21:35:58]
+2016-09-24 00:33:54	_geoff	[21:22:36] okay so i have these "csv" files being exported from excel by someone else.  all my csvs i tested on are clean and now i have this curve ball of these shitty excel exports [21:22:36]
+2016-09-24 00:33:54	_geoff	[21:23:06] they look like `     cell1,cell2,,,,,,,,,,,,,,,,,^Mcell1,cell2,cell3,,,,,,,,,,,,,,,,,,^M   ` [21:23:06]
+2016-09-24 00:33:54	_geoff	[21:23:27] basically i need to change that to be `cell1,cell2\ncell1,cell2,cell3` [21:23:27]
+2016-09-24 00:33:54	izalove	[21:23:33] i'd google for a decent csv parser that can reformat them [21:23:33]
+2016-09-24 00:33:54	_geoff	[21:24:10] hrm.. i thought sed would be a good choice [21:24:10]
+2016-09-24 00:33:54	_geoff	[21:24:48] "replace any number of commas followed by a ^M with a new line" [21:24:48]
+2016-09-24 00:33:54	_geoff	[21:26:46] my non-working attempt: sed 's/(,)+\^M/\r/g' [21:26:46]
+2016-09-24 00:33:54	izalove	[21:27:54] so you just want to remove empty fields? [21:27:54]
+2016-09-24 00:33:54	izalove	[21:28:01] why bother with \r at all? [21:28:01]
+2016-09-24 00:33:54	izalove	[21:28:19] sed 's/,,*/,/g' [21:28:19]
+2016-09-24 00:33:54	izalove	[21:29:05] ah i see you want to replace \r with \n [21:29:05]
+2016-09-24 00:33:54	izalove	[21:29:16] sed 's/,,*\r/\n/g' [21:29:16]
+2016-09-24 00:33:54	_geoff	[21:30:29] yes [21:30:29]
+2016-09-24 00:33:54	_geoff	[21:30:36] that makes me very very happy because it works [21:30:36]
+2016-09-24 00:33:54	somaReverse	[14:17:07] Hi, How can I make sed substitude string being case-aware? [14:17:07]
+2016-09-24 00:33:54	somaReverse	[14:17:13] make Good ==> Bad , good ==> bad ,and  GOOD ==> BAD [14:17:13]
+2016-09-24 00:33:54	Riviera	[14:18:37] Not easily, you would use a tool more suited for that task, possibly the awk scripting language. [14:18:37]
+2016-09-24 00:33:54	Petter	[14:21:58] With sed you would need one substitution for each case. [14:21:58]
+2016-09-24 00:33:54	somaReverse	[14:22:25] thanks [14:22:25]
+2016-09-24 00:33:54	Petter	[14:24:13] # printf '%s\n' 'Good, good, GOOD' | sed 's/Good/Bad/g; s/good/bad/g; s/GOOD/BAD/g;' [14:24:13]
+2016-09-24 00:33:54	shbot	[14:24:15] Petter: Bad, bad, BAD [14:24:15]
+2016-09-24 00:33:54	izalove	[15:13:58] BuT wHaT aBoUt MiXeD cAsE [15:13:58]
+2016-09-24 00:33:54	geirha	[15:17:57] BaD! [15:17:57]
+2016-09-24 00:33:54	Nimitz14	[18:25:35] #awk [18:25:35]
+2016-09-24 00:33:54	thebope	[18:56:13] Hello all [18:56:13]
+2016-09-24 00:33:54	thebope	[18:56:18] I'm curious what I'm doing wrong with this guy [18:56:18]
+2016-09-24 00:33:54	thebope	[18:56:18] http://sprunge.us/DdPD [18:56:18]
+2016-09-24 00:33:54	go|dfish	[18:57:31] # echo https:\/\/lgh\.something\.com\/global-nav\.js/\/static\/global-nav\.js [18:57:31]
+2016-09-24 00:33:54	shbot	[18:57:33] go|dfish: https://lgh.something.com/global-nav.js//static/global-nav.js [18:57:33]
+2016-09-24 00:33:54	go|dfish	[18:57:56] thebope: does your url actually have 2 // in it? you don't need to escape the /'s if you're using # as a delimiter [18:57:56]
+2016-09-24 00:33:54	go|dfish	[18:58:41] oh right [18:58:41]
+2016-09-24 00:33:54	go|dfish	[18:59:02] you're missing a # also [18:59:02]
+2016-09-24 00:33:54	Petter	[18:59:28] Likely the unescaped / [18:59:28]
+2016-09-24 00:33:54	go|dfish	[18:59:29] looks like you want: sed 's#https://lgh\.something\.com/global-nav\.js/static/global-nav\.js##g' [18:59:29]
+2016-09-24 00:33:54	thebope	[19:02:21] Hey Petter and go|dfish [19:02:21]
+2016-09-24 00:33:54	thebope	[19:02:31] thanks guy [19:02:31]
+2016-09-24 00:33:54	thebope	[19:02:35] let me try that out [19:02:35]
+2016-09-24 00:33:54	thebope	[19:02:57] ohhhh! I didn't realize the # were the delimiters [19:02:57]
+2016-09-24 00:33:54	thebope	[19:03:00] that was silly of e [19:03:00]
+2016-09-24 00:33:54	***	Playback Complete.
+2016-09-24 00:34:22	--	Channel created on Wed, 09 Sep 2009 05:53:00
+2016-09-24 00:40:00		[00:34]
+2016-09-24 00:44:10	-->	b (~coffee@unaffiliated/ridout) has joined ##sed
+2016-09-24 00:50:00		[00:44]
+2016-09-24 01:18:13	--	thomasm is now known as tm
+2016-09-24 01:18:13		[01:18]
+2016-09-24 01:18:45	<--	zipe31 (~zipe31@min31-1-82-224-11-112.fbx.proxad.net) has quit (Ping timeout: 260 seconds)
+2016-09-24 01:24:00		[01:18]
+2016-09-24 01:38:10	-->	zipe31 (~zipe31@min31-1-82-224-11-112.fbx.proxad.net) has joined ##sed
+2016-09-24 01:44:00		[01:38]
+2016-09-24 01:51:27	<--	Avasz (~DCrawler@unaffiliated/avasz) has quit (Ping timeout: 265 seconds)
+2016-09-24 01:57:00		[01:51]
+2016-09-24 02:00:42	<--	han-solo (~han-solo@101.56.29.69) has quit (Quit: leaving)
+2016-09-24 02:06:00		[02:00]
+2016-09-24 02:23:11	-->	han-solo (~han-solo@101.56.29.69) has joined ##sed
+2016-09-24 02:23:11		[02:23]
+2016-09-24 02:31:05	<--	zipe31 (~zipe31@min31-1-82-224-11-112.fbx.proxad.net) has quit (Ping timeout: 260 seconds)
+2016-09-24 02:32:29	-->	zipe31 (~zipe31@min31-1-82-224-11-112.fbx.proxad.net) has joined ##sed
+2016-09-24 02:37:40	<--	zipe31 (~zipe31@min31-1-82-224-11-112.fbx.proxad.net) has quit (Ping timeout: 255 seconds)
+2016-09-24 02:43:00		[02:37]
+2016-09-24 02:55:31	-->	hpt (~hpt@123.114.151.81) has joined ##sed
+2016-09-24 02:56:54	<--	hpt (~hpt@123.114.151.81) has quit (Client Quit)
+2016-09-24 02:57:57	<--	han-solo (~han-solo@101.56.29.69) has quit (Ping timeout: 276 seconds)
+2016-09-24 02:59:03	-->	han-solo (~han-solo@123.239.33.100) has joined ##sed
+2016-09-24 02:59:03		[02:59]
+2016-09-24 02:59:38	-->	zipe31 (~zipe31@min31-1-82-224-11-112.fbx.proxad.net) has joined ##sed
+2016-09-24 03:05:00		[02:59]
+2016-09-24 03:12:15	-->	flying (~flying@31.98.111.57) has joined ##sed
+2016-09-24 03:18:00		[03:12]
+2016-09-24 03:36:28	-->	rgrinberg (~rgrinberg@24-246-56-85.cable.teksavvy.com) has joined ##sed
+2016-09-24 03:36:28		[03:36]
+2016-09-24 03:37:56	<--	RaiNerTsuFal (~RaiNerTsu@akita.vtlx.cn) has quit (Quit: Conversation terminated!)
+2016-09-24 03:40:19	<--	han-solo (~han-solo@123.239.33.100) has quit (Ping timeout: 250 seconds)
+2016-09-24 03:41:32	-->	RaiNerTsuFal (~RaiNerTsu@akita.vtlx.cn) has joined ##sed
+2016-09-24 03:46:59	<--	rgrinberg (~rgrinberg@24-246-56-85.cable.teksavvy.com) has quit (Quit: WeeChat 1.5)
+2016-09-24 03:47:19	-->	rgrinberg (~rgrinberg@24-246-56-85.cable.teksavvy.com) has joined ##sed
+2016-09-24 03:51:12	-->	fbsd (~fbsd@a89-154-153-39.cpe.netcabo.pt) has joined ##sed
+2016-09-24 03:57:00		[03:51]
+2016-09-24 04:07:19	<--	rgrinberg (~rgrinberg@24-246-56-85.cable.teksavvy.com) has quit (Quit: WeeChat 1.5)
+2016-09-24 04:13:00		[04:07]
+2016-09-24 04:14:30	-->	han-solo (~han-solo@115.246.73.119) has joined ##sed
+2016-09-24 04:20:00		[04:14]
+2016-09-24 04:32:53	<--	han-solo (~han-solo@115.246.73.119) has quit (Ping timeout: 252 seconds)
+2016-09-24 04:33:35	-->	han-solo (~han-solo@115.246.73.119) has joined ##sed
+2016-09-24 04:37:46	-->	larryv (~larryv@wikipedia/larryv) has joined ##sed
+2016-09-24 04:37:46		[04:37]
+2016-09-24 04:41:43	-->	D630 (~D630@unaffiliated/d630) has joined ##sed
+2016-09-24 04:47:00		[04:41]
+2016-09-24 04:48:24	--	pookie is now known as olspookishmagus
+2016-09-24 04:54:00		[04:48]
+2016-09-24 04:54:26	<--	k^ (k@91.219.237.227) has quit (Remote host closed the connection)
+2016-09-24 04:55:16	<--	zipe31 (~zipe31@min31-1-82-224-11-112.fbx.proxad.net) has quit (Ping timeout: 244 seconds)
+2016-09-24 04:57:00	-->	k^ (k@91.219.237.227) has joined ##sed
+2016-09-24 05:02:00		[04:57]
+2016-09-24 05:07:27	-->	rgrinberg (~rgrinberg@24-246-56-85.cable.teksavvy.com) has joined ##sed
+2016-09-24 05:07:56	-->	nal (~nal@adsl-64-237-238-172.prtc.net) has joined ##sed
+2016-09-24 05:08:56	--	waldner_ is now known as waldner
+2016-09-24 05:08:59	-->	zipe31 (~zipe31@min31-1-82-224-11-112.fbx.proxad.net) has joined ##sed
+2016-09-24 05:14:00		[05:08]
+2016-09-24 05:21:07	<--	han-solo (~han-solo@115.246.73.119) has quit (Read error: Connection reset by peer)
+2016-09-24 05:21:13	-->	han-solo1 (~han-solo@115.246.73.119) has joined ##sed
+2016-09-24 05:21:28	<--	han-solo1 (~han-solo@115.246.73.119) has quit (Client Quit)
+2016-09-24 05:21:44	-->	han-solo (~han-solo@115.246.73.119) has joined ##sed
+2016-09-24 05:27:00		[05:21]
+2016-09-24 05:28:23	-->	hotwings (hd@core.apache2.ca) has joined ##sed
+2016-09-24 05:29:04	-->	han-solo1 (~han-solo@101.59.205.254) has joined ##sed
+2016-09-24 05:29:14	<--	hotwings (hd@core.apache2.ca) has left ##sed
+2016-09-24 05:29:16	<--	han-solo (~han-solo@115.246.73.119) has quit (Disconnected by services)
+2016-09-24 05:29:21	<--	han-solo1 (~han-solo@101.59.205.254) has quit (Client Quit)
+2016-09-24 05:29:45	-->	han-solo (~han-solo@101.56.96.67) has joined ##sed
+2016-09-24 05:35:00		[05:29]
+2016-09-24 05:38:04	<--	zipe31 (~zipe31@min31-1-82-224-11-112.fbx.proxad.net) has quit (Ping timeout: 240 seconds)
+2016-09-24 05:44:00		[05:38]
+2016-09-24 05:44:28	-->	Alcest (~alcest@69.64.40.177) has joined ##sed
+2016-09-24 05:50:00		[05:44]
+2016-09-24 05:51:16	-->	zipe31 (~zipe31@2001:bc8:3890:3d00::cca:1b) has joined ##sed
+2016-09-24 05:57:00		[05:51]
+2016-09-24 06:14:41	<--	flying (~flying@31.98.111.57) has quit
+2016-09-24 06:14:41		[06:14]
+2016-09-24 06:15:10	<--	jair (~jair@124x35x59x226.ap124.ftth.ucom.ne.jp) has left ##sed
+2016-09-24 06:21:00		[06:15]
+2016-09-24 06:28:01	--	zerick_ is now known as zerick
+2016-09-24 06:31:06	<--	b (~coffee@unaffiliated/ridout) has quit (Ping timeout: 264 seconds)
+2016-09-24 06:37:00		[06:31]
+2016-09-24 06:37:51	-->	b (~coffee@unaffiliated/ridout) has joined ##sed
+2016-09-24 06:43:00		[06:37]
+2016-09-24 07:03:30	<--	han-solo (~han-solo@101.56.96.67) has quit (Ping timeout: 264 seconds)
+2016-09-24 07:03:30		[07:03]
+2016-09-24 07:16:51	-->	tiago (tiago@95.85.2.91) has joined ##sed
+2016-09-24 07:16:51	<--	tiago (tiago@95.85.2.91) has quit (Changing host)
+2016-09-24 07:16:51	-->	tiago (tiago@unaffiliated/ttsda) has joined ##sed
+2016-09-24 07:22:00		[07:16]
+2016-09-24 07:51:05	<--	rgrinberg (~rgrinberg@24-246-56-85.cable.teksavvy.com) has quit (Ping timeout: 240 seconds)
+2016-09-24 07:51:05		[07:51]
+2016-09-24 07:53:05	<--	b (~coffee@unaffiliated/ridout) has quit (Ping timeout: 252 seconds)
+2016-09-24 07:59:00		[07:53]
+2016-09-24 08:01:37	<--	zipe31 (~zipe31@2001:bc8:3890:3d00::cca:1b) has quit (Ping timeout: 250 seconds)
+2016-09-24 08:01:49	-->	b (~coffee@unaffiliated/ridout) has joined ##sed
+2016-09-24 08:07:00		[08:01]
+2016-09-24 08:07:34	-->	nal1 (~nal@adsl-64-237-238-172.prtc.net) has joined ##sed
+2016-09-24 08:10:28	<--	nal (~nal@adsl-64-237-238-172.prtc.net) has quit (Ping timeout: 265 seconds)
+2016-09-24 08:10:28	<--	dzho (~dzho@unaffiliated/dzho) has quit (Ping timeout: 265 seconds)
+2016-09-24 08:11:30	-->	dzho (~dzho@unaffiliated/dzho) has joined ##sed
+2016-09-24 08:11:47	<--	D630 (~D630@unaffiliated/d630) has quit (Quit: quit)
+2016-09-24 08:12:17	-->	D630 (~D630@unaffiliated/d630) has joined ##sed
+2016-09-24 08:13:04	<--	aw1 (~aw1@unaffiliated/aw1) has quit (Ping timeout: 240 seconds)
+2016-09-24 08:14:40	-->	zipe31 (~zipe31@min31-1-82-224-11-112.fbx.proxad.net) has joined ##sed
+2016-09-24 08:20:00		[08:14]
+2016-09-24 08:26:16	-->	aw1 (~aw1@unaffiliated/aw1) has joined ##sed
+2016-09-24 08:27:19	--	_val__ is now known as _val_
+2016-09-24 08:33:00		[08:27]
+2016-09-24 08:37:36	<--	genpaku (~genpaku@107.191.100.185) has quit (Ping timeout: 250 seconds)
+2016-09-24 08:38:03	<--	Nahra (~user@unaffiliated/nahra) has quit (Ping timeout: 250 seconds)
+2016-09-24 08:38:08	<--	larryv (~larryv@wikipedia/larryv) has quit (Ping timeout: 244 seconds)
+2016-09-24 08:38:27	<--	D630 (~D630@unaffiliated/d630) has quit (Ping timeout: 250 seconds)
+2016-09-24 08:38:28	<--	LongyanG (~long@15255.s.t4vps.eu) has quit (Ping timeout: 250 seconds)
+2016-09-24 08:38:28	<--	DANtheBEASTman (~DANtheBEA@bananabo.xyz) has quit (Ping timeout: 250 seconds)
+2016-09-24 08:38:28	<--	sumark (~sumark@apache2-kant.caprisun.dreamhost.com) has quit (Ping timeout: 250 seconds)
+2016-09-24 08:38:28	<--	shesek (~shesek@bzq-84-110-58-65.cablep.bezeqint.net) has quit (Ping timeout: 250 seconds)
+2016-09-24 08:38:30	<--	stevenm_ (~stevenm@195.62.218.30) has quit (Ping timeout: 250 seconds)
+2016-09-24 08:38:30	<--	plitter (~plitter@66.209.202.84.customer.cdi.no) has quit (Ping timeout: 250 seconds)
+2016-09-24 08:38:31	<--	Fernando-Basso (fernandoba@gateway/shell/openshells.net/x-zagzinaqlxgpfyjp) has quit (Ping timeout: 250 seconds)
+2016-09-24 08:38:33	<--	arcsky (~arcsky@87.117.231.108) has quit (Ping timeout: 250 seconds)
+2016-09-24 08:40:15	<--	nal1 (~nal@adsl-64-237-238-172.prtc.net) has quit (Ping timeout: 260 seconds)
+2016-09-24 08:40:43	<--	dualbus1 (U2FsdGVkX1@ma.sdf.org) has quit (Ping timeout: 244 seconds)
+2016-09-24 08:40:43	-->	twa_ (~twa@184.250.139.97) has joined ##sed
+2016-09-24 08:40:45	-->	ShadeS_ (shades@milliways.ramdrive.org) has joined ##sed
+2016-09-24 08:41:16	-->	shbot1 (~shbot@37.139.2.101) has joined ##sed
+2016-09-24 08:41:52	-->	luptenschteiner (~User@ppp103-111.static.internode.on.net) has joined ##sed
+2016-09-24 08:42:16	<--	ghoti (~paul@hq.experiencepoint.com) has quit (Ping timeout: 244 seconds)
+2016-09-24 08:43:18	<--	dzho (~dzho@unaffiliated/dzho) has quit (Ping timeout: 244 seconds)
+2016-09-24 08:43:21	-->	dualbus1 (U2FsdGVkX1@ma.sdf.org) has joined ##sed
+2016-09-24 08:43:28	-->	edong23_ (~quassel@mptc-dhcp-50-50.mptelco.com) has joined ##sed
+2016-09-24 08:43:49	-->	llua` (~llua@the.kittypla.net) has joined ##sed
+2016-09-24 08:44:18	<--	akkad (akkad@166.84.6.60) has quit (Ping timeout: 240 seconds)
+2016-09-24 08:44:19	<--	Liam` (~Liam@znc.liam.sh) has quit (Ping timeout: 240 seconds)
+2016-09-24 08:44:19	<--	gigetoo (~gigetoo@c83-250-44-242.bredband.comhem.se) has quit (Ping timeout: 240 seconds)
+2016-09-24 08:44:21	<--	bumpy (~BouncingB@wtsi-nat-m-dt3.sanger.ac.uk) has quit (Ping timeout: 240 seconds)
+2016-09-24 08:44:23	<--	folivora (~out@devnull.drwxr-xr-x.eu) has quit (Ping timeout: 240 seconds)
+2016-09-24 08:44:23	<--	johnmilton (~johnmilto@192.206.23.197) has quit (Ping timeout: 240 seconds)
+2016-09-24 08:44:24	<--	pocketprotector (~pocketpro@unaffiliated/pocketprotector) has quit (Ping timeout: 240 seconds)
+2016-09-24 08:44:25	<--	kingsley (~kingsley@65-102-176-42.tukw.qwest.net) has quit (Ping timeout: 240 seconds)
+2016-09-24 08:44:25	<--	ShadeS (shades@milliways.ramdrive.org) has quit (Ping timeout: 240 seconds)
+2016-09-24 08:44:25	<--	_geoff (~geoff@50-199-206-213-static.hfc.comcastbusiness.net) has quit (Ping timeout: 240 seconds)
+2016-09-24 08:44:32	<--	tm (~sinnlos@360.vmworld.it) has quit (*.net *.split)
+2016-09-24 08:44:33	<--	ramok (~komar@max.bionik.tu-berlin.de) has quit (*.net *.split)
+2016-09-24 08:44:35	<--	Petter (~username@unaffiliated/karhunkynsi) has quit (*.net *.split)
+2016-09-24 08:44:35	<--	drawkula (~username@p4FC10572.dip0.t-ipconnect.de) has quit (*.net *.split)
+2016-09-24 08:44:35	<--	hpotter (~intlnsde@83.172.43.62) has quit (*.net *.split)
+2016-09-24 08:44:35	<--	minsky (minsky@But.I.Love.The.Coookies.PanicBNC.com) has quit (*.net *.split)
+2016-09-24 08:44:36	<--	hiroki (~hyamamoto@unaffiliated/hiroki) has quit (*.net *.split)
+2016-09-24 08:44:37	<--	waldner (waldner@openvpn/user/waldner) has quit (*.net *.split)
+2016-09-24 08:44:38	<--	nexace (~nexace@leocc.net) has quit (*.net *.split)
+2016-09-24 08:44:43	<--	bibibi (~bibibi@unaffiliated/bibibi) has quit (*.net *.split)
+2016-09-24 08:44:43	<--	sze (~sze@unaffiliated/sze) has quit (*.net *.split)
+2016-09-24 08:44:44	<--	ggherdov (sid11402@gateway/web/irccloud.com/x-tmymwkmjidrjouot) has quit (*.net *.split)
+2016-09-24 08:44:44	<--	isomorphismes (~ubuntu@ec2-54-243-213-161.compute-1.amazonaws.com) has quit (*.net *.split)
+2016-09-24 08:44:49	<--	simbalion (~simba@tailpuff.net) has quit (*.net *.split)
+2016-09-24 08:44:52	<--	enzotib_ (enzotib@gateway/shell/blinkenshell.org/x-osuckkafzcqkbhtt) has quit (*.net *.split)
+2016-09-24 08:44:52	<--	probonono (~User@unaffiliated/probonono) has quit (*.net *.split)
+2016-09-24 08:44:52	<--	jrawson (~nameless@c-73-164-187-88.hsd1.or.comcast.net) has quit (*.net *.split)
+2016-09-24 08:44:52	<--	njs126 (~njs126@rrcs-67-79-116-98.se.biz.rr.com) has quit (*.net *.split)
+2016-09-24 08:44:55	<--	izalove (~izabera@unaffiliated/izabera) has quit (*.net *.split)
+2016-09-24 08:44:59	<--	sbine (~sbine@unaffiliated/sbine) has quit (*.net *.split)
+2016-09-24 08:45:03	<--	zenguy_pc (~zenguy_pc@162.245.216.41) has quit (Ping timeout: 244 seconds)
+2016-09-24 08:45:04	<--	mikar (~znc@pc9.gatrobe.uni-hannover.de) has quit (Ping timeout: 244 seconds)
+2016-09-24 08:45:06	<--	biax (~biax@unaffiliated/biax) has quit (Ping timeout: 244 seconds)
+2016-09-24 08:45:06	<--	myoweech (~myoweech@unaffiliated/myoweech) has quit (Ping timeout: 244 seconds)
+2016-09-24 08:45:08	<--	gnomon (~gnomon@CPE1c872c7063d0-CM00fc8d8fbe70.cpe.net.cable.rogers.com) has quit (Ping timeout: 244 seconds)
+2016-09-24 08:45:13	<--	Sp4rKy (~Sp4rKy@86.65.39.14) has quit (Ping timeout: 244 seconds)
+2016-09-24 08:45:14	<--	go|dfish (goldfish@nat/dcunetworkingsociety/x-gydwqjesojsnxnkt) has quit (Ping timeout: 244 seconds)
+2016-09-24 08:45:17	<--	blindbox (~blindbox@60.54.66.69) has quit (Ping timeout: 255 seconds)
+2016-09-24 08:45:17	<--	Al3xG0 (~unix@unaffiliated/al3xg0) has quit (Ping timeout: 313 seconds)
+2016-09-24 08:45:19	<--	charles81 (sid26088@gateway/web/irccloud.com/x-vxsytjfzplpbqgrj) has quit (Ping timeout: 272 seconds)
+2016-09-24 08:45:21	<--	muteki_ (~muteki@kirkland-vpn.arrisi.com) has quit (Ping timeout: 272 seconds)
+2016-09-24 08:45:27	-->	myoweech (~myoweech@web99.webfaction.com) has joined ##sed
+2016-09-24 08:45:27	<--	myoweech (~myoweech@web99.webfaction.com) has quit (Changing host)
+2016-09-24 08:45:27	-->	myoweech (~myoweech@unaffiliated/myoweech) has joined ##sed
+2016-09-24 08:45:31	<--	geggam (~geggam@108-218-203-177.uvs.sntcca.sbcglobal.net) has quit (Ping timeout: 272 seconds)
+2016-09-24 08:45:32	<--	lockheed (~user@166.78.1.156) has quit (Ping timeout: 272 seconds)
+2016-09-24 08:45:35	<--	trw (~twa@184.250.139.97) has quit (Ping timeout: 272 seconds)
+2016-09-24 08:45:35	<--	llua (~llua@zsh/developer/llua) has quit (Ping timeout: 272 seconds)
+2016-09-24 08:45:36	<--	codebam (codebam@gateway/shell/panicbnc/x-kznhggougaxwfplr) has quit (Ping timeout: 272 seconds)
+2016-09-24 08:45:42	<--	betheynyx (~b@45.63.97.181) has quit (Ping timeout: 272 seconds)
+2016-09-24 08:45:43	<--	Hello71 (~Hello71@wikipedia/Hello71) has quit (Ping timeout: 272 seconds)
+2016-09-24 08:45:44	<--	chasmo77 (~chas77@158.183-62-69.ftth.swbr.surewest.net) has quit (Ping timeout: 272 seconds)
+2016-09-24 08:45:44	<--	edong23 (~quassel@mptc-dhcp-50-50.mptelco.com) has quit (Ping timeout: 272 seconds)
+2016-09-24 08:45:45	<--	Phanes (Phanes@unaffiliated/phanes) has quit (Ping timeout: 272 seconds)
+2016-09-24 08:45:56	<--	_val_ (~val@fw1.astro.rug.nl) has quit (*.net *.split)
+2016-09-24 08:45:56	<--	yitz (~yitz_@unaffiliated/yitz-/x-6738568) has quit (*.net *.split)
+2016-09-24 08:45:58	<--	djinni` (~djinni@68.ip-149-56-14.net) has quit (*.net *.split)
+2016-09-24 08:46:00	<--	slon_ (slon@ip-78-45-105-131.net.upcbroadband.cz) has quit (*.net *.split)
+2016-09-24 08:46:01	<--	przemoc (~przemoc@unaffiliated/przemoc) has quit (*.net *.split)
+2016-09-24 08:46:02	<--	TyrfingMjolnir (~Tyrfing@62.92.82.250) has quit (*.net *.split)
+2016-09-24 08:46:07	-->	genpaku_ (~genpaku@107.191.100.185) has joined ##sed
+2016-09-24 08:46:12	<--	shbot (~shbot@37.139.2.101) has quit (Ping timeout: 620 seconds)
+2016-09-24 08:46:14	<--	PaulePanter (~paul@mail.gw90.de) has quit (Ping timeout: 620 seconds)
+2016-09-24 08:46:16	<--	The_Schmidt (~The_Schmi@207-192-200-73.lbbkcmtk04.res.dyn.suddenlink.net) has quit (Ping timeout: 620 seconds)
+2016-09-24 08:46:21	-->	yitz_ (~yitz_@c-67-180-189-159.hsd1.ca.comcast.net) has joined ##sed
+2016-09-24 08:46:21	<--	yitz_ (~yitz_@c-67-180-189-159.hsd1.ca.comcast.net) has quit (Changing host)
+2016-09-24 08:46:21	-->	yitz_ (~yitz_@unaffiliated/yitz-/x-6738568) has joined ##sed
+2016-09-24 08:46:22	-->	Al3xG0 (~unix@200.140.70.49) has joined ##sed
+2016-09-24 08:46:22	-->	muteki (~muteki@unaffiliated/muteki) has joined ##sed
+2016-09-24 08:46:23	<--	Al3xG0 (~unix@200.140.70.49) has quit (Changing host)
+2016-09-24 08:46:23	-->	Al3xG0 (~unix@unaffiliated/al3xg0) has joined ##sed
+2016-09-24 08:46:30	-->	biax (~biax@unaffiliated/biax) has joined ##sed
+2016-09-24 08:46:31	--	genpaku_ is now known as genpaku
+2016-09-24 08:46:32	-->	pocketprotector- (~pocketpro@146.148.64.32) has joined ##sed
+2016-09-24 08:46:33	-->	hiroki (~hyamamoto@mumbai.hst.vps.hangmat.org) has joined ##sed
+2016-09-24 08:46:33	<--	hiroki (~hyamamoto@mumbai.hst.vps.hangmat.org) has quit (Changing host)
+2016-09-24 08:46:33	-->	hiroki (~hyamamoto@unaffiliated/hiroki) has joined ##sed
+2016-09-24 08:46:34	-->	Phanes (Phanes@2600:3c03::f03c:91ff:fe67:c4e9) has joined ##sed
+2016-09-24 08:46:34	<--	Phanes (Phanes@2600:3c03::f03c:91ff:fe67:c4e9) has quit (Changing host)
+2016-09-24 08:46:34	-->	Phanes (Phanes@unaffiliated/phanes) has joined ##sed
+2016-09-24 08:46:34	-->	plitter (~plitter@66.209.202.84.customer.cdi.no) has joined ##sed
+2016-09-24 08:46:35	-->	_val_ (~val@fw1.astro.rug.nl) has joined ##sed
+2016-09-24 08:46:35	<--	_val_ (~val@fw1.astro.rug.nl) has quit (Changing host)
+2016-09-24 08:46:35	-->	_val_ (~val@freebsd/user/val) has joined ##sed
+2016-09-24 08:46:39	-->	minsky (minsky@But.I.Love.The.Coookies.PanicBNC.com) has joined ##sed
+2016-09-24 08:46:43	-->	simbalion (~simba@tailpuff.net) has joined ##sed
+2016-09-24 08:46:49	<--	charisma (~charisma@unaffiliated/charisma) has quit (Ping timeout: 381 seconds)
+2016-09-24 08:46:51	<--	maedox (sid2021@gateway/web/irccloud.com/x-cgdcbkswciyuvcki) has quit (Ping timeout: 381 seconds)
+2016-09-24 08:46:52	<--	feliks (HmYAoESrAn@unaffiliated/feliks) has quit (Ping timeout: 356 seconds)
+2016-09-24 08:46:55	-->	_geoff_ (~geoff@50-199-206-213-static.hfc.comcastbusiness.net) has joined ##sed
+2016-09-24 08:46:57	-->	charisma (~charisma@2400:8900:e001:1b90:7e54:ac43:c0ff:eeee) has joined ##sed
+2016-09-24 08:46:59	-->	feliks (0Me42K73PG@2a00:d0c0:200:0:b9:1a:9c17:380) has joined ##sed
+2016-09-24 08:47:02	-->	Hello71 (~Hello71@wikipedia/Hello71) has joined ##sed
+2016-09-24 08:47:02	-->	izalove (~izabera@64.137.202.202) has joined ##sed
+2016-09-24 08:47:07	-->	Petter (~username@unaffiliated/karhunkynsi) has joined ##sed
+2016-09-24 08:47:08	-->	njs126 (~njs126@rrcs-67-79-116-98.se.biz.rr.com) has joined ##sed
+2016-09-24 08:47:09	-->	tm (~sinnlos@360.vmworld.it) has joined ##sed
+2016-09-24 08:47:09	-->	D630 (~D630@unaffiliated/d630) has joined ##sed
+2016-09-24 08:47:09	-->	stevenm (~stevenm@195.62.218.30) has joined ##sed
+2016-09-24 08:47:12	<--	charisma (~charisma@2400:8900:e001:1b90:7e54:ac43:c0ff:eeee) has quit (Changing host)
+2016-09-24 08:47:12	-->	charisma (~charisma@unaffiliated/charisma) has joined ##sed
+2016-09-24 08:47:13	-->	geggam (~geggam@108-218-203-177.uvs.sntcca.sbcglobal.net) has joined ##sed
+2016-09-24 08:47:15	-->	johnmilton (~johnmilto@192.206.23.197) has joined ##sed
+2016-09-24 08:47:16	-->	The_Schmidt (~The_Schmi@207-192-200-73.lbbkcmtk04.res.dyn.suddenlink.net) has joined ##sed
+2016-09-24 08:47:17	-->	Nahra (~user@unaffiliated/nahra) has joined ##sed
+2016-09-24 08:47:19	-->	kingsley (~kingsley@65-102-176-42.tukw.qwest.net) has joined ##sed
+2016-09-24 08:47:23	-->	shesek (~shesek@bzq-84-110-58-65.cablep.bezeqint.net) has joined ##sed
+2016-09-24 08:47:23	-->	waldner (waldner@2a01:7e00::f03c:91ff:fe96:96f3) has joined ##sed
+2016-09-24 08:47:23	<--	waldner (waldner@2a01:7e00::f03c:91ff:fe96:96f3) has quit (Changing host)
+2016-09-24 08:47:23	-->	waldner (waldner@openvpn/user/waldner) has joined ##sed
+2016-09-24 08:47:23	-->	gigetoo (~gigetoo@c83-250-44-242.bredband.comhem.se) has joined ##sed
+2016-09-24 08:47:26	-->	Fernando-Basso (fernandoba@gateway/shell/openshells.net/x-cyhnczmoboacpkuc) has joined ##sed
+2016-09-24 08:47:27	-->	DANtheBEASTman (~DANtheBEA@bananabo.xyz) has joined ##sed
+2016-09-24 08:47:28	-->	drawkula (~username@p4FC10572.dip0.t-ipconnect.de) has joined ##sed
+2016-09-24 08:47:30	-->	ramok (~komar@max.bionik.tu-berlin.de) has joined ##sed
+2016-09-24 08:47:31	-->	przemoc (~przemoc@unaffiliated/przemoc) has joined ##sed
+2016-09-24 08:47:32	-->	serialoverflow (~znc@pc9.gatrobe.uni-hannover.de) has joined ##sed
+2016-09-24 08:47:32	-->	enzotib (enzotib@gateway/shell/blinkenshell.org/x-arhlagtlmzczxbwj) has joined ##sed
+2016-09-24 08:47:34	-->	nexace (~nexace@leocc.net) has joined ##sed
+2016-09-24 08:47:34	-->	PaulePanter (~paul@mail.gw90.de) has joined ##sed
+2016-09-24 08:47:36	-->	jrawson (~nameless@c-73-164-187-88.hsd1.or.comcast.net) has joined ##sed
+2016-09-24 08:47:39	-->	chasmo77 (~chas77@158.183-62-69.ftth.swbr.surewest.net) has joined ##sed
+2016-09-24 08:47:41	--	tm is now known as Guest27040
+2016-09-24 08:47:41	-->	arcsky (~arcsky@87.117.231.108) has joined ##sed
+2016-09-24 08:47:42	<--	edong23_ (~quassel@mptc-dhcp-50-50.mptelco.com) has quit (Excess Flood)
+2016-09-24 08:47:51	<--	shbot1 (~shbot@37.139.2.101) has quit (Remote host closed the connection)
+2016-09-24 08:47:59	-->	larryv (~larryv@wikipedia/larryv) has joined ##sed
+2016-09-24 08:48:04	-->	shbot (~shbot@37.139.2.101) has joined ##sed
+2016-09-24 08:48:04		[08:48]
+2016-09-24 08:48:10	-->	LongyanG (~long@15255.s.t4vps.eu) has joined ##sed
+2016-09-24 08:48:25	-->	folivora (~out@devnull.drwxr-xr-x.eu) has joined ##sed
+2016-09-24 08:48:29	-->	blindbox (~blindbox@60.54.66.69) has joined ##sed
+2016-09-24 08:48:30	-->	betheynyx (~b@45.63.97.181) has joined ##sed
+2016-09-24 08:48:41	-->	TyrfingMjolnir (~Tyrfing@62.92.82.250) has joined ##sed
+2016-09-24 08:49:06	-->	slon (slon@ip-78-45-105-131.net.upcbroadband.cz) has joined ##sed
+2016-09-24 08:49:06	-->	isomorphismes (~ubuntu@ec2-54-243-213-161.compute-1.amazonaws.com) has joined ##sed
+2016-09-24 08:49:06	-->	zenguy_pc (~zenguy_pc@2602:ffc5::383d:9c2f) has joined ##sed
+2016-09-24 08:49:06	-->	lockheed (~user@166.78.1.156) has joined ##sed
+2016-09-24 08:49:06	-->	Liam` (~Liam@znc.liam.sh) has joined ##sed
+2016-09-24 08:49:06	-->	djinni`_ (~djinni@68.ip-149-56-14.net) has joined ##sed
+2016-09-24 08:49:07	<--	D630 (~D630@unaffiliated/d630) has quit (Client Quit)
+2016-09-24 08:49:09	<--	zenguy_pc (~zenguy_pc@2602:ffc5::383d:9c2f) has quit (Max SendQ exceeded)
+2016-09-24 08:49:18	-->	ghoti (~paul@hq.experiencepoint.com) has joined ##sed
+2016-09-24 08:49:21	-->	edong23 (~quassel@mptc-dhcp-50-50.mptelco.com) has joined ##sed
+2016-09-24 08:49:21	-->	dzho (~dzho@unaffiliated/dzho) has joined ##sed
+2016-09-24 08:49:42	-->	sze (~sze@unaffiliated/sze) has joined ##sed
+2016-09-24 08:49:55	-->	sbine (~sbine@tra78-6-88-186-13-233.fbx.proxad.net) has joined ##sed
+2016-09-24 08:50:05	-->	codebam (codebam@gateway/shell/panicbnc/x-ssuebhodfaomvjou) has joined ##sed
+2016-09-24 08:50:15	-->	zenguy_pc (~zenguy_pc@2602:ffc5::383d:9c2f) has joined ##sed
+2016-09-24 08:50:37	-->	bouncy (~BouncingB@wtsi-nat-m-dt3.sanger.ac.uk) has joined ##sed
+2016-09-24 08:50:57	--	sbine is now known as Guest39566
+2016-09-24 08:51:30	-->	sumark (~sumark@apache2-kant.caprisun.dreamhost.com) has joined ##sed
+2016-09-24 08:51:43	-->	nal (~nal@adsl-64-237-238-172.prtc.net) has joined ##sed
+2016-09-24 08:52:29	-->	go|dfish (goldfish@nat/dcunetworkingsociety/x-vausmadjwvowugjr) has joined ##sed
+2016-09-24 08:52:53	-->	D630 (~D630@unaffiliated/d630) has joined ##sed
+2016-09-24 08:52:59	-->	hpotter (~intlnsde@83.172.43.62) has joined ##sed
+2016-09-24 08:54:11	-->	shbot1 (~shbot@37.139.2.101) has joined ##sed
+2016-09-24 08:54:15	-->	akkad (akkad@dns.mauthesis.com) has joined ##sed
+2016-09-24 08:54:29	-->	biax_ (~biax@175.141.131.63) has joined ##sed
+2016-09-24 08:54:31	<--	biax_ (~biax@175.141.131.63) has quit (Excess Flood)
+2016-09-24 08:55:45	-->	folivora_ (~out@devnull.drwxr-xr-x.eu) has joined ##sed
+2016-09-24 08:55:58	<--	Al3xG0 (~unix@unaffiliated/al3xg0) has quit (*.net *.split)
+2016-09-24 08:55:59	<--	myoweech (~myoweech@unaffiliated/myoweech) has quit (*.net *.split)
+2016-09-24 08:56:19	-->	Al3xG0 (~unix@unaffiliated/al3xg0) has joined ##sed
+2016-09-24 08:56:49	<--	nexace (~nexace@leocc.net) has quit (Ping timeout: 265 seconds)
+2016-09-24 08:57:36	-->	twa__ (~twa@184.250.139.97) has joined ##sed
+2016-09-24 08:57:48	<--	dzho (~dzho@unaffiliated/dzho) has quit (Ping timeout: 265 seconds)
+2016-09-24 08:57:49	<--	serialoverflow (~znc@pc9.gatrobe.uni-hannover.de) has quit (Ping timeout: 265 seconds)
+2016-09-24 08:57:50	<--	gigetoo (~gigetoo@c83-250-44-242.bredband.comhem.se) has quit (Ping timeout: 265 seconds)
+2016-09-24 08:57:50	<--	The_Schmidt (~The_Schmi@207-192-200-73.lbbkcmtk04.res.dyn.suddenlink.net) has quit (Ping timeout: 265 seconds)
+2016-09-24 08:57:57	<--	larryv (~larryv@wikipedia/larryv) has quit (Ping timeout: 250 seconds)
+2016-09-24 08:58:16	<--	edong23 (~quassel@mptc-dhcp-50-50.mptelco.com) has quit (Ping timeout: 265 seconds)
+2016-09-24 08:58:16	<--	LongyanG (~long@15255.s.t4vps.eu) has quit (Ping timeout: 265 seconds)
+2016-09-24 08:58:16	<--	shbot (~shbot@37.139.2.101) has quit (Ping timeout: 265 seconds)
+2016-09-24 08:58:19	<--	_geoff_ (~geoff@50-199-206-213-static.hfc.comcastbusiness.net) has quit (Ping timeout: 265 seconds)
+2016-09-24 08:58:34	-->	gigetoo (~gigetoo@c83-250-44-242.bredband.comhem.se) has joined ##sed
+2016-09-24 08:58:44	<--	fbsd (~fbsd@a89-154-153-39.cpe.netcabo.pt) has quit (Ping timeout: 240 seconds)
+2016-09-24 08:58:45	<--	ShadeS_ (shades@milliways.ramdrive.org) has quit (Ping timeout: 240 seconds)
+2016-09-24 08:58:45	<--	twa_ (~twa@184.250.139.97) has quit (Ping timeout: 240 seconds)
+2016-09-24 08:58:52	-->	genpaku_ (~genpaku@107.191.100.185) has joined ##sed
+2016-09-24 08:59:06	<--	b (~coffee@unaffiliated/ridout) has quit (Ping timeout: 252 seconds)
+2016-09-24 08:59:06	<--	RaiNerTsuFal (~RaiNerTsu@akita.vtlx.cn) has quit (Ping timeout: 252 seconds)
+2016-09-24 09:00:39	<--	Guest39566 (~sbine@tra78-6-88-186-13-233.fbx.proxad.net) has quit (Ping timeout: 248 seconds)
+2016-09-24 09:01:00	<--	Soliton (~Soliton@wesnoth/developer/soliton) has quit (Disconnected by services)
+2016-09-24 09:01:07	-->	Soliton_ (~Soliton@wesnoth/developer/soliton) has joined ##sed
+2016-09-24 09:01:37	--	Soliton_ is now known as Soliton
+2016-09-24 09:02:52	-->	Hello71_ (~Hello71@wikipedia/Hello71) has joined ##sed
+2016-09-24 09:02:59	-->	sumark_ (~sumark@apache2-kant.caprisun.dreamhost.com) has joined ##sed
+2016-09-24 09:03:28	<--	slon (slon@ip-78-45-105-131.net.upcbroadband.cz) has quit (Ping timeout: 255 seconds)
+2016-09-24 09:03:28		[09:03]
+2016-09-24 09:03:30	<--	hpotter (~intlnsde@83.172.43.62) has quit (Ping timeout: 255 seconds)
+2016-09-24 09:03:30	<--	isomorphismes (~ubuntu@ec2-54-243-213-161.compute-1.amazonaws.com) has quit (Ping timeout: 255 seconds)
+2016-09-24 09:03:31	<--	lockheed (~user@166.78.1.156) has quit (Ping timeout: 255 seconds)
+2016-09-24 09:03:31	<--	Liam` (~Liam@znc.liam.sh) has quit (Ping timeout: 255 seconds)
+2016-09-24 09:03:32	<--	djinni`_ (~djinni@68.ip-149-56-14.net) has quit (Ping timeout: 255 seconds)
+2016-09-24 09:03:36	<--	hiroki (~hyamamoto@unaffiliated/hiroki) has quit (Ping timeout: 272 seconds)
+2016-09-24 09:03:40	<--	waldner (waldner@openvpn/user/waldner) has quit (Ping timeout: 272 seconds)
+2016-09-24 09:03:41	<--	kingsley (~kingsley@65-102-176-42.tukw.qwest.net) has quit (Ping timeout: 272 seconds)
+2016-09-24 09:03:42	<--	izalove (~izabera@64.137.202.202) has quit (Ping timeout: 272 seconds)
+2016-09-24 09:03:43	<--	minsky (minsky@But.I.Love.The.Coookies.PanicBNC.com) has quit (Ping timeout: 272 seconds)
+2016-09-24 09:03:43	<--	_val_ (~val@freebsd/user/val) has quit (Ping timeout: 272 seconds)
+2016-09-24 09:03:43	<--	plitter (~plitter@66.209.202.84.customer.cdi.no) has quit (Ping timeout: 272 seconds)
+2016-09-24 09:03:45	<--	Nahra (~user@unaffiliated/nahra) has quit (Ping timeout: 272 seconds)
+2016-09-24 09:03:48	<--	ghoti (~paul@hq.experiencepoint.com) has quit (Ping timeout: 272 seconds)
+2016-09-24 09:03:49	<--	chasmo77 (~chas77@158.183-62-69.ftth.swbr.surewest.net) has quit (Ping timeout: 272 seconds)
+2016-09-24 09:03:51	<--	stevenm (~stevenm@195.62.218.30) has quit (Ping timeout: 272 seconds)
+2016-09-24 09:03:51	<--	njs126 (~njs126@rrcs-67-79-116-98.se.biz.rr.com) has quit (Ping timeout: 272 seconds)
+2016-09-24 09:03:51	<--	Hello71 (~Hello71@wikipedia/Hello71) has quit (Ping timeout: 272 seconds)
+2016-09-24 09:03:53	<--	Phanes (Phanes@unaffiliated/phanes) has quit (Ping timeout: 272 seconds)
+2016-09-24 09:03:55	<--	genpaku (~genpaku@107.191.100.185) has quit (Ping timeout: 272 seconds)
+2016-09-24 09:03:56	<--	Petter (~username@unaffiliated/karhunkynsi) has quit (Ping timeout: 272 seconds)
+2016-09-24 09:03:59	<--	bouncy (~BouncingB@wtsi-nat-m-dt3.sanger.ac.uk) has quit (Ping timeout: 272 seconds)
+2016-09-24 09:04:03	<--	sumark (~sumark@apache2-kant.caprisun.dreamhost.com) has quit (*.net *.split)
+2016-09-24 09:04:06	<--	TyrfingMjolnir (~Tyrfing@62.92.82.250) has quit (*.net *.split)
+2016-09-24 09:04:07	<--	blindbox (~blindbox@60.54.66.69) has quit (*.net *.split)
+2016-09-24 09:04:07	<--	betheynyx (~b@45.63.97.181) has quit (*.net *.split)
+2016-09-24 09:04:08	<--	folivora (~out@devnull.drwxr-xr-x.eu) has quit (*.net *.split)
+2016-09-24 09:04:08	<--	jrawson (~nameless@c-73-164-187-88.hsd1.or.comcast.net) has quit (*.net *.split)
+2016-09-24 09:04:09	<--	PaulePanter (~paul@mail.gw90.de) has quit (*.net *.split)
+2016-09-24 09:04:11	<--	Fernando-Basso (fernandoba@gateway/shell/openshells.net/x-cyhnczmoboacpkuc) has quit (*.net *.split)
+2016-09-24 09:04:14	<--	drawkula (~username@p4FC10572.dip0.t-ipconnect.de) has quit (*.net *.split)
+2016-09-24 09:04:14	<--	Guest27040 (~sinnlos@360.vmworld.it) has quit (*.net *.split)
+2016-09-24 09:04:17	<--	tiago (tiago@unaffiliated/ttsda) has quit (*.net *.split)
+2016-09-24 09:04:17	<--	Alcest (~alcest@69.64.40.177) has quit (*.net *.split)
+2016-09-24 09:04:18	<--	RadoQ (~cheater@unaffiliated/radoq) has quit (*.net *.split)
+2016-09-24 09:04:20	<--	Muzer (~muzer@cpc96772-rdng27-2-0-cust294.15-3.cable.virginm.net) has quit (*.net *.split)
+2016-09-24 09:04:20	<--	sh4rm4^bnc (~sh4rm4@deadlytowers.org) has quit (*.net *.split)
+2016-09-24 09:04:20	<--	SiegeX (~SiegeX@unaffiliated/siegex) has quit (*.net *.split)
+2016-09-24 09:04:23	<--	Cork (~Cork@firefox/community/cork) has quit (*.net *.split)
+2016-09-24 09:04:27	<--	veg (~veg@unaffiliated/veg) has quit (*.net *.split)
+2016-09-24 09:04:31	<--	sph084 (~shenness@50.58.91.120) has quit (*.net *.split)
+2016-09-24 09:04:36	-->	izabera (~izabera@64.137.202.202) has joined ##sed
+2016-09-24 09:04:37	<--	biax (~biax@unaffiliated/biax) has quit (Ping timeout: 264 seconds)
+2016-09-24 09:04:39	-->	rawsonj (~nameless@c-73-164-187-88.hsd1.or.comcast.net) has joined ##sed
+2016-09-24 09:04:41	-->	minsky (minsky@But.I.Love.The.Coookies.PanicBNC.com) has joined ##sed
+2016-09-24 09:04:54	-->	hiroki (~hyamamoto@mumbai.hst.vps.hangmat.org) has joined ##sed
+2016-09-24 09:04:54	<--	hiroki (~hyamamoto@mumbai.hst.vps.hangmat.org) has quit (Changing host)
+2016-09-24 09:04:54	-->	hiroki (~hyamamoto@unaffiliated/hiroki) has joined ##sed
+2016-09-24 09:04:56	--	rawsonj is now known as jrawson
+2016-09-24 09:04:57	-->	stevenm (~stevenm@195.62.218.30) has joined ##sed
+2016-09-24 09:04:58	<--	ramok (~komar@max.bionik.tu-berlin.de) has quit (*.net *.split)
+2016-09-24 09:05:00	<--	pocketprotector- (~pocketpro@146.148.64.32) has quit (*.net *.split)
+2016-09-24 09:05:02	<--	yitz_ (~yitz_@unaffiliated/yitz-/x-6738568) has quit (*.net *.split)
+2016-09-24 09:05:11	<--	izabera (~izabera@64.137.202.202) has quit (Client Quit)
+2016-09-24 09:05:14	-->	djinni` (~djinni@68.ip-149-56-14.net) has joined ##sed
+2016-09-24 09:05:15	<--	djinni` (~djinni@68.ip-149-56-14.net) has quit (Excess Flood)
+2016-09-24 09:05:15	<--	D630 (~D630@unaffiliated/d630) has quit (Quit: quit)
+2016-09-24 09:05:21	-->	Petter (~username@unaffiliated/karhunkynsi) has joined ##sed
+2016-09-24 09:05:21	-->	ramok (~komar@max.bionik.tu-berlin.de) has joined ##sed
+2016-09-24 09:05:22	-->	ShadeS (shades@milliways.ramdrive.org) has joined ##sed
+2016-09-24 09:05:24	-->	Sp4rKy (~Sp4rKy@86.65.39.14) has joined ##sed
+2016-09-24 09:05:25	-->	Phanes (Phanes@2600:3c03::f03c:91ff:fe67:c4e9) has joined ##sed
+2016-09-24 09:05:25	<--	Phanes (Phanes@2600:3c03::f03c:91ff:fe67:c4e9) has quit (Changing host)
+2016-09-24 09:05:25	-->	Phanes (Phanes@unaffiliated/phanes) has joined ##sed
+2016-09-24 09:05:37	--	genpaku_ is now known as genpaku
+2016-09-24 09:05:39	--	ShadeS is now known as Guest20359
+2016-09-24 09:05:55	-->	tiago (tiago@95.85.2.91) has joined ##sed
+2016-09-24 09:05:55	<--	tiago (tiago@95.85.2.91) has quit (Changing host)
+2016-09-24 09:05:55	-->	tiago (tiago@unaffiliated/ttsda) has joined ##sed
+2016-09-24 09:06:03	-->	_geoff (~geoff@50.199.206.213) has joined ##sed
+2016-09-24 09:06:23	-->	lockheed (~user@166.78.1.156) has joined ##sed
+2016-09-24 09:06:48	-->	Nahra (~user@unaffiliated/nahra) has joined ##sed
+2016-09-24 09:06:59	-->	Liam` (~Liam@znc.liam.sh) has joined ##sed
+2016-09-24 09:07:02	-->	edong23 (~quassel@mptc-dhcp-50-50.mptelco.com) has joined ##sed
+2016-09-24 09:07:13	-->	njs126 (~njs126@rrcs-67-79-116-98.se.biz.rr.com) has joined ##sed
+2016-09-24 09:07:21	-->	izabera (~izabera@64.137.202.202) has joined ##sed
+2016-09-24 09:07:22	-->	bouncy (~BouncingB@wtsi-nat-m-dt3.sanger.ac.uk) has joined ##sed
+2016-09-24 09:07:24	-->	Cork (~Cork@firefox/community/cork) has joined ##sed
+2016-09-24 09:08:02	-->	ghoti (~paul@hq.experiencepoint.com) has joined ##sed
+2016-09-24 09:08:10	-->	Muzer (~muzer@tim32.org) has joined ##sed
+2016-09-24 09:08:30	-->	RadoQ (~cheater@unaffiliated/radoq) has joined ##sed
+2016-09-24 09:08:35	-->	djinni` (~djinni@68.ip-149-56-14.net) has joined ##sed
+2016-09-24 09:08:51	<--	izabera (~izabera@64.137.202.202) has quit (Changing host)
+2016-09-24 09:08:51	-->	izabera (~izabera@unaffiliated/izabera) has joined ##sed
+2016-09-24 09:08:55	-->	SiegeX (~SiegeX@unaffiliated/siegex) has joined ##sed
+2016-09-24 09:08:58	-->	yitz (~yitz_@c-67-180-189-159.hsd1.ca.comcast.net) has joined ##sed
+2016-09-24 09:08:58	<--	yitz (~yitz_@c-67-180-189-159.hsd1.ca.comcast.net) has quit (Changing host)
+2016-09-24 09:08:58	-->	yitz (~yitz_@unaffiliated/yitz-/x-6738568) has joined ##sed
+2016-09-24 09:09:20	--	izabera is now known as izalove
+2016-09-24 09:10:07	--	llua` is now known as llua
+2016-09-24 09:10:07	<--	llua (~llua@the.kittypla.net) has quit (Changing host)
+2016-09-24 09:10:07	-->	llua (~llua@zsh/developer/llua) has joined ##sed
+2016-09-24 09:10:21	-->	isomorphismes (~ubuntu@ec2-54-243-213-161.compute-1.amazonaws.com) has joined ##sed
+2016-09-24 09:10:28	-->	pocketprotector (~pocketpro@unaffiliated/pocketprotector) has joined ##sed
+2016-09-24 09:10:36	-->	dzho (~dzho@unaffiliated/dzho) has joined ##sed
+2016-09-24 09:11:51	-->	chasmo77 (~chas77@158.183-62-69.ftth.swbr.surewest.net) has joined ##sed
+2016-09-24 09:11:55	-->	waldner (waldner@kermit.backreference.org) has joined ##sed
+2016-09-24 09:11:56	<--	waldner (waldner@kermit.backreference.org) has quit (Changing host)
+2016-09-24 09:11:56	-->	waldner (waldner@openvpn/user/waldner) has joined ##sed
+2016-09-24 09:13:01	-->	hpotter (~intlnsde@83.172.43.62) has joined ##sed
+2016-09-24 09:13:05	-->	betheynyx (~b@45.63.97.181) has joined ##sed
+2016-09-24 09:13:06	-->	sph084 (~shenness@50.58.91.120) has joined ##sed
+2016-09-24 09:13:30	-->	The_Schmidt (~The_Schmi@207-192-200-73.lbbkcmtk04.res.dyn.suddenlink.net) has joined ##sed
+2016-09-24 09:14:07	-->	serialoverflow (~znc@pc9.gatrobe.uni-hannover.de) has joined ##sed
+2016-09-24 09:14:13	-->	kingsley (~kingsley@65-102-176-42.tukw.qwest.net) has joined ##sed
+2016-09-24 09:15:32	-->	LongyanG (~long@15255.s.t4vps.eu) has joined ##sed
+2016-09-24 09:16:02	-->	TyrfingMjolnir (~Tyrfing@62.92.82.250) has joined ##sed
+2016-09-24 09:16:18	-->	RaiNerTsuFal (~RaiNerTsu@akita.vtlx.cn) has joined ##sed
+2016-09-24 09:16:22	<--	yokel (~yokel@unaffiliated/contempt) has quit (Ping timeout: 244 seconds)
+2016-09-24 09:16:43	-->	Guest39566 (~sbine@unaffiliated/sbine) has joined ##sed
+2016-09-24 09:17:53	-->	nexace (~nexace@leocc.net) has joined ##sed
+2016-09-24 09:18:13	-->	Guest27040 (~sinnlos@360.vmworld.it) has joined ##sed
+2016-09-24 09:18:24	-->	Fernando-Basso (fernandoba@gateway/shell/openshells.net/x-ckioidvpkzfyfrji) has joined ##sed
+2016-09-24 09:18:56	-->	slon (slon@ip-78-45-105-131.net.upcbroadband.cz) has joined ##sed
+2016-09-24 09:18:56		[09:18]
+2016-09-24 09:20:32	-->	_val_ (~val@freebsd/user/val) has joined ##sed
+2016-09-24 09:20:37	-->	sh4rm4^bnc (~sh4rm4@deadlytowers.org) has joined ##sed
+2016-09-24 09:20:38	-->	PaulePanter (~paul@mail.gw90.de) has joined ##sed
+2016-09-24 09:22:03	-->	veg (~veg@silentio.us) has joined ##sed
+2016-09-24 09:22:03	<--	veg (~veg@silentio.us) has quit (Changing host)
+2016-09-24 09:22:03	-->	veg (~veg@unaffiliated/veg) has joined ##sed
+2016-09-24 09:22:34	<--	ecdhe (~ecdhe@unaffiliated/ecdhe) has quit (Ping timeout: 244 seconds)
+2016-09-24 09:22:54	-->	blindbox (~blindbox@60.54.66.69) has joined ##sed
+2016-09-24 09:23:00	-->	ecdhe (~ecdhe@unaffiliated/ecdhe) has joined ##sed
+2016-09-24 09:23:38	-->	yokel (~yokel@unaffiliated/contempt) has joined ##sed
+2016-09-24 09:26:29	-->	ggherdov (sid11402@gateway/web/irccloud.com/x-bjvqayrttdihiytj) has joined ##sed
+2016-09-24 09:26:43	-->	maedox (sid2021@gateway/web/irccloud.com/x-tyzqfstwssltlcob) has joined ##sed
+2016-09-24 09:27:50	-->	plitter (~plitter@66.209.202.84.customer.cdi.no) has joined ##sed
+2016-09-24 09:28:28	-->	charles81 (sid26088@gateway/web/irccloud.com/x-hwfqtkcykmccydfj) has joined ##sed
+2016-09-24 09:30:37	-->	drawkula (~username@p4FC10572.dip0.t-ipconnect.de) has joined ##sed
+2016-09-24 09:31:13	<--	Guest39566 (~sbine@unaffiliated/sbine) has quit (Quit: Guest39566)
+2016-09-24 09:32:30	-->	D630 (~D630@unaffiliated/d630) has joined ##sed
+2016-09-24 09:34:14	-->	b (~coffee@unaffiliated/ridout) has joined ##sed
+2016-09-24 09:34:14		[09:34]
+2016-09-24 09:44:40	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined ##sed
+2016-09-24 09:44:40	--	Topic for ##sed is "The Stream EDitor | Paste at: http://sprunge.us (/msg greybot sprunge) | FAQ: http://sed.sf.net/sedfaq.html | Intro/Tutorial: http://xrl.us/sedintro#uh-0 | POSIX: http://xrl.us/sedstd | Reference: http://xrl.us/gnused | Regex: #regex | Do NOT try to parse markup (html, xml, etc) with sed! /msg greybot html | Please ask your question and be patient, someone will get to you soon"
+2016-09-24 09:44:40	--	Topic set by e36freak (~daniel.mi@auriga.kiwilight.com) on Wed, 21 Aug 2013 16:29:09
+2016-09-24 09:44:40	--	Channel ##sed: 107 nicks (0 ops, 0 voices, 107 normals)
+2016-09-24 09:45:49	--	Channel created on Wed, 09 Sep 2009 05:53:00
+2016-09-24 09:51:00		[09:45]
+2016-09-24 09:51:29	-->	Goldman_ (~root@de.ccc.org.mx) has joined ##sed
+2016-09-24 09:52:17	-->	_geoff (~geoff@50-199-206-213-static.hfc.comcastbusiness.net) has joined ##sed
+2016-09-24 09:53:55	<--	ross`_ (~ross@68.171.222.93) has quit (Ping timeout: 265 seconds)
+2016-09-24 09:53:55	<--	Al3xG0 (~unix@unaffiliated/al3xg0) has quit (Ping timeout: 265 seconds)
+2016-09-24 09:53:56	<--	_geoff_ (~geoff@50-199-206-213-static.hfc.comcastbusiness.net) has quit (Ping timeout: 265 seconds)
+2016-09-24 09:53:59	<--	Fernando-Basso (fernandoba@gateway/shell/openshells.net/x-ckioidvpkzfyfrji) has quit (Ping timeout: 265 seconds)
+2016-09-24 09:53:59	<--	nexace (~nexace@leocc.net) has quit (Ping timeout: 265 seconds)
+2016-09-24 09:54:11	-->	aw1 (~aw1@unaffiliated/aw1) has joined ##sed
+2016-09-24 09:54:23	<--	dzho (~dzho@unaffiliated/dzho) has quit (Ping timeout: 265 seconds)
+2016-09-24 09:54:27	<--	zerick_ (~zerick@irc.quassel.zerick.me) has quit (Ping timeout: 265 seconds)
+2016-09-24 09:54:27	<--	linuxthefish (~ltf@unaffiliated/edmundf) has quit (Ping timeout: 265 seconds)
+2016-09-24 09:54:27	<--	edong23_ (~quassel@mptc-dhcp-50-50.mptelco.com) has quit (Ping timeout: 265 seconds)
+2016-09-24 09:54:35	<--	drawkula (~username@p4FC10572.dip0.t-ipconnect.de) has quit (Ping timeout: 265 seconds)
+2016-09-24 09:54:35	<--	plitter (~plitter@66.209.202.84.customer.cdi.no) has quit (Ping timeout: 265 seconds)
+2016-09-24 09:54:35	<--	ecdhe (~ecdhe@unaffiliated/ecdhe) has quit (Ping timeout: 265 seconds)
+2016-09-24 09:54:35	<--	veg (~veg@unaffiliated/veg) has quit (Ping timeout: 265 seconds)
+2016-09-24 09:54:35	<--	sh4rm4^bnc (~sh4rm4@deadlytowers.org) has quit (Ping timeout: 265 seconds)
+2016-09-24 09:54:35	<--	slon (slon@ip-78-45-105-131.net.upcbroadband.cz) has quit (Ping timeout: 265 seconds)
+2016-09-24 09:54:52	<--	Guest27040 (~sinnlos@360.vmworld.it) has quit (Ping timeout: 265 seconds)
+2016-09-24 09:54:54	-->	lockheed (~user@166.78.1.156) has joined ##sed
+2016-09-24 09:54:56	-->	gigetoo (~gigetoo@c83-250-44-242.bredband.comhem.se) has joined ##sed
+2016-09-24 09:54:56	-->	Soliton (~Soliton@wesnoth/developer/soliton) has joined ##sed
+2016-09-24 09:55:10	-->	ross` (~ross@68.171.222.93) has joined ##sed
+2016-09-24 09:55:15	-->	kingsley (~kingsley@65-102-176-42.tukw.qwest.net) has joined ##sed
+2016-09-24 09:57:55	-->	edong23 (~quassel@mptc-dhcp-50-50.mptelco.com) has joined ##sed
+2016-09-24 09:59:09	-->	Al3xG0 (~unix@unaffiliated/al3xg0) has joined ##sed
+2016-09-24 09:59:10	<--	zenguy_pc (~zenguy_pc@2602:ffc5::383d:9c2f) has quit (Ping timeout: 265 seconds)
+2016-09-24 10:03:53	-->	njs126 (~njs126@rrcs-67-79-116-98.se.biz.rr.com) has joined ##sed
+2016-09-24 10:04:22	-->	zenguy_pc (~zenguy_pc@2602:ffc5::383d:9c2f) has joined ##sed
+2016-09-24 10:04:24	-->	zerick (~zerick@irc.quassel.zerick.me) has joined ##sed
+2016-09-24 10:04:48	<--	apus (~tux@p200300422C21D18EBEAEC5FFFE6B0505.dip0.t-ipconnect.de) has quit (Quit: Konversation terminated!)
+2016-09-24 10:04:49	-->	slon (slon@ip-78-45-105-131.net.upcbroadband.cz) has joined ##sed
+2016-09-24 10:05:22	-->	zipe31 (~zipe31@min31-1-82-224-11-112.fbx.proxad.net) has joined ##sed
+2016-09-24 10:06:52	-->	veg (~veg@silentio.us) has joined ##sed
+2016-09-24 10:06:52		[10:06]
+2016-09-24 10:06:52	<--	veg (~veg@silentio.us) has quit (Changing host)
+2016-09-24 10:06:52	-->	veg (~veg@unaffiliated/veg) has joined ##sed
+2016-09-24 10:07:08	-->	plitter (~plitter@66.209.202.84.customer.cdi.no) has joined ##sed
+2016-09-24 10:07:31	-->	drawkula (~username@p4FC10572.dip0.t-ipconnect.de) has joined ##sed
+2016-09-24 10:07:50	-->	ecdhe (~ecdhe@unaffiliated/ecdhe) has joined ##sed
+2016-09-24 10:08:08	-->	linuxthefish (~ltf@unaffiliated/edmundf) has joined ##sed
+2016-09-24 10:08:48	-->	Guest27040 (~sinnlos@360.vmworld.it) has joined ##sed
+2016-09-24 10:11:13	-->	kaldoran (~kaldoran@cable-192.222.205.239.electronicbox.net) has joined ##sed
+2016-09-24 10:17:00		[10:11]
+2016-09-24 10:18:15	<--	zenguy_pc (~zenguy_pc@2602:ffc5::383d:9c2f) has quit (Ping timeout: 272 seconds)
+2016-09-24 10:18:15	<--	Al3xG0 (~unix@unaffiliated/al3xg0) has quit (Ping timeout: 272 seconds)
+2016-09-24 10:18:26	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined ##sed
+2016-09-24 10:18:26	--	Topic for ##sed is "The Stream EDitor | Paste at: http://sprunge.us (/msg greybot sprunge) | FAQ: http://sed.sf.net/sedfaq.html | Intro/Tutorial: http://xrl.us/sedintro#uh-0 | POSIX: http://xrl.us/sedstd | Reference: http://xrl.us/gnused | Regex: #regex | Do NOT try to parse markup (html, xml, etc) with sed! /msg greybot html | Please ask your question and be patient, someone will get to you soon"
+2016-09-24 10:18:26	--	Topic set by e36freak (~daniel.mi@auriga.kiwilight.com) on Wed, 21 Aug 2013 16:29:09
+2016-09-24 10:18:26	--	Channel ##sed: 59 nicks (0 ops, 0 voices, 59 normals)
+2016-09-24 10:18:28	--	genpaku_ is now known as genpaku
+2016-09-24 10:18:28	-->	yitz (~yitz_@c-67-180-189-159.hsd1.ca.comcast.net) has joined ##sed
+2016-09-24 10:18:28	<--	yitz (~yitz_@c-67-180-189-159.hsd1.ca.comcast.net) has quit (Changing host)
+2016-09-24 10:18:28	-->	yitz (~yitz_@unaffiliated/yitz-/x-6738568) has joined ##sed
+2016-09-24 10:18:29	-->	tiago (tiago@95.85.2.91) has joined ##sed
+2016-09-24 10:18:29	<--	tiago (tiago@95.85.2.91) has quit (Changing host)
+2016-09-24 10:18:29	-->	tiago (tiago@unaffiliated/ttsda) has joined ##sed
+2016-09-24 10:18:30	-->	stevenm (~stevenm@195.62.218.30) has joined ##sed
+2016-09-24 10:18:31	-->	nal1 (~nal@adsl-64-237-238-172.prtc.net) has joined ##sed
+2016-09-24 10:18:33	-->	SiegeX (~SiegeX@unaffiliated/siegex) has joined ##sed
+2016-09-24 10:18:36	<--	folivora_ (~out@devnull.drwxr-xr-x.eu) has quit (Max SendQ exceeded)
+2016-09-24 10:18:41	-->	zipe31 (~zipe31@min31-1-82-224-11-112.fbx.proxad.net) has joined ##sed
+2016-09-24 10:18:47	-->	minsky (minsky@But.I.Love.The.Coookies.PanicBNC.com) has joined ##sed
+2016-09-24 10:18:48	-->	_geoff (~geoff@50-199-206-213-static.hfc.comcastbusiness.net) has joined ##sed
+2016-09-24 10:18:50	-->	Soliton (~Soliton@wesnoth/developer/soliton) has joined ##sed
+2016-09-24 10:18:54	-->	LongyanG (~long@15255.s.t4vps.eu) has joined ##sed
+2016-09-24 10:19:06	-->	Petter (~username@unaffiliated/karhunkynsi) has joined ##sed
+2016-09-24 10:19:08	-->	zenguy_pc (~zenguy_pc@2602:ffc5::383d:9c2f) has joined ##sed
+2016-09-24 10:19:15	-->	akkad (~akkad@dns.mauthesis.com) has joined ##sed
+2016-09-24 10:19:20	-->	RadoQ (~cheater@unaffiliated/radoq) has joined ##sed
+2016-09-24 10:19:26	-->	ezio (~ezio@unaffiliated/ezio) has joined ##sed
+2016-09-24 10:19:32	-->	zerick (~zerick@irc.quassel.zerick.me) has joined ##sed
+2016-09-24 10:19:37	--	Channel created on Wed, 09 Sep 2009 05:53:00
+2016-09-24 10:19:39	-->	The_Schmidt (~The_Schmi@207-192-200-73.lbbkcmtk04.res.dyn.suddenlink.net) has joined ##sed
+2016-09-24 10:19:42	-->	yokel_ (~yokel@unaffiliated/contempt) has joined ##sed
+2016-09-24 10:19:47	-->	chasmo77 (~chas77@158.183-62-69.ftth.swbr.surewest.net) has joined ##sed
+2016-09-24 10:19:50	-->	betheynyx (~b@45.63.97.181) has joined ##sed
+2016-09-24 10:20:05	-->	plitter (~plitter@66.209.202.84.customer.cdi.no) has joined ##sed
+2016-09-24 10:20:15	--	yokel_ is now known as yokel
+2016-09-24 10:20:17	-->	Liam` (~Liam@znc.liam.sh) has joined ##sed
+2016-09-24 10:20:26	<--	charles81 (sid26088@gateway/web/irccloud.com/x-hwfqtkcykmccydfj) has quit (Ping timeout: 265 seconds)
+2016-09-24 10:20:26	-->	sph084 (~shenness@50.58.91.120) has joined ##sed
+2016-09-24 10:20:27	-->	Goldman_ (~root@de.ccc.org.mx) has joined ##sed
+2016-09-24 10:20:46	-->	serialoverflow (~znc@pc9.gatrobe.uni-hannover.de) has joined ##sed
+2016-09-24 10:20:47	-->	aw1 (~aw1@unaffiliated/aw1) has joined ##sed
+2016-09-24 10:20:51	-->	shbot (~shbot@37.139.2.101) has joined ##sed
+2016-09-24 10:20:55	-->	codebam (codebam@gateway/shell/panicbnc/x-iubeychsxbdjzxly) has joined ##sed
+2016-09-24 10:21:01	-->	Guest27040 (~sinnlos@360.vmworld.it) has joined ##sed
+2016-09-24 10:21:13	-->	ghoti (~paul@hq.experiencepoint.com) has joined ##sed
+2016-09-24 10:21:15	-->	flying (~flying@90.216.134.193) has joined ##sed
+2016-09-24 10:21:36	-->	edong23 (~quassel@mptc-dhcp-50-50.mptelco.com) has joined ##sed
+2016-09-24 10:21:37	-->	jrawson (~nameless@c-73-164-187-88.hsd1.or.comcast.net) has joined ##sed
+2016-09-24 10:21:52	-->	lockheed (~user@166.78.1.156) has joined ##sed
+2016-09-24 10:22:18	-->	pocketprotector (~pocketpro@unaffiliated/pocketprotector) has joined ##sed
+2016-09-24 10:22:20	-->	hiroki (~hyamamoto@mumbai.hst.vps.hangmat.org) has joined ##sed
+2016-09-24 10:22:22	<--	maedox (sid2021@gateway/web/irccloud.com/x-tyzqfstwssltlcob) has quit (Ping timeout: 265 seconds)
+2016-09-24 10:22:41	<--	hiroki (~hyamamoto@mumbai.hst.vps.hangmat.org) has quit (Changing host)
+2016-09-24 10:22:41	-->	hiroki (~hyamamoto@unaffiliated/hiroki) has joined ##sed
+2016-09-24 10:22:44	-->	Fernando-Basso (~Fernando-@gateway/shell/openshells.net/x-arnyffwrlelkkthk) has joined ##sed
+2016-09-24 10:28:00		[10:22]
+2016-09-24 10:28:38	<--	RadoQ (~cheater@unaffiliated/radoq) has quit (Killed (barjavel.freenode.net (Nickname regained by services)))
+2016-09-24 10:28:45	-->	RadoQ (~cheater@unaffiliated/radoq) has joined ##sed
+2016-09-24 10:31:38	-->	The_Schmidt_ (~The_Schmi@207-192-200-73.lbbkcmtk04.res.dyn.suddenlink.net) has joined ##sed
+2016-09-24 10:31:56	<--	yitz (~yitz_@unaffiliated/yitz-/x-6738568) has quit (Read error: Connection reset by peer)
+2016-09-24 10:31:57	<--	jrawson (~nameless@c-73-164-187-88.hsd1.or.comcast.net) has quit (Ping timeout: 250 seconds)
+2016-09-24 10:31:58	<--	nal1 (~nal@adsl-64-237-238-172.prtc.net) has quit (Ping timeout: 250 seconds)
+2016-09-24 10:31:59	<--	twa__ (~twa@184.250.139.97) has quit (Ping timeout: 250 seconds)
+2016-09-24 10:31:59	<--	johnmilton (~johnmilto@192.206.23.197) has quit (Ping timeout: 250 seconds)
+2016-09-24 10:31:59	<--	Fernando-Basso (~Fernando-@gateway/shell/openshells.net/x-arnyffwrlelkkthk) has quit (Ping timeout: 250 seconds)
+2016-09-24 10:31:59	<--	edong23 (~quassel@mptc-dhcp-50-50.mptelco.com) has quit (Ping timeout: 250 seconds)
+2016-09-24 10:31:59	<--	LongyanG (~long@15255.s.t4vps.eu) has quit (Ping timeout: 250 seconds)
+2016-09-24 10:31:59	<--	geggam (~geggam@108-218-203-177.uvs.sntcca.sbcglobal.net) has quit (Ping timeout: 250 seconds)
+2016-09-24 10:32:00	<--	shbot (~shbot@37.139.2.101) has quit (Ping timeout: 250 seconds)
+2016-09-24 10:32:00	-->	llua` (~llua@six.happyforever.com) has joined ##sed
+2016-09-24 10:32:00	-->	ShadeS (~shades@milliways.ramdrive.org) has joined ##sed
+2016-09-24 10:32:00	-->	sumark (~sumark@apache2-kant.caprisun.dreamhost.com) has joined ##sed
+2016-09-24 10:32:01	<--	The_Schmidt (~The_Schmi@207-192-200-73.lbbkcmtk04.res.dyn.suddenlink.net) has quit (Ping timeout: 250 seconds)
+2016-09-24 10:32:01	<--	akkad (~akkad@dns.mauthesis.com) has quit (Ping timeout: 250 seconds)
+2016-09-24 10:32:28	--	ShadeS is now known as Guest49820
+2016-09-24 10:32:47	<--	minsky (minsky@But.I.Love.The.Coookies.PanicBNC.com) has quit (Ping timeout: 272 seconds)
+2016-09-24 10:32:47	<--	Al3xG0 (~unix@unaffiliated/al3xg0) has quit (Ping timeout: 272 seconds)
+2016-09-24 10:32:47	<--	tiago (tiago@unaffiliated/ttsda) has quit (Ping timeout: 272 seconds)
+2016-09-24 10:32:49	<--	codebam (codebam@gateway/shell/panicbnc/x-iubeychsxbdjzxly) has quit (Ping timeout: 272 seconds)
+2016-09-24 10:32:49	<--	betheynyx (~b@45.63.97.181) has quit (Ping timeout: 272 seconds)
+2016-09-24 10:32:49	-->	shbot (~shbot@37.139.2.101) has joined ##sed
+2016-09-24 10:32:49	<--	zenguy_pc (~zenguy_pc@2602:ffc5::383d:9c2f) has quit (Ping timeout: 272 seconds)
+2016-09-24 10:32:50	<--	_geoff (~geoff@50-199-206-213-static.hfc.comcastbusiness.net) has quit (Ping timeout: 272 seconds)
+2016-09-24 10:32:50	<--	stevenm (~stevenm@195.62.218.30) has quit (Ping timeout: 272 seconds)
+2016-09-24 10:32:50	<--	SiegeX (~SiegeX@unaffiliated/siegex) has quit (Ping timeout: 272 seconds)
+2016-09-24 10:32:50	<--	ross` (~ross@68.171.222.93) has quit (Ping timeout: 272 seconds)
+2016-09-24 10:32:50	<--	llua (~llua@zsh/developer/llua) has quit (Ping timeout: 272 seconds)
+2016-09-24 10:32:50	<--	isomorphismes (~ubuntu@ec2-54-243-213-161.compute-1.amazonaws.com) has quit (Ping timeout: 272 seconds)
+2016-09-24 10:32:50	<--	hiroki (~hyamamoto@unaffiliated/hiroki) has quit (Ping timeout: 272 seconds)
+2016-09-24 10:32:50	<--	pocketprotector (~pocketpro@unaffiliated/pocketprotector) has quit (Ping timeout: 272 seconds)
+2016-09-24 10:32:50	<--	lockheed (~user@166.78.1.156) has quit (Ping timeout: 272 seconds)
+2016-09-24 10:32:51	<--	ghoti (~paul@hq.experiencepoint.com) has quit (Ping timeout: 272 seconds)
+2016-09-24 10:32:51	<--	chasmo77 (~chas77@158.183-62-69.ftth.swbr.surewest.net) has quit (Ping timeout: 272 seconds)
+2016-09-24 10:32:52	<--	ezio (~ezio@unaffiliated/ezio) has quit (Ping timeout: 272 seconds)
+2016-09-24 10:32:52	<--	Petter (~username@unaffiliated/karhunkynsi) has quit (Ping timeout: 272 seconds)
+2016-09-24 10:32:52	<--	Soliton (~Soliton@wesnoth/developer/soliton) has quit (Ping timeout: 272 seconds)
+2016-09-24 10:32:52	<--	zipe31 (~zipe31@min31-1-82-224-11-112.fbx.proxad.net) has quit (Ping timeout: 272 seconds)
+2016-09-24 10:32:52	<--	zerick (~zerick@irc.quassel.zerick.me) has quit (Ping timeout: 272 seconds)
+2016-09-24 10:32:52	<--	gigetoo (~gigetoo@c83-250-44-242.bredband.comhem.se) has quit (Ping timeout: 272 seconds)
+2016-09-24 10:32:52	<--	plitter (~plitter@66.209.202.84.customer.cdi.no) has quit (Ping timeout: 272 seconds)
+2016-09-24 10:32:54	-->	sze (~sze@unaffiliated/sze) has joined ##sed
+2016-09-24 10:32:58	-->	nal1 (~nal@adsl-64-237-238-172.prtc.net) has joined ##sed
+2016-09-24 10:33:00	-->	zenguy_pc (~zenguy_pc@162.245.216.41) has joined ##sed
+2016-09-24 10:33:01	-->	rawsonj (~nameless@c-73-164-187-88.hsd1.or.comcast.net) has joined ##sed
+2016-09-24 10:33:02	-->	yitz_ (~yitz_@unaffiliated/yitz-/x-6738568) has joined ##sed
+2016-09-24 10:33:08	-->	njs126 (~njs126@rrcs-67-79-116-98.se.biz.rr.com) has joined ##sed
+2016-09-24 10:33:13	-->	trw (~twa@184.250.139.97) has joined ##sed
+2016-09-24 10:33:16	-->	minsky (minsky@But.I.Love.The.Coookies.PanicBNC.com) has joined ##sed
+2016-09-24 10:33:26	--	rawsonj is now known as jrawson
+2016-09-24 10:33:27	-->	ezio (~ezio@textbookexchange.ca) has joined ##sed
+2016-09-24 10:33:28	<--	ezio (~ezio@textbookexchange.ca) has quit (Changing host)
+2016-09-24 10:33:28	-->	ezio (~ezio@unaffiliated/ezio) has joined ##sed
+2016-09-24 10:33:28	-->	zerick_ (~zerick@irc.quassel.zerick.me) has joined ##sed
+2016-09-24 10:33:56	-->	hiroki (~hyamamoto@mumbai.hst.vps.hangmat.org) has joined ##sed
+2016-09-24 10:33:56	<--	hiroki (~hyamamoto@mumbai.hst.vps.hangmat.org) has quit (Changing host)
+2016-09-24 10:33:56	-->	hiroki (~hyamamoto@unaffiliated/hiroki) has joined ##sed
+2016-09-24 10:34:10	-->	Petter (~username@unaffiliated/karhunkynsi) has joined ##sed
+2016-09-24 10:34:16	-->	veg (~veg@silentio.us) has joined ##sed
+2016-09-24 10:34:16	<--	veg (~veg@silentio.us) has quit (Changing host)
+2016-09-24 10:34:16	-->	veg (~veg@unaffiliated/veg) has joined ##sed
+2016-09-24 10:34:18	-->	Al3xG0 (~unix@unaffiliated/al3xg0) has joined ##sed
+2016-09-24 10:34:21	-->	plitter (~plitter@66.209.202.84.customer.cdi.no) has joined ##sed
+2016-09-24 10:34:34	-->	SiegeX (~SiegeX@unaffiliated/siegex) has joined ##sed
+2016-09-24 10:34:40	-->	edong23 (~quassel@mptc-dhcp-50-50.mptelco.com) has joined ##sed
+2016-09-24 10:35:11	-->	ross` (~ross@68.171.222.93) has joined ##sed
+2016-09-24 10:35:17	-->	TyrfingMjolnir (~Tyrfing@62.92.82.250) has joined ##sed
+2016-09-24 10:35:19	-->	ecdhe (~ecdhe@173-22-126-166.client.mchsi.com) has joined ##sed
+2016-09-24 10:35:19	<--	ecdhe (~ecdhe@173-22-126-166.client.mchsi.com) has quit (Changing host)
+2016-09-24 10:35:19	-->	ecdhe (~ecdhe@unaffiliated/ecdhe) has joined ##sed
+2016-09-24 10:35:22	-->	codebam (codebam@gateway/shell/panicbnc/x-mewlrflsgrbjxnfw) has joined ##sed
+2016-09-24 10:35:26	-->	kingsley (~kingsley@65-102-176-42.tukw.qwest.net) has joined ##sed
+2016-09-24 10:35:28	-->	tiago (~tiago@95.85.2.91) has joined ##sed
+2016-09-24 10:35:28	<--	tiago (~tiago@95.85.2.91) has quit (Changing host)
+2016-09-24 10:35:28	-->	tiago (~tiago@unaffiliated/ttsda) has joined ##sed
+2016-09-24 10:35:31	-->	stevenm (~stevenm@195.62.218.30) has joined ##sed
+2016-09-24 10:36:21	-->	ramok (~komar@max.bionik.tu-berlin.de) has joined ##sed
+2016-09-24 10:36:23	-->	_geoff (~geoff@50-199-206-213-static.hfc.comcastbusiness.net) has joined ##sed
+2016-09-24 10:36:35	-->	johnmilton (~johnmilto@192.206.23.197) has joined ##sed
+2016-09-24 10:36:50	-->	chasmo77 (~chas77@158.183-62-69.ftth.swbr.surewest.net) has joined ##sed
+2016-09-24 10:37:03	-->	LongyanG (~long@15255.s.t4vps.eu) has joined ##sed
+2016-09-24 10:37:38	-->	drawkula (~username@p4FC10572.dip0.t-ipconnect.de) has joined ##sed
+2016-09-24 10:37:49	-->	geggam (~geggam@108-218-203-177.uvs.sntcca.sbcglobal.net) has joined ##sed
+2016-09-24 10:37:55	-->	folivora (~out@devnull.drwxr-xr-x.eu) has joined ##sed
+2016-09-24 10:38:42	-->	dzho (~dzho@unaffiliated/dzho) has joined ##sed
+2016-09-24 10:38:48	-->	Muzer (~muzer@tim32.org) has joined ##sed
+2016-09-24 10:38:58	-->	pocketprotector (~pocketpro@unaffiliated/pocketprotector) has joined ##sed
+2016-09-24 10:39:02	-->	linuxthefish (~ltf@unaffiliated/edmundf) has joined ##sed
+2016-09-24 10:39:16	-->	kaldoran (~kaldoran@cable-192.222.205.239.electronicbox.net) has joined ##sed
+2016-09-24 10:39:17	-->	lockheed (~user@166.78.1.156) has joined ##sed
+2016-09-24 10:39:24	-->	nexace (~nexace@leocc.net) has joined ##sed
+2016-09-24 10:39:32	-->	izalove (~izabera@64.137.202.202) has joined ##sed
+2016-09-24 10:39:32	-->	ghoti (~paul@hq.experiencepoint.com) has joined ##sed
+2016-09-24 10:39:38	-->	blindbox (~blindbox@60.54.66.69) has joined ##sed
+2016-09-24 10:40:06	-->	zipe31 (~zipe31@min31-1-82-224-11-112.fbx.proxad.net) has joined ##sed
+2016-09-24 10:40:07	-->	fionnan (~fionnan@cube.netsoc.tcd.ie) has joined ##sed
+2016-09-24 10:40:16	-->	FernandoBasso (fernandoba@gateway/shell/openshells.net/x-sjffejsufvxskzhr) has joined ##sed
+2016-09-24 10:40:32	-->	ggherdov (sid11402@gateway/web/irccloud.com/x-xgtikdyelwmwopza) has joined ##sed
+2016-09-24 10:41:45	-->	jetchisel (~jetchisel@opensuse/member/jetchisel) has joined ##sed
+2016-09-24 10:47:00		[10:41]
+2016-09-24 11:05:16	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined ##sed
+2016-09-24 11:05:16		[11:05]
+2016-09-24 11:05:16	--	Topic for ##sed is "The Stream EDitor | Paste at: http://sprunge.us (/msg greybot sprunge) | FAQ: http://sed.sf.net/sedfaq.html | Intro/Tutorial: http://xrl.us/sedintro#uh-0 | POSIX: http://xrl.us/sedstd | Reference: http://xrl.us/gnused | Regex: #regex | Do NOT try to parse markup (html, xml, etc) with sed! /msg greybot html | Please ask your question and be patient, someone will get to you soon"
+2016-09-24 11:05:16	--	Topic set by e36freak (~daniel.mi@auriga.kiwilight.com) on Wed, 21 Aug 2013 16:29:09
+2016-09-24 11:05:16	--	Channel ##sed: 110 nicks (0 ops, 0 voices, 110 normals)
+2016-09-24 11:06:20	-->	Muzer (~muzer@tim32.org) has joined ##sed
+2016-09-24 11:06:29	--	Channel created on Wed, 09 Sep 2009 05:53:00
+2016-09-24 11:07:18	-->	larryv (~larryv@wikipedia/larryv) has joined ##sed
+2016-09-24 11:07:18	-->	bouncy (~BouncingB@wtsi-nat-m-dt3.sanger.ac.uk) has joined ##sed
+2016-09-24 11:11:44	-->	maedox (sid2021@gateway/web/irccloud.com/x-iiuqclyyvxvkikbt) has joined ##sed
+2016-09-24 11:13:21	-->	dualbus1 (U2FsdGVkX1@192.94.73.31) has joined ##sed
+2016-09-24 11:14:03	-->	ggherdov (sid11402@gateway/web/irccloud.com/x-kharnwnhsnrrlodz) has joined ##sed
+2016-09-24 11:15:40	-->	b (~coffee@unaffiliated/ridout) has joined ##sed
+2016-09-24 11:21:00		[11:15]
+2016-09-24 11:24:11	<--	larryv (~larryv@wikipedia/larryv) has quit (Quit: larryv)
+2016-09-24 11:25:11	-->	larryv (~larryv@wikipedia/larryv) has joined ##sed
+2016-09-24 11:31:00		[11:25]
+2016-09-24 11:34:48	-->	jetchisel (~jetchisel@opensuse/member/jetchisel) has joined ##sed
+2016-09-24 11:37:58	-->	simbalion (~simba@tailpuff.net) has joined ##sed
+2016-09-24 11:41:02	<--	twa_ (~twa@184.250.139.97) has quit (Ping timeout: 244 seconds)
+2016-09-24 11:41:02	<--	hpotter (~intlnsde@83.172.43.62) has quit (Ping timeout: 244 seconds)
+2016-09-24 11:47:00		[11:41]
+2016-09-24 11:56:13	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined ##sed
+2016-09-24 11:56:13	--	Topic for ##sed is "The Stream EDitor | Paste at: http://sprunge.us (/msg greybot sprunge) | FAQ: http://sed.sf.net/sedfaq.html | Intro/Tutorial: http://xrl.us/sedintro#uh-0 | POSIX: http://xrl.us/sedstd | Reference: http://xrl.us/gnused | Regex: #regex | Do NOT try to parse markup (html, xml, etc) with sed! /msg greybot html | Please ask your question and be patient, someone will get to you soon"
+2016-09-24 11:56:13	--	Topic set by e36freak (~daniel.mi@auriga.kiwilight.com) on Wed, 21 Aug 2013 16:29:09
+2016-09-24 11:56:13	--	Channel ##sed: 108 nicks (0 ops, 0 voices, 108 normals)
+2016-09-24 11:57:13	-->	shesek (~shesek@bzq-84-110-235-71.cablep.bezeqint.net) has joined ##sed
+2016-09-24 11:57:29	--	Channel created on Wed, 09 Sep 2009 05:53:00
+2016-09-24 11:59:07	<--	netman (~netman@185.94.249.77) has quit (Ping timeout: 244 seconds)
+2016-09-24 11:59:52	-->	PaulePanter (~paul@mail.gw90.de) has joined ##sed
+2016-09-24 12:00:38	--	yitz_ is now known as yitz
+2016-09-24 12:01:09	-->	plitter (~plitter@66.209.202.84.customer.cdi.no) has joined ##sed
+2016-09-24 12:01:20	-->	netman (~netman@185.94.249.77) has joined ##sed
+2016-09-24 12:05:19	<--	PaulePanter (~paul@mail.gw90.de) has quit (Ping timeout: 244 seconds)
+2016-09-24 12:05:19		[12:05]
+2016-09-24 12:07:23	<--	rgrinberg (~rgrinberg@24-246-56-85.cable.teksavvy.com) has quit (Ping timeout: 244 seconds)
+2016-09-24 12:13:00		[12:07]
+2016-09-24 12:13:23	-->	ecdhe (~ecdhe@173-22-126-166.client.mchsi.com) has joined ##sed
+2016-09-24 12:13:23	-->	simbalion (~simba@tailpuff.net) has joined ##sed
+2016-09-24 12:13:23	-->	maedox (sid2021@gateway/web/irccloud.com/x-iiuqclyyvxvkikbt) has joined ##sed
+2016-09-24 12:13:23	-->	Muzer (~muzer@tim32.org) has joined ##sed
+2016-09-24 12:13:23	-->	zenguy_pc (~zenguy_pc@162.245.216.41) has joined ##sed
+2016-09-24 12:13:23	-->	njs126 (~njs126@rrcs-67-79-116-98.se.biz.rr.com) has joined ##sed
+2016-09-24 12:13:23	-->	FernandoBasso (fernandoba@gateway/shell/openshells.net/x-rfdvlnhqimulhisw) has joined ##sed
+2016-09-24 12:13:23	-->	kingsley (~kingsley@65-102-176-42.tukw.qwest.net) has joined ##sed
+2016-09-24 12:13:23	-->	minsky (minsky@But.I.Love.The.Coookies.PanicBNC.com) has joined ##sed
+2016-09-24 12:13:30	-->	PaulePanter (~paul@mail.gw90.de) has joined ##sed
+2016-09-24 12:19:00		[12:13]
+2016-09-24 12:19:16	<--	PaulePanter (~paul@mail.gw90.de) has quit (Ping timeout: 244 seconds)
+2016-09-24 12:19:55	-->	PaulePanter (~paul@mail.gw90.de) has joined ##sed
+2016-09-24 12:24:10	<--	przemoc (~przemoc@unaffiliated/przemoc) has quit (Quit: leaving)
+2016-09-24 12:27:03	-->	nal2 (~nal@adsl-64-237-238-172.prtc.net) has joined ##sed
+2016-09-24 12:33:00		[12:27]
+2016-09-24 12:35:48	<--	ross` (~ross@68.171.222.93) has quit (Ping timeout: 244 seconds)
+2016-09-24 12:36:31	-->	cyborg-one (~cyborg-on@37.203.8.27) has joined ##sed
+2016-09-24 12:37:39	-->	ross` (~ross@68.171.222.93) has joined ##sed
+2016-09-24 12:43:00		[12:37]
+2016-09-24 12:45:33	<--	jetchisel (~jetchisel@opensuse/member/jetchisel) has quit (Ping timeout: 276 seconds)
+2016-09-24 12:47:33	-->	rgrinberg (~rgrinberg@24-246-56-85.cable.teksavvy.com) has joined ##sed
+2016-09-24 12:51:29	-->	elastix (~Thunderbi@cpc85186-haye23-2-0-cust65.17-4.cable.virginm.net) has joined ##sed
+2016-09-24 12:54:07	<--	geggam (~geggam@108-218-203-177.uvs.sntcca.sbcglobal.net) has quit (Ping timeout: 250 seconds)
+2016-09-24 12:58:58	-->	przemoc (~przemoc@unaffiliated/przemoc) has joined ##sed
+2016-09-24 12:58:58		[12:58]
+2016-09-24 12:59:43	<--	rgrinberg (~rgrinberg@24-246-56-85.cable.teksavvy.com) has quit (Quit: WeeChat 1.5)
+2016-09-24 13:01:29	-->	rgrinberg (~rgrinberg@24-246-56-85.cable.teksavvy.com) has joined ##sed
+2016-09-24 13:07:00		[13:01]
+2016-09-24 13:09:54	-->	geggam (~geggam@108.199.2.75) has joined ##sed
+2016-09-24 13:11:23	-->	bibibi (~bibibi@unaffiliated/bibibi) has joined ##sed
+2016-09-24 13:17:00		[13:11]
+2016-09-24 13:49:03	-->	navidr (uid112413@gateway/web/irccloud.com/x-wkwyyiugceigpgeh) has joined ##sed
+2016-09-24 13:49:03		[13:49]
+2016-09-24 13:49:35	<--	aw1 (~aw1@unaffiliated/aw1) has quit (Ping timeout: 250 seconds)
+2016-09-24 13:51:14	-->	fbsd (~fbsd@a89-154-153-39.cpe.netcabo.pt) has joined ##sed
+2016-09-24 13:57:00		[13:51]
+2016-09-24 14:06:04	-->	tachoknight_ (~tachoknig@c-73-246-129-13.hsd1.il.comcast.net) has joined ##sed
+2016-09-24 14:07:05	tachoknight_	Hi all. Is it possible to use sed to do a find/replace limited to the word being at the beginning of a line?
+2016-09-24 14:07:34	tachoknight_	i.e. I want to replace "foo" with "bar" only if "foo" is at the beginning of the line; if it's "blah-foo" i want to leave it alone
+2016-09-24 14:09:45	izalove	s/^foo/bar/
+2016-09-24 14:11:02	tachoknight_	absolutely perfect, thanks izalove
+2016-09-24 14:11:40	tachoknight_	so i understand, what is ^ doing?
+2016-09-24 14:11:49	tachoknight_	forcing it to have nothing to the left?
+2016-09-24 14:12:46	izalove	^ matches the beginning of the string
+2016-09-24 14:12:46		[14:12]
+2016-09-24 14:13:22	tachoknight_	ahhh
+2016-09-24 14:13:33	tachoknight_	need to brush up on my regex
+2016-09-24 14:19:00		[14:13]
+2016-09-24 14:20:45	-->	aw1 (~aw1@unaffiliated/aw1) has joined ##sed
+2016-09-24 14:26:00		[14:20]
+2016-09-24 14:36:42	<--	aw1 (~aw1@unaffiliated/aw1) has quit (Ping timeout: 244 seconds)
+2016-09-24 14:42:00		[14:36]
+2016-09-24 14:54:05	-->	aw1 (~aw1@unaffiliated/aw1) has joined ##sed
+2016-09-24 14:56:02	<--	aw1 (~aw1@unaffiliated/aw1) has quit (Max SendQ exceeded)
+2016-09-24 14:56:28	<--	navidr (uid112413@gateway/web/irccloud.com/x-wkwyyiugceigpgeh) has quit (Ping timeout: 265 seconds)
+2016-09-24 14:57:10	-->	navidr_ (uid112413@gateway/web/irccloud.com/x-hxgnnwxhoenbvnzt) has joined ##sed
+2016-09-24 14:57:10		[14:57]
+2016-09-24 14:58:21	<--	waldner_ (waldner@openvpn/user/waldner) has quit (Ping timeout: 265 seconds)
+2016-09-24 14:58:26	--	Hello71_ is now known as Hello71
+2016-09-24 14:58:46	-->	waldner (waldner@openvpn/user/waldner) has joined ##sed
+2016-09-24 15:02:26	-->	aw1 (~aw1@unaffiliated/aw1) has joined ##sed
+2016-09-24 15:02:53	-->	gnomon (~gnomon@CPE1c872c7063d0-CM00fc8d8fbe70.cpe.net.cable.rogers.com) has joined ##sed
+2016-09-24 15:08:00		[15:02]
+2016-09-24 15:27:45	-->	otyugh (~implijer_@86.215.181.20) has joined ##sed
+2016-09-24 15:27:45		[15:27]
+2016-09-24 15:28:57	otyugh	how would you parse, say '[download]  62.7% of 28.58MiB at 245.56KiB/s ETA 00:44' the "62" ? I got a working thing but I feel like I'm not doing it right ; sed -r 's/\[download\]  ([^\.]*).*/\1/'
+2016-09-24 15:32:07	<--	aw1 (~aw1@unaffiliated/aw1) has quit (Ping timeout: 272 seconds)
+2016-09-24 15:38:00		[15:32]
+2016-09-24 15:50:25	<--	akkad (akkad@166.84.6.60) has quit (Read error: Connection reset by peer)
+2016-09-24 15:55:21	-->	aw1 (~aw1@unaffiliated/aw1) has joined ##sed
+2016-09-24 15:55:22		[15:55]
+2016-09-24 16:00:01	-->	b (~coffee@unaffiliated/ridout) has joined ##sed
+2016-09-24 16:04:16	<--	navidr_ (uid112413@gateway/web/irccloud.com/x-hxgnnwxhoenbvnzt) has quit (Quit: Connection closed for inactivity)
+2016-09-24 16:10:00		[16:04]
+2016-09-24 16:10:43	<--	bibibi (~bibibi@unaffiliated/bibibi) has quit (Ping timeout: 244 seconds)
+2016-09-24 16:13:19	<--	aw1 (~aw1@unaffiliated/aw1) has quit (Ping timeout: 244 seconds)
+2016-09-24 16:19:00		[16:13]
+2016-09-24 16:21:34	-->	Avasz (~DCrawler@unaffiliated/avasz) has joined ##sed
+2016-09-24 16:27:00		[16:21]
+2016-09-24 16:28:11	-->	aw1 (~aw1@unaffiliated/aw1) has joined ##sed
+2016-09-24 16:29:59	<--	aw1 (~aw1@unaffiliated/aw1) has quit (Max SendQ exceeded)
+2016-09-24 16:31:09	-->	aw1 (~aw1@unaffiliated/aw1) has joined ##sed
+2016-09-24 16:32:53	<--	cyborg-one (~cyborg-on@37.203.8.27) has quit (Quit: cyborg-one)
+2016-09-24 16:34:06	<--	Avasz (~DCrawler@unaffiliated/avasz) has quit (Ping timeout: 264 seconds)
+2016-09-24 16:40:00		[16:34]
+2016-09-24 16:52:06	--	dualbus1 is now known as dualbus
+2016-09-24 16:58:00		[16:52]
+2016-09-24 17:05:38	<--	aw1 (~aw1@unaffiliated/aw1) has quit (Read error: Connection timed out)
+2016-09-24 17:11:00		[17:05]
