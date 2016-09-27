@@ -210,7 +210,7 @@ source ${ZSH}/oh-my-zsh.sh
 #{ eval $(keychain --eval --agents ssh,gpg identity id_rsa id_ecdsa); } 2>&1 | tee /dev/tty &>>${ZSH_ERROR}
 #2>&1 { eval $(keychain --eval --agents ssh,gpg identity id_rsa id_ecdsa); } >/dev/stdout
 
-{ eval $(keychain --eval --agents ssh,gpg identity id_rsa id_ecdsa); } 2>&1 9>&1 >/dev/stdout
+2>&1 9>&1 >/dev/stdout { eval $(keychain --eval --agents ssh,gpg identity id_rsa id_ecdsa); }
 
 # precmd() { disambiguate-keeplast }
 
