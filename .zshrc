@@ -22,13 +22,13 @@ cleanup() {
  #echo "derp" >>$ZSH_ERROR
  [[ ${-} != *i* ]] || {
   [[ ! -r "$ZSH_ERROR" || -z `cat "$ZSH_ERROR"` ]] && {
-    printf "\n \033[32m %s \033[0m\n" 'zshrc: no errors detected'; } || {
+    printf "\n \033[32m %s \033[0m\n\n" 'zshrc: no errors detected'; } || {
     printf "\n \033[31m %s \n" 'zshrc: the following errors were detected:'
     #cat "${ZSH_ERROR}" 2>&1 | tee "/dev/tty" >>/store/zsh-log-${UID}.log; }
     cat "${ZSH_ERROR}" |& \
 	sed -s 's/^.*$/\t&/w /dev/tty' \
 	>>/store/zsh-log-${UID}.log
-    printf "\033[0m"; }
+    printf "\033[0m\n\n"; }
  }
  ## cleanup env and temp files
  [[ -r "${ZSH_ERROR}" ]] && rm -f "${ZSH_ERROR}" || return 0
@@ -99,8 +99,9 @@ else
 #ZSH_THEME="pygmalion"
 #ZSH_THEME="powerline"
 #ZSH_THEME="agnoster"
-ZSH_THEME="bullet-train"
 #ZSH_THEME="jtyr"
+#ZSH_THEME="bullet-train"
+
 export BULLETTRAIN_DIR_EXTENDED=2
 #export BULLETTRAIN_CUSTOM_MSG=`host 192.168.1.98 | sed -r 's/^.*pointer .*?\.(.*\..*\.)$/\1 -/'`
 export BULLETTRAIN_CONTEXT_SHOW=true
@@ -748,6 +749,7 @@ safetytoggle -n
 ## Load zsh-completions plugin
 plugins+=(zsh-completions)
 autoload -U promptinit && promptinit
+. /usr/share/zsh/functions/Prompts/prompt_clint_setup
 ## -U: Ignore any aliases when loading a function like compinit or bashcompinit
 ## +X: Just load the named function fow now and don't execute it
 #autoload -U +X compinit && compinit
