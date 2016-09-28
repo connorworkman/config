@@ -99,8 +99,7 @@ else
 #ZSH_THEME="pygmalion"
 #ZSH_THEME="powerline"
 #ZSH_THEME="agnoster"
-#ZSH_THEME="jtyr"
-#ZSH_THEME="bullet-train"
+ZSH_THEME="bullet-train"
 
 export BULLETTRAIN_DIR_EXTENDED=2
 #export BULLETTRAIN_CUSTOM_MSG=`host 192.168.1.98 | sed -r 's/^.*pointer .*?\.(.*\..*\.)$/\1 -/'`
@@ -749,7 +748,7 @@ safetytoggle -n
 ## Load zsh-completions plugin
 plugins+=(zsh-completions)
 autoload -U promptinit && promptinit
-. /usr/share/zsh/functions/Prompts/prompt_clint_setup
+#. /usr/share/zsh/functions/Prompts/prompt_clint_setup
 ## -U: Ignore any aliases when loading a function like compinit or bashcompinit
 ## +X: Just load the named function fow now and don't execute it
 #autoload -U +X compinit && compinit
