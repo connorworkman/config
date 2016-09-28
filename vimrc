@@ -135,8 +135,10 @@ nnoremap <Leader>v :silent !cat /store/config/100vimcommands.txt \| sed 's/^[ ]*
 nnoremap <Leader>- <Esc>:set nu!<CR>
 nnoremap <Leader>= <Esc>:set rnu!<CR>
 "nnoremap <Leader>, :s/.*[0-9]*[\.\]] \([A-Z].*\) \[.*\]$/\1/
-nnoremap <Leader>, :s/ .*:[0-9][0-9]//
-nnoremap <Leader>. :s/[0-9]*\. //
+nnoremap <Leader>, :%s/ .*:[0-9][0-9]//
+nnoremap <Leader>. :%s/[0-9]*\. //
+nnoremap <Leader>/ :%s/ by / - /
+
 "nnoremap <Leader>. V"+y<Esc>:call system("xclip -i -selection clipboard", getreg("\""))
 "\<CR>:call system("xclip -i", getreg("\""))<CR>
 map [1;5Q <C-F2>
