@@ -180,6 +180,11 @@ alias ald='ld -I/lib64/ld-linux-x86-64.so.2 /usr/lib/crt1.o /usr/lib/crti.o -lc 
 
 ## shell functions
 
+tunssh() {
+	#sshuttle -r username@sshserver 0.0.0.0/0 -vv
+	sshuttle -r "${1?Erro: no host specified.}"  "${2:-0.0.0.0/0}" -vv
+}
+
 web_search_custom() {
 	emulate -L zsh
 	typeset -A urls
