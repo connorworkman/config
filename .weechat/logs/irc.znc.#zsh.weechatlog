@@ -14438,3 +14438,40 @@
 2016-09-28 20:17:56	<--	enkeyz (~enkeyz@unaffiliated/enkeyz) has quit (Client Quit)
 2016-09-28 20:18:11	-->	enkeyz (~enkeyz@unaffiliated/enkeyz) has joined #zsh
 2016-09-28 20:18:31	<--	mcmillhj (~huntermcm@c-71-62-149-7.hsd1.va.comcast.net) has quit (Ping timeout: 244 seconds)
+2016-09-28 20:20:13	Mikachu	CFLAGS=whatever ./configure --whatever
+2016-09-28 20:20:23	Mikachu	just like every other autoconf project in existence
+2016-09-28 20:20:36	Mikachu	and most in general
+2016-09-28 20:21:38	<--	blackmes1 (~blackmesa@aftr-37-201-227-42.unity-media.net) has quit (Ping timeout: 244 seconds)
+2016-09-28 20:26:25	-->	derk0pf (~derk0pf@p5DDB4978.dip0.t-ipconnect.de) has joined #zsh
+2016-09-28 20:30:02	<--	enkeyz (~enkeyz@unaffiliated/enkeyz) has quit (Quit: leaving)
+2016-09-28 20:30:16	-->	enkeyz (~enkeyz@unaffiliated/enkeyz) has joined #zsh
+2016-09-28 20:31:34	psprint	Bart was apparently right about testing unoptimized version of race-condition-like bugs, feels like nothing suspicious happened past few days
+2016-09-28 20:31:34		[20:31]
+2016-09-28 20:31:45	psprint	s/of/for/
+2016-09-28 20:31:48	<--	enkeyz (~enkeyz@unaffiliated/enkeyz) has quit (Client Quit)
+2016-09-28 20:31:56	-->	enkeyz (~enkeyz@unaffiliated/enkeyz) has joined #zsh
+2016-09-28 20:34:20	psprint	Mikachu: thought about your bad-arrays in context of strings. Could it be that a new string type keeping everything in wchar_t (or even the 4-byte version of that, forgot its name) could be defined, to do a smooth change from metafied strings? I guess your situation with typedef -c is different because you just do if-s on whether to use cached length, that's not the same type. is adding new type actually
+2016-09-28 20:34:22	psprint	possible?
+2016-09-28 20:34:31	-->	mcmillhj (~huntermcm@c-71-62-149-7.hsd1.va.comcast.net) has joined #zsh
+2016-09-28 20:34:56	psprint	s/that's not the same type/that's not the same as defining new type/
+2016-09-28 20:35:10	<--	enkeyz (~enkeyz@unaffiliated/enkeyz) has quit (Client Quit)
+2016-09-28 20:35:20	-->	enkeyz (~enkeyz@unaffiliated/enkeyz) has joined #zsh
+2016-09-28 20:36:06	psprint	the motivation is that parsing long text is very long, I've gained 600 ms by just avoiding ${#} in z-sy-h, e.g. https://github.com/zsh-users/zsh-syntax-highlighting/pull/374
+2016-09-28 20:37:51	psprint	CFLAGS=-O2 worked thanks
+2016-09-28 20:39:27	<--	mcmillhj (~huntermcm@c-71-62-149-7.hsd1.va.comcast.net) has quit (Ping timeout: 272 seconds)
+2016-09-28 20:44:31	<--	enkeyz (~enkeyz@unaffiliated/enkeyz) has quit (Ping timeout: 272 seconds)
+2016-09-28 20:50:00		[20:44]
+2016-09-28 20:56:29	-->	enkeyz (~enkeyz@unaffiliated/enkeyz) has joined #zsh
+2016-09-28 20:56:51	danielsh	psprint, what'd be the benefit of s/char/wchar_t/ ?
+2016-09-28 20:57:57	<--	enkeyz (~enkeyz@unaffiliated/enkeyz) has quit (Client Quit)
+2016-09-28 20:58:55	psprint	danielsh: currently if one indexes for N-th char, code iterates over each char with MB_METACHARLEN, counting bytes of variable-length characters
+2016-09-28 20:59:34	psprint	that's why ${#} is so slow
+2016-09-28 20:59:49	danielsh	ah!
+2016-09-28 21:00:12	psprint	I'm not sure about wchar_t, but the 4-bytes should be able to hold any unicode char, and indexing would be instant
+2016-09-28 21:00:35	psprint	izabera told that yash, yet another shell, uses wchar_t
+2016-09-28 21:00:53	danielsh	is it portable enough then ?
+2016-09-28 21:01:25	<--	alexandros_c (~alexandro@unaffiliated/alexandros-c/x-1684531) has quit (Ping timeout: 244 seconds)
+2016-09-28 21:02:23	-->	alexandros_c (~alexandro@unaffiliated/alexandros-c/x-1684531) has joined #zsh
+2016-09-28 21:05:38	psprint	danielsh: ?
+2016-09-28 21:05:38		[21:05]
+2016-09-28 21:07:18	danielsh	does it exist on every system that zsh currently builds on ?
