@@ -1,0 +1,146 @@
+2016-09-28 14:16:55	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined #openvpn
+2016-09-28 14:16:55		[14:16]
+2016-09-28 14:16:55	--	Topic for #openvpn is "openvpn: OpenVPN Community Support Channel || PLEASE read entire topic || Current Release: 2.3.12 (23 Aug 2016) || First time? Use !welcome and !goal || Access-Server? /join #openvpn-as || Your problem is probably firewall. Really || TAP/bridging is almost always a bad idea || Vulninfo: !heartbleed !poodle !ovpnuke !sweet32 || Patience is a virtue"
+2016-09-28 14:16:55	--	Topic set by danhunsaker (sid145261@openvpn/corp/danhunsaker) on Fri, 23 Sep 2016 09:00:56
+2016-09-28 14:16:56	--	Channel #openvpn: 218 nicks (7 ops, 2 voices, 209 normals)
+2016-09-28 14:16:57	--	Channel created on Sat, 25 Nov 2006 20:42:40
+2016-09-28 14:18:51	wallbroken	danhunsaker, i also tried removing "route 192.168.1.0 255.255.255.0"
+2016-09-28 14:18:54	wallbroken	but no luck
+2016-09-28 14:19:09	@danhunsaker	That would indicate another issue, yes.
+2016-09-28 14:20:01	<--	xamindar (~quassel@71-91-164-206.dhcp.gwnt.ga.charter.com) has quit (Remote host closed the connection)
+2016-09-28 14:20:19	wallbroken	nobody knows the possible reasons?
+2016-09-28 14:21:16	@danhunsaker	Those who do don't monitor the channel every second, so it might be a while before you get a response.
+2016-09-28 14:21:52	@danhunsaker	As I'm sure you've already seen from experience.
+2016-09-28 14:22:47	@danhunsaker	I get paid to hang out in here, but even I don't get paid to monitor the channel and respond immediately.
+2016-09-28 14:23:06	@danhunsaker	Also, business hours are over, here, so even then I'm only here by choice.
+2016-09-28 14:25:39	<--	wallbroken (~wallbroke@unaffiliated/wallbroken) has quit (Read error: Connection reset by peer)
+2016-09-28 14:25:54	-->	wallbroken (~wallbroke@unaffiliated/wallbroken) has joined #openvpn
+2016-09-28 14:31:00		[14:25]
+2016-09-28 14:35:17	wallbroken	danhunsaker, i fixed 1 problem
+2016-09-28 14:35:25	wallbroken	now i can ping 10.0.0.0
+2016-09-28 14:35:54	@danhunsaker	OK.  You don't have to mention me if we're the only ones talking, by the way.
+2016-09-28 14:36:05	@danhunsaker	:D
+2016-09-28 14:36:34	wallbroken	oh sorry, i don't want to be boring, so, nevermind
+2016-09-28 14:41:26	dcarmich	@danhunsaker: I've just updated my personal FreeBSD server from 10.3-RELEASE to 11.0-RELEASE, and every other service on it works fine other than my OpenVPN. The VPN connection is properly established from the endpoint to the server, but no traffic passes out of the server from the VPN client. Would it be best to ask on the FreeBSD forums?
+2016-09-28 14:42:10	@danhunsaker	Sounds like either firewall or routing to me.
+2016-09-28 14:42:42	@danhunsaker	But others may be more knowledgeable.
+2016-09-28 14:44:07	dcarmich	Here are my ipfw rules and netstat -r: http://pastebin.com/TCJFG87P
+2016-09-28 14:45:01	@danhunsaker	wallbroken: If you need my attention specifically, it's OK to mention me.  Didn't mean to imply I don't want people talking to me ever.  Just that you risk only talking to me, and having others (who may know the answer faster) skip your comments because they're addressed to me specifically.  (Plus, if we're the only ones actively talking, there isn't really
+2016-09-28 14:45:01	@danhunsaker	anyone else you'd be addressing anyway, so by default all your comments would be directed at me.)
+2016-09-28 14:45:58	wallbroken	i was mentioning you just because to get you answer faster. that's all
+2016-09-28 14:46:31	dcarmich	Any clues there?
+2016-09-28 14:46:31		[14:46]
+2016-09-28 14:48:08	@danhunsaker	wallbroken: While I understand that, it *is* a little rude...  :-\
+2016-09-28 14:49:01	@danhunsaker	dcarmich: Your routes are ... unusual.  The fact 10.8.0.1 and 10.8.0.2 are both routed to the lo device is also unusual.
+2016-09-28 14:49:57	@danhunsaker	The firewall rules don't seem to match up with the routes, either.  You have a route for 10.8.0.0/24, and a NAT rule for 10.8.0.0/16...
+2016-09-28 14:50:49	dcarmich	My hosting provider has their backup server on 10.12.44.0, and in the default image added a static route to the 10.0.0.0 network with '10.12.44.225' ... should I remove that?
+2016-09-28 14:50:55	dcarmich	(I'm not doing any routing-table stuff manually.)
+2016-09-28 14:52:15	@danhunsaker	That one shouldn't be causing any issues, here, as the 10.8.0.0/24 is more specific.
+2016-09-28 14:53:12	<--	wallbroken (~wallbroke@unaffiliated/wallbroken) has quit (Read error: Connection reset by peer)
+2016-09-28 14:54:01	-->	wallbroken (~wallbroke@unaffiliated/wallbroken) has joined #openvpn
+2016-09-28 14:56:08	<--	wallbroken (~wallbroke@unaffiliated/wallbroken) has quit (Read error: Connection reset by peer)
+2016-09-28 14:56:39	-->	wallbroken (~wallbroke@unaffiliated/wallbroken) has joined #openvpn
+2016-09-28 14:56:39	dcarmich	http://pastebin.com/tbdmw1MT
+2016-09-28 14:56:42	dcarmich	Here's my openvpn.conf.
+2016-09-28 15:02:00		[14:56]
+2016-09-28 15:03:01	<--	dcarmich (~dcarmich@c-73-22-88-72.hsd1.il.comcast.net) has quit (Read error: Connection reset by peer)
+2016-09-28 15:04:57	<--	shootbird (~quassel@beepbeep.serverpit.com) has quit (Ping timeout: 276 seconds)
+2016-09-28 15:07:52	<--	wallbroken (~wallbroke@unaffiliated/wallbroken) has quit (Read error: Connection reset by peer)
+2016-09-28 15:08:47	-->	wallbroken (~wallbroke@unaffiliated/wallbroken) has joined #openvpn
+2016-09-28 15:12:10	-->	shootbird (~quassel@beepbeep.serverpit.com) has joined #openvpn
+2016-09-28 15:15:09	<--	Amplificator (~quassel@unaffiliated/amplificator) has quit (Quit: No Ping reply in 150 seconds.)
+2016-09-28 15:16:22	-->	Amplificator (~quassel@unaffiliated/amplificator) has joined #openvpn
+2016-09-28 15:17:05	-->	bytesandbolts (~bytesandb@host86-183-11-7.range86-183.btcentralplus.com) has joined #openvpn
+2016-09-28 15:17:05		[15:17]
+2016-09-28 15:17:19	<--	shootbird (~quassel@beepbeep.serverpit.com) has quit (Remote host closed the connection)
+2016-09-28 15:17:40	-->	shootbird (~quassel@beepbeep.serverpit.com) has joined #openvpn
+2016-09-28 15:21:02	-->	MikeDebian (~ML@a81-84-80-8.cpe.netcabo.pt) has joined #openvpn
+2016-09-28 15:23:48	<--	shootbird (~quassel@beepbeep.serverpit.com) has quit (Ping timeout: 276 seconds)
+2016-09-28 15:25:26	-->	dcarmich (~dcarmich@c-73-22-88-72.hsd1.il.comcast.net) has joined #openvpn
+2016-09-28 15:25:29	dcarmich	back
+2016-09-28 15:25:33	dcarmich	@danhunsaker.. sorry... Mac crashed.
+2016-09-28 15:26:59	dcarmich	still here?
+2016-09-28 15:27:43	@danhunsaker	I'd dial back your verbosity to no greater than 4.  5 is mostly extraneous unless your issue really requires something only visible there.  Also, all the 'push' lines will only work on the server side.
+2016-09-28 15:28:12	@danhunsaker	And of course, as the /topic says, Patience is a virtue.  I don't live in IRC.  :P
+2016-09-28 15:29:24	@danhunsaker	But yeah, if that's your server config, the 'push' lines seem OK.
+2016-09-28 15:29:30	dcarmich	yep
+2016-09-28 15:29:31	dcarmich	that's server.
+2016-09-28 15:29:37	dcarmich	Any idea what could cause the routing-table issues?
+2016-09-28 15:29:49	@danhunsaker	Any number of hundreds of things.
+2016-09-28 15:29:58	-->	shootbird (~quassel@beepbeep.serverpit.com) has joined #openvpn
+2016-09-28 15:30:58	@danhunsaker	I generally defer to dazo, ecrist, krzee, or rob0 (when he's around) for most issues, as they've been doing this a *lot* longer than I have.
+2016-09-28 15:33:18	@danhunsaker	If you stick around for a while, one of them (or another knowledgeable user) can probably help you way better than I can.
+2016-09-28 15:33:18		[15:33]
+2016-09-28 15:33:32	@danhunsaker	I *can*, though, provide o little help...
+2016-09-28 15:33:35	@danhunsaker	!flowcharts
+2016-09-28 15:33:36	@vpnHelper	"flowcharts" is (#1) From !serverlan - http://pekster.sdf.org/misc/serverlan.png, or (#2) From !clientlan - http://pekster.sdf.org/misc/clientlan.png, or (#3) From !redirect - http://pekster.sdf.org/misc/redirect.png
+2016-09-28 15:35:38	dcarmich	Those won't open.
+2016-09-28 15:39:28	@danhunsaker	They've all loaded here...  You might need to try again in a bit.
+2016-09-28 15:39:57	@danhunsaker	You won't need to follow all of them, but they walk through basic steps to get up and going in the three most common scenarios.
+2016-09-28 15:40:26	@danhunsaker	(Or, well, rather they walk through troubleshooting steps for those scenarios.  See !howto for basic setup...)
+2016-09-28 15:42:45	dcarmich	!howto
+2016-09-28 15:42:46	@vpnHelper	"howto" is (#1) OpenVPN comes with a great howto, http://openvpn.net/howto PLEASE READ IT!, or (#2) http://www.secure-computing.net/openvpn/howto.php for a mirror, or (#3) Getting started with OpenVPN: https://community.openvpn.net/openvpn/wiki/GettingStartedwithOVPN
+2016-09-28 15:43:04	dcarmich	What times are dazo/ecrist/krzee/rob0 usually available?
+2016-09-28 15:48:25	@danhunsaker	The times vary by what else they're doing.
+2016-09-28 15:48:25		[15:48]
+2016-09-28 15:52:24	alyptik	dcarmich: i missed the first half of your problem
+2016-09-28 15:52:32	alyptik	could you re ask it
+2016-09-28 15:52:37	dcarmich	I've just updated my personal FreeBSD server from 10.3-RELEASE to 11.0-RELEASE, and every other service on it works fine other than my OpenVPN. The VPN connection is properly established from the endpoint to the server, but no traffic passes out of the server from the VPN client.
+2016-09-28 15:52:45	dcarmich	Here are my ipfw rules and netstat -r: http://pastebin.com/TCJFG87P
+2016-09-28 15:52:55	dcarmich	Here's my server-side openvpn.conf: http://pastebin.com/tbdmw1MT
+2016-09-28 15:55:29	alyptik	can you ping IPs like 8.8.8.8? or complete lack of network
+2016-09-28 15:56:07	dcarmich	complete lack of network.. the traffic hits the tun0 interface on the server side, but doesn't go out.
+2016-09-28 15:56:21	alyptik	is 199.102.76.114 your server or client
+2016-09-28 15:57:39	dcarmich	server
+2016-09-28 15:57:57	alyptik	dcarmich: trying to get a picture of your network, actually pastebin ip addr on both server and client
+2016-09-28 15:58:07	alyptik	`ip addr`*
+2016-09-28 15:58:28	dcarmich	server: 199.102.76.114 ... client: an iPhone on a cellular network.
+2016-09-28 15:58:33	alyptik	ah ok
+2016-09-28 15:58:35	dcarmich	(or public wifi.)
+2016-09-28 15:58:57	alyptik	can your client ping  199.102.76.114? and what is  199.102.76.113
+2016-09-28 16:00:16	dcarmich	actually..
+2016-09-28 16:00:23	dcarmich	113 is my server.
+2016-09-28 16:00:38	alyptik	so what is 114?
+2016-09-28 16:00:39	dcarmich	114 is my server.
+2016-09-28 16:00:40	dcarmich	sorry..
+2016-09-28 16:00:46	alyptik	so what is 113
+2016-09-28 16:00:56	dcarmich	gateway on my hosting provider's net..
+2016-09-28 16:01:15	alyptik	can you ping 114? and the route table you posted is your server right?
+2016-09-28 16:01:21	<--	krzee (~k@openvpn/community/support/krzee) has quit (Ping timeout: 240 seconds)
+2016-09-28 16:02:25	dcarmich	yep
+2016-09-28 16:02:46	alyptik	any way to get route table of iphone? dont own one myself
+2016-09-28 16:03:42	-->	chang (~vayne@pD9E44249.dip0.t-ipconnect.de) has joined #openvpn
+2016-09-28 16:03:42		[16:03]
+2016-09-28 16:04:03	dcarmich	no sadly.
+2016-09-28 16:04:44	alyptik	hm well try pinging  199.102.76.114 or in some way connecting to a service running on that
+2016-09-28 16:04:45	<--	pdobrogost_home (~quassel@77-255-246-50.adsl.inetia.pl) has quit (Ping timeout: 276 seconds)
+2016-09-28 16:06:17	alyptik	i am trying to figure out if your default route is somehow broken
+2016-09-28 16:06:49	dcarmich	tried to ping 10.8.0.1 or 10.8.0.2 from a test client...
+2016-09-28 16:06:51	dcarmich	no ping.
+2016-09-28 16:07:42	<--	yong (~vayne@pD9E44676.dip0.t-ipconnect.de) has quit (Ping timeout: 264 seconds)
+2016-09-28 16:08:14	alyptik	seems that is it, try push "redirect-gateway def1" instead of bypass-dhcp
+2016-09-28 16:10:06	alyptik	also try adding 'push "route 10.8.0.0 255.255.0.0"' if that fails
+2016-09-28 16:15:27	-->	pdobrogost_home (~quassel@87.205.145.84) has joined #openvpn
+2016-09-28 16:20:48	<--	wallbroken (~wallbroke@unaffiliated/wallbroken) has quit (Read error: Connection reset by peer)
+2016-09-28 16:20:48		[16:20]
+2016-09-28 16:21:19	-->	wallbroken (~wallbroke@unaffiliated/wallbroken) has joined #openvpn
+2016-09-28 16:23:57	<--	wallbroken (~wallbroke@unaffiliated/wallbroken) has quit (Read error: Connection reset by peer)
+2016-09-28 16:24:26	-->	wallbroken (~wallbroke@unaffiliated/wallbroken) has joined #openvpn
+2016-09-28 16:27:25	<--	wallbroken (~wallbroke@unaffiliated/wallbroken) has quit (Read error: Connection reset by peer)
+2016-09-28 16:27:28	dcarmich	I eill try thT
+2016-09-28 16:27:32	dcarmich	will try that
+2016-09-28 16:27:41	dcarmich	thanks
+2016-09-28 16:27:52	-->	wallbroken (~wallbroke@unaffiliated/wallbroken) has joined #openvpn
+2016-09-28 16:33:00		[16:27]
+2016-09-28 16:34:51	alyptik	yup
+2016-09-28 16:40:00		[16:34]
+2016-09-28 16:51:31	<--	MikeDebian (~ML@a81-84-80-8.cpe.netcabo.pt) has quit (Quit: Leaving)
+2016-09-28 16:54:01	<--	chachasmooth (~chachasmo@unaffiliated/chachasmooth) has quit (Ping timeout: 240 seconds)
+2016-09-28 16:56:43	-->	chachasmooth (~chachasmo@unaffiliated/chachasmooth) has joined #openvpn
+2016-09-28 16:56:43		[16:56]
+2016-09-28 17:00:15	-->	yong (~vayne@pD9E45367.dip0.t-ipconnect.de) has joined #openvpn
+2016-09-28 17:01:32	<--	yong (~vayne@pD9E45367.dip0.t-ipconnect.de) has quit (Remote host closed the connection)
+2016-09-28 17:01:57	<--	fp7 (~fp7@unaffiliated/fp7) has quit (Ping timeout: 276 seconds)
+2016-09-28 17:02:54	<--	chang (~vayne@pD9E44249.dip0.t-ipconnect.de) has quit (Ping timeout: 264 seconds)
+2016-09-28 17:04:01	<--	shootbird (~quassel@beepbeep.serverpit.com) has quit (Ping timeout: 240 seconds)
+2016-09-28 17:08:48	-->	shootbird (~quassel@beepbeep.serverpit.com) has joined #openvpn
