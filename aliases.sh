@@ -203,6 +203,35 @@ web_search_custom() {
 	open_command "$url"
 }
 
+skvm() {
+	local format
+	declare -a args
+	args=( "$1" )
+	for ((i=1;i<=${#}+1;i++)) shift && args+="$1"
+	format="${args[1]##*.}"
+	format="${format/cow/qcow2}"
+	[[ -z "$args[2]" || "$args[2]" == "null" ]] && {
+		qemu-system-x86_64 -boot menu=on \
+			-drive file="${args[1]?No image specified!}",format="$format",aio=native,cache.direct=on \
+			-enable-kvm -usbdevice tablet -machine type=pc,accel=kvm -cpu host -smp "${args[4]:-4}" -show-cursor \
+			-m "${args[3]:-2048}" -net nic -net bridge,br=virbr0,smb=/mnt/shared -vga "${args[5]:-virtio}"
+			-spice port=5930,disable-ticketing \
+			-device "${4:-virtio}"-serial-pci -device virtserialport,chardev=spicechannel0,name=com.redhat.spice.0 \
+			-chardev spicevmc,id=spicechannel0,name=vdagent \
+			-spice unix,addr=/tmp/vm_spice.socket,disable-ticketing,playback-compression=off
+		} || {
+		qemu-system-x86_64 -cdrom "${args[2]}" -boot order=d \
+			-drive file="${args[1]?No image specified!}",format="$format",aio=native,cache.direct=on \
+			-enable-kvm -usbdevice tablet -machine type=pc,accel=kvm -cpu host -smp "${args[4]:-4}" -show-cursor \
+			-m "${args[3]:-2048}" -net nic -net bridge,br=virbr0,smb=/mnt/shared -vga "${args[5]:-virtio}"
+			-spice port=5930,disable-ticketing \
+			-device "${4:-virtio}"-serial-pci -device virtserialport,chardev=spicechannel0,name=com.redhat.spice.0 \
+			-chardev spicevmc,id=spicechannel0,name=vdagent \
+			-spice unix,addr=/tmp/vm_spice.socket,disable-ticketing,playback-compression=off
+		#qemu-system-x86_64 -cdrom ~/sdxc/install-amd64-minimal-20160915.iso -boot order=d \
+		#-drive file=/@media/backup/gentoo.cow,format=qcow2 -enable-kvm -m 512 -net nic -net bridge,br=virbr0
+		}
+}
 brkvm() {
 	local format
 	declare -a args
@@ -213,25 +242,24 @@ brkvm() {
 	[[ -z "$args[2]" || "$args[2]" == "null" ]] && {
 		qemu-system-x86_64 -boot menu=on \
 			-drive file="${args[1]?No image specified!}",format="$format",aio=native,cache.direct=on \
-			-enable-kvm -usbdevice tablet -machine type=pc,accel=kvm -cpu host -smp 4 -show-cursor \
-			-m "${args[3]:-2048}" -net nic -net bridge,br=virbr0,smb=/mnt/shared \
-			-vga "${args[4]:-virtio}"; } || {
+			-enable-kvm -usbdevice tablet -machine type=pc,accel=kvm -cpu host -smp "${args[4]:-4}" -show-cursor \
+			-m "${args[3]:-2048}" -net nic -net bridge,br=virbr0,smb=/mnt/shared -vga "${args[5]:-virtio}"
 			#-spice port=5930,disable-ticketing \
 			#-device "${4:-virtio}"-serial-pci -device virtserialport,chardev=spicechannel0,name=com.redhat.spice.0 \
 			#-chardev spicevmc,id=spicechannel0,name=vdagent \
 			#-spice unix,addr=/tmp/vm_spice.socket,disable-ticketing,playback-compression=off; } || {
-	#format="${format/cow/qcow2}"
+		} || {
 		qemu-system-x86_64 -cdrom "${args[2]}" -boot order=d \
 			-drive file="${args[1]?No image specified!}",format="$format",aio=native,cache.direct=on \
-			-enable-kvm -usbdevice tablet -machine type=pc,accel=kvm -cpu host -smp 4 -show-cursor \
-			-m "${args[3]:-2048}" -net nic -net bridge,br=virbr0,smb=/mnt/shared \
-			-vga "${args[4]:-virtio}"; }
+			-enable-kvm -usbdevice tablet -machine type=pc,accel=kvm -cpu host -smp "${args[4]:-4}" -show-cursor \
+			-m "${args[3]:-2048}" -net nic -net bridge,br=virbr0,smb=/mnt/shared -vga "${args[5]:-virtio}"
 			#-spice port=5930,disable-ticketing \
 			#-device "${4:-virtio}"-serial-pci -device virtserialport,chardev=spicechannel0,name=com.redhat.spice.0 \
 			#-chardev spicevmc,id=spicechannel0,name=vdagent \
 			#-spice unix,addr=/tmp/vm_spice.socket,disable-ticketing,playback-compression=off; }
-	#qemu-system-x86_64 -cdrom ~/sdxc/install-amd64-minimal-20160915.iso -boot order=d \
-	#-drive file=/@media/backup/gentoo.cow,format=qcow2 -enable-kvm -m 512 -net nic -net bridge,br=virbr0
+		#qemu-system-x86_64 -cdrom ~/sdxc/install-amd64-minimal-20160915.iso -boot order=d \
+		#-drive file=/@media/backup/gentoo.cow,format=qcow2 -enable-kvm -m 512 -net nic -net bridge,br=virbr0
+		}
 }
 
 kvm() {
@@ -246,25 +274,24 @@ kvm() {
 #,if=virtio,aio=native,cache.direct=on \
 		qemu-system-x86_64 -boot menu=on \
 			-drive file="${args[1]?No image specified!}",format="$format",aio=native,cache.direct=on \
-			-enable-kvm -usbdevice tablet -machine type=pc,accel=kvm -cpu host -smp 4 -show-cursor \
-			-m "${args[3]:-2048}" -net nic -net bridge,br=virbr0,smb=/mnt/shared \
-			-vga "${args[4]:-virtio}"; } || {
+			-enable-kvm -usbdevice tablet -machine type=pc,accel=kvm -cpu host -smp "${args[4]:-4}" -show-cursor \
+			-m "${args[3]:-2048}" -net nic,mac=52:54:00:12:34:56 -net bridge,br=virbr0,smb=/mnt/shared -vga "${args[5]:-virtio}"
 			#-spice port=5930,disable-ticketing \
 			#-device "${4:-virtio}"-serial-pci -device virtserialport,chardev=spicechannel0,name=com.redhat.spice.0 \
 			#-chardev spicevmc,id=spicechannel0,name=vdagent \
 			#-spice unix,addr=/tmp/vm_spice.socket,disable-ticketing,playback-compression=off; } || {
-	#format="${format/cow/qcow2}"
+		} || {
 		qemu-system-x86_64 -cdrom "${args[2]}" -boot order=d \
 			-drive file="${args[1]?No image specified!}",format="$format",aio=native,cache.direct=on \
-			-enable-kvm -usbdevice tablet -machine type=pc,accel=kvm -cpu host -smp 4 -show-cursor \
-			-m "${args[3]:-2048}" -net nic,model=virtio -net bridge,br=virbr0,smb=/mnt/shared \
-			-vga "${args[4]:-virtio}"; }
+			-enable-kvm -usbdevice tablet -machine type=pc,accel=kvm -cpu host -smp "${args[4]:-4}" -show-cursor \
+			-m "${args[3]:-2048}" -net nic,52:54:00:12:34:56 -net bridge,br=virbr0,smb=/mnt/shared -vga "${args[5]:-virtio}"
 			#-spice port=5930,disable-ticketing \
 			#-device "${4:-virtio}"-serial-pci -device virtserialport,chardev=spicechannel0,name=com.redhat.spice.0 \
 			#-chardev spicevmc,id=spicechannel0,name=vdagent \
 			#-spice unix,addr=/tmp/vm_spice.socket,disable-ticketing,playback-compression=off; }
-	#qemu-system-x86_64 -cdrom ~/sdxc/install-amd64-minimal-20160915.iso -boot order=d \
-	#-drive file=/@media/backup/gentoo.cow,format=qcow2 -enable-kvm -m 512 -net nic -net bridge,br=virbr0
+		#qemu-system-x86_64 -cdrom ~/sdxc/install-amd64-minimal-20160915.iso -boot order=d \
+		#-drive file=/@media/backup/gentoo.cow,format=qcow2 -enable-kvm -m 512 -net nic -net bridge,br=virbr0
+		}
 }
 
 ovmf-kvm() {
@@ -279,25 +306,26 @@ ovmf-kvm() {
 	[[ -z "$args[2]" || "$args[2]" == "null" ]] && {
 		qemu-system-x86_64 -boot menu=on \
 			-drive file="${args[1]?No image specified!}",format="$format",aio=native,cache.direct=on \
-			-enable-kvm -usbdevice tablet -machine type=pc,accel=kvm -cpu host -smp 4 -show-cursor \
-			-m "${args[3]:-2048}" -net nic -net bridge,br=virbr0,smb=/mnt/shared \
-			-vga "${args[4]:-virtio}" -bios "${HOME}/ovmf_x64.bin"; } || {
+			-enable-kvm -usbdevice tablet -machine type=pc,accel=kvm -cpu host -smp "${args[4]:-4}" -show-cursor \
+			-m "${args[3]:-2048}" -net nic -net bridge,br=virbr0,smb=/mnt/shared -vga "${args[5]:-virtio}"
+			-bios "${HOME}/ovmf_x64.bin"
 			#-spice port=5930,disable-ticketing \
 			#-device "${4:-virtio}"-serial-pci -device virtserialport,chardev=spicechannel0,name=com.redhat.spice.0 \
 			#-chardev spicevmc,id=spicechannel0,name=vdagent \
 			#-spice unix,addr=/tmp/vm_spice.socket,disable-ticketing,playback-compression=off; } || {
-	#format="${format/cow/qcow2}"
+		} || {
 		qemu-system-x86_64 -cdrom "${args[2]}" -boot order=d \
 			-drive file="${args[1]?No image specified!}",format="$format",aio=native,cache.direct=on \
-			-enable-kvm -usbdevice tablet -machine type=pc,accel=kvm -cpu host -smp 4 -show-cursor \
-			-m "${args[3]:-2048}" -net nic -net bridge,br=virbr0,smb=/mnt/shared \
-			-vga "${args[4]:-virtio}" -bios "${HOME}/ovmf_x64.bin"; }
+			-enable-kvm -usbdevice tablet -machine type=pc,accel=kvm -cpu host -smp "${args[4]:-4}" -show-cursor \
+			-m "${args[3]:-2048}" -net nic -net bridge,br=virbr0,smb=/mnt/shared -vga "${args[5]:-virtio}"
+			-bios "${HOME}/ovmf_x64.bin"
 			#-spice port=5930,disable-ticketing \
 			#-device "${4:-virtio}"-serial-pci -device virtserialport,chardev=spicechannel0,name=com.redhat.spice.0 \
 			#-chardev spicevmc,id=spicechannel0,name=vdagent \
 			#-spice unix,addr=/tmp/vm_spice.socket,disable-ticketing,playback-compression=off; }
-	#qemu-system-x86_64 -cdrom ~/sdxc/install-amd64-minimal-20160915.iso -boot menu=on \
-	#-drive file=/@media/backup/gentoo.cow,format=qcow2 -enable-kvm -m 2048 -net nic -net bridge,br=virbr0
+		#qemu-system-x86_64 -cdrom ~/sdxc/install-amd64-minimal-20160915.iso -boot menu=on \
+		#-drive file=/@media/backup/gentoo.cow,format=qcow2 -enable-kvm -m 2048 -net nic -net bridge,br=virbr0
+		}
 }
 
 
