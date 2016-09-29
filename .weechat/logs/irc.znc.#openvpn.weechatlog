@@ -467,3 +467,678 @@
 2016-09-28 21:08:29	<--	krzee (9467285c@openvpn/community/support/krzee) has quit (Quit: Page closed)
 2016-09-28 21:10:47	-->	ade_b (~Ade@redhat/adeb) has joined #openvpn
 2016-09-28 21:10:53	--	ade_b is now known as ade
+2016-09-28 21:11:59	-->	nzoueidi (~Naeil@ubuntu/member/na3il) has joined #openvpn
+2016-09-28 21:17:00		[21:11]
+2016-09-28 21:23:58	--	irc: disconnected from server
+2016-09-29 00:46:15	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined #openvpn
+2016-09-29 00:46:15		[00:46]
+2016-09-29 00:46:15	--	Topic for #openvpn is "openvpn: OpenVPN Community Support Channel || PLEASE read entire topic || Current Release: 2.3.12 (23 Aug 2016) || First time? Use !welcome and !goal || Access-Server? /join #openvpn-as || Your problem is probably firewall. Really || TAP/bridging is almost always a bad idea || Vulninfo: !heartbleed !poodle !ovpnuke !sweet32 || Patience is a virtue"
+2016-09-29 00:46:15	--	Topic set by danhunsaker (sid145261@openvpn/corp/danhunsaker) on Fri, 23 Sep 2016 09:00:56
+2016-09-29 00:46:15	--	Channel #openvpn: 216 nicks (6 ops, 2 voices, 208 normals)
+2016-09-29 00:46:15	***	Buffer Playback...
+2016-09-29 00:46:15	krzee	[06:25:02] !iphone [06:25:02]
+2016-09-29 00:46:15	@vpnHelper	[06:25:03] "iphone" is (#1) OpenVPN Connect is now available for iOS in the App Store (see also: !connect), or (#2) https://community.openvpn.net/openvpn/wiki/IOSinline [06:25:03]
+2016-09-29 00:46:15	dcarmich	[06:28:08] thanks :) [06:28:08]
+2016-09-29 00:46:15	krzee	[06:28:59] and maybe it does work with files, i see i said i expected it to if i was using itunes [06:28:59]
+2016-09-29 00:46:15	krzee	[06:29:24] but give it a try [06:29:24]
+2016-09-29 00:46:15	krzee	[06:29:46] and you're welcome [06:29:46]
+2016-09-29 00:46:15	dcarmich	[06:30:32] Finally got it working ... thank you... but the performance is rather on the low side.. any tips for boosting it? [06:30:32]
+2016-09-29 00:46:15	krzee	[06:30:54] !speed [06:30:54]
+2016-09-29 00:46:15	@vpnHelper	[06:30:55] "speed" is (#1) Having speed problems? The following suggestions may help., or (#2) OpenVPN is often CPU bound; check utilization, and remember it only uses 1 core (single-threaded), or (#3) MTU issues? Send max-size DF packets and watch for fragmentation/delivery issues (see !mtu), or (#4) iface txqueuelen often needs to be >100 on fast and/or latent links, or (#5) less likely are issues with bad [06:30:55]
+2016-09-29 00:46:15	@vpnHelper	[06:30:56] TCP window scaling or the sliding window; generally, don't 2nd guess TCP (in openvpn or your OS knobs), or (#6) prefer tun over tap (see !tunortap and !whybridge) and UDP over TCP (see !tcp), or (#7) if iperf on public ip is also bad, dont expect openvpn to magically make your connection to the server better., or (#8) also consider testing without compression (on _both_ sides, try: --comp-lzo no), or [06:30:56]
+2016-09-29 00:46:15	@vpnHelper	[06:30:57] (#9) a user reported that http://lowendtalk.com/discussion/comment/843711/ helped them. [06:30:57]
+2016-09-29 00:46:15	krzee	[06:35:40] oh it looks like you needed to put those push sndbuf rcvbuf lines direct into client config [06:35:40]
+2016-09-29 00:46:15	krzee	[06:36:09] according to the link in !speed, and thats from a skilled user [06:36:09]
+2016-09-29 00:46:15	krzee	[06:36:26] id try his advice [06:36:26]
+2016-09-29 00:46:15	dcarmich	[06:49:47] now... when I try using 'keep-state' on the 'nat 1 ip from 10.8.0.0/16 to any out via xn0' rule.. the traffic doesn't come back in. [06:49:47]
+2016-09-29 00:46:15	krzee	[06:51:56] did you also check-state> [06:51:56]
+2016-09-29 00:46:15	krzee	[06:52:10] your ipfw would be better worked on in #freebsd [06:52:10]
+2016-09-29 00:46:15	krzee	[06:52:22] they have wayyyyyy more people who use ipfw [06:52:22]
+2016-09-29 00:46:15	dcarmich	[06:54:02] ok. [06:54:02]
+2016-09-29 00:46:15	dcarmich	[06:54:06] Now.. for future reference... [06:54:06]
+2016-09-29 00:46:15	dcarmich	[06:54:12] what was the problem breaking the connection in this case? [06:54:12]
+2016-09-29 00:46:15	krzee	[06:54:20] viscosity sucks [06:54:20]
+2016-09-29 00:46:15	krzee	[06:54:28] literally, thats all it was [06:54:28]
+2016-09-29 00:46:15	krzee	[06:54:51] you were using the wrong compression settings and cipher [06:54:51]
+2016-09-29 00:46:15	dcarmich	[06:54:56] I see. [06:54:56]
+2016-09-29 00:46:15	krzee	[06:54:59] which will DEFINITELY break some stuff [06:54:59]
+2016-09-29 00:46:15	krzee	[06:57:31] i havent used ipfw since freebsd 4 [06:57:31]
+2016-09-29 00:46:15	krzee	[06:57:35] lol [06:57:35]
+2016-09-29 00:46:15	krzee	[06:57:51] possibly 3.something for ipfw actually [06:57:51]
+2016-09-29 00:46:15	krzee	[06:58:05] i may have used ipf all of 4 [06:58:05]
+2016-09-29 00:46:15	dcarmich	[07:06:49] I see.. thank you again.. :) [07:06:49]
+2016-09-29 00:46:15	krzee	[07:08:06] you're welcome, have fun! [07:08:06]
+2016-09-29 00:46:15	krzee	[07:08:12] and gnite, im gone [07:08:12]
+2016-09-29 00:46:15	@danhunsaker	[08:07:38] dcarmich: Something to keep in mind with Connect (which is the only OpenVPN client on iOS that I'm aware of): [08:07:38]
+2016-09-29 00:46:15	@danhunsaker	[08:07:42] !connect [08:07:42]
+2016-09-29 00:46:15	@vpnHelper	[08:07:43] "connect" is (#1) OpenVPN Connect is part of the commercial, non-free (non-GPL) corporate offering; see #openvpn-as for help with these. For the community-maintained GPL OpenVPN, see !download for download links, !android for GPL-openvpn on Android, or !howto for the beginner how-to guide, or (#2) the source is here: http://staging.openvpn.net/openvpn3/ except for the portion that may not be [08:07:43]
+2016-09-29 00:46:15	@vpnHelper	[08:07:44] released because of NDA with apple (for its vpn API), or (#3) It is impossible to retrieve your configuration from Connect itself. This is by design. Keep a copy of your config (and any certs/keys/etc that go with it) someplace safe, and where you can find it later. [08:07:44]
+2016-09-29 00:46:15	@danhunsaker	[08:07:54] ^ See #3 [08:07:54]
+2016-09-29 00:46:15	mxmxmx	[10:13:16] !welcome [10:13:16]
+2016-09-29 00:46:15	@vpnHelper	[10:13:16] "welcome" is (#1) Start by stating your !goal, such as 'I would like to access the internet over my vpn', or (#2) New to IRC? see the link in !ask, or (#3) We may need you to !paste your !logs and !configs and maybe !interface to help you, or (#4) See !howto for beginners, or (#5) See !route for lans behind openvpn, or (#6) !redirect for sending inet traffic through the server, or (#7) Also [10:13:16]
+2016-09-29 00:46:15	@vpnHelper	[10:13:17] interesting: !man !/30 !topology !iporder !sample !forum !wiki !mitm, or (#8) Don't use 192.168.1.0/24 or 192.168.0.0/24 (too much potential for conflict), or (#9) And again, if you think you need !tap, you're probably wrong [10:13:17]
+2016-09-29 00:46:15	mxmxmx	[10:14:51] !goal I would like to set SNI for openvpn client like I do with openssl ("openssl s_client -servername ...") [10:14:51]
+2016-09-29 00:46:15	mxmxmx	[10:15:34] Is it actually possible ? :) [10:15:34]
+2016-09-29 00:46:15	@plai	[10:26:19] mxmxmx: no [10:26:19]
+2016-09-29 00:46:15	@plai	[10:26:30] openvpn doesn't do SNI [10:26:30]
+2016-09-29 00:46:15	@plai	[10:27:06] you could just use a different port for different VPNs [10:27:06]
+2016-09-29 00:46:15	mxmxmx	[10:30:52] plai, thanks, yep, but I would like to avoid that ideally :> [10:30:52]
+2016-09-29 00:46:15	@plai	[10:42:57] mxmxmx: then you are probably out of luck [10:42:57]
+2016-09-29 00:46:15	@plai	[10:43:19] also your use case is probably quite esoteric for most people using OpenVPN [10:43:19]
+2016-09-29 00:46:15	@plai	[10:43:31] you are the first one I have seen asking for SNI [10:43:31]
+2016-09-29 00:46:15	***	Playback Complete.
+2016-09-29 00:46:44	<--	metachr0n (~nobody@78.1.broadband13.iol.cz) has quit (Quit: WeeChat 1.5)
+2016-09-29 00:47:11	-->	metachr0n (~nobody@46.166.137.197) has joined #openvpn
+2016-09-29 00:47:22	--	Channel created on Sat, 25 Nov 2006 20:42:40
+2016-09-29 00:47:40	-->	chachasmooth (~chachasmo@unaffiliated/chachasmooth) has joined #openvpn
+2016-09-29 00:48:21	<--	AlexRussia (~Alex@unaffiliated/alexrussia) has quit (Ping timeout: 272 seconds)
+2016-09-29 00:54:00		[00:48]
+2016-09-29 00:58:39	-->	AlexRussia (~Alex@unaffiliated/alexrussia) has joined #openvpn
+2016-09-29 01:04:00		[00:58]
+2016-09-29 01:13:46	<--	moriko (~moriko@178.162.222.41.adsl.inet-telecom.org) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-09-29 01:16:47	-->	tomaz__ (~tomaz__@89-212-78-6.static.t-2.net) has joined #openvpn
+2016-09-29 01:22:00		[01:16]
+2016-09-29 01:30:44	wallbroken	to create cetificates on windows, what do i need to enable?
+2016-09-29 01:30:52	wallbroken	"openSSL utilities" ?
+2016-09-29 01:34:13	Gaffel	Download and install.
+2016-09-29 01:35:44	wallbroken	i done a precise question
+2016-09-29 01:36:40	Gaffel	https://www.openssl.org/
+2016-09-29 01:36:42	@vpnHelper	Title: /index.html (at www.openssl.org)
+2016-09-29 01:37:23	wallbroken	Gaffel, i was talking about openvpn installation
+2016-09-29 01:37:23		[01:37]
+2016-09-29 01:37:55	Gaffel	Yes?
+2016-09-29 01:38:08	Gaffel	You need certificates, don't you?
+2016-09-29 01:38:44	wallbroken	Gaffel, my question is clear
+2016-09-29 01:38:46	<--	deadhead9 (~deadhead@162.219.178.82) has quit (Read error: Connection reset by peer)
+2016-09-29 01:38:52	wallbroken	maybe you did undestand that
+2016-09-29 01:39:07	-->	deadhead9 (~deadhead@162.219.179.34) has joined #openvpn
+2016-09-29 01:39:07	Gaffel	It's not clear. If it was then we wouldn't be having this conversation.
+2016-09-29 01:39:21	<--	lbft (~lbft@unaffiliated/lbft) has quit (Ping timeout: 240 seconds)
+2016-09-29 01:40:06	-->	moriko (~moriko@178.162.222.41.adsl.inet-telecom.org) has joined #openvpn
+2016-09-29 01:40:36	wallbroken	Gaffel, i need to CREATE new certificates, ok?
+2016-09-29 01:40:48	wallbroken	and also, i need to install openVPN
+2016-09-29 01:40:51	Gaffel	And I've replied.
+2016-09-29 01:41:01	Gaffel	You need a tool that creates certificates.
+2016-09-29 01:41:09	Gaffel	OpenSSL has the tool for that.
+2016-09-29 01:41:13	wallbroken	when you install openvpn, there are components list to be checked to install
+2016-09-29 01:41:30	Gaffel	Okay, yes.
+2016-09-29 01:41:36	wallbroken	one of thet is "OpenSSL utilities"
+2016-09-29 01:41:43	wallbroken	is that i need to create certs?
+2016-09-29 01:41:46	Gaffel	Yes
+2016-09-29 01:41:53	Gaffel	You claimed that you question was clear, it wasn't.
+2016-09-29 01:42:05	wallbroken	i don't need also "easyrsa" ?
+2016-09-29 01:42:15	Gaffel	You never said that you were looking at the OpenVPN for Windows.
+2016-09-29 01:42:27	Gaffel	So your claim that your question was clear is FALSE.
+2016-09-29 01:42:36	Gaffel	No, easyrsa is not required but it makes it easier.
+2016-09-29 01:43:53	wallbroken	Gaffel, so i need "openSSL utilities" on openvpn installation?
+2016-09-29 01:44:11	Gaffel	I answered Yes.
+2016-09-29 01:44:36	wallbroken	there are also "Openvpn rsa certificate management script", this is easyrsa?
+2016-09-29 01:45:05	Gaffel	I guess.
+2016-09-29 01:45:20	-->	lbft (~lbft@unaffiliated/lbft) has joined #openvpn
+2016-09-29 01:45:34	wallbroken	another thing: i'm trying to enable redirection on server
+2016-09-29 01:45:38	wallbroken	it's all ok
+2016-09-29 01:45:51	wallbroken	the only problem is in netfilter
+2016-09-29 01:46:18	wallbroken	the only command to make it work is: "iptables -I FORWARD -i tun+ -j ACCEPT"
+2016-09-29 01:46:37	wallbroken	but i don't like it very much
+2016-09-29 01:46:43	Gaffel	Why not?
+2016-09-29 01:47:07	wallbroken	because usually i always used:
+2016-09-29 01:47:09	wallbroken	iptables -P FORWARD DROP
+2016-09-29 01:47:10	wallbroken	iptables -A FORWARD -s 10.0.0.0/24 -i tun0 -j ACCEPT
+2016-09-29 01:47:10	wallbroken	iptables -A FORWARD -o tun0 -m state --state RELATED,ESTABLISHED -j ACCEPT
+2016-09-29 01:47:14	wallbroken	but this time this is not working
+2016-09-29 01:47:19	wallbroken	and i don't know why
+2016-09-29 01:47:45	Gaffel	Is it the right subnet?
+2016-09-29 01:47:53	<--	AlexRussia (~Alex@unaffiliated/alexrussia) has quit (Ping timeout: 272 seconds)
+2016-09-29 01:53:00		[01:47]
+2016-09-29 01:58:27	wallbroken	Gaffel, yes
+2016-09-29 01:58:30	wallbroken	255.255.255.0
+2016-09-29 02:02:08	Gaffel	So all the clients get 10.0.0.x?
+2016-09-29 02:06:05	wallbroken	i want to connect to 192.168.1.20 from 10.0.0.2
+2016-09-29 02:07:48	@dazo	mxmxmx: so you want your server certificate to have several valid hostnames?  .... why not use --verify-x509-name to validate the certificate CN instead of using SNI?
+2016-09-29 02:09:46	-->	NoSleeves (uid180082@gateway/web/irccloud.com/x-mwpsvxrbhwlseymw) has joined #openvpn
+2016-09-29 02:09:46		[02:09]
+2016-09-29 02:10:49	<--	wallbroken (~wallbroke@unaffiliated/wallbroken) has quit (Read error: Connection reset by peer)
+2016-09-29 02:11:01	<--	Ryushin (user@windwalker.chrisdos.com) has quit (Ping timeout: 240 seconds)
+2016-09-29 02:11:17	-->	wallbroken (~wallbroke@unaffiliated/wallbroken) has joined #openvpn
+2016-09-29 02:11:33	-->	j12t (~j12t@c-50-131-55-96.hsd1.ca.comcast.net) has joined #openvpn
+2016-09-29 02:17:00		[02:11]
+2016-09-29 02:17:42	<--	j12t (~j12t@c-50-131-55-96.hsd1.ca.comcast.net) has quit (Ping timeout: 276 seconds)
+2016-09-29 02:19:28	mxmxmx	dazo, thanks, I was indeed looking at this option right now
+2016-09-29 02:20:08	mxmxmx	dazo, basically what im trying to do is redirect clients to multiple openvpn servers using haproxy
+2016-09-29 02:20:15	-->	AlexRussia (~Alex@unaffiliated/alexrussia) has joined #openvpn
+2016-09-29 02:20:39	-->	BloodCountess (~Tess@unaffiliated/bloodcountess) has joined #openvpn
+2016-09-29 02:22:34	mxmxmx	dazo, thats why I thought about SNI : be able to redirect clients requesting [pattern].example.com to openvpn-backend-[pattern]
+2016-09-29 02:23:35	@dazo	mxmxmx: right ... I don't recall now how flexible --verify-x509-name is ... but you certainly can generate individual certificates with the same CN together with --verify-x509-name
+2016-09-29 02:24:09	@dazo	mxmxmx: but for your haproxy front-end, just beware that established connections needs to go to the same backend
+2016-09-29 02:24:42	<--	wallbroken (~wallbroke@unaffiliated/wallbroken) has quit (Read error: Connection reset by peer)
+2016-09-29 02:25:33	mxmxmx	dazo, yep, its really about proxying clients to their openvpn server using a single IP address
+2016-09-29 02:25:39	-->	wallbroken (~wallbroke@unaffiliated/wallbroken) has joined #openvpn
+2016-09-29 02:25:39	<--	CaTtleyA (~CaTtleyA@lputeaux-656-1-50-20.w82-127.abo.wanadoo.fr) has quit (Ping timeout: 268 seconds)
+2016-09-29 02:26:47	@dazo	mxmxmx: so you wanted to use SNI to tell the haproxy which specific backends it should use?
+2016-09-29 02:27:17	@dazo	(if so, then --verify-x509-name won't help at all)
+2016-09-29 02:27:38	mxmxmx	dazo, yes exactly
+2016-09-29 02:30:26	@dazo	okay, then you need proper SNI which OpenVPN cannot do
+2016-09-29 02:31:22	wallbroken	ok, i solved with iptables -F FORWARD before rules
+2016-09-29 02:31:33	wallbroken	i think you need to fix openvpn documentation
+2016-09-29 02:31:52	@dazo	wallbroken: which docs?
+2016-09-29 02:32:08	wallbroken	https://community.openvpn.net/openvpn/wiki/BridgingAndRouting
+2016-09-29 02:32:08		[02:32]
+2016-09-29 02:32:09	@vpnHelper	Title: BridgingAndRouting – OpenVPN Community (at community.openvpn.net)
+2016-09-29 02:32:17	wallbroken	there is some iptables instruction
+2016-09-29 02:32:46	@dazo	wallbroken: which uses -I which should go on top of everything
+2016-09-29 02:33:18	@dazo	and no, we will not add -F ... because that flushes all rules ... which can really mess up things for users
+2016-09-29 02:34:01	mxmxmx	dazo, thanks for your help, I will try a different approach !
+2016-09-29 02:34:08	@dazo	mxmxmx: yw!
+2016-09-29 02:34:19	wallbroken	dazo, ok, thank you
+2016-09-29 02:34:45	wallbroken	dazo, i also found this method:
+2016-09-29 02:34:46	wallbroken	iptables -P FORWARD DROP
+2016-09-29 02:34:47	wallbroken	iptables -A FORWARD -s 10.0.0.0/24 -i tun0 -j ACCEPT
+2016-09-29 02:34:47	wallbroken	iptables -A FORWARD -o tun0 -m state --state RELATED,ESTABLISHED -j ACCEPT
+2016-09-29 02:34:59	wallbroken	you think i need to change -A and -P with -I at all?
+2016-09-29 02:39:45	-->	mexx (~huy@unaffiliated/mexx) has joined #openvpn
+2016-09-29 02:39:47	mexx	Hello
+2016-09-29 02:41:34	mexx	I have a small server in colo and my hoster provides /56 inet6 connectivity, I want to share a /64 with one of my openvpn clients, how would I do that ?
+2016-09-29 02:43:02	<--	wallbroken (~wallbroke@unaffiliated/wallbroken) has quit (Read error: Connection reset by peer)
+2016-09-29 02:43:32	-->	wallbroken (~wallbroke@unaffiliated/wallbroken) has joined #openvpn
+2016-09-29 02:47:54	BtbN	pick a /64, configure openvpn to use it.
+2016-09-29 02:47:54		[02:47]
+2016-09-29 02:48:03	BtbN	A /64 is quite excessive for OpenVPN though
+2016-09-29 02:48:15	BtbN	it's not like you'll ever have a couple trillion of clients
+2016-09-29 02:48:42	mexx	/128 ?
+2016-09-29 02:49:11	BtbN	That'd leave you with exactly one client!
+2016-09-29 02:49:23	mexx	:)
+2016-09-29 02:49:31	BtbN	I usually use a /112
+2016-09-29 02:49:41	BtbN	so 65k clients, still plenty
+2016-09-29 02:49:41	mexx	I actually already have  server-ipv6 /64 in my conf
+2016-09-29 02:50:09	BtbN	you also want a propper IPv6 firewall and forwarding, of course.
+2016-09-29 02:50:34	mexx	and something like radvd ?
+2016-09-29 02:50:38	BtbN	no
+2016-09-29 02:50:53	BtbN	there is no layer2 with OpenVPN unless you use tap VPN, which is a bad idea in 99% of the cases.
+2016-09-29 02:51:14	mexx	so how can I distribute addresses ?
+2016-09-29 02:51:19	mexx	dhcpv6 ?
+2016-09-29 02:51:26	BtbN	You tell OpenVPN which addresses to use.
+2016-09-29 02:51:47	<--	rustic (~rustic@144.202.228.211) has quit (Remote host closed the connection)
+2016-09-29 02:52:30	<--	Hobbyboy (Hobbyboy@gateway/shell/panicbnc/x-qcnaaoajtiewhzvk) has quit (Ping timeout: 272 seconds)
+2016-09-29 02:52:40	mexx	I probably misexplained, I want my openvpn client which is a lan router to share its inet6 connectivity with local lan
+2016-09-29 02:52:42	<--	wallbroken (~wallbroke@unaffiliated/wallbroken) has quit (Read error: Connection reset by peer)
+2016-09-29 02:53:10	-->	wallbroken (~wallbroke@unaffiliated/wallbroken) has joined #openvpn
+2016-09-29 02:53:30	-->	ExoUNX (~textual@unaffiliated/exounx) has joined #openvpn
+2016-09-29 02:53:45	-->	Ryushin (~Ryushin@50-203-182-130-static.hfc.comcastbusiness.net) has joined #openvpn
+2016-09-29 02:53:47	BtbN	Then just put any IPv6 network on the VPN itself, a private fd20:... one or something, pick a /64, route it to the address of your routers OpenVPN client, and set up the usual networking tools there.
+2016-09-29 02:55:35	mexx	then I won't be able to route clients ?
+2016-09-29 02:56:02	mexx	to the big internet6
+2016-09-29 02:56:09	BtbN	why wouldn't you?
+2016-09-29 02:56:41	BtbN	you can just set the default route over the VPN, as you probably don't have a native connection.
+2016-09-29 02:58:14	mexx	https://en.wikipedia.org/wiki/Unique_local_address, says "They are not routable in the global IPv6 Internet"
+2016-09-29 02:58:23	mexx	but maybe I misunderstood you
+2016-09-29 02:59:06	@dazo	mexx: OpenVPN assigns IP addresses and tells clients which IP to use
+2016-09-29 02:59:35	mexx	dazo: indeed I do get an ipv6 address
+2016-09-29 02:59:36	@dazo	the rest is tackled by normal TCP/IP routing
+2016-09-29 03:00:08	@dazo	which openvpn can setup too ... either by using --route directly in configs .... or --push "route ...." from the server
+2016-09-29 03:00:34	@dazo	https://community.openvpn.net/openvpn/wiki/GettingStartedwithOVPN#Configuringthenetworklayer
+2016-09-29 03:00:35	@vpnHelper	Title: GettingStartedwithOVPN – OpenVPN Community (at community.openvpn.net)
+2016-09-29 03:00:56	@dazo	https://community.openvpn.net/openvpn/wiki/GettingStartedwithOVPN#WhataboutIPv6
+2016-09-29 03:00:58	@vpnHelper	Title: GettingStartedwithOVPN – OpenVPN Community (at community.openvpn.net)
+2016-09-29 03:00:59	BtbN	you need something to route over.
+2016-09-29 03:01:14	BtbN	So you need some addresses on the tunnel
+2016-09-29 03:01:51	mexx	dazo: I have push "route-ipv6 2000::/3"
+2016-09-29 03:02:02	@dazo	BtbN: [advanced topic] ... it is possible to have a tunnel without IP addresses and do routing on device level .... but, that's not for noobs :)
+2016-09-29 03:02:42	@dazo	mexx: good ... then you need to ensure you have IPv6 forwarding enabled ... and that your firewall allows IPv6 traffic to pass from VPN to wherever
+2016-09-29 03:02:44	BtbN	dazo, that's not easily possible in a multi-client VPN
+2016-09-29 03:02:50	BtbN	unless you want to send all clients all your traffic
+2016-09-29 03:03:12	<--	fengshaun (~fengshaun@unaffiliated/fengshaun) has quit (Ping timeout: 276 seconds)
+2016-09-29 03:03:12		[03:03]
+2016-09-29 03:03:17	mexx	dazo: but how do I attribute ipv6 addresses to devices on the local lan ?
+2016-09-29 03:03:34	BtbN	dnsmasq is a nice and integrated solution for small networks.
+2016-09-29 03:04:15	@dazo	BtbN: it is possible in multi-client setups too .... JJK have described that in his OpenVPN 2 Cookbook (p.306)
+2016-09-29 03:04:42	<--	DArqueBishop (~drkbish@tyrande.darquecathedral.org) has quit (Quit: End of line.)
+2016-09-29 03:05:31	@dazo	BtbN: but it needs TAP
+2016-09-29 03:05:49	BtbN	well, you essentialy route to a mac then.
+2016-09-29 03:05:55	@dazo	yeah
+2016-09-29 03:07:23	@dazo	mexx: okay ... so you then need a separate /64 on your LAN which is then routed via the VPN /112 (or /64) subnet ... your LAN can use radvd to quickly get a stateless autoconfig setup running
+2016-09-29 03:08:46	@dazo	(as I said: "the rest is tackled by normal TCP/IP routing")
+2016-09-29 03:10:50	mexx	but then I can only go as far as the openvpn server ?
+2016-09-29 03:11:45	-->	DArqueBishop (~drkbish@tyrande.darquecathedral.org) has joined #openvpn
+2016-09-29 03:13:56	@dazo	mexx: no.  Run radvd on your openvpn client, then tell it to announce that client as the default gw (route ::/0 {} block)
+2016-09-29 03:15:01	mexx	but since there's no nat like mechanism, how do I route private addresses once I get on the vpn server ?
+2016-09-29 03:15:24	BtbN	what private addresses?
+2016-09-29 03:15:35	@dazo	why can you not use a /64 segment of your public pool?
+2016-09-29 03:15:57	mexx	oh
+2016-09-29 03:16:04	@dazo	you just declare for yourself that *this* /64 belongs to the LAN behind your VPN client
+2016-09-29 03:16:06	mexx	of course
+2016-09-29 03:16:17	BtbN	you don't need public addresses on the VPN though
+2016-09-29 03:16:22	BtbN	no need to waste a subnet there
+2016-09-29 03:16:26	@dazo	fair enough
+2016-09-29 03:17:06	-->	CaTtleyA (~CaTtleyA@lputeaux-656-1-50-20.w82-127.abo.wanadoo.fr) has joined #openvpn
+2016-09-29 03:17:53	mexx	BtbN: like you said, i will probably never get a trillion of clients
+2016-09-29 03:18:22	BtbN	for router-advertisement you still need a /64 though
+2016-09-29 03:18:22		[03:18]
+2016-09-29 03:18:24	BtbN	no other way to do it
+2016-09-29 03:18:42	mexx	oh ok
+2016-09-29 03:19:45	-->	dadinn (~you-user-@82-132-223-183.dab.02.net) has joined #openvpn
+2016-09-29 03:20:52	-->	xamindar (~quassel@71-91-164-206.dhcp.gwnt.ga.charter.com) has joined #openvpn
+2016-09-29 03:23:08	ThinkPrivacy	I am having an issue with my openvpn server.  I can connect my clients ok but only 1 client can ping the server, the server can't ping any clients and the clients can't ping each other... I think I need some help ;)
+2016-09-29 03:26:21	<--	Voldenet (~Voldenet@unaffiliated/voldenet) has quit (Ping timeout: 240 seconds)
+2016-09-29 03:30:49	<--	xamindar (~quassel@71-91-164-206.dhcp.gwnt.ga.charter.com) has quit (Read error: Connection reset by peer)
+2016-09-29 03:31:45	@plai	mxmxmx: also haproxy does not speak the openvpn protocol
+2016-09-29 03:32:19	@plai	you would need to implement something that understands openvpn protocol enough to extract the SNI information from that
+2016-09-29 03:32:30	-->	Voldenet (~Voldenet@unaffiliated/voldenet) has joined #openvpn
+2016-09-29 03:33:13	@plai	setting sni on the client side of openvpn is probably not that problematic
+2016-09-29 03:33:30	@plai	but impelementing real SNI in the server side is probably not going to happen anytime soon
+2016-09-29 03:33:30		[03:33]
+2016-09-29 03:33:40	<--	wuseman (~wusidusi@unaffiliated/wuseman) has quit (Ping timeout: 272 seconds)
+2016-09-29 03:33:40	@plai	(whihc you would not need with a proxy)
+2016-09-29 03:34:19	mxmxmx	plai, Ok I thought this was standardized, I didnt realize it should be openvpn specific
+2016-09-29 03:34:33	@plai	sni is standardized
+2016-09-29 03:34:48	@plai	but openvpn doesn't use the standard tcp/ssl protocol
+2016-09-29 03:35:10	@plai	it uses its own protocol since it also has to work over udp
+2016-09-29 03:37:06	-->	xamindar (~quassel@71-91-164-206.dhcp.gwnt.ga.charter.com) has joined #openvpn
+2016-09-29 03:38:02	mxmxmx	plai, thanks, yes, sounds obvious now
+2016-09-29 03:39:54	mxmxmx	plai, maybe I could use "sslh", I think I have seen SNI support
+2016-09-29 03:40:23	mxmxmx	(SNI support for selecting probes)
+2016-09-29 03:42:21	<--	dadinn (~you-user-@82-132-223-183.dab.02.net) has quit (Ping timeout: 240 seconds)
+2016-09-29 03:42:47	-->	dadinn (~you-user-@82-132-235-4.dab.02.net) has joined #openvpn
+2016-09-29 03:47:41	-->	Abbott (~Abbott@unaffiliated/abbott) has joined #openvpn
+2016-09-29 03:48:58	Abbott	I'd like to be able to connect to my VPN and route all traffic, but also connect just to get access to the LAN. Is the only way to accomplish this by running two separate instances of openvpn?
+2016-09-29 03:48:58		[03:48]
+2016-09-29 03:51:57	@plai	no
+2016-09-29 03:52:19	@plai	just add redirect-gateway to one client config and do not add it to the other
+2016-09-29 03:53:24	-->	darxun (darxun@crew.of.the.worldwide.famous.micros0ft.dk) has joined #openvpn
+2016-09-29 03:53:35	-->	Hobbyboy (Hobbyboy@gateway/shell/panicbnc/x-ljvyzpheftqabldf) has joined #openvpn
+2016-09-29 03:59:00		[03:53]
+2016-09-29 04:02:59	-->	guampa (~guampa@unaffiliated/guampa) has joined #openvpn
+2016-09-29 04:08:00		[04:02]
+2016-09-29 04:08:03	-->	bf_ (~bf_@xdsl-78-35-86-235.netcologne.de) has joined #openvpn
+2016-09-29 04:14:00		[04:08]
+2016-09-29 04:17:47	-->	designbybeck (~designbyb@x169y027.angelo.edu) has joined #openvpn
+2016-09-29 04:23:00		[04:17]
+2016-09-29 04:36:16	-->	SkinnyMelon (~SkinnyMel@gw.jak.sulinet.hu) has joined #openvpn
+2016-09-29 04:37:07	<--	moriko (~moriko@178.162.222.41.adsl.inet-telecom.org) has quit (Read error: Connection reset by peer)
+2016-09-29 04:42:51	-->	moriko (~moriko@178.162.222.41.adsl.inet-telecom.org) has joined #openvpn
+2016-09-29 04:42:51		[04:42]
+2016-09-29 04:51:39	-->	johnny56 (~johnny56@unaffiliated/johnny56) has joined #openvpn
+2016-09-29 04:55:06	<--	AlexRussia (~Alex@unaffiliated/alexrussia) has quit (Ping timeout: 264 seconds)
+2016-09-29 05:01:00		[04:55]
+2016-09-29 05:24:32	-->	AlexRussia (~Alex@unaffiliated/alexrussia) has joined #openvpn
+2016-09-29 05:24:32		[05:24]
+2016-09-29 05:26:23	<--	ade (~Ade@redhat/adeb) has quit (Ping timeout: 272 seconds)
+2016-09-29 05:28:48	<--	CaTtleyA (~CaTtleyA@lputeaux-656-1-50-20.w82-127.abo.wanadoo.fr) has quit (Ping timeout: 268 seconds)
+2016-09-29 05:32:16	<--	mxtm (mxtm@dogecoin/staff-emeritus/mxtm) has quit (Quit: ZNC - 1.6.0 - http://znc.in)
+2016-09-29 05:32:45	<--	mexx (~huy@unaffiliated/mexx) has quit (Quit: Leaving.)
+2016-09-29 05:34:34	<--	moriko (~moriko@178.162.222.41.adsl.inet-telecom.org) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-09-29 05:39:18	-->	moriko (~moriko@178.162.222.41.adsl.inet-telecom.org) has joined #openvpn
+2016-09-29 05:45:00		[05:39]
+2016-09-29 05:46:38	-->	m1911 (~m1911@123.116.245.23) has joined #openvpn
+2016-09-29 05:52:00		[05:46]
+2016-09-29 05:55:10	-->	strixdio (~brian@ool-18bf73c9.dyn.optonline.net) has joined #openvpn
+2016-09-29 05:58:17	<--	moriko (~moriko@178.162.222.41.adsl.inet-telecom.org) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-09-29 06:02:54	-->	SCHAPiE (~bla@unaffiliated/schaap137) has joined #openvpn
+2016-09-29 06:06:46	<--	bf_ (~bf_@xdsl-78-35-86-235.netcologne.de) has quit (Quit: KVIrc 4.2.0 Equilibrium http://www.kvirc.net/)
+2016-09-29 06:08:40	<--	mxmxmx (~subk@AMarseille-652-1-244-240.w86-210.abo.wanadoo.fr) has quit (Quit: Quitte)
+2016-09-29 06:08:40		[06:08]
+2016-09-29 06:08:47	-->	bf_ (~bf_@xdsl-78-35-86-235.netcologne.de) has joined #openvpn
+2016-09-29 06:12:59	-->	Envil (~envil@x4db48eb6.dyn.telefonica.de) has joined #openvpn
+2016-09-29 06:14:04	-->	j12t (~j12t@c-50-131-55-96.hsd1.ca.comcast.net) has joined #openvpn
+2016-09-29 06:18:03	-->	gffa (~unknown@unaffiliated/gffa) has joined #openvpn
+2016-09-29 06:19:06	<--	j12t (~j12t@c-50-131-55-96.hsd1.ca.comcast.net) has quit (Ping timeout: 264 seconds)
+2016-09-29 06:19:35	<--	AlexRussia (~Alex@unaffiliated/alexrussia) has quit (Ping timeout: 272 seconds)
+2016-09-29 06:20:18	<--	shootbird (~quassel@beepbeep.serverpit.com) has quit (Ping timeout: 264 seconds)
+2016-09-29 06:23:20	<--	bf_ (~bf_@xdsl-78-35-86-235.netcologne.de) has quit (Quit: KVIrc 4.2.0 Equilibrium http://www.kvirc.net/)
+2016-09-29 06:25:34	-->	shootbird (~quassel@beepbeep.serverpit.com) has joined #openvpn
+2016-09-29 06:25:34		[06:25]
+2016-09-29 06:27:50	<--	chachasmooth (~chachasmo@unaffiliated/chachasmooth) has quit (Ping timeout: 272 seconds)
+2016-09-29 06:29:35	-->	chachasmooth (~chachasmo@unaffiliated/chachasmooth) has joined #openvpn
+2016-09-29 06:35:00		[06:29]
+2016-09-29 06:35:08	<--	m1911 (~m1911@123.116.245.23) has quit (Remote host closed the connection)
+2016-09-29 06:40:43	-->	totus (~totus@cpe-67-10-159-34.satx.res.rr.com) has joined #openvpn
+2016-09-29 06:42:15	<--	SkinnyMelon (~SkinnyMel@gw.jak.sulinet.hu) has quit (Ping timeout: 276 seconds)
+2016-09-29 06:42:40	-->	m1911 (~m1911@123.116.245.23) has joined #openvpn
+2016-09-29 06:43:38	-->	fengshaun (~fengshaun@unaffiliated/fengshaun) has joined #openvpn
+2016-09-29 06:44:35	@danhunsaker	Abbott: If the LAN you wish to connect to is behind the same VPN, redirecting traffic will not prevent you from accessing it as well.  If they are different servers, though, then yes, you'll need two instances to reach both at once.
+2016-09-29 06:46:01	@danhunsaker	plai's response is accurate for the use case where you wish to sometimes connect and redirect traffic, but other times just want to access the LAN without redirecting traffic.
+2016-09-29 06:47:06	-->	navidr (uid112413@gateway/web/irccloud.com/x-hlihutipwrthhota) has joined #openvpn
+2016-09-29 06:49:08	<--	m1911 (~m1911@123.116.245.23) has quit (Remote host closed the connection)
+2016-09-29 06:49:19	-->	AlexRussia (~Alex@unaffiliated/alexrussia) has joined #openvpn
+2016-09-29 06:53:10	<--	nitdega (~nitdega@2602:302:d16c:d021:4438:73ab:f30d:c9f1) has quit (Quit: ZNC - 1.6.0 - http://znc.in)
+2016-09-29 06:53:10		[06:53]
+2016-09-29 06:53:14	-->	j12t (~j12t@c-50-131-55-96.hsd1.ca.comcast.net) has joined #openvpn
+2016-09-29 06:54:36	-->	nitdega (~nitdega@2602:302:d16c:d021:4438:73ab:f30d:c9f1) has joined #openvpn
+2016-09-29 06:57:38	@dazo	restricting what a VPN client can access in regards to network resources over a VPN tunnel, is primarily the task of a firewall as well .... VPN just establishes a network link, comparable to a network cable - the cable itself doesn't restrict what you can access on a network
+2016-09-29 06:57:57	@dazo	Abbott: ^^^
+2016-09-29 07:03:00		[06:57]
+2016-09-29 07:06:32	<--	dadinn (~you-user-@82-132-235-4.dab.02.net) has quit (Remote host closed the connection)
+2016-09-29 07:07:17	<--	plai (~arne@openvpn/community/developer/plaisthos) has quit (Ping timeout: 250 seconds)
+2016-09-29 07:07:58	-->	zoredache (~zoredache@pdpc/supporter/professional/zoredache) has joined #openvpn
+2016-09-29 07:08:16	zoredache	!tunortap
+2016-09-29 07:08:17	@vpnHelper	"tunortap" is (#1) you ONLY want tap if you need to pass layer2 traffic over the vpn (traffic destined for a MAC address). If you are using IP traffic you want tun., or (#2) and if your reason for wanting tap is windows shares, see !wins or use DNS, or (#3) remember layer2 has no security, arp poisoning works over tap vpns, or (#4) lan gaming? use tap!, or (#5) Normal Android/iOS devices (not
+2016-09-29 07:08:18	@vpnHelper	rooted/jailbroken) support only tun
+2016-09-29 07:12:34	-->	plaisthos (~arne@openvpn/community/developer/plaisthos) has joined #openvpn
+2016-09-29 07:12:34	--	Mode #openvpn [+o plaisthos] by ChanServ
+2016-09-29 07:14:45	<--	r00t^2 (~bts@g.rainwreck.com) has quit (Ping timeout: 276 seconds)
+2016-09-29 07:16:32	-->	r00t^2 (~bts@g.rainwreck.com) has joined #openvpn
+2016-09-29 07:17:56	<--	lss8 (~lss8@unaffiliated/lss8) has quit (Ping timeout: 252 seconds)
+2016-09-29 07:18:30	<--	plaisthos (~arne@openvpn/community/developer/plaisthos) has quit (Ping timeout: 272 seconds)
+2016-09-29 07:18:30		[07:18]
+2016-09-29 07:24:12	-->	weaksauce (~weaksauce@ip72-194-65-47.oc.oc.cox.net) has joined #openvpn
+2016-09-29 07:24:57	<--	strixdio (~brian@ool-18bf73c9.dyn.optonline.net) has left #openvpn ("WeeChat 1.0.1")
+2016-09-29 07:30:00		[07:24]
+2016-09-29 07:38:50	-->	plaisthos (~arne@openvpn/community/developer/plaisthos) has joined #openvpn
+2016-09-29 07:38:50	--	Mode #openvpn [+o plaisthos] by ChanServ
+2016-09-29 07:43:49	<--	plaisthos (~arne@openvpn/community/developer/plaisthos) has quit (Ping timeout: 272 seconds)
+2016-09-29 07:49:00		[07:43]
+2016-09-29 07:49:17	-->	plaisthos (~arne@openvpn/community/developer/plaisthos) has joined #openvpn
+2016-09-29 07:49:17	--	Mode #openvpn [+o plaisthos] by ChanServ
+2016-09-29 07:55:00		[07:49]
+2016-09-29 07:57:30	<--	linuxdevman (~linuxdevm@209.95.50.51) has quit (Quit: Quiting .. Cheers!)
+2016-09-29 08:02:14	<--	Naeil (~nzoueidi@ubuntu/member/na3il) has quit (Ping timeout: 244 seconds)
+2016-09-29 08:04:27	-->	SkinnyMelon (~SkinnyMel@gw.jak-szfvar.sulinet.hu) has joined #openvpn
+2016-09-29 08:06:47	-->	CaTtleyA (~CaTtleyA@lfbn-1-3377-77.w90-127.abo.wanadoo.fr) has joined #openvpn
+2016-09-29 08:12:00		[08:06]
+2016-09-29 08:43:11	<--	skyroveRR (~skyroveRR@unaffiliated/skyroverr) has quit (Ping timeout: 252 seconds)
+2016-09-29 08:43:11		[08:43]
+2016-09-29 08:44:57	-->	skyroveRR (~skyroveRR@unaffiliated/skyroverr) has joined #openvpn
+2016-09-29 08:45:20	<--	salcedo (uid184031@gateway/web/irccloud.com/x-nramokcwwoerzfll) has quit (Quit: Connection closed for inactivity)
+2016-09-29 08:50:20	<--	plaisthos (~arne@openvpn/community/developer/plaisthos) has quit (Ping timeout: 272 seconds)
+2016-09-29 08:56:00		[08:50]
+2016-09-29 09:10:20	-->	plaisthos (~arne@openvpn/community/developer/plaisthos) has joined #openvpn
+2016-09-29 09:10:20	--	Mode #openvpn [+o plaisthos] by ChanServ
+2016-09-29 09:14:24	<--	wallbroken (~wallbroke@unaffiliated/wallbroken) has quit (Read error: Connection reset by peer)
+2016-09-29 09:14:24		[09:14]
+2016-09-29 09:15:20	-->	wallbroken (~wallbroke@unaffiliated/wallbroken) has joined #openvpn
+2016-09-29 09:15:49	<--	guampa (~guampa@unaffiliated/guampa) has quit (Read error: Connection reset by peer)
+2016-09-29 09:21:00		[09:15]
+2016-09-29 09:21:43	ponyofdeath	hi, trying to share the vpn servers secondary vpn tunnel subnet to a client i am pushing the route via the server config to the client but am unable to see traffic going from that client's tun device to the backend subnet. do i need to whitelist the traffic somewhere from the secondary vpn server's subnet?
+2016-09-29 09:22:13	ponyofdeath	10.99.9.0/24 server 1 10.88.8.0/24 server2
+2016-09-29 09:22:39	ponyofdeath	client on server 1 ping to backend subnet on client on server 2
+2016-09-29 09:23:01	<--	Gaffel (~gaffel@195-252-43-174-no254.tbcn.telia.com) has quit (Ping timeout: 240 seconds)
+2016-09-29 09:25:09	<--	plaisthos (~arne@openvpn/community/developer/plaisthos) has quit (Ping timeout: 272 seconds)
+2016-09-29 09:27:19	-->	plaisthos (~arne@openvpn/community/developer/plaisthos) has joined #openvpn
+2016-09-29 09:27:20	--	Mode #openvpn [+o plaisthos] by ChanServ
+2016-09-29 09:27:27	-->	Gaffel (~gaffel@195.252.43.174) has joined #openvpn
+2016-09-29 09:29:08	-->	dadinn (~you-user-@154.58.83.47) has joined #openvpn
+2016-09-29 09:30:29	-->	guampa (~guampa@unaffiliated/guampa) has joined #openvpn
+2016-09-29 09:36:00		[09:30]
+2016-09-29 09:39:52	<--	excalibr (excalibr@gateway/shell/firrre/x-hrbtsmyuqnbawxnr) has quit (Ping timeout: 252 seconds)
+2016-09-29 09:41:54	-->	excalibr (excalibr@gateway/shell/firrre/x-bkjpwwknkgfaelsw) has joined #openvpn
+2016-09-29 09:43:02	<--	obscurehero (~obscurehe@via.arcis.pw) has quit (Ping timeout: 252 seconds)
+2016-09-29 09:43:19	<--	simp (~simp@talvik.eu) has quit (Ping timeout: 252 seconds)
+2016-09-29 09:43:20	<--	Olipro (~Olipro@uncyclopedia/pdpc.21for7.olipro) has quit (Ping timeout: 252 seconds)
+2016-09-29 09:43:20	<--	ghormoon (~ghormoon@ghorland.net) has quit (Ping timeout: 252 seconds)
+2016-09-29 09:43:20	<--	mac_nibblet (~mac_nibbl@server1.dasprids.de) has quit (Ping timeout: 252 seconds)
+2016-09-29 09:43:21	<--	XJR-9 (sid2977@pdpc/supporter/active/xjr-9) has quit (Ping timeout: 252 seconds)
+2016-09-29 09:43:22	<--	bpye_ (~quassel@unaffiliated/bpye) has quit (Ping timeout: 252 seconds)
+2016-09-29 09:43:42	-->	hays_ (~quassel@unaffiliated/hays) has joined #openvpn
+2016-09-29 09:45:26	-->	bpye (~quassel@unaffiliated/bpye) has joined #openvpn
+2016-09-29 09:45:42	-->	obscurehero (~obscurehe@via.arcis.pw) has joined #openvpn
+2016-09-29 09:45:54	-->	simp (~simp@talvik.eu) has joined #openvpn
+2016-09-29 09:46:22	-->	ghormoon (~ghormoon@ghorland.net) has joined #openvpn
+2016-09-29 09:47:11	<--	CaTtleyA (~CaTtleyA@lfbn-1-3377-77.w90-127.abo.wanadoo.fr) has quit (Ping timeout: 268 seconds)
+2016-09-29 09:47:23	-->	XJR-9 (sid2977@pdpc/supporter/active/xjr-9) has joined #openvpn
+2016-09-29 09:47:31	-->	_KaszpiR__ (quasselcor@unaffiliated/kaszpir/x-3157048) has joined #openvpn
+2016-09-29 09:48:33	-->	AlexRussia_ (~Alex@unaffiliated/alexrussia) has joined #openvpn
+2016-09-29 09:49:06	<--	AlexRussia (~Alex@unaffiliated/alexrussia) has quit (Ping timeout: 263 seconds)
+2016-09-29 09:50:00	<--	danhunsaker (sid145261@openvpn/corp/danhunsaker) has quit (Ping timeout: 252 seconds)
+2016-09-29 09:50:01	<--	xalice (~alice@fuck.marketing) has quit (Ping timeout: 252 seconds)
+2016-09-29 09:50:02	<--	Schrotti (~Schrottfr@2a03:4000:5:112::1) has quit (Ping timeout: 252 seconds)
+2016-09-29 09:50:02	<--	hays (~quassel@unaffiliated/hays) has quit (Ping timeout: 252 seconds)
+2016-09-29 09:50:04	<--	Eugene (eugene@kashpureff.org) has quit (Ping timeout: 252 seconds)
+2016-09-29 09:50:04	<--	_KaszpiR_ (quasselcor@unaffiliated/kaszpir/x-3157048) has quit (Ping timeout: 252 seconds)
+2016-09-29 09:50:04	<--	marlinc (~marlinc@unaffiliated/marlinc) has quit (Ping timeout: 252 seconds)
+2016-09-29 09:50:06	<--	evilman_work (~evilman@87.244.6.228) has quit (Ping timeout: 252 seconds)
+2016-09-29 09:51:30	-->	marlinc (~marlinc@unaffiliated/marlinc) has joined #openvpn
+2016-09-29 09:51:30		[09:51]
+2016-09-29 09:51:36	-->	Olipro (~Olipro@uncyclopedia/pdpc.21for7.olipro) has joined #openvpn
+2016-09-29 09:54:15	-->	danhunsaker (sid145261@openvpn/corp/danhunsaker) has joined #openvpn
+2016-09-29 09:54:16	--	Mode #openvpn [+o danhunsaker] by ChanServ
+2016-09-29 09:54:51	<--	madmattco (~quassel@quassel.madboxes.cc) has quit (Remote host closed the connection)
+2016-09-29 09:55:34	<--	AlexRussia_ (~Alex@unaffiliated/alexrussia) has quit (Ping timeout: 272 seconds)
+2016-09-29 10:01:00		[09:55]
+2016-09-29 10:01:20	-->	xalice (~alice@fuck.marketing) has joined #openvpn
+2016-09-29 10:07:00		[10:01]
+2016-09-29 10:09:21	-->	AlexRussia_ (~Alex@unaffiliated/alexrussia) has joined #openvpn
+2016-09-29 10:12:01	<--	chantra (~chantra@unaffiliated/chantra) has quit (Ping timeout: 272 seconds)
+2016-09-29 10:15:44	-->	Eugene (eugene@kashpureff.org) has joined #openvpn
+2016-09-29 10:15:46	-->	elastix (~Thunderbi@cpc85186-haye23-2-0-cust65.17-4.cable.virginm.net) has joined #openvpn
+2016-09-29 10:16:30	-->	chantra (~chantra@unaffiliated/chantra) has joined #openvpn
+2016-09-29 10:20:15	<--	zoredache (~zoredache@pdpc/supporter/professional/zoredache) has quit (Ping timeout: 272 seconds)
+2016-09-29 10:22:40	-->	zoredache (~zoredache@pdpc/supporter/professional/zoredache) has joined #openvpn
+2016-09-29 10:22:40		[10:22]
+2016-09-29 10:23:23	wallbroken	https://community.openvpn.net/openvpn/wiki/BridgingAndRouting
+2016-09-29 10:23:24	@vpnHelper	Title: BridgingAndRouting – OpenVPN Community (at community.openvpn.net)
+2016-09-29 10:23:30	wallbroken	# Allow traffic initiated from VPN to access LAN
+2016-09-29 10:23:35	wallbroken	 # Allow traffic initiated from VPN to access "the world"
+2016-09-29 10:23:51	wallbroken	can anybody tell me which of those rule may be needed to enable forward?
+2016-09-29 10:27:57	<--	Envil (~envil@x4db48eb6.dyn.telefonica.de) has quit (Remote host closed the connection)
+2016-09-29 10:33:00		[10:27]
+2016-09-29 10:35:08	-->	Schrottfresse (~Schrottfr@schrottfresse.de) has joined #openvpn
+2016-09-29 10:41:00		[10:35]
+2016-09-29 10:42:15	<--	Nazara (~Sovereign@ling.comssa.org.au) has quit (Ping timeout: 252 seconds)
+2016-09-29 10:42:33	-->	Nazara (~Sovereign@ling.comssa.org.au) has joined #openvpn
+2016-09-29 10:42:34	@dazo	wallbroken: That entirely depends on what you expect?  Do you want to only forward traffic to an internal LAN?  Only tunnel data to the Internet ("hiding" the VPN clients true public IP address behind the VPN servers public IP address) ... or both?
+2016-09-29 10:46:05	<--	Olipro (~Olipro@uncyclopedia/pdpc.21for7.olipro) has quit (Quit: Don't flap your BGP at me sonny)
+2016-09-29 10:46:46	-->	Olipro (~Olipro@uncyclopedia/pdpc.21for7.olipro) has joined #openvpn
+2016-09-29 10:52:00		[10:46]
+2016-09-29 10:59:35	wallbroken	dazo, firstly: i want to reach an interlan 192.168.1.x lan host from an external 10.0.0.x host
+2016-09-29 10:59:48	wallbroken	*internal
+2016-09-29 10:59:53	<--	chamunks (chamunks@loki.entityreborn.com) has quit (Quit: Don't worry I'm not gone yet.)
+2016-09-29 11:00:00	<--	designbybeck (~designbyb@x169y027.angelo.edu) has quit (Quit: Leaving)
+2016-09-29 11:01:08	-->	chamunks (chamunks@loki.entityreborn.com) has joined #openvpn
+2016-09-29 11:04:20	<--	navidr (uid112413@gateway/web/irccloud.com/x-hlihutipwrthhota) has quit (Quit: Connection closed for inactivity)
+2016-09-29 11:05:33	<--	Mike-- (mad@mx.probie.nl) has quit (Read error: Connection reset by peer)
+2016-09-29 11:11:00		[11:05]
+2016-09-29 11:14:11	-->	krzee (ba784d5c@openvpn/community/support/krzee) has joined #openvpn
+2016-09-29 11:14:11	--	Mode #openvpn [+o krzee] by ChanServ
+2016-09-29 11:14:28	@krzee	whats up encryption lovers!
+2016-09-29 11:14:32	wallbroken	hi, krzee, i need to ask  you a thing
+2016-09-29 11:14:41	wallbroken	https://community.openvpn.net/openvpn/wiki/BridgingAndRouting
+2016-09-29 11:14:42	@vpnHelper	Title: BridgingAndRouting – OpenVPN Community (at community.openvpn.net)
+2016-09-29 11:14:50	@krzee	nice i only came on to see if anybody would say that :-p
+2016-09-29 11:15:04	wallbroken	"Allow traffic initiated from VPN to access LAN"
+2016-09-29 11:15:15	wallbroken	"Allow traffic initiated from VPN to access "the world"
+2016-09-29 11:15:34	wallbroken	can you drive me in which rules of the list i need?
+2016-09-29 11:15:52	wallbroken	i premise that i don't need NAT rules just because i use Static Routing
+2016-09-29 11:16:39	wallbroken	honestly i don't want to learn IPTABLES (which is time consuming) just to know which of those rules i need
+2016-09-29 11:17:08	wallbroken	so, if anybody here could drive me to know which of those rules i need, it could be fun
+2016-09-29 11:17:45	-->	JackWinter (~jack@vodsl-8402.vo.lu) has joined #openvpn
+2016-09-29 11:19:12	<--	krzee (ba784d5c@openvpn/community/support/krzee) has quit (Ping timeout: 240 seconds)
+2016-09-29 11:20:01	-->	krzie (ba784d5c@openvpn/community/support/krzee) has joined #openvpn
+2016-09-29 11:20:01	--	Mode #openvpn [+o krzie] by ChanServ
+2016-09-29 11:20:12	--	krzie is now known as krzee
+2016-09-29 11:20:27	@krzee	sorry i got disconnected from my wifi before i saw the question
+2016-09-29 11:21:37	wallbroken	<wallbroken> https://community.openvpn.net/openvpn/wiki/BridgingAndRouting
+2016-09-29 11:21:38	@vpnHelper	Title: BridgingAndRouting – OpenVPN Community (at community.openvpn.net)
+2016-09-29 11:21:45	wallbroken	<wallbroken> "Allow traffic initiated from VPN to access LAN"
+2016-09-29 11:21:45	wallbroken	<wallbroken> "Allow traffic initiated from VPN to access "the world"
+2016-09-29 11:21:45	wallbroken	<wallbroken> can you drive me in which rules of the list i need?
+2016-09-29 11:21:51	wallbroken	<wallbroken> i premise that i don't need NAT rules just because i use Static Routing
+2016-09-29 11:21:51	wallbroken	<wallbroken> honestly i don't want to learn IPTABLES (which is time consuming) just to know which of those rules i need
+2016-09-29 11:21:51	wallbroken	<wallbroken> so, if anybody here could drive me to know which of those rules i need, it could be fun
+2016-09-29 11:22:27	@krzee	so your goal is simply to route clients to the server's lan and to the internet over the vpn?
+2016-09-29 11:22:42	@dazo	wallbroken: then you need  "Allow traffic initiated from VPN to access LAN"
+2016-09-29 11:23:07	@dazo	unless I'm completely misreading things now
+2016-09-29 11:23:18	<--	skyroveRR (~skyroveRR@unaffiliated/skyroverr) has quit (Ping timeout: 264 seconds)
+2016-09-29 11:23:22	<--	elastix (~Thunderbi@cpc85186-haye23-2-0-cust65.17-4.cable.virginm.net) has quit (Quit: elastix)
+2016-09-29 11:23:28	wallbroken	wait, i have 2 different client configuration file
+2016-09-29 11:23:29	@dazo	[based on this]  <wallbroken> dazo, firstly: i want to reach an interlan 192.168.1.x lan host from an external 10.0.0.x host
+2016-09-29 11:23:34	@krzee	i think he wants a routed udp tun, and !redirect and !serverlan
+2016-09-29 11:23:41	-->	skyroveRR (~skyroveRR@unaffiliated/skyroverr) has joined #openvpn
+2016-09-29 11:24:07	wallbroken	openvpn host ----- internet ----> openvpn server ---lan---> lan host
+2016-09-29 11:24:09	wallbroken	it's clear?
+2016-09-29 11:24:17	@krzee	!serverlan
+2016-09-29 11:24:19	@vpnHelper	"serverlan" is (#1) for a lan behind a server, the server must have ip forwarding enabled (!ipforward), the server needs to push a route for its lan to clients, and the router of the lan the server is on needs a route added to it (!route_outside_openvpn), or (#2) see !route for a better explanation, or (#3) Handy troubleshooting flowchart: http://pekster.sdf.org/misc/serverlan.png
+2016-09-29 11:24:36	@krzee	no iptables needed for that part
+2016-09-29 11:24:44	wallbroken	yes it needed
+2016-09-29 11:25:02	@krzee	sure, if you actively blocked things
+2016-09-29 11:25:12	@krzee	but if everything is allow, no iptables needed for that part
+2016-09-29 11:25:31	wallbroken	yes, iptables is needed only for NAT, right?
+2016-09-29 11:25:47	wallbroken	but to do what i want, i don't need nat
+2016-09-29 11:25:48	@krzee	no nat needed for that part, try reading !serverlan
+2016-09-29 11:26:03	wallbroken	krzee, follow me, I already done all
+2016-09-29 11:26:03		[11:26]
+2016-09-29 11:26:08	wallbroken	all it's working
+2016-09-29 11:26:18	wallbroken	but i have only a iptables issue
+2016-09-29 11:26:34	-->	mnathani (~mnathani@192-0-149-228.cpe.teksavvy.com) has joined #openvpn
+2016-09-29 11:26:40	wallbroken	iptables -I FORWARD -i tun+ -j ACCEPT
+2016-09-29 11:26:44	wallbroken	this makes thing work
+2016-09-29 11:26:46	mnathani	where can I find a startup script for openvpn on freebsd?
+2016-09-29 11:26:53	@dazo	to allow your VPN client to access the LAN via the VPN server .... you will need: # Allow traffic initiated from VPN to access LAN
+2016-09-29 11:27:08	@krzee	mnathani: hopefully in #openbsd
+2016-09-29 11:27:26	@dazo	pluss this one: Allow established traffic to pass back and forth
+2016-09-29 11:27:42	@krzee	wallbroken: yes, you need to allow ip forwarding if you werent already
+2016-09-29 11:27:49	@krzee	which is mentioned in !serverlan
+2016-09-29 11:28:17	@dazo	wallbroken: those examples on that wiki page configures a _stateful_ firewalling .... the  -I FORWARD -i tun+ -j ACCEPT variant is stateless
+2016-09-29 11:28:19	@krzee	bbiaf, leaving the bar headed home... ill reconnect, but you're in better hands than mine with dazo anyways ;]
+2016-09-29 11:28:31	wallbroken	yes
+2016-09-29 11:28:45	wallbroken	dazo, i also found another configuration similar
+2016-09-29 11:28:51	wallbroken	iptables -P FORWARD DROP
+2016-09-29 11:28:52	wallbroken	iptables -I FORWARD -s 10.0.0.0/24 -i tun0 -j ACCEPT
+2016-09-29 11:28:52	wallbroken	iptables -I FORWARD -o tun0 -m state --state RELATED,ESTABLISHED -j ACCEPT
+2016-09-29 11:29:00	wallbroken	honestly, i think i'm going off-topic
+2016-09-29 11:29:11	wallbroken	but i just curious to know if is there some difference
+2016-09-29 11:29:25	<--	SkinnyMelon (~SkinnyMel@gw.jak-szfvar.sulinet.hu) has quit (Ping timeout: 244 seconds)
+2016-09-29 11:29:31	wallbroken	between "Allow traffic initiated from VPN to access LAN" and this last
+2016-09-29 11:29:44	@dazo	you are headed towards where #netfilter can help better ... but I've done iptables since it first arrived in the 2.4 linux kernel, so I know a few things about it
+2016-09-29 11:30:07	wallbroken	dazo, in netfilter they said: read the manual
+2016-09-29 11:30:12	<--	JackWinter_ (~jack@vodsl-8402.vo.lu) has quit (Ping timeout: 276 seconds)
+2016-09-29 11:30:19	wallbroken	but i don't really care to learn netfilter
+2016-09-29 11:30:27	@dazo	which is very fair, this is really basic netfilter stuff
+2016-09-29 11:30:29	wallbroken	i just wanted to know if there was a diff between thos diff
+2016-09-29 11:30:42	@dazo	if you don't care to learn netfilter/iptables ... then I'm out of here
+2016-09-29 11:30:57	@dazo	yes, there is a difference
+2016-09-29 11:31:01	wallbroken	dazo, but why do i need to learn something time consuming that i don't need anymore just to know a difference between two configurations?
+2016-09-29 11:31:14	@dazo	because that helps you understand what really happens.
+2016-09-29 11:31:19	 *	dazo moves on
+2016-09-29 11:31:23	@dazo	RTFM
+2016-09-29 11:31:29	<--	j12t (~j12t@c-50-131-55-96.hsd1.ca.comcast.net) has quit (Ping timeout: 244 seconds)
+2016-09-29 11:31:33	Gaffel	Which enables you to help yourself in the future.
+2016-09-29 11:31:33	mnathani	I guess installing the appropriate package helps
+2016-09-29 11:31:44	@dazo	mnathani++
+2016-09-29 11:32:26	wallbroken	Gaffel, is like learning photoshop just to make a draw to your child
+2016-09-29 11:32:42	<--	krzee (ba784d5c@openvpn/community/support/krzee) has quit (Ping timeout: 240 seconds)
+2016-09-29 11:33:13	@dazo	what most people need with iptables is so simple it is plain stupidity not to learn the basics of it
+2016-09-29 11:33:23	Gaffel	Not a valid analogy.
+2016-09-29 11:33:30	@dazo	Gaffel++
+2016-09-29 11:33:56	wallbroken	dazo: it's very important to specify -output interface?
+2016-09-29 11:33:59	wallbroken	-o eth0 ?
+2016-09-29 11:34:08	Gaffel	No, not always.
+2016-09-29 11:34:11	Gaffel	It depends.
+2016-09-29 11:34:17	wallbroken	i think i will remove it
+2016-09-29 11:34:29	Gaffel	What you've pasted, yes.
+2016-09-29 11:34:45	Gaffel	That output interface is not needed.
+2016-09-29 11:34:54	Gaffel	Also, you should put the resulting rule at the top of the chain.
+2016-09-29 11:35:00	@dazo	wallbroken: it hardens the rule to ensure traffic goes where you define it should go ... but if you don't care about that ...well, why bother with iptables at all?
+2016-09-29 11:35:10	wallbroken	iptables -I FORWARD -i tun0 -s 10.8.0.0/24 -d 192.168.0.0/24 -m conntrack --ctstate NEW -j ACCEPT
+2016-09-29 11:35:16	wallbroken	i think i will do it that way
+2016-09-29 11:35:33	wallbroken	Gaffel, i'm reading netfilter, and they said --state field is deprecated
+2016-09-29 11:35:42	Gaffel	Okay
+2016-09-29 11:35:44	wallbroken	and it's has been substituted by --conntrack
+2016-09-29 11:35:45	@dazo	Gaffel: not needed until someone does a bummer with network config or begins to swap around at things ... the more tight it is, the safer you are in a longer run
+2016-09-29 11:36:04	@dazo	wallbroken: which is what the wiki page uses
+2016-09-29 11:36:07	Gaffel	It's the rule for established/related packets.
+2016-09-29 11:36:18	Gaffel	So things that already have been let through.
+2016-09-29 11:36:33	wallbroken	dazo, yes, maybe my paste is an old way to do things?
+2016-09-29 11:36:35	@dazo	ahh, right
+2016-09-29 11:36:38	Gaffel	Set policy to DROP
+2016-09-29 11:36:54	Gaffel	Then that generic established/related acceptance.
+2016-09-29 11:37:04	Gaffel	Then you put strict rules below that.
+2016-09-29 11:37:12	wallbroken	-A FORWARD -s 10.0.0.0/24 -i tun0 -j ACCEPT
+2016-09-29 11:37:18	wallbroken	-A FORWARD -o tun0 -m state --state RELATED,ESTABLISHED -j ACCEPT
+2016-09-29 11:37:26	wallbroken	that's an old deprecated way?
+2016-09-29 11:37:31	@dazo	yes
+2016-09-29 11:38:06	@dazo	 -m conntrack --ctstate NEW   //    -m conntrack --ctstate RELATED,ESTABLISHED
+2016-09-29 11:38:17	@dazo	that's what you need
+2016-09-29 11:38:31	Gaffel	-A FORWARD -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+2016-09-29 11:38:41	wallbroken	yes, even if i just tried both the way, and both are working
+2016-09-29 11:38:51	Gaffel	Yup
+2016-09-29 11:39:04	Gaffel	It will break too much if it's removed completely.
+2016-09-29 11:39:17	Gaffel	iptables is planned to be deprecated as a whole anyway, so no rush.
+2016-09-29 11:39:29	@danhunsaker	But the conntrack module is not only loads better than the state module, it'll also still be around in a few versions.
+2016-09-29 11:39:49	@danhunsaker	I.E., when iptables itself evaporates.
+2016-09-29 11:40:03	Gaffel	The successor, nftables, uses conntrack.
+2016-09-29 11:40:13	@dazo	yupp
+2016-09-29 11:40:14	wallbroken	another thing: i enabled a static routing rule over the router, instead of using nat
+2016-09-29 11:40:16	@danhunsaker	Indeed.
+2016-09-29 11:40:21	wallbroken	it's good than nat?
+2016-09-29 11:40:28	wallbroken	*better
+2016-09-29 11:40:28	Gaffel	I prefer nftables.
+2016-09-29 11:40:37	<--	metachr0n (~nobody@46.166.137.197) has quit (Quit: WeeChat 1.5)
+2016-09-29 11:40:49	Gaffel	Routing is better.
+2016-09-29 11:40:54	@dazo	wallbroken: NAT is a pure hack to avoid depletion of IPv4 addresses during the 1990s
+2016-09-29 11:41:15	wallbroken	i said the router: when you get packet with destination network 10.0.0.0, forward them to: 192.168.1.100 (which is openvpn server into the lan)
+2016-09-29 11:41:15		[11:41]
+2016-09-29 11:41:35	wallbroken	router is the default gateway
+2016-09-29 11:41:59	wallbroken	so, when an host doesn't know anything about a NET, it will forward to default GW
+2016-09-29 11:42:08	@dazo	correct
+2016-09-29 11:42:17	@dazo	!tcpip
+2016-09-29 11:42:18	@vpnHelper	"tcpip" is http://www.redbooks.ibm.com/redbooks/pdfs/gg243376.pdf See chapter 3.1 for useful basic TCP/IP networking knowledge you should probably know
+2016-09-29 11:42:32	wallbroken	dazo, i studied it at university
+2016-09-29 11:43:00	@dazo	wallbroken: so did my wife, I stopped after 6 months ... but I know networking, she doesn't
+2016-09-29 11:43:04	Gaffel	Then you'll become familiar with iptables really quick.
+2016-09-29 11:43:10	@dazo	lol
+2016-09-29 11:44:35	@dazo	Gaffel: which distro have you installed nftables on?
+2016-09-29 11:44:35	wallbroken	and i do know what NAT does, it's changing source and destination address to make multiplation of  local IP streams over a single public IP
+2016-09-29 11:44:48	Gaffel	dazo, nothing by default as far as I know.
+2016-09-29 11:44:57	wallbroken	but as far i know, nat will be destroyed when ipv6 will come up
+2016-09-29 11:45:18	@dazo	Gaffel: compiled yourself and installed?  which distro are you on?
+2016-09-29 11:45:19	Gaffel	It's non-existant in CentOS (but vailible from the elep-release repo, but broken)
+2016-09-29 11:45:26	Gaffel	I use Arch
+2016-09-29 11:45:40	wallbroken	dazo, iptables works also with ipv6?
+2016-09-29 11:45:48	Gaffel	No, but ip6tables
+2016-09-29 11:46:28	wallbroken	so, i don't need to learn something will be no more useful in a couple of time?
+2016-09-29 11:46:42	@dazo	wallbroken: there are NAT66 and NAT64 ..... but there's a lot of NAT66 controversies .... NAT64 can be quite useful to access IPv4 nets over a pure IPv6 net - but quite a job to configure correctly (need DNS64 too)
+2016-09-29 11:47:13	Gaffel	Once you need to switch to nftables, you'll learn it really quick. It's more readable.
+2016-09-29 11:47:30	wallbroken	dazo, IP has something called "PROTO 41" which allows to encapsulate ipv6 frame over an ipv4
+2016-09-29 11:47:31	@dazo	the concept is basically the same between iptables and ip6tables ... the biggest challenge is that while IPv4 have ARP, IPv6 depends on ICMPv6 packets to do the same - which can be firewalled
+2016-09-29 11:48:12	@dazo	wallbroken: the IPv6 encapsulation is something different again
+2016-09-29 11:48:36	@dazo	protocol 41 *is* the IPv6 protocol
+2016-09-29 11:49:05	wallbroken	protocol 41 is not the way to make "ipv6 tunnels" ?
+2016-09-29 11:49:10	@dazo	nope
+2016-09-29 11:49:17	-->	krzee (9467285c@openvpn/community/support/krzee) has joined #openvpn
+2016-09-29 11:49:17	--	Mode #openvpn [+o krzee] by ChanServ
+2016-09-29 11:49:21	wallbroken	i can find it on ietf.org ?
+2016-09-29 11:49:22	@krzee	annnnd im back
+2016-09-29 11:49:42	@krzee	your setup working how you want yet/
+2016-09-29 11:49:42	<--	ExoUNX (~textual@unaffiliated/exounx) has quit (Ping timeout: 276 seconds)
+2016-09-29 11:49:43	@dazo	wallbroken: be my guest .... it's quicker to look at /etc/protocols if you are in doubt
+2016-09-29 11:50:22	@krzee	hey dazo arent you from europe?
+2016-09-29 11:50:28	@dazo	krzee: yupp!
+2016-09-29 11:50:40	wallbroken	https://tools.ietf.org/html/draft-palet-v6ops-proto41-nat-03
+2016-09-29 11:50:41	@vpnHelper	Title: draft-palet-v6ops-proto41-nat-03 - Forwarding Protocol 41 in NAT Boxes (at tools.ietf.org)
+2016-09-29 11:50:43	wallbroken	let me try to read this
+2016-09-29 11:50:50	Gaffel	Europa! \o/
+2016-09-29 11:51:02	<--	gffa (~unknown@unaffiliated/gffa) has quit (Quit: sleep)
+2016-09-29 11:51:04	@krzee	im headed there tomorrow, any advice on a cellphone carrier that'll let me have signal in paris, sicily, rome, athens, barcelona, and amsterdam?
+2016-09-29 11:51:23	wallbroken	i'm from italy
+2016-09-29 11:52:42	<--	JackWinter (~jack@vodsl-8402.vo.lu) has quit (Quit: Konversation terminated!)
+2016-09-29 11:55:48	@dazo	wallbroken: first important detail .... what you have there has not become an RFC ... and it is over 12 years old.  It has even expired.
+2016-09-29 11:56:50	@dazo	wallbroken: but it is basically touching the areas of NAT64 .... https://tools.ietf.org/html/rfc6146
+2016-09-29 11:56:50		[11:56]
+2016-09-29 11:56:51	@vpnHelper	Title: RFC 6146 - Stateful NAT64: Network Address and Protocol Translation from IPv6 Clients to IPv4 Servers (at tools.ietf.org)
+2016-09-29 11:58:11	@dazo	there has been some talks about NAT46 too, but that has never really happened AFAIK.
+2016-09-29 11:59:04	@dazo	(I believe that also never went further as a draft)
+2016-09-29 11:59:13	Gaffel	The deployment of IPv6 is so slow that it should be a crime.
+2016-09-29 11:59:34	@danhunsaker	Looking forward to when we have enough devices that we start looking seriously at NATting v6-only networks...
+2016-09-29 11:59:39	Gaffel	It's criminally slow.
+2016-09-29 11:59:48	<--	NoSleeves (uid180082@gateway/web/irccloud.com/x-mwpsvxrbhwlseymw) has quit (Quit: Connection closed for inactivity)
+2016-09-29 12:00:47	wallbroken	dazo, about the past thing: -o eth0, in "iptables -I FORWARD -i tun0 -o eth0 -s 10.8.0.0/24 -d 192.168.0.0/24 -m conntrack --ctstate NEW -j ACCEPT" is needed or not needed?
+2016-09-29 12:01:35	@dazo	danhunsaker: hehehe .... considering the "amazing" adoption speed of IPv6, it's good that NAT66 specs have been worked on already :-P
+2016-09-29 12:02:27	@dazo	wallbroken: -o in that one is hardening your setup ... to ensure that traffic going to 192.168.0.0/24 will only be allowed if it is routed to eth0
+2016-09-29 12:02:58	@dazo	if it is needed, is entirely up to how strict you want your setup
+2016-09-29 12:05:01	@danhunsaker	dazo: Trufax.
+2016-09-29 12:05:57	wallbroken	dazo: theorically: i could also uninstall iptables at all, right?
+2016-09-29 12:11:00		[12:05]
+2016-09-29 12:12:01	@dazo	wallbroken: yes ... but iptables are just the user-space tools which configures the kernel .... so if you do that you can't change the netfilter config already set in the kernel
+2016-09-29 12:12:31	@dazo	if you're netfilter config is clean/empty ... then it will be an unprotected/not firewalled box
+2016-09-29 12:14:07	wallbroken	ok
+2016-09-29 12:14:12	<--	krzee (9467285c@openvpn/community/support/krzee) has quit (Ping timeout: 240 seconds)
+2016-09-29 12:14:42	wallbroken	who is the mantainer of easyrsa?
+2016-09-29 12:14:51	wallbroken	i need to tell him a problem about the last version
+2016-09-29 12:14:53	wallbroken	3.0.
+2016-09-29 12:14:56	wallbroken	3.0.2
+2016-09-29 12:14:59	wallbroken	ops
+2016-09-29 12:15:02	wallbroken	3.0.1
+2016-09-29 12:15:14	wallbroken	.bat file to run it on windows is missing
+2016-09-29 12:16:43	-->	elastix (~Thunderbi@cpc85186-haye23-2-0-cust65.17-4.cable.virginm.net) has joined #openvpn
+2016-09-29 12:17:13	zoredache	Maybe create an issue in the bug tracker on github wallbroken?
+2016-09-29 12:17:42	zoredache	https://github.com/OpenVPN/easy-rsa
+2016-09-29 12:17:43	@vpnHelper	Title: GitHub - OpenVPN/easy-rsa: easy-rsa - Simple shell based CA utility (at github.com)

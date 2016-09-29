@@ -19971,3 +19971,684 @@
 2016-09-28 21:01:09		[21:01]
 2016-09-28 21:09:18	--	KnightsOfNi_ is now known as KnightsOfNi
 2016-09-28 21:09:45	-->	jreese (~jreese@138.68.14.8) has joined #znc
+2016-09-28 21:15:00		[21:09]
+2016-09-28 21:19:42	<--	x[x] (~dmt@185.51.74.198) has quit (Ping timeout: 264 seconds)
+2016-09-28 21:23:41	-->	HappyLoaf_ (happyloaf@92.222.41.125) has joined #znc
+2016-09-28 21:23:58	--	irc: disconnected from server
+2016-09-29 00:46:14	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined #znc
+2016-09-29 00:46:14		[00:46]
+2016-09-29 00:46:14	--	Topic for #znc is "www.znc.in | ZNC 1.6.3: http://wiki.znc.in/ChangeLog/1.6.3 | http://znc.in/nightly | https://github.com/znc/znc | Development at #znc-dev | Debian stable: 1.4 is 1.5 years old | Debian oldstable: 0.206 is 3.5 years old | don't randomly PM people | https://blog.mehl.mx/2014/i-love-znc-because-ilovefs/ | znc.pem is currently reloaded every connect"
+2016-09-29 00:46:14	--	Topic set by DarthGandalf (somebody@znc/developer/DarthGandalf) on Tue, 23 Feb 2016 11:47:08
+2016-09-29 00:46:15	--	Channel #znc: 949 nicks (3 ops, 0 voices, 946 normals)
+2016-09-29 00:46:15	***	Buffer Playback...
+2016-09-29 00:46:15	DarthGandalf	[07:32:33] keigel2001: schat or dcc or bouncedcc modules open sockets AFAIR [07:32:33]
+2016-09-29 00:46:15	DarthGandalf	[07:33:55] But ZNC-Linker is easier than that - it just gets IRC connections from github, and accepts/relays messages as usual ZNC does. [07:33:55]
+2016-09-29 00:46:15	Janko	[08:39:31] is it possible to always get backlog, even if I have one client online already? [08:39:31]
+2016-09-29 00:46:15	MetaNova	[08:41:46] yes, you'll need to disable AutoClearChanBuffer and AutoClearQueryBuffer [08:41:46]
+2016-09-29 00:46:15	Uber	[08:42:29] Janko you could use clientbuffer (each client gets their own buffer) or just disable AutoClearBuffer [08:42:29]
+2016-09-29 00:46:15	MetaNova	[08:42:50] clientbuffer relies on autoclearbuffer being disabled anyway [08:42:50]
+2016-09-29 00:46:15	MetaNova	[08:43:32] [[clientbuffer]] and [[playback]] are basically how to manage the buffers after that point [08:43:32]
+2016-09-29 00:46:15	ZNC-Linker	[08:43:32] http://wiki.znc.in/clientbuffer http://wiki.znc.in/playback [08:43:32]
+2016-09-29 00:46:15	Uber	[08:43:49] yeah.. but would have different end results than just disabling and not using clientbuffer [08:43:49]
+2016-09-29 00:46:15	MetaNova	[08:45:41] Uber: my understanding of clientbuffer is for the channel activity to be cached for multiple clients [08:45:41]
+2016-09-29 00:46:15	MetaNova	[08:45:57] each client won't receive repeat messages, though, which sounds like what they're after [08:45:57]
+2016-09-29 00:46:15	MetaNova	[08:46:05] "always get backlog" [08:46:05]
+2016-09-29 00:46:15	MetaNova	[08:46:41] although .. they could just be looking for multiple clients to see the same thing, not necessarily see the same thing every time (activity which has already been viewed by each) [08:46:41]
+2016-09-29 00:46:15	MetaNova	[08:47:36] Janko: the disabling of the autoclear settings is a must, but depending on how you want the backlog handled, you may or may not want additional modules for backlog management [08:47:36]
+2016-09-29 00:46:15	Uber	[08:47:38] guess it would depend one what is meant by "backlog" [08:47:38]
+2016-09-29 00:46:15	MetaNova	[08:47:46] yeah [08:47:46]
+2016-09-29 00:46:15	Uber	[08:48:36] with clientbuffer connecting with 2nd client the current convo would be played back upto set buffer limit -- instead of without clientbuffer connecting with 2nd client there would be not channel history played back [08:48:36]
+2016-09-29 00:46:15	Janko	[08:49:26] Thanks... Well I need history played back when connecting with another client while one is already connected [08:49:26]
+2016-09-29 00:46:15	MetaNova	[08:50:09] if you disconnect from that 2nd client and connect with it again, do you need to see everything it saw previously, or just the difference in activity from the last time it connected? [08:50:09]
+2016-09-29 00:46:15	MetaNova	[08:50:49] if you want to see everything again (plus what's new), then your quest is over by just disabling the autoclear variables [08:50:49]
+2016-09-29 00:46:15	MetaNova	[08:51:01] if you only want to see what's new, then you need to use [[clientbuffer]] [08:51:01]
+2016-09-29 00:46:15	ZNC-Linker	[08:51:01] http://wiki.znc.in/clientbuffer [08:51:01]
+2016-09-29 00:46:15	Janko	[08:51:39] either is fine - but I'd rather just see everything again [08:51:39]
+2016-09-29 00:46:15	MetaNova	[08:52:17] well, there you go [08:52:17]
+2016-09-29 00:46:15	MetaNova	[08:52:24] just disable AutoClearChanBuffer and AutoClearQueryBuffer [08:52:24]
+2016-09-29 00:46:15	MetaNova	[08:52:44] you can do that from the *controlpanel module through IRC, or log in through the webadmin interface to do it [08:52:44]
+2016-09-29 00:46:15	Janko	[08:53:37] set AutoClearQueryBuffer Janko off : Error: Unknown variable [08:53:37]
+2016-09-29 00:46:15	MetaNova	[08:55:25] <MetaNova> set AutoClearChanBuffer zero-one on [08:55:25]
+2016-09-29 00:46:15	MetaNova	[08:55:25] <*controlpanel> AutoClearChanBuffer = true [08:55:25]
+2016-09-29 00:46:15	MetaNova	[08:55:39] are you sure you have *controlpanel loaded? what ZNC version? [08:55:39]
+2016-09-29 00:46:15	Janko	[08:56:07] setting AutoClearChanBuffer worked, just not Query buffer [08:56:07]
+2016-09-29 00:46:15	MetaNova	[08:56:57] must be using an older version [08:56:57]
+2016-09-29 00:46:15	MetaNova	[08:57:03] <MetaNova> set AutoClearQueryBuffer zero-one on [08:57:03]
+2016-09-29 00:46:15	MetaNova	[08:57:03] <*controlpanel> AutoClearQueryBuffer = true [08:57:03]
+2016-09-29 00:46:15	Janko	[08:57:25] Yeah, ZNC 1.4 from debian repo [08:57:25]
+2016-09-29 00:46:15	MetaNova	[08:57:38] you may want to consider upgrading [08:57:38]
+2016-09-29 00:46:15	MetaNova	[08:58:31] are you using Debian or Ubuntu? [08:58:31]
+2016-09-29 00:46:15	Janko	[09:00:18] I have stable Debian 8 (jessie) [09:00:18]
+2016-09-29 00:46:15	MetaNova	[09:01:00] ah [09:01:00]
+2016-09-29 00:46:15	MetaNova	[09:05:12] you would need to append 'jessie-backports' to the man deb mirror in your /etc/apt/sources.list [09:05:12]
+2016-09-29 00:46:15	MetaNova	[09:05:27] jessie-backports has znc_1.6.2 [09:05:27]
+2016-09-29 00:46:15	Janko	[09:08:43] I already have backports... let's try installing znc from there... [09:08:43]
+2016-09-29 00:46:15	MetaNova	[09:09:03] I'd imagine an 'apt-get update' and 'apt-get upgrade' might be in order [09:09:03]
+2016-09-29 00:46:15	Janko	[09:14:33] successfully installed znc 1.6.2, and disabled AutoClear{Chan,Query}Buffer [09:14:33]
+2016-09-29 00:46:15	Janko	[09:15:30] But I don't get any history printed when I connect through second client :( [09:15:30]
+2016-09-29 00:46:15	Janko	[09:16:58] Oh, wait, I do [09:16:58]
+2016-09-29 00:46:15	Janko	[09:17:34] Looks like it works, thanks [09:17:34]
+2016-09-29 00:46:15	MetaNova	[09:17:37] cache isn't persistent across instance restarts [09:17:37]
+2016-09-29 00:46:15	MetaNova	[09:17:41] so, it'd take a moment [09:17:41]
+2016-09-29 00:46:15	MetaNova	[09:17:44] Janko: you're welcome [09:17:44]
+2016-09-29 00:46:15	***	Playback Complete.
+2016-09-29 00:47:16	--	Channel created on Tue, 15 Jan 2008 16:47:30
+2016-09-29 00:47:40	-->	chachasmooth (~chachasmo@unaffiliated/chachasmooth) has joined #znc
+2016-09-29 00:53:00		[00:47]
+2016-09-29 00:54:19	<--	shum (~sdothum@108.63.189.28) has quit (Quit: ZNC - 1.6.0 - http://znc.in)
+2016-09-29 00:55:53	-->	SavaStefan (~SavaStefa@95.76.54.183) has joined #znc
+2016-09-29 00:55:53	<--	SavaStefan (~SavaStefa@95.76.54.183) has quit (Changing host)
+2016-09-29 00:55:53	-->	SavaStefan (~SavaStefa@unaffiliated/savastefan) has joined #znc
+2016-09-29 00:56:14	<--	Mixologic (~Mixologic@97-120-5-239.ptld.qwest.net) has quit (Ping timeout: 252 seconds)
+2016-09-29 00:57:17	-->	shum (~sdothum@108.63.189.28) has joined #znc
+2016-09-29 01:01:47	-->	Mixologic (~Mixologic@75-164-147-22.ptld.qwest.net) has joined #znc
+2016-09-29 01:04:48	-->	x[x] (~dmt@185.51.75.217) has joined #znc
+2016-09-29 01:10:00		[01:04]
+2016-09-29 01:22:51	-->	xantam (~xantam@p54B7018F.dip0.t-ipconnect.de) has joined #znc
+2016-09-29 01:27:39	--	zoid is now known as tnolfmit
+2016-09-29 01:27:39		[01:27]
+2016-09-29 01:28:19	--	tnolfmit is now known as tnilfmot
+2016-09-29 01:29:34	<--	[]\[] (~]\]@76.17.01a8.ip4.static.sl-reverse.com) has quit (Ping timeout: 244 seconds)
+2016-09-29 01:29:36	<--	x[x] (~dmt@185.51.75.217) has quit (Ping timeout: 276 seconds)
+2016-09-29 01:30:05	<--	HappyLoaf_ (happyloaf@bitcoinshell.mooo.com) has quit (Ping timeout: 244 seconds)
+2016-09-29 01:34:20	--	tnilfmot is now known as zoid
+2016-09-29 01:34:25	-->	HappyLoaf_ (happyloaf@92.222.41.125) has joined #znc
+2016-09-29 01:35:16	<--	WhizzWr (Whizz@s-o-m-e.h-o-s-t.name) has quit (Ping timeout: 265 seconds)
+2016-09-29 01:38:12	--	zz_klimt is now known as klimt
+2016-09-29 01:38:52	-->	WhizzWr (Whizz@s-o-m-e.h-o-s-t.name) has joined #znc
+2016-09-29 01:39:21	<--	lbft (~lbft@unaffiliated/lbft) has quit (Ping timeout: 240 seconds)
+2016-09-29 01:40:22	-->	Kkiro (~yoo200181@119.192.41.62) has joined #znc
+2016-09-29 01:40:22	<--	Kkiro (~yoo200181@119.192.41.62) has quit (Changing host)
+2016-09-29 01:40:22	-->	Kkiro (~yoo200181@unaffiliated/kkiro) has joined #znc
+2016-09-29 01:44:38	-->	EricGonczer_ (~textual@2605:6000:f6d0:9100:1c2:8347:6469:35dc) has joined #znc
+2016-09-29 01:44:38		[01:44]
+2016-09-29 01:45:20	-->	lbft (~lbft@unaffiliated/lbft) has joined #znc
+2016-09-29 01:49:45	<--	HappyLoaf_ (happyloaf@92.222.41.125) has quit (Ping timeout: 276 seconds)
+2016-09-29 01:49:45	<--	themurph (~themurph@107.13.114.254) has quit (Ping timeout: 276 seconds)
+2016-09-29 01:52:03	<--	EricGonczer_ (~textual@2605:6000:f6d0:9100:1c2:8347:6469:35dc) has quit (Quit: My MacBook Pro has gone to sleep. ZZZzzz…)
+2016-09-29 01:56:27	-->	HappyLoaf_ (happyloaf@92.222.41.125) has joined #znc
+2016-09-29 02:02:00		[01:56]
+2016-09-29 02:04:42	<--	xaoc (xaoc@fuckyoudear.life) has quit (Ping timeout: 264 seconds)
+2016-09-29 02:09:54	<--	HappyLoaf_ (happyloaf@92.222.41.125) has quit (Ping timeout: 276 seconds)
+2016-09-29 02:15:00		[02:09]
+2016-09-29 02:15:47	-->	xaoc (xaoc@fuckyoudear.life) has joined #znc
+2016-09-29 02:18:13	<--	Wolfie (wolfie@wolfietech.ca) has quit (Quit: ZNC 1.7.x - http://znc.in)
+2016-09-29 02:19:40	-->	Wolfie (wolfie@wolfietech.ca) has joined #znc
+2016-09-29 02:20:12	--	klimt is now known as zz_klimt
+2016-09-29 02:20:57	-->	HappyLoaf_ (happyloaf@bitcoinshell.mooo.com) has joined #znc
+2016-09-29 02:23:52	-->	EricGonczer_ (~textual@2605:6000:f6d0:9100:1193:1c3b:3e5d:a37e) has joined #znc
+2016-09-29 02:24:51	<--	kazimuth_ (~james@ec2-54-172-24-246.compute-1.amazonaws.com) has quit (Ping timeout: 276 seconds)
+2016-09-29 02:25:39	<--	CaTtleyA (~CaTtleyA@lputeaux-656-1-50-20.w82-127.abo.wanadoo.fr) has quit (Ping timeout: 268 seconds)
+2016-09-29 02:27:25	<--	tmplt (~kandros@185-97-32-30.cust.tranquillity.se) has quit (Ping timeout: 244 seconds)
+2016-09-29 02:28:02	-->	kazimuth (~james@ec2-54-172-24-246.compute-1.amazonaws.com) has joined #znc
+2016-09-29 02:31:34	<--	Celelibi (celelibi@221.63.128.77.rev.sfr.net) has quit (Ping timeout: 244 seconds)
+2016-09-29 02:31:34		[02:31]
+2016-09-29 02:34:04	-->	Celelibi (celelibi@105.71.136.88.rev.sfr.net) has joined #znc
+2016-09-29 02:35:42	<--	HappyLoaf_ (happyloaf@bitcoinshell.mooo.com) has quit (Ping timeout: 244 seconds)
+2016-09-29 02:41:00		[02:35]
+2016-09-29 02:42:19	<--	xantam (~xantam@p54B7018F.dip0.t-ipconnect.de) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-09-29 02:48:00		[02:42]
+2016-09-29 02:52:00	-->	tmplt (~kandros@185.97.32.30) has joined #znc
+2016-09-29 02:52:30	<--	Hobbyboy (Hobbyboy@gateway/shell/panicbnc/x-qcnaaoajtiewhzvk) has quit (Ping timeout: 272 seconds)
+2016-09-29 02:53:00	-->	HappyLoaf_ (happyloaf@bitcoinshell.mooo.com) has joined #znc
+2016-09-29 02:56:09	<--	MillerBoss (~shit@107.191.50.190) has quit (Quit: ZNC - http://znc.in)
+2016-09-29 02:56:24	-->	EricGonc_ (~textual@72.32.180.177) has joined #znc
+2016-09-29 02:58:49	<--	EricGonczer_ (~textual@2605:6000:f6d0:9100:1193:1c3b:3e5d:a37e) has quit (Ping timeout: 272 seconds)
+2016-09-29 03:02:17	-->	x[x] (~dmt@185.51.75.217) has joined #znc
+2016-09-29 03:05:09	<--	HappyLoaf_ (happyloaf@bitcoinshell.mooo.com) has quit (Ping timeout: 244 seconds)
+2016-09-29 03:05:09		[03:05]
+2016-09-29 03:05:40	<--	tmplt (~kandros@185.97.32.30) has quit (Ping timeout: 244 seconds)
+2016-09-29 03:06:42	<--	x[x] (~dmt@185.51.75.217) has quit (Ping timeout: 244 seconds)
+2016-09-29 03:06:46	-->	MillerBoss (~shit@2001:19f0:5c00:93e1:64fd:ccfa:2b83:3ecb) has joined #znc
+2016-09-29 03:07:50	-->	tmplt (~kandros@185-97-32-30.cust.tranquillity.se) has joined #znc
+2016-09-29 03:08:08	<--	nckx (~nckx@tobias.gr) has quit (Quit: 🐧 + GNU Guix: http://gnu.org/s/guix)
+2016-09-29 03:09:24	-->	nckx (~nckx@tobias.gr) has joined #znc
+2016-09-29 03:09:51	<--	nckx (~nckx@tobias.gr) has quit (Client Quit)
+2016-09-29 03:10:41	-->	nckx (~nckx@tobias.gr) has joined #znc
+2016-09-29 03:10:53	<--	nckx (~nckx@tobias.gr) has quit (Remote host closed the connection)
+2016-09-29 03:12:18	-->	nckx (~nckx@tobias.gr) has joined #znc
+2016-09-29 03:14:30	<--	nckx (~nckx@tobias.gr) has quit (Client Quit)
+2016-09-29 03:14:36	-->	HappyLoaf_ (happyloaf@bitcoinshell.mooo.com) has joined #znc
+2016-09-29 03:15:14	-->	nckx (~nckx@tobias.gr) has joined #znc
+2016-09-29 03:15:33	-->	lockheed (~user@166.78.1.156) has joined #znc
+2016-09-29 03:17:05	-->	MrC (Ben@mrbenc.net) has joined #znc
+2016-09-29 03:17:07	-->	CaTtleyA (~CaTtleyA@lputeaux-656-1-50-20.w82-127.abo.wanadoo.fr) has joined #znc
+2016-09-29 03:18:03	-->	karakedi (~eAC53C340@unaffiliated/orphan) has joined #znc
+2016-09-29 03:18:21	-->	Fogest (~Fogest@168.235.64.153) has joined #znc
+2016-09-29 03:18:21	-->	Owner (~Owner@97-85-132-177.static.stls.mo.charter.com) has joined #znc
+2016-09-29 03:18:47	<--	Owner (~Owner@97-85-132-177.static.stls.mo.charter.com) has quit (Max SendQ exceeded)
+2016-09-29 03:19:06	<--	HappyLoaf_ (happyloaf@bitcoinshell.mooo.com) has quit (Ping timeout: 244 seconds)
+2016-09-29 03:19:06	-->	Mattski (~Matt@168.235.68.87) has joined #znc
+2016-09-29 03:19:06	<--	Mattski (~Matt@168.235.68.87) has quit (Changing host)
+2016-09-29 03:19:06	-->	Mattski (~Matt@unaffiliated/mattski) has joined #znc
+2016-09-29 03:19:29	-->	Herb_Tarlek (~FN_Herb@104.245.34.24) has joined #znc
+2016-09-29 03:19:30	<--	Herb_Tarlek (~FN_Herb@104.245.34.24) has quit (Excess Flood)
+2016-09-29 03:19:46	-->	Owner (~Owner@97-85-132-177.static.stls.mo.charter.com) has joined #znc
+2016-09-29 03:20:11	--	Owner is now known as Guest63175
+2016-09-29 03:20:11		[03:20]
+2016-09-29 03:22:01	-->	HappyLoaf_ (happyloaf@bitcoinshell.mooo.com) has joined #znc
+2016-09-29 03:23:37	-->	Herb_Tarlek (~FN_Herb@104.245.34.24) has joined #znc
+2016-09-29 03:25:25	<--	sdothum (~sdothum@108.63.189.28) has quit (Quit: ZNC 1.6.3 - http://znc.in)
+2016-09-29 03:28:55	<--	HappyLoaf_ (happyloaf@bitcoinshell.mooo.com) has quit (Ping timeout: 244 seconds)
+2016-09-29 03:32:16	--	SAL9000_ is now known as SAL9000
+2016-09-29 03:33:40	<--	wuseman (~wusidusi@unaffiliated/wuseman) has quit (Ping timeout: 272 seconds)
+2016-09-29 03:34:31	-->	HappyLoaf_ (happyloaf@bitcoinshell.mooo.com) has joined #znc
+2016-09-29 03:35:24	-->	wuseman (~wusidusi@h151n6-vn-a12.ias.bredband.telia.com) has joined #znc
+2016-09-29 03:35:24		[03:35]
+2016-09-29 03:35:31	<--	GingerGeek_ (~Zed@unaffiliated/gingergeek) has quit (Quit: Follow ma Twitter: @GingerGeek)
+2016-09-29 03:35:43	-->	GingerGeek (~Zed@gingergeek.co.uk) has joined #znc
+2016-09-29 03:35:43	<--	GingerGeek (~Zed@gingergeek.co.uk) has quit (Changing host)
+2016-09-29 03:35:43	-->	GingerGeek (~Zed@unaffiliated/gingergeek) has joined #znc
+2016-09-29 03:35:52	<--	myReaper (reaper@claire.myReaper.de) has left #znc ("Leaving")
+2016-09-29 03:39:15	<--	HappyLoaf_ (happyloaf@bitcoinshell.mooo.com) has quit (Ping timeout: 244 seconds)
+2016-09-29 03:40:54	<--	nckx (~nckx@tobias.gr) has quit (Quit: 🐧 + GNU Guix: http://gnu.org/s/guix)
+2016-09-29 03:42:29	-->	nckx (~nckx@tobias.gr) has joined #znc
+2016-09-29 03:44:03	<--	nckx (~nckx@tobias.gr) has quit (Client Quit)
+2016-09-29 03:49:49	-->	nckx (~nckx@tobias.gr) has joined #znc
+2016-09-29 03:51:44	<--	nckx (~nckx@tobias.gr) has quit (Client Quit)
+2016-09-29 03:51:44		[03:51]
+2016-09-29 03:53:18	-->	nckx (~nckx@tobias.gr) has joined #znc
+2016-09-29 03:53:35	-->	Hobbyboy (Hobbyboy@gateway/shell/panicbnc/x-ljvyzpheftqabldf) has joined #znc
+2016-09-29 03:59:00		[03:53]
+2016-09-29 04:00:43	MuffinMedic	DarthGandalf: sqlite's GLOB vs LIKE syntax. I decided to go with GLOB since it seems more natural.
+2016-09-29 04:00:51	MuffinMedic	And I stay away from regex as best I can.
+2016-09-29 04:01:41	<--	Mixologic (~Mixologic@75-164-147-22.ptld.qwest.net) has quit (Ping timeout: 240 seconds)
+2016-09-29 04:03:33	-->	Mixologic (~Mixologic@97-120-7-147.ptld.qwest.net) has joined #znc
+2016-09-29 04:04:03	-->	HappyLoaf_ (happyloaf@bitcoinshell.mooo.com) has joined #znc
+2016-09-29 04:04:04	-->	thaugu (~thafner@193.240.160.243) has joined #znc
+2016-09-29 04:04:21	-->	nickd25 (~nickd25@nick.teamshrimp.com) has joined #znc
+2016-09-29 04:04:21	<--	nickd25 (~nickd25@nick.teamshrimp.com) has quit (Changing host)
+2016-09-29 04:04:21	-->	nickd25 (~nickd25@unaffiliated/nickd25) has joined #znc
+2016-09-29 04:05:36	<--	thaugu_ (~thafner@193.240.160.243) has quit (Ping timeout: 244 seconds)
+2016-09-29 04:09:07	<--	HappyLoaf_ (happyloaf@bitcoinshell.mooo.com) has quit (Ping timeout: 272 seconds)
+2016-09-29 04:15:00		[04:09]
+2016-09-29 04:15:03	-->	HappyLoaf_ (happyloaf@bitcoinshell.mooo.com) has joined #znc
+2016-09-29 04:15:21	<--	Syntaxerror (~Syntaxerr@unaffiliated/snowman25) has quit (Ping timeout: 276 seconds)
+2016-09-29 04:21:00		[04:15]
+2016-09-29 04:22:30	<--	HappyLoaf_ (happyloaf@bitcoinshell.mooo.com) has quit (Ping timeout: 276 seconds)
+2016-09-29 04:23:25	-->	Syntaxerror (~Syntaxerr@unaffiliated/snowman25) has joined #znc
+2016-09-29 04:24:35	-->	FrozenWes (~FrozenWes@unaffiliated/frozenwes) has joined #znc
+2016-09-29 04:25:44	<--	EricGonc_ (~textual@72.32.180.177) has quit (Read error: Connection reset by peer)
+2016-09-29 04:29:00	<--	Syntaxerror (~Syntaxerr@unaffiliated/snowman25) has quit (Ping timeout: 276 seconds)
+2016-09-29 04:34:00		[04:29]
+2016-09-29 04:37:37	<--	RudyValencia (znc@unaffiliated/rudyvalencia) has quit (Ping timeout: 272 seconds)
+2016-09-29 04:38:04	-->	HappyLoaf_ (happyloaf@bitcoinshell.mooo.com) has joined #znc
+2016-09-29 04:42:21	<--	HappyLoaf_ (happyloaf@bitcoinshell.mooo.com) has quit (Ping timeout: 240 seconds)
+2016-09-29 04:44:30	-->	RudyValencia (rudy@unaffiliated/rudyvalencia) has joined #znc
+2016-09-29 04:49:17	-->	Syntaxerror (~Syntaxerr@unaffiliated/snowman25) has joined #znc
+2016-09-29 04:49:17		[04:49]
+2016-09-29 04:51:41	-->	ableto (~ableto@65.255.80.240) has joined #znc
+2016-09-29 04:54:34	--	Robby` is now known as robby`
+2016-09-29 04:55:54	-->	Mag-en00b (~ident@mobile-user-2e84b8-5.dhcp.inet.fi) has joined #znc
+2016-09-29 04:57:30	<--	jass93 (~ifillj@rrcs-24-39-217-250.nys.biz.rr.com) has quit (Ping timeout: 264 seconds)
+2016-09-29 05:00:25	<--	Syntaxerror (~Syntaxerr@unaffiliated/snowman25) has quit (Ping timeout: 272 seconds)
+2016-09-29 05:00:51	<--	Cultist (~CultOfThe@unaffiliated/cultist) has quit (Ping timeout: 276 seconds)
+2016-09-29 05:02:46	-->	killerpty (killerpty@gateway/shell/layerbnc/x-cypjmsfbtoeubldw) has joined #znc
+2016-09-29 05:05:03	-->	Syntaxerror (~Syntaxerr@unaffiliated/snowman25) has joined #znc
+2016-09-29 05:05:03		[05:05]
+2016-09-29 05:07:50	-->	swarfega (swarfega@2605:f700:42:2c1c::2a06:e021) has joined #znc
+2016-09-29 05:08:06	-->	HappyLoaf_ (happyloaf@bitcoinshell.mooo.com) has joined #znc
+2016-09-29 05:13:43	<--	HappyLoaf_ (happyloaf@bitcoinshell.mooo.com) has quit (Ping timeout: 272 seconds)
+2016-09-29 05:17:39	<--	btaroli (~btaroli@24.4.196.70) has quit (Read error: Connection reset by peer)
+2016-09-29 05:18:59	-->	EnigmaFX (~Enigma@104.243.24.236) has joined #znc
+2016-09-29 05:20:19	-->	btaroli (~btaroli@24.4.196.70) has joined #znc
+2016-09-29 05:20:19		[05:20]
+2016-09-29 05:28:48	<--	CaTtleyA (~CaTtleyA@lputeaux-656-1-50-20.w82-127.abo.wanadoo.fr) has quit (Ping timeout: 268 seconds)
+2016-09-29 05:28:50	-->	Oclair_ (~Oclair@91-115-162-251.adsl.highway.telekom.at) has joined #znc
+2016-09-29 05:30:42	-->	trepatudo (~SDig@5.196.50.27) has joined #znc
+2016-09-29 05:30:45	<--	Oclair (~Oclair@194-166-18-58.adsl.highway.telekom.at) has quit (Ping timeout: 276 seconds)
+2016-09-29 05:32:16	<--	mxtm (mxtm@dogecoin/staff-emeritus/mxtm) has quit (Quit: ZNC - 1.6.0 - http://znc.in)
+2016-09-29 05:32:17	<--	andor2007 (~andor2007@cpc72039-pete10-2-0-cust165.4-4.cable.virginm.net) has quit (Read error: Connection reset by peer)
+2016-09-29 05:34:06	-->	HappyLoaf_ (happyloaf@bitcoinshell.mooo.com) has joined #znc
+2016-09-29 05:36:00	-->	andor2007 (~andor2007@2a01:348:6:8809:216:3eff:feae:e278) has joined #znc
+2016-09-29 05:36:00		[05:36]
+2016-09-29 05:55:06	<--	thaugu (~thafner@193.240.160.243) has quit (Ping timeout: 264 seconds)
+2016-09-29 05:55:06		[05:55]
+2016-09-29 05:57:09	<--	Guest63175 (~Owner@97-85-132-177.static.stls.mo.charter.com) has quit (Read error: Connection reset by peer)
+2016-09-29 06:03:00		[05:57]
+2016-09-29 06:04:33	<--	Simounet (~Simounet@unaffiliated/simounet) has quit (Quit: Cya!)
+2016-09-29 06:05:28	<--	HappyLoaf_ (happyloaf@bitcoinshell.mooo.com) has quit (Ping timeout: 244 seconds)
+2016-09-29 06:07:19	-->	EricGonczer_ (~textual@72.32.180.179) has joined #znc
+2016-09-29 06:10:22	midnightmagic	regex is good for the soul.
+2016-09-29 06:10:59	midnightmagic	THE SOUL MAN
+2016-09-29 06:11:29	SAL9000	regex in moderation
+2016-09-29 06:17:00		[06:11]
+2016-09-29 06:18:19	<--	andy09usa (~andy09usa@unaffiliated/andy09usa) has quit (Ping timeout: 250 seconds)
+2016-09-29 06:18:19	<--	johnlage (johnlage@2604:880:a:7::fda) has quit (Ping timeout: 272 seconds)
+2016-09-29 06:18:51	<--	romana (~romana@unaffiliated/romana-/x-8401878) has quit (Ping timeout: 276 seconds)
+2016-09-29 06:19:19	-->	x[x] (~dmt@185.51.72.146) has joined #znc
+2016-09-29 06:25:00		[06:19]
+2016-09-29 06:26:40	-->	HappyLoaf_ (happyloaf@bitcoinshell.mooo.com) has joined #znc
+2016-09-29 06:27:50	<--	chachasmooth (~chachasmo@unaffiliated/chachasmooth) has quit (Ping timeout: 272 seconds)
+2016-09-29 06:29:35	-->	chachasmooth (~chachasmo@unaffiliated/chachasmooth) has joined #znc
+2016-09-29 06:30:26	-->	romana (~romana@unaffiliated/romana-/x-8401878) has joined #znc
+2016-09-29 06:34:11	--	Guest430 is now known as Condor
+2016-09-29 06:36:59	<--	HappyLoaf_ (happyloaf@bitcoinshell.mooo.com) has quit (Ping timeout: 244 seconds)
+2016-09-29 06:37:21	--	edran_ is now known as edran
+2016-09-29 06:37:41	<--	hfp (~hfp@MTRLPQ0736W-LP130-03-1177833615.dsl.bell.ca) has quit (Ping timeout: 240 seconds)
+2016-09-29 06:37:49	<--	Sinnersbleed (~sinner@2a00:1a28:1157:110:0:1337:dead:c0de) has quit (Ping timeout: 250 seconds)
+2016-09-29 06:40:06	-->	hfp (~hfp@MTRLPQ0736W-LP130-03-1177833615.dsl.bell.ca) has joined #znc
+2016-09-29 06:40:06		[06:40]
+2016-09-29 06:40:17	-->	Simounet (~Simounet@unaffiliated/simounet) has joined #znc
+2016-09-29 06:43:06	<--	Case_Of (~Case_Of@unaffiliated/itruc) has quit (Ping timeout: 264 seconds)
+2016-09-29 06:43:33	<--	khfeng (~khfeng@114-32-108-117.HINET-IP.hinet.net) has quit (Ping timeout: 276 seconds)
+2016-09-29 06:43:43	-->	khfeng (~khfeng@114-32-108-117.HINET-IP.hinet.net) has joined #znc
+2016-09-29 06:44:40	-->	HappyLoaf_ (happyloaf@bitcoinshell.mooo.com) has joined #znc
+2016-09-29 06:45:07	<--	rany (~me@unaffiliated/rany) has quit (Quit: Leaving)
+2016-09-29 06:45:20	-->	rany (~me@unaffiliated/rany) has joined #znc
+2016-09-29 06:47:42	<--	Condor (~condor@unaffiliated/condor) has quit (Quit: WeeChat 1.5)
+2016-09-29 06:48:12	-->	Condor (~condor@unaffiliated/condor) has joined #znc
+2016-09-29 06:49:04	-->	Case_Of (~Case_Of@unaffiliated/itruc) has joined #znc
+2016-09-29 06:52:32	<--	HappyLoaf_ (happyloaf@bitcoinshell.mooo.com) has quit (Ping timeout: 272 seconds)
+2016-09-29 06:53:35	<--	rany (~me@unaffiliated/rany) has quit (Quit: Leaving)
+2016-09-29 06:53:47	-->	rany (~me@unaffiliated/rany) has joined #znc
+2016-09-29 06:55:23	-->	Sinnersblood (~sinner@2a00:1a28:1157:110:0:1337:dead:c0de) has joined #znc
+2016-09-29 06:55:23		[06:55]
+2016-09-29 06:59:01	<--	rany (~me@unaffiliated/rany) has quit (Remote host closed the connection)
+2016-09-29 06:59:24	-->	rany (~me@unaffiliated/rany) has joined #znc
+2016-09-29 07:03:56	<--	rany (~me@unaffiliated/rany) has quit (Remote host closed the connection)
+2016-09-29 07:04:27	-->	rany (~me@unaffiliated/rany) has joined #znc
+2016-09-29 07:06:54	<--	rany (~me@unaffiliated/rany) has quit (Remote host closed the connection)
+2016-09-29 07:07:51	-->	rany (~me@unaffiliated/rany) has joined #znc
+2016-09-29 07:08:38	-->	jass93 (~ifillj@moraine-122.dynamic.rpi.edu) has joined #znc
+2016-09-29 07:08:42	-->	HappyLoaf_ (happyloaf@bitcoinshell.mooo.com) has joined #znc
+2016-09-29 07:13:09	<--	HappyLoaf_ (happyloaf@bitcoinshell.mooo.com) has quit (Ping timeout: 244 seconds)
+2016-09-29 07:13:09		[07:13]
+2016-09-29 07:14:28	-->	synne (~synne@2c.06.01a8.ip4.static.sl-reverse.com) has joined #znc
+2016-09-29 07:16:10	<--	ShaRose (ShaRose@i.am.sharo.se) has quit (Quit: I appear to have left for some reason.)
+2016-09-29 07:16:46	-->	ShaRose (ShaRose@i.am.sharo.se) has joined #znc
+2016-09-29 07:18:04	--	rany is now known as gitlord
+2016-09-29 07:18:45	<--	Vauff (~Vauff@vauff.me) has quit (Quit: No Ping reply in 180 seconds.)
+2016-09-29 07:19:20	--	gitlord is now known as BigCock2016
+2016-09-29 07:21:03	-->	Vauff (~Vauff@vauff.me) has joined #znc
+2016-09-29 07:22:12	--	BigCock2016 is now known as rany
+2016-09-29 07:26:28	-->	themurph (~themurph@107.13.114.254) has joined #znc
+2016-09-29 07:32:00		[07:26]
+2016-09-29 07:32:19	-->	HappyLoaf_ (happyloaf@bitcoinshell.mooo.com) has joined #znc
+2016-09-29 07:37:03	-->	andy09usa (~andy09usa@unaffiliated/andy09usa) has joined #znc
+2016-09-29 07:41:08	<--	HappyLoaf_ (happyloaf@bitcoinshell.mooo.com) has quit (Quit: ZNC - http://znc.in)
+2016-09-29 07:41:43	-->	HappyLoaf_ (happyloaf@bitcoinshell.mooo.com) has joined #znc
+2016-09-29 07:47:00		[07:41]
+2016-09-29 07:47:01	<--	wuseman (~wusidusi@h151n6-vn-a12.ias.bredband.telia.com) has quit (Ping timeout: 240 seconds)
+2016-09-29 07:48:14	-->	wuseman (~wusidusi@h151n6-vn-a12.ias.bredband.telia.com) has joined #znc
+2016-09-29 07:48:16	<--	swarfega (swarfega@2605:f700:42:2c1c::2a06:e021) has quit (Ping timeout: 272 seconds)
+2016-09-29 07:51:01	<--	HappyLoaf_ (happyloaf@bitcoinshell.mooo.com) has quit (Quit: ZNC - http://znc.in)
+2016-09-29 07:54:29	<--	jass93 (~ifillj@moraine-122.dynamic.rpi.edu) has quit (Ping timeout: 244 seconds)
+2016-09-29 07:54:40	--	rany is now known as ArnoldSchwarzene
+2016-09-29 07:55:04	--	ArnoldSchwarzene is now known as ArnoldS1947
+2016-09-29 07:55:30	--	ArnoldS1947 is now known as rany
+2016-09-29 08:00:32	-->	swarfega (swarfega@2605:f700:42:2c1c::2a06:e021) has joined #znc
+2016-09-29 08:03:18	-->	HappyLoaf_ (happyloaf@bitcoinshell.mooo.com) has joined #znc
+2016-09-29 08:03:18		[08:03]
+2016-09-29 08:06:47	-->	CaTtleyA (~CaTtleyA@lfbn-1-3377-77.w90-127.abo.wanadoo.fr) has joined #znc
+2016-09-29 08:09:22	<--	conradev (~conrad@ec2-52-5-100-155.compute-1.amazonaws.com) has quit (Quit: ...)
+2016-09-29 08:11:44	-->	conradev (~conrad@ec2-52-5-100-155.compute-1.amazonaws.com) has joined #znc
+2016-09-29 08:16:18	lol768	Hello, does anyone have experience with running the integration tests? I'm getting issues with the Qt5Network not being found but a) libqt5network5 is installed and b) I've tried export CMAKE_PREFIX_PATH="/opt/Qt/5.7/gcc_64/include/QtNetwork/"; cmake .
+2016-09-29 08:16:21	-->	jass93 (~ifillj@heffner-wl-373.dynamic.rpi.edu) has joined #znc
+2016-09-29 08:19:11	lol768	oh and I'm just assuming I need to run cmake in the integration directory .. but it's not actually documented on the wiki as far as I can see
+2016-09-29 08:19:11		[08:19]
+2016-09-29 08:19:46	-->	lisk0v (~liskov@exit0.liskov.tor-relays.net) has joined #znc
+2016-09-29 08:20:19	<--	HappyLoaf_ (happyloaf@bitcoinshell.mooo.com) has quit (Ping timeout: 244 seconds)
+2016-09-29 08:22:03	lol768	hmm, looks like there's an inttest target, but gives same error
+2016-09-29 08:22:42	<--	x[x] (~dmt@185.51.72.146) has quit (Ping timeout: 264 seconds)
+2016-09-29 08:28:00		[08:22]
+2016-09-29 08:28:53	lol768	okay, got it to build by setting export CMAKE_PREFIX_PATH=/opt/Qt/5.7/gcc_64/lib/cmake
+2016-09-29 08:29:12	lol768	15/16 tests are failing.
+2016-09-29 08:29:22	MetaNova	lol768: since when does ZNC use Qt?
+2016-09-29 08:29:42	 *	lol768 shrugs
+2016-09-29 08:29:47	lol768	it's in the CMakeLists file
+2016-09-29 08:30:23	lol768	it's using it to do HTTP requests
+2016-09-29 08:30:32	MetaNova	I see
+2016-09-29 08:31:18	MetaNova	heh, are you using the git version?
+2016-09-29 08:31:35	lol768	yeah
+2016-09-29 08:31:49	lol768	output: https://gist.github.com/lol768/823e3b18f2aed1175bc1c30b7d9faa7c
+2016-09-29 08:32:19	lol768	oh, my mistake. None of them seem to be passing
+2016-09-29 08:35:45	<--	haudrauf (~haudrauf2@p200300C35BC3B100BA387C23E6AA7C9C.dip0.t-ipconnect.de) has quit (Ping timeout: 272 seconds)
+2016-09-29 08:35:50	<--	LancerFIN (lancerfin@lancerfin.jedi-knight.org) has quit (Read error: Connection reset by peer)
+2016-09-29 08:37:08	-->	haudrauf (~haudrauf2@p200300C35BC3B100BA387C23E6AA7C9C.dip0.t-ipconnect.de) has joined #znc
+2016-09-29 08:37:16	-->	LancerFIN (lancerfin@lancerfin.jedi-knight.org) has joined #znc
+2016-09-29 08:38:02	MetaNova	[  PASSED  ] 122 tests.
+2016-09-29 08:38:22	<--	khronosschoty (Elite16547@gateway/shell/elitebnc/x-shlcvjhsnlsnjped) has quit (Excess Flood)
+2016-09-29 08:38:31	DarthGandalf	MetaNova: only for integration tests
+2016-09-29 08:39:09	-->	khronosschoty (Elite16547@gateway/shell/elitebnc/x-xofpykdmwqboqyyg) has joined #znc
+2016-09-29 08:39:53	DarthGandalf	lol768: make inttest should be run after make install
+2016-09-29 08:40:22	DarthGandalf	It passes the path to <prefix>/bin/znc which will be run by test
+2016-09-29 08:40:36	DarthGandalf	<prefix> doesn't need to be /usr, of course
+2016-09-29 08:40:49	<--	khronosschoty (Elite16547@gateway/shell/elitebnc/x-xofpykdmwqboqyyg) has quit (Excess Flood)
+2016-09-29 08:41:38	lol768	DarthGandalf: ah I see, couldn't install be set as a required pre-requisite target?
+2016-09-29 08:41:41	DarthGandalf	MuffinMedic: ah, LIKE with % and _ ?
+2016-09-29 08:41:42	-->	khronosschoty (Elite16547@gateway/shell/elitebnc/x-laxswojlvwswrfty) has joined #znc
+2016-09-29 08:41:44	DarthGandalf	I see
+2016-09-29 08:41:47	MuffinMedic	Yea.
+2016-09-29 08:42:12	lol768	aha, getting much better output now. Thanks DarthGandalf
+2016-09-29 08:42:17	MuffinMedic	I actually didn't realize until I looked it up that sqlite had a built in GLOB operator
+2016-09-29 08:43:46	DarthGandalf	lol768: hm, maybe. I don't know if it's possible to depend on install
+2016-09-29 08:43:46		[08:43]
+2016-09-29 08:45:11	-->	b6s3d (~b00s3d@unaffiliated/b00s3d) has joined #znc
+2016-09-29 08:45:25	b6s3d	hello how do i disconnect from a irc server without disconnecting from znc
+2016-09-29 08:45:33	DarthGandalf	/znc disconnect
+2016-09-29 08:45:41	DarthGandalf	lol768: but why do you want to run it?
+2016-09-29 08:46:11	lol768	DarthGandalf: I want to add another one
+2016-09-29 08:46:14	lol768	for the CSRF module PR
+2016-09-29 08:46:16	-->	HappyLoaf_ (happyloaf@bitcoinshell.mooo.com) has joined #znc
+2016-09-29 08:46:21	DarthGandalf	ah
+2016-09-29 08:46:45	lol768	is that what you were looking for when you asked for some tests?
+2016-09-29 08:47:01	DarthGandalf	that works, yeah
+2016-09-29 08:47:11	lol768	cool
+2016-09-29 08:47:41	DarthGandalf	but there are some things which I don't like about that test; Z;
+2016-09-29 08:48:08	DarthGandalf	also I'll need to split it to multiple files at some point; Z;
+2016-09-29 08:48:22	lol768	haha
+2016-09-29 08:48:27	lol768	it gets a little repetitive..
+2016-09-29 08:48:43	lol768	I've reapplied tzvetkoff's commit on top of the latest code and fixed some of the comments too
+2016-09-29 08:50:20	Mag-en00b	is there a reason why i cannot override OnChanMessage in a .py module? the current implementation that forwards OnChanMessage to OnChanMsg abstracts away Message, so I cannot get access to it's timestamp --> https://github.com/znc/znc/blob/master/modules/modpython/znc.py#L628
+2016-09-29 08:51:43	Mag-en00b	when I write a method with said method (OnChanMessage) in my python module, it just simply never gets called, yet my python method OnChanMsg does get called
+2016-09-29 08:52:51	<--	swarfega (swarfega@2605:f700:42:2c1c::2a06:e021) has quit (Ping timeout: 272 seconds)
+2016-09-29 08:53:18	<--	HappyLoaf_ (happyloaf@bitcoinshell.mooo.com) has quit (Ping timeout: 264 seconds)
+2016-09-29 08:54:18	DarthGandalf	Mag-en00b: ZNC version?
+2016-09-29 08:55:13	Mag-en00b	ZNC 1.6.3
+2016-09-29 08:55:24	DarthGandalf	That's why it doesn't work.
+2016-09-29 08:55:34	Mag-en00b	which is why?
+2016-09-29 08:55:37	DarthGandalf	Message appeared in 1.7
+2016-09-29 08:55:50	Mag-en00b	ahh, okies. simplifies things tremendously :)
+2016-09-29 08:55:54	DarthGandalf	Which wasn't released yet
+2016-09-29 08:56:19	MuffinMedic	Speaking of which DarthGandalf - Will the API in 1.7 be backwards compatible (OnChanMsg still works) or will modules need to be rewritten with OnChanMessage?
+2016-09-29 08:56:30	DarthGandalf	it's back compatible, yes
+2016-09-29 08:56:42	MuffinMedic	Perfect.
+2016-09-29 08:56:47	DarthGandalf	But I'll need to change the message API :(
+2016-09-29 08:56:55	DarthGandalf	I'm trying to do that for last several days
+2016-09-29 08:57:04	Mag-en00b	DarthGandalf: thanks. another question: i'd like to publish a module, but dont have an account. could i get one for the wiki's "external modules" page?
+2016-09-29 08:57:16	Case_Of	no update since 1.6.3?
+2016-09-29 08:57:18	DarthGandalf	pm me your email
+2016-09-29 08:57:35	--	Swant is now known as IKEA
+2016-09-29 08:57:44	Case_Of	ho a sweden guy
+2016-09-29 08:57:51	-->	HappyLoaf_ (happyloaf@bitcoinshell.mooo.com) has joined #znc
+2016-09-29 08:58:32	--	Mode #znc [+o MetaNova] by ChanServ
+2016-09-29 08:58:59	DarthGandalf	Mag-en00b: check it
+2016-09-29 08:58:59		[08:58]
+2016-09-29 08:59:00	demize	Lots of Swedes on the Internet.
+2016-09-29 08:59:27	--	Mode #znc [-bbbb *virgin*!*@* *!50f688cc@* mrBen2k*!*logstash@*.compute-1.amazonaws.com$##fix_your_connection $a:Nocty$##fix_your_connection] by MetaNova
+2016-09-29 08:59:28	--	Mode #znc [-bbbb $a:unforgiven512$##fix_your_connection *!*drbean@124.219.*$##fix_your_connection *!*43d5da4a@gateway/web/cgi-irc/kiwiirc.com/session _u2pop_!guachiman@gateway/shell/sh3lls.net/x-ujvabxatnysajhhf] by MetaNova
+2016-09-29 08:59:28	--	Mode #znc [-bbbb Buck^eidj|in`[]!~vipyr@58.82.137.82 *!*@2a03:b0c0:2:d0::cb:e001$##fix_your_connection $a:pantofel$##fix_your_connection *!*@unaffiliated/miramar-fl$##fix_your_connection] by MetaNova
+2016-09-29 08:59:28	--	Mode #znc [-bbb *!*@gateway/web/cgi-irc/kiwiirc.com/ip.119.15* *!*@kindari.net$##fix_your_connection *!*@tyrion.nullsign.com$##fix_your_connection] by MetaNova
+2016-09-29 08:59:35	Case_Of	ouch
+2016-09-29 08:59:36	--	Mode #znc [-o MetaNova] by MetaNova
+2016-09-29 08:59:45	--	IKEA is now known as Swant
+2016-09-29 09:00:26	Case_Of	and lot of furnitures around the world
+2016-09-29 09:02:22	-->	swarfega (swarfega@2605:f700:42:2c1c::2a06:e021) has joined #znc
+2016-09-29 09:08:00		[09:02]
+2016-09-29 09:09:29	<--	khronosschoty (Elite16547@gateway/shell/elitebnc/x-laxswojlvwswrfty) has quit (Excess Flood)
+2016-09-29 09:09:52	Mag-en00b	DarthGandalf: thank you :)
+2016-09-29 09:11:06	<--	AgentClank (AgentClank@unaffiliated/agentclank) has quit (Quit: Account terminated by the PanicBNC Staff Team.)
+2016-09-29 09:13:24	<--	conradev (~conrad@ec2-52-5-100-155.compute-1.amazonaws.com) has quit (Quit: ...)
+2016-09-29 09:15:01	<--	HappyLoaf_ (happyloaf@bitcoinshell.mooo.com) has quit (Ping timeout: 272 seconds)
+2016-09-29 09:15:52	--	rhg331 is now known as rhg135
+2016-09-29 09:16:25	-->	conradev (~conrad@ec2-52-5-100-155.compute-1.amazonaws.com) has joined #znc
+2016-09-29 09:17:18	-->	HappyLoaf_ (happyloaf@bitcoinshell.mooo.com) has joined #znc
+2016-09-29 09:21:48	<--	HappyLoaf_ (happyloaf@bitcoinshell.mooo.com) has quit (Ping timeout: 244 seconds)
+2016-09-29 09:22:05	-->	shivers (~shivers@c80-216-57-116.bredband.comhem.se) has joined #znc
+2016-09-29 09:23:01	<--	Gaffel (~gaffel@195-252-43-174-no254.tbcn.telia.com) has quit (Ping timeout: 240 seconds)
+2016-09-29 09:23:01		[09:23]
+2016-09-29 09:26:40	<--	conradev (~conrad@ec2-52-5-100-155.compute-1.amazonaws.com) has quit (Remote host closed the connection)
+2016-09-29 09:27:27	-->	Gaffel (~gaffel@195.252.43.174) has joined #znc
+2016-09-29 09:30:00	<--	Colti (Miramar-FL@2a00:c1e0:0:2:0:1:208:ab5e) has quit (Excess Flood)
+2016-09-29 09:30:34	-->	conradev (~conrad@ec2-52-5-100-155.compute-1.amazonaws.com) has joined #znc
+2016-09-29 09:31:39	-->	Colti (Miramar-FL@2a00:c1e0:0:2:0:1:208:ab5e) has joined #znc
+2016-09-29 09:34:24	<--	FrozenWes (~FrozenWes@unaffiliated/frozenwes) has quit (Quit: FrozenWes)
+2016-09-29 09:37:42	<--	sunri5e_ (~sunri5e@unaffiliated/sunri5e) has quit (Quit: ZNC 1.6.3 - http://znc.in)
+2016-09-29 09:38:31	-->	sunri5e (~sunri5e@unaffiliated/sunri5e) has joined #znc
+2016-09-29 09:38:31		[09:38]
+2016-09-29 09:39:52	<--	ShawnWhite (ShawnWhite@2a01:7e00::f03c:91ff:fe70:27e1) has quit (Ping timeout: 252 seconds)
+2016-09-29 09:40:08	<--	mindlesstux (~mindlesst@daedalus.mindlesstux.com) has quit (Disconnected by services)
+2016-09-29 09:40:09	-->	mindlesstux_ (~mindlesst@daedalus.mindlesstux.com) has joined #znc
+2016-09-29 09:40:24	<--	saiyan (~saiyan@mx0.chrstn.eu) has quit (Ping timeout: 252 seconds)
+2016-09-29 09:40:30	--	mindlesstux_ is now known as mindlesstux
+2016-09-29 09:40:38	<--	AntiSpamMeta (~MetaBot@AntiSpamMeta/.) has quit (Killed (wilhelm.freenode.net (Nickname regained by services)))
+2016-09-29 09:40:45	-->	saiyan (~saiyan@mx0.chrstn.eu) has joined #znc
+2016-09-29 09:41:13	-->	demize- (kyrias@archlinux/trusteduser/demize) has joined #znc
+2016-09-29 09:42:08	-->	eDW1n- (zero@gateway/shell/elitebnc/x-lmajepldrbhnxrmd) has joined #znc
+2016-09-29 09:42:28	-->	kerio_ (kerio@bad.memes.vs.dank.ninja) has joined #znc
+2016-09-29 09:42:28	--	Mode #znc [+o kerio_] by ChanServ
+2016-09-29 09:42:50	-->	cathyjf (~Cathy@unaffiliated/cathy) has joined #znc
+2016-09-29 09:42:57	-->	ShawnWhite (ShawnWhite@2a01:7e00::f03c:91ff:fe70:27e1) has joined #znc
+2016-09-29 09:43:01	<--	Cathy (~Cathy@unaffiliated/cathy) has quit (Ping timeout: 252 seconds)
+2016-09-29 09:43:01	<--	demize (kyrias@archlinux/trusteduser/demize) has quit (Remote host closed the connection)
+2016-09-29 09:43:01	<--	kerio (kerio@bad.memes.vs.dank.ninja) has quit (Quit: this wasn't supposed to happen)
+2016-09-29 09:43:12	--	cathyjf is now known as Cathy
+2016-09-29 09:43:17	--	Maple__ is now known as visiting
+2016-09-29 09:43:19	<--	eDW1n (zero@gateway/shell/elitebnc/x-ukrnlmjswongjiib) has quit (Ping timeout: 252 seconds)
+2016-09-29 09:43:20	<--	Olipro (~Olipro@uncyclopedia/pdpc.21for7.olipro) has quit (Ping timeout: 252 seconds)
+2016-09-29 09:43:20	<--	physpi (sid161004@gateway/web/irccloud.com/x-wlalbidhwfnbsffx) has quit (Ping timeout: 252 seconds)
+2016-09-29 09:43:20	<--	ghormoon (~ghormoon@ghorland.net) has quit (Ping timeout: 252 seconds)
+2016-09-29 09:43:21	<--	ilbelkyr (~bcode@atheme/ilbelkyr) has quit (Ping timeout: 252 seconds)
+2016-09-29 09:43:21	<--	RoboMWM (~RoboMWM@tf.us.to) has quit (Ping timeout: 252 seconds)
+2016-09-29 09:43:21	<--	Unity (~Mitsuki@unaffiliated/unity) has quit (Ping timeout: 252 seconds)
+2016-09-29 09:43:21	<--	Lord255 (~lord@unaffiliated/lord255) has quit (Ping timeout: 252 seconds)
+2016-09-29 09:43:21	<--	Extreme- (extreme7@gateway/shell/xshellz/x-adjlqezomccyanod) has quit (Ping timeout: 252 seconds)
+2016-09-29 09:43:22	<--	vendion (~vendion@unaffiliated/vendion) has quit (Ping timeout: 252 seconds)
+2016-09-29 09:43:22	<--	Madgod (~sheo@unaffiliated/diewelt) has quit (Ping timeout: 252 seconds)
+2016-09-29 09:43:22	<--	Froggaard (~Froggaard@mayweather.pulsedmedia.com) has quit (Ping timeout: 252 seconds)
+2016-09-29 09:43:22	<--	banging_ (~banging@2a03:b0c0:2:d0::147:1) has quit (Ping timeout: 252 seconds)
+2016-09-29 09:43:22	-->	Lord255_ (~lord@unaffiliated/lord255) has joined #znc
+2016-09-29 09:43:24	--	Lord255_ is now known as Lord255
+2016-09-29 09:43:26	--	kerio_ is now known as kerio
+2016-09-29 09:43:57	-->	ilbelkyr_ (~bcode@atheme/ilbelkyr) has joined #znc
+2016-09-29 09:43:58	-->	ghormoon (~ghormoon@ghorland.net) has joined #znc
+2016-09-29 09:44:55	-->	banging (~banging@2a03:b0c0:2:d0::147:1) has joined #znc
+2016-09-29 09:45:12	-->	RoboMWM (~RoboMWM@tf.us.to) has joined #znc
+2016-09-29 09:45:34	<--	ableto (~ableto@65.255.80.240) has quit (Quit: Leaving)
+2016-09-29 09:45:37	-->	physpi (sid161004@gateway/web/irccloud.com/x-ewejwhziphbnjbnc) has joined #znc
+2016-09-29 09:45:37	-->	vendion (~vendion@unaffiliated/vendion) has joined #znc
+2016-09-29 09:45:44	-->	AntiSpamMeta (~MetaBot@AntiSpamMeta/.) has joined #znc
+2016-09-29 09:45:46	-->	been_here (beenhere@CEO.micros0ft.dk) has joined #znc
+2016-09-29 09:45:51	-->	Extreme (extreme7@gateway/shell/xshellz/x-pmuqrnxzkmkdhpgl) has joined #znc
+2016-09-29 09:46:13	<--	disgusting[m] (disgusting@gateway/shell/matrix.org/x-romdcailwlinzpou) has quit (Ping timeout: 276 seconds)
+2016-09-29 09:46:13	-->	harambea (~bea@95.215.44.99) has joined #znc
+2016-09-29 09:46:39	-->	KeithGS- (~keith@209.141.41.189) has joined #znc
+2016-09-29 09:46:46	-->	wolfy1339_ (~wolfy1339@botters/wolfy1339) has joined #znc
+2016-09-29 09:47:00	-->	Killerkid (Killerkid@unaffiliated/killerkid) has joined #znc
+2016-09-29 09:47:11	<--	CaTtleyA (~CaTtleyA@lfbn-1-3377-77.w90-127.abo.wanadoo.fr) has quit (Ping timeout: 268 seconds)
+2016-09-29 09:47:30	<--	Riotela (cibliamatr@gateway/shell/matrix.org/x-dppkdlpqfnpdmocz) has quit (Ping timeout: 276 seconds)
+2016-09-29 09:47:37	-->	Avengence_ (~avengence@94.142.238.108) has joined #znc
+2016-09-29 09:47:46	-->	knivey (knivey@2604:180:1:706:0:1ced:c0:ffee) has joined #znc
+2016-09-29 09:47:50	-->	heinrich5991_ (~hein5991@unaffiliated/heinrich5991) has joined #znc
+2016-09-29 09:48:01	<--	Avengence (~avengence@94.142.238.108) has quit (Ping timeout: 240 seconds)
+2016-09-29 09:48:01	--	Avengence_ is now known as Avengence
+2016-09-29 09:48:35	<--	haudrauf (~haudrauf2@p200300C35BC3B100BA387C23E6AA7C9C.dip0.t-ipconnect.de) has quit (Ping timeout: 272 seconds)
+2016-09-29 09:48:39	-->	Unity (~Mitsuki@2a01:4f8:191:80a1:1be::c6a7) has joined #znc
+2016-09-29 09:48:40	<--	Unity (~Mitsuki@2a01:4f8:191:80a1:1be::c6a7) has quit (Changing host)
+2016-09-29 09:48:40	-->	Unity (~Mitsuki@unaffiliated/unity) has joined #znc
+2016-09-29 09:48:52	-->	lesderid_ (~lesderid@anna.lesderid.net) has joined #znc
+2016-09-29 09:48:57	<--	sunri5e (~sunri5e@unaffiliated/sunri5e) has quit (Quit: ZNC 1.6.3 - http://znc.in)
+2016-09-29 09:49:02	-->	Zarthus_ (Zarthus@trivialand/guesser/zarthus) has joined #znc
+2016-09-29 09:49:31	-->	gsingh93- (~gsingh93@104.236.206.26) has joined #znc
+2016-09-29 09:49:45	-->	sunri5e (~sunri5e@unaffiliated/sunri5e) has joined #znc
+2016-09-29 09:50:01	<--	z_AlexJFox (sid7798@wikipedia/AlexJFox) has quit (Ping timeout: 252 seconds)
+2016-09-29 09:50:01	<--	beenhere (beenhere@unaffiliated/beenhere) has quit (Ping timeout: 252 seconds)
+2016-09-29 09:50:01	<--	dgtlchlk (~uhmm@2001:470:1f11:5a0::18) has quit (Ping timeout: 252 seconds)
+2016-09-29 09:50:01	<--	DonRichie (~DonRichie@ricl.de) has quit (Ping timeout: 252 seconds)
+2016-09-29 09:50:01	<--	knivey_ (knivey@2604:180:1:706:0:1ced:c0:ffee) has quit (Ping timeout: 252 seconds)
+2016-09-29 09:50:02	<--	wolfy1339 (~wolfy1339@botters/wolfy1339) has quit (Ping timeout: 252 seconds)
+2016-09-29 09:50:02	<--	Colti (Miramar-FL@2a00:c1e0:0:2:0:1:208:ab5e) has quit (Ping timeout: 252 seconds)
+2016-09-29 09:50:02	<--	Neworths (~Neworths@2a01:e34:ef02:3580:211:32ff:fe0e:674e) has quit (Ping timeout: 252 seconds)
+2016-09-29 09:50:02	<--	heinrich5991 (~hein5991@unaffiliated/heinrich5991) has quit (Ping timeout: 252 seconds)
+2016-09-29 09:50:02	<--	deanfx (~deanfx@4o4.co) has quit (Ping timeout: 252 seconds)
+2016-09-29 09:50:03	<--	KeithGS (~keith@2605:6400:20:35d:745a:d3cd:3017:7494) has quit (Ping timeout: 252 seconds)
+2016-09-29 09:50:03	<--	Alef_Burzmali (~burzmali@gammu.burzmali.com) has quit (Ping timeout: 252 seconds)
+2016-09-29 09:50:03	<--	averythomas (~averythom@cpe-76-178-244-96.maine.res.rr.com) has quit (Ping timeout: 252 seconds)
+2016-09-29 09:50:04	<--	Killerkid_ (Killerkid@unaffiliated/killerkid) has quit (Quit: ZNC - http://znc.in)
+2016-09-29 09:50:04	<--	f4bs (~fc2b9e1f@p5B27321F.dip.t-dialin.eu) has quit (Ping timeout: 252 seconds)
+2016-09-29 09:50:04	<--	Sketch (~Sketch@2604:180:2::a506:5c0d) has quit (Ping timeout: 252 seconds)
+2016-09-29 09:50:04	<--	oyvindio (oyvindio@oyvind.io) has quit (Ping timeout: 252 seconds)
+2016-09-29 09:50:05	<--	idmistir_ (~idmistir@2a01:4f8:161:620b::2) has quit (Ping timeout: 252 seconds)
+2016-09-29 09:50:05	<--	lesderid (~lesderid@anna.lesderid.net) has quit (Ping timeout: 252 seconds)
+2016-09-29 09:50:05	<--	fred``` (fred@earthli.ng) has quit (Quit: +++ATH0)
+2016-09-29 09:50:05	<--	tabakhase (tabakhase@unaffiliated/tabakhase) has quit (Ping timeout: 252 seconds)
+2016-09-29 09:50:05	<--	gsingh93 (~gsingh93@104.236.206.26) has quit (Ping timeout: 252 seconds)
+2016-09-29 09:50:05	<--	goezz (galau@just.eg.goez.my.id) has quit (Ping timeout: 252 seconds)
+2016-09-29 09:50:05	<--	md_5- (~md_5@mcdevs/trusted/md-5) has quit (Ping timeout: 252 seconds)
+2016-09-29 09:50:05	<--	Zarthus (Zarthus@trivialand/guesser/zarthus) has quit (Read error: Connection reset by peer)
+2016-09-29 09:50:05	-->	dgtlchlk (~uhmm@2001:470:1f11:5a0::18) has joined #znc
+2016-09-29 09:50:06	-->	deanfx (~deanfx@4o4.co) has joined #znc
+2016-09-29 09:50:06	-->	Froggaard (~Froggaard@mayweather.pulsedmedia.com) has joined #znc
+2016-09-29 09:50:06	<--	nt (~nt@carlo.failback.org) has quit (Ping timeout: 252 seconds)
+2016-09-29 09:50:06	--	wolfy1339_ is now known as wolfy1339
+2016-09-29 09:50:06	--	heinrich5991_ is now known as heinrich5991
+2016-09-29 09:50:09	--	Zarthus_ is now known as Zarthus
+2016-09-29 09:50:16	-->	idmistir (~idmistir@unaffiliated/idmistir) has joined #znc
+2016-09-29 09:50:16	-->	oyvindio (oyvindio@oyvind.io) has joined #znc
+2016-09-29 09:50:18	<--	jass93 (~ifillj@heffner-wl-373.dynamic.rpi.edu) has quit (Ping timeout: 264 seconds)
+2016-09-29 09:50:20	-->	Alef_Burzmali (~burzmali@gammu.burzmali.com) has joined #znc
+2016-09-29 09:50:27	-->	Colty (Miramar-FL@2a00:c1e0:0:2:0:1:208:ab5e) has joined #znc
+2016-09-29 09:50:39	--	gsingh93- is now known as gsingh93
+2016-09-29 09:50:51	-->	md_5 (~md_5@mcdevs/trusted/md-5) has joined #znc
+2016-09-29 09:50:55	-->	Madgod (~sheo@unaffiliated/diewelt) has joined #znc
+2016-09-29 09:51:11	-->	Sketch (~Sketch@2604:180:2::a506:5c0d) has joined #znc
+2016-09-29 09:51:12	-->	DonRichie (~DonRichie@ricl.de) has joined #znc
+2016-09-29 09:51:14	-->	Neworths (~Neworths@cop60-3-78-240-35-88.fbx.proxad.net) has joined #znc
+2016-09-29 09:51:16	-->	tabakhase (tabakhase@unaffiliated/tabakhase) has joined #znc
+2016-09-29 09:51:33	-->	z_AlexJFox (sid7798@wikipedia/AlexJFox) has joined #znc
+2016-09-29 09:51:37	-->	Olipro (~Olipro@uncyclopedia/pdpc.21for7.olipro) has joined #znc
+2016-09-29 09:51:39	-->	f4bs (~fc2b9e1f@2001:1608:12:1::4242) has joined #znc
+2016-09-29 09:53:07	-->	ToBeCloud (uid51591@wikimedia/ToBeFree) has joined #znc
+2016-09-29 09:53:14	-->	fred`` (fred@2001:4dd0:ff00:8ea1::2500) has joined #znc
+2016-09-29 09:53:15	<--	Suicides (sid87698@gateway/web/irccloud.com/x-pksqxurrnmbgzbxb) has quit (Read error: Connection reset by peer)
+2016-09-29 09:53:33	-->	nt (~nt@carlo.failback.org) has joined #znc
+2016-09-29 09:53:33		[09:53]
+2016-09-29 09:53:40	<--	Tele (STROmae@gateway/shell/panicbnc/x-zxrkdgpjozbvalnt) has quit (Ping timeout: 272 seconds)
+2016-09-29 09:53:40	-->	eggoez (galau@just.eg.goez.my.id) has joined #znc
+2016-09-29 09:53:41	-->	Suicides (sid87698@gateway/web/irccloud.com/x-xfezhhcwdpbqnsjn) has joined #znc
+2016-09-29 09:54:39	<--	Leo_Verto (leo@musicbrainz/user/Leo-Verto) has quit (Ping timeout: 276 seconds)
+2016-09-29 09:56:16	<--	DonRichie (~DonRichie@ricl.de) has quit (Read error: Network is unreachable)
+2016-09-29 09:56:27	-->	DonRichie (~DonRichie@ricl.de) has joined #znc
+2016-09-29 09:57:10	-->	Cultist (~CultOfThe@user-24-214-114-233.knology.net) has joined #znc
+2016-09-29 09:57:11	<--	Cultist (~CultOfThe@user-24-214-114-233.knology.net) has quit (Changing host)
+2016-09-29 09:57:11	-->	Cultist (~CultOfThe@unaffiliated/cultist) has joined #znc
+2016-09-29 09:57:30	-->	averythomas (~averythom@cpe-76-178-244-96.maine.res.rr.com) has joined #znc
+2016-09-29 09:57:51	-->	haudrauf (~haudrauf2@p200300C35BC3B100BA387C23E6AA7C9C.dip0.t-ipconnect.de) has joined #znc
+2016-09-29 09:59:44	<--	lesderid_ (~lesderid@anna.lesderid.net) has quit (Quit: bai)
+2016-09-29 09:59:52	-->	lesderid (~lesderid@anna.lesderid.net) has joined #znc
+2016-09-29 10:00:22	-->	Tele (STROmae@gateway/shell/panicbnc/x-bmhbbazykmpmihvq) has joined #znc
+2016-09-29 10:01:15	<--	Unity (~Mitsuki@unaffiliated/unity) has quit (Ping timeout: 272 seconds)
+2016-09-29 10:02:27	<--	Mixologic (~Mixologic@97-120-7-147.ptld.qwest.net) has quit (Ping timeout: 276 seconds)
+2016-09-29 10:02:31	<--	haudrauf (~haudrauf2@p200300C35BC3B100BA387C23E6AA7C9C.dip0.t-ipconnect.de) has quit (Ping timeout: 272 seconds)
+2016-09-29 10:05:14	-->	Mixologic (~Mixologic@97-120-40-55.ptld.qwest.net) has joined #znc
+2016-09-29 10:05:18	<--	karakedi (~eAC53C340@unaffiliated/orphan) has quit (Ping timeout: 264 seconds)
+2016-09-29 10:07:07	-->	Unity (~Mitsuki@de01.vmpanel.net) has joined #znc
+2016-09-29 10:07:08	<--	Unity (~Mitsuki@de01.vmpanel.net) has quit (Changing host)
+2016-09-29 10:07:08	-->	Unity (~Mitsuki@unaffiliated/unity) has joined #znc
+2016-09-29 10:12:08	-->	haudrauf (~haudrauf2@p200300C35BC3B100BA387C23E6AA7C9C.dip0.t-ipconnect.de) has joined #znc
+2016-09-29 10:12:08		[10:12]
+2016-09-29 10:12:52	--	Sinnersblood is now known as Sinnersbleed
+2016-09-29 10:13:32	-->	Leo_Verto (leo@musicbrainz/user/Leo-Verto) has joined #znc
+2016-09-29 10:14:44	-->	johnlage (johnlage@2604:880:a:7::fda) has joined #znc
+2016-09-29 10:20:00		[10:14]
+2016-09-29 10:22:52	-->	HappyLoaf_ (happyloaf@bitcoinshell.mooo.com) has joined #znc
+2016-09-29 10:24:44	<--	sunri5e (~sunri5e@unaffiliated/sunri5e) has quit (Quit: ZNC 1.6.3 - http://znc.in)
+2016-09-29 10:25:33	-->	sunri5e (~sunri5e@unaffiliated/sunri5e) has joined #znc
+2016-09-29 10:29:21	<--	haudrauf (~haudrauf2@p200300C35BC3B100BA387C23E6AA7C9C.dip0.t-ipconnect.de) has quit (Quit: ZNC - http://znc.in)
+2016-09-29 10:29:30	-->	haudrauf (~haudrauf2@p200300C35BC3B100BA387C23E6AA7C9C.dip0.t-ipconnect.de) has joined #znc
+2016-09-29 10:29:39	-->	khronosschoty (Elite16547@gateway/shell/elitebnc/x-knbeflfocslqwvgm) has joined #znc
+2016-09-29 10:30:39	<--	KindOne (kindone@freenude/topless/kindone) has quit (Remote host closed the connection)
+2016-09-29 10:32:46	-->	KindOne (kindone@freenude/topless/kindone) has joined #znc
+2016-09-29 10:36:26	<--	ChrisB92 (chrisbish9@bnc.bish.pro) has quit (Ping timeout: 252 seconds)
+2016-09-29 10:36:26		[10:36]
+2016-09-29 10:36:46	-->	ChrisB92^Away (chrisbish9@bnc.bish.pro) has joined #znc
+2016-09-29 10:42:00		[10:36]
+2016-09-29 10:45:35	<--	Suicides (sid87698@gateway/web/irccloud.com/x-xfezhhcwdpbqnsjn) has quit (Ping timeout: 272 seconds)
+2016-09-29 10:45:50	<--	dgtlchlk (~uhmm@2001:470:1f11:5a0::18) has quit (Ping timeout: 252 seconds)
+2016-09-29 10:45:50	<--	latez (latez@insomnia.nyc) has quit (Ping timeout: 252 seconds)
+2016-09-29 10:45:57	-->	latez (latez@insomnia.nyc) has joined #znc
+2016-09-29 10:46:05	<--	Olipro (~Olipro@uncyclopedia/pdpc.21for7.olipro) has quit (Quit: Don't flap your BGP at me sonny)
+2016-09-29 10:46:32	-->	_Jay2k1 (J@y2k1.it) has joined #znc
+2016-09-29 10:46:42	<--	Jay2k1 (J@y2k1.it) has quit (Ping timeout: 252 seconds)
+2016-09-29 10:46:46	-->	Olipro (~Olipro@uncyclopedia/pdpc.21for7.olipro) has joined #znc
+2016-09-29 10:47:05	--	_Jay2k1 is now known as Jay2k1
+2016-09-29 10:47:30	-->	Suicides (sid87698@gateway/web/irccloud.com/x-cdvasididaxvubdp) has joined #znc
+2016-09-29 10:51:39	<--	HappyLoaf_ (happyloaf@bitcoinshell.mooo.com) has quit (Quit: ZNC - http://znc.in)
+2016-09-29 10:52:34	<--	haudrauf (~haudrauf2@p200300C35BC3B100BA387C23E6AA7C9C.dip0.t-ipconnect.de) has quit (Ping timeout: 272 seconds)
+2016-09-29 10:53:22	-->	dgtlchlk (~uhmm@2001:470:1f11:5a0::18) has joined #znc
+2016-09-29 10:53:23	<--	Realmy (~Realmy@unaffiliated/realmy) has quit (Ping timeout: 252 seconds)
+2016-09-29 10:53:50	<--	swarfega (swarfega@2605:f700:42:2c1c::2a06:e021) has quit (Ping timeout: 272 seconds)
+2016-09-29 10:54:05	<--	deanfx (~deanfx@4o4.co) has quit (Ping timeout: 252 seconds)
+2016-09-29 10:54:23	-->	HappyLoaf_ (happyloaf@bitcoinshell.mooo.com) has joined #znc
+2016-09-29 10:55:32	-->	disgusting[m] (disgusting@gateway/shell/matrix.org/x-qouafaexcbueklin) has joined #znc
+2016-09-29 10:55:43	-->	deanfx (~deanfx@4o4.co) has joined #znc
+2016-09-29 10:55:44	<--	fkrone (~fkrone@fkrone.com) has quit (Ping timeout: 252 seconds)
+2016-09-29 10:56:02	-->	fkrone (~fkrone@fkrone.com) has joined #znc
+2016-09-29 10:56:04	-->	Realmy (~Realmy@unaffiliated/realmy) has joined #znc
+2016-09-29 10:56:39	<--	lisk0v (~liskov@exit0.liskov.tor-relays.net) has left #znc
+2016-09-29 10:58:56	<--	HappyLoaf_ (happyloaf@bitcoinshell.mooo.com) has quit (Ping timeout: 244 seconds)
+2016-09-29 10:58:56		[10:58]
+2016-09-29 10:59:12	-->	haudrauf (~haudrauf2@p200300C35BC3B100BA387C23E6AA7C9C.dip0.t-ipconnect.de) has joined #znc
+2016-09-29 10:59:23	-->	swarfega (swarfega@2605:f700:42:2c1c::2a06:e021) has joined #znc
+2016-09-29 10:59:35	<--	RaiNerTsuFal (~RaiNerTsu@akita.vtlx.cn) has quit (Ping timeout: 252 seconds)
+2016-09-29 10:59:53	<--	chamunks (chamunks@loki.entityreborn.com) has quit (Quit: Don't worry I'm not gone yet.)
+2016-09-29 11:00:05	-->	chamunks (chamunks@loki.entityreborn.com) has joined #znc
+2016-09-29 11:00:41	<--	Apport (seven@gateway/shell/xzibition.com/x-scdumasbxmebpjcv) has quit (Ping timeout: 252 seconds)
+2016-09-29 11:03:59	-->	Apport (seven@gateway/shell/xzibition.com/x-ujdoktfffqgbfvqo) has joined #znc
+2016-09-29 11:04:10	-->	Duntorah_ (~Duntorah@173.57.22.180) has joined #znc
+2016-09-29 11:05:32	-->	RaiNerTsuFal (~RaiNerTsu@akita.vtlx.cn) has joined #znc
+2016-09-29 11:05:33	<--	Duntorah (~Duntorah@173.57.22.180) has quit (Ping timeout: 252 seconds)
+2016-09-29 11:06:46	<--	dgtlchlk (~uhmm@2001:470:1f11:5a0::18) has quit (Quit: bye bye)
+2016-09-29 11:09:51	-->	Riotela (cibliamatr@gateway/shell/matrix.org/x-plczihqlifiuijxb) has joined #znc
+2016-09-29 11:10:20	-->	dgtlchlk (~uhmm@2001:470:1f11:5a0::18) has joined #znc
+2016-09-29 11:10:59	-->	karakedi (~eAC53C340@unaffiliated/orphan) has joined #znc
+2016-09-29 11:12:41	<--	dreamcat4 (~dreamcat4@179.43.176.34) has quit (Ping timeout: 252 seconds)
+2016-09-29 11:12:46	-->	dreamcat4_ (~dreamcat4@179.43.176.34) has joined #znc
+2016-09-29 11:12:47	<--	Froggaard (~Froggaard@mayweather.pulsedmedia.com) has quit (Ping timeout: 252 seconds)
+2016-09-29 11:12:53	<--	BlackPanx_ (~black@93-103-10-34.static.t-2.net) has quit (Ping timeout: 244 seconds)
+2016-09-29 11:13:10	-->	Froggaard (~Froggaard@mayweather.pulsedmedia.com) has joined #znc
+2016-09-29 11:13:18	--	dreamcat4_ is now known as dreamcat4
+2016-09-29 11:13:20	<--	Hogofwar (~Daniel@irc.pont.in) has quit (Ping timeout: 252 seconds)
+2016-09-29 11:14:26	-->	Hogofwar (~Daniel@irc.pont.in) has joined #znc
+2016-09-29 11:14:26		[11:14]
+2016-09-29 11:14:52	-->	BlackPanx_ (~black@93-103-10-34.static.t-2.net) has joined #znc
+2016-09-29 11:16:08	-->	XV8 (~XV8@50-200-68-222-static.hfc.comcastbusiness.net) has joined #znc
+2016-09-29 11:16:26	b6s3d	hello, how do i combine eggdrop and znc?
+2016-09-29 11:16:37	<--	haudrauf (~haudrauf2@p200300C35BC3B100BA387C23E6AA7C9C.dip0.t-ipconnect.de) has quit (Ping timeout: 272 seconds)
+2016-09-29 11:16:53	MuffinMedic	If you mean connect egg drop to ZNC, you just connect it to your ZNC as you would any other client.
+2016-09-29 11:17:04	MuffinMedic	(assuming eggdrop supports passworded-protected servers, which I do not know)
+2016-09-29 11:17:25	-->	HappyLoaf_ (happyloaf@bitcoinshell.mooo.com) has joined #znc
+2016-09-29 11:18:45	-->	haudrauf (~haudrauf2@p200300C35BC3B100BA387C23E6AA7C9C.dip0.t-ipconnect.de) has joined #znc
+2016-09-29 11:22:11	<--	HappyLoaf_ (happyloaf@bitcoinshell.mooo.com) has quit (Ping timeout: 244 seconds)
+2016-09-29 11:28:00		[11:22]
+2016-09-29 11:28:41	<--	haudrauf (~haudrauf2@p200300C35BC3B100BA387C23E6AA7C9C.dip0.t-ipconnect.de) has quit (Ping timeout: 272 seconds)
+2016-09-29 11:29:06	-->	haudrauf (~haudrauf2@p200300C35BC3B100BA387C23E6AA7C9C.dip0.t-ipconnect.de) has joined #znc
+2016-09-29 11:29:37	-->	jolleyjoe_znc (~jolleyjoe@50.112.149.234) has joined #znc
+2016-09-29 11:35:00		[11:29]
+2016-09-29 11:37:46	KindOne	[[Eggdrop]]
+2016-09-29 11:37:46	ZNC-Linker	http://wiki.znc.in/Eggdrop
+2016-09-29 11:42:53	--	robby` is now known as Robby`
+2016-09-29 11:44:27	-->	HappyLoaf_ (happyloaf@bitcoinshell.mooo.com) has joined #znc
+2016-09-29 11:44:38	-->	poz3idon (~poz3idon@52.9.133.248) has joined #znc
+2016-09-29 11:44:40	--	demize- is now known as demize
+2016-09-29 11:44:52	<--	XV8 (~XV8@50-200-68-222-static.hfc.comcastbusiness.net) has quit (Quit: Textual IRC Client: www.textualapp.com)
+2016-09-29 11:46:34	-->	annieslmaos (~annieslma@2a04:1980:3100:1aac:e61d:2dff:feb1:48c1) has joined #znc
+2016-09-29 11:47:03	<--	EricGonczer_ (~textual@72.32.180.179) has quit (Read error: Connection reset by peer)
+2016-09-29 11:47:08	annieslmaos	hello, how do i reset my webadmin password?? i forgot it and cannot get back in..
+2016-09-29 11:49:10	Zarthus	 did you also forget your znc password
+2016-09-29 11:49:31	annieslmaos	no, i have my regular znc password
+2016-09-29 11:49:36	Zarthus	then you're in luck
+2016-09-29 11:49:38	Zarthus	they're the same
+2016-09-29 11:49:55	MetaNova	^
+2016-09-29 11:50:13	annieslmaos	oh god.
+2016-09-29 11:50:13		[11:50]
+2016-09-29 11:50:22	annieslmaos	thank you
+2016-09-29 11:50:23	annieslmaos	:)
+2016-09-29 11:51:13	-->	sdothum (~sdothum@dsl-173-206-93-36.tor.primus.ca) has joined #znc
+2016-09-29 11:53:42	<--	shum (~sdothum@108.63.189.28) has quit (Ping timeout: 244 seconds)
+2016-09-29 11:54:37	<--	HappyLoaf_ (happyloaf@bitcoinshell.mooo.com) has quit (Ping timeout: 272 seconds)
+2016-09-29 11:55:54	<--	sdothum (~sdothum@dsl-173-206-93-36.tor.primus.ca) has quit (Ping timeout: 272 seconds)
+2016-09-29 11:56:17	-->	sdothum (~sdothum@108.63.186.29) has joined #znc
+2016-09-29 11:57:10	<--	Merixer (~Merixer@utopia.arvanode.net) has quit (Ping timeout: 272 seconds)
+2016-09-29 11:58:33	<--	mren_ (~mren@mail.mrmx.de) has quit (Quit: Wer erwachsen wird, hat nichts mehr zu lachen (Ludolfs))
+2016-09-29 11:59:25	-->	Merixer (~Merixer@c83-254-207-197.bredband.comhem.se) has joined #znc
+2016-09-29 12:00:31	-->	mren (~mren@kvirc/translator/mren) has joined #znc
+2016-09-29 12:03:29	-->	jass93 (~ifillj@sage-lab-lower-421.dynamic2.rpi.edu) has joined #znc
+2016-09-29 12:05:44	<--	ToBeCloud (uid51591@wikimedia/ToBeFree) has quit (Quit: Connection closed for inactivity)
+2016-09-29 12:05:44		[12:05]
+2016-09-29 12:06:33	<--	sunri5e (~sunri5e@unaffiliated/sunri5e) has quit (Quit: ZNC 1.6.3 - http://znc.in)
+2016-09-29 12:08:53	-->	sunri5e (~sunri5e@unaffiliated/sunri5e) has joined #znc
+2016-09-29 12:09:37	<--	wuseman (~wusidusi@h151n6-vn-a12.ias.bredband.telia.com) has quit (Changing host)
+2016-09-29 12:09:37	-->	wuseman (~wusidusi@unaffiliated/wuseman) has joined #znc
+2016-09-29 12:15:00		[12:09]
