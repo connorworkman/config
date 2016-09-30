@@ -1142,3 +1142,266 @@
 2016-09-29 12:17:13	zoredache	Maybe create an issue in the bug tracker on github wallbroken?
 2016-09-29 12:17:42	zoredache	https://github.com/OpenVPN/easy-rsa
 2016-09-29 12:17:43	@vpnHelper	Title: GitHub - OpenVPN/easy-rsa: easy-rsa - Simple shell based CA utility (at github.com)
+2016-09-29 12:18:32	@dazo	zoredache++
+2016-09-29 12:19:09	-->	ipx (~ipx@gateway/tor-sasl/ipx) has joined #openvpn
+2016-09-29 12:20:06	wallbroken	yes but as far i remember, here the was the guy directly involved in mantaining of it
+2016-09-29 12:20:23	wallbroken	*there
+2016-09-29 12:21:04	zoredache	Sure, but IRC makes for a horrible todo list.  Issues in the bug tracker don't require the dev to actually be paying attention to the chat, when you asked the question.
+2016-09-29 12:22:13	zoredache	btw the bat file you are looking for seems to be here.  https://github.com/OpenVPN/easy-rsa/tree/master/distro/windows and there seems to be a patch to add the windows tools to the package https://github.com/OpenVPN/easy-rsa/commit/d92d29803be86a96926ad3926fc9653f7481cef4
+2016-09-29 12:22:15	@vpnHelper	Title: easy-rsa/distro/windows at master · OpenVPN/easy-rsa · GitHub (at github.com)
+2016-09-29 12:26:03	<--	elastix (~Thunderbi@cpc85186-haye23-2-0-cust65.17-4.cable.virginm.net) has quit (Quit: elastix)
+2016-09-29 12:26:03		[12:26]
+2016-09-29 12:30:28	-->	krzie (9467285c@openvpn/community/support/krzee) has joined #openvpn
+2016-09-29 12:30:28	--	Mode #openvpn [+o krzie] by ChanServ
+2016-09-29 12:33:13	<--	ipx (~ipx@gateway/tor-sasl/ipx) has quit (Quit: ipx)
+2016-09-29 12:39:00		[12:33]
+2016-09-29 12:48:00	<--	pothepanda (~thgs@2a02:587:3c17:8f00:39d1:6704:70fe:5a4) has quit (Quit: Baii)
+2016-09-29 12:53:00		[12:48]
+2016-09-29 12:53:20	-->	wknapik_ (wknapik@gateway/vpn/mullvad/x-hsjiswycckgvpjfu) has joined #openvpn
+2016-09-29 12:53:26	wknapik_	EHLO
+2016-09-29 12:53:32	--	wknapik_ is now known as wknapik
+2016-09-29 12:54:11	@krzie	ohai
+2016-09-29 12:54:27	wknapik	:]
+2016-09-29 12:55:21	-->	fp7 (~fp7@unaffiliated/fp7) has joined #openvpn
+2016-09-29 12:59:36	wknapik	i'm using redirect-gateway def1, persist-tun and up/down update-resolv-conf. is that enough to never leak my ip, until i explicitly shut down the openvpn client ?
+2016-09-29 13:01:44	@krzie	if you wanna be sure, firewall the outbound traffic
+2016-09-29 13:02:20	wknapik	so what's the condition for a leak without the firewall in place ?
+2016-09-29 13:02:45	<--	watt_rabbit (uid187165@gateway/web/irccloud.com/x-wqfezoyitfxcuvcm) has quit (Quit: Connection closed for inactivity)
+2016-09-29 13:03:07	@krzie	its all up to your os, openvpn just sets the routing table to route you over the vpn
+2016-09-29 13:03:28	@krzie	if you set the rule, you can set it to log and answer your own question
+2016-09-29 13:03:37	@krzie	if it blocks stuff, see what it blocked ;]
+2016-09-29 13:04:57	wknapik	with the routes and a proper resolv.conf i'm safe. so what i'm asking is - other than an intentional explicit shutdown - what could cause those routes to be removed / resolv.conf to be reverted, even for a moment ?
+2016-09-29 13:05:06	zoredache	It is a more complex setup but when I am paranoid, I remove all routes other then those provided by the VPN, and a static route for the VPN server.  And when I am really paranoid, I stand up a VM and do my browsing within the VM within the VM, and then firewall things so the VM can only communicate with the VPN server.
+2016-09-29 13:05:47	@krzie	the routes wont get removed while the tunnel is up, but maybe something sends out the old route for some reason, established connection or something... all i know is the proper answer to your question is use a firewall if you care.
+2016-09-29 13:06:11	--	krzie is now known as krzee
+2016-09-29 13:06:26	wknapik	hm
+2016-09-29 13:07:33	@krzee	openvpn makes an encrypted connection between 2 machines... its not made to ensure anything regarding traffic/ip leaks
+2016-09-29 13:07:37	wknapik	krzee if i use an up/down script to set the firewall rules, can the "down" execution happen without me killing openvpn intentionally ?
+2016-09-29 13:07:46	@krzee	firewalls are specifically made to block traffic, which is what you want
+2016-09-29 13:07:54	@krzee	wknapik:
+2016-09-29 13:07:56	@krzee	!script
+2016-09-29 13:07:57	@vpnHelper	"script" is See SCRIPTING AND ENVIRONMENTAL VARIALBES in the manual for a list of places that scripts can hook into openvpn. Online reference at: https://community.openvpn.net/openvpn/wiki/Openvpn23ManPage#lbAR
+2016-09-29 13:08:12	@krzee	--down     Executed after TCP/UDP and TUN/TAP close
+2016-09-29 13:08:12		[13:08]
+2016-09-29 13:08:33	wknapik	right. so can the tun device close without me asking for it ?
+2016-09-29 13:08:41	wknapik	like due to some timeout, etc. ?
+2016-09-29 13:09:21	@krzee	depends on your settings, but assuming you have keepalives and retries and stuff, it shouldnt die without being asked to
+2016-09-29 13:09:33	wknapik	hm
+2016-09-29 13:09:48	wknapik	all retries are infinite by default afair
+2016-09-29 13:09:58	wknapik	and i haven't changed any of those
+2016-09-29 13:11:09	wknapik	i could set up a firewall, but if the tun device remains in place until i kill openvpn, then routing + resolv.conf should be enough
+2016-09-29 13:11:27	@krzee	your choice, you asked a question and i answered it
+2016-09-29 13:11:29	wknapik	and that would be way simpler - one config option + one preexisting script
+2016-09-29 13:11:35	@krzee	but please, do whatever you want
+2016-09-29 13:11:38	@krzee	its your system
+2016-09-29 13:12:11	wknapik	yeah, thanks
+2016-09-29 13:12:22	@krzee	np
+2016-09-29 13:14:19	@krzee	but i have one request, please never ever come back telling us how your ip leaked
+2016-09-29 13:14:21	@krzee	:D
+2016-09-29 13:14:31	wknapik	haha
+2016-09-29 13:14:51	wknapik	that's not how it works ;]
+2016-09-29 13:14:56	wknapik	you said it would work!
+2016-09-29 13:15:05	@krzee	haha
+2016-09-29 13:15:46	wknapik	i guess i need to set up something for the case where openvpn just gets killed for whatever reason
+2016-09-29 13:16:08	@krzee	!ovpnuke
+2016-09-29 13:16:09	@vpnHelper	"ovpnuke" is https://community.openvpn.net/openvpn/wiki/SecurityAnnouncement-97597e732b for info on CVE-2014-8104 which is a DOS that allows an authenticated client to crash an openvpn server running openvpn before 2.3.6
+2016-09-29 13:16:20	-->	bf_ (~bf_@cable-78-34-13-77.netcologne.de) has joined #openvpn
+2016-09-29 13:16:24	@krzee	...there was a dos in it once upon a time ;]
+2016-09-29 13:16:30	wknapik	yep
+2016-09-29 13:16:35	wallbroken	guys: let's consider this scenario: 10.0.0.2 ----internet----> 10.0.0.1 ---LAN---> 192.168.1.1
+2016-09-29 13:16:45	wallbroken	i want to analyze the routing
+2016-09-29 13:17:05	<--	toli (~toli@ip-62-235-214-113.dsl.scarlet.be) has quit (Ping timeout: 240 seconds)
+2016-09-29 13:17:17	wknapik	...
+2016-09-29 13:17:19	wknapik	ok
+2016-09-29 13:17:29	wknapik	knock yourself out ;-)
+2016-09-29 13:17:43	wallbroken	start packet(source: 10.0.0.1, destination: 192.168.1.1)
+2016-09-29 13:18:22	wallbroken	the packets arrive to 10.0.0.1 just because i told openvpn client: packet 192.168.0.0/24 must be routed into openvpn
+2016-09-29 13:18:40	wallbroken	that packets arrive to openvpn server 10.0.0.1
+2016-09-29 13:18:46	@krzee	ok, and is 10.0.0.1 (bad subnet for a vpn btw) also 192.168.1.1
+2016-09-29 13:18:47	@krzee	?
+2016-09-29 13:19:14	wallbroken	no
+2016-09-29 13:19:15	@krzee	!commonsubnet
+2016-09-29 13:19:18	@krzee	!subnet
+2016-09-29 13:19:19	@vpnHelper	"subnet" is (#1) http://www.subnet-calculator.com/ or http://en.wikipedia.org/wiki/Subnetwork, or (#2) Want a random subnet generator? See: !randomsubnet, or (#3) You may be looking for !toplogy
+2016-09-29 13:19:33	wallbroken	10.0.0.1 host have 2 interfaces
+2016-09-29 13:19:43	wallbroken	tun0 which has 10.0.0.0/24
+2016-09-29 13:19:58	wallbroken	and eth0 which has 192.168.1.0/24
+2016-09-29 13:19:59	wallbroken	ok?
+2016-09-29 13:20:10	@krzee	whats the eth0 ip?
+2016-09-29 13:20:20	wallbroken	192.168.1.8
+2016-09-29 13:20:28	@krzee	ok, so what is 192.168.1.1?
+2016-09-29 13:20:37	wallbroken	192.168.1.1 is another host of the lan
+2016-09-29 13:20:46	@krzee	is it the default gateway for the lan?
+2016-09-29 13:20:46	wallbroken	it doesn't know anything about openvpn
+2016-09-29 13:21:00	wallbroken	yes
+2016-09-29 13:21:06	@krzee	you need to add a route to it for all subnets it doesnt know about but should
+2016-09-29 13:21:10	@krzee	so the vpn subnet for sure
+2016-09-29 13:21:23	@krzee	and if you have any lans behind clients that you want routing to, you need routes for those too
+2016-09-29 13:21:27	@krzee	!route_outside_ovpn
+2016-09-29 13:21:28	@vpnHelper	"route_outside_ovpn" is "route_outside_openvpn" is (#1) If your server is not the default gateway for the LAN, you will need to add routes to your gateway. See ROUTES TO ADD OUTSIDE OPENVPN in !route or (#2) Here are 2 diagrams that explain how this works: http://www.secure-computing.net/wiki/index.php/Graph http://i.imgur.com/BM9r1.png
+2016-09-29 13:21:37	wallbroken	krzee, i did it
+2016-09-29 13:21:44	wallbroken	i added a static route on the router
+2016-09-29 13:21:55	@krzee	ok, so you probably didnt do this:
+2016-09-29 13:21:56	@krzee	oops
+2016-09-29 13:22:07	@krzee	<wallbroken> it doesn't know anything about openvpn
+2016-09-29 13:22:46	wallbroken	wait i'm trying to reconstruct the trace of the packet
+2016-09-29 13:23:05	@krzee	at every hop, find the next hop by looking in the routing table
+2016-09-29 13:23:13	@krzee	most specific route wins
+2016-09-29 13:23:13		[13:23]
+2016-09-29 13:23:23	@krzee	if theres nothing specific, it goes to default
+2016-09-29 13:23:26	wallbroken	once the packet arrives to host which hosts openvpn server, it said: this packet has 10.0.0.2 as source, 192.168.1.1 as destination
+2016-09-29 13:23:27	wallbroken	ok?
+2016-09-29 13:23:41	@krzee	huh?
+2016-09-29 13:23:49	@krzee	no it doesnt change src / dst
+2016-09-29 13:23:56	@krzee	unless you are NATing, which you shouldnt be
+2016-09-29 13:23:59	wallbroken	the host said: ok, i know 192.168.1.0/24 in my routing table
+2016-09-29 13:24:05	wallbroken	krzee, nobody said that it does
+2016-09-29 13:24:14	-->	toli (~toli@ip-83-134-71-206.dsl.scarlet.be) has joined #openvpn
+2016-09-29 13:24:28	@krzee	<wallbroken> start packet(source: 10.0.0.1, destination: 192.168.1.1)
+2016-09-29 13:24:30	wallbroken	10.0.0.2 and 192.168.1.1 are fixed source and dest since the packet originated
+2016-09-29 13:24:33	@krzee	[16:23] <wallbroken> once the packet arrives to host which hosts openvpn server, it said: this packet has 10.0.0.2 as source, 192.168.1.1 as destination
+2016-09-29 13:24:33	wallbroken	oh sorry
+2016-09-29 13:24:35	wallbroken	my fault
+2016-09-29 13:24:38	wallbroken	yes sorry
+2016-09-29 13:24:58	wallbroken	start packet(source: 10.0.0.2, destination: 192.168.1.1)
+2016-09-29 13:25:04	wallbroken	ok?
+2016-09-29 13:25:19	@krzee	ok, first let me ask
+2016-09-29 13:25:23	@krzee	are you having a problem?
+2016-09-29 13:25:29	wallbroken	no, all is working
+2016-09-29 13:25:41	@krzee	-.-
+2016-09-29 13:25:41	wallbroken	but i'm curious to analyze the trace
+2016-09-29 13:25:42	<--	chachasmooth (~chachasmo@unaffiliated/chachasmooth) has quit (Ping timeout: 264 seconds)
+2016-09-29 13:25:42	<--	pdobrogost_home (~quassel@87.205.145.84) has quit (Ping timeout: 264 seconds)
+2016-09-29 13:25:51	@krzee	then learn to use wireshark and tcpdump dude
+2016-09-29 13:26:02	wallbroken	i have my brain
+2016-09-29 13:26:08	wallbroken	why should i use some tool?
+2016-09-29 13:26:17	@krzee	cool, later
+2016-09-29 13:26:21	<--	krzee (9467285c@openvpn/community/support/krzee) has quit (Quit: Page closed)
+2016-09-29 13:27:36	wknapik	btw, how is there no official documentation on preventing ip leaks ? there's a ton of applications to do it (my vpn provider suggests a 6.5k line python script with a gui for crying out loud), but not even a proof of concept from the openvpn devs/community ?
+2016-09-29 13:28:38	zoredache	wknapik: Because openvpn is a generic vpn creation tool, and isn't focused purely on the personal privacy aspects.
+2016-09-29 13:28:51	-->	chachasmooth (~chachasmo@unaffiliated/chachasmooth) has joined #openvpn
+2016-09-29 13:29:36	wknapik	zoredache no, that argument doesn't work. there's functionality *in* openvpn itself to prevent dns leaks, so the problem has been acknowledged as relevant to the project.
+2016-09-29 13:30:49	zoredache	There is functionality to prevent dns leaks?  Or is there is functionality to update client DNS settings as required by some configurations that might include privacy.
+2016-09-29 13:31:01	<--	Ryushin (~Ryushin@50-203-182-130-static.hfc.comcastbusiness.net) has quit (Ping timeout: 240 seconds)
+2016-09-29 13:31:33	wknapik	zoredache --block-outside-dns: Block DNS servers on other network adapters to prevent DNS leaks. This option prevents any application from accessing TCP or UDP port 53 except one inside  the  tunnel.
+2016-09-29 13:33:05	@danhunsaker	wallbroken: Learn the tools.  We recommend them for huge lists of reasons, and never lightly.  They'll do a lot of the work for you, so you can avoid operator errors and save your brain for other things.  Such as learning how to properly communicate with other human beings in support channels.
+2016-09-29 13:33:45	--	Notice(ChanServ): danhunsaker added wallbroken to the AKICK list, expires in 1 day, 0:00:00.
+2016-09-29 13:33:45	--	Mode #openvpn [+b *!*@unaffiliated/wallbroken] by ChanServ
+2016-09-29 13:33:45	<--	ChanServ has kicked wallbroken (Banned: One day ban. We can't help those who refuse our help. Please do come back when you're willing to listen to our)
+2016-09-29 13:36:56	@danhunsaker	wknapik: OpenVPN is designed to provide o secure connection.  Most of the mechanisms for securing the endpoints are outside its control, because most of them are in the firewall.  There are certainly things it can simplify, but it's not designed for privacy - it's designed for a secure connection over insecure networks.
+2016-09-29 13:36:58	zoredache	wknapik: ah, that is a new feature apparently released in the last year.  It hasn't tricked down into packaged version
+2016-09-29 13:38:14	@danhunsaker	The DNS leak protection feature is actually meant to ensure users get DNS results that will connect over that secure connection, not for privacy purposes.
+2016-09-29 13:38:14		[13:38]
+2016-09-29 13:38:49	-->	pdobrogost_home (~quassel@87.205.145.84) has joined #openvpn
+2016-09-29 13:39:18	<--	SCHAPiE (~bla@unaffiliated/schaap137) has quit (Remote host closed the connection)
+2016-09-29 13:41:21	wknapik	danhunsaker not designed for privacy ? can't agree, but anyway, the demand is there, even more so these days. all i'm asking for is a wiki page with a PoC. based on up/down scripts or something, whatever... anything not vpn-provider-specific.
+2016-09-29 13:41:47	@danhunsaker	Feel free to write one.  :)
+2016-09-29 13:42:00	wknapik	i might
+2016-09-29 13:42:07	wknapik	just started with all this today
+2016-09-29 13:42:25	@danhunsaker	That said, whether you agree or not is beside the point.  We as a company aren't building a privacy tool.
+2016-09-29 13:42:52	@danhunsaker	That it can be used as part of a suite of tools for improving privacy is great, but it's not our purpose.
+2016-09-29 13:43:09	wknapik	danhunsaker that's something to reconsider. all my friends, people who have never thought of using a vpn, do it today, for the privacy benefits
+2016-09-29 13:43:21	wknapik	danhunsaker that's a huge chunk of the market
+2016-09-29 13:43:53	@danhunsaker	Perhaps.  Would you purchase our commercial offering if we added more priavcy controls to it?
+2016-09-29 13:44:23	@danhunsaker	Your perception of "the market" isn't the same as our target audience.
+2016-09-29 13:44:30	wknapik	i don't even know what your commercial offerings are today. i based my choice of provider on the privacy features offered.
+2016-09-29 13:44:45	wknapik	no logging to begin with
+2016-09-29 13:44:57	<--	shio (~shio@134.121.101.84.rev.sfr.net) has quit (Read error: Connection reset by peer)
+2016-09-29 13:45:08	wknapik	no credit card info, emails, etc. - no identyfying information needed
+2016-09-29 13:45:32	wknapik	i don't think you'd be willing to provide just these two features, right ?;]
+2016-09-29 13:45:40	@danhunsaker	That's great.  We aren't your provider.
+2016-09-29 13:45:48	wknapik	yep
+2016-09-29 13:46:06	@danhunsaker	Again.  We're not in the privacy business.
+2016-09-29 13:46:19	@danhunsaker	All we do is secure networks.
+2016-09-29 13:46:34	@danhunsaker	(And even that's an oversimplification.)
+2016-09-29 13:46:57	zoredache	wknapik: What you are asking for is also a far more complex problem.  Being certain that every potential supported OS and application that might use a VPN doesn't screw up and leak can be very challenging.  Can  you be certain something in your browser hasn't figured out your IP at some point before the vpn was established and saved in a cookie for sharing later?
+2016-09-29 13:47:27	wknapik	zoredache that's another level and truely out of scope
+2016-09-29 13:47:41	@danhunsaker	The point is that it's *all* out of scope.
+2016-09-29 13:48:08	@danhunsaker	OpenVPN provides the secure link between networks and computers.  Other tools provide the other aspects.
+2016-09-29 13:48:13	wknapik	danhunsaker that's why i'm asking for 20 lines of text on a wiki page, not a feature
+2016-09-29 13:48:16	<--	bf_ (~bf_@cable-78-34-13-77.netcologne.de) has quit (Quit: KVIrc 4.2.0 Equilibrium http://www.kvirc.net/)
+2016-09-29 13:48:32	-->	shio (~shio@134.121.101.84.rev.sfr.net) has joined #openvpn
+2016-09-29 13:48:44	@danhunsaker	Just a moment ago you were questioning our business model.  :)
+2016-09-29 13:48:56	wknapik	questioning ?
+2016-09-29 13:49:19	@danhunsaker	17:43:10 <wknapik> danhunsaker that's something to reconsider. all my friends, people who have never thought of using a vpn, do it today, for the privacy benefits
+2016-09-29 13:49:23	wknapik	i don't care if you choose to cater to those looking to improve their privacy. i'm just saying many vpn users are looking for exactly that.
+2016-09-29 13:49:46	@danhunsaker	And more power to them.
+2016-09-29 13:49:51	wknapik	yeah - do it, or don't, i don't care - i'm saying this is something your users are looking for
+2016-09-29 13:49:55	wknapik	at least some of them
+2016-09-29 13:50:17	wknapik	aaanyway
+2016-09-29 13:50:33	wknapik	one last thing
+2016-09-29 13:51:15	wknapik	maybe putting windows-specific info in a man page is not the best idea ? it's already 2929 lines long and cumbersome enough.
+2016-09-29 13:51:49	<--	wknapik (wknapik@gateway/vpn/mullvad/x-hsjiswycckgvpjfu) has left #openvpn ("bye!")
+2016-09-29 13:52:50	-->	salcedo (uid184031@gateway/web/irccloud.com/x-uyjnwbhjigxubasm) has joined #openvpn
+2016-09-29 13:54:38	-->	yong (~vayne@pD9E45367.dip0.t-ipconnect.de) has joined #openvpn
+2016-09-29 13:54:38		[13:54]
+2016-09-29 14:14:19	<--	subzero79 (~subzero79@101.163.88.249) has quit (Read error: Connection reset by peer)
+2016-09-29 14:14:19		[14:14]
+2016-09-29 14:15:14	-->	subzero79 (~subzero79@101.163.88.249) has joined #openvpn
+2016-09-29 14:21:00		[14:15]
+2016-09-29 14:39:20	-->	Ryushin (user@windwalker.chrisdos.com) has joined #openvpn
+2016-09-29 14:39:20		[14:39]
+2016-09-29 15:17:18	<--	fp7 (~fp7@unaffiliated/fp7) has quit (Ping timeout: 272 seconds)
+2016-09-29 15:17:18		[15:17]
+2016-09-29 15:19:20	-->	fp7 (~fp7@unaffiliated/fp7) has joined #openvpn
+2016-09-29 15:21:55	<--	skyroveRR (~skyroveRR@unaffiliated/skyroverr) has quit (Ping timeout: 244 seconds)
+2016-09-29 15:24:37	-->	skyroveRR (~skyroveRR@unaffiliated/skyroverr) has joined #openvpn
+2016-09-29 15:30:00		[15:24]
+2016-09-29 16:04:09	<--	pdobrogost_home (~quassel@87.205.145.84) has quit (Ping timeout: 272 seconds)
+2016-09-29 16:04:09		[16:04]
+2016-09-29 16:05:47	-->	pdobrogost_home (~quassel@77-255-250-37.adsl.inetia.pl) has joined #openvpn
+2016-09-29 16:11:00		[16:05]
+2016-09-29 16:11:00	<--	chachasmooth (~chachasmo@unaffiliated/chachasmooth) has quit (Ping timeout: 244 seconds)
+2016-09-29 16:13:31	-->	chachasmooth (~chachasmo@unaffiliated/chachasmooth) has joined #openvpn
+2016-09-29 16:18:45	<--	fp7 (~fp7@unaffiliated/fp7) has quit (Ping timeout: 244 seconds)
+2016-09-29 16:19:41	-->	fp7 (~fp7@unaffiliated/fp7) has joined #openvpn
+2016-09-29 16:25:00		[16:19]
+2016-09-29 16:31:14	<--	subzero79 (~subzero79@101.163.88.249) has quit (Quit: Ping timeout (120 seconds))
+2016-09-29 16:33:42	-->	chang (~vayne@pD9E44CEE.dip0.t-ipconnect.de) has joined #openvpn
+2016-09-29 16:37:42	<--	yong (~vayne@pD9E45367.dip0.t-ipconnect.de) has quit (Ping timeout: 264 seconds)
+2016-09-29 16:39:53	-->	j12t (~j12t@2602:306:309d:1ad0:db9:7c1f:fd61:9e8a) has joined #openvpn
+2016-09-29 16:40:46	-->	subzero79 (~subzero79@101.163.88.249) has joined #openvpn
+2016-09-29 16:40:46		[16:40]
+2016-09-29 16:41:09	<--	caliculk (~caliculk@unaffiliated/caliculk) has quit (Remote host closed the connection)
+2016-09-29 16:46:25	-->	caliculk (~caliculk@unaffiliated/caliculk) has joined #openvpn
+2016-09-29 16:52:00		[16:46]
+2016-09-29 17:05:54	-->	leo2007 (~leo2007@2400:6180:0:d0::d83:5001) has joined #openvpn
+2016-09-29 17:06:37	<--	leo2007 (~leo2007@2400:6180:0:d0::d83:5001) has left #openvpn ("rcirc on GNU Emacs 25.1.1")
+2016-09-29 17:07:44	-->	leo2007 (~leo2007@2400:6180:0:d0::d83:5001) has joined #openvpn
+2016-09-29 17:07:44		[17:07]
+2016-09-29 17:08:12	<--	leo2007 (~leo2007@2400:6180:0:d0::d83:5001) has left #openvpn
+2016-09-29 17:09:58	<--	totus (~totus@cpe-67-10-159-34.satx.res.rr.com) has quit (Quit: Leaving.)
+2016-09-29 17:13:44	<--	j12t (~j12t@2602:306:309d:1ad0:db9:7c1f:fd61:9e8a) has quit (Remote host closed the connection)
+2016-09-29 17:19:00		[17:13]
+2016-09-29 17:59:34	-->	krzee (~k@openvpn/community/support/krzee) has joined #openvpn
+2016-09-29 17:59:34		[17:59]
+2016-09-29 17:59:34	--	Mode #openvpn [+o krzee] by ChanServ
+2016-09-29 18:04:21	<--	dcarmich (~dcarmich@c-73-22-88-72.hsd1.il.comcast.net) has quit (Quit: Textual IRC Client: www.textualapp.com)
+2016-09-29 18:10:00		[18:04]
+2016-09-29 18:25:33	<--	DzAirmaX (~AirmaX@unaffiliated/dzairmax) has quit (Ping timeout: 276 seconds)
+2016-09-29 18:25:33		[18:25]
+2016-09-29 18:30:30	<--	ShadniX (dagger@p5481C1C0.dip0.t-ipconnect.de) has quit (Ping timeout: 264 seconds)
+2016-09-29 18:31:18	-->	j12t (~j12t@73.93.153.192) has joined #openvpn
+2016-09-29 18:32:45	-->	ShadniX (dagger@p5481CE96.dip0.t-ipconnect.de) has joined #openvpn
+2016-09-29 18:36:09	<--	j12t (~j12t@73.93.153.192) has quit (Ping timeout: 272 seconds)
+2016-09-29 18:42:00		[18:36]
+2016-09-29 18:55:18	<--	fp7 (~fp7@unaffiliated/fp7) has quit (Ping timeout: 244 seconds)
+2016-09-29 19:00:35	<--	THX1138 (~THX1138@unaffiliated/zzyzx) has quit (Quit: l8r)
+2016-09-29 19:00:35		[19:00]
+2016-09-29 19:20:59	-->	skyroveRR_ (~skyroveRR@unaffiliated/skyroverr) has joined #openvpn
+2016-09-29 19:20:59		[19:20]
+2016-09-29 19:24:14	<--	skyroveRR (~skyroveRR@unaffiliated/skyroverr) has quit (Ping timeout: 244 seconds)
+2016-09-29 19:30:00		[19:24]
+2016-09-29 19:40:13	-->	Hamy (~Hamy@gateway/tor-sasl/hamy) has joined #openvpn
+2016-09-29 19:42:01	-->	THX1138 (~THX1138@unaffiliated/zzyzx) has joined #openvpn
+2016-09-29 19:42:33	<--	THX1138 (~THX1138@unaffiliated/zzyzx) has quit (Client Quit)
+2016-09-29 19:48:00		[19:42]
+2016-09-29 19:48:03	-->	THX1138 (~THX1138@unaffiliated/zzyzx) has joined #openvpn
+2016-09-29 19:49:02	<--	subzero79 (~subzero79@101.163.88.249) has quit (Ping timeout: 244 seconds)
+2016-09-29 19:51:47	-->	subzero79 (~subzero79@CPE-124-186-111-81.lns4.woo.bigpond.net.au) has joined #openvpn
+2016-09-29 19:52:39	<--	THX1138 (~THX1138@unaffiliated/zzyzx) has quit (Ping timeout: 244 seconds)
+2016-09-29 19:54:51	Hamy	it appears that using 'mssfix'(even when specified only on one side) , adjusts both receiving and sending MSS values on a tcp connection. it assumes that the link's MTU , is the same as it's MRU. while in reality, this is not always the case. it would have been helpful if we could explicitly tell mssfix to adjust either ones separately
+2016-09-29 19:55:26	-->	THX1138 (~THX1138@unaffiliated/zzyzx) has joined #openvpn
+2016-09-29 19:56:18	<--	subzero79 (~subzero79@CPE-124-186-111-81.lns4.woo.bigpond.net.au) has quit (Ping timeout: 264 seconds)
+2016-09-29 20:02:00		[19:56]
+2016-09-29 20:03:58	-->	francoisk (~francoisk@154.66.250.11) has joined #openvpn

@@ -275,7 +275,8 @@ kvm() {
 		qemu-system-x86_64 -boot menu=on \
 			-drive file="${args[1]?No image specified!}",format="$format",aio=native,cache.direct=on \
 			-enable-kvm -usbdevice tablet -machine type=pc,accel=kvm -cpu host -smp "${args[4]:-4}" -show-cursor \
-			-m "${args[3]:-2048}" -net nic,mac=52:54:00:12:34:56 -net bridge,br=virbr0,smb=/mnt/shared -vga "${args[5]:-virtio}"
+			-m "${args[3]:-2048}" -net nic -net bridge,br=virbr0,smb=/mnt/shared -vga "${args[5]:-virtio}"
+			#-m "${args[3]:-2048}" -net nic,mac=52:54:00:12:34:56 -net bridge,br=virbr0,smb=/mnt/shared -vga "${args[5]:-virtio}"
 			#-spice port=5930,disable-ticketing \
 			#-device "${4:-virtio}"-serial-pci -device virtserialport,chardev=spicechannel0,name=com.redhat.spice.0 \
 			#-chardev spicevmc,id=spicechannel0,name=vdagent \
@@ -284,7 +285,8 @@ kvm() {
 		qemu-system-x86_64 -cdrom "${args[2]}" -boot order=d \
 			-drive file="${args[1]?No image specified!}",format="$format",aio=native,cache.direct=on \
 			-enable-kvm -usbdevice tablet -machine type=pc,accel=kvm -cpu host -smp "${args[4]:-4}" -show-cursor \
-			-m "${args[3]:-2048}" -net nic,52:54:00:12:34:56 -net bridge,br=virbr0,smb=/mnt/shared -vga "${args[5]:-virtio}"
+			-m "${args[3]:-2048}" -net nic -net bridge,br=virbr0,smb=/mnt/shared -vga "${args[5]:-virtio}"
+			#-m "${args[3]:-2048}" -net nic,mac=52:54:00:12:34:56 -net bridge,br=virbr0,smb=/mnt/shared -vga "${args[5]:-virtio}"
 			#-spice port=5930,disable-ticketing \
 			#-device "${4:-virtio}"-serial-pci -device virtserialport,chardev=spicechannel0,name=com.redhat.spice.0 \
 			#-chardev spicevmc,id=spicechannel0,name=vdagent \

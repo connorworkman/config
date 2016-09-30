@@ -15167,3 +15167,212 @@
 2016-09-29 12:15:03	Somelauw	oh, fzf too
 2016-09-29 12:15:10	llua	does it speed up after you comment out those plugins?
 2016-09-29 12:17:38	<--	hahuang61 (~hahuang65@c-50-136-152-183.hsd1.ca.comcast.net) has quit (Quit: WeeChat 1.5)
+2016-09-29 12:18:11	Somelauw	only zsh-syntax-highlighting and many autocompletion plugins
+2016-09-29 12:18:11		[12:18]
+2016-09-29 12:18:38	Somelauw	and deer and dircycle which i just disabled, let's see if that is enough
+2016-09-29 12:19:01	<--	mcmillhj (~huntermcm@c-71-62-149-7.hsd1.va.comcast.net) has quit (Ping timeout: 244 seconds)
+2016-09-29 12:19:58	<--	Rerst (~Rerst@p5DCA4323.dip0.t-ipconnect.de) has quit (Ping timeout: 272 seconds)
+2016-09-29 12:20:01	Somelauw	it is still not instant, but i think disabling deer and dircycle may have improved startup time
+2016-09-29 12:21:18	Mikachu	if you put zmodload zsh/zprof first in your .zshrc, and then zprof at the end, it will dump out which functions used the most time
+2016-09-29 12:21:26	Somelauw	ok
+2016-09-29 12:21:48	Mikachu	it might be easier to track down which area is slow if you wrap sections in named functions
+2016-09-29 12:22:06	Mikachu	so [buncha code] becomes time1() { [buncha code] }; time1
+2016-09-29 12:22:24	Mikachu	but you can try without doing that first
+2016-09-29 12:24:20	Somelauw	31% is -antigen-load, 15% is compdump, 13% -antigen-ensure-repo, 13% antigen-bundle
+2016-09-29 12:24:30	<--	dsdeiz (~dsdeiz@drupal.org/user/447770/view) has quit (Ping timeout: 264 seconds)
+2016-09-29 12:24:58	Somelauw	so antigen together is 57%
+2016-09-29 12:25:21	<--	stryx` (~stryx@unaffiliated/stryx/x-3871776) has quit (Ping timeout: 240 seconds)
+2016-09-29 12:25:31	Mikachu	compdump shouldn't be running at all
+2016-09-29 12:25:40	<--	ZyX-I (~ZyX-I@broadband-77-37-230-77.nationalcablenetworks.ru) has quit (Ping timeout: 272 seconds)
+2016-09-29 12:25:45	Somelauw	it is
+2016-09-29 12:25:52	llua	frameworks
+2016-09-29 12:26:04	-->	mcmillhj (~huntermcm@c-71-62-149-7.hsd1.va.comcast.net) has joined #zsh
+2016-09-29 12:26:06	-->	cdown__ (~cdown@199.201.66.0) has joined #zsh
+2016-09-29 12:26:18	llua	cruise control, locked at 2 mph
+2016-09-29 12:26:28	Mikachu	well, if it is something is set up incorrectly
+2016-09-29 12:26:34	Mikachu	which is impressive since the correct setup is:
+2016-09-29 12:26:39	Mikachu	autoload compinit; compinit
+2016-09-29 12:27:04	Mikachu	which will run compdump the first time, and subsequent times not
+2016-09-29 12:27:23	Somelauw	I have autoload -Uz compinit
+2016-09-29 12:27:39	Mikachu	the -Uz part isn't a problem
+2016-09-29 12:27:44	Somelauw	i don't know why or how
+2016-09-29 12:27:46	Mikachu	but what's the compinit invocation line?
+2016-09-29 12:28:13	Somelauw	those lines
+2016-09-29 12:28:25	Mikachu	you didn't say any lines
+2016-09-29 12:28:31	Mikachu	just an autoload
+2016-09-29 12:28:50	<--	cdown_ (~cdown@82.132.235.134) has quit (Ping timeout: 244 seconds)
+2016-09-29 12:31:06	<--	mcmillhj (~huntermcm@c-71-62-149-7.hsd1.va.comcast.net) has quit (Ping timeout: 264 seconds)
+2016-09-29 12:31:24	<--	strull (~strull@p57A399E7.dip0.t-ipconnect.de) has quit (Remote host closed the connection)
+2016-09-29 12:31:45	Somelauw	autoload -Uz compinit; compinit
+2016-09-29 12:31:58	Mikachu	ah
+2016-09-29 12:33:18	-->	Rerst (~Rerst@p5DCA4323.dip0.t-ipconnect.de) has joined #zsh
+2016-09-29 12:33:18		[12:33]
+2016-09-29 12:34:58	<--	blackmes1 (~blackmesa@aftr-37-201-227-42.unity-media.net) has quit (Quit: WeeChat 1.5)
+2016-09-29 12:37:11	Somelauw	Mikachu: https://bpaste.net/show/5504ad290b0c
+2016-09-29 12:37:30	-->	stryx` (~stryx@87.117.231.25) has joined #zsh
+2016-09-29 12:37:39	<--	stryx` (~stryx@87.117.231.25) has quit (Changing host)
+2016-09-29 12:37:39	-->	stryx` (~stryx@unaffiliated/stryx/x-3871776) has joined #zsh
+2016-09-29 12:38:35	-->	mcmillhj (~huntermcm@c-71-62-149-7.hsd1.va.comcast.net) has joined #zsh
+2016-09-29 12:38:39	Somelauw	to stop antigen, I could switch to zgen or even git submodules. I don't know why compdump is running.
+2016-09-29 12:42:35	Mikachu	antigen seems like a really bad idea
+2016-09-29 12:42:49	Mikachu	"hey lets give these 15 people direct access to run any code they want on my machine"
+2016-09-29 12:43:23	<--	mcmillhj (~huntermcm@c-71-62-149-7.hsd1.va.comcast.net) has quit (Ping timeout: 272 seconds)
+2016-09-29 12:44:09	Somelauw	only add stuff from people you trust
+2016-09-29 12:44:35	Somelauw	but yes, there is a risk involved
+2016-09-29 12:47:48	<--	stryx` (~stryx@unaffiliated/stryx/x-3871776) has quit (Remote host closed the connection)
+2016-09-29 12:53:00		[12:47]
+2016-09-29 12:53:09	-->	mcmillhj (~huntermcm@c-71-62-149-7.hsd1.va.comcast.net) has joined #zsh
+2016-09-29 12:53:10	<--	Rerst (~Rerst@p5DCA4323.dip0.t-ipconnect.de) has quit (Quit: Leaving)
+2016-09-29 12:53:52	--	visiting is now known as Maple__
+2016-09-29 12:55:21	-->	fp7 (~fp7@unaffiliated/fp7) has joined #zsh
+2016-09-29 12:56:25	-->	Forlorn (~Forlorn@unaffiliated/forlorn) has joined #zsh
+2016-09-29 12:58:06	<--	mcmillhj (~huntermcm@c-71-62-149-7.hsd1.va.comcast.net) has quit (Ping timeout: 264 seconds)
+2016-09-29 12:58:41	<--	macabre (~ibtjw@unaffiliated/macabre) has quit (Remote host closed the connection)
+2016-09-29 13:02:16	<--	satifant (~sati@unaffiliated/satifant) has quit (Quit: Verlassend)
+2016-09-29 13:07:15	-->	mcmillhj (~huntermcm@c-71-62-149-7.hsd1.va.comcast.net) has joined #zsh
+2016-09-29 13:11:35	-->	stryx` (~stryx@unaffiliated/stryx/x-3871776) has joined #zsh
+2016-09-29 13:11:35		[13:11]
+2016-09-29 13:12:14	<--	Kryptron (~Kryptron@unaffiliated/kryptron) has quit (Ping timeout: 244 seconds)
+2016-09-29 13:12:31	<--	mcmillhj (~huntermcm@c-71-62-149-7.hsd1.va.comcast.net) has quit (Ping timeout: 272 seconds)
+2016-09-29 13:13:21	Somelauw	anyway, after switching from antigen compdump disappeared too
+2016-09-29 13:18:42	<--	pocek (pock@37-128-32-207.adsl.inetia.pl) has quit (Quit: leaving)
+2016-09-29 13:19:19	<--	stryx` (~stryx@unaffiliated/stryx/x-3871776) has quit (Remote host closed the connection)
+2016-09-29 13:19:43	-->	stryx` (~stryx@unaffiliated/stryx/x-3871776) has joined #zsh
+2016-09-29 13:19:55	Somelauw	i think the majority of oh-my-zsh and prezto plugins do stuff that are done better by normal scripts. The only type of plugins i like are autocompletion.
+2016-09-29 13:20:20	<--	a_ (d@ps38852.dreamhost.com) has quit (Quit: Reconnecting)
+2016-09-29 13:20:27	-->	a_ (d@ps38852.dreamhost.com) has joined #zsh
+2016-09-29 13:20:34	SeepingN	here here
+2016-09-29 13:20:57	-->	Rerst (~Rerst@p5DCA4323.dip0.t-ipconnect.de) has joined #zsh
+2016-09-29 13:21:19	-->	mcmillhj (~huntermcm@c-71-62-149-7.hsd1.va.comcast.net) has joined #zsh
+2016-09-29 13:24:16	<--	cdown (~cdown@82-132-235-134.dab.02.net) has quit (Remote host closed the connection)
+2016-09-29 13:24:17	--	cdown__ is now known as cdown
+2016-09-29 13:24:28	<--	a_ (d@ps38852.dreamhost.com) has quit (Client Quit)
+2016-09-29 13:24:35	-->	a_ (d@ps38852.dreamhost.com) has joined #zsh
+2016-09-29 13:26:18	<--	mcmillhj (~huntermcm@c-71-62-149-7.hsd1.va.comcast.net) has quit (Ping timeout: 264 seconds)
+2016-09-29 13:26:53	<--	a_ (d@ps38852.dreamhost.com) has quit (Client Quit)
+2016-09-29 13:26:53		[13:26]
+2016-09-29 13:27:09	-->	a_ (d@ps38852.dreamhost.com) has joined #zsh
+2016-09-29 13:27:10	<--	a_ (d@ps38852.dreamhost.com) has quit (Client Quit)
+2016-09-29 13:27:59	-->	pocek (pock@159-205-36-92.adsl.inetia.pl) has joined #zsh
+2016-09-29 13:28:06	-->	catsup_ (d@ps38852.dreamhost.com) has joined #zsh
+2016-09-29 13:34:00		[13:28]
+2016-09-29 13:37:31	<--	_sjs (~steven.sp@198.46.145.149) has quit (Quit: Lost terminal)
+2016-09-29 13:41:18	<--	cdown (~cdown@199.201.66.0) has quit (Ping timeout: 264 seconds)
+2016-09-29 13:42:55	-->	alexandros_c (~alexandro@unaffiliated/alexandros-c/x-1684531) has joined #zsh
+2016-09-29 13:48:00		[13:42]
+2016-09-29 13:49:14	<--	Rerst (~Rerst@p5DCA4323.dip0.t-ipconnect.de) has quit (Remote host closed the connection)
+2016-09-29 13:52:25	<--	m0viefreak (~asdf@unaffiliated/m0viefreak) has quit (Ping timeout: 272 seconds)
+2016-09-29 13:57:19	-->	mcmillhj (~huntermcm@c-71-62-149-7.hsd1.va.comcast.net) has joined #zsh
+2016-09-29 14:01:50	<--	mcmillhj (~huntermcm@c-71-62-149-7.hsd1.va.comcast.net) has quit (Ping timeout: 244 seconds)
+2016-09-29 14:03:11	<--	larryv (~larryv@wikipedia/larryv) has left #zsh
+2016-09-29 14:03:11		[14:03]
+2016-09-29 14:12:30	<--	Forlorn (~Forlorn@unaffiliated/forlorn) has quit (Ping timeout: 264 seconds)
+2016-09-29 14:17:46	-->	mcmillhj (~huntermcm@c-71-62-149-7.hsd1.va.comcast.net) has joined #zsh
+2016-09-29 14:19:46	<--	Somelauw (~Somelauw@unaffiliated/somelauw) has quit (Quit: WeeChat 1.5)
+2016-09-29 14:19:46		[14:19]
+2016-09-29 14:22:49	<--	mcmillhj (~huntermcm@c-71-62-149-7.hsd1.va.comcast.net) has quit (Ping timeout: 272 seconds)
+2016-09-29 14:25:42	<--	theblazehen_ (~quassel@196-215-3-97.dynamic.isadsl.co.za) has quit (Ping timeout: 264 seconds)
+2016-09-29 14:26:44	-->	mcmillhj (~huntermcm@c-71-62-149-7.hsd1.va.comcast.net) has joined #zsh
+2016-09-29 14:32:00		[14:26]
+2016-09-29 14:33:38	<--	SeepingN (~CPngN@unaffiliated/cpngn/x-6985199) has quit (Disconnected by services)
+2016-09-29 14:33:46	-->	SeepingN_ (~CPngN@unaffiliated/cpngn/x-6985199) has joined #zsh
+2016-09-29 14:35:25	<--	mcmillhj (~huntermcm@c-71-62-149-7.hsd1.va.comcast.net) has quit (Ping timeout: 244 seconds)
+2016-09-29 14:40:09	<--	Phantom7_ (~textual@188.146.73.57.nat.umts.dynamic.t-mobile.pl) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-09-29 14:41:02	-->	Forlorn (~Forlorn@unaffiliated/forlorn) has joined #zsh
+2016-09-29 14:45:16	<--	SeepingN_ (~CPngN@unaffiliated/cpngn/x-6985199) has quit (Quit: The system is going down for reboot NOW!)
+2016-09-29 14:45:28	haasn	Is there a way to get zsh to create potentially missing parent dirs when piping to a file? like command > foo/bar/bat/baz. My current work-around is to run that command, let it fail, type ‘mkdir -p <Alt-.><Ctrl-w>’, run that, press up twice, run that command again but it's annoyingly unnecessary
+2016-09-29 14:45:45	haasn	It would be great if I could use some simple syntax to get zsh to create the dirs if necessary for me
+2016-09-29 14:46:00	Mikachu	even mkdir -p is a gnu extension
+2016-09-29 14:50:54	<--	hahuang62 (~hahuang65@c-50-136-152-183.hsd1.ca.comcast.net) has quit (Ping timeout: 264 seconds)
+2016-09-29 14:50:54		[14:50]
+2016-09-29 14:59:59	-->	mcmillhj (~huntermcm@c-71-62-149-7.hsd1.va.comcast.net) has joined #zsh
+2016-09-29 15:01:35	-->	hpt (~hpt@61.48.210.118) has joined #zsh
+2016-09-29 15:05:18	<--	mcmillhj (~huntermcm@c-71-62-149-7.hsd1.va.comcast.net) has quit (Ping timeout: 264 seconds)
+2016-09-29 15:07:42	<--	cloudhea1 (~cloudhead@ip5f5af7b6.dynamic.kabel-deutschland.de) has quit (Ping timeout: 264 seconds)
+2016-09-29 15:07:42		[15:07]
+2016-09-29 15:12:44	-->	mcmillhj (~huntermcm@c-71-62-149-7.hsd1.va.comcast.net) has joined #zsh
+2016-09-29 15:15:36	-->	strull (~strull@93.212.81.60) has joined #zsh
+2016-09-29 15:17:16	<--	mcmillhj (~huntermcm@c-71-62-149-7.hsd1.va.comcast.net) has quit (Ping timeout: 244 seconds)
+2016-09-29 15:17:18	<--	fp7 (~fp7@unaffiliated/fp7) has quit (Ping timeout: 272 seconds)
+2016-09-29 15:17:49	-->	mcmillhj (~huntermcm@c-71-62-149-7.hsd1.va.comcast.net) has joined #zsh
+2016-09-29 15:19:20	-->	fp7 (~fp7@unaffiliated/fp7) has joined #zsh
+2016-09-29 15:22:42	<--	mcmillhj (~huntermcm@c-71-62-149-7.hsd1.va.comcast.net) has quit (Ping timeout: 264 seconds)
+2016-09-29 15:22:42		[15:22]
+2016-09-29 15:27:18	<--	Sasazuka (~Sasazuka@unaffiliated/sasazuka) has quit (Quit: My Mac has gone to sleep. ZZZzzz…)
+2016-09-29 15:33:00		[15:27]
+2016-09-29 15:40:10	-->	xall (~xall@ip68-230-65-100.ph.ph.cox.net) has joined #zsh
+2016-09-29 15:46:00		[15:40]
+2016-09-29 15:52:08	<--	Forlorn (~Forlorn@unaffiliated/forlorn) has quit (Ping timeout: 272 seconds)
+2016-09-29 15:53:37	-->	Forlorn (~Forlorn@unaffiliated/forlorn) has joined #zsh
+2016-09-29 15:55:06	-->	_sjs (~steven.sp@c-67-180-3-240.hsd1.ca.comcast.net) has joined #zsh
+2016-09-29 15:57:18	<--	meh` (~meh@151.42.183.214) has quit (Quit: brb)
+2016-09-29 16:03:00		[15:57]
+2016-09-29 16:05:16	-->	noganex (~noganex@p5082A6F3.dip0.t-ipconnect.de) has joined #zsh
+2016-09-29 16:05:26	<--	xall (~xall@ip68-230-65-100.ph.ph.cox.net) has quit (Ping timeout: 272 seconds)
+2016-09-29 16:08:18	<--	noganex_ (~noganex@p5DCB4528.dip0.t-ipconnect.de) has quit (Ping timeout: 264 seconds)
+2016-09-29 16:14:00		[16:08]
+2016-09-29 16:18:44	-->	mcmillhj (~huntermcm@c-71-62-149-7.hsd1.va.comcast.net) has joined #zsh
+2016-09-29 16:18:45	<--	fp7 (~fp7@unaffiliated/fp7) has quit (Ping timeout: 244 seconds)
+2016-09-29 16:19:41	-->	fp7 (~fp7@unaffiliated/fp7) has joined #zsh
+2016-09-29 16:21:07	<--	tater (username@unaffiliated/tater) has quit (Quit: leaving)
+2016-09-29 16:22:04	-->	meloc (~geomyidae@13.66.225.144) has joined #zsh
+2016-09-29 16:22:09	<--	meloc (~geomyidae@13.66.225.144) has quit (Changing host)
+2016-09-29 16:22:09	-->	meloc (~geomyidae@pdpc/supporter/professional/geomyidae) has joined #zsh
+2016-09-29 16:23:54	<--	mcmillhj (~huntermcm@c-71-62-149-7.hsd1.va.comcast.net) has quit (Ping timeout: 264 seconds)
+2016-09-29 16:29:00		[16:23]
+2016-09-29 16:47:08	-->	hahuang62 (~hahuang65@c-50-136-152-183.hsd1.ca.comcast.net) has joined #zsh
+2016-09-29 16:47:08		[16:47]
+2016-09-29 16:49:41	-->	xall (~xall@ip68-230-65-100.ph.ph.cox.net) has joined #zsh
+2016-09-29 16:51:37	<--	hwygeek (~hwygeek@75-166-106-15.hlrn.qwest.net) has quit (Quit: Leaving)
+2016-09-29 16:52:56	<--	hahuang62 (~hahuang65@c-50-136-152-183.hsd1.ca.comcast.net) has quit (Ping timeout: 272 seconds)
+2016-09-29 16:54:40	-->	meh` (~meh@151.42.183.214) has joined #zsh
+2016-09-29 17:00:00		[16:54]
+2016-09-29 17:00:38	--	mozzarel1 is now known as mozzarella
+2016-09-29 17:06:00		[17:00]
+2016-09-29 17:17:59	<--	timvisher (~tim.vishe@pool-71-185-187-94.phlapa.fios.verizon.net) has quit (Remote host closed the connection)
+2016-09-29 17:18:53	<--	meloc (~geomyidae@pdpc/supporter/professional/geomyidae) has quit (Ping timeout: 272 seconds)
+2016-09-29 17:19:11	-->	timvisher (~tim.vishe@pool-71-185-187-94.phlapa.fios.verizon.net) has joined #zsh
+2016-09-29 17:25:00		[17:19]
+2016-09-29 17:26:54	<--	xall (~xall@ip68-230-65-100.ph.ph.cox.net) has quit (Ping timeout: 264 seconds)
+2016-09-29 17:32:00		[17:26]
+2016-09-29 17:34:47	-->	hahuang62 (~hahuang65@c-50-136-152-183.hsd1.ca.comcast.net) has joined #zsh
+2016-09-29 17:35:08	-->	xall (~xall@ip68-230-65-100.ph.ph.cox.net) has joined #zsh
+2016-09-29 17:36:03	<--	Ridout (~coffee@unaffiliated/ridout) has quit (Quit: Lost terminal)
+2016-09-29 17:39:30	<--	hahuang62 (~hahuang65@c-50-136-152-183.hsd1.ca.comcast.net) has quit (Ping timeout: 264 seconds)
+2016-09-29 17:44:56	<--	beatdown (beatdown@2001:19f0:6400:8865::e) has quit (Quit: ZNC 1.6.1 - http://znc.in)
+2016-09-29 17:45:06	-->	beatdown (beatdown@chainsawed.and.strangled.net) has joined #zsh
+2016-09-29 17:46:35	-->	hahuang62 (~hahuang65@c-50-136-152-183.hsd1.ca.comcast.net) has joined #zsh
+2016-09-29 17:52:00		[17:46]
+2016-09-29 17:53:54	<--	mitz (~mitz@KD106167040033.ppp-bb.dion.ne.jp) has quit (Ping timeout: 264 seconds)
+2016-09-29 17:59:00		[17:53]
+2016-09-29 18:02:47	-->	mitz (~mitz@KD106167040033.ppp-bb.dion.ne.jp) has joined #zsh
+2016-09-29 18:06:11	-->	chandan (~chandan@122.167.230.212) has joined #zsh
+2016-09-29 18:12:00		[18:06]
+2016-09-29 18:19:14	-->	14WAALY0Y (~quassel@196-215-3-97.dynamic.isadsl.co.za) has joined #zsh
+2016-09-29 18:19:42	<--	meh` (~meh@151.42.183.214) has quit (Ping timeout: 264 seconds)
+2016-09-29 18:23:10	<--	OxFEEDBACC (~what@unaffiliated/oxfeedbacc) has quit (Quit: quit pro quo)
+2016-09-29 18:29:00		[18:23]
+2016-09-29 18:34:46	-->	Phantom7 (~textual@188.146.73.57.nat.umts.dynamic.t-mobile.pl) has joined #zsh
+2016-09-29 18:40:00		[18:34]
+2016-09-29 18:55:18	<--	fp7 (~fp7@unaffiliated/fp7) has quit (Ping timeout: 244 seconds)
+2016-09-29 18:55:18		[18:55]
+2016-09-29 19:00:37	-->	jrmg (~jrmg@223.red-79-153-246.dynamicip.rima-tde.net) has joined #zsh
+2016-09-29 19:05:18	<--	jrmg (~jrmg@223.red-79-153-246.dynamicip.rima-tde.net) has quit (Ping timeout: 264 seconds)
+2016-09-29 19:06:41	<--	daishan (~daishan@fcker.ca) has quit (Ping timeout: 240 seconds)
+2016-09-29 19:07:56	-->	daishan (~daishan@fcker.ca) has joined #zsh
+2016-09-29 19:13:00		[19:07]
+2016-09-29 19:15:27	<--	hahuang62 (~hahuang65@c-50-136-152-183.hsd1.ca.comcast.net) has quit (Ping timeout: 244 seconds)
+2016-09-29 19:16:21	<--	strull (~strull@93.212.81.60) has quit (Remote host closed the connection)
+2016-09-29 19:22:00		[19:16]
+2016-09-29 19:36:16	<--	Phantom7 (~textual@188.146.73.57.nat.umts.dynamic.t-mobile.pl) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-09-29 19:42:00		[19:36]
+2016-09-29 19:42:56	psprint	that sucks hehe, and makes me realize that I should do [[ -d .. ]] && mkdir
+2016-09-29 19:43:09	psprint	||
+2016-09-29 19:47:21	-->	bocaneri (~bocaneri@about/linux/staff/sauvin) has joined #zsh
+2016-09-29 19:48:21	<--	setheus (~setheus@107-203-153-73.lightspeed.rcsntx.sbcglobal.net) has quit (Ping timeout: 240 seconds)
+2016-09-29 19:50:04	-->	setheus (~setheus@107-203-153-73.lightspeed.rcsntx.sbcglobal.net) has joined #zsh
+2016-09-29 19:51:32	<--	xall (~xall@ip68-230-65-100.ph.ph.cox.net) has quit (Ping timeout: 272 seconds)
+2016-09-29 19:52:52	-->	Raging_Hog (~heikki@193.64.112.22) has joined #zsh
+2016-09-29 19:58:00		[19:52]
+2016-09-29 20:01:38	bogner	Mikachu: mkdir -p is posix
+2016-09-29 20:02:27	bogner	Mikachu: http://pubs.opengroup.org/onlinepubs/009696799/utilities/mkdir.html

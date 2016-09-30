@@ -8,7 +8,7 @@ bind "TAB:menu-complete"; bind "set show-all-if-ambiguous on"
 #bind "TAB:complete"; bind "set show-all-if-ambiguous off"
 bind "set menu-complete-display-prefix on"
 
-#[ ! -e "${HOME}"/aliases.sh ] || . "${HOME}"/aliases.sh 
+#[ ! -e "${HOME}"/aliases.sh ] || . "${HOME}"/aliases.sh
 
 if [ -f %{/usr/lib/bash-git-prompt/gitprompt.sh ]; then
    # To only show the git prompt in or under a repository directory
