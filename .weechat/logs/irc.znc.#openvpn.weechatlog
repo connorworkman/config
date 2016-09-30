@@ -1567,3 +1567,283 @@
 2016-09-30 04:40:11	wknapik	EHLO
 2016-09-30 04:41:02	wknapik	is there a way to get the automatic route setup via --redirect-gateway, but skip the automatic removal on tunnel tear down ?
 2016-09-30 04:42:04	wknapik	i know i could set up routes manually (skip --redirect-gateway entirely) and keep them around, but that's reimplementing existing openvpn functionality for no benefit...
+2016-09-30 04:44:53	XSalsaTequila	why would you keep the routes while the tun doesn't exist
+2016-09-30 04:46:26	wknapik	to prevent ip leaks until the user explicitly says that's what they want. a failsafe. i tried using mktun thinking the existence of the device would be enough to prevent route removal, but that doesn't seem to work...
+2016-09-30 04:47:25	-->	egonsen (~egonsen@unaffiliated/egonsen) has joined #openvpn
+2016-09-30 04:48:12	wknapik	so the idea is that if the user starts up the vpn, all traffic goes through it, no matter what (timeouts, processes being killed, etc.), until the user says "ok, now i want to go back to the previous state"
+2016-09-30 04:48:30	egonsen	hi. when i connect to an open vpn server via tcp/ip, are the tcp checks and handshakes always done twice? once for the "outer" ip packet and once for the inner one?
+2016-09-30 04:50:18	<--	Geom (~Geom@112.201.136.169) has quit (Ping timeout: 264 seconds)
+2016-09-30 04:53:35	<--	THX1138 (~THX1138@unaffiliated/zzyzx) has quit (Quit: l8r)
+2016-09-30 04:54:14	-->	Geom (~Geom@122.52.73.141) has joined #openvpn
+2016-09-30 04:54:14		[04:54]
+2016-09-30 04:55:09	<--	wknapik (~wknapik@unaffiliated/wknapik) has quit (Ping timeout: 244 seconds)
+2016-09-30 04:55:16	-->	wknapik (~wknapik@unaffiliated/wknapik) has joined #openvpn
+2016-09-30 04:56:18	<--	XSalsaTequila (~zenified@unaffiliated/thisiszenified) has quit (Ping timeout: 264 seconds)
+2016-09-30 04:57:02	<--	wknapik (~wknapik@unaffiliated/wknapik) has left #openvpn
+2016-09-30 04:58:13	<--	dadinn (~you-user-@82-132-217-82.dab.02.net) has quit (Remote host closed the connection)
+2016-09-30 04:59:14	<--	egonsen (~egonsen@unaffiliated/egonsen) has quit (Read error: Connection reset by peer)
+2016-09-30 04:59:50	-->	THX1138 (~THX1138@unaffiliated/zzyzx) has joined #openvpn
+2016-09-30 05:05:00		[04:59]
+2016-09-30 05:12:22	jamesaxl	hi
+2016-09-30 05:13:37	speciality	hi
+2016-09-30 05:14:25	-->	[0xAA] (~zenified@unaffiliated/thisiszenified) has joined #openvpn
+2016-09-30 05:15:11	<--	evilman_work (~evilman@87.244.6.228) has quit (Ping timeout: 252 seconds)
+2016-09-30 05:15:20	<--	[0xAA] (~zenified@unaffiliated/thisiszenified) has quit (Max SendQ exceeded)
+2016-09-30 05:16:04	jamesaxl	I create  my files use easy-rsa, these the command that I used http://pastebin.com/TeEGTjRL they are correct ?
+2016-09-30 05:17:17	Hamy	egonsen: yes. and thats only one of the reasons why tcp tunneling is a bad idea
+2016-09-30 05:17:54	<--	Naeil (~nzoueidi@ubuntu/member/na3il) has quit (Ping timeout: 264 seconds)
+2016-09-30 05:18:14	-->	[0xAA] (~zenified@unaffiliated/thisiszenified) has joined #openvpn
+2016-09-30 05:21:59	jamesaxl	because after copied the files on server side and on client side, I got OpenSSL: error:14090086:SSL routines:ssl3_get_server_certificate:certificate verify failed
+2016-09-30 05:21:59		[05:21]
+2016-09-30 05:23:18	<--	[0xAA] (~zenified@unaffiliated/thisiszenified) has quit (Ping timeout: 264 seconds)
+2016-09-30 05:23:43	-->	jchiu (~jchiu@12.39.4.250) has joined #openvpn
+2016-09-30 05:23:54	speciality	https://community.openvpn.net/openvpn/wiki/EasyRSA3-OpenVPN-Howto
+2016-09-30 05:23:55	@vpnHelper	Title: EasyRSA3-OpenVPN-Howto – OpenVPN Community (at community.openvpn.net)
+2016-09-30 05:23:56	speciality	jamesaxl, ^
+2016-09-30 05:24:16	-->	[0xAA] (~zenified@unaffiliated/thisiszenified) has joined #openvpn
+2016-09-30 05:24:24	<--	CaTtleyA (~CaTtleyA@lputeaux-656-1-50-20.w82-127.abo.wanadoo.fr) has quit (Ping timeout: 268 seconds)
+2016-09-30 05:25:08	jamesaxl	speciality, thanks a lot
+2016-09-30 05:27:53	<--	[0xAA] (~zenified@unaffiliated/thisiszenified) has quit (Excess Flood)
+2016-09-30 05:29:36	-->	Naeil (~nzoueidi@ubuntu/member/na3il) has joined #openvpn
+2016-09-30 05:30:12	-->	dadinn (~you-user-@82-132-217-82.dab.02.net) has joined #openvpn
+2016-09-30 05:33:54	jchiu	!welcome
+2016-09-30 05:33:55	@vpnHelper	"welcome" is (#1) Start by stating your !goal, such as 'I would like to access the internet over my vpn', or (#2) New to IRC? see the link in !ask, or (#3) We may need you to !paste your !logs and !configs and maybe !interface to help you, or (#4) See !howto for beginners, or (#5) See !route for lans behind openvpn, or (#6) !redirect for sending inet traffic through the server, or (#7) Also
+2016-09-30 05:33:56	@vpnHelper	interesting: !man !/30 !topology !iporder !sample !forum !wiki !mitm, or (#8) Don't use 192.168.1.0/24 or 192.168.0.0/24 (too much potential for conflict), or (#9) And again, if you think you need !tap, you're probably wrong
+2016-09-30 05:35:48	-->	gffa (~unknown@unaffiliated/gffa) has joined #openvpn
+2016-09-30 05:39:23	<--	OS-16517 (~YBPL@unaffiliated/os-16517) has quit
+2016-09-30 05:39:23		[05:39]
+2016-09-30 05:44:35	<--	Hamy (~Hamy@gateway/tor-sasl/hamy) has quit (Quit: Leaving)
+2016-09-30 05:47:10	-->	[0xAA] (~zenified@unaffiliated/thisiszenified) has joined #openvpn
+2016-09-30 05:47:21	jchiu	I have a point to point set up between AWS and my DC. My issue is that sometimes I lose momentary connectivity when the client does a TLS soft reset. This does not seem to happen on a regular basis. I have already up'ed my tran-window, but that doesn't seem to have helped. Almost everything else is default from the example configs. Any advice on ways to keep the connection a little more stable?
+2016-09-30 05:53:00		[05:47]
+2016-09-30 05:53:18	<--	ShapeShifter499 (~ShapeShif@unaffiliated/shapeshifter499) has quit (Ping timeout: 264 seconds)
+2016-09-30 05:54:59	--	F2Knight is now known as F2Knight[away]
+2016-09-30 05:57:16	<--	dadinn (~you-user-@82-132-217-82.dab.02.net) has quit (Remote host closed the connection)
+2016-09-30 06:01:56	@dazo	!logs
+2016-09-30 06:01:57	@vpnHelper	"logs" is (#1) please pastebin your logfiles from both client and server with verb set to 4 (only use 5 if asked), or (#2) In the Windows client(OpenVPN-GUI) right-click the status icon and pick View Log, or (#3) In the OS X client(Tunnelblick) right-click it and select Copy log text to clipboard, or (#4) if you dont know how to find your logs, see !logfile
+2016-09-30 06:01:58	@dazo	!configs
+2016-09-30 06:02:00	@vpnHelper	"configs" is (#1) please !paste your client and server configs (with comments removed, you can use `grep -vE '^#|^;|^$' server.conf`), also include which OS and ovpn version, or (#2) dont forget to include any ccd entries, or (#3) pfSense, see http://www.secure-computing.net/wiki/index.php/OpenVPN/pfSense to obtain your config, or (#4) remove inline private key or tls-auth key before posting
+2016-09-30 06:02:04	@dazo	jchiu: ^^^
+2016-09-30 06:02:12	<--	j12t_ (~j12t@c-50-131-55-96.hsd1.ca.comcast.net) has quit (Remote host closed the connection)
+2016-09-30 06:02:23	-->	j12t (~j12t@c-50-131-55-96.hsd1.ca.comcast.net) has joined #openvpn
+2016-09-30 06:03:23	-->	j12t_ (~j12t@c-50-131-55-96.hsd1.ca.comcast.net) has joined #openvpn
+2016-09-30 06:04:12	-->	dadinn (~you-user-@82-132-217-82.dab.02.net) has joined #openvpn
+2016-09-30 06:04:41	-->	ShapeShifter499 (~ShapeShif@unaffiliated/shapeshifter499) has joined #openvpn
+2016-09-30 06:05:48	<--	ShapeShifter499 (~ShapeShif@unaffiliated/shapeshifter499) has quit (Remote host closed the connection)
+2016-09-30 06:07:42	<--	j12t (~j12t@c-50-131-55-96.hsd1.ca.comcast.net) has quit (Ping timeout: 264 seconds)
+2016-09-30 06:13:00		[06:07]
+2016-09-30 06:14:43	<--	dadinn (~you-user-@82-132-217-82.dab.02.net) has quit (Ping timeout: 272 seconds)
+2016-09-30 06:17:25	jchiu	http://pastebin.com/y33fJBrS
+2016-09-30 06:18:25	-->	ShapeShifter499 (~ShapeShif@unaffiliated/shapeshifter499) has joined #openvpn
+2016-09-30 06:19:47	<--	plaisthos (~arne@openvpn/community/developer/plaisthos) has quit (Ping timeout: 272 seconds)
+2016-09-30 06:21:54	-->	plaisthos (~arne@openvpn/community/developer/plaisthos) has joined #openvpn
+2016-09-30 06:21:54	--	Mode #openvpn [+o plaisthos] by ChanServ
+2016-09-30 06:24:04	--	F2Knight[away] is now known as F2Knight
+2016-09-30 06:30:00		[06:24]
+2016-09-30 06:39:05	<--	pppingme (~pppingme@unaffiliated/pppingme) has quit (Quit: Leaving)
+2016-09-30 06:44:53	<--	francoisk (~francoisk@154.66.250.11) has quit (Quit: Leaving)
+2016-09-30 06:46:44	-->	ade_b (~Ade@redhat/adeb) has joined #openvpn
+2016-09-30 06:46:44		[06:46]
+2016-09-30 06:49:41	<--	luckman212 (~luckman21@unaffiliated/luckman212) has quit (Ping timeout: 240 seconds)
+2016-09-30 06:52:20	-->	pppingme (~pppingme@unaffiliated/pppingme) has joined #openvpn
+2016-09-30 06:53:06	-->	Hrki (~hrki@unaffiliated/hrki) has joined #openvpn
+2016-09-30 06:53:46	Hrki	hello, why steps for certificate creation in HOWO is different than on https://community.openvpn.net/openvpn/wiki/EasyRSA3-OpenVPN-Howto ?
+2016-09-30 06:53:47	@vpnHelper	Title: EasyRSA3-OpenVPN-Howto – OpenVPN Community (at community.openvpn.net)
+2016-09-30 06:55:30	<--	plaisthos (~arne@openvpn/community/developer/plaisthos) has quit (Read error: Connection reset by peer)
+2016-09-30 06:55:32	<--	[0xAA] (~zenified@unaffiliated/thisiszenified) has quit (Ping timeout: 244 seconds)
+2016-09-30 06:56:31	-->	luckman212 (~luckman21@unaffiliated/luckman212) has joined #openvpn
+2016-09-30 06:57:47	-->	SCHAPiE (~bla@unaffiliated/schaap137) has joined #openvpn
+2016-09-30 06:58:12	jamesaxl	speciality, you help me, and you help Freebsd users, cause I should write a tuto freebsd page
+2016-09-30 07:00:05	<--	ade_b (~Ade@redhat/adeb) has quit (Quit: Too sexy for his shirt)
+2016-09-30 07:00:13	-->	plaisthos (~arne@openvpn/community/developer/plaisthos) has joined #openvpn
+2016-09-30 07:00:13	--	Mode #openvpn [+o plaisthos] by ChanServ
+2016-09-30 07:00:58	@dazo	Hrki: EasyRSA3 is a newer version which has a lot of usability improvements over the old EasyRSA-2 which is referred to in the HOWTO
+2016-09-30 07:02:27	-->	[0xAA] (~zenified@unaffiliated/thisiszenified) has joined #openvpn
+2016-09-30 07:02:27		[07:02]
+2016-09-30 07:04:02	<--	[0xAA] (~zenified@unaffiliated/thisiszenified) has quit (Max SendQ exceeded)
+2016-09-30 07:07:25	-->	MikeDebian (~ML@a81-84-80-8.cpe.netcabo.pt) has joined #openvpn
+2016-09-30 07:09:31	-->	ade_b (~Ade@redhat/adeb) has joined #openvpn
+2016-09-30 07:14:54	<--	Naeil (~nzoueidi@ubuntu/member/na3il) has quit (Ping timeout: 272 seconds)
+2016-09-30 07:15:53	-->	Naeil (~nzoueidi@ubuntu/member/na3il) has joined #openvpn
+2016-09-30 07:16:13	-->	[0xAA] (~zenified@unaffiliated/thisiszenified) has joined #openvpn
+2016-09-30 07:16:47	<--	_0x5eb_ (~seb@seb-hpws2.w1.tele.crt1.net) has quit (Ping timeout: 250 seconds)
+2016-09-30 07:18:16	<--	[0xAA] (~zenified@unaffiliated/thisiszenified) has quit (Max SendQ exceeded)
+2016-09-30 07:18:16		[07:18]
+2016-09-30 07:19:22	-->	_0x5eb_ (~seb@seb-hpws2.elen.ucl.ac.be) has joined #openvpn
+2016-09-30 07:25:00		[07:19]
+2016-09-30 07:43:20	-->	JackWinter1 (~jack@vodsl-8402.vo.lu) has joined #openvpn
+2016-09-30 07:43:20		[07:43]
+2016-09-30 07:47:11	-->	OS-16517 (~YBPL@unaffiliated/os-16517) has joined #openvpn
+2016-09-30 07:47:28	<--	jamesaxl (~jamesaxl@176.98.129.195) has quit (Read error: Connection reset by peer)
+2016-09-30 07:47:54	-->	jamesaxl (~jamesaxl@176.98.129.195) has joined #openvpn
+2016-09-30 07:48:27	<--	JackWinter1 (~jack@vodsl-8402.vo.lu) has quit (Ping timeout: 272 seconds)
+2016-09-30 07:54:00		[07:48]
+2016-09-30 07:55:26	<--	jamesaxl (~jamesaxl@176.98.129.195) has quit (Ping timeout: 272 seconds)
+2016-09-30 07:55:44	-->	jamesaxl (~jamesaxl@176.98.129.195) has joined #openvpn
+2016-09-30 08:01:00		[07:55]
+2016-09-30 08:02:11	<--	ade_b (~Ade@redhat/adeb) has quit (Ping timeout: 244 seconds)
+2016-09-30 08:05:17	<--	rich0 (~quassel@gentoo/developer/rich0) has quit (Ping timeout: 244 seconds)
+2016-09-30 08:11:00		[08:05]
+2016-09-30 08:16:58	<--	Naeil (~nzoueidi@ubuntu/member/na3il) has quit (Ping timeout: 272 seconds)
+2016-09-30 08:17:10	<--	Geom (~Geom@122.52.73.141) has quit (Ping timeout: 244 seconds)
+2016-09-30 08:17:59	-->	Geom (~Geom@122.52.73.141) has joined #openvpn
+2016-09-30 08:22:51	<--	MikeDebian (~ML@a81-84-80-8.cpe.netcabo.pt) has quit (Ping timeout: 244 seconds)
+2016-09-30 08:28:00		[08:22]
+2016-09-30 08:30:16	<--	ShapeShifter499 (~ShapeShif@unaffiliated/shapeshifter499) has quit (Quit: Leaving)
+2016-09-30 08:36:00		[08:30]
+2016-09-30 08:42:23	-->	slushpupie (6b04b34b@gateway/web/freenode/ip.107.4.179.75) has joined #openvpn
+2016-09-30 08:45:58	-->	SkinnyMelon (~SkinnyMel@5402C58A.dsl.pool.telekom.hu) has joined #openvpn
+2016-09-30 08:51:00		[08:45]
+2016-09-30 08:51:29	<--	dograt (~dograt@unaffiliated/dograt) has quit (Quit: No Ping reply in 210 seconds.)
+2016-09-30 08:52:45	-->	dograt (~dograt@unaffiliated/dograt) has joined #openvpn
+2016-09-30 08:57:23	-->	MikeDebian (~ML@a81-84-80-8.cpe.netcabo.pt) has joined #openvpn
+2016-09-30 09:03:00		[08:57]
+2016-09-30 09:05:13	-->	sz0 (uid110435@gateway/web/irccloud.com/x-ohwtfqwzoweguqwo) has joined #openvpn
+2016-09-30 09:05:44	<--	fp7 (~fp7@unaffiliated/fp7) has quit (Ping timeout: 272 seconds)
+2016-09-30 09:11:00		[09:05]
+2016-09-30 09:16:42	<--	slushpupie (6b04b34b@gateway/web/freenode/ip.107.4.179.75) has quit (Ping timeout: 240 seconds)
+2016-09-30 09:19:20	-->	fp7 (~fp7@unaffiliated/fp7) has joined #openvpn
+2016-09-30 09:24:30	<--	fp7 (~fp7@unaffiliated/fp7) has quit (Ping timeout: 264 seconds)
+2016-09-30 09:30:00		[09:24]
+2016-09-30 09:34:52	-->	Uranio (~Uranio@89.36.210.188) has joined #openvpn
+2016-09-30 09:36:19	--	SCHAPiE is now known as WeatherDude
+2016-09-30 09:36:36	--	WeatherDude is now known as SCHAPiE
+2016-09-30 09:36:53	<--	Uranio (~Uranio@89.36.210.188) has left #openvpn
+2016-09-30 09:37:23	<--	_Timon (~Timon@tt.cloud.tilaa.com) has quit (Remote host closed the connection)
+2016-09-30 09:43:00		[09:37]
+2016-09-30 09:48:37	<--	AlexRussia_ (~Alex@unaffiliated/alexrussia) has quit (Ping timeout: 244 seconds)
+2016-09-30 09:50:46	-->	AlexRussia_ (~Alex@unaffiliated/alexrussia) has joined #openvpn
+2016-09-30 09:56:00		[09:50]
+2016-09-30 09:56:40	-->	jpX (~textual@165.230.225.119) has joined #openvpn
+2016-09-30 09:58:23	<--	jamesaxl (~jamesaxl@176.98.129.195) has quit (Quit: Leaving)
+2016-09-30 09:59:33	-->	ducktape (495d9b8e@gateway/web/freenode/ip.73.93.155.142) has joined #openvpn
+2016-09-30 10:00:42	ducktape	I am having issue connecting to OpenVPN running on Netgear R6900 from a FC23 system
+2016-09-30 10:04:07	<--	jpX (~textual@165.230.225.119) has quit (Ping timeout: 244 seconds)
+2016-09-30 10:05:12	<--	ducktape (495d9b8e@gateway/web/freenode/ip.73.93.155.142) has quit (Ping timeout: 240 seconds)
+2016-09-30 10:08:34	-->	ducktape (~ducktape@73.93.155.142) has joined #openvpn
+2016-09-30 10:08:50	ducktape	!welcome
+2016-09-30 10:08:51	@vpnHelper	"welcome" is (#1) Start by stating your !goal, such as 'I would like to access the internet over my vpn', or (#2) New to IRC? see the link in !ask, or (#3) We may need you to !paste your !logs and !configs and maybe !interface to help you, or (#4) See !howto for beginners, or (#5) See !route for lans behind openvpn, or (#6) !redirect for sending inet traffic through the server, or (#7) Also
+2016-09-30 10:08:52	@vpnHelper	interesting: !man !/30 !topology !iporder !sample !forum !wiki !mitm, or (#8) Don't use 192.168.1.0/24 or 192.168.0.0/24 (too much potential for conflict), or (#9) And again, if you think you need !tap, you're probably wrong
+2016-09-30 10:09:50	<--	NoSleeves (uid180082@gateway/web/irccloud.com/x-jjwbwjwbigtfpzrt) has quit (Quit: Connection closed for inactivity)
+2016-09-30 10:09:51	ducktape	!goal I need help figuring out VPN issues between Netgear R6900 and FC23 client
+2016-09-30 10:10:26	@danhunsaker	(Just `!goal`...)
+2016-09-30 10:10:55	ducktape	!goal
+2016-09-30 10:10:55	@vpnHelper	"goal" is Please clearly state your goal for your vpn: example, I would like to access the lan behind the server , I would like to access the internet over my vpn , I just want a secure connection between 2 computers , etc
+2016-09-30 10:11:09	ducktape	lol
+2016-09-30 10:11:09		[10:11]
+2016-09-30 10:11:18	ducktape	I need help figuring out VPN issues between Netgear R6900 and FC23 client
+2016-09-30 10:11:19	<--	Hobbyboy (Hobbyboy@gateway/shell/panicbnc/x-ljvyzpheftqabldf) has quit (Read error: Connection reset by peer)
+2016-09-30 10:11:42	ducktape	http://pastebin.com/QJXQ1sWa <- info/errors I am seeing on the client side
+2016-09-30 10:12:46	<--	SCHAPiE (~bla@unaffiliated/schaap137) has quit (Excess Flood)
+2016-09-30 10:13:12	-->	SCHAPiE (bla@unaffiliated/schaap137) has joined #openvpn
+2016-09-30 10:13:13	<--	SCHAPiE (bla@unaffiliated/schaap137) has quit (Excess Flood)
+2016-09-30 10:13:25	ducktape	additionally although the messages indicate tap0 is opened, ifconfig does not reflect it
+2016-09-30 10:13:44	-->	SCHAPiE (~bla@unaffiliated/schaap137) has joined #openvpn
+2016-09-30 10:13:46	<--	SCHAPiE (~bla@unaffiliated/schaap137) has quit (Excess Flood)
+2016-09-30 10:14:10	-->	SCHAPiE (bla@unaffiliated/schaap137) has joined #openvpn
+2016-09-30 10:14:11	<--	SCHAPiE (bla@unaffiliated/schaap137) has quit (Excess Flood)
+2016-09-30 10:14:51	ducktape	and yes I know its not recommended to use tap but the Netgear router only support tap for non-mobile devices
+2016-09-30 10:15:34	@danhunsaker	Interesting that it thinks there's a meaningful difference.
+2016-09-30 10:16:40	ducktape	beats me, but if i enable tun based server, I cannot connect via OS X/Windoze clients using a tun device
+2016-09-30 10:17:11	@danhunsaker	My guess is poorly made client configs on the router's part.
+2016-09-30 10:17:26	ducktape	and Netgear support forced me to use tap and I can connect from OS X and windoze clients
+2016-09-30 10:17:33	ducktape	but linux clients all fail
+2016-09-30 10:17:46	ducktape	danhunsaker, agreed
+2016-09-30 10:18:01	@danhunsaker	Because Netgear doesn't actually know what they're doing...  *sigh*
+2016-09-30 10:18:31	ducktape	I was going to re flash the netgear with a more open router firmware but that will open up other cans of worms I am sure
+2016-09-30 10:19:10	@danhunsaker	Depends on the firmware.  Some would actually be *more* secure.
+2016-09-30 10:19:32	@danhunsaker	I wonder how well pfSense would handle a Netgear device...
+2016-09-30 10:19:38	ducktape	but since this setup is working with OS X & windows clients i am wondering if this something linux client specific that i can tweak in the linux client config file
+2016-09-30 10:20:48	ducktape	coz on FC23/centos 7 i had to "export OPENSSL_ENABLE_MD5_VERIFY=1; export NSS_HASH_ALG_SUPPORT=+MD5"
+2016-09-30 10:20:55	ducktape	even to get the TLS to work
+2016-09-30 10:21:28	@danhunsaker	Ugh.  So it's woefully outdated, too.
+2016-09-30 10:21:38	@danhunsaker	That's likely most of the issue right there...
+2016-09-30 10:21:53	-->	jpX (~textual@pool-165-230-225-119.nat.rutgers.edu) has joined #openvpn
+2016-09-30 10:21:59	ducktape	danhunsaker, probably, but its the latest firmware for the R6900  router
+2016-09-30 10:22:18	ducktape	this is the supported/blessed firmware ofcourse
+2016-09-30 10:22:30	@danhunsaker	Of that I have no doubt.
+2016-09-30 10:23:35	-->	fp7 (~fp7@unaffiliated/fp7) has joined #openvpn
+2016-09-30 10:23:41	@danhunsaker	Tons of firmware devs using ancient versions of software, usually for reasons like size, compile time, and sheer laziness...
+2016-09-30 10:24:27	@danhunsaker	All completely ignoring the security and bug aspects of old software.
+2016-09-30 10:26:14	-->	ducktape_ (~ducktape@c-73-222-33-210.hsd1.ca.comcast.net) has joined #openvpn
+2016-09-30 10:26:14		[10:26]
+2016-09-30 10:26:22	ducktape_	Ughh
+2016-09-30 10:26:31	ducktape_	sorry got disconnected
+2016-09-30 10:26:45	ducktape_	is it correct of me to assume that not much can be done on the linux client side then to resolve this?
+2016-09-30 10:26:53	ducktape_	and its just bad/outdated server side foo?
+2016-09-30 10:26:54	<--	ducktape (~ducktape@73.93.155.142) has quit (Ping timeout: 264 seconds)
+2016-09-30 10:27:19	--	ducktape_ is now known as ducktape
+2016-09-30 10:27:53	@danhunsaker	Maybe.
+2016-09-30 10:28:25	ducktape	*sigh*
+2016-09-30 10:28:37	-->	SCHAPiE (bla@unaffiliated/schaap137) has joined #openvpn
+2016-09-30 10:28:50	@danhunsaker	The server is pushing 'route-gateway dhcp' - htat seems a likely source of contention.
+2016-09-30 10:29:47	ducktape	and windows and OS X are more forgiving I take it vs linux?
+2016-09-30 10:30:49	@danhunsaker	Hard to say without more data.
+2016-09-30 10:31:15	@danhunsaker	It looks like the client is getting a gateway address from a completely different subnet than the VPN...
+2016-09-30 10:31:29	ducktape	what data do you need/can i provide?
+2016-09-30 10:31:53	@danhunsaker	10.220.55.1/24 isn't anywhere near 10.1.10.1/24...
+2016-09-30 10:32:33	ducktape	10.220.55.1/24 is the ip for the local eth device
+2016-09-30 10:32:43	@danhunsaker	Well, !configs usually help.  Logs from a successful connection would be useful for comparison.  Server logs are usually helpful.
+2016-09-30 10:32:59	@danhunsaker	I suspected as much.
+2016-09-30 10:33:20	ducktape	the tap device should get an ip from the 10.1.10.xxx subnet
+2016-09-30 10:33:45	-->	rich0_ (~quassel@gentoo/developer/rich0) has joined #openvpn
+2016-09-30 10:33:54	ducktape	!config
+2016-09-30 10:33:54	@vpnHelper	(config <name> [<value>]) -- If <value> is given, sets the value of <name> to <value>. Otherwise, returns the current value of <name>. You may omit the leading "supybot." in the name if you so choose.
+2016-09-30 10:34:05	ducktape	!configs
+2016-09-30 10:34:06	@vpnHelper	"configs" is (#1) please !paste your client and server configs (with comments removed, you can use `grep -vE '^#|^;|^$' server.conf`), also include which OS and ovpn version, or (#2) dont forget to include any ccd entries, or (#3) pfSense, see http://www.secure-computing.net/wiki/index.php/OpenVPN/pfSense to obtain your config, or (#4) remove inline private key or tls-auth key before posting
+2016-09-30 10:34:07	@danhunsaker	(It's plural...)
+2016-09-30 10:34:16	@danhunsaker	(You got it...  XD )
+2016-09-30 10:34:35	ducktape	I do not have access to the server.conf since Netgear does not expose it
+2016-09-30 10:35:02	@danhunsaker	That does make things trickier, yeah.
+2016-09-30 10:35:06	-->	Hobbyboy (Hobbyboy@gateway/shell/panicbnc/x-wvdwaegakklaidqw) has joined #openvpn
+2016-09-30 10:35:20	ducktape	let me find out if I can get the server config...
+2016-09-30 10:35:21	@danhunsaker	Give us what you can, and we'll work around the rest.
+2016-09-30 10:36:26	ducktape	client config -> http://pastebin.com/83LSmUGg
+2016-09-30 10:39:01	ducktape	wow from Netgear's docs it looks like the server is most likely from circa 2.3.2 era :-)
+2016-09-30 10:40:33	<--	jpX (~textual@pool-165-230-225-119.nat.rutgers.edu) has quit (Quit: [Insert message here])
+2016-09-30 10:40:41	@danhunsaker	Actually better than I thought, but still using MD5 isn't a ringing endorsement.
+2016-09-30 10:40:56	ducktape	also from their docs "TUN mode - 12973 (for smartphone) TAP mode � 12974 (for PC)"
+2016-09-30 10:41:26	ducktape	and when I tried to set it up via tun I could not connect via OS X
+2016-09-30 10:41:26		[10:41]
+2016-09-30 10:41:50	@danhunsaker	Most mobile devices don't support TAP mode, so they'd be *forced* to use tun.
+2016-09-30 10:42:24	ducktape	correct but I am not sure why OS X cannot connect via tun
+2016-09-30 10:42:30	@danhunsaker	Guess they're just victims of their own experience.  Get a bunch of those types in here.
+2016-09-30 10:42:42	@danhunsaker	I'd have to see logs to say.
+2016-09-30 10:43:18	@danhunsaker	But I'd guess it's wired to hand out 12974 to Mac/Win configs, regardless of the server settings.
+2016-09-30 10:46:20	@danhunsaker	Probably 'dev tap', too...
+2016-09-30 10:46:46	ducktape	sounds very likely
+2016-09-30 10:47:09	ducktape	very forward thinking :-)
+2016-09-30 10:51:04	@krzee	osx uses tun just fine
+2016-09-30 10:52:06	<--	ExoUNX (~textual@unaffiliated/exounx) has quit (Ping timeout: 264 seconds)
+2016-09-30 10:52:39	@danhunsaker	krzee: That's what makes no sense in all this.  There's something the Netgear folks are doing seriously, terribly wrong, somewhere.
+2016-09-30 10:53:26	@krzee	well i had a user in here where viscosity was his problem
+2016-09-30 10:53:34	@krzee	just the other night
+2016-09-30 10:53:47	@krzee	switching to tunnelblick fixed everything
+2016-09-30 10:54:09	@krzee	netgear may not be to blame, maybe his setup on osx is
+2016-09-30 10:55:49	ducktape	krzee, if I use tun from OS X /windows it does not work
+2016-09-30 10:56:28	ducktape	krzee, and now with tap OS X, windows works fine but  linux does not
+2016-09-30 10:56:28		[10:56]
+2016-09-30 10:56:48	ducktape	krzee, I am using tunnelblick on OS X
+2016-09-30 10:56:56	@krzee	when in tun grab me verb 5 logs from both sides
+2016-09-30 10:57:38	ducktape	krzee, my problem is I cannot get logs from Netgear
+2016-09-30 10:57:51	@krzee	cant get logs!?
+2016-09-30 10:57:56	ducktape	I can give you log from the client side with tun and on OS X
+2016-09-30 10:59:06	@krzee	probably not enough, but ill take a verb 5 linux client log with both sides on tun
+2016-09-30 10:59:08	ducktape	krzee, the Netgear 6900 does not expose the VPN logs
+2016-09-30 10:59:20	@krzee	that's horrible, get openwrt :-p
+2016-09-30 11:00:03	ducktape	I am going to on the R8000 but R6900 does not have a alternate firmware, i don't think
+2016-09-30 11:00:35	@krzee	even if you get it working, do you want a server where you cant see your logs?
+2016-09-30 11:00:44	@krzee	personally i wouldnt want that even if i got it working
+2016-09-30 11:03:12	ducktape	krzee, agreed, I am going to figure out an alternative
+2016-09-30 11:09:00		[11:03]
+2016-09-30 11:14:04	--	rich0_ is now known as rich0
+2016-09-30 11:19:54	<--	ducktape (~ducktape@c-73-222-33-210.hsd1.ca.comcast.net) has quit (Quit: This computer has gone to sleep)
+2016-09-30 11:25:00		[11:19]
+2016-09-30 12:01:45	-->	CaTtleyA (~CaTtleyA@lfbn-1-3377-77.w90-127.abo.wanadoo.fr) has joined #openvpn
+2016-09-30 12:01:45		[12:01]
+2016-09-30 12:15:44	<--	WinstonSmith (~WinstonSm@unaffiliated/winstonsmith) has quit (Ping timeout: 272 seconds)
+2016-09-30 12:21:00		[12:15]
+2016-09-30 12:22:34	-->	WinstonSmith (~WinstonSm@unaffiliated/winstonsmith) has joined #openvpn
+2016-09-30 12:28:00		[12:22]
+2016-09-30 12:33:36	-->	navidr (uid112413@gateway/web/irccloud.com/x-aolpoygqjuxraojf) has joined #openvpn
+2016-09-30 12:35:50	<--	gffa (~unknown@unaffiliated/gffa) has quit (Quit: sleep)

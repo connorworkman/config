@@ -568,7 +568,7 @@ dbr() {
 				printf '\n \033[31m %s \n\033[0m' \
 					"Directory dropbox:/edm/audio/$(<<<${REPLY/*- /} \
 					sed 's/./\l&/g;s/ (.*//') exists!"
-				read -r -n 1 -p "${1:-Continue?} [y/n]: " cont
+				read -rsk 1 ?"Continue? [y/n]: " cont
 				case $cont in
 					[Yy]*|'') : ;; ## Continue
 					[Nn]*) printf " \033[31m %s \n\033[0m" "Exiting..."; return 1 ;;
@@ -592,7 +592,7 @@ dbr() {
 			    printf '\n \033[31m %s \n\033[0m' \
 				    "Directory dropbox:/edm/wanderlust/$(<<<${REPLY/*- /} \
 				    sed 's/./\l&/g;s/ (.*//') exists!"
-				read -r -n 1 -p "${1:-Continue?} [y/n]: " cont
+				read -rsk 1 ?"Continue? [y/n]: " cont
 				case $cont in
 					[Yy]*|'') : ;; ## Continue
 					[Nn]*) printf " \033[31m %s \n\033[0m" "Exiting..."; return 1 ;;
