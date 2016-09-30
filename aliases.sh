@@ -12,6 +12,8 @@ alias ohmyzsh='pushd ${ZSH} '
 
 ## Custom aliases
 
+alias nmixxx='sudo renice -n -20 -p `pgrep mixxx | paste -s -d " "` '
+#alias nmixxx="mixxx >/dev/null 2>&1 & renice -n -20 -p $! && disown "
 alias kpulse='systemctl --user stop pulseaudio.socket && pulseaudio --kill || pulseaudio --kill '
 alias archchroot='mount --rbind /sys /mnt/genoo/sys/ && mount --make-rslave /mnt/gentoo/sys/ && mount --rbind /dev /mnt/gentoo/dev/ && mount --make-rslave /mnt/gentoo/dev/ && mount -t proc proc /mnt/gentoo/proc/ && chroot '
 alias ws='web_search_custom '

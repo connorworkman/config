@@ -15376,3 +15376,170 @@
 2016-09-29 19:58:00		[19:52]
 2016-09-29 20:01:38	bogner	Mikachu: mkdir -p is posix
 2016-09-29 20:02:27	bogner	Mikachu: http://pubs.opengroup.org/onlinepubs/009696799/utilities/mkdir.html
+2016-09-29 20:06:05	<--	lazouz (~lazouz@isis.rezometz.org) has quit (Ping timeout: 272 seconds)
+2016-09-29 20:07:01	-->	lazouz (~lazouz@isis.rezometz.org) has joined #zsh
+2016-09-29 20:11:26	<--	tdowg1 (~quassel@pool-96-244-201-225.bltmmd.fios.verizon.net) has quit (Remote host closed the connection)
+2016-09-29 20:17:00		[20:11]
+2016-09-29 20:30:26	-->	eworm (~eworm@archlinux/developer/eworm) has joined #zsh
+2016-09-29 20:36:00		[20:30]
+2016-09-29 20:39:05	-->	xall (~xall@ip68-230-65-100.ph.ph.cox.net) has joined #zsh
+2016-09-29 20:44:36	-->	constant (~root@freebsd/developer/variable) has joined #zsh
+2016-09-29 20:50:00		[20:44]
+2016-09-29 20:52:21	<--	watersoul (~ircuser@172.245.255.61) has quit (Ping timeout: 240 seconds)
+2016-09-29 20:55:48	--	irc: disconnected from server
+2016-09-30 00:48:26	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined #zsh
+2016-09-30 00:48:26		[00:48]
+2016-09-30 00:48:26	--	Topic for #zsh is "v5.2 | http://zsh.sf.net/ | http://zshwiki.org/ | http://zsh.sf.net/FAQ/ | http://zshwiki.org/home/docs/wikifaq | http://tinyurl.com/zsh-refcard-pdf | Just ask. | Nobody here or everybody clueless? try the zsh-users mailinglist: http://www.zsh.org/mla"
+2016-09-30 00:48:26	--	Topic set by Mikachu (~Mikachu@gimp/developer/Mikachu) on Wed, 02 Dec 2015 11:54:14
+2016-09-30 00:48:26	--	Channel #zsh: 403 nicks (0 ops, 0 voices, 403 normals)
+2016-09-30 00:48:26	***	Buffer Playback...
+2016-09-30 00:48:26	danielsh	[08:55:04] It walks $BUFFER because it highlights all brackets, not just the one that matches $CURSOR [08:55:04]
+2016-09-30 00:48:26	Mikachu	[08:55:16] but yeah, if you want to highlight all brackets i guess you're stuck with that [08:55:16]
+2016-09-30 00:48:26	Mikachu	[08:55:27] isn't it very slow though? [08:55:27]
+2016-09-30 00:48:26	Mikachu	[08:55:42] if the commandline is 500+ characters [08:55:42]
+2016-09-30 00:48:26	danielsh	[08:56:07] performance on huge buffers is an issue yes [08:56:07]
+2016-09-30 00:48:26	danielsh	[08:56:17] I generally try it with 'fned vcs_info' or so [08:56:17]
+2016-09-30 00:48:26	danielsh	[08:56:43] (I mean perf of the 'main' highlighter; probably applies to the brackets highlighter too but I have no first-hand experience there) [08:56:43]
+2016-09-30 00:48:26	Mikachu	[08:57:11] btw, in your initial patch your comment said "now do syntax highlighting", fairly self centered :P you can use the hook for anything [08:57:11]
+2016-09-30 00:48:26	danielsh	[08:57:38] mea culpa [08:57:38]
+2016-09-30 00:48:26	danielsh	[08:59:02] speaking of which, do you have any thoughts about ordering multiple add-zle-hook-widget hooks ? [08:59:02]
+2016-09-30 00:48:26	danielsh	[08:59:27] when two plugins register a (say) pre-redraw hook and they want to specify their relative order [08:59:27]
+2016-09-30 00:48:26	Mikachu	[08:59:38] to be perfectly honest, i have not read a single one of the mails about add-zle-hook-widget [08:59:38]
+2016-09-30 00:48:26	danielsh	[09:00:21] that's great, you can now give tabula rasa feedback :) [09:00:21]
+2016-09-30 00:48:26	danielsh	[09:00:29] (only if interested of course) [09:00:29]
+2016-09-30 00:48:26	Mikachu	[09:00:37] sure [09:00:37]
+2016-09-30 00:48:26	danielsh	[09:01:14] so, in 5.3 zsyh will hook itself through add-zle-hook-widget, [09:01:14]
+2016-09-30 00:48:26	danielsh	[09:01:22] which solves ~10 distinct reported issues, [09:01:22]
+2016-09-30 00:48:26	Mikachu	[09:01:29] it just feels somewhat overengineered compared to telling the user "to use this, put "zle myhook" in your <whatever>-hook function at the appropriate place" [09:01:29]
+2016-09-30 00:48:26	danielsh	[09:01:42] but the question is, what if another plugin registers a pre-redraw hook that modifies $BUFFER. [09:01:42]
+2016-09-30 00:48:26	Mikachu	[09:01:58] but i suppose we're targetting users who are lazier than that [09:01:58]
+2016-09-30 00:48:26	Mikachu	[09:02:21] modifying buffer from pre-redraw would be pretty sick [09:02:21]
+2016-09-30 00:48:26	danielsh	[09:02:25] no, it's a valid answer... bypass add-zle-hook-widget altogether. [09:02:25]
+2016-09-30 00:48:26	danielsh	[09:02:35] why?  it's "pre" redraw. [09:02:35]
+2016-09-30 00:48:26	Mikachu	[09:02:53] well, is it supposed to remove the last character every time you move the cursor? [09:02:53]
+2016-09-30 00:48:26	Mikachu	[09:03:27] but supposing someone somehow has a valid use for doing that [09:03:27]
+2016-09-30 00:48:26	danielsh	[09:03:35] I could see it useful, for example, to have the the effect of 'set linebreak' in vim [09:03:35]
+2016-09-30 00:48:26	Mikachu	[09:03:38] i guess you would want them to run first [09:03:38]
+2016-09-30 00:48:26	danielsh	[09:03:46] (never wrap lines in the middle of a word, only between words) [09:03:46]
+2016-09-30 00:48:26	Mikachu	[09:04:18] you don't really set that for writing shell code... [09:04:18]
+2016-09-30 00:48:26	danielsh	[09:04:43] yes, I'd want them to run first... now how would that be achieved? [09:04:43]
+2016-09-30 00:48:26	danielsh	[09:05:07] Mikachu, one problem with the "write your own hook" is that it requires all users to replicate work [09:05:07]
+2016-09-30 00:48:26	Mikachu	[09:05:20] not much work if your way is [09:05:20]
+2016-09-30 00:48:26	Mikachu	[09:05:26] add-hook pre-redraw syntax-highlight 15 [09:05:26]
+2016-09-30 00:48:26	Mikachu	[09:05:34] add-hook pre-redraw other-sick-thing 5 [09:05:34]
+2016-09-30 00:48:26	Mikachu	[09:05:36] and my way is [09:05:36]
+2016-09-30 00:48:26	Mikachu	[09:05:51] pre-redraw() { zle other-sick-thing; zle syntax-highlight } [09:05:51]
+2016-09-30 00:48:26	danielsh	[09:06:04] the differene is that my way, that happens only once in the plugin, [09:06:04]
+2016-09-30 00:48:26	danielsh	[09:06:15] whereas your way, every user has to replicate the correct sequence [09:06:15]
+2016-09-30 00:48:26	Mikachu	[09:06:48] well, z-sy-h is fairly widespread [09:06:48]
+2016-09-30 00:48:26	Mikachu	[09:07:02] if you pick a priority number you can just hope everyone writing a plugin that modifies the buffer picks a lower number [09:07:02]
+2016-09-30 00:48:26	Mikachu	[09:07:17] ;) [09:07:17]
+2016-09-30 00:48:26	Mikachu	[09:07:37] i can't think of another way that is non-specific to pre-redraw [09:07:37]
+2016-09-30 00:48:26	danielsh	[09:07:41] popularocracy?  Whoever has the most users lays down the law? :) [09:07:41]
+2016-09-30 00:48:26	danielsh	[09:08:24] I thought of using tsort(1), zsyh could register itself as "> buffer-is-stable", othersickthing would register itself as "<buffer-is-stable", then tsort would DTRT without explicit numbers [09:08:24]
+2016-09-30 00:48:26	Mikachu	[09:08:29] "If you're not confused, I haven't correctly transferred all the limited information I do have..." heh (pws) [09:08:29]
+2016-09-30 00:48:26	danielsh	[09:08:44] heh [09:08:44]
+2016-09-30 00:48:26	MoziM	[10:37:40] can someone explain how this alias/function hybrid works? alias f="find . -type f -recursive | xargs cat | sed -n '/^function $1\(\)/,/^}/p'" [10:37:40]
+2016-09-30 00:48:26	MoziM	[10:37:53] it's witchcraft to me O.o [10:37:53]
+2016-09-30 00:48:26	danielsh	[10:44:34] first of all it has a bug [10:44:34]
+2016-09-30 00:48:26	danielsh	[10:44:34] it should exchange the single and double quotes [10:44:34]
+2016-09-30 00:48:26	***	Playback Complete.
+2016-09-30 00:49:27	--	Channel created on Tue, 02 Sep 2003 05:34:53
+2016-09-30 00:51:35	-->	Ridout (~coffee@unaffiliated/ridout) has joined #zsh
+2016-09-30 00:56:58	<--	Xeago (~Xeago@unaffiliated/xeago) has quit (Ping timeout: 244 seconds)
+2016-09-30 00:58:36	-->	Xeago (~Xeago@unaffiliated/xeago) has joined #zsh
+2016-09-30 01:02:32	-->	hahuang62 (~hahuang65@c-50-136-152-183.hsd1.ca.comcast.net) has joined #zsh
+2016-09-30 01:03:36	-->	Rodya_ (~Rodya_@c-71-224-101-129.hsd1.pa.comcast.net) has joined #zsh
+2016-09-30 01:03:36		[01:03]
+2016-09-30 01:03:53	<--	Naeil (~nzoueidi@ubuntu/member/na3il) has quit (Remote host closed the connection)
+2016-09-30 01:07:17	MoziM	ahh ok
+2016-09-30 01:07:18	<--	hahuang62 (~hahuang65@c-50-136-152-183.hsd1.ca.comcast.net) has quit (Ping timeout: 244 seconds)
+2016-09-30 01:07:38	MoziM	but can you put a function inside an alias?
+2016-09-30 01:13:00		[01:07]
+2016-09-30 01:18:32	osse	MoziM: there are no functions in that alias
+2016-09-30 01:19:04	<--	MoziM (~jon@108-94-91-31.lightspeed.irvnca.sbcglobal.net) has quit (Quit: Leaving)
+2016-09-30 01:19:10	Mikachu	is that the dumbest way to write grep -r someone could come up with?
+2016-09-30 01:22:21	<--	alexandros_c (~alexandro@unaffiliated/alexandros-c/x-1684531) has quit (Quit: bye ..)
+2016-09-30 01:23:24	Mikachu	ah, it tries to match the closing brace to print the whole body too
+2016-09-30 01:24:10	Mikachu	function f() { sed -n "/^function $1\(\)/,/^}/p" **/*(.) } should work better though
+2016-09-30 01:24:51	Mikachu	-recursive is also not an option to find here
+2016-09-30 01:25:06	Mikachu	so i think the answer to the original question is "not at all"
+2016-09-30 01:27:10	<--	Rodya_ (~Rodya_@c-71-224-101-129.hsd1.pa.comcast.net) has quit (Remote host closed the connection)
+2016-09-30 01:27:29	-->	Rodya_ (~Rodya_@c-71-224-101-129.hsd1.pa.comcast.net) has joined #zsh
+2016-09-30 01:31:38	-->	laurensclaessen (~laurenscl@d54C4E066.access.telenet.be) has joined #zsh
+2016-09-30 01:31:38		[01:31]
+2016-09-30 01:33:30	<--	Guest474 (~Nuck@c-67-181-18-100.hsd1.ca.comcast.net) has quit (Ping timeout: 264 seconds)
+2016-09-30 01:38:32	-->	nuck (~Nuck@c-67-181-18-100.hsd1.ca.comcast.net) has joined #zsh
+2016-09-30 01:38:56	--	nuck is now known as Guest41787
+2016-09-30 01:44:00		[01:38]
+2016-09-30 01:49:39	<--	Ridout (~coffee@unaffiliated/ridout) has quit (Quit: Lost terminal)
+2016-09-30 01:49:39	-->	Naeil (~nzoueidi@ubuntu/member/na3il) has joined #zsh
+2016-09-30 01:50:19	-->	zpe (~zpe@h-48-244.a137.corp.bahnhof.se) has joined #zsh
+2016-09-30 01:56:00		[01:50]
+2016-09-30 01:59:50	-->	strcat_ (~strcat@p549202EB.dip0.t-ipconnect.de) has joined #zsh
+2016-09-30 02:03:09	<--	strcat1974 (~strcat@p54921DC4.dip0.t-ipconnect.de) has quit (Ping timeout: 276 seconds)
+2016-09-30 02:09:00		[02:03]
+2016-09-30 02:10:53	-->	OxFEEDBACC (~what@176.5.54.158) has joined #zsh
+2016-09-30 02:10:53	<--	OxFEEDBACC (~what@176.5.54.158) has quit (Changing host)
+2016-09-30 02:10:53	-->	OxFEEDBACC (~what@unaffiliated/oxfeedbacc) has joined #zsh
+2016-09-30 02:16:00		[02:10]
+2016-09-30 02:17:38	danielsh	(add -e to sed for portability)
+2016-09-30 02:19:23	llua	(it isn't needed for portability)
+2016-09-30 02:19:25	-->	blackmesa (~blackmesa@aftr-37-201-227-42.unity-media.net) has joined #zsh
+2016-09-30 02:20:33	danielsh	(/me stands corrected)
+2016-09-30 02:24:55	-->	strull (~strull@p5DD4513C.dip0.t-ipconnect.de) has joined #zsh
+2016-09-30 02:27:38	--	cyberlard is now known as jludwig
+2016-09-30 02:33:00		[02:27]
+2016-09-30 02:39:15	--	F1skr is now known as mikkeloscar
+2016-09-30 02:45:00		[02:39]
+2016-09-30 02:48:30	<--	cdown (~cdown@199.201.66.0) has quit (Ping timeout: 264 seconds)
+2016-09-30 02:52:53	-->	cdown (~cdown@199.201.66.0) has joined #zsh
+2016-09-30 02:55:26	-->	mcmillhj (~huntermcm@75-146-23-33-Richmond.hfc.comcastbusiness.net) has joined #zsh
+2016-09-30 02:59:14	<--	Caelum (rkitover@cachemiss.com) has left #zsh ("WeeChat 1.5")
+2016-09-30 03:03:18	-->	hahuang62 (~hahuang65@c-50-136-152-183.hsd1.ca.comcast.net) has joined #zsh
+2016-09-30 03:03:18		[03:03]
+2016-09-30 03:03:30	<--	nomike (~nomike@mx1.paysafecard.com) has quit (Ping timeout: 264 seconds)
+2016-09-30 03:06:01	-->	kvieta (~kvieta@87.117.231.25) has joined #zsh
+2016-09-30 03:08:18	<--	hahuang62 (~hahuang65@c-50-136-152-183.hsd1.ca.comcast.net) has quit (Ping timeout: 264 seconds)
+2016-09-30 03:14:00		[03:08]
+2016-09-30 03:21:16	<--	kvieta (~kvieta@87.117.231.25) has left #zsh ("Not enough swimsuit harem ecchi")
+2016-09-30 03:27:00		[03:21]
+2016-09-30 03:29:54	<--	blackmesa (~blackmesa@aftr-37-201-227-42.unity-media.net) has quit (Ping timeout: 264 seconds)
+2016-09-30 03:35:00		[03:29]
+2016-09-30 03:40:11	<--	Raging_Hog (~heikki@193.64.112.22) has quit (Quit: Konversation terminated!)
+2016-09-30 03:46:00		[03:40]
+2016-09-30 03:47:15	-->	larryv (~larryv@wikipedia/larryv) has joined #zsh
+2016-09-30 03:47:44	<--	larryv (~larryv@wikipedia/larryv) has left #zsh
+2016-09-30 03:47:55	-->	larryv (~larryv@wikipedia/larryv) has joined #zsh
+2016-09-30 03:48:22	-->	hwygeek (~hwygeek@75-166-106-15.hlrn.qwest.net) has joined #zsh
+2016-09-30 03:48:24	<--	hwygeek (~hwygeek@75-166-106-15.hlrn.qwest.net) has quit (Max SendQ exceeded)
+2016-09-30 03:48:56	-->	hwygeek (~hwygeek@75-166-106-15.hlrn.qwest.net) has joined #zsh
+2016-09-30 03:49:03	-->	strelox (~user@p200300754F36D400A270AB2A40024A14.dip0.t-ipconnect.de) has joined #zsh
+2016-09-30 03:50:18	<--	Naeil (~nzoueidi@ubuntu/member/na3il) has quit (Ping timeout: 264 seconds)
+2016-09-30 03:52:21	<--	excelsior (~vijay@1.23.37.200) has quit (Ping timeout: 276 seconds)
+2016-09-30 03:54:09	-->	jedahan (~textual@subtle/user/jedahan) has joined #zsh
+2016-09-30 04:00:00		[03:54]
+2016-09-30 04:01:10	-->	macabre (~ibtjw@unaffiliated/macabre) has joined #zsh
+2016-09-30 04:06:24	-->	nikivi (~nikivi@dhcp-077-250-172-150.chello.nl) has joined #zsh
+2016-09-30 04:08:54	<--	bocaneri (~bocaneri@about/linux/staff/sauvin) has quit (Ping timeout: 264 seconds)
+2016-09-30 04:14:00		[04:08]
+2016-09-30 04:14:51	-->	Naeil (~nzoueidi@ubuntu/member/na3il) has joined #zsh
+2016-09-30 04:17:55	psprint	hah someone does what my ctags does well :P
+2016-09-30 04:20:25	<--	nikivi (~nikivi@dhcp-077-250-172-150.chello.nl) has quit (Read error: Connection reset by peer)
+2016-09-30 04:26:00		[04:20]
+2016-09-30 04:27:15	-->	blackmesa (~blackmesa@aftr-37-201-227-42.unity-media.net) has joined #zsh
+2016-09-30 04:27:17	<--	jedahan (~textual@subtle/user/jedahan) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-09-30 04:28:45	<--	nexysno (~nexysno@mau78-1-88-184-111-173.fbx.proxad.net) has quit (Ping timeout: 276 seconds)
+2016-09-30 04:30:27	-->	nexysno (~nexysno@mau78-1-88-184-111-173.fbx.proxad.net) has joined #zsh
+2016-09-30 04:31:34	-->	invonpc (5959fd25@gateway/web/freenode/ip.89.89.253.37) has joined #zsh
+2016-09-30 04:32:45	<--	blackmesa (~blackmesa@aftr-37-201-227-42.unity-media.net) has quit (Ping timeout: 272 seconds)
+2016-09-30 04:32:59	invonpc	hi, where can I find all color name variables zsh set when using "autoload -Uz colors && colors"?
+2016-09-30 04:34:46	osse	invonpc: the colors function defines the $fg array with names as keys.  print ${(k)fg}
+2016-09-30 04:35:46	Mikachu	it's fairly obsolete though
+2016-09-30 04:36:11	-->	nikivi (~nikivi@dhcp-077-250-172-150.chello.nl) has joined #zsh
+2016-09-30 04:36:56	osse	all of those names work with %F...%f
+2016-09-30 04:37:29	invonpc	got it
+2016-09-30 04:37:40	invonpc	is it possible to add custom name colors?
+2016-09-30 04:39:17	<--	nikivi (~nikivi@dhcp-077-250-172-150.chello.nl) has quit (Client Quit)
+2016-09-30 04:41:50	<--	eworm (~eworm@archlinux/developer/eworm) has quit (Quit: Leaving.)
+2016-09-30 04:41:50		[04:41]
