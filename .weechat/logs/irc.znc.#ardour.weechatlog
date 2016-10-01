@@ -12435,3 +12435,179 @@
 2016-09-30 12:33:26	<--	prokoudine_ (~alex@ppp83-237-116-248.pppoe.mtu-net.ru) has quit (Ping timeout: 244 seconds)
 2016-09-30 12:39:00		[12:33]
 2016-09-30 12:39:48	<--	son0p (~AndChat32@152.201.178.139) has quit (Ping timeout: 272 seconds)
+2016-09-30 12:42:40	-->	son0p (~AndChat32@152.201.178.139) has joined #ardour
+2016-09-30 12:45:24	tom-	nstewart: i'm curious, what will your script do?
+2016-09-30 12:46:44	nstewart	high level  I'm making a stab at a batch mode polyphonic (perhaps limited to a couple notes) pitch to midi converter. 
+2016-09-30 12:47:36	tom-	sounds good
+2016-09-30 12:47:40	nstewart	next level - I let rhythm ferret generate note regions for the aduio track, and I'm trying to iterate over the regions, do an FFT, and pick the most confident 3 notes out of it. 
+2016-09-30 12:49:11	nstewart	I tend to play 2-3 notes anyway, so I think it'll work for me for what I want, even if it's not generic enough for general purpose.
+2016-09-30 12:50:08	nstewart	I think giving up real time,  having my regions already split up, and knowing that it's a guitar played in this manner narrows the field down enough that its got a shot.
+2016-09-30 12:51:05	rgareus	nstewart: I have a feeling that you would rather want libaubio bindings
+2016-09-30 12:51:25	rgareus	or use existing vamp-plugins 
+2016-09-30 12:52:50	rgareus	nstewart: ardour can already load and run vamp plugins.   except there's no generic handler for the produced data
+2016-09-30 12:53:08	rgareus	http://vamp-plugins.org/download.html has a couple of pitch + note trackers.
+2016-09-30 12:53:09	LAbot	Title: Vamp Plugins (at vamp-plugins.org)
+2016-09-30 12:59:00		[12:53]
+2016-09-30 13:05:08	nstewart	that should make me quiet for a few hours.
+2016-09-30 13:05:13	nstewart	thanks
+2016-09-30 13:08:55	<--	Synthead (~Synthead@98.99.251.254) has quit (Quit: Synthead)
+2016-09-30 13:14:00		[13:08]
+2016-09-30 13:14:23	son0p	rgareus a lua script can stdout something to pipe? 
+2016-09-30 13:15:22	zequence	nstewart: You use things like puredata, supercollider..?
+2016-09-30 13:20:11	<--	olinuxx (~capturixe@unaffiliated/olinuxx) has quit (Remote host closed the connection)
+2016-09-30 13:20:31	-->	AndChat|320025 (~AndChat32@190.146.234.123) has joined #ardour
+2016-09-30 13:23:18	<--	son0p (~AndChat32@152.201.178.139) has quit (Ping timeout: 264 seconds)
+2016-09-30 13:25:30	rgareus	yes, you can also launch external proccesses
+2016-09-30 13:27:08	AndChat|320025	rgareus: chuck have a live pitch tracker too
+2016-09-30 13:28:32	tom-	rgareus: sounds good, is that since new?
+2016-09-30 13:28:43	rgareus	tom-: no. it's standard lua fn.
+2016-09-30 13:28:50	rgareus	not ardour provided.
+2016-09-30 13:29:09	tom-	rgareus: good to know, thx
+2016-09-30 13:29:09		[13:29]
+2016-09-30 13:29:31	rgareus	http://www.lua.org/manual/5.1/manual.html#pdf-os.execute
+2016-09-30 13:29:32	LAbot	Title: Lua 5.1 Reference Manual (at www.lua.org)
+2016-09-30 13:30:28	rgareus	AndChat|320025: do you know if chuck uses a library for doing so?
+2016-09-30 13:32:23	<--	slyrus (~chatzilla@107.200.10.27) has quit (Remote host closed the connection)
+2016-09-30 13:32:55	-->	slyrus (~chatzilla@107.200.10.27) has joined #ardour
+2016-09-30 13:33:00	tom-	rgareus: execute is certainly not rt-safe, is it?
+2016-09-30 13:33:27	rgareus	tom-: that's why the os library is only available to GUI scripts
+2016-09-30 13:34:17	AndChat|320025	rgareus: I don't know,
+2016-09-30 13:34:17	tom-	rgareus: so a gui can cann an external process?
+2016-09-30 13:34:37	tom-	rgareus: that opens new ways
+2016-09-30 13:34:59	rgareus	not new.
+2016-09-30 13:35:45	rgareus	it was possible from day 1 to launch some external app from a script.
+2016-09-30 13:36:17	tom-	calling oscsend there, that would work
+2016-09-30 13:36:32	rgareus	sure
+2016-09-30 13:37:11	rgareus	but why would you? seems rather complicated compared to the existing OSC API
+2016-09-30 13:38:30	tom-	the existing osc api is not scriptable
+2016-09-30 13:39:36	-->	son0p (~ff@190.146.234.123) has joined #ardour
+2016-09-30 13:39:50	rgareus	http://manual.ardour.org/lua-scripting/class_reference/#ARDOUR:LuaOSC:Address
+2016-09-30 13:40:07	rgareus	tom-: an API is never scriptable
+2016-09-30 13:40:16	rgareus	tom-: but there is an API to send OSC
+2016-09-30 13:40:45	son0p	rgareus: do you mean chuck using a external library for pitch tracking?  no, it use a Unit Analizer 
+2016-09-30 13:40:45	tom-	got you
+2016-09-30 13:41:04	tom-	rgareus: but can it effectively be used from the draw method?
+2016-09-30 13:41:23	rgareus	son0p: I'm mainly interested in the algorithm
+2016-09-30 13:41:51	son0p	https://github.com/spencersalazar/chuck/blob/master/src/examples/analysis/tracking/pitch-track.ck
+2016-09-30 13:41:54	rgareus	son0p: well, just curious
+2016-09-30 13:42:02	son0p	rgareus: there is an impementation
+2016-09-30 13:42:57	rgareus	tom-: yes you can shoot yourself in the foot.
+2016-09-30 13:43:09	rgareus	and there's plenty of rope, too :)
+2016-09-30 13:43:29	tom-	rgareus: i'm jjust about to do that :)
+2016-09-30 13:43:59	 *	tom- thought he has tried but it didn't work now trying again
+2016-09-30 13:47:27	<--	son0p (~ff@190.146.234.123) has quit (Quit: Lost terminal)
+2016-09-30 13:47:27		[13:47]
+2016-09-30 13:48:37	<--	AndChat|320025 (~AndChat32@190.146.234.123) has quit (Quit: Bye)
+2016-09-30 13:48:55	-->	son0p (~AndChat32@190.146.234.123) has joined #ardour
+2016-09-30 13:49:42	-->	AndChat|320025 (~AndChat32@152.200.231.61) has joined #ardour
+2016-09-30 13:50:21	tom-	rgareus: it does not give an error but also i can't see the osc message arriving ..
+2016-09-30 13:53:54	<--	son0p (~AndChat32@190.146.234.123) has quit (Ping timeout: 264 seconds)
+2016-09-30 13:54:30	tom-	rgareus: this is what i have http://pastebin.com/raw/4vYERpUf
+2016-09-30 13:55:00	tom-	i'm not if it should or can work like this
+2016-09-30 13:59:10	<--	youki (~youki@moe.useed.fr) has quit (Quit: Quitte)
+2016-09-30 13:59:32	tom-	os.execute does nothing if in render_indline
+2016-09-30 14:00:38	rgareus	tom-: is thre any support code that actually calls render?
+2016-09-30 14:00:49	--	AndChat|320025 is now known as son0p
+2016-09-30 14:01:18	tom-	rgareus: yes
+2016-09-30 14:01:35	tom-	rgareus: just self:queue_draw() in dsp_runmap()
+2016-09-30 14:02:18	rgareus	oops LuaBindings::osc() is not set up for inline-displays. I thought it was
+2016-09-30 14:02:37	tom-	rgareus: i've added 'os.execute("echo a >/tmp/gugus")' it also does nothing
+2016-09-30 14:02:37		[14:02]
+2016-09-30 14:03:23	rgareus	tom-: try calling an actual executable
+2016-09-30 14:03:37	rgareus	not an inline bash script
+2016-09-30 14:03:47	tom-	ahh. yep
+2016-09-30 14:03:53	tom-	/bin/sh echo ...
+2016-09-30 14:04:01	rgareus	man sh
+2016-09-30 14:04:18	<--	M-SpaceHobo (spacehoboz@gateway/shell/matrix.org/x-pqkamtydmifjbjyq) has quit (Remote host closed the connection)
+2016-09-30 14:04:25	rgareus	os.execute("/tmp/some_script.sh")
+2016-09-30 14:05:01	rgareus	ardour's GUI will block while that command is running
+2016-09-30 14:07:42	tom-	it doesn't seem to run 
+2016-09-30 14:07:51	rgareus	mmh that should work
+2016-09-30 14:08:25	rgareus	as for OSC,  add    LuaBindings::osc (LG);  to  libs/ardour/luaproc.cc:1022   in LuaProc::setup_lua_inline_gui()
+2016-09-30 14:11:13	rgareus	tom-: works here. I've created /tmp/test.sh  
+2016-09-30 14:11:14	rgareus	------
+2016-09-30 14:11:15	rgareus	#!/bin/sh
+2016-09-30 14:11:15	rgareus	date >> /tmp/test
+2016-09-30 14:11:17	rgareus	-----
+2016-09-30 14:11:43	rgareus	chmod +x /tmp/test.sh;    and then  addedd         os.execute("/tmp/test.sh")     to   scripts/scope.lua
+2016-09-30 14:12:10	tom-	rgareus: i've done similar
+2016-09-30 14:12:24	rgareus	near the top of  render_inline   before the   "get settings"
+2016-09-30 14:12:51	tom-	however, it's afert the osc test. let me see
+2016-09-30 14:12:57	tom-	what happens if i put it alone
+2016-09-30 14:14:13	tom-	now it works :)
+2016-09-30 14:15:26	tom-	no luck with osc
+2016-09-30 14:15:45	tom-	i've added  LuaBindings::osc (LG); and run the the scrip from pastebin
+2016-09-30 14:16:48	tom-	(to luaproc.cc)
+2016-09-30 14:21:04	rgareus	tom-: tx:send ("/a", "")
+2016-09-30 14:21:04		[14:21]
+2016-09-30 14:21:31	rgareus	http://manual.ardour.org/lua-scripting/class_reference/#ARDOUR:LuaOSC:Address  send()  doc says  "Path (string) and type (string) must always be given."
+2016-09-30 14:22:16	tom-	aaah
+2016-09-30 14:22:45	tom-	meanwhile using oscsend also works
+2016-09-30 14:25:01	tom-	rgareus: that's fantastic, calling external processes and sending osc from there extends the possibilities
+2016-09-30 14:25:29	tom-	i wonder why i have missed os.execute
+2016-09-30 14:26:02	tom-	rgareus: is osc currently turned off on purpose?
+2016-09-30 14:26:41	tom-	it seems to work great from a short test
+2016-09-30 14:26:53	rgareus	tom-: git pull
+2016-09-30 14:27:04	tom-	okie :)
+2016-09-30 14:27:06	<--	Artefact2 (~Artefact2@unaffiliated/artefact2) has quit (Ping timeout: 244 seconds)
+2016-09-30 14:27:57	tom-	rgareus: if that was not missing on purpose and was somehow forgot, i guess it does clarify some of our misunderstandings in the past, possibly
+2016-09-30 14:29:39	tom-	rgareus: that feature makes my day
+2016-09-30 14:30:19	rgareus	tom-: inline displays pre-date lua-OSC bindings
+2016-09-30 14:30:30	rgareus	so the latter were never added.
+2016-09-30 14:32:12	tom-	one small thing, that might be not too easy to solve
+2016-09-30 14:32:19	tom-	every message comes from another port
+2016-09-30 14:33:08	tom-	i guess there is no simple way to keep the same?
+2016-09-30 14:33:23	rgareus	tom-: did you try to create the   LuaOSC.Address  object only once (not a local)
+2016-09-30 14:33:24	rgareus	?
+2016-09-30 14:33:55	tom-	rgareus: it's created in every cycle
+2016-09-30 14:34:05	tom-	rgareus: not very good
+2016-09-30 14:34:12	tom-	just a test
+2016-09-30 14:34:14	tom-	aah.
+2016-09-30 14:34:21	tom-	when i create it once, it will do that?
+2016-09-30 14:34:23	tom-	nice
+2016-09-30 14:34:45	rgareus	no idea.    LuaOSC.Address basically does     lo_address_new_from_url ()
+2016-09-30 14:34:46	tom-	so the address also holds the outgoing port
+2016-09-30 14:34:47	tom-	?
+2016-09-30 14:34:54	-->	Artefact2 (~Artefact2@unaffiliated/artefact2) has joined #ardour
+2016-09-30 14:35:05	-->	AndChat|320025 (~AndChat32@152.201.152.41) has joined #ardour
+2016-09-30 14:35:11	rgareus	and send  calls   lo_message_new(); ...  lo_send_message()
+2016-09-30 14:35:26	tom-	liblo does send that from a random port iiuc
+2016-09-30 14:35:28	rgareus	tom-: probably not
+2016-09-30 14:35:44	tom-	unless you send it over a server thread that again has set a port
+2016-09-30 14:35:46	rgareus	yeah, I think that is correct, you'll get a random from addr
+2016-09-30 14:36:02	rgareus	s/addr/port/
+2016-09-30 14:37:04	tom-	that must not hold back impulses to be sent out as osc
+2016-09-30 14:37:04		[14:37]
+2016-09-30 14:37:56	<--	son0p (~AndChat32@152.200.231.61) has quit (Ping timeout: 244 seconds)
+2016-09-30 14:40:06	tom-	rgareus: from my POV it makes the luadsp + inline display scenario even hotter
+2016-09-30 14:41:00	tom-	rgareus: thanks for that!
+2016-09-30 14:41:18	<--	nick_m__ (~nick_m@CPE-58-166-73-190.lnse5.cht.bigpond.net.au) has quit (Ping timeout: 264 seconds)
+2016-09-30 14:41:26	rgareus	tom-: n/p thanks for flagging this up
+2016-09-30 14:41:26	tom-	good bye
+2016-09-30 14:41:36	tom-	np :o)
+2016-09-30 14:41:40	<--	tom- (~srv@84-74-158-93.dclient.hispeed.ch) has quit (Quit: leaving)
+2016-09-30 14:42:45	-->	son0p (~AndChat32@152.201.169.10) has joined #ardour
+2016-09-30 14:44:09	<--	AndChat|320025 (~AndChat32@152.201.152.41) has quit (Ping timeout: 244 seconds)
+2016-09-30 14:50:00		[14:44]
+2016-09-30 14:52:49	-->	nick_m__ (~nick_m@CPE-121-218-215-124.lnse4.cht.bigpond.net.au) has joined #ardour
+2016-09-30 14:55:09	<--	Yruama_Lairba (~UTILISATE@mut38-h04-89-80-39-202.dsl.sta.abo.bbox.fr) has quit (Read error: Connection reset by peer)
+2016-09-30 15:00:10	<--	JackWinter (~jack@vodsl-8402.vo.lu) has quit (Ping timeout: 244 seconds)
+2016-09-30 15:00:13	-->	JackWinter_ (~jack@vodsl-9352.vo.lu) has joined #ardour
+2016-09-30 15:04:06	<--	remixvinil (~remix@95.46.18.239) has quit (Ping timeout: 264 seconds)
+2016-09-30 15:04:18	<--	Freejack (~Freejack@unaffiliated/freejack) has quit (Ping timeout: 244 seconds)
+2016-09-30 15:09:12	-->	Freejack (~Freejack@unaffiliated/freejack) has joined #ardour
+2016-09-30 15:09:12		[15:09]
+2016-09-30 15:21:57	-->	las (~paul@13.sub-174-197-18.myvzw.com) has joined #ardour
+2016-09-30 15:27:00		[15:21]
+2016-09-30 15:41:50	<--	electro-flinch (~colinf@82.45.2.252) has quit (Quit: Leaving.)
+2016-09-30 15:45:20	-->	drobilla (~user@172-97-220-102.cpe.distributel.net) has joined #ardour
+2016-09-30 15:45:20		[15:45]
+2016-09-30 15:49:46	<--	rhydermike (~quassel@86.17.120.222) has quit (Remote host closed the connection)
+2016-09-30 15:55:00		[15:49]
+2016-09-30 15:59:10	-->	NickSB2 (~NickSB2__@cpc5-harb9-2-0-cust141.perr.cable.virginm.net) has joined #ardour
+2016-09-30 16:00:00	<--	karswell` (~user@13.239.113.87.dyn.plus.net) has quit (Remote host closed the connection)
+2016-09-30 16:05:00		[16:00]
+2016-09-30 16:05:32	<--	unclechu (~unclechu@94.50.194.48) has quit (Quit: Leaving)
+2016-09-30 16:07:45	-->	the_CLA_2 (~the_CLA@p57B9903E.dip0.t-ipconnect.de) has joined #ardour
+2016-09-30 16:11:20	<--	the_CLA (~the_CLA@p57B980C9.dip0.t-ipconnect.de) has quit (Ping timeout: 272 seconds)
+2016-09-30 16:17:00		[16:11]

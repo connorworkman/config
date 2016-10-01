@@ -13312,3 +13312,157 @@
 2016-09-30 12:36:43	<--	MyCuriosity (~MyCuriosi@unaffiliated/mycuriosity) has quit (Remote host closed the connection)
 2016-09-30 12:37:15	-->	bkboggy (~bkboggy@cpe-172-250-147-60.socal.res.rr.com) has joined ##asm
 2016-09-30 12:38:31	-->	damme (~damme@2001:16d8:cc75::802) has joined ##asm
+2016-09-30 12:44:00		[12:38]
+2016-09-30 12:44:14	-->	SwiftMatt (~Objective@162.242.95.162) has joined ##asm
+2016-09-30 12:45:37	<--	rendar (~rendar@host67-183-dynamic.42-79-r.retail.telecomitalia.it) has quit (Quit: Leaving)
+2016-09-30 12:50:26	-->	dqi (~dqi@165-218-045-062.dynamic.caiway.nl) has joined ##asm
+2016-09-30 12:51:21	-->	Demon_Fox (~Demon_Fox@71.94.3.176) has joined ##asm
+2016-09-30 12:55:04	<--	codfection (~codfectio@unaffiliated/codfection) has quit (Remote host closed the connection)
+2016-09-30 12:55:16	-->	MulleDK19 (MulleDK19@unaffiliated/mulledk19) has joined ##asm
+2016-09-30 13:01:00		[12:55]
+2016-09-30 13:12:09	OxFEEDBACC	the library in question exists in LD_LIBRARY_PATH, readelf reports it as NEEDED for the program to be run, but when i run it, it isn't attempted to be loaded, according to LD_DEBUG=libs ... what could prevent the lib from being loaded? the symbol needed is present, too, but if not, that should give another error anyway...
+2016-09-30 13:13:00	@Jester01	on demand loading, the symbol hasn't been reached during runtime
+2016-09-30 13:13:27	OxFEEDBACC	no, well, the program doesn't even run due to that...
+2016-09-30 13:13:28	@Jester01	LD_BIND_NOW=1  and that should load everything at start
+2016-09-30 13:13:31	@Jester01	oh.
+2016-09-30 13:13:41	OxFEEDBACC	wetext: wetext: version `LIBXMLXF_0.1.0' not found (required by wetext)
+2016-09-30 13:13:49	@Jester01	that means version difference
+2016-09-30 13:13:55	@Jester01	obviously.
+2016-09-30 13:14:00	OxFEEDBACC	wetext being the program, LIB* being the library version...
+2016-09-30 13:14:12	@Jester01	no, that's symbol versioning
+2016-09-30 13:14:23	OxFEEDBACC	all objdump, nm, etc output show it consistent...
+2016-09-30 13:14:37	OxFEEDBACC	ya, default symver for that lib ;-)
+2016-09-30 13:15:03	@Jester01	paste the relevant line showing the symbol existing with that version
+2016-09-30 13:15:17	OxFEEDBACC	and i don't specify a symver in the program...
+2016-09-30 13:15:23	OxFEEDBACC	nor at link time...
+2016-09-30 13:15:56	OxFEEDBACC	00000000000007d0 g    DF .text  0000000000000032  LIBXMLXF_0.1.0 xmlChildCount
+2016-09-30 13:16:02	OxFEEDBACC	(objdump)
+2016-09-30 13:16:02		[13:16]
+2016-09-30 13:16:23	@Jester01	that's xmlChildCount
+2016-09-30 13:16:34	OxFEEDBACC	yes...
+2016-09-30 13:16:36	@Jester01	it wants "wetext"
+2016-09-30 13:16:38	OxFEEDBACC	oh...
+2016-09-30 13:17:08	OxFEEDBACC	you mean the second wetext in the error message is a symbol name? i don't reference it in the source...
+2016-09-30 13:17:23	@Jester01	yeah I think so
+2016-09-30 13:18:33	OxFEEDBACC	no idea where that may come from...
+2016-09-30 13:19:08	OxFEEDBACC	it's only wetext.c and wetext.h that are named like that... and the executable, finally...
+2016-09-30 13:19:50	@Jester01	objdump the binary and see if the undefined reference is there
+2016-09-30 13:20:00	OxFEEDBACC	also objdump -[tT] wetext don't show symbols by that name...
+2016-09-30 13:20:04	-->	palantir (~palantir@anj75-2-88-162-182-55.fbx.proxad.net) has joined ##asm
+2016-09-30 13:20:06	@Jester01	then objdump the objects and libs you use :)
+2016-09-30 13:20:57	-->	codfection (~codfectio@unaffiliated/codfection) has joined ##asm
+2016-09-30 13:21:05	OxFEEDBACC	i'm doing that since an hour now :-p (well, originally searching at the wrong end, obviously)
+2016-09-30 13:21:11	@Jester01	or use a debugger and put a breakpoint on the error message printing
+2016-09-30 13:21:22	@Jester01	and use the backtrace to see who referenced the symobl
+2016-09-30 13:21:23	@Jester01	symbol
+2016-09-30 13:22:25	OxFEEDBACC	in gdb it stops with the same error... no bt possible ("no stack")
+2016-09-30 13:22:36	@Jester01	you need to put a breakpoint ...
+2016-09-30 13:22:47	-->	kolobyte (~aaa@unaffiliated/kolobyte) has joined ##asm
+2016-09-30 13:22:52	OxFEEDBACC	at wetext, i think? i did...
+2016-09-30 13:23:06	@Jester01	no, in the dynamic loader that prints the error
+2016-09-30 13:23:28	@Jester01	anyway, if it's not a function but data that won't help because those are not via the PLT
+2016-09-30 13:23:43	-->	sarbs (~sarbs@c-67-182-146-128.hsd1.wa.comcast.net) has joined ##asm
+2016-09-30 13:24:00	sarbs	what does "mov    0x4(%esi,%edx,4),%ecx" mean? i can't figure out how to read the first half
+2016-09-30 13:24:02	@Jester01	objdump -dr the binary and grep for it
+2016-09-30 13:24:30	@Jester01	sarbs: switch to intel if you don't understand at&t :)
+2016-09-30 13:24:38	OxFEEDBACC	grep for wetext? not there...
+2016-09-30 13:24:51	@Jester01	dud you obdump -dr ?
+2016-09-30 13:24:53	@Jester01	did
+2016-09-30 13:25:00	OxFEEDBACC	yes...
+2016-09-30 13:25:12	@Jester01	sarbs: see also https://sourceware.org/binutils/docs/as/i386_002dMemory.html
+2016-09-30 13:25:35	@Jester01	can you upload your binary?
+2016-09-30 13:25:37	sarbs	Jester01 awesome, thanks!
+2016-09-30 13:25:45	OxFEEDBACC	without grep spits out some disassembly... what is -r? some reloc stuff, i guess...
+2016-09-30 13:25:50	@Jester01	yes
+2016-09-30 13:26:53	OxFEEDBACC	dang...
+2016-09-30 13:27:05	OxFEEDBACC	well, thanks so far...
+2016-09-30 13:27:17	<--	kolobyte (~aaa@unaffiliated/kolobyte) has quit (Ping timeout: 272 seconds)
+2016-09-30 13:27:28	OxFEEDBACC	i think...
+2016-09-30 13:27:32	OxFEEDBACC	i know...
+2016-09-30 13:28:18	OxFEEDBACC	ya...
+2016-09-30 13:28:28	OxFEEDBACC	i should have thought earlier...
+2016-09-30 13:28:57	OxFEEDBACC	or corrected my buildscript mmonths ago, because i suspected that something like this could happen...
+2016-09-30 13:29:46	OxFEEDBACC	like, configs for lib and executable in one file, build both in one run, then some config trash from the lib is still in effect when building the executable :-/
+2016-09-30 13:30:29	OxFEEDBACC	just running the builds in separate steps solves it... but the script must be corrected of course...
+2016-09-30 13:31:17	-->	osa1_ (~omer@50-253-193-254-static.hfc.comcastbusiness.net) has joined ##asm
+2016-09-30 13:31:17		[13:31]
+2016-09-30 13:31:43	<--	osa1 (~omer@haskell/developer/osa1) has quit (Ping timeout: 272 seconds)
+2016-09-30 13:31:55	-->	kolobyte (~aaa@unaffiliated/kolobyte) has joined ##asm
+2016-09-30 13:37:00		[13:31]
+2016-09-30 13:41:23	-->	jack_rabbit (~jack_rabb@2601:240:8200:e1c0:90c0:e65c:1a4b:721e) has joined ##asm
+2016-09-30 13:41:53	<--	jack_rabbit (~jack_rabb@2601:240:8200:e1c0:90c0:e65c:1a4b:721e) has quit (Max SendQ exceeded)
+2016-09-30 13:43:30	-->	YeZSTeR (~yez@121.54.58.242) has joined ##asm
+2016-09-30 13:44:55	<--	kbw (~KeyboardW@68-204-170-7.res.bhn.net) has quit (Quit: My MacBook Air has gone to sleep. ZZZzzz…)
+2016-09-30 13:48:31	<--	phinxy (~tehhhd@unaffiliated/phinxy) has quit (Quit: Leaving)
+2016-09-30 13:52:23	-->	Church- (~hatter@unaffiliated/church-) has joined ##asm
+2016-09-30 13:52:23		[13:52]
+2016-09-30 13:58:54	-->	SunnyD (~SunnyD@cpe-72-178-78-211.hot.res.rr.com) has joined ##asm
+2016-09-30 13:59:43	<--	Heasummn (~Heasummn@2601:246:802:d0c1:ee97:c29:3aa1:8a88) has quit (Read error: Connection timed out)
+2016-09-30 14:01:16	<--	osa1_ (~omer@50-253-193-254-static.hfc.comcastbusiness.net) has quit (Ping timeout: 244 seconds)
+2016-09-30 14:01:42	-->	Heasummn (~Heasummn@2601:246:802:d0c1:ee97:c29:3aa1:8a88) has joined ##asm
+2016-09-30 14:02:23	-->	kbw (~KeyboardW@68-204-170-7.res.bhn.net) has joined ##asm
+2016-09-30 14:04:50	<--	palantir (~palantir@anj75-2-88-162-182-55.fbx.proxad.net) has quit (Quit: Textual IRC Client: www.textualapp.com)
+2016-09-30 14:10:00		[14:04]
+2016-09-30 14:11:38	<--	damme (~damme@2001:16d8:cc75::802) has quit (Ping timeout: 272 seconds)
+2016-09-30 14:13:42	-->	palantir (~palantir@anj75-2-88-162-182-55.fbx.proxad.net) has joined ##asm
+2016-09-30 14:13:46	<--	palantir (~palantir@anj75-2-88-162-182-55.fbx.proxad.net) has quit (Client Quit)
+2016-09-30 14:17:05	boolcrap	how do i modify this guys code to support longer sequence matches
+2016-09-30 14:17:08	boolcrap	http://michael.dipperstein.com/lzss/
+2016-09-30 14:17:09	boolcrap	too newb
+2016-09-30 14:17:56	boolcrap	nm found it
+2016-09-30 14:23:00		[14:17]
+2016-09-30 14:30:17	-->	paule32_ (~jens@dslb-188-103-045-130.188.103.pools.vodafone-ip.de) has joined ##asm
+2016-09-30 14:32:01	-->	sophia7 (~sophia7@unaffiliated/sophia7) has joined ##asm
+2016-09-30 14:32:24	<--	WilburPB (~WilburPB@146.197.246.70) has quit (Quit: My Mac has gone to sleep. ZZZzzz…)
+2016-09-30 14:34:06	<--	paule32 (~jens@dslb-094-222-036-221.094.222.pools.vodafone-ip.de) has quit (Ping timeout: 264 seconds)
+2016-09-30 14:36:24	<--	dqi (~dqi@165-218-045-062.dynamic.caiway.nl) has quit (Ping timeout: 244 seconds)
+2016-09-30 14:38:19	<--	codfection (~codfectio@unaffiliated/codfection) has quit (Quit: Leaving)
+2016-09-30 14:38:19		[14:38]
+2016-09-30 14:44:42	-->	codfection (~codfectio@unaffiliated/codfection) has joined ##asm
+2016-09-30 14:44:57	-->	XOCKET (~XOCKET@unaffiliated/xocket) has joined ##asm
+2016-09-30 14:46:30	Heasummn	I'm creating a VM for my Compiler, and I'm wondering what the most effecient method of storing stuff like Variable names and meta data within something like a compiled Assembly file?
+2016-09-30 14:46:52	<--	sophia7 (~sophia7@unaffiliated/sophia7) has quit (Quit: sophia7)
+2016-09-30 14:52:00		[14:46]
+2016-09-30 14:56:33	<--	slidercrank (~slidercra@unaffiliated/slidercrank) has quit (Ping timeout: 244 seconds)
+2016-09-30 15:00:23	<--	PJBoy (~PJBoy_@unaffiliated/pjboy) has quit (Ping timeout: 272 seconds)
+2016-09-30 15:02:43	-->	osa1 (~omer@50-253-193-254-static.hfc.comcastbusiness.net) has joined ##asm
+2016-09-30 15:02:43	<--	osa1 (~omer@50-253-193-254-static.hfc.comcastbusiness.net) has quit (Changing host)
+2016-09-30 15:02:43	-->	osa1 (~omer@haskell/developer/osa1) has joined ##asm
+2016-09-30 15:08:00		[15:02]
+2016-09-30 15:08:12	-->	osa1_ (~omer@50-253-193-254-static.hfc.comcastbusiness.net) has joined ##asm
+2016-09-30 15:08:54	<--	osa1 (~omer@haskell/developer/osa1) has quit (Ping timeout: 264 seconds)
+2016-09-30 15:13:48	 *	extor wonders if anyone has read Duntemann's ASM book
+2016-09-30 15:16:14	-->	arescorpio (~arescorpi@5-43-16-190.fibertel.com.ar) has joined ##asm
+2016-09-30 15:16:22	boolcrap	i read an asm book once
+2016-09-30 15:22:00		[15:16]
+2016-09-30 15:24:27	<--	osa1_ (~omer@50-253-193-254-static.hfc.comcastbusiness.net) has quit (Ping timeout: 272 seconds)
+2016-09-30 15:27:18	-->	Manticore (~Manticore@2001-0678-00f0-2011-3f2a-79d7-17c9-4828.pool6.ovpn.se) has joined ##asm
+2016-09-30 15:27:42	--	Manticore is now known as Guest12872
+2016-09-30 15:28:56	<--	vdamewood (~vdamewood@unaffiliated/vdamewood) has quit (Quit: Life beckons.)
+2016-09-30 15:28:57	<--	YeZSTeR (~yez@121.54.58.242) has quit (Read error: Connection reset by peer)
+2016-09-30 15:29:37	-->	osa1 (~omer@50-253-193-254-static.hfc.comcastbusiness.net) has joined ##asm
+2016-09-30 15:29:37	<--	osa1 (~omer@50-253-193-254-static.hfc.comcastbusiness.net) has quit (Changing host)
+2016-09-30 15:29:37	-->	osa1 (~omer@haskell/developer/osa1) has joined ##asm
+2016-09-30 15:30:14	<--	XOCKET (~XOCKET@unaffiliated/xocket) has quit (Disconnected by services)
+2016-09-30 15:30:14	-->	XOCK_STREAM (~XOCKET@unaffiliated/xocket) has joined ##asm
+2016-09-30 15:36:00		[15:30]
+2016-09-30 15:37:42	<--	osa1 (~omer@haskell/developer/osa1) has quit (Ping timeout: 264 seconds)
+2016-09-30 15:38:15	-->	osa1 (~omer@haskell/developer/osa1) has joined ##asm
+2016-09-30 15:38:50	-->	YeZSTeR (~yez@121.54.58.242) has joined ##asm
+2016-09-30 15:39:14	--	YeZSTeR is now known as Guest59930
+2016-09-30 15:44:40	<--	Guest12872 (~Manticore@2001-0678-00f0-2011-3f2a-79d7-17c9-4828.pool6.ovpn.se) has quit (Remote host closed the connection)
+2016-09-30 15:45:01	<--	Guest59930 (~yez@121.54.58.242) has quit (Quit: WeeChat 1.5)
+2016-09-30 15:46:52	-->	osa1_ (~omer@50-253-193-254-static.hfc.comcastbusiness.net) has joined ##asm
+2016-09-30 15:47:18	<--	osa1 (~omer@haskell/developer/osa1) has quit (Ping timeout: 264 seconds)
+2016-09-30 15:53:00		[15:47]
+2016-09-30 15:54:30	<--	osa1_ (~omer@50-253-193-254-static.hfc.comcastbusiness.net) has quit (Ping timeout: 264 seconds)
+2016-09-30 15:55:15	-->	snyp (~Snyp@150.129.132.165) has joined ##asm
+2016-09-30 16:01:00		[15:55]
+2016-09-30 16:01:53	-->	osa1 (~omer@50-253-193-254-static.hfc.comcastbusiness.net) has joined ##asm
+2016-09-30 16:01:53	<--	osa1 (~omer@50-253-193-254-static.hfc.comcastbusiness.net) has quit (Changing host)
+2016-09-30 16:01:53	-->	osa1 (~omer@haskell/developer/osa1) has joined ##asm
+2016-09-30 16:07:00		[16:01]
+2016-09-30 16:08:40	-->	yong (~vayne@pD9E45DAD.dip0.t-ipconnect.de) has joined ##asm
+2016-09-30 16:08:53	<--	XOCK_STREAM (~XOCKET@unaffiliated/xocket) has quit (Ping timeout: 244 seconds)
+2016-09-30 16:11:54	<--	chang (~vayne@pD9E44CEE.dip0.t-ipconnect.de) has quit (Ping timeout: 264 seconds)
+2016-09-30 16:17:00		[16:11]
