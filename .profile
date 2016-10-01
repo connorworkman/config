@@ -26,6 +26,7 @@ export QT_QPA_PLATFORMTHEME="qt5ct"
 export PYTHONSTARTUP="${HOME}/.pyrc"
 ##Compilation flags
 export ARCHFLAGS="-arch x86_64"
+export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
 ## SSH
 export SSH_KEY_PATH=".ssh/identity"
 ## Add vim as default editor
