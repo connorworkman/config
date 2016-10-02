@@ -91,7 +91,7 @@ default_privs = nobody
 # from gethostname(). $myhostname is used as a default value for many
 # other configuration parameters.
 #
-myhostname = surface.alyptik.lan
+myhostname = mail.alyp.tk
 #myhostname = virtual.domain.tld
 
 # The mydomain parameter specifies the local internet domain name.
@@ -99,8 +99,7 @@ myhostname = surface.alyptik.lan
 # $mydomain is used as a default value for many other configuration
 # parameters.
 #
-mydomain = alyptik.lan
-#mydomain = domain.tld
+mydomain = alyp.tk
 
 # SENDING MAIL
 # 
@@ -143,8 +142,8 @@ inet_interfaces = all
 # backup MX host for other domains, otherwise mail delivery loops
 # will happen when the primary MX host is down.
 #
-#proxy_interfaces =
-#proxy_interfaces = 1.2.3.4
+#proxy_interfaces = 76.173.136.206
+#proxy_interfaces = 192.168.1.99, 192.168.1.97, 192.168.1.95
 
 # The mydestination parameter specifies the list of domains that this
 # machine considers itself the final destination for.
@@ -177,6 +176,8 @@ inet_interfaces = all
 #
 # See also below, section "REJECTING MAIL FOR UNKNOWN LOCAL USERS".
 #
+#mydestination = localhost
+#mydestination = localhost.$mydomain, localhost
 mydestination = $myhostname, localhost.$mydomain, localhost
 #mydestination = $myhostname, localhost.$mydomain, localhost, $mydomain
 #mydestination = $myhostname, localhost.$mydomain, localhost, $mydomain,
@@ -262,7 +263,7 @@ unknown_local_recipient_reject_code = 550
 # Specify "mynetworks_style = host" when Postfix should "trust"
 # only the local machine.
 # 
-#mynetworks_style = class
+mynetworks_style = class
 #mynetworks_style = subnet
 #mynetworks_style = host
 
@@ -277,8 +278,7 @@ unknown_local_recipient_reject_code = 550
 # of listing the patterns here. Specify type:table for table-based lookups
 # (the value on the table right-hand side is not used).
 #
-mynetworks = 192.168.1.0/24, 127.0.0.0/8, 76.173.128.0/20, 172.0.0.0/8, 10.8.0.0/16, 98.150.136.0/21
-#mynetworks = 168.100.189.0/28, 127.0.0.0/8
+#mynetworks = 192.168.1.0/24, 127.0.0.0/8, 76.173.128.0/20, 172.0.0.0/8, 10.8.0.0/16, 98.150.136.0/21
 #mynetworks = $config_directory/mynetworks
 #mynetworks = hash:/etc/postfix/network_table
 
@@ -310,7 +310,61 @@ mynetworks = 192.168.1.0/24, 127.0.0.0/8, 76.173.128.0/20, 172.0.0.0/8, 10.8.0.0
 # list this system as their primary or backup MX host. See the
 # permit_mx_backup restriction description in postconf(5).
 #
-relay_domains = $mydestination
+#relay_domains = $mydestination
+#relay_domains = 
+
+relay_domains = $mydestination, proxy:mysql:/etc/postfix/relay_domains_maps.cf
+virtual_alias_maps = proxy:mysql:/etc/postfix/virtual_alias_maps.cf
+virtual_mailbox_domains = proxy:mysql:/etc/postfix/virtual_mailbox_domains.cf
+virtual_mailbox_maps = proxy:mysql:/etc/postfix/virtual_mailbox_maps.cf
+virtual_mailbox_base = /home/vmail
+virtual_mailbox_limit = 512000000
+virtual_minimum_uid = 5000
+virtual_uid_maps = static:5000
+virtual_gid_maps = static:5000
+#luser_relay = admin+$local
+dovecot_destination_recipient_limit = 1
+#virtual_transport = lmtp:unix:private/dovecot-lmtp
+#virtual_transport = lmtp:unix:/var/run/dovecot/lmtp
+#virtual_transport = virtual
+virtual_transport = dovecot
+#local_transport = dovecot
+local_transport = virtual
+#local_transport = lmtp:unix:/var/run/dovecot/lmtp
+#fallback_transport = lmtp:unix:/var/run/dovecot/lmtp
+#fallback_transport = lmtp:unix:private/dovecot-lmtp
+#mailbox_transport = virtual
+#mailbox_transport = lmtp:unix:/var/run/dovecot/lmtp
+local_recipient_maps = $virtual_mailbox_maps
+transport_maps = hash:/etc/postfix/transport
+
+smtpd_sasl_auth_enable = yes
+smtpd_sasl_type = dovecot
+smtpd_sasl_path = /var/run/dovecot/auth-client
+#smtpd_client_restrictions = permit_mynetworks, reject
+smtpd_client_restrictions = permit
+smtpd_recipient_restrictions = permit_mynetworks, permit_sasl_authenticated, reject_unauth_destination, check_policy_service inet:127.0.0.1:10030, check_policy_service inet:127.0.0.1:12340, check_policy_service inet:127.0.0.1:2501
+smtpd_relay_restrictions = permit_mynetworks, permit_sasl_authenticated, reject_unauth_destination
+smtpd_sasl_security_options = noanonymous
+smtpd_sasl_tls_security_options = $smtpd_sasl_security_options
+smtpd_tls_security_level = may
+smtpd_tls_auth_only = yes
+smtpd_tls_received_header = yes
+smtpd_tls_cert_file = /etc/ssl/private/vmail.crt
+smtpd_tls_key_file = /etc/ssl/private/vmail.key
+smtpd_sasl_local_domain = $mydomain
+broken_sasl_auth_clients = yes
+smtpd_tls_loglevel = 1
+smtp_header_checks = regexp:/etc/postfix/smtp_header_checks
+smtpd_reject_unlisted_recipient = no
+
+smtpd_tls_mandatory_protocols = !SSLv2,!SSLv3
+smtp_tls_mandatory_protocols = !SSLv2,!SSLv3
+smtpd_tls_protocols = !SSLv2,!SSLv3
+smtp_tls_protocols = !SSLv2,!SSLv3
+smtpd_tls_exclude_ciphers = aNULL, eNULL, EXPORT, DES, RC4, MD5, PSK, aECDH, EDH-DSS-DES-CBC3-SHA, EDH-RSA-DES-CDC3-SHA, KRB5-DE5, CBC3-SHA
+smtpd_tls_dh1024_param_file = $config_directory/dhparams.pem
+
 
 # INTERNET OR INTRANET
 
@@ -331,8 +385,7 @@ relay_domains = $mydestination
 #relayhost = [gateway.my.domain]
 #relayhost = [mailserver.isp.tld]
 #relayhost = uucphost
-#relayhost = mail.alyptik.xyz
-relayhost =
+#relayhost = [an.ip.add.ress]
 
 # REJECTING UNKNOWN RELAY USERS
 #
@@ -347,49 +400,6 @@ relayhost =
 # a user@domain.tld address.
 # 
 #relay_recipient_maps = hash:/etc/postfix/relay_recipients
-#local_transport = dovecot
-#default_transport = dovecot
-relay_domains = $mydestination
-virtual_alias_maps = proxy:mysql:/etc/postfix/virtual_alias_maps.cf
-virtual_mailbox_domains = proxy:mysql:/etc/postfix/virtual_mailbox_domains.cf
-virtual_mailbox_maps = proxy:mysql:/etc/postfix/virtual_mailbox_maps.cf
-virtual_mailbox_base = /home/vmail
-virtual_mailbox_limit = 512000000
-virtual_minimum_uid = 5000
-virtual_transport = dovecot
-virtual_uid_maps = static:5000
-virtual_gid_maps = static:5000
-local_transport = virtual
-local_recipient_maps = $virtual_mailbox_maps
-transport_maps = hash:/etc/postfix/transport
-
-smtpd_sasl_type = dovecot
-smtpd_sasl_path = /var/run/dovecot/auth-client
-smtpd_recipient_restrictions = permit_mynetworks, permit_sasl_authenticated, reject_unauth_destination#, check_policy_service inet:127.0.0.1:10030, check_policy_service inet:127.0.0.1:12340, check_policy_service inet:127.0.0.1:10040
-smtpd_relay_restrictions = permit_mynetworks, permit_sasl_authenticated, reject_unauth_destination
-smtpd_sasl_security_options = noanonymous
-smtpd_sasl_tls_security_options = $smtpd_sasl_security_options
-smtpd_tls_security_level = may
-smtpd_tls_auth_only = yes
-#smtpd_tls_auth_only = no
-smtpd_tls_received_header = yes
-smtpd_tls_cert_file = /etc/ssl/private/vmail.crt
-smtpd_tls_key_file = /etc/ssl/private/vmail.key
-smtpd_sasl_local_domain = $mydomain
-broken_sasl_auth_clients = yes
-smtpd_tls_loglevel = 1
-smtp_header_checks = regexp:/etc/postfix/smtp_header_checks
-smtpd_reject_unlisted_recipient = no
-dovecot_destination_recipient_limit = 1
-
-message_size_limit = 100240000
-
-smtpd_tls_mandatory_protocols = !SSLv2,!SSLv3
-smtp_tls_mandatory_protocols = !SSLv2,!SSLv3
-smtpd_tls_protocols = !SSLv2,!SSLv3
-smtp_tls_protocols = !SSLv2,!SSLv3
-smtpd_tls_exclude_ciphers = aNULL, eNULL, EXPORT, DES, RC4, MD5, PSK, aECDH, EDH-DSS-DES-CBC3-SHA, EDH-RSA-DES-CDC3-SHA, KRB5-DE5, CBC3-SHA
-smtpd_tls_dh1024_param_file = ${config_directory}/dhparams.pem
 
 # INPUT RATE CONTROL
 #
@@ -486,6 +496,7 @@ home_mailbox = Maildir/
 # system type.
 #
 #mail_spool_directory = /var/mail
+#mail_spool_directory = /home/vmailer
 mail_spool_directory = /var/spool/mail
 
 # The mailbox_command parameter specifies the optional external
@@ -510,7 +521,6 @@ mail_spool_directory = /var/spool/mail
 #mailbox_command = /some/where/procmail
 #mailbox_command = /some/where/procmail -a "$EXTENSION"
 #mailbox_command = /usr/lib/dovecot/dovecot-lda -f "$SENDER" -a "$RECIPIENT"
-
 # The mailbox_transport specifies the optional transport in master.cf
 # to use after processing aliases and .forward files. This parameter
 # has precedence over the mailbox_command, fallback_transport and
@@ -550,7 +560,7 @@ mail_spool_directory = /var/spool/mail
 #
 #fallback_transport = lmtp:unix:/file/name
 #fallback_transport = cyrus
-#fallback_transport =
+#fallback_transport = lmtp:unix:private/dovecot-lmtp
 
 # The luser_relay parameter specifies an optional destination address
 # for unknown recipients.  By default, mail for unknown@$mydestination,
@@ -571,11 +581,10 @@ mail_spool_directory = /var/spool/mail
 # the main.cf file, otherwise the SMTP server will reject mail for    
 # non-UNIX accounts with "User unknown in local recipient table".
 #
-#luser_relay = $user@localhost
 #luser_relay = $user@other.host
 #luser_relay = $local@other.host
 #luser_relay = admin+$local
-
+ 
 # JUNK MAIL CONTROLS
 # 
 # The controls listed here are only a very small subset. The file
@@ -592,7 +601,6 @@ mail_spool_directory = /var/spool/mail
 # For details, see "man header_checks".
 #
 #header_checks = regexp:/etc/postfix/header_checks
-smtp_header_checks = regexp:/etc/postfix/smtp_header_checks
 
 # FAST ETRN SERVICE
 #
@@ -634,7 +642,7 @@ smtpd_banner = $myhostname ESMTP $mail_name ($mail_version)
 # most delivery transports. For the local delivery agent the default is 2.
 
 local_destination_concurrency_limit = 2
-default_destination_concurrency_limit = 20
+default_destination_concurrency_limit = 10
 
 # DEBUGGING CONTROL
 #
@@ -650,7 +658,7 @@ debug_peer_level = 2
 # increase the verbose logging level by the amount specified in the
 # debug_peer_level parameter.
 #
-#debug_peer_list = 127.0.0.1
+debug_peer_list = 127.0.0.1
 #debug_peer_list = some.domain
 
 # The debugger_command specifies the external command that is executed
@@ -704,8 +712,7 @@ mailq_path = /usr/bin/mailq
 
 # setgid_group: The group for mail submission and queue management
 # commands.  This must be a group name with a numerical group ID that
-# is not shared with other accounts, not even with the Postfix account.
-#
+# is not shared with other accounts, not even with the Postfix account#
 setgid_group = postdrop
 
 # html_directory: The location of the Postfix HTML documentation.
@@ -724,7 +731,8 @@ sample_directory = /etc/postfix
 # readme_directory: The location of the Postfix README files.
 #
 readme_directory = /usr/share/doc/postfix
-inet_protocols = ipv4
+inet_protocols = ipv4 ipv6
 meta_directory = /etc/postfix
 shlib_directory = /usr/lib/postfix
+
 

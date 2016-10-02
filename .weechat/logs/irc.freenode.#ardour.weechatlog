@@ -4970,3 +4970,332 @@
 2016-09-15 19:59:53	<--	avoca (~avoca@178.167.160.42.threembb.ie) has quit (Ping timeout: 240 seconds)
 2016-09-15 20:02:00	--	irc: disconnected from server
 2016-09-15 20:02:00		[20:02]
+2016-10-01 14:29:02	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined #ardour
+2016-10-01 14:29:02		[14:29]
+2016-10-01 14:29:02	--	Topic for #ardour is "5.4 is released | download: http://ardour.org/download |  paste to http://pastebin.com/ | OS X users please /join #ardour-osx"
+2016-10-01 14:29:02	--	Topic set by las (~paul@13.sub-174-197-18.myvzw.com) on Sat, 01 Oct 2016 05:02:53
+2016-10-01 14:29:02	--	Channel #ardour: 136 nicks (1 op, 0 voices, 135 normals)
+2016-10-01 14:29:02	--	PvNotice(ChanServ): Welcome to the Ardour Discussion, Support and Development Channel. Don't ask to ask, Just ask! And please be patient for answers.
+2016-10-01 14:29:02	--	URL for #ardour: http://www.ardour.org
+2016-10-01 14:29:35	--	Channel created on Sat, 25 Nov 2006 20:42:44
+2016-10-01 14:33:45	tom-	rgareus: ARDOUR.LuaOSC doesn't seem to work in dsp_init
+2016-10-01 14:34:10	rgareus	of course not.  dsp_init is in realtime context
+2016-10-01 14:34:41	rgareus	the GUI interpreter does not call it
+2016-10-01 14:35:57	tom-	there could be non-rt_init() or similar
+2016-10-01 14:36:27	tom-	the thing would be to init the server there with the port number
+2016-10-01 14:36:55	rgareus	you don't need a dedicated init.
+2016-10-01 14:36:58	tom-	another method could be sort of "on destroy"
+2016-10-01 14:37:06	<--	AndChat|320025 (~AndChat32@152.201.138.9) has quit (Ping timeout: 264 seconds)
+2016-10-01 14:37:17	rgareus	for DSP it's required because init can do non-realtime setup.
+2016-10-01 14:37:30	rgareus	in the GUI check, just check if the variable is set.
+2016-10-01 14:37:37	rgareus	and if not, initialize it
+2016-10-01 14:37:40	-->	Ricardus (~rich@cpe-69-201-72-201.twcny.res.rr.com) has joined #ardour
+2016-10-01 14:38:12	rgareus	destruction must always be implicit.  (lifetime must not be managed my lua in the first place)
+2016-10-01 14:38:16	tom-	init can do non-realtime setup?
+2016-10-01 14:38:28	rgareus	no, it's a different interpeter
+2016-10-01 14:38:42	rgareus	aah. sorry. I misunderstood the Q.
+2016-10-01 14:39:03	rgareus	dsp_init () can do non-realtime work.  processing won't start before dsp_init returns
+2016-10-01 14:39:17	Ricardus	new ubuntu. las and rgareus favorite!
+2016-10-01 14:39:51	tom-	so that luaosc could work there
+2016-10-01 14:39:59	rgareus	tom-: no.
+2016-10-01 14:40:05	rgareus	tom-: you can allocate memory
+2016-10-01 14:40:29	tom-	rgareus: is there another one-time called method to do non-rt things once?
+2016-10-01 14:40:35	<--	youki (~youki@moe.useed.fr) has quit (Quit: Quitte)
+2016-10-01 14:40:57	rgareus	tom-: it's equivelent to  LV2's or VSTs instantiate()
+2016-10-01 14:41:26	rgareus	tom-: there's   dsp_configure()  but that must be rt-safe  and it's called every time the channel-count changes
+2016-10-01 14:42:32	tom-	i see
+2016-10-01 14:42:54	tom-	rgareus: so checking in the gui if a variable is set
+2016-10-01 14:43:21	rgareus	tom-: scripts/HiAndLowPass.lua is an example for that
+2016-10-01 14:43:32	rgareus	line 48...
+2016-10-01 14:44:29	tom-	*not* shared, ok
+2016-10-01 14:44:29		[14:44]
+2016-10-01 14:44:30	rgareus	oops. sorry. wrong example
+2016-10-01 14:45:14	rgareus	scripts/spectrogram.lua   150...
+2016-10-01 14:45:21	<--	aisyk (~aisyk@2a02-8429-8179-d500-a98c-a66a-2120-2abc.rev.sfr.net) has quit (Remote host closed the connection)
+2016-10-01 14:45:43	rgareus	tom-:   fft = nil    ... and later    if not fft then ... end
+2016-10-01 14:46:25	rgareus	tom-: font-caching works similar in   scripts/midimon.lua
+2016-10-01 14:46:44	tom-	l 181
+2016-10-01 14:46:58	tom-	i think. good to know thanks
+2016-10-01 14:47:26	tom-	rgareus: everything that happens inside render_inline (where osc can be sent) will not work in a headless environment, is that true?
+2016-10-01 14:48:25	tom-	or can it be run from dsp_runmap() too? i guess not
+2016-10-01 14:49:00	rgareus	correct
+2016-10-01 14:49:14	rgareus	also if the inline display is hidden, it won't run
+2016-10-01 14:49:29	rgareus	you should not send osc from there. really.
+2016-10-01 14:49:40	tom-	yep :)
+2016-10-01 14:49:45	rgareus	but whatever.
+2016-10-01 14:49:56	tom-	sending osc is thus only possible if there is effectively a gui around iiuc
+2016-10-01 14:52:25	rgareus	on LV2 you could use a dedicated thread to send LV2 and decouple it with a ringbuffer.
+2016-10-01 14:53:21	rgareus	there are also existing LADSPA plugins to send OSC on some event (automation).  can be handy for some hacks to trigger things.
+2016-10-01 14:54:22	tom-	if lv2 can, could ardour also use a ringbuffer for this .. 
+2016-10-01 14:54:25	tom-	?
+2016-10-01 14:54:39	rgareus	you can't launch a thread
+2016-10-01 14:55:17	rgareus	anyway, the idea is not to to use scripting to  supersede plugin standards.  LV2 rocks
+2016-10-01 14:57:51	tom-	now the inline gui thread sees the server variable
+2016-10-01 14:58:06	tom-	so that worked :)
+2016-10-01 14:58:37	<--	sils (uid134108@gateway/web/irccloud.com/x-brugfkhcgvejftob) has quit (Quit: Connection closed for inactivity)
+2016-10-01 15:03:30	<--	Freejack (~Freejack@unaffiliated/freejack) has quit (Ping timeout: 264 seconds)
+2016-10-01 15:03:30		[15:03]
+2016-10-01 15:08:15	-->	Freejack (~Freejack@unaffiliated/freejack) has joined #ardour
+2016-10-01 15:10:56	tom-	no luck with luabridge::Stack<> yet
+2016-10-01 15:11:13	<--	unicornjedi (~unicornje@pool-96-241-220-249.washdc.fios.verizon.net) has quit (Quit: Konversation terminated!)
+2016-10-01 15:13:08	<--	zhanshan (~zhanshan@ip1f12dab2.dynamic.kabel-deutschland.de) has quit (Remote host closed the connection)
+2016-10-01 15:19:00		[15:13]
+2016-10-01 15:29:15	tom-	rgareus: it works! receiving osc from a plugin from the same port
+2016-10-01 15:35:00		[15:29]
+2016-10-01 15:48:30	<--	Yruama_Lairba (~UTILISATE@mut38-h04-89-80-39-202.dsl.sta.abo.bbox.fr) has quit (Read error: Connection reset by peer)
+2016-10-01 15:54:00		[15:48]
+2016-10-01 16:01:42	<--	chaot4 (~irssi@mailrelay.hostingcloud24.de) has quit (Read error: Connection reset by peer)
+2016-10-01 16:02:11	-->	chaot4 (~irssi@mailrelay.hostingcloud24.de) has joined #ardour
+2016-10-01 16:08:00		[16:02]
+2016-10-01 16:08:09	-->	the_CLA (~the_CLA@p57B9826D.dip0.t-ipconnect.de) has joined #ardour
+2016-10-01 16:11:25	<--	the_CLA_2 (~the_CLA@p57B9903E.dip0.t-ipconnect.de) has quit (Ping timeout: 244 seconds)
+2016-10-01 16:11:47	<--	henkz (~henke@c-c4c671d5.215-6-64736c10.cust.bredbandsbolaget.se) has quit (Quit: Leaving)
+2016-10-01 16:12:28	<--	yann-kaelig (~inyan@89-64-18-19.dynamic.chello.pl) has quit (Quit: Leaving)
+2016-10-01 16:18:00		[16:12]
+2016-10-01 16:25:42	-->	rhydermike (~quassel@cpc80381-grim18-2-0-cust221.12-3.cable.virginm.net) has joined #ardour
+2016-10-01 16:25:53	<--	tom- (~srv@84-74-158-93.dclient.hispeed.ch) has quit (Quit: leaving)
+2016-10-01 16:31:00		[16:25]
+2016-10-01 16:31:03	<--	tkln_ (~aapo@pug1.kyla.fi) has quit (Ping timeout: 244 seconds)
+2016-10-01 16:31:17	-->	tkln (~aapo@pug1.kyla.fi) has joined #ardour
+2016-10-01 16:34:37	<--	electro-flinch (~colinf@82.45.2.252) has quit (Quit: Leaving.)
+2016-10-01 16:35:30	<--	beatdown (beatdown@chainsawed.and.strangled.net) has quit (Quit: ZNC 1.6.1 - http://znc.in)
+2016-10-01 16:41:00		[16:35]
+2016-10-01 16:50:17	-->	Alby_Fox (~mint@108.59.8.8) has joined #ardour
+2016-10-01 16:56:00		[16:50]
+2016-10-01 16:59:07	-->	dsr1204 (~dsr1204@99-111-235-130.lightspeed.cicril.sbcglobal.net) has joined #ardour
+2016-10-01 17:05:00		[16:59]
+2016-10-01 17:09:48	-->	mbenson__ (~mbenson@108-87-152-117.lightspeed.nsvltn.sbcglobal.net) has joined #ardour
+2016-10-01 17:13:21	-->	son0p (~AndChat32@152.201.60.76) has joined #ardour
+2016-10-01 17:13:25	<--	son0p (~AndChat32@152.201.60.76) has quit (Read error: Connection reset by peer)
+2016-10-01 17:19:00		[17:13]
+2016-10-01 17:24:54	<--	krabador (~krabador@unaffiliated/krabador) has quit (Quit: Leaving)
+2016-10-01 17:30:00		[17:24]
+2016-10-01 17:43:26	<--	rhydermike (~quassel@cpc80381-grim18-2-0-cust221.12-3.cable.virginm.net) has quit (Remote host closed the connection)
+2016-10-01 17:49:00		[17:43]
+2016-10-01 17:54:50	Ricardus	Anyone seen the Zappa film?
+2016-10-01 18:00:00		[17:54]
+2016-10-01 18:01:38	-->	Lex_NewtoN (~quassel@5.44.169.197) has joined #ardour
+2016-10-01 18:07:00		[18:01]
+2016-10-01 18:22:42	<--	mbenson__ (~mbenson@108-87-152-117.lightspeed.nsvltn.sbcglobal.net) has quit (Ping timeout: 264 seconds)
+2016-10-01 18:22:42		[18:22]
+2016-10-01 19:21:55	-->	oofus (~chris@oofus1-adsl.demon.co.uk) has joined #ardour
+2016-10-01 19:21:55		[19:21]
+2016-10-01 19:22:06	<--	oofus_ (~chris@oofus1-adsl.demon.co.uk) has quit (Read error: Connection reset by peer)
+2016-10-01 19:24:50	<--	dsr1204 (~dsr1204@99-111-235-130.lightspeed.cicril.sbcglobal.net) has quit (Ping timeout: 252 seconds)
+2016-10-01 19:30:00		[19:24]
+2016-10-01 19:36:39	-->	rghvdberg (~rghvdberg@145.130.225.41) has joined #ardour
+2016-10-01 19:42:00		[19:36]
+2016-10-01 20:12:11	<--	NickSB2 (~NickSB2__@cpc5-harb9-2-0-cust141.perr.cable.virginm.net) has quit (Ping timeout: 272 seconds)
+2016-10-01 20:12:11		[20:12]
+2016-10-01 20:13:45	-->	nilg (~user@77.70.2.229) has joined #ardour
+2016-10-01 20:15:24	-->	takuan (~takuan@d8d86ba60.access.telenet.be) has joined #ardour
+2016-10-01 20:21:00		[20:15]
+2016-10-01 20:26:57	-->	remixvinil (~remix@95.46.18.239) has joined #ardour
+2016-10-01 20:32:00		[20:26]
+2016-10-01 20:36:37	<--	nilg (~user@77.70.2.229) has quit (Read error: Connection reset by peer)
+2016-10-01 20:42:00		[20:36]
+2016-10-01 21:12:42	<--	epaladin (32960dd1@gateway/web/freenode/ip.50.150.13.209) has quit (Ping timeout: 240 seconds)
+2016-10-01 21:12:42		[21:12]
+2016-10-01 21:19:08	-->	dawdaw (dfe3e580@gateway/web/freenode/ip.223.227.229.128) has joined #ardour
+2016-10-01 21:23:03	<--	remixvinil (~remix@95.46.18.239) has quit (Ping timeout: 265 seconds)
+2016-10-01 21:23:54	-->	electro-flinch (~colinf@82.45.2.252) has joined #ardour
+2016-10-01 21:29:00		[21:23]
+2016-10-01 21:51:06	--	irc: disconnected from server
+2016-10-01 21:51:06		[21:51]
+2016-10-02 03:07:54	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined #ardour
+2016-10-02 03:07:54		[03:07]
+2016-10-02 03:07:54	--	Topic for #ardour is "5.4 is released | download: http://ardour.org/download |  paste to http://pastebin.com/ | OS X users please /join #ardour-osx"
+2016-10-02 03:07:54	--	Topic set by las (~paul@13.sub-174-197-18.myvzw.com) on Sat, 01 Oct 2016 05:02:53
+2016-10-02 03:07:54	--	Channel #ardour: 142 nicks (1 op, 0 voices, 141 normals)
+2016-10-02 03:07:54	--	PvNotice(ChanServ): Welcome to the Ardour Discussion, Support and Development Channel. Don't ask to ask, Just ask! And please be patient for answers.
+2016-10-02 03:07:54	--	URL for #ardour: http://www.ardour.org
+2016-10-02 03:08:26	--	Channel created on Sat, 25 Nov 2006 20:42:44
+2016-10-02 03:08:38	<--	electro-flinch (~colinf@82.45.2.252) has quit (Ping timeout: 265 seconds)
+2016-10-02 03:08:57	<--	falktx_ (~falktx@193.43.158.229) has quit (Quit: Konversation terminated!)
+2016-10-02 03:14:00		[03:08]
+2016-10-02 03:18:08	<--	yann-kaelig (~inyan@89-64-16-125.dynamic.chello.pl) has quit (Quit: Leaving)
+2016-10-02 03:21:58	-->	electro-flinch (~colinf@82.45.2.252) has joined #ardour
+2016-10-02 03:27:00		[03:21]
+2016-10-02 03:27:07	-->	yann-kaelig (~inyan@89-64-16-125.dynamic.chello.pl) has joined #ardour
+2016-10-02 03:27:35	<--	yann-kaelig (~inyan@89-64-16-125.dynamic.chello.pl) has quit (Remote host closed the connection)
+2016-10-02 03:30:52	<--	prokoudine_ (~alex@ppp83-237-112-221.pppoe.mtu-net.ru) has quit (Ping timeout: 265 seconds)
+2016-10-02 03:36:00		[03:30]
+2016-10-02 03:38:02	-->	prokoudine_ (~alex@ppp83-237-117-132.pppoe.mtu-net.ru) has joined #ardour
+2016-10-02 03:38:31	-->	henkz (~henke@c-c4c671d5.215-6-64736c10.cust.bredbandsbolaget.se) has joined #ardour
+2016-10-02 03:40:23	<--	son0p (~AndChat32@152.201.175.1) has quit (Ping timeout: 252 seconds)
+2016-10-02 03:40:27	<--	avoca (~avoca@92.251.202.2.threembb.ie) has quit (Quit: WeeChat 1.5)
+2016-10-02 03:40:42	<--	Valvalion (~Valvalion@187.104-201-80.adsl-dyn.isp.belgacom.be) has quit (Ping timeout: 264 seconds)
+2016-10-02 03:46:00		[03:40]
+2016-10-02 03:46:13	-->	JL__ (25a11659@gateway/web/freenode/ip.37.161.22.89) has joined #ardour
+2016-10-02 03:47:51	<--	JL__ (25a11659@gateway/web/freenode/ip.37.161.22.89) has quit (Client Quit)
+2016-10-02 03:53:00		[03:47]
+2016-10-02 04:00:16	<--	easyshekels (~easysheke@bzq-79-177-48-157.red.bezeqint.net) has quit (Ping timeout: 244 seconds)
+2016-10-02 04:06:00		[04:00]
+2016-10-02 04:13:20	-->	JL__ (25a04e52@gateway/web/freenode/ip.37.160.78.82) has joined #ardour
+2016-10-02 04:18:58	-->	sobersabre_ (~sobersabr@bzq-224-168-31-61.red.bezeqint.net) has joined #ardour
+2016-10-02 04:22:06	<--	sobersabre (~sobersabr@unaffiliated/sobersabre) has quit (Ping timeout: 264 seconds)
+2016-10-02 04:22:06		[04:22]
+2016-10-02 04:24:53	<--	oofus (~chris@oofus1-adsl.demon.co.uk) has quit (Quit: Konversation terminated!)
+2016-10-02 04:25:12	<--	JL__ (25a04e52@gateway/web/freenode/ip.37.160.78.82) has quit (Ping timeout: 240 seconds)
+2016-10-02 04:26:42	-->	oofus (~quassel@oofus1-adsl.demon.co.uk) has joined #ardour
+2016-10-02 04:32:00		[04:26]
+2016-10-02 04:35:30	<--	unclechu_ (~unclechu@188.17.21.55) has quit (Quit: Leaving)
+2016-10-02 04:40:13	-->	son0p (~AndChat32@181.33.147.176) has joined #ardour
+2016-10-02 04:46:00		[04:40]
+2016-10-02 04:48:38	-->	JL__ (25a73d01@gateway/web/freenode/ip.37.167.61.1) has joined #ardour
+2016-10-02 04:49:16	<--	JL__ (25a73d01@gateway/web/freenode/ip.37.167.61.1) has quit (Client Quit)
+2016-10-02 04:51:23	<--	prokoudine_ (~alex@ppp83-237-117-132.pppoe.mtu-net.ru) has quit (Quit: prokoudine_)
+2016-10-02 04:57:00		[04:51]
+2016-10-02 05:13:38	-->	rhydermike (~quassel@cpc80381-grim18-2-0-cust221.12-3.cable.virginm.net) has joined #ardour
+2016-10-02 05:13:38		[05:13]
+2016-10-02 05:17:31	-->	JL__ (52e3be7c@gateway/web/freenode/ip.82.227.190.124) has joined #ardour
+2016-10-02 05:21:42	<--	JL__ (52e3be7c@gateway/web/freenode/ip.82.227.190.124) has quit (Ping timeout: 240 seconds)
+2016-10-02 05:27:00		[05:21]
+2016-10-02 05:48:55	-->	unclechu (~unclechu@188.17.21.55) has joined #ardour
+2016-10-02 05:48:55		[05:48]
+2016-10-02 06:06:51	<--	electro-flinch (~colinf@82.45.2.252) has quit (Quit: Leaving.)
+2016-10-02 06:06:51		[06:06]
+2016-10-02 06:07:03	-->	Enemtee (~NMT@h-82-156.a328.priv.bahnhof.se) has joined #ardour
+2016-10-02 06:07:32	-->	GrusGrus (~Thunderbi@a88-113-110-199.elisa-laajakaista.fi) has joined #ardour
+2016-10-02 06:07:59	-->	JL__ (52e3be7c@gateway/web/freenode/ip.82.227.190.124) has joined #ardour
+2016-10-02 06:12:36	-->	falktx (~falktx@dslb-188-103-016-227.188.103.pools.vodafone-ip.de) has joined #ardour
+2016-10-02 06:18:00		[06:12]
+2016-10-02 06:36:01	<--	unclechu (~unclechu@188.17.21.55) has quit (Ping timeout: 272 seconds)
+2016-10-02 06:36:01		[06:36]
+2016-10-02 06:37:52	-->	unclechu (~unclechu@188.17.38.97) has joined #ardour
+2016-10-02 06:41:28	-->	nilg (~user@77.70.2.229) has joined #ardour
+2016-10-02 06:44:23	-->	mbenson__ (~mbenson@108-87-152-117.lightspeed.nsvltn.sbcglobal.net) has joined #ardour
+2016-10-02 06:50:00		[06:44]
+2016-10-02 06:53:13	<--	JL__ (52e3be7c@gateway/web/freenode/ip.82.227.190.124) has quit (Quit: Page closed)
+2016-10-02 06:59:00		[06:53]
+2016-10-02 07:00:30	-->	avoca (~avoca@92.251.239.35.threembb.ie) has joined #ardour
+2016-10-02 07:01:52	<--	nilg (~user@77.70.2.229) has quit (Remote host closed the connection)
+2016-10-02 07:07:00		[07:01]
+2016-10-02 07:23:54	<--	mbenson__ (~mbenson@108-87-152-117.lightspeed.nsvltn.sbcglobal.net) has quit (Ping timeout: 264 seconds)
+2016-10-02 07:23:54		[07:23]
+2016-10-02 07:38:14	<--	Lex_NewtoN (~quassel@5.44.169.197) has quit (Remote host closed the connection)
+2016-10-02 07:44:00		[07:38]
+2016-10-02 08:01:34	<--	youki (~youki@moe.useed.fr) has quit (Remote host closed the connection)
+2016-10-02 08:01:34		[08:01]
+2016-10-02 08:05:32	rgareus	nstewart: I'm halfway done adding lua-bindings for Vamp Plugins and ARDOUR::Readable.  well, really 90% done but you know 90/10.  I'll probably not finish it this week-end.
+2016-10-02 08:07:03	rgareus	nstewart: as for detecting onsets and transients, that'll be relatively easy using vamp-aubio or vamp-qm.
+2016-10-02 08:13:00		[08:07]
+2016-10-02 08:15:40	-->	nilg (~user@77.70.2.229) has joined #ardour
+2016-10-02 08:21:00		[08:15]
+2016-10-02 08:21:09	<--	unclechu (~unclechu@188.17.38.97) has quit (Ping timeout: 272 seconds)
+2016-10-02 08:26:37	<--	nilg (~user@77.70.2.229) has quit (Read error: Connection reset by peer)
+2016-10-02 08:32:00		[08:26]
+2016-10-02 08:33:22	-->	unclechu (~unclechu@94.50.193.197) has joined #ardour
+2016-10-02 08:35:17	-->	Valvalion (~Valvalion@187.104-201-80.adsl-dyn.isp.belgacom.be) has joined #ardour
+2016-10-02 08:41:00		[08:35]
+2016-10-02 08:46:37	-->	gianluca_r (~gianluca@88.147.60.32) has joined #ardour
+2016-10-02 08:47:08	gianluca_r	hello 
+2016-10-02 08:47:10	gianluca_r	can't start jackd at 192k when using the m-audio audiophile 2496, steps: make sure no jackd procs are running, start it with `jackd -d alsa -d hw:2 -r 192000` then check with jack_samplerate and it's always at 44100, what am I missing?
+2016-10-02 08:47:48	gianluca_r	hw:2 is the m-audio card as I read it from alsamixer
+2016-10-02 08:51:26	c3r1c3_Win	gianluca_r: I thought that the maudio was called the 2496 because it could do UPTO 24-bit audio at 96Khz?
+2016-10-02 08:51:59	gianluca_r	c3r1c3_Win: me too, so should that explain?
+2016-10-02 08:53:01	c3r1c3_Win	That would pretty much explain your issue. Don't try to run hardware at stuff it's not designed to.
+2016-10-02 08:53:09	c3r1c3_Win	*stuff=settings
+2016-10-02 08:55:52	gianluca_r	if I switch back to intel 82801I Ardour starts at 192k, that sounds somewhat strange to me
+2016-10-02 09:00:47	-->	nilg (~user@77.70.2.229) has joined #ardour
+2016-10-02 09:00:47		[09:00]
+2016-10-02 09:01:05	-->	prokoudine_ (~alex@ppp83-237-117-132.pppoe.mtu-net.ru) has joined #ardour
+2016-10-02 09:02:23	prokoudine_	rgareus: any idea if novation launchpad canbe used via the push 2 control surface? las mentioned something like that in the past
+2016-10-02 09:08:00		[09:02]
+2016-10-02 09:08:52	gianluca_r	bye
+2016-10-02 09:08:55	<--	gianluca_r (~gianluca@88.147.60.32) has left #ardour ("Konversation terminated!")
+2016-10-02 09:14:00		[09:08]
+2016-10-02 09:19:50	<--	rghvdberg (~rghvdberg@145.130.225.41) has quit (Ping timeout: 265 seconds)
+2016-10-02 09:21:20	-->	JL__ (52e3be7c@gateway/web/freenode/ip.82.227.190.124) has joined #ardour
+2016-10-02 09:21:42	<--	JL__ (52e3be7c@gateway/web/freenode/ip.82.227.190.124) has quit (Client Quit)
+2016-10-02 09:25:03	<--	GrusGrus (~Thunderbi@a88-113-110-199.elisa-laajakaista.fi) has quit (Remote host closed the connection)
+2016-10-02 09:30:24	<--	krabador (~krabador@unaffiliated/krabador) has quit (Remote host closed the connection)
+2016-10-02 09:30:24		[09:30]
+2016-10-02 09:32:25	rgareus	prokoudine_: I don't know, but I'd be surprised if the Push2 interface was compatible with the Launchpad.
+2016-10-02 09:34:07	rgareus	prokoudine_: maybe las was hinting at the conceptual level.  infrastructure for mixed control + performance interfaces
+2016-10-02 09:34:57	<--	avoca (~avoca@92.251.239.35.threembb.ie) has quit (Quit: WeeChat 1.5)
+2016-10-02 09:35:07	prokoudine_	rgareus: do you think you have that link from las with a photo of push 2 having ardour-specific stuff on LEDs?
+2016-10-02 09:35:42	 *	rgareus thinks is he has a link :)
+2016-10-02 09:35:53	rgareus	prokoudine_: do you mean http://manual.ardour.org/using-control-surfaces/Ableton_Push2/ ?
+2016-10-02 09:36:34	prokoudine_	nope, there was more, afaik
+2016-10-02 09:37:12	prokoudine_	but maybe that might do
+2016-10-02 09:37:17	rgareus	I asked him for a picture of his setup, but never saw one.
+2016-10-02 09:42:21	-->	mbenson__ (~mbenson@108-87-152-117.lightspeed.nsvltn.sbcglobal.net) has joined #ardour
+2016-10-02 09:47:56	-->	oofus_ (~quassel@oofus1-adsl.demon.co.uk) has joined #ardour
+2016-10-02 09:47:56		[09:47]
+2016-10-02 09:49:48	<--	vekoon (~vekoon@188-141-112-94.dynamic.upc.ie) has quit (Ping timeout: 265 seconds)
+2016-10-02 09:49:59	<--	oofus (~quassel@oofus1-adsl.demon.co.uk) has quit (Ping timeout: 252 seconds)
+2016-10-02 09:50:51	-->	krabador (~krabador@unaffiliated/krabador) has joined #ardour
+2016-10-02 09:50:54	<--	mbenson__ (~mbenson@108-87-152-117.lightspeed.nsvltn.sbcglobal.net) has quit (Ping timeout: 264 seconds)
+2016-10-02 09:56:00		[09:50]
+2016-10-02 10:01:14	<--	nilg (~user@77.70.2.229) has quit (Remote host closed the connection)
+2016-10-02 10:04:42	-->	easyshekels (~easysheke@bzq-79-178-63-106.red.bezeqint.net) has joined #ardour
+2016-10-02 10:08:39	-->	Vulpes` (~user@ip68-2-62-254.ph.ph.cox.net) has joined #ardour
+2016-10-02 10:10:13	<--	Vulpes (~user@unaffiliated/vulpes) has quit (Ping timeout: 244 seconds)
+2016-10-02 10:16:00		[10:10]
+2016-10-02 10:16:20	-->	avlinux (~tester@100.43.117.131) has joined #ardour
+2016-10-02 10:22:00		[10:16]
+2016-10-02 10:22:10	avlinux	rgareus, Just finished a mix of an arrangement using little else than the new Ardour 'a-' plugins, they are really good! Especially the compressor, great stuff!
+2016-10-02 10:25:56	<--	Caterpillar (~caterpill@unaffiliated/caterpillar) has quit (Quit: You were not made to live as brutes, but to follow virtue and knowledge.)
+2016-10-02 10:27:25	<--	oofus_ (~quassel@oofus1-adsl.demon.co.uk) has quit (Read error: Connection reset by peer)
+2016-10-02 10:29:11	<--	Valvalion (~Valvalion@187.104-201-80.adsl-dyn.isp.belgacom.be) has quit (Remote host closed the connection)
+2016-10-02 10:32:47	rgareus	avlinux: thanks.  kudos for the compressor go to damo22 (zamcomp)
+2016-10-02 10:34:51	rgareus	avlinux: it's great to know that ardour-environment on its own becomes useful.  that's good for portable sessions.
+2016-10-02 10:35:15	rgareus	avlinux: what's the "little else" ?  some of the VSTs that you can't let go?
+2016-10-02 10:38:48	<--	prokoudine_ (~alex@ppp83-237-117-132.pppoe.mtu-net.ru) has quit (Quit: prokoudine_)
+2016-10-02 10:38:48		[10:38]
+2016-10-02 10:42:50	<--	aisyk (~aisyk@2a02-8429-8179-d500-3528-1721-56d3-255f.rev.sfr.net) has quit (Remote host closed the connection)
+2016-10-02 10:43:18	avlinux	rgareus, I only actually use 1 VST (Loudmax), I still like the linuxDSP DYN500 compressor for vocals and I'm addicted to Barry's Satan Maximizer for various purposes
+2016-10-02 10:44:14	-->	zhanshan (~zhanshan@ip1f12dab2.dynamic.kabel-deutschland.de) has joined #ardour
+2016-10-02 10:45:32	avlinux	rgareus, The linuxDSP PEQ-1a (his Pultec simulation) really is indispensible on Kick drums, but your x42 EQ has won me over elsewhere, especially on snares
+2016-10-02 10:47:10	avlinux	rgareus, Of course you guys aren't going to be putting something as specific as a Pultec EQ in a free set of included plugins understandably, but you've really done a nice job with the basics
+2016-10-02 10:47:19	rgareus	makes sense. there's not a one-size-fits-all tool.   the Satan Maximizer should acutally work on all OS.
+2016-10-02 10:48:05	<--	Enemtee (~NMT@h-82-156.a328.priv.bahnhof.se) has quit (Quit: Lämnar)
+2016-10-02 10:48:22	rgareus	avlinux: did you try the harrison XT-DC (drum character) ?
+2016-10-02 10:49:02	avlinux	rgareus, No I don't have a key for it, but I guess it does demo-mode now right?
+2016-10-02 10:49:31	rgareus	yeah.. 30 sec even (every time you re-open it)
+2016-10-02 10:49:44	rgareus	or 20 sec. I forget.
+2016-10-02 10:50:04	rgareus	and worst-case: the generic UI.. forever.
+2016-10-02 10:50:24	avlinux	rgareus, lol that's about the length of time to find that actual parameter you want to adjust... then it goes away
+2016-10-02 10:51:06	rgareus	depends if you 'know' the plugin
+2016-10-02 10:51:15	avlinux	rgareus, Yes true :)
+2016-10-02 10:51:24	rgareus	it's basically 2 EQs  one for the onset.  and one for the tail.
+2016-10-02 10:51:35	rgareus	works very well on snares.
+2016-10-02 10:51:44	avlinux	rgareus, your work?
+2016-10-02 10:51:55	rgareus	harrison's work.
+2016-10-02 10:52:08	rgareus	I was involved in parts
+2016-10-02 10:53:14	avlinux	rgareus, I'll have to give it a try I guess, I keep forgetting the demos are in Ardour now
+2016-10-02 10:54:57	avlinux	rgareus, Here's the mix, there is only EQ on the kick and snare, no Reverbs at all. The bass has a-Compressor only on it: http://bandshed.net/music/RB_EP_Next/StraightUp-RC2_session.mp3
+2016-10-02 10:54:57		[10:54]
+2016-10-02 10:56:47	avlinux	rgareus, NOT a final mix.. :) All reverb is room + an ambient stairwell mic
+2016-10-02 10:58:12	rgareus	avlinux: sorry, can't listen at the moment.. (watching a movie) but I'll do that later
+2016-10-02 10:58:48	avlinux	rgreaus, lol well I'll stop jabbering then! Enjoy the movie!
+2016-10-02 11:00:27	-->	ahellquist (4e48865d@gateway/web/freenode/ip.78.72.134.93) has joined #ardour
+2016-10-02 11:03:05	<--	avlinux (~tester@100.43.117.131) has quit (Quit: Leaving)
+2016-10-02 11:07:47	-->	c3r1c3-Win (~c3r1c3@ip72-211-87-79.no.no.cox.net) has joined #ardour
+2016-10-02 11:10:00	-->	aisyk (~aisyk@2a02-8429-8179-d500-cca0-62c0-0c80-2e1c.rev.sfr.net) has joined #ardour
+2016-10-02 11:10:00		[11:10]
+2016-10-02 11:11:18	<--	c3r1c3_Win (~c3r1c3@ip72-211-87-79.no.no.cox.net) has quit (Ping timeout: 264 seconds)
+2016-10-02 11:13:10	-->	yann-kaelig (~inyan@89-64-15-158.dynamic.chello.pl) has joined #ardour
+2016-10-02 11:18:16	-->	mek42_laptop (~chatzilla@cpe-184-153-249-203.twcny.res.rr.com) has joined #ardour
+2016-10-02 11:18:44	-->	jpbouza (~Juan@191.85.176.191) has joined #ardour
+2016-10-02 11:24:00		[11:18]
+2016-10-02 11:27:12	<--	ahellquist (4e48865d@gateway/web/freenode/ip.78.72.134.93) has quit (Ping timeout: 240 seconds)
+2016-10-02 11:33:00		[11:27]
+2016-10-02 11:39:47	-->	dsr1204 (~dsr1204@99-111-235-130.lightspeed.cicril.sbcglobal.net) has joined #ardour
+2016-10-02 11:39:53	<--	edogawa (~quassel@62-46-161-199.adsl.highway.telekom.at) has quit (Remote host closed the connection)
+2016-10-02 11:43:39	<--	zhanshan (~zhanshan@ip1f12dab2.dynamic.kabel-deutschland.de) has quit (Quit: Leaving)
+2016-10-02 11:49:00		[11:43]
+2016-10-02 11:52:31	<--	son0p (~AndChat32@181.33.147.176) has quit (Ping timeout: 244 seconds)
+2016-10-02 11:57:31	-->	son0p (~AndChat32@181.33.147.176) has joined #ardour
+2016-10-02 11:59:29	-->	mbenson__ (~mbenson@108-87-152-117.lightspeed.nsvltn.sbcglobal.net) has joined #ardour
+2016-10-02 12:05:00		[11:59]
+2016-10-02 12:07:55	-->	tom- (~srv@84-74-158-93.dclient.hispeed.ch) has joined #ardour
+2016-10-02 12:08:50	<--	mbenson__ (~mbenson@108-87-152-117.lightspeed.nsvltn.sbcglobal.net) has quit (Ping timeout: 256 seconds)
+2016-10-02 12:10:03	<--	c3r1c3-Win (~c3r1c3@ip72-211-87-79.no.no.cox.net) has quit (Read error: Connection reset by peer)
+2016-10-02 12:11:38	<--	remixvinil (~remix@95.46.18.239) has quit (Ping timeout: 244 seconds)
+2016-10-02 12:11:54	-->	c3r1c3_Win (~c3r1c3@ip72-211-87-79.no.no.cox.net) has joined #ardour
+2016-10-02 12:14:41	-->	las (~las@230.sub-70-196-8.myvzw.com) has joined #ardour
+2016-10-02 12:20:00		[12:14]
+2016-10-02 12:39:21	--	irc: disconnected from server
+2016-10-02 12:39:21		[12:39]

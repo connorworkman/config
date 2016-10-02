@@ -12082,3 +12082,1976 @@
 2016-09-15 20:01:18	<--	xaxxon (~xaxxon@c-24-18-184-142.hsd1.wa.comcast.net) has quit (Quit: This computer has gone to sleep)
 2016-09-15 20:01:54	-->	yeticry (~yeticry@183.160.6.32) has joined ##c++
 2016-09-15 20:01:59	--	irc: disconnected from server
+2016-10-01 14:29:00	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined ##c++
+2016-10-01 14:29:00		[14:29]
+2016-10-01 14:29:00	--	Topic for ##c++ is "##C++ is a topical channel for discussing standard C++ specifications and code. || Current standard: ISO/IEC 14882:2014 (a.k.a. C++14) || https://isocpp.org/faq || pastes: http://melpon.org/wandbox"
+2016-10-01 14:29:00	--	Topic set by V-ille (~ville@81-175-149-170.bb.dnainternet.fi) on Fri, 18 Sep 2015 07:13:01
+2016-10-01 14:29:00	--	Channel ##c++: 945 nicks (0 ops, 0 voices, 945 normals)
+2016-10-01 14:29:03	--	Channel created on Fri, 14 Sep 2001 17:15:35
+2016-10-01 14:29:07	Akahige	No need for a move *
+2016-10-01 14:29:22	o]	return statement is "return std::move .. no please
+2016-10-01 14:29:50	Akahige	o]: He wants to return a member var and have it moved from
+2016-10-01 14:30:04	o]	hmmm
+2016-10-01 14:30:06	o]	that smells
+2016-10-01 14:30:13	Olipro	I'm investigating the implementation of std::future in MSVC
+2016-10-01 14:30:15	o]	move it locally first
+2016-10-01 14:30:19	o]	then return the local var
+2016-10-01 14:30:28	Akahige	^ That's actually a good solution.
+2016-10-01 14:30:37	Akahige	I never taught of that.
+2016-10-01 14:30:40	Akahige	thought*
+2016-10-01 14:31:04	o]	then let the client decide whether to copy or move it :)
+2016-10-01 14:31:18	eraz	T move_from() { return T(std::move(this->memvar); } ??
+2016-10-01 14:31:23	Akahige	Well o], your solution allows elision to happen :)
+2016-10-01 14:31:28	o]	ughghgghggh eraz
+2016-10-01 14:31:39	o]	Akahige yes yes. returning by value is C++ friendly
+2016-10-01 14:31:40	eraz	o] I don't understand what you mean by "move it locally first".
+2016-10-01 14:31:43	Olipro	except, what if T has its move operator deleted
+2016-10-01 14:32:46	Olipro	eraz: no, it's just straight-up return std::move(this->_get_value());
+2016-10-01 14:32:59	Olipro	where "this" is an instance of std::future<T>
+2016-10-01 14:33:05	Akahige	eraz: He means like this.... auto get() { auto x = std::move(member_var); return x; }
+2016-10-01 14:33:12	-->	Zxpr1jk (~zxpr1jk@24.214.61.47) has joined ##c++
+2016-10-01 14:33:43	eraz	How's that different from what I suggested but in two lines?
+2016-10-01 14:33:58	<--	Sculptor_ (~Sculptor@cable-24-135-26-151.dynamic.sbb.rs) has quit (Changing host)
+2016-10-01 14:33:59	-->	Sculptor_ (~Sculptor@trivialand/master/sculptor) has joined ##c++
+2016-10-01 14:34:14	--	Sculptor_ is now known as Sculptor
+2016-10-01 14:34:35	<--	MrP[Home] (~Palsson@c-a46fe555.06-213-6e6b701.cust.bredbandsbolaget.se) has quit (Read error: Connection reset by peer)
+2016-10-01 14:34:45	<--	DragonTamer (~DragonTam@unaffiliated/dragontamer) has quit (Quit: Leaving)
+2016-10-01 14:34:49	<--	feliwir (Elite16673@gateway/shell/elitebnc/x-rtzxalhfzysxuhww) has quit (Ping timeout: 248 seconds)
+2016-10-01 14:34:50	Akahige	eraz: Because it creates a local, which is then an expiring value, so it can be elided.
+2016-10-01 14:35:05	eraz	It doesn't elide return T()?
+2016-10-01 14:35:07	<--	rtkt (~rtkt@ptr-2hj4tbw74k45rbq4qb0x1wdv1.ip6.access.telenet.be) has quit (Ping timeout: 265 seconds)
+2016-10-01 14:35:11	eraz	o_O
+2016-10-01 14:35:13	Olipro	http://stackoverflow.com/questions/14856344/when-should-stdmove-be-used-on-a-function-return-value
+2016-10-01 14:35:48	eraz	geordi: { auto x = f(); } auto f() { return tracked::B(); }
+2016-10-01 14:35:48	geordi	B0* B0~
+2016-10-01 14:36:40	Olipro	and now for something completely different - anyone got a "nicer" way of doing this:
+2016-10-01 14:36:41	Olipro	http://ideone.com/TyMLJZ
+2016-10-01 14:36:49	eraz	geordi: { auto x = S().f(); } struct S { tracked::B b; auto f() { return tracked::B(std::move(b)); } };
+2016-10-01 14:36:50	geordi	B0* B0=>B1* B0~ B1~
+2016-10-01 14:37:08	eraz	That looks like elision.
+2016-10-01 14:37:21	-->	cbot_ (~FS@ool-2f12e4fc.dyn.optonline.net) has joined ##c++
+2016-10-01 14:37:42	<--	cbot (~FS@ool-2f12e4fc.dyn.optonline.net) has quit (Ping timeout: 264 seconds)
+2016-10-01 14:38:30	<--	Lord_Dagothur (Dagothur@2607:fea8:9220:688:2118:9c94:9dcf:b3e7) has quit (Ping timeout: 265 seconds)
+2016-10-01 14:38:33	-->	sedeki (~textual@unaffiliated/sedeki) has joined ##c++
+2016-10-01 14:39:30	<--	Nomenclatura (~turtle@189.182.120.31) has quit (Ping timeout: 264 seconds)
+2016-10-01 14:42:16	w3z	that looks like a move, not elision
+2016-10-01 14:42:45	w3z	{auto x=f();} auto f(){return tracked::B{};}
+2016-10-01 14:42:46	geordi	B0* B0~
+2016-10-01 14:43:03	-->	UnlikeSuika (~UnlikeSui@117.123.105.126) has joined ##c++
+2016-10-01 14:43:07	eraz	w3z: A move into temporary that is elisioned.
+2016-10-01 14:43:17	eraz	I was trying to make sense of what o] was suggesting above.
+2016-10-01 14:44:12	w3z	i dont think o]s suggestion would help anything, nrvo after a move construction, vs a move construction eh
+2016-10-01 14:44:12		[14:44]
+2016-10-01 14:44:47	xaxxon	w3z: is your last geordi nrvo?   nothing named is returned
+2016-10-01 14:44:53	<--	Enhex (~Enhex@77.138.252.82) has quit (Quit: Leaving)
+2016-10-01 14:45:02	eraz	It was in the context of trying to move a member out from an object.
+2016-10-01 14:45:03	w3z	no, o]s suggested approach is nrvo
+2016-10-01 14:45:45	-->	Appleman1234 (~Appleman1@KD119104052245.au-net.ne.jp) has joined ##c++
+2016-10-01 14:46:11	w3z	{auto x=f();} auto f(){auto y=tracked::B{}; auto t=move(y); return t;}
+2016-10-01 14:46:11	geordi	B0* B0=>B1* B0~ B1~
+2016-10-01 14:46:17	xaxxon	nrvo benefit is based on how much stuff is in the object "stack" size, right?  whereas the move benefit is how much is on the "heap"?
+2016-10-01 14:46:46	-->	wildlander (~wild@unaffiliated/wildlander) has joined ##c++
+2016-10-01 14:47:25	xaxxon	e.g. if you have a class with 1000 ints in it, nrvo is a huge win, right?   whereas if it has one pointer to a 100MB new'd buffer then the move is important, but the nrvo doesn't matter?
+2016-10-01 14:47:29	w3z	i dont understand your question (or possibly nrvo)
+2016-10-01 14:47:38	-->	Karyon (~yaaic@unaffiliated/karyon) has joined ##c++
+2016-10-01 14:47:41	eraz	w3z: I don't see the difference (in effect).
+2016-10-01 14:47:43	<--	manuels (~manuelsch@p20030072AF6BC2001EEA2F3E8805DBF5.dip0.t-ipconnect.de) has quit (Remote host closed the connection)
+2016-10-01 14:47:44	-->	Hydrogen (~Hydrogen@amarok/developer/hydrogen) has joined ##c++
+2016-10-01 14:49:12	<--	idontcarebear (~idontcare@50.35.14.24) has quit (Ping timeout: 272 seconds)
+2016-10-01 14:49:19	-->	topshell (~wew@447495.s.dedikuoti.lt) has joined ##c++
+2016-10-01 14:49:25	w3z	eraz i dont think there is one, which is why i said o]s suggestion probably doesnt help
+2016-10-01 14:49:37	-->	Alec (~AlecT@unaffiliated/alec) has joined ##c++
+2016-10-01 14:49:45	eraz	w3z: oh, but that suggestion was with respect to this approach (I think):
+2016-10-01 14:49:46	w3z	{auto x=f();} auto f(){auto y=tracked::B{}; return move(y);}
+2016-10-01 14:49:47	geordi	B0* B0=>B1* B0~ B1~
+2016-10-01 14:49:50	eraz	geordi: { auto x = S().f(); } struct S { tracked::B b; tracked::B&& f() { return std::move(b); } };
+2016-10-01 14:49:50	geordi	B0* B0=>B1* B0~ B1~
+2016-10-01 14:50:17	-->	idontcarebear (~idontcare@50.35.14.24) has joined ##c++
+2016-10-01 14:50:22	-->	kaza (~kazakuri@shinjiru.me) has joined ##c++
+2016-10-01 14:50:36	w3z	whether im moving from a member or in my simplified exampe from a block local doesnt change anything
+2016-10-01 14:50:48	-->	CHC (~CHC@unaffiliated/chc) has joined ##c++
+2016-10-01 14:50:56	<--	p4trix (~p4trix@46.26.255.185) has quit (Ping timeout: 252 seconds)
+2016-10-01 14:51:01	w3z	(other than when the moved from goes away)
+2016-10-01 14:51:02	eraz	w3z: In the latter case, the member variable may or may not be moved from. In o]'s suggestion, it is guaranteed to be moved from.
+2016-10-01 14:51:12	<--	kazakuri (~kazakuri@shinjiru.me) has quit (Ping timeout: 276 seconds)
+2016-10-01 14:51:41	-->	josef_k (~jeremy@203-213-41-139.tpgi.com.au) has joined ##c++
+2016-10-01 14:51:55	eraz	geordi: { S().f(); } struct S { tracked::B b; auto&& f() { return std::move(b); } }; // Move not guaranteed.
+2016-10-01 14:51:56	geordi	B0* B0~
+2016-10-01 14:52:00	eraz	geordi: { S().f(); } struct S { tracked::B b; auto f() { return tracked::B(std::move(b)); } }; // Move guaranteed.
+2016-10-01 14:52:00	geordi	B0* B0=>B1* B1~ B0~
+2016-10-01 14:52:07	w3z	the original returned a value not an rvalue reference
+2016-10-01 14:52:18	eraz	Oh did it?
+2016-10-01 14:52:22	<--	fogbank (~foggy@88.147.0.91) has quit (Ping timeout: 272 seconds)
+2016-10-01 14:52:26	eraz	Then there's no difference. :S
+2016-10-01 14:52:35	<--	wildlander (~wild@unaffiliated/wildlander) has quit (Quit: o/)
+2016-10-01 14:52:35	w3z	obviously if were returning a T&& then theres no guarantee of a move
+2016-10-01 14:53:01	Hydrogen	Wondering if theres a c++ function I've never heard of (probably) or if this is simpler than I'm making it (probably) or if I'm just dumb(likely).  If I have a range, and I divide it into N sections, how would I determine which section a number fell into? Would I just need to loop through and check each?
+2016-10-01 14:53:32	xaxxon	!give Hydrogen general
+2016-10-01 14:53:34	nolyc	Hydrogen: ##c++-general for algorithms, libraries, practices, projects, tools etc. yes two #s.
+2016-10-01 14:53:47	xaxxon	there is no builtin
+2016-10-01 14:54:06	Hydrogen	xaxxon, got it, thanks
+2016-10-01 14:54:13	w3z	you find out how many multiples of the "section" size your index is away from the origin
+2016-10-01 14:54:14	<--	bkboggy (~bkboggy@cpe-172-250-147-60.socal.res.rr.com) has quit (Ping timeout: 252 seconds)
+2016-10-01 14:54:16	<--	Gustavo6046 (~Gustavo60@unaffiliated/gustavo6046) has quit (Quit: *rooonc* *yawn* *accidentally dropping a spore* *rooonc* zZzZzZ)
+2016-10-01 14:55:40	<--	orbiter (~UNIX2@ipb21bf875.dynamic.kabel-deutschland.de) has quit (Quit: Backen ist Liebe, Braten ist Leidenschaft, Dampfgaren ist Gleichgültigkeit, Dünsten ist Haß.)
+2016-10-01 14:55:51	w3z	i=7, s=2 then i is at the 7/2 section - 7 is in the 3rd set of sections sized 2...
+2016-10-01 14:55:57	-->	Lord_Dagothur (Dagothur@2607:fea8:9220:688:2118:9c94:9dcf:b3e7) has joined ##c++
+2016-10-01 14:56:07	-->	LunarJetman (~LunarJetm@79-64-100-87.host.pobb.as13285.net) has joined ##c++
+2016-10-01 14:56:30	<--	LunarJetman (~LunarJetm@79-64-100-87.host.pobb.as13285.net) has quit (Client Quit)
+2016-10-01 14:56:41	-->	cbot (~FS@ool-2f12e4fc.dyn.optonline.net) has joined ##c++
+2016-10-01 14:57:13	<--	bloony (~pi@59-253-11.connect.netcom.no) has quit (Ping timeout: 248 seconds)
+2016-10-01 14:57:16	-->	bkboggy (~bkboggy@cpe-172-250-147-60.socal.res.rr.com) has joined ##c++
+2016-10-01 14:57:40	-->	DigiByteDev (~JT2@n218250011174.netvigator.com) has joined ##c++
+2016-10-01 14:57:51	Hydrogen	w3z, thanks
+2016-10-01 14:58:48	-->	heiner (~heiner@dslb-178-005-128-106.178.005.pools.vodafone-ip.de) has joined ##c++
+2016-10-01 14:59:19	<--	cbot_ (~FS@ool-2f12e4fc.dyn.optonline.net) has quit (Ping timeout: 272 seconds)
+2016-10-01 14:59:19		[14:59]
+2016-10-01 14:59:43	-->	snyp (~Snyp@150.129.132.224) has joined ##c++
+2016-10-01 14:59:58	<--	Aph3x-WL (Aph3x@2600:3c03::f03c:91ff:fe6e:5ed9) has quit (Ping timeout: 272 seconds)
+2016-10-01 14:59:58	<--	Karyon (~yaaic@unaffiliated/karyon) has quit (Remote host closed the connection)
+2016-10-01 15:00:27	-->	bg (baf11173@gateway/web/cgi-irc/kiwiirc.com/ip.186.241.17.115) has joined ##c++
+2016-10-01 15:01:39	<--	DigiByteDev (~JT2@n218250011174.netvigator.com) has quit (Ping timeout: 244 seconds)
+2016-10-01 15:02:30	<--	heiner_ (~heiner@dslb-178-008-214-069.178.008.pools.vodafone-ip.de) has quit (Ping timeout: 272 seconds)
+2016-10-01 15:04:15	<--	pied (~kwisatz@ip68-7-161-112.sd.sd.cox.net) has quit (Ping timeout: 244 seconds)
+2016-10-01 15:04:39	-->	pied (~kwisatz@2600:8801:d304:f100:1a57:b7d4:ca0:c6fe) has joined ##c++
+2016-10-01 15:05:06	-->	jamless (~daniel@201.6.97.246) has joined ##c++
+2016-10-01 15:07:06	<--	PJBoy (~PJBoy_@unaffiliated/pjboy) has quit (Ping timeout: 264 seconds)
+2016-10-01 15:07:06	<--	bg (baf11173@gateway/web/cgi-irc/kiwiirc.com/ip.186.241.17.115) has quit (Quit: http://www.kiwiirc.com/ - A hand crafted IRC client)
+2016-10-01 15:09:31	<--	ne0ndrag0n (~ne0ndrag0@pool-96-244-118-192.bltmmd.fios.verizon.net) has quit (Quit: Leaving)
+2016-10-01 15:12:02	<--	bobb_ (~bobbb@HSI-KBW-46-223-228-224.hsi.kabel-badenwuerttemberg.de) has quit (Quit: Leaving)
+2016-10-01 15:14:56	-->	Nomenclatura (~turtle@189.182.36.149) has joined ##c++
+2016-10-01 15:14:56		[15:14]
+2016-10-01 15:19:12	<--	anotherguy (2ec5b8ed@gateway/web/freenode/ip.46.197.184.237) has quit (Ping timeout: 240 seconds)
+2016-10-01 15:19:49	<--	CJKay (~Chris@cpc92318-cmbg19-2-0-cust507.5-4.cable.virginm.net) has quit (Quit: Leaving.)
+2016-10-01 15:21:17	<--	vitimiti (~vitimiti@unaffiliated/vitimiti) has quit (Quit: Meows out)
+2016-10-01 15:21:58	-->	coconuts_ (6d3c048e@gateway/web/freenode/ip.109.60.4.142) has joined ##c++
+2016-10-01 15:22:08	<--	coconuts_ (6d3c048e@gateway/web/freenode/ip.109.60.4.142) has left ##c++
+2016-10-01 15:22:29	<--	Lord_Dagothur (Dagothur@2607:fea8:9220:688:2118:9c94:9dcf:b3e7) has quit (Ping timeout: 265 seconds)
+2016-10-01 15:23:01	-->	Nomenclatura_ (~turtle@189.182.91.233) has joined ##c++
+2016-10-01 15:25:17	-->	Nomenclatura__ (~turtle@189.182.91.233) has joined ##c++
+2016-10-01 15:25:18	<--	Nomenclatura_ (~turtle@189.182.91.233) has quit (Client Quit)
+2016-10-01 15:25:29	<--	Nomenclatura (~turtle@189.182.36.149) has quit (Ping timeout: 248 seconds)
+2016-10-01 15:26:41	-->	CEnnis91 (uid3543@gateway/web/irccloud.com/x-ubsvfwjgcvrkwpad) has joined ##c++
+2016-10-01 15:32:00		[15:26]
+2016-10-01 15:32:18	<--	gist (~jack@p5B104ABB.dip0.t-ipconnect.de) has quit (Ping timeout: 264 seconds)
+2016-10-01 15:32:30	-->	Moleboy (61632d46@gateway/web/freenode/ip.97.99.45.70) has joined ##c++
+2016-10-01 15:32:39	-->	callousfury (~thraxxus@2602:302:d1fb:3360:5845:ee2d:5d49:847) has joined ##c++
+2016-10-01 15:33:10	-->	Carbonflux (~Bob@75-172-112-206.tukw.qwest.net) has joined ##c++
+2016-10-01 15:34:13	<--	xameada (~xameada@ip98-165-190-88.ph.ph.cox.net) has quit (Ping timeout: 244 seconds)
+2016-10-01 15:34:26	<--	fstd (~fstd@unaffiliated/fisted) has quit (Read error: Connection reset by peer)
+2016-10-01 15:34:27	-->	fstd_ (~fstd@unaffiliated/fisted) has joined ##c++
+2016-10-01 15:34:31	-->	tete94 (~tete94@201.206.234.227) has joined ##c++
+2016-10-01 15:34:46	--	fstd_ is now known as fstd
+2016-10-01 15:37:04	<--	Moleboy (61632d46@gateway/web/freenode/ip.97.99.45.70) has quit (Quit: Page closed)
+2016-10-01 15:37:13	<--	callousfury (~thraxxus@2602:302:d1fb:3360:5845:ee2d:5d49:847) has quit (Ping timeout: 248 seconds)
+2016-10-01 15:41:35	-->	jeromelanteri (~jeromelan@cm-119-76-54-163.revip17.asianet.co.th) has joined ##c++
+2016-10-01 15:43:23	<--	sedeki (~textual@unaffiliated/sedeki) has quit (Quit: Textual IRC Client: www.textualapp.com)
+2016-10-01 15:44:17	<--	cobalt-red (~cobalt-re@2620:0:2820:220e:592d:cd59:df2:ae03) has quit (Ping timeout: 272 seconds)
+2016-10-01 15:46:58	<--	SwiftMatt (~Objective@162.242.95.213) has quit (Quit: Textual IRC Client: www.textualapp.com)
+2016-10-01 15:47:23	<--	fedepad (~fedepad@p54846F4E.dip0.t-ipconnect.de) has quit (Remote host closed the connection)
+2016-10-01 15:47:23		[15:47]
+2016-10-01 15:49:06	<--	k_j (~no@151.42.78.158) has quit (Ping timeout: 265 seconds)
+2016-10-01 15:50:26	<--	renlo (~renlo@c-73-231-172-250.hsd1.ca.comcast.net) has quit (Quit: renlo)
+2016-10-01 15:50:58	-->	arescorpio (~arescorpi@51-202-17-190.fibertel.com.ar) has joined ##c++
+2016-10-01 15:54:24	-->	zap0 (~moofy@14-201-222-143.tpgi.com.au) has joined ##c++
+2016-10-01 15:55:41	-->	uboot__ (~moon@x4dbb5734.dyn.telefonica.de) has joined ##c++
+2016-10-01 15:57:04	<--	iambatman (~boris2015@unaffiliated/boris2015) has quit (Quit: brb)
+2016-10-01 15:57:50	-->	alza (uid49753@gateway/web/irccloud.com/x-xtlcccipvmakcada) has joined ##c++
+2016-10-01 15:59:29	<--	uboot_ (~moon@x4dbc01e2.dyn.telefonica.de) has quit (Ping timeout: 272 seconds)
+2016-10-01 16:01:59	-->	hualet (~hualet@183.94.112.221) has joined ##c++
+2016-10-01 16:04:42	<--	chachasmooth (~chachasmo@unaffiliated/chachasmooth) has quit (Ping timeout: 264 seconds)
+2016-10-01 16:04:42		[16:04]
+2016-10-01 16:06:39	-->	chachasmooth (~chachasmo@unaffiliated/chachasmooth) has joined ##c++
+2016-10-01 16:07:09	<--	incog (stillfree@unaffiliated/incog) has quit (Read error: Connection reset by peer)
+2016-10-01 16:07:26	<--	RedOrangeZ (~RedOrange@c-73-30-227-113.hsd1.pa.comcast.net) has quit (Read error: Connection reset by peer)
+2016-10-01 16:08:01	-->	RedOrangeZ (~RedOrange@c-73-30-227-113.hsd1.pa.comcast.net) has joined ##c++
+2016-10-01 16:08:56	-->	Raed|Mobile (~Raed@2607:fb90:470f:4a0a:37a0:b42f:146a:5d99) has joined ##c++
+2016-10-01 16:09:41	-->	SpaceDanceCJ (~Sasha@178.121.162.227) has joined ##c++
+2016-10-01 16:10:45	-->	chang (~vayne@pD9E44DDE.dip0.t-ipconnect.de) has joined ##c++
+2016-10-01 16:11:07	<--	SpaceDanceCJ (~Sasha@178.121.162.227) has quit (Client Quit)
+2016-10-01 16:11:43	<--	irrenhaus3 (~xenon@HSI-KBW-046-005-253-079.hsi8.kabel-badenwuerttemberg.de) has quit (Quit: Lost terminal)
+2016-10-01 16:12:22	<--	gelignite (~gelignite@x4db639ab.dyn.telefonica.de) has quit (Read error: Connection reset by peer)
+2016-10-01 16:13:07	-->	xjrn (~chatzilla@2601:642:4500:1d54:28ff:9e39:495b:d0fa) has joined ##c++
+2016-10-01 16:14:31	<--	yong (~vayne@pD9E45DDE.dip0.t-ipconnect.de) has quit (Ping timeout: 244 seconds)
+2016-10-01 16:16:50	-->	moffz0r (~moffz0r@14-201-5-120.static.tpgi.com.au) has joined ##c++
+2016-10-01 16:16:59	-->	quc (~quc@bbservice65.mmpnet237.tnp.pl) has joined ##c++
+2016-10-01 16:17:57	introom	what's the equivalent of allocator<T>.construct ? I note it's deprecated in C++17 ?
+2016-10-01 16:18:13	-->	pdtpatrick (~Patrick@2620:10d:c090:180::1:b437) has joined ##c++
+2016-10-01 16:18:52	Akahige	Placement new would be my guess.
+2016-10-01 16:19:12	Akahige	I never understood why that was there, since it probably just calls placement new
+2016-10-01 16:19:41	<--	timemage (~timemage@unaffiliated/timemage) has quit (Ping timeout: 244 seconds)
+2016-10-01 16:19:41	o]	C++17 is deprecating some awful stuff indeed. begone!
+2016-10-01 16:20:05	o]	some people were complaining in CppCon that std::randomshuffle was being removed
+2016-10-01 16:20:05		[16:20]
+2016-10-01 16:20:12	Akahige	What? xD
+2016-10-01 16:20:14	Akahige	Lol
+2016-10-01 16:20:15	Akahige	Just lol
+2016-10-01 16:20:19	Akahige	std::shuffle ftw
+2016-10-01 16:20:21	o]	that C++ was getting difficult to be used to "normal people"
+2016-10-01 16:20:23	<--	Hydrogen (~Hydrogen@amarok/developer/hydrogen) has quit (Read error: Connection reset by peer)
+2016-10-01 16:20:24	o]	yeah
+2016-10-01 16:20:33	Akahige	I wont say I'm a normal person
+2016-10-01 16:20:44	Akahige	But I wont say I'm any smarter than a normal (read average) person
+2016-10-01 16:21:05	Akahige	And <random> and related libs is pretty easy to use.
+2016-10-01 16:21:18	o]	yup
+2016-10-01 16:21:20	eraz	<random> is so underused.
+2016-10-01 16:21:27	eraz	Especially in intro to C++ courses.
+2016-10-01 16:21:28	o]	but these people want oneliners
+2016-10-01 16:21:28	-->	ragecryx (~ragecryx@188.4.53.134.dsl.dyn.forthnet.gr) has joined ##c++
+2016-10-01 16:21:31	eraz	screw this rand() crap.
+2016-10-01 16:21:37	-->	dedgrant (~dedgrant@199-116-243-67.dyn.novuscom.net) has joined ##c++
+2016-10-01 16:22:00	<--	tete94 (~tete94@201.206.234.227) has quit (Quit: Leaving)
+2016-10-01 16:22:06	Akahige	<random> is one of my favoured libs tbh
+2016-10-01 16:22:13	-->	z8z (~x@mo1-72-104-233.air.mopera.net) has joined ##c++
+2016-10-01 16:22:23	introom	Akahige: so after you use allocator.allocate to get some raw memory, how can you construct in place ? placement new ? that seems too raw level.
+2016-10-01 16:22:23	o]	one of them was a developer of this --> https://www.juce.com/
+2016-10-01 16:22:24	Akahige	Behind <algorithm>, gotta love higher order functions.
+2016-10-01 16:22:39	Akahige	introom: How is it any less raw level than construct()
+2016-10-01 16:22:45	-->	renlo (~renlo@c-73-231-172-250.hsd1.ca.comcast.net) has joined ##c++
+2016-10-01 16:23:12	Akahige	Only place I've ever used placement new personally was when I was playing with unions inside a class.
+2016-10-01 16:23:26	o]	and then when you look at abominations like this... https://github.com/julianstorer/JUCE/blob/master/examples/HelloWorld/Source/Main.cpp
+2016-10-01 16:24:16	introom	Akahige: ok. then the equivalent for allocator.destroy? explictily call the destructor ?
+2016-10-01 16:24:27	Akahige	Guess so
+2016-10-01 16:24:47	<--	jstein (~quassel@gentoo/developer/jstein) has quit (Remote host closed the connection)
+2016-10-01 16:24:59	<--	DEElekgolo (~DEElekgol@2602:30a:2e0e:a7a0:68a2:b8cf:7b55:7d7e) has quit (Ping timeout: 252 seconds)
+2016-10-01 16:25:09	-->	lamefun (~lamefun2@94.181.154.185) has joined ##c++
+2016-10-01 16:26:24	<--	Immune (~Immune@173.55.30.110) has quit (Ping timeout: 244 seconds)
+2016-10-01 16:26:24	<--	pdtpatrick (~Patrick@2620:10d:c090:180::1:b437) has quit (Remote host closed the connection)
+2016-10-01 16:27:22	-->	anton02 (~quassel@lal1651212.lnk.telstra.net) has joined ##c++
+2016-10-01 16:27:31	-->	pdtpatrick (~Patrick@199.201.64.2) has joined ##c++
+2016-10-01 16:28:00	<--	topshell (~wew@447495.s.dedikuoti.lt) has quit (Remote host closed the connection)
+2016-10-01 16:28:08	<--	c0njugate (~c0njugate@101.160.18.22) has quit (Read error: Connection reset by peer)
+2016-10-01 16:28:22	<--	snover (~Adium@unaffiliated/snover) has quit (Quit: Leaving.)
+2016-10-01 16:28:23	introom	{int * p = new int[100](); --p;}.   is `--p' UB?  I understand for iterator it's UB, but for builtin pointer, is that so ?
+2016-10-01 16:28:23	geordi	error: stray '`' in program
+2016-10-01 16:28:35	-->	c0njugate (~c0njugate@101.160.18.22) has joined ##c++
+2016-10-01 16:29:03	o]	yes. ub
+2016-10-01 16:29:14	<--	z8z (~x@mo1-72-104-233.air.mopera.net) has quit (Quit: Quitting)
+2016-10-01 16:29:18	o]	!next
+2016-10-01 16:29:19	nolyc	Another satisfied customer, next!
+2016-10-01 16:29:37	<--	ragecryx (~ragecryx@188.4.53.134.dsl.dyn.forthnet.gr) has quit (Quit: Leaving)
+2016-10-01 16:29:49	ubsan	I'm pretty sure in C++, it's just implementation defined behavior
+2016-10-01 16:29:56	-->	SpaceDanceCJ (~Sasha@178.121.19.33) has joined ##c++
+2016-10-01 16:29:57	Akahige	Naw
+2016-10-01 16:29:58	Akahige	UB
+2016-10-01 16:30:19	Akahige	For pointers, and iterators, the only valid pointer addresses are the first, and one past the end.
+2016-10-01 16:30:31	ubsan	yeah, but I don't think an invalid pointer address is UB
+2016-10-01 16:30:32	<--	lolmac (~tom@189.4.80.92) has quit (Remote host closed the connection)
+2016-10-01 16:30:35	Akahige	Anything else, the standard doesn't guarantee there wont be overflow/underflow/hardware traps.
+2016-10-01 16:31:01	Akahige	ubsan: Consider you end up on a system where incrementing too far overflows, and overflow on that platform is a hardware trap? ;)
+2016-10-01 16:31:13	ubsan	Akahige: yeah, exactly, IDB
+2016-10-01 16:31:23	Akahige	No, Undefined Behaviour
+2016-10-01 16:31:26	<--	pickyaxe (~pickyaxe@77.139.132.50) has quit (Quit: My MacBook Air has gone to sleep. ZZZzzz…)
+2016-10-01 16:31:27	ubsan	there was a DR about it
+2016-10-01 16:31:34	<--	psionic (aleksah@shell.metropolia.fi) has quit (Ping timeout: 244 seconds)
+2016-10-01 16:31:37	Akahige	Just because UB is predictable for a particular system, doens't make it implementation defined.
+2016-10-01 16:31:40	ubsan	it may not have been changed, but there was a DR
+2016-10-01 16:32:05	<--	pdtpatrick (~Patrick@199.201.64.2) has quit (Ping timeout: 265 seconds)
+2016-10-01 16:32:12	-->	psionic (aleksah@shell.metropolia.fi) has joined ##c++
+2016-10-01 16:32:22	-->	MaBunny (~Peter@117.194.192.107) has joined ##c++
+2016-10-01 16:32:40	-->	DEElekgolo (~DEElekgol@2602:30a:2e0e:a7a0:68a2:b8cf:7b55:7d7e) has joined ##c++
+2016-10-01 16:33:26	<--	renlo (~renlo@c-73-231-172-250.hsd1.ca.comcast.net) has quit (Quit: renlo)
+2016-10-01 16:34:31	introom	ubsan: what is DR? and I'd anticipate that is IDB.
+2016-10-01 16:34:33	<--	TikityTik (~TikityTik@162.223.44.49) has quit (Read error: Connection reset by peer)
+2016-10-01 16:34:40	ubsan	"defect report"
+2016-10-01 16:35:19	-->	lolmac (~tom@189.4.80.92) has joined ##c++
+2016-10-01 16:35:19		[16:35]
+2016-10-01 16:35:28	ubsan	"Indirection through an invalid pointer value and passing an invalid pointer value to a deallocation function have undefined behavior. Any other use of an invalid pointer value has
+2016-10-01 16:35:28	ubsan	implementation-defined behavior."
+2016-10-01 16:35:30	<--	beatdown (beatdown@chainsawed.and.strangled.net) has quit (Quit: ZNC 1.6.1 - http://znc.in)
+2016-10-01 16:35:37	ubsan	3.7.4
+2016-10-01 16:36:10	introom	ubsan: my use case is the value of the pointer, not *pointer. So I guess it's IDB.
+2016-10-01 16:36:18	ubsan	introom: yep
+2016-10-01 16:36:27	Akahige	He asked whether decrementing the pointer was UB
+2016-10-01 16:36:28	<--	abysed (~abysed@c-73-19-73-100.hsd1.wa.comcast.net) has quit (Read error: Connection reset by peer)
+2016-10-01 16:36:31	Akahige	Not dereferencing it
+2016-10-01 16:37:04	ubsan	(I believe)
+2016-10-01 16:37:21	Akahige	There was no dereferencing in that code snipper
+2016-10-01 16:37:24	Akahige	(I observed)
+2016-10-01 16:37:28	<--	dustyp90 (~Dustin@dsl-dhcp-conrtxxahre-72-26-13-37.consolidated.net) has quit (Remote host closed the connection)
+2016-10-01 16:37:38	<--	lamefun (~lamefun2@94.181.154.185) has quit (Remote host closed the connection)
+2016-10-01 16:37:39	ubsan	ah, wait
+2016-10-01 16:37:39	ubsan	http://eel.is/c++draft/expr.add#4
+2016-10-01 16:37:42	-->	matkatmusic (~matkatmus@pool-108-54-229-138.nycmny.fios.verizon.net) has joined ##c++
+2016-10-01 16:37:51	ubsan	"Likewise, the expression P - J points to the (possibly-hypothetical) element x[i - j] if 0 ≤ i - j ≤ n; otherwise, the behavior is undefined."
+2016-10-01 16:38:11	ubsan	introom: ^ it's UB
+2016-10-01 16:38:36	Akahige	I recently made the same mistake as you ubsan, which is why I knew offhand straight away.
+2016-10-01 16:38:47	ubsan	Akahige: makes sense
+2016-10-01 16:39:11	-->	beatdown (beatdown@chainsawed.and.strangled.net) has joined ##c++
+2016-10-01 16:39:23	<--	snyp (~Snyp@150.129.132.224) has quit (Ping timeout: 272 seconds)
+2016-10-01 16:39:27	ubsan	I just recently learned about the "invalid pointers are IDB" rules, so I tried to use that rule :P
+2016-10-01 16:39:29	Akahige	The first and one past the end is valid, any further either side is UB.
+2016-10-01 16:40:00	Akahige	Same rules for iterators I believe, which is why we have reverse iterators :D
+2016-10-01 16:41:13	<--	hexagoxel (~hexagoxel@p200300798F77DD00021E33FFFE2231E9.dip0.t-ipconnect.de) has quit (Ping timeout: 248 seconds)
+2016-10-01 16:41:45	-->	snyp (~Snyp@nas4.meghbelabroadband.in) has joined ##c++
+2016-10-01 16:42:25	-->	lamefun (~lamefun2@94.181.154.185) has joined ##c++
+2016-10-01 16:42:31	-->	lamefun2 (~lamefun2@94.181.154.185) has joined ##c++
+2016-10-01 16:42:32	<--	lamefun2 (~lamefun2@94.181.154.185) has quit (Client Quit)
+2016-10-01 16:43:53	<--	pied (~kwisatz@2600:8801:d304:f100:1a57:b7d4:ca0:c6fe) has quit (Ping timeout: 248 seconds)
+2016-10-01 16:45:07	-->	z8z (~x@mo1-72-104-233.air.mopera.net) has joined ##c++
+2016-10-01 16:45:20	-->	Nomenclatura (~turtle@189.182.143.161) has joined ##c++
+2016-10-01 16:47:43	-->	hexagoxel (~hexagoxel@p200300798F5DF300021E33FFFE2231E9.dip0.t-ipconnect.de) has joined ##c++
+2016-10-01 16:47:54	<--	Nomenclatura__ (~turtle@189.182.91.233) has quit (Ping timeout: 264 seconds)
+2016-10-01 16:48:11	<--	edr (~edr@pdpc/supporter/professional/edr) has quit (Quit: Leaving)
+2016-10-01 16:48:52	-->	Judge_Dredd (~Judge_Dre@unaffiliated/judge-dredd/x-2170742) has joined ##c++
+2016-10-01 16:50:09	<--	lamefun (~lamefun2@94.181.154.185) has quit (Quit: Leaving)
+2016-10-01 16:51:47	-->	lamefun (~lamefun2@94.181.154.185) has joined ##c++
+2016-10-01 16:51:47		[16:51]
+2016-10-01 16:53:49	o]	Akahige: which also explains the weird .base() rules
+2016-10-01 16:54:08	<--	lamefun (~lamefun2@94.181.154.185) has quit (Client Quit)
+2016-10-01 16:54:37	Akahige	Yea, it's always a surprise for a newbie that the .base() iterator points to the item before the one you're on, or after, depends on your view xD
+2016-10-01 16:55:00	-->	pdtpatrick (~Patrick@2620:10d:c090:180::1:b437) has joined ##c++
+2016-10-01 16:56:39	-->	dedgrant_ (~dedgrant@199-116-243-67.dyn.novuscom.net) has joined ##c++
+2016-10-01 16:56:43	<--	pdtpatrick (~Patrick@2620:10d:c090:180::1:b437) has quit (Remote host closed the connection)
+2016-10-01 16:57:31	-->	ByteStorm (~Peter@117.194.192.107) has joined ##c++
+2016-10-01 16:57:59	<--	blackbeard420 (~blackbear@dynamic-acs-24-154-82-158.zoominternet.net) has quit (Quit: Lost terminal)
+2016-10-01 16:58:15	-->	pdtpatrick (~Patrick@2620:10d:c090:180::1:b437) has joined ##c++
+2016-10-01 16:58:17	<--	MaBunny (~Peter@117.194.192.107) has quit (Ping timeout: 248 seconds)
+2016-10-01 16:58:38	<--	Malkrith (uid186536@gateway/web/irccloud.com/x-ujrpwsqwmkojvlgi) has quit (Quit: Connection closed for inactivity)
+2016-10-01 16:59:38	<--	dedgrant (~dedgrant@199-116-243-67.dyn.novuscom.net) has quit (Ping timeout: 252 seconds)
+2016-10-01 17:01:50	<--	rorro (~rorro@c-227-220.eduroam.liu.se) has quit (Ping timeout: 252 seconds)
+2016-10-01 17:02:23	<--	chachasmooth (~chachasmo@unaffiliated/chachasmooth) has quit (Ping timeout: 252 seconds)
+2016-10-01 17:02:49	<--	pdtpatrick (~Patrick@2620:10d:c090:180::1:b437) has quit (Ping timeout: 272 seconds)
+2016-10-01 17:04:10	-->	chachasmooth (~chachasmo@unaffiliated/chachasmooth) has joined ##c++
+2016-10-01 17:04:39	-->	pdtpatrick (~Patrick@2620:10d:c090:180::1:b437) has joined ##c++
+2016-10-01 17:04:50	smak	Have a bit of odd question. Does there exist a method/library that easily add the ability for one to track in and out bound TCP packets in their application. I have a need to know if the service I have connected to has acknowledged receipt of transmission, or if the packet is waiting in the OS out bound buffer.
+2016-10-01 17:05:00	<--	matkatmusic (~matkatmus@pool-108-54-229-138.nycmny.fios.verizon.net) has quit (Remote host closed the connection)
+2016-10-01 17:05:27	-->	renlo (~renlo@c-73-231-172-250.hsd1.ca.comcast.net) has joined ##c++
+2016-10-01 17:06:19	-->	ARCADIVS (~RMM@97.84.20.251) has joined ##c++
+2016-10-01 17:06:53	<--	cbot (~FS@ool-2f12e4fc.dyn.optonline.net) has quit (Ping timeout: 265 seconds)
+2016-10-01 17:06:53		[17:06]
+2016-10-01 17:07:05	<--	SpaceDanceCJ (~Sasha@178.121.19.33) has quit (Quit: Going offline, see ya! (www.adiirc.com))
+2016-10-01 17:07:40	-->	cbot (~FS@ool-2f12e4fc.dyn.optonline.net) has joined ##c++
+2016-10-01 17:08:18	<--	KAHR-Alpha (~Alpha@AReims-652-1-192-126.w92-142.abo.wanadoo.fr) has quit (Ping timeout: 264 seconds)
+2016-10-01 17:08:49	<--	pdtpatrick (~Patrick@2620:10d:c090:180::1:b437) has quit (Remote host closed the connection)
+2016-10-01 17:09:01	-->	pdtpatrick (~Patrick@199.201.64.2) has joined ##c++
+2016-10-01 17:11:37	<--	chasmo77 (~chas77@158.183-62-69.ftth.swbr.surewest.net) has quit (Quit: It's just that easy)
+2016-10-01 17:12:22	<--	blueness_ (~blueness@gentoo/developer/blueness) has quit (Quit: blueness_)
+2016-10-01 17:12:45	-->	VlijmenFileer (~vlijmenfi@199.195.193.181) has joined ##c++
+2016-10-01 17:13:07	-->	VlijmenFileer42 (~vlijmenfi@199.195.193.181) has joined ##c++
+2016-10-01 17:13:28	<--	VlijmenFileer (~vlijmenfi@199.195.193.181) has quit (Remote host closed the connection)
+2016-10-01 17:14:11	-->	KNRO__ (~quassel@78.138.118.122) has joined ##c++
+2016-10-01 17:14:13	<--	KNRO_ (~quassel@94.187.209.247) has quit (Ping timeout: 272 seconds)
+2016-10-01 17:14:54	-->	SwiftMatt (~Objective@162.242.95.213) has joined ##c++
+2016-10-01 17:14:55	-->	doppel (~chatzilla@ip70-189-197-158.lv.lv.cox.net) has joined ##c++
+2016-10-01 17:17:02	<--	justanotheruser (~justanoth@unaffiliated/justanotheruser) has quit (Ping timeout: 265 seconds)
+2016-10-01 17:18:25	introom	ubsan: sadly it's UB. but I guess ppl are using that UB in lots of places.
+2016-10-01 17:18:34	ubsan	introom: yeah, it is
+2016-10-01 17:18:55	Akahige	Careful with it though
+2016-10-01 17:18:58	Akahige	You could get pregnant
+2016-10-01 17:20:05	doppel	what's UB?
+2016-10-01 17:20:13	-->	blueness_ (~blueness@gentoo/developer/blueness) has joined ##c++
+2016-10-01 17:21:27	Akahige	Undefined Behaviour
+2016-10-01 17:22:17	-->	cobalt-red (~cobalt-re@2620:0:2820:220e:592d:cd59:df2:ae03) has joined ##c++
+2016-10-01 17:22:17		[17:22]
+2016-10-01 17:24:24	<--	al1o (~al1o@236.red-88-16-49.dynamicip.rima-tde.net) has quit (Quit: My MacBook Pro has gone to sleep. ZZZzzz…)
+2016-10-01 17:25:46	doppel	no, what is UB?
+2016-10-01 17:26:03	<--	cobalt-red (~cobalt-re@2620:0:2820:220e:592d:cd59:df2:ae03) has quit (Client Quit)
+2016-10-01 17:26:13	 *	doppel sighs
+2016-10-01 17:26:43	-->	xiphffff (~xiphffff@168.235.67.132) has joined ##c++
+2016-10-01 17:26:45	doppel	which particular UB is being referred to?
+2016-10-01 17:27:42	Akahige	doppel: Incrementing or decrementing a pointer to a location before the beginning or past the past the end location.
+2016-10-01 17:28:11	-->	pied (~kwisatz@2600:8801:d304:f100:1a57:b7d4:ca0:c6fe) has joined ##c++
+2016-10-01 17:28:47	<--	dedgrant_ (~dedgrant@199-116-243-67.dyn.novuscom.net) has quit (Ping timeout: 252 seconds)
+2016-10-01 17:28:54	doppel	ah.
+2016-10-01 17:30:44	<--	zap0 (~moofy@14-201-222-143.tpgi.com.au) has quit (Read error: Connection reset by peer)
+2016-10-01 17:31:18	doppel	actually, i believe it is not UB to increment a pointer one past the end location
+2016-10-01 17:31:28	-->	Aph3x-WL (Aph3x@2600:3c03::f03c:91ff:fe6e:5ed9) has joined ##c++
+2016-10-01 17:31:45	doppel	it is, of course, UB to actually dereference past the end location.
+2016-10-01 17:32:37	Akahige	Nah
+2016-10-01 17:32:42	-->	P1RATEZ (piratez@unaffiliated/p1ratez) has joined ##c++
+2016-10-01 17:32:47	Akahige	It's UB to increment it past one place past the end.
+2016-10-01 17:33:10	Akahige	doppel: Because it could overflow, which in itself is UB, and overflow also may trigger a hardware trap ;)
+2016-10-01 17:33:18	chaiomanot	in 100% of platforms that c actually works on, pointers are just an offset. it doesn't matter how far off from the original address you go, so long as you are consistent with it and only dereference on a valid address you are OK
+2016-10-01 17:33:20	chaiomanot	UB or not
+2016-10-01 17:33:22	ubsan	Akahige: reread :P
+2016-10-01 17:33:34	<--	MissionCritical (~MissionCr@unaffiliated/missioncritical) has quit (Ping timeout: 244 seconds)
+2016-10-01 17:33:36	ubsan	"i believe it is not UB to increment a pointer one past the end location"
+2016-10-01 17:33:41	Akahige	AH!
+2016-10-01 17:33:41	ubsan	doppel: also reread :P
+2016-10-01 17:33:43	Akahige	Apologies.
+2016-10-01 17:33:50	Akahige	Yea, one past the end is valid
+2016-10-01 17:33:52	<--	xiphffff (~xiphffff@168.235.67.132) has quit (Quit: leaving)
+2016-10-01 17:33:57	Akahige	One past one past the end is invalid
+2016-10-01 17:33:59	Akahige	That's confusing
+2016-10-01 17:34:02	Akahige	!recursion
+2016-10-01 17:34:03	nolyc	To understand recursion, you first must understand recursion. see !recursion.
+2016-10-01 17:34:07	chaiomanot	one past the end is valid how?
+2016-10-01 17:34:09	doppel	ubsan: reread what?
+2016-10-01 17:34:12	Alec	ubsan: that quote is true
+2016-10-01 17:34:13	chaiomanot	you cant dereference it
+2016-10-01 17:34:15	Alec	1 past is okay, but 2 is not
+2016-10-01 17:34:19	chaiomanot	^ not true
+2016-10-01 17:34:23	Akahige	chaiomanot: Not valid to dereference it, but it's valid to increment to it.
+2016-10-01 17:34:28	Alec	Yeah you can't dereference it but you can go ONE beyond
+2016-10-01 17:34:35	chaiomanot	Akahige, you can increment as far as you like past the end
+2016-10-01 17:34:39	Akahige	No, you can't
+2016-10-01 17:34:40	chaiomanot	1 or 2 or 3...
+2016-10-01 17:34:41	Alec	BUT NOT TWO! Goodness gracious, hell no, not 2!
+2016-10-01 17:34:41	Akahige	It's UB
+2016-10-01 17:35:04	Akahige	chaiomanot: Not joking, it's UB to increment more than one past the end.
+2016-10-01 17:35:14	chaiomanot	i dont know what the spec has to say about it, but on 100% of platforms it's ok
+2016-10-01 17:35:19	-->	treehug88 (~textual@cpe-68-173-227-135.nyc.res.rr.com) has joined ##c++
+2016-10-01 17:35:24	Akahige	It may do nothing bad on your system, but the spec says it's UB
+2016-10-01 17:35:29	-->	zys (~zys@183.240.202.31) has joined ##c++
+2016-10-01 17:35:30	chaiomanot	"your system"
+2016-10-01 17:35:35	chaiomanot	ALL systems
+2016-10-01 17:35:45	Akahige	You clearly have never done embedded programming
+2016-10-01 17:35:45	<--	pied (~kwisatz@2600:8801:d304:f100:1a57:b7d4:ca0:c6fe) has quit (Ping timeout: 272 seconds)
+2016-10-01 17:35:46	Akahige	:D
+2016-10-01 17:35:50	ubsan	heh
+2016-10-01 17:35:50	chaiomanot	Akahige, i sure have
+2016-10-01 17:35:55	Akahige	Lots of crazy shit happens there
+2016-10-01 17:35:58	chaiomanot	ya
+2016-10-01 17:36:05	chaiomanot	guess what, pointers are just offsets there too
+2016-10-01 17:36:18	Akahige	Why this hostility?
+2016-10-01 17:36:39	Akahige	It's UB, end of story. I don't care if no system in the world has an ill effect of ignoring this rule, it's still UB.
+2016-10-01 17:36:52	chaiomanot	can you reference that for me?
+2016-10-01 17:37:04	chaiomanot	i'd like to see where it says 1 past is ok but 2 is not
+2016-10-01 17:37:04	Akahige	It'd be a real effort to search it, but I could.
+2016-10-01 17:37:20	<--	josef_k (~jeremy@203-213-41-139.tpgi.com.au) has quit (Ping timeout: 265 seconds)
+2016-10-01 17:37:20		[17:37]
+2016-10-01 17:37:21	doppel	hmmm, the draft on eelis's thing is different from this c++14 draft i have
+2016-10-01 17:37:40	eraz	doppel: because eelis's is built using the latest.
+2016-10-01 17:37:44	eraz	It's constantly changing.
+2016-10-01 17:37:49	doppel	bleah.
+2016-10-01 17:37:49	<--	bkboggy (~bkboggy@cpe-172-250-147-60.socal.res.rr.com) has quit (Ping timeout: 265 seconds)
+2016-10-01 17:37:55	doppel	i can't work with that. :-/
+2016-10-01 17:37:58	chaiomanot	the thing is, one could theoretically have a pointer to a memory block at the end of the addressable space
+2016-10-01 17:38:06	<--	CEnnis91 (uid3543@gateway/web/irccloud.com/x-ubsvfwjgcvrkwpad) has quit (Quit: Connection closed for inactivity)
+2016-10-01 17:38:06	chaiomanot	in which case one past then end would overflow to zero
+2016-10-01 17:38:15	eraz	doppel: you can actually see the changes being made here: https://github.com/cplusplus/draft
+2016-10-01 17:38:24	chaiomanot	there's no way that's OK, but random changes aren't
+2016-10-01 17:38:59	doppel	the paper i have is n4140...hmm.
+2016-10-01 17:40:16	<--	z8z (~x@mo1-72-104-233.air.mopera.net) has quit (Quit: Quitting)
+2016-10-01 17:40:43	chaiomanot	<Akahige> It may do nothing bad on your system, but the spec says it's UB
+2016-10-01 17:40:49	-->	bkboggy (~bkboggy@cpe-172-250-147-60.socal.res.rr.com) has joined ##c++
+2016-10-01 17:40:52	chaiomanot	it's mathematically impossible for it to not work
+2016-10-01 17:40:53	Akahige	chaiomanot: Looking it up now btw, since you asked nicely. xD
+2016-10-01 17:41:06	chaiomanot	since a C pointer doesnt know how big its memory block is
+2016-10-01 17:41:13	chaiomanot	it cant know where 1 past is
+2016-10-01 17:41:20	-->	Mission-Critical (~MissionCr@unaffiliated/missioncritical) has joined ##c++
+2016-10-01 17:41:33	chaiomanot	an increment MUST simply offset the address
+2016-10-01 17:41:55	chaiomanot	in which case, it can be moved anywhere along the ~offset~ number line in question
+2016-10-01 17:42:37	Akahige	chaiomanot: http://eel.is/c++draft/expr.add
+2016-10-01 17:42:42	Akahige	Paragraph 4
+2016-10-01 17:43:10	Akahige	Tbh, the wording is much simpler in the C standard xD
+2016-10-01 17:43:15	Akahige	But we're in ##C++ right now
+2016-10-01 17:44:12	chaiomanot	I see, it does seem to say that
+2016-10-01 17:44:20	chaiomanot	Akahige, i don't disagree that the spec claims it to be UB
+2016-10-01 17:44:29	Akahige	That's all I've argued :P
+2016-10-01 17:44:31	Akahige	Nothing more.
+2016-10-01 17:44:33	chaiomanot	but as i said, it's physically impossible for it to not work
+2016-10-01 17:44:38	chaiomanot	spec be damned :P
+2016-10-01 17:45:03	<--	xaxxon (~xaxxon@c-24-18-184-142.hsd1.wa.comcast.net) has quit (Quit: This computer has gone to sleep)
+2016-10-01 17:45:11	Akahige	I assume the standard just puts it on the responsibility of the OS or implementor that the max address in memory always has one after it? xD Idk
+2016-10-01 17:45:36	Akahige	The program might not know how much memory it has, the OS does though.
+2016-10-01 17:45:51	Akahige	Although, I've already mentioned embedded, and in that case, it's often no one knows. :D
+2016-10-01 17:46:15	Akahige	But embedded platforms' implementations of C and C++ are very often not fully standards compliant anyway if we're honest.
+2016-10-01 17:46:29	chaiomanot	<Akahige> I assume the standard just puts it on the responsibility of the OS or implementor that the max address in memory always has one after it? xD Idk
+2016-10-01 17:46:38	chaiomanot	if zero isn't a valid address, i guess so
+2016-10-01 17:47:09	chaiomanot	Akahige, even in embedded memory blocks have contiguous addresses
+2016-10-01 17:47:20	Akahige	hehehehe, kinda...
+2016-10-01 17:47:38	 *	Akahige hates having to change register values to change which page in memory he refers to on embedded silliness.
+2016-10-01 17:47:40	chaiomanot	yes, even though there are different memory regions
+2016-10-01 17:47:48	Akahige	Well, if the platform doesn't fire off any silly traps for an overflow, I assume 0 would be a valid past the end.
+2016-10-01 17:47:49	chaiomanot	blocks don't overlap :P
+2016-10-01 17:48:01	chaiomanot	or at least, not without the addresses being seamless
+2016-10-01 17:48:27	<--	bkboggy (~bkboggy@cpe-172-250-147-60.socal.res.rr.com) has quit (Ping timeout: 265 seconds)
+2016-10-01 17:48:30	Akahige	You could always pretend that you just have a 12 bit address, rather than 8 bits of addressable memory in 4 pages. xD
+2016-10-01 17:48:56	Akahige	But then again, we run into more embedded silliness when some of those memory locations maps directly to flag registers and working registers.
+2016-10-01 17:49:17	doppel	actually, it seems that a pointer one past the end of an object is still defined
+2016-10-01 17:49:20	doppel	http://eel.is/c++draft/basic.compound#3
+2016-10-01 17:49:29	-->	Adbray (~Adbtay@2001:470:1f11:def:3dc1:295d:bd4f:952d) has joined ##c++
+2016-10-01 17:49:32	Akahige	doppel: I originally said that one past the end is defined xD
+2016-10-01 17:49:37	chaiomanot	true true, but then it's not a C array is it
+2016-10-01 17:49:47	Akahige	doppel: It got confusing, because I kept saying one past one past the end is not defined.
+2016-10-01 17:49:51	Akahige	Nested "one past"s
+2016-10-01 17:50:11	doppel	okay
+2016-10-01 17:50:19	 *	Akahige chose silly wording
+2016-10-01 17:50:26	Akahige	I should just said two past the end
+2016-10-01 17:50:39	chaiomanot	Akahige, i suspect the reason they did it that way is because you might very well need an address to it for slicing
+2016-10-01 17:50:48	chaiomanot	granted, it would be a zero length slice, but still
+2016-10-01 17:50:51	Akahige	Couldn't tell ya
+2016-10-01 17:51:04	chaiomanot	at least, i know i do that quite a bit in my c string handling code
+2016-10-01 17:51:15	chaiomanot	good to see it's not UB :P
+2016-10-01 17:51:21	-->	bkboggy (~bkboggy@cpe-172-250-147-60.socal.res.rr.com) has joined ##c++
+2016-10-01 17:51:29	Akahige	But I'd assume it's because for(int* p = whatever; p != past_the_end; ++p)
+2016-10-01 17:51:40	Akahige	You have to be able to legally obtain that past_the_end
+2016-10-01 17:51:40	chaiomanot	ah yes, that as well
+2016-10-01 17:53:13	-->	KNRO_ (~quassel@94.187.209.247) has joined ##c++
+2016-10-01 17:53:13		[17:53]
+2016-10-01 17:54:15	-->	xiphffff (~xiphffff@unaffiliated/dkingston) has joined ##c++
+2016-10-01 17:56:45	-->	hk238 (~kvirc@unaffiliated/hk238) has joined ##c++
+2016-10-01 17:56:57	<--	KNRO__ (~quassel@78.138.118.122) has quit (Ping timeout: 248 seconds)
+2016-10-01 17:58:02	<--	xiphffff (~xiphffff@unaffiliated/dkingston) has quit (Client Quit)
+2016-10-01 18:01:24	<--	LastGeko (~quassel@69.172.148.83) has quit (Read error: Connection reset by peer)
+2016-10-01 18:02:30	<--	quc (~quc@bbservice65.mmpnet237.tnp.pl) has quit (Ping timeout: 244 seconds)
+2016-10-01 18:03:20	-->	xiphffff (~ffff@unaffiliated/dkingston) has joined ##c++
+2016-10-01 18:04:02	<--	xiphiasx_ (sid165431@gateway/web/irccloud.com/x-ralltaazbexypchm) has quit
+2016-10-01 18:04:19	--	xiphffff is now known as xiphiasx_
+2016-10-01 18:04:50	-->	rorro (~rorro@h-170-152-58.a163.priv.bahnhof.se) has joined ##c++
+2016-10-01 18:05:34	-->	matkatmusic (~matkatmus@pool-108-54-229-138.nycmny.fios.verizon.net) has joined ##c++
+2016-10-01 18:05:38	<--	alza (uid49753@gateway/web/irccloud.com/x-xtlcccipvmakcada) has quit (Quit: Connection closed for inactivity)
+2016-10-01 18:05:46	-->	zwf (~Thunderbi@modemcable076.238-20-96.mc.videotron.ca) has joined ##c++
+2016-10-01 18:06:19	<--	jbud (~jbud@ip-24-54-73-229.user.start.ca) has quit (Quit: leaving)
+2016-10-01 18:10:00	doppel	it's easier to study c++ using a draft closest to a standard release, rather than using a draft that changes between standard releases.
+2016-10-01 18:10:00		[18:10]
+2016-10-01 18:10:42	<--	matkatmusic (~matkatmus@pool-108-54-229-138.nycmny.fios.verizon.net) has quit (Ping timeout: 264 seconds)
+2016-10-01 18:14:16	w3z	so then, youll re-study the standard after the release in a few months...
+2016-10-01 18:14:37	Akahige	Personally I'd work from the working draft
+2016-10-01 18:14:41	<--	pdtpatrick (~Patrick@199.201.64.2) has quit (Remote host closed the connection)
+2016-10-01 18:14:43	<--	Nomenclatura (~turtle@189.182.143.161) has quit (Quit: q)
+2016-10-01 18:14:55	Akahige	However, if you're an implementor, you really should get the proper release for that standard. :D
+2016-10-01 18:15:06	-->	Nomenclatura (~turtle@189.182.143.161) has joined ##c++
+2016-10-01 18:15:56	<--	bjz (~bjz@104.222.140.110) has quit (Ping timeout: 244 seconds)
+2016-10-01 18:16:15	-->	bjz_ (~bjz@14-201-215-168.tpgi.com.au) has joined ##c++
+2016-10-01 18:16:44	<--	bjz_ (~bjz@14-201-215-168.tpgi.com.au) has quit (Read error: Connection reset by peer)
+2016-10-01 18:17:09	doppel	w3z:  then i will.
+2016-10-01 18:17:48	-->	bjz (~bjz@14-201-215-168.tpgi.com.au) has joined ##c++
+2016-10-01 18:18:04	-->	pdtpatrick (~Patrick@199.201.64.2) has joined ##c++
+2016-10-01 18:18:56	<--	bjz (~bjz@14-201-215-168.tpgi.com.au) has quit (Read error: Connection reset by peer)
+2016-10-01 18:19:03	-->	pied (~kwisatz@2600:8801:d304:f100:1a57:b7d4:ca0:c6fe) has joined ##c++
+2016-10-01 18:19:42	doppel	actually, it might be some time before i delve into c++17
+2016-10-01 18:19:43	-->	fahadash (uid44972@gateway/web/irccloud.com/x-eeqpxjpnocnchieq) has joined ##c++
+2016-10-01 18:20:03	-->	bjz (~bjz@14-201-215-168.tpgi.com.au) has joined ##c++
+2016-10-01 18:20:28	-->	code_zombie_ (~code_zomb@136.63.230.43) has joined ##c++
+2016-10-01 18:20:30	Akahige	I've played with some features
+2016-10-01 18:20:38	Akahige	But once it's released I'll probably have a go at them all xD
+2016-10-01 18:21:13	-->	xaxxon (~xaxxon@2601:602:9d00:d58b:8995:fa1f:3f38:7a91) has joined ##c++
+2016-10-01 18:22:24	doppel	of course by then they'll probably be nearly ready to release c++20
+2016-10-01 18:23:47	<--	code_zombie (~code_zomb@136.63.230.43) has quit (Ping timeout: 252 seconds)
+2016-10-01 18:24:13	<--	pdtpatrick (~Patrick@199.201.64.2) has quit (Ping timeout: 265 seconds)
+2016-10-01 18:24:28	<--	vralphv (~vralp@d137-186-58-40.abhsia.telus.net) has quit (Quit: leaving)
+2016-10-01 18:24:58	-->	Nilesh_ (uid116340@gateway/web/irccloud.com/x-jmpjvvepzzsrlkde) has joined ##c++
+2016-10-01 18:25:15	<--	allen29 (~all@unaffiliated/allen29) has quit (Quit: Leaving)
+2016-10-01 18:25:15		[18:25]
+2016-10-01 18:30:56	<--	jamless (~daniel@201.6.97.246) has quit (Ping timeout: 252 seconds)
+2016-10-01 18:31:45	<--	glenfe (~glen@unaffiliated/glenfe) has quit (Read error: Connection reset by peer)
+2016-10-01 18:32:18	-->	pdtpatrick (~Patrick@199.201.64.2) has joined ##c++
+2016-10-01 18:34:01	<--	pied (~kwisatz@2600:8801:d304:f100:1a57:b7d4:ca0:c6fe) has quit (Ping timeout: 272 seconds)
+2016-10-01 18:34:58	-->	baotiao (~baotiao@43.255.178.184) has joined ##c++
+2016-10-01 18:37:58	-->	xameada (~xameada@ip98-165-190-88.ph.ph.cox.net) has joined ##c++
+2016-10-01 18:38:31	Alec	doppel: it's a bit weird how there's almost nothing for 40 years, then suddenly they're AHEAD of schedule
+2016-10-01 18:42:07	<--	raphaelsc (~raphaelsc@177.206.69.165.dynamic.adsl.gvt.net.br) has quit (Read error: Connection reset by peer)
+2016-10-01 18:42:07		[18:42]
+2016-10-01 18:45:18	<--	TheSeven (~quassel@rockbox/developer/TheSeven) has quit (Disconnected by services)
+2016-10-01 18:45:29	<--	dv_ (~quassel@62.178.118.86) has quit (Ping timeout: 248 seconds)
+2016-10-01 18:46:03	-->	dv_ (~quassel@62.178.118.86) has joined ##c++
+2016-10-01 18:51:04	<--	fluter (~fluter@fedora/fluter) has quit (Ping timeout: 244 seconds)
+2016-10-01 18:51:30	<--	renlo (~renlo@c-73-231-172-250.hsd1.ca.comcast.net) has quit (Quit: renlo)
+2016-10-01 18:52:06	<--	lolmac (~tom@189.4.80.92) has quit (Ping timeout: 264 seconds)
+2016-10-01 18:52:17	-->	renlo (~renlo@c-73-231-172-250.hsd1.ca.comcast.net) has joined ##c++
+2016-10-01 18:52:56	<--	fpro (~fpro@hines-sting-1-21.greenmountainaccess.net) has quit (Quit: Leaving)
+2016-10-01 18:53:47	-->	SHC (~quassel@117.204.43.65) has joined ##c++
+2016-10-01 18:56:47	<--	rosten (~rosten@cpe-45-48-9-161.socal.res.rr.com) has quit (Ping timeout: 252 seconds)
+2016-10-01 18:57:01	<--	Cabanossi (~Cabanossi@p5DD7A376.dip0.t-ipconnect.de) has quit (Ping timeout: 265 seconds)
+2016-10-01 18:57:04	<--	renlo (~renlo@c-73-231-172-250.hsd1.ca.comcast.net) has quit (Client Quit)
+2016-10-01 18:57:28	-->	lolmac (~tom@189.4.80.92) has joined ##c++
+2016-10-01 18:57:28		[18:57]
+2016-10-01 18:58:17	-->	Cabanossi (~Cabanossi@p5DD7A637.dip0.t-ipconnect.de) has joined ##c++
+2016-10-01 19:02:30	-->	justanotheruser (~justanoth@unaffiliated/justanotheruser) has joined ##c++
+2016-10-01 19:02:38	<--	arescorpio (~arescorpi@51-202-17-190.fibertel.com.ar) has quit (Quit: Leaving.)
+2016-10-01 19:04:19	<--	navidr (uid112413@gateway/web/irccloud.com/x-ydruzytsiwmnitba) has quit (Quit: Connection closed for inactivity)
+2016-10-01 19:08:52	ByteStorm	!books
+2016-10-01 19:08:54	nolyc	A nice C++ book guide and list can be found at http://stackoverflow.com/q/388242/1090079
+2016-10-01 19:09:05	o]	yeah \m/
+2016-10-01 19:09:21	-->	lamefun (~lamefun2@94.181.154.185) has joined ##c++
+2016-10-01 19:12:24	doppel	what is that even in response to?
+2016-10-01 19:12:32	-->	envi (kvirc@121.132.243.26) has joined ##c++
+2016-10-01 19:12:32		[19:12]
+2016-10-01 19:12:49	<--	envi (kvirc@121.132.243.26) has quit (Client Quit)
+2016-10-01 19:12:53	doppel	errr, nevermind.
+2016-10-01 19:15:03	ByteStorm	guys,how much is "A Tour of C++" book useful in these days of C++14/17 ??
+2016-10-01 19:15:21	<--	rorro (~rorro@h-170-152-58.a163.priv.bahnhof.se) has quit (Ping timeout: 248 seconds)
+2016-10-01 19:15:24	ByteStorm	tht seems to be the only paperback  i can afford
+2016-10-01 19:15:33	doppel	well, it covers the basics, at least
+2016-10-01 19:15:44	ByteStorm	hmm ):
+2016-10-01 19:15:49	ubsan	the 2011 one is good
+2016-10-01 19:15:55	-->	jamesaxl (~jamesaxl@176.98.129.195) has joined ##c++
+2016-10-01 19:15:56	ubsan	I think
+2016-10-01 19:15:59	ByteStorm	which book?
+2016-10-01 19:16:07	ubsan	the "A Tour of C++"
+2016-10-01 19:16:11	ByteStorm	do you hav a copy with you now?
+2016-10-01 19:16:16	ubsan	nope
+2016-10-01 19:16:22	ubsan	I learned from the interwebs
+2016-10-01 19:16:28	ByteStorm	ok
+2016-10-01 19:16:40	 *	ubsan recommends cppcon talks
+2016-10-01 19:16:56	<--	lamefun (~lamefun2@94.181.154.185) has quit (Quit: Leaving)
+2016-10-01 19:16:56	ByteStorm	was there a edition of 2015 too?
+2016-10-01 19:17:09	ByteStorm	srry about this:  http://www.amazon.in/Tour-C-Bjarne-Stroustrup/dp/9332555338/ref=sr_1_13?s=books&ie=UTF8&qid=1475385198&sr=1-13&keywords=C%2B%2B+Primer
+2016-10-01 19:17:40	<--	pdtpatrick (~Patrick@199.201.64.2) has quit (Remote host closed the connection)
+2016-10-01 19:17:55	Alec	ByteStorm: hopefully others will back me up on this: Bgianyee has written some total crap
+2016-10-01 19:17:59	Alec	Oh man that came out wrong...
+2016-10-01 19:18:06	Alec	Bjarne has written some total crap
+2016-10-01 19:18:27	Alec	Like there's this 900 page exercise book sold as a textbook (often sold with The C++ Programming Language) - TOTAL CRAP
+2016-10-01 19:18:29	ByteStorm	i dont think so,i had a prev book of his tht i read and i learned the basics of c++ from it
+2016-10-01 19:18:47	ubsan	Alec: lol
+2016-10-01 19:19:11	ByteStorm	Programming Principles and Practise Using C++ 3rd edition
+2016-10-01 19:19:12	Alec	ubsan: I actually mean it. There are like 3 C++ books I actually recommend, the rest are proper crap. Like "selling false hopes and dreams" crap
+2016-10-01 19:19:14	ByteStorm	maybe
+2016-10-01 19:19:19	ubsan	Alec: ?
+2016-10-01 19:19:26	Alec	Maybe... is it big and has a picture of a bird swimming above water ByteStorm?
+2016-10-01 19:19:35	ByteStorm	no the prev edition
+2016-10-01 19:19:40	Alec	If so I have a copy in my bathroom you could have, it's not there for reading
+2016-10-01 19:19:41	ubsan	Alec: I wanna know the 3 books :P
+2016-10-01 19:19:42	-->	gravitation (~gravitati@c-50-176-207-97.hsd1.ct.comcast.net) has joined ##c++
+2016-10-01 19:19:50	ByteStorm	oh no,this one was it
+2016-10-01 19:19:56	ByteStorm	The C++ Programming Language: third edition2002
+2016-10-01 19:20:15	ByteStorm	it was for C++03
+2016-10-01 19:20:44	Alec	The C++ Programming Language was grey for 98.... mountains for 11 right?
+2016-10-01 19:20:48	Alec	That's okay
+2016-10-01 19:21:08	<--	Judge_Dredd (~Judge_Dre@unaffiliated/judge-dredd/x-2170742) has quit (Quit: Leaving.)
+2016-10-01 19:21:27	Alec	TBH the best one I've ever read for learning C++ (provided you've got some minor experience already in .... writing? I dunno) is Herb Sutter's Exceptional C++
+2016-10-01 19:21:34	<--	Shadowblitz16 (~Shadowbli@63-155-152-52.eugn.qwest.net) has quit (Read error: Connection reset by peer)
+2016-10-01 19:21:49	ubsan	Herb Sutter is pretty great
+2016-10-01 19:22:17	-->	pdtpatrick (~Patrick@2620:10d:c090:180::1:b437) has joined ##c++
+2016-10-01 19:22:18	<--	pdtpatrick (~Patrick@2620:10d:c090:180::1:b437) has quit (Remote host closed the connection)
+2016-10-01 19:22:35	-->	pdtpatrick (~Patrick@199.201.64.2) has joined ##c++
+2016-10-01 19:22:39	Alec	I've got a cutting of his hair he doesn't know about you know.
+2016-10-01 19:22:50	<--	doppel (~chatzilla@ip70-189-197-158.lv.lv.cox.net) has quit (Quit: ChatZilla 0.9.92 [Firefox 49.0.1/20160922113459])
+2016-10-01 19:22:56	Alec	And a Hawaiian shirt I stole from his luggage.
+2016-10-01 19:23:24	ubsan	Alec: o-o
+2016-10-01 19:23:41	Alec	ubsan: look all you like, it's not for sale
+2016-10-01 19:24:23	<--	pdtpatrick (~Patrick@199.201.64.2) has quit (Remote host closed the connection)
+2016-10-01 19:24:32	-->	Lord_Dagothur (Dagothur@2607:fea8:9220:688:2118:9c94:9dcf:b3e7) has joined ##c++
+2016-10-01 19:24:37	ByteStorm	you kno guys,i did love if a book taught me how to make copy constructors and plus operators,if it taught me to handle exceptions properly,and if it helped me to learn the new C++114 features which i dont kno at all
+2016-10-01 19:25:15	Alec	ByteStorm: it's important to .... (this is going to be controversial!) not worry too much about the new features
+2016-10-01 19:25:25	ubsan	(except for auto)
+2016-10-01 19:25:29	Alec	OTHER THAN MOVE CONSTRUCTORS - frankly I'm ashamed at you lot for taking 40 years to come up with them.
+2016-10-01 19:25:30	ubsan	(auto is just good af)
+2016-10-01 19:25:31	-->	adempus (~adempus@ool-43529049.dyn.optonline.net) has joined ##c++
+2016-10-01 19:25:46	ByteStorm	really? bcoz if i dont learn them then i could be left behind
+2016-10-01 19:25:47	Alec	ubsan: I'm a typedef guy TBH.... but auto is sometimes nice....
+2016-10-01 19:25:57	ubsan	Alec: oh, also using
+2016-10-01 19:26:02	ubsan	because using foo = bar; is amazing
+2016-10-01 19:26:07	-->	pdtpatrick (~Patrick@199.201.64.2) has joined ##c++
+2016-10-01 19:26:08	ubsan	as opposed to typedef bar foo;
+2016-10-01 19:26:12	Alec	ByteStorm: don't worry. Also you'd be surprised at how rarely useful some of this new stuff is.
+2016-10-01 19:26:20	Alec	Enum class too...
+2016-10-01 19:26:22	ByteStorm	hmm
+2016-10-01 19:26:27	ubsan	enum class is amazing!
+2016-10-01 19:26:27	Alec	The point is ALL the REALLY good stuff, is not hard to learn
+2016-10-01 19:26:28	ubsan	<3
+2016-10-01 19:26:29	Alec	Like auto.
+2016-10-01 19:26:31	ubsan	yeah
+2016-10-01 19:26:32	-->	Moose (~moose@unaffiliated/moose) has joined ##c++
+2016-10-01 19:26:53	adempus	SO I have a list of about 500,000 strings representing a dictionary, and I want to compare it with another list with the same amount of words to see if the two lists are equal. What's the fastest way to do that?
+2016-10-01 19:26:55	-->	pied (~kwisatz@2600:8801:d304:f100:1a57:b7d4:ca0:c6fe) has joined ##c++
+2016-10-01 19:27:17	adempus	I know I have to sort them first, but that takes time.
+2016-10-01 19:27:18	Moose	adempus, that sounds like a #C++-general question
+2016-10-01 19:27:29	Moose	You may get a better response there.
+2016-10-01 19:27:34	Alec	adempus: sort them during insertion
+2016-10-01 19:27:34		[19:27]
+2016-10-01 19:28:06	Alec	But yeah ByteStorm you don't need to use all the magical new crap they're making up for pretty much EVERYTHING
+2016-10-01 19:28:06	adempus	#C++-general links me to #namespace
+2016-10-01 19:28:14	ubsan	##C++-general
+2016-10-01 19:28:18	ubsan	double hashes :)
+2016-10-01 19:28:19	Moose	Double hash, sorry
+2016-10-01 19:28:38	<--	adempus (~adempus@ool-43529049.dyn.optonline.net) has left ##c++
+2016-10-01 19:28:49	ByteStorm	i think ill buy Programming: Principles and Practice Using C++,its said to be beginner friendly
+2016-10-01 19:28:51	-->	adempus (~adempus@ool-43529049.dyn.optonline.net) has joined ##c++
+2016-10-01 19:28:57	Alec	ByteStorm: NO
+2016-10-01 19:29:07	ByteStorm	Alec: WHY :D
+2016-10-01 19:29:10	Alec	At least get a PDF of it. It REALLY isn't worth it
+2016-10-01 19:29:16	Alec	THAT'S THE ONE WITH THE BIRD COVER
+2016-10-01 19:29:17	-->	josef_k (~jeremy@203-213-41-139.tpgi.com.au) has joined ##c++
+2016-10-01 19:29:28	ByteStorm	does everyone agree on tht statement here?>
+2016-10-01 19:29:38	Alec	I really recommend "The design and implementation of C++" - it's a little old, it has an oak seed growing on the front.
+2016-10-01 19:29:44	ubsan	Alec seems like they know what they're doing
+2016-10-01 19:29:57	ubsan	I don't actually have an opinion on the things
+2016-10-01 19:29:59	ByteStorm	ubsan: me?
+2016-10-01 19:30:02	ubsan	b/c again, interwebs
+2016-10-01 19:30:10	Alec	ByteStorm: I would give you my copy but you'd have to skip over the parts eclipsed by blood magic markings to try and punish the author.
+2016-10-01 19:30:23	ByteStorm	hmm
+2016-10-01 19:30:27	Alec	But seriously though, it's crap. TRY and find a PDF. It is PROPERLY crap.
+2016-10-01 19:30:43	Alec	I got it thinking "it's from bujanngee himself!"
+2016-10-01 19:30:45	Alec	No, shit.
+2016-10-01 19:30:47	Alec	*spits*
+2016-10-01 19:31:07	ByteStorm	i had my tablet faiked up too,cant read anything on it
+2016-10-01 19:32:15	Alec	ByteStorm: Kindle DX Baby
+2016-10-01 19:32:19	Alec	Pirating books FTW.
+2016-10-01 19:32:35	ubsan	lol
+2016-10-01 19:32:36	ByteStorm	srry for the inappropriate word
+2016-10-01 19:32:45	ubsan	also lol
+2016-10-01 19:32:59	<--	pdtpatrick (~Patrick@199.201.64.2) has quit (Remote host closed the connection)
+2016-10-01 19:33:16	-->	pdtpatrick (~Patrick@199.201.64.2) has joined ##c++
+2016-10-01 19:33:25	Alec	ByteStorm: really don't
+2016-10-01 19:33:43	Alec	Herb Sutter's "Exception C++" and "The Design and Implementation of C++" will get you off to a great start
+2016-10-01 19:34:17	Alec	But you must not think "mankind went for 40 years without move constructors, so I can ignore them too", but they're really not difficult.
+2016-10-01 19:35:25	pragma-	Personally, I recommend avoiding modern cutting-edge C++ features because half of the compilers disagree on how to properly implement things.
+2016-10-01 19:35:49	ubsan	personally, I think this is very, very incorrect ^
+2016-10-01 19:35:50	Alec	There's a reference book ("annotated C++ reference manual?") brown book from the same series as the grey "The C++ programming language" - also crap
+2016-10-01 19:36:16	-->	renlo (~renlo@c-73-231-172-250.hsd1.ca.comcast.net) has joined ##c++
+2016-10-01 19:36:17	ubsan	I've definitely done C++14 code across the Big Three
+2016-10-01 19:36:35	pragma-	because C++14 is so cutting-edge...
+2016-10-01 19:36:44	-->	QwertyDragon (~QwertyDra@pool-98-118-51-122.bstnma.fios.verizon.net) has joined ##c++
+2016-10-01 19:37:12	ubsan	...
+2016-10-01 19:37:21	ubsan	I mean, sure, avoid C++17? I guess?
+2016-10-01 19:37:26	pragma-	That's like almost 3 years old already! It's ancient in programming language timespan!
+2016-10-01 19:37:30	ubsan	but C++17 isn't even out yet...
+2016-10-01 19:37:38	<--	pdtpatrick (~Patrick@199.201.64.2) has quit (Remote host closed the connection)
+2016-10-01 19:37:58	Alec	pragma-: that's a joke right?
+2016-10-01 19:38:07	Alec	This isn't a JS chatroom
+2016-10-01 19:38:39	<--	systemfault (~rcyr@unaffiliated/rcyr) has quit (Quit: Bye!)
+2016-10-01 19:38:40	-->	mempko (~mempko@2601:602:9403:920:95b5:12bb:f86d:a0cd) has joined ##c++
+2016-10-01 19:38:44	pragma-	That must be why nobody is talking about JS!
+2016-10-01 19:38:49	Alec	But yeah ByteStorm doing is more important than learning, and without experience the new stuff won't make any sense. I also recommend you compile with -fno-elide-constructors at first because I got raped once by my learning curve.
+2016-10-01 19:39:08	ubsan	Alec: :(
+2016-10-01 19:39:11	ByteStorm	hmm
+2016-10-01 19:39:30	<--	sanct (~sanct@212.35.67.11) has quit (Ping timeout: 264 seconds)
+2016-10-01 19:39:48	-->	SpaceDanceCJ (~Sasha@37.45.169.166) has joined ##c++
+2016-10-01 19:40:10	pragma-	Except in languages like C++ you need to learn before doing because you can't learn by doing due to the nature of undefined/implmentation-defined/unspecified/locale-specific/etc behaviors.
+2016-10-01 19:40:20	pragma-	Otherwise you get ... how did he say ... raped by your learning curve.
+2016-10-01 19:40:48	Alec	pragma-: that only happened because stuff with side-effects wasn't having side-effects
+2016-10-01 19:40:55	pragma-	See?
+2016-10-01 19:40:57	pragma-	Don't be like Alec.
+2016-10-01 19:41:43	Alec	There are some perks though
+2016-10-01 19:42:07	Alec	You get to write shit that works and your compiler doesn't spew pages of useless output when something goes wrong
+2016-10-01 19:42:14	Alec	"hash-tag not templates for everything"
+2016-10-01 19:42:19	Alec	Also it doesn't take forever to compile!
+2016-10-01 19:42:24	pragma-	Until 3 days later, "Huh, this was working fine last week."
+2016-10-01 19:44:57	-->	sirosirian (~theosiria@177.40.66.60) has joined ##c++
+2016-10-01 19:44:57		[19:44]
+2016-10-01 19:45:32	<--	renlo (~renlo@c-73-231-172-250.hsd1.ca.comcast.net) has quit (Quit: renlo)
+2016-10-01 19:45:54	<--	josef_k (~jeremy@203-213-41-139.tpgi.com.au) has quit (Ping timeout: 265 seconds)
+2016-10-01 19:45:55	Alec	ByteStorm: DO NOT GET THAT BOOK
+2016-10-01 19:45:57	Alec	It's proper shit
+2016-10-01 19:48:06	pragma-	that's a weird mix of American and British.
+2016-10-01 19:48:07	<--	xtheosirian (~theosiria@179.182.254.56) has quit (Ping timeout: 272 seconds)
+2016-10-01 19:48:35	<--	snowkidind (~textual@pool-96-255-207-158.washdc.fios.verizon.net) has quit (Quit: astalaPIZZA Baby!)
+2016-10-01 19:48:35	-->	fedepad (~fedepad@p4FE10EE3.dip0.t-ipconnect.de) has joined ##c++
+2016-10-01 19:48:48	Alec	pragma-: is that what the nurse said when she saw you in your mother's arms for the first time?
+2016-10-01 19:48:49	Alec	Burn
+2016-10-01 19:49:35	-->	renlo (~renlo@c-73-231-172-250.hsd1.ca.comcast.net) has joined ##c++
+2016-10-01 19:53:09	<--	fedepad (~fedepad@p4FE10EE3.dip0.t-ipconnect.de) has quit (Ping timeout: 265 seconds)
+2016-10-01 19:58:23	-->	quc (~quc@bbservice10.mmpnet237.tnp.pl) has joined ##c++
+2016-10-01 20:00:36	<--	ByteStorm (~Peter@117.194.192.107) has quit (Quit: Bye guys hav a good time :))
+2016-10-01 20:00:36		[20:00]
+2016-10-01 20:02:33	<--	oldrobot (~oldrobot@192.241.221.244) has quit (Ping timeout: 276 seconds)
+2016-10-01 20:03:44	-->	Markow (~Markow@176.122.215.103) has joined ##c++
+2016-10-01 20:05:14	<--	afiefh (~afiefh@141.226.161.17) has quit (Ping timeout: 265 seconds)
+2016-10-01 20:05:16	<--	jamesaxl (~jamesaxl@176.98.129.195) has quit (Quit: Leaving)
+2016-10-01 20:06:22	<--	gravitation (~gravitati@c-50-176-207-97.hsd1.ct.comcast.net) has quit (Quit: gravitation)
+2016-10-01 20:07:04	-->	matkatmusic (~matkatmus@pool-108-54-229-138.nycmny.fios.verizon.net) has joined ##c++
+2016-10-01 20:07:51	-->	gravitation (~gravitati@c-50-176-207-97.hsd1.ct.comcast.net) has joined ##c++
+2016-10-01 20:07:54	<--	xjrn (~chatzilla@2601:642:4500:1d54:28ff:9e39:495b:d0fa) has quit (Quit: ChatZilla 0.9.92 [Firefox 49.0.1/20160922113459])
+2016-10-01 20:11:20	<--	gravitation (~gravitati@c-50-176-207-97.hsd1.ct.comcast.net) has quit (Client Quit)
+2016-10-01 20:11:48	-->	MaBunny (~Peter@117.194.192.107) has joined ##c++
+2016-10-01 20:12:30	<--	matkatmusic (~matkatmus@pool-108-54-229-138.nycmny.fios.verizon.net) has quit (Ping timeout: 264 seconds)
+2016-10-01 20:13:26	-->	nilg (~user@77.70.2.229) has joined ##c++
+2016-10-01 20:17:19	-->	Beetny (~Beetny@14-202-48-200.tpgi.com.au) has joined ##c++
+2016-10-01 20:17:19		[20:17]
+2016-10-01 20:18:21	-->	andrzejku (~andrzejku@90-156-117-46.internetia.net.pl) has joined ##c++
+2016-10-01 20:19:00	-->	AmR|EiSa (~AmREiSa@41.176.34.159) has joined ##c++
+2016-10-01 20:23:13	-->	bloony (~pi@56-206-11.connect.netcom.no) has joined ##c++
+2016-10-01 20:23:25	<--	baotiao (~baotiao@43.255.178.184) has quit (Quit: baotiao)
+2016-10-01 20:23:30	-->	CaptainPi (~edx@dslb-094-218-175-192.094.218.pools.vodafone-ip.de) has joined ##c++
+2016-10-01 20:23:39	<--	hualet (~hualet@183.94.112.221) has quit (Remote host closed the connection)
+2016-10-01 20:24:10	-->	hualet (~hualet@183.94.112.221) has joined ##c++
+2016-10-01 20:25:41	-->	symm- (~symm-@188.25.181.174) has joined ##c++
+2016-10-01 20:28:58	-->	jamesaxl (~jamesaxl@176.98.129.195) has joined ##c++
+2016-10-01 20:32:00	<--	renlo (~renlo@c-73-231-172-250.hsd1.ca.comcast.net) has quit (Quit: renlo)
+2016-10-01 20:32:32	-->	ferdna (~ferdna@cpe-69-23-141-130.elp.res.rr.com) has joined ##c++
+2016-10-01 20:32:32		[20:32]
+2016-10-01 20:32:54	<--	climjark (~climjark@73.112.13.65) has quit (Ping timeout: 264 seconds)
+2016-10-01 20:36:29	<--	Nomenclatura (~turtle@189.182.143.161) has quit (Quit: q)
+2016-10-01 20:36:37	<--	nilg (~user@77.70.2.229) has quit (Read error: Connection reset by peer)
+2016-10-01 20:36:42	<--	CaptainPi (~edx@dslb-094-218-175-192.094.218.pools.vodafone-ip.de) has quit (Quit: Konversation terminated!)
+2016-10-01 20:36:52	<--	bjz (~bjz@14-201-215-168.tpgi.com.au) has quit (Read error: Connection reset by peer)
+2016-10-01 20:36:57	<--	AmR|EiSa (~AmREiSa@41.176.34.159) has quit
+2016-10-01 20:39:58	-->	bjz (~bjz@14-201-215-168.tpgi.com.au) has joined ##c++
+2016-10-01 20:41:07	<--	xameada (~xameada@ip98-165-190-88.ph.ph.cox.net) has quit (Ping timeout: 244 seconds)
+2016-10-01 20:42:31	-->	xz0r (6725c95f@gateway/web/freenode/ip.103.37.201.95) has joined ##c++
+2016-10-01 20:42:44	xz0r	Hi can someone please tell me how can I read input if the number of lines are not known before?
+2016-10-01 20:42:51	xz0r	and terminate after reading
+2016-10-01 20:43:14	Alec	xz0r: feof
+2016-10-01 20:43:56	xz0r	Alec: I'm a beginner so can you please elaborate
+2016-10-01 20:44:21	Alec	xz0r: feof is a function that tells you if you have reached the end of the file or not
+2016-10-01 20:44:25	<--	Raed|Mobile (~Raed@2607:fb90:470f:4a0a:37a0:b42f:146a:5d99) has quit (Ping timeout: 248 seconds)
+2016-10-01 20:44:32	Alec	if feof returns 0 then no, otherwise, yes.
+2016-10-01 20:48:03	<--	adempus (~adempus@ool-43529049.dyn.optonline.net) has quit (Remote host closed the connection)
+2016-10-01 20:48:03		[20:48]
+2016-10-01 20:49:26	<--	P1RATEZ (piratez@unaffiliated/p1ratez) has quit
+2016-10-01 20:50:49	-->	sigtrm (quassel@quassel.woboq.de) has joined ##c++
+2016-10-01 20:51:05	-->	anaiden (~anaiden@99-95-167-8.lightspeed.sntcca.sbcglobal.net) has joined ##c++
+2016-10-01 20:51:34	o]	feof? really?
+2016-10-01 20:52:04	o]	!give xz0r getline
+2016-10-01 20:52:05	nolyc	xz0r: std::ifstream in("foo.txt"); std::string line; while (std::getline(in, line)) { do_stuff_with(line); }
+2016-10-01 20:52:06	-->	SiN_Bizkit (~SiN_Bizki@90.188.118.76) has joined ##c++
+2016-10-01 20:53:18	Alec	o]: if you can run in constant memory you should
+2016-10-01 20:53:33	Alec	I've heard about you and will say no more.
+2016-10-01 20:55:30	-->	King_Hual (~failed@94.26.28.68) has joined ##c++
+2016-10-01 20:55:30	<--	King_Hual (~failed@94.26.28.68) has quit (Changing host)
+2016-10-01 20:55:30	-->	King_Hual (~failed@unaffiliated/king-hual/x-1207580) has joined ##c++
+2016-10-01 20:55:31	o]	wut
+2016-10-01 20:55:42	<--	bjz (~bjz@14-201-215-168.tpgi.com.au) has quit (Read error: Connection reset by peer)
+2016-10-01 20:56:12	-->	fluter (~fluter@fedora/fluter) has joined ##c++
+2016-10-01 20:56:17	o]	feof is not the tool to ensure constant memory. if that is the case, he could use in.get()
+2016-10-01 20:56:24	-->	pottsy (~pottsy@203-213-120-51.static.tpgi.com.au) has joined ##c++
+2016-10-01 20:56:25	o]	you will say no more because you suck :)
+2016-10-01 20:56:28	-->	bjz (~bjz@14-201-215-168.tpgi.com.au) has joined ##c++
+2016-10-01 20:56:40	o]	feof is for C codes. /j ##C , Alec
+2016-10-01 20:56:50	o]	!next
+2016-10-01 20:56:51	-->	afiefh (~afiefh@195.110.40.242) has joined ##c++
+2016-10-01 20:56:51	nolyc	Another satisfied customer, next!
+2016-10-01 20:57:08	Alec	Did your mother tell you that? I told her two things, firstly that the money was on top of the microwave, and it was a good deal for the night and secondly not to inform you about what we did.
+2016-10-01 20:57:15	<--	anaiden (~anaiden@99-95-167-8.lightspeed.sntcca.sbcglobal.net) has quit (Quit: Leaving)
+2016-10-01 20:57:28	Alec	Is there a burn command for the bot o]? I can see why your biological father left.
+2016-10-01 20:57:29	Alec	ZING
+2016-10-01 20:57:31	Alec	!next
+2016-10-01 20:57:32	nolyc	Another satisfied customer, next!
+2016-10-01 20:57:41	o]	yup! definitely a retard
+2016-10-01 20:58:02	Alec	" - o]'s dad on day 3
+2016-10-01 20:58:04	Alec	!next
+2016-10-01 20:58:05	nolyc	Another satisfied customer, next!
+2016-10-01 20:59:24	-->	DigiByteDev (~JT2@n218250011174.netvigator.com) has joined ##c++
+2016-10-01 21:01:05	<--	ville (~ville@87-93-88-197.bb.dnainternet.fi) has quit (Ping timeout: 252 seconds)
+2016-10-01 21:02:18	<--	rpadn (~rpadn@host135-231-dynamic.181-80-r.retail.telecomitalia.it) has quit (Ping timeout: 244 seconds)
+2016-10-01 21:02:34	-->	rpadn (~rpadn@host135-231-dynamic.181-80-r.retail.telecomitalia.it) has joined ##c++
+2016-10-01 21:03:21	-->	symm-_ (~symm-@188.25.203.101) has joined ##c++
+2016-10-01 21:03:21		[21:03]
+2016-10-01 21:04:09	<--	DigiByteDev (~JT2@n218250011174.netvigator.com) has quit (Ping timeout: 248 seconds)
+2016-10-01 21:04:09	<--	bloony (~pi@56-206-11.connect.netcom.no) has quit (Ping timeout: 248 seconds)
+2016-10-01 21:04:41	<--	symm- (~symm-@188.25.181.174) has quit (Ping timeout: 265 seconds)
+2016-10-01 21:05:13	<--	symm-_ (~symm-@188.25.203.101) has quit (Client Quit)
+2016-10-01 21:05:30	-->	symm- (~symm-@188.25.203.101) has joined ##c++
+2016-10-01 21:06:25	-->	whois (~gaoshuwen@180.140.106.119) has joined ##c++
+2016-10-01 21:07:07	-->	bloony (~pi@161-51-11.connect.netcom.no) has joined ##c++
+2016-10-01 21:07:50	-->	pickyaxe (~pickyaxe@77.139.132.50) has joined ##c++
+2016-10-01 21:10:26	<--	code_zombie_ (~code_zomb@136.63.230.43) has quit (Quit: Leaving)
+2016-10-01 21:10:58	-->	rendar (~I@host59-182-dynamic.12-79-r.retail.telecomitalia.it) has joined ##c++
+2016-10-01 21:11:36	<--	jaafar (~quassel@76-218-204-163.lightspeed.sntcca.sbcglobal.net) has quit (Ping timeout: 244 seconds)
+2016-10-01 21:11:58	-->	francoisk (~francoisk@154.66.250.11) has joined ##c++
+2016-10-01 21:14:08	<--	zys (~zys@183.240.202.31) has left ##c++
+2016-10-01 21:14:31	<--	whois (~gaoshuwen@180.140.106.119) has left ##c++
+2016-10-01 21:16:23	-->	Enhex (~Enhex@77.138.252.82) has joined ##c++
+2016-10-01 21:17:19	<--	bkboggy (~bkboggy@cpe-172-250-147-60.socal.res.rr.com) has quit (Quit: Leaving)
+2016-10-01 21:18:03	<--	sigtrm (quassel@quassel.woboq.de) has quit (Ping timeout: 272 seconds)
+2016-10-01 21:18:33	<--	pied (~kwisatz@2600:8801:d304:f100:1a57:b7d4:ca0:c6fe) has quit (Ping timeout: 248 seconds)
+2016-10-01 21:18:33		[21:18]
+2016-10-01 21:18:58	<--	Goplat (~goplat@reactos/developer/Goplat) has quit (Remote host closed the connection)
+2016-10-01 21:19:07	-->	fedepad (~fedepad@p4FE10EE3.dip0.t-ipconnect.de) has joined ##c++
+2016-10-01 21:19:07	<--	UnlikeSuika (~UnlikeSui@117.123.105.126) has quit (Quit: RIP)
+2016-10-01 21:19:23	-->	UnlikeSuika (~UnlikeSui@117.123.105.126) has joined ##c++
+2016-10-01 21:19:32	RokerHRO	*yaaawn*
+2016-10-01 21:19:40	-->	Musngi (70c662dc@gateway/web/freenode/ip.112.198.98.220) has joined ##c++
+2016-10-01 21:19:41	-->	sigtrm (quassel@quassel.woboq.de) has joined ##c++
+2016-10-01 21:20:05	<--	hualet (~hualet@183.94.112.221) has quit (Remote host closed the connection)
+2016-10-01 21:20:50	<--	Musngi (70c662dc@gateway/web/freenode/ip.112.198.98.220) has quit (Client Quit)
+2016-10-01 21:20:51	-->	zys1990 (~zys@183.240.202.31) has joined ##c++
+2016-10-01 21:21:21	-->	hualet (~hualet@183.94.112.221) has joined ##c++
+2016-10-01 21:21:47	<--	zys1990 (~zys@183.240.202.31) has quit (Quit: Konversation terminated!)
+2016-10-01 21:22:07	-->	zys (~zys@183.240.202.31) has joined ##c++
+2016-10-01 21:22:42	<--	Leovale (~Leovale@108.161.112.10) has quit (Read error: Connection reset by peer)
+2016-10-01 21:23:32	<--	jan64 (~jan64@aazr231.neoplus.adsl.tpnet.pl) has quit (Ping timeout: 265 seconds)
+2016-10-01 21:24:55	-->	systemfault (~rcyr@unaffiliated/rcyr) has joined ##c++
+2016-10-01 21:25:11	<--	zys (~zys@183.240.202.31) has quit (Client Quit)
+2016-10-01 21:25:47	 *	SlashLife pokes RokerHRO
+2016-10-01 21:26:39	-->	vuoto (~vuoto@80-71-135-9.u.parknet.dk) has joined ##c++
+2016-10-01 21:26:43	systemfault	Let's say I have a const foo& as a parameter to a function and I want to capture a copy of that object to a lambda, how can I do it?
+2016-10-01 21:27:13	systemfault	[f](){} is doing to copy the const reference if I understand well.
+2016-10-01 21:27:19	systemfault	*going
+2016-10-01 21:27:27	<--	logan_e_ (uid164592@gateway/web/irccloud.com/x-ajwcavqwpjspgswi) has quit (Quit: Connection closed for inactivity)
+2016-10-01 21:27:58	SlashLife	systemfault: Uhh. That's actually an interesting question - though I would not expect it to be.
+2016-10-01 21:28:28	-->	inad922 (~inad925@188-143-37-21.pool.digikabel.hu) has joined ##c++
+2016-10-01 21:29:13	Moose	Can you please clarify. Do you want to capture a copy of foo or const foo& in your lambda?
+2016-10-01 21:29:16	SlashLife	Bond, James Bond
+2016-10-01 21:29:20	SlashLife	WTF, std index.
+2016-10-01 21:29:40	francoisk	systemfault, yes, [f] will copy the object, not a reference to it
+2016-10-01 21:29:50	Moose	Like do you want a copy of the reference or a copy of the object itself.
+2016-10-01 21:30:05	systemfault	I want a copy of the object, not the ref.
+2016-10-01 21:31:35	<--	nacon (~nacon@unaffiliated/nacon) has quit (Quit: leaving)
+2016-10-01 21:32:12	SlashLife	systemfault: "The type of such a data member is the referenced type if the entity is a reference to an object ..."
+2016-10-01 21:32:16	systemfault	francoisk: Not what that snippet says: http://melpon.org/wandbox/permlink/aRO7foOZgVhQ2DYW
+2016-10-01 21:32:19	SlashLife	http://www.eelis.net/c++draft/expr.prim.lambda#16
+2016-10-01 21:33:56	systemfault	SlashLife: Ah, so if I want a copy, I need to do  [f = foo(f)](){} to force the copy?
+2016-10-01 21:33:56		[21:33]
+2016-10-01 21:34:43	SlashLife	I'd say the "referenced" type of T& is T.
+2016-10-01 21:35:34	systemfault	SlashLife: What about my snippet then?
+2016-10-01 21:35:51	<--	vuoto (~vuoto@80-71-135-9.u.parknet.dk) has quit (Quit: Lost terminal)
+2016-10-01 21:36:15	systemfault	Is decltype "lying" under some circumstances?
+2016-10-01 21:37:30	SlashLife	I'm actually not sure.
+2016-10-01 21:37:46	-->	vuoto (~vuoto@80-71-135-9.u.parknet.dk) has joined ##c++
+2016-10-01 21:38:06	xaxxon	I don't get how anyone uses anything other thangodbolt for compilation issues
+2016-10-01 21:39:05	xaxxon	systemfault: what's your current question?  (sorry just catching up)
+2016-10-01 21:39:23	francoisk	systemfault, this is what I meant: http://melpon.org/wandbox/permlink/TxqI4ouE6LaU8Mfo
+2016-10-01 21:39:43	-->	t0by (~t0by@host146-232-dynamic.48-82-r.retail.telecomitalia.it) has joined ##c++
+2016-10-01 21:40:03	francoisk	Slightly better output: http://melpon.org/wandbox/permlink/bQFN8TEkRcP2I5wl
+2016-10-01 21:40:11	systemfault	xaxxon: http://melpon.org/wandbox/permlink/aRO7foOZgVhQ2DYW if you look at the, the type of the str parameter inside the lambda is a const reference... but if I want an actual copy of str, do I need to manually call the copy ctor?
+2016-10-01 21:40:31	francoisk	clearly the captured variable has a different address.
+2016-10-01 21:40:36	<--	t0by (~t0by@host146-232-dynamic.48-82-r.retail.telecomitalia.it) has quit (Read error: Connection reset by peer)
+2016-10-01 21:40:51	-->	t0by (~t0by@host146-232-dynamic.48-82-r.retail.telecomitalia.it) has joined ##c++
+2016-10-01 21:40:58	-->	ville (~ville@37-33-31-76.bb.dnainternet.fi) has joined ##c++
+2016-10-01 21:41:01	systemfault	Right
+2016-10-01 21:41:05	xaxxon	all I see is a compiler error
+2016-10-01 21:41:12	francoisk	xaxxon, my code?
+2016-10-01 21:41:16	xaxxon	no
+2016-10-01 21:41:18	xaxxon	sf's
+2016-10-01 21:41:22	francoisk	yeah me too
+2016-10-01 21:41:32	SlashLife	xaxxon: That's the point, though: The type name in the error message.
+2016-10-01 21:41:32	systemfault	The compiler error is the expected output...
+2016-10-01 21:41:35	xaxxon	are you trying to say because of the type shown in the compiler error
+2016-10-01 21:41:41	xaxxon	maybe?
+2016-10-01 21:41:49	systemfault	prog.cc:9:27: error: implicit instantiation of undefined template 'TD<const std::__1::basic_string<char> &>'
+2016-10-01 21:41:55	systemfault	See the type inside TD
+2016-10-01 21:41:59	francoisk	well if you look at my code it's clear that [f] copies
+2016-10-01 21:42:03	xaxxon	systemfault: not sure how legit that is
+2016-10-01 21:42:07	SlashLife	It's "string const &"; a reference.
+2016-10-01 21:42:50	systemfault	well, francoisk's snippet does show different addresses :/
+2016-10-01 21:43:21	<--	ville (~ville@37-33-31-76.bb.dnainternet.fi) has quit (Client Quit)
+2016-10-01 21:43:26	<--	fluter (~fluter@fedora/fluter) has quit (Ping timeout: 252 seconds)
+2016-10-01 21:43:40	francoisk	i guess the decltype in your code is using the 'str' passed into function x, not the lambda's capture
+2016-10-01 21:43:58	francoisk	for some reason
+2016-10-01 21:44:31	SlashLife	So does your example btw.: http://melpon.org/wandbox/permlink/hwSjO7ALcH0F7Qzb
+2016-10-01 21:44:44	SlashLife	So the question is: Why does decltype() think it's a ref?
+2016-10-01 21:44:46	-->	ville (~ville@87-93-56-207.bb.dnainternet.fi) has joined ##c++
+2016-10-01 21:44:55	xaxxon	ok, it's forsure a ref: http://melpon.org/wandbox/permlink/MzQfOMYAWDGb0iAP
+2016-10-01 21:45:28	systemfault	wtf then.
+2016-10-01 21:45:42	<--	dv_ (~quassel@62.178.118.86) has quit (Ping timeout: 244 seconds)
+2016-10-01 21:45:59	xaxxon	better: v
+2016-10-01 21:46:00	xaxxon	http://melpon.org/wandbox/permlink/xy2k4mapmE8i1oOI
+2016-10-01 21:46:10	-->	Jackneill (~Jackneill@unaffiliated/jackneill) has joined ##c++
+2016-10-01 21:46:13	-->	oxygene (~fred@ALille-652-1-29-194.w92-155.abo.wanadoo.fr) has joined ##c++
+2016-10-01 21:46:15	-->	dv_ (~quassel@62.178.118.86) has joined ##c++
+2016-10-01 21:46:29	<--	snyp (~Snyp@nas4.meghbelabroadband.in) has quit (Quit: WeeChat 1.5)
+2016-10-01 21:46:47	<--	oxygene (~fred@ALille-652-1-29-194.w92-155.abo.wanadoo.fr) has quit (Read error: Connection reset by peer)
+2016-10-01 21:47:06	xaxxon	well, let's make it mutable and see what happens
+2016-10-01 21:47:15	francoisk	As I said, it's because the function's 'str' is being favoured over the lambda's capture. If you gice it a different name it works as expected: http://melpon.org/wandbox/permlink/MzQfOMYAWDGb0iAP
+2016-10-01 21:47:21	<--	bjz (~bjz@14-201-215-168.tpgi.com.au) has quit (Read error: Connection reset by peer)
+2016-10-01 21:47:33	francoisk	oops
+2016-10-01 21:47:42	francoisk	http://melpon.org/wandbox/permlink/uwukjexO6TirJG0H
+2016-10-01 21:48:52	xaxxon	http://melpon.org/wandbox/permlink/MZz82Yy3VDYezSU6
+2016-10-01 21:48:54	xaxxon	definitely a copy
+2016-10-01 21:49:04	francoisk	it's only with decltype. In my first example I simply printed the address of captured one with the same name and its address was different.
+2016-10-01 21:49:04		[21:49]
+2016-10-01 21:49:06	<--	Unrealmaster (~Unrealmas@S0106bc4dfb18b493.cg.shawcable.net) has quit (Ping timeout: 264 seconds)
+2016-10-01 21:49:41	xaxxon	I changed the value of the string in the lambda.  clearly a copy
+2016-10-01 21:50:00	-->	bjz (~bjz@14-201-215-168.tpgi.com.au) has joined ##c++
+2016-10-01 21:50:12	<--	SHC (~quassel@117.204.43.65) has quit (Read error: Connection reset by peer)
+2016-10-01 21:50:14	<--	HeroYoojin__ (~HeroYooji@71.91.4.255) has quit (Quit: Leaving)
+2016-10-01 21:51:05	--	irc: disconnected from server
+2016-10-02 03:07:53	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined ##c++
+2016-10-02 03:07:53		[03:07]
+2016-10-02 03:07:53	--	Topic for ##c++ is "##C++ is a topical channel for discussing standard C++ specifications and code. || Current standard: ISO/IEC 14882:2014 (a.k.a. C++14) || https://isocpp.org/faq || pastes: http://melpon.org/wandbox"
+2016-10-02 03:07:53	--	Topic set by V-ille (~ville@81-175-149-170.bb.dnainternet.fi) on Fri, 18 Sep 2015 07:13:01
+2016-10-02 03:07:53	--	Channel ##c++: 953 nicks (0 ops, 0 voices, 953 normals)
+2016-10-02 03:08:02	--	Channel created on Fri, 14 Sep 2001 17:15:35
+2016-10-02 03:08:10	Cerebr0	"Error: "Cool" is not a valid command." xD
+2016-10-02 03:10:42	<--	lescactus (~quassel@111.240.148.77.rev.sfr.net) has quit (Ping timeout: 264 seconds)
+2016-10-02 03:10:44	-->	Arlen0 (~Arlen0@38-103-219-200.alamobb.net) has joined ##c++
+2016-10-02 03:10:56	<--	Arlen0 (~Arlen0@38-103-219-200.alamobb.net) has quit (Remote host closed the connection)
+2016-10-02 03:11:57	<--	nebby (5ebec139@gateway/web/freenode/ip.94.190.193.57) has quit (Quit: Page closed)
+2016-10-02 03:12:06	-->	MaBunny (~Peter@117.194.218.82) has joined ##c++
+2016-10-02 03:13:09	-->	vuoto (~vuoto@80-71-135-9.u.parknet.dk) has joined ##c++
+2016-10-02 03:13:41	-->	pasasap (~pasasap@unaffiliated/pasasap) has joined ##c++
+2016-10-02 03:14:11	-->	CEnnis91 (uid3543@gateway/web/irccloud.com/x-falllhcxjmutkxdj) has joined ##c++
+2016-10-02 03:14:43	-->	foxx (~foxx_@p5DC92EA1.dip0.t-ipconnect.de) has joined ##c++
+2016-10-02 03:14:49	<--	dreampwnzor (~dreampwnz@unaffiliated/dreampwnzor) has quit (Ping timeout: 248 seconds)
+2016-10-02 03:15:07	--	foxx is now known as Guest52674
+2016-10-02 03:16:11	<--	fender0107401 (~fender010@115.171.112.73) has quit (Quit: WeeChat 1.0.1)
+2016-10-02 03:16:38	-->	rebb (~rebb3@p54B80C14.dip0.t-ipconnect.de) has joined ##c++
+2016-10-02 03:17:04	<--	matkatmusic (~matkatmus@pool-108-54-229-138.nycmny.fios.verizon.net) has quit (Remote host closed the connection)
+2016-10-02 03:17:05	-->	Xing (~Xing@li882-39.members.linode.com) has joined ##c++
+2016-10-02 03:17:29	<--	pied (~kwisatz@2600:8801:d304:f100:1a57:b7d4:ca0:c6fe) has quit (Ping timeout: 248 seconds)
+2016-10-02 03:17:32	<--	Xing (~Xing@li882-39.members.linode.com) has quit (Max SendQ exceeded)
+2016-10-02 03:17:44	<--	francoisk (~francoisk@154.66.250.11) has left ##c++ ("Leaving")
+2016-10-02 03:17:57	-->	Xing (~Xing@li882-39.members.linode.com) has joined ##c++
+2016-10-02 03:18:16	<--	Xing (~Xing@li882-39.members.linode.com) has quit (Max SendQ exceeded)
+2016-10-02 03:18:26	-->	josef_k (~jeremy@203-213-41-139.tpgi.com.au) has joined ##c++
+2016-10-02 03:18:43	-->	Xing (~Xing@li882-39.members.linode.com) has joined ##c++
+2016-10-02 03:19:12	<--	Xing (~Xing@li882-39.members.linode.com) has quit (Max SendQ exceeded)
+2016-10-02 03:19:36	-->	Xing (~Xing@li882-39.members.linode.com) has joined ##c++
+2016-10-02 03:20:10	<--	Xing (~Xing@li882-39.members.linode.com) has quit (Max SendQ exceeded)
+2016-10-02 03:20:35	-->	Xing (~Xing@li882-39.members.linode.com) has joined ##c++
+2016-10-02 03:21:04	-->	jamesaxl (~jamesaxl@176.98.129.195) has joined ##c++
+2016-10-02 03:21:20	-->	the_2nd (~the_2nd@2a02:8070:4584:9e00:be5f:f4ff:fe08:eb05) has joined ##c++
+2016-10-02 03:21:23	<--	Xing (~Xing@li882-39.members.linode.com) has quit (Max SendQ exceeded)
+2016-10-02 03:22:07	<--	nacon (~nacon@unaffiliated/nacon) has quit (Quit: leaving)
+2016-10-02 03:22:08	-->	Xing (~Xing@45.76.97.45) has joined ##c++
+2016-10-02 03:22:59	<--	Guest52674 (~foxx_@p5DC92EA1.dip0.t-ipconnect.de) has quit (Quit: Leaving)
+2016-10-02 03:22:59		[03:22]
+2016-10-02 03:23:04	-->	lescactus (~quassel@111.240.148.77.rev.sfr.net) has joined ##c++
+2016-10-02 03:23:30	-->	The_CooIest (~Arthur_Li@bzq-84-108-121-56.cablep.bezeqint.net) has joined ##c++
+2016-10-02 03:24:06	<--	The_Coolest (~Arthur_Li@bzq-84-108-121-56.cablep.bezeqint.net) has quit (Ping timeout: 265 seconds)
+2016-10-02 03:24:11	-->	GenteelBen (~GenteelBe@cpc70133-lutn12-2-0-cust324.9-3.cable.virginm.net) has joined ##c++
+2016-10-02 03:24:46	<--	Adbray (~Adbtay@2001:470:1f11:def:3dc1:295d:bd4f:952d) has quit (Ping timeout: 272 seconds)
+2016-10-02 03:24:50	the_2nd	In c++ is there a way to write a templated function only for containers which are sortable (std::sort is defined for)? Or would I just define it for any T and let the compilation fail on the std::sort call?
+2016-10-02 03:25:32	<--	jamesaxl (~jamesaxl@176.98.129.195) has quit (Ping timeout: 252 seconds)
+2016-10-02 03:25:43	<--	Xing (~Xing@45.76.97.45) has quit (Client Quit)
+2016-10-02 03:25:46	ville	std::sort isn't defined for containers. it's defined for iterators. so you would have to look at the iterator type of a container.
+2016-10-02 03:26:07	-->	Xing (~Xing@45.76.97.45) has joined ##c++
+2016-10-02 03:26:32	<--	Xing (~Xing@45.76.97.45) has quit (Max SendQ exceeded)
+2016-10-02 03:26:33	-->	callousfury (~thraxxus@2602:302:d1fb:3360:904f:abbc:5304:2f45) has joined ##c++
+2016-10-02 03:26:46	ville	which comes down to seeing if i + 1 is a valid expression for the iterator type
+2016-10-02 03:26:57	-->	Xing (~Xing@45.76.97.45) has joined ##c++
+2016-10-02 03:27:23	ville	of course there isn't a trait to check that but devicing one shouldn't be super impossible
+2016-10-02 03:29:08	<--	vuoto (~vuoto@80-71-135-9.u.parknet.dk) has quit (Quit: Lost terminal)
+2016-10-02 03:29:36	-->	The_Coolest (~Arthur_Li@bzq-84-108-121-56.cablep.bezeqint.net) has joined ##c++
+2016-10-02 03:29:43	-->	matkatmusic (~matkatmus@pool-108-54-229-138.nycmny.fios.verizon.net) has joined ##c++
+2016-10-02 03:32:38	-->	piling (~piling@unaffiliated/piling) has joined ##c++
+2016-10-02 03:32:54	<--	dinfuehr (~dinfuehr@178-189-228-28.adsl.highway.telekom.at) has quit (Ping timeout: 244 seconds)
+2016-10-02 03:33:27	Eelis	<< TYPE<iterator_traits<int*>::iterator_category>
+2016-10-02 03:33:28	geordi	random_access_iterator_tag
+2016-10-02 03:33:55	<--	The_Coolest (~Arthur_Li@bzq-84-108-121-56.cablep.bezeqint.net) has quit (Client Quit)
+2016-10-02 03:34:18	-->	dinfuehr (~dinfuehr@88-117-116-8.adsl.highway.telekom.at) has joined ##c++
+2016-10-02 03:34:40	the_2nd	thanks
+2016-10-02 03:35:30	<--	matkatmusic (~matkatmus@pool-108-54-229-138.nycmny.fios.verizon.net) has quit (Remote host closed the connection)
+2016-10-02 03:35:37	<--	yumaokao (~yumaokao@218-161-54-18.HINET-IP.hinet.net) has quit (Ping timeout: 248 seconds)
+2016-10-02 03:36:33	<--	al1o (~al1o@236.red-88-16-49.dynamicip.rima-tde.net) has quit (Quit: My MacBook Pro has gone to sleep. ZZZzzz…)
+2016-10-02 03:36:52	<--	roentgen (~roentgen@unaffiliated/roentgen) has quit (Quit: WeeChat 1.5)
+2016-10-02 03:39:06	-->	HerzogDeXtEr1 (~farci@i59F6C393.versanet.de) has joined ##c++
+2016-10-02 03:39:06		[03:39]
+2016-10-02 03:39:26	-->	roentgen (~roentgen@unaffiliated/roentgen) has joined ##c++
+2016-10-02 03:41:10	<--	HerzogDeXtEr (~farci@i59F6CEE2.versanet.de) has quit (Ping timeout: 244 seconds)
+2016-10-02 03:41:30	<--	dv_ (~quassel@62.178.118.86) has quit (Ping timeout: 265 seconds)
+2016-10-02 03:41:41	-->	dv__ (~quassel@62.178.118.86) has joined ##c++
+2016-10-02 03:45:03	-->	makerman (~makerman@2602:306:36c6:76c0:7c40:165:5d59:9495) has joined ##c++
+2016-10-02 03:45:45	<--	makerman (~makerman@2602:306:36c6:76c0:7c40:165:5d59:9495) has left ##c++
+2016-10-02 03:46:06	-->	Adbray (~Adbtay@71-82-48-169.dhcp.bycy.mi.charter.com) has joined ##c++
+2016-10-02 03:46:29	-->	afiefh (~afiefh@141.226.161.17) has joined ##c++
+2016-10-02 03:46:48	<--	tadaa (~tadaaa@nat-wh-wz4-12.rz.uni-karlsruhe.de) has quit
+2016-10-02 03:47:17	<--	MrDoctor (~anirban@unaffiliated/apostasy) has quit (Quit: Leaving)
+2016-10-02 03:47:48	<--	Adbray (~Adbtay@71-82-48-169.dhcp.bycy.mi.charter.com) has quit (Read error: Connection reset by peer)
+2016-10-02 03:48:11	-->	jamesaxl (~jamesaxl@176.98.129.195) has joined ##c++
+2016-10-02 03:49:26	<--	blackwind_123 (~IceChat9@117.192.139.229) has quit (Ping timeout: 244 seconds)
+2016-10-02 03:50:24	-->	FreeBirdLjj (~freebirdl@117.172.26.212) has joined ##c++
+2016-10-02 03:51:10	<--	rtkt (~rtkt@ptr-2hj4tbw74k45t52mbuids2e8l.ip6.access.telenet.be) has quit (Ping timeout: 265 seconds)
+2016-10-02 03:51:56	-->	blackwind_123 (~IceChat9@117.192.131.163) has joined ##c++
+2016-10-02 03:52:35	-->	SteffanW (~steffanw@ip4da40774.direct-adsl.nl) has joined ##c++
+2016-10-02 03:54:04	-->	Neomex (~Neomex@brj145.neoplus.adsl.tpnet.pl) has joined ##c++
+2016-10-02 03:55:23	-->	wildlander (~wild@unaffiliated/wildlander) has joined ##c++
+2016-10-02 03:55:23		[03:55]
+2016-10-02 03:55:50	-->	oxygene (~fred@ALille-652-1-29-194.w92-155.abo.wanadoo.fr) has joined ##c++
+2016-10-02 03:57:50	-->	Adbray (~Adbtay@71-82-48-169.dhcp.bycy.mi.charter.com) has joined ##c++
+2016-10-02 03:58:05	<--	sirosirian (~theosiria@177.40.66.60) has quit (Quit: Going offline, see ya! (www.adiirc.com))
+2016-10-02 03:58:39	<--	Malkrith (uid186536@gateway/web/irccloud.com/x-ufthwxpvvhzgumdg) has quit (Quit: Connection closed for inactivity)
+2016-10-02 04:01:16	Cerebr0	my god C++ is so different from C
+2016-10-02 04:01:17	-->	pied (~kwisatz@2600:8801:d304:f100:1a57:b7d4:ca0:c6fe) has joined ##c++
+2016-10-02 04:01:25	Cerebr0	no printf
+2016-10-02 04:02:54	RokerHRO	of course there is printf in C++. but there are better alternatives, too.
+2016-10-02 04:02:56	chaiomanot	...
+2016-10-02 04:03:31	chaiomanot	Cerebr0, printf is a horrible interface, its a http://c2.com/cgi/wiki?BigBallOfMud
+2016-10-02 04:03:53	megaTherion	Cerebr0: you can use printf if you insist
+2016-10-02 04:03:54	chaiomanot	use stringstreams
+2016-10-02 04:05:13	<--	Kenran (~Kenran@p548D29AE.dip0.t-ipconnect.de) has quit (Quit: leaving)
+2016-10-02 04:05:22	-->	Zxpr1jk (~zxpr1jk@24.214.61.47) has joined ##c++
+2016-10-02 04:06:58	-->	Gustavo6046 (~Gustavo60@unaffiliated/gustavo6046) has joined ##c++
+2016-10-02 04:07:18	-->	hualet (~hualet@183.94.112.221) has joined ##c++
+2016-10-02 04:09:03	<--	pied (~kwisatz@2600:8801:d304:f100:1a57:b7d4:ca0:c6fe) has quit (Ping timeout: 265 seconds)
+2016-10-02 04:11:10	<--	blueness_ (~blueness@gentoo/developer/blueness) has quit (Quit: blueness_)
+2016-10-02 04:11:10		[04:11]
+2016-10-02 04:11:44	<--	hualet (~hualet@183.94.112.221) has quit (Ping timeout: 252 seconds)
+2016-10-02 04:11:56	-->	praisethemoon_ (~quassel@197.17.61.169) has joined ##c++
+2016-10-02 04:12:16	-->	robmurrer (~robmurrer@75-172-95-19.tukw.qwest.net) has joined ##c++
+2016-10-02 04:12:38	<--	oxygene (~fred@ALille-652-1-29-194.w92-155.abo.wanadoo.fr) has quit (Quit: Quitte)
+2016-10-02 04:14:21	-->	vuoto (~vuoto@80-71-135-9.u.parknet.dk) has joined ##c++
+2016-10-02 04:14:29	<--	MaBunny (~Peter@117.194.218.82) has quit (Quit: Bye guys hav a good time :))
+2016-10-02 04:14:51	<--	praisethemoon (~quassel@197.17.61.169) has quit (Ping timeout: 265 seconds)
+2016-10-02 04:16:18	<--	robmurrer (~robmurrer@75-172-95-19.tukw.qwest.net) has quit (Remote host closed the connection)
+2016-10-02 04:16:25	-->	WizJin (WizJin@gateway/shell/fnordserver.eu/x-ucrdjjpiuffoxaim) has joined ##c++
+2016-10-02 04:16:55	-->	robmurrer (~robmurrer@75-172-95-19.tukw.qwest.net) has joined ##c++
+2016-10-02 04:18:17	-->	achauvin (~achauvin@176.158.16.33) has joined ##c++
+2016-10-02 04:19:13	-->	blueness_ (~blueness@gentoo/developer/blueness) has joined ##c++
+2016-10-02 04:19:41	<--	gist (~jack@p5B104B3C.dip0.t-ipconnect.de) has quit (Ping timeout: 265 seconds)
+2016-10-02 04:19:55	-->	ewanshin (~ewanshin@183.101.46.30) has joined ##c++
+2016-10-02 04:20:13	<--	Xing (~Xing@45.76.97.45) has quit (Quit: Leaving)
+2016-10-02 04:20:34	-->	Lord_Dagothur (Dagothur@2607:fea8:9220:688:2118:9c94:9dcf:b3e7) has joined ##c++
+2016-10-02 04:21:09	-->	gist (~jack@p5B104B3C.dip0.t-ipconnect.de) has joined ##c++
+2016-10-02 04:21:30	<--	robmurrer (~robmurrer@75-172-95-19.tukw.qwest.net) has quit (Ping timeout: 264 seconds)
+2016-10-02 04:21:42	-->	Zxpr2jk (~zxpr1jk@24.214.61.47) has joined ##c++
+2016-10-02 04:22:16	<--	achauvin (~achauvin@176.158.16.33) has quit (Client Quit)
+2016-10-02 04:22:42	<--	karakedi (~eAC53C340@unaffiliated/orphan) has quit (Ping timeout: 264 seconds)
+2016-10-02 04:22:44	<--	callousfury (~thraxxus@2602:302:d1fb:3360:904f:abbc:5304:2f45) has quit (Ping timeout: 252 seconds)
+2016-10-02 04:23:20	-->	iamboris (~boris2015@unaffiliated/boris2015) has joined ##c++
+2016-10-02 04:24:03	<--	traquila (~traquila@digi00622.digicube.fr) has quit (Quit: Konversation terminated!)
+2016-10-02 04:24:17	<--	Zxpr1jk (~zxpr1jk@24.214.61.47) has quit (Ping timeout: 272 seconds)
+2016-10-02 04:25:39	-->	geoferg (~george@host-89-243-205-30.as13285.net) has joined ##c++
+2016-10-02 04:26:45	<--	fx21 (~fx@c80-216-5-68.bredband.comhem.se) has quit (Quit: Leaving)
+2016-10-02 04:26:45		[04:26]
+2016-10-02 04:31:17	<--	Cerebr0 (~seth@LFbn-1-5070-107.w90-104.abo.wanadoo.fr) has quit (Ping timeout: 244 seconds)
+2016-10-02 04:31:17	-->	karakedi (~eAC53C340@unaffiliated/orphan) has joined ##c++
+2016-10-02 04:31:50	<--	bjz (~bjz@14-201-215-168.tpgi.com.au) has quit (Read error: Connection reset by peer)
+2016-10-02 04:32:38	-->	bjz (~bjz@14-201-215-168.tpgi.com.au) has joined ##c++
+2016-10-02 04:35:52	-->	wanderman (~wanderman@unaffiliated/wanderman) has joined ##c++
+2016-10-02 04:35:55	<--	afiefh (~afiefh@141.226.161.17) has quit (Read error: Connection reset by peer)
+2016-10-02 04:36:07	-->	matkatmusic (~matkatmus@pool-108-54-229-138.nycmny.fios.verizon.net) has joined ##c++
+2016-10-02 04:36:15	-->	jaafar (~quassel@76-218-204-163.lightspeed.sntcca.sbcglobal.net) has joined ##c++
+2016-10-02 04:41:35	<--	vuoto (~vuoto@80-71-135-9.u.parknet.dk) has quit (Remote host closed the connection)
+2016-10-02 04:41:46	-->	strelox (~user@p200300754F24F500625718FFFED193E0.dip0.t-ipconnect.de) has joined ##c++
+2016-10-02 04:41:46		[04:41]
+2016-10-02 04:41:54	<--	matkatmusic (~matkatmus@pool-108-54-229-138.nycmny.fios.verizon.net) has quit (Ping timeout: 264 seconds)
+2016-10-02 04:42:00	<--	Guest7516 (~GrayArea@cpc73846-dals21-2-0-cust384.20-2.cable.virginm.net) has quit (Quit: KVIrc 4.2.0 Equilibrium http://www.kvirc.net/)
+2016-10-02 04:42:19	-->	GrayArea (~GrayArea@cpc73846-dals21-2-0-cust384.20-2.cable.virginm.net) has joined ##c++
+2016-10-02 04:45:09	-->	Fqwe (~Fqwe@nag77-2-83-152-154-106.fbx.proxad.net) has joined ##c++
+2016-10-02 04:45:28	<--	Fqwe (~Fqwe@nag77-2-83-152-154-106.fbx.proxad.net) has quit (Max SendQ exceeded)
+2016-10-02 04:45:32	<--	kaffeetrauma (~Thunderbi@85-22-37-153.ip.dokom21.de) has quit (Quit: kaffeetrauma)
+2016-10-02 04:45:43	-->	Imme (~Imme@nag77-2-83-152-154-106.fbx.proxad.net) has joined ##c++
+2016-10-02 04:46:05	<--	Imme (~Imme@nag77-2-83-152-154-106.fbx.proxad.net) has quit (Max SendQ exceeded)
+2016-10-02 04:46:52	-->	Goe (~Goe@cac94-8-82-245-27-76.fbx.proxad.net) has joined ##c++
+2016-10-02 04:47:07	<--	Goe (~Goe@cac94-8-82-245-27-76.fbx.proxad.net) has quit (Max SendQ exceeded)
+2016-10-02 04:47:18	<--	jan64 (~jan64@abbh241.neoplus.adsl.tpnet.pl) has quit (Ping timeout: 244 seconds)
+2016-10-02 04:47:27	-->	hosified (~hosified@unaffiliated/hosified) has joined ##c++
+2016-10-02 04:47:36	-->	Eaol (~Eaol@cac94-8-82-245-27-76.fbx.proxad.net) has joined ##c++
+2016-10-02 04:49:14	<--	KNRO_ (~quassel@94.187.209.247) has quit (Remote host closed the connection)
+2016-10-02 04:50:49	<--	manuel (~manuelsch@p20030072AF6BC2001EEA2F3E8805DBF5.dip0.t-ipconnect.de) has quit (Ping timeout: 248 seconds)
+2016-10-02 04:51:16	-->	jan64 (~jan64@abbh241.neoplus.adsl.tpnet.pl) has joined ##c++
+2016-10-02 04:52:31	-->	pied (~kwisatz@2600:8801:d304:f100:1a57:b7d4:ca0:c6fe) has joined ##c++
+2016-10-02 04:54:58	<--	tk__ (~tk@i60-34-186-223.s41.a022.ap.plala.or.jp) has quit (Quit: ばいばい)
+2016-10-02 04:56:00	-->	nacon (~nacon@ip5f5bd54d.dynamic.kabel-deutschland.de) has joined ##c++
+2016-10-02 04:56:01	<--	nacon (~nacon@ip5f5bd54d.dynamic.kabel-deutschland.de) has quit (Changing host)
+2016-10-02 04:56:01	-->	nacon (~nacon@unaffiliated/nacon) has joined ##c++
+2016-10-02 04:57:13	<--	Eaol (~Eaol@cac94-8-82-245-27-76.fbx.proxad.net) has quit (Remote host closed the connection)
+2016-10-02 04:57:13		[04:57]
+2016-10-02 04:57:28	-->	ohlq (~ohlq@AAubervilliers-151-1-12-68.w83-114.abo.wanadoo.fr) has joined ##c++
+2016-10-02 04:57:51	<--	ohlq (~ohlq@AAubervilliers-151-1-12-68.w83-114.abo.wanadoo.fr) has quit (Max SendQ exceeded)
+2016-10-02 04:58:30	--	CHC is now known as Shinto
+2016-10-02 04:58:34	--	Shinto is now known as CHC
+2016-10-02 04:58:38	-->	wasutton3 (~wasutton3@c-50-180-86-14.hsd1.ga.comcast.net) has joined ##c++
+2016-10-02 05:00:11	-->	Malkrith (uid186536@gateway/web/irccloud.com/x-nmksqxgeucipklbj) has joined ##c++
+2016-10-02 05:00:15	-->	Icff8 (~Icff8@AAubervilliers-151-1-12-68.w83-114.abo.wanadoo.fr) has joined ##c++
+2016-10-02 05:01:34	-->	dreampwnzor (~dreampwnz@unaffiliated/dreampwnzor) has joined ##c++
+2016-10-02 05:01:40	<--	Icff8 (~Icff8@AAubervilliers-151-1-12-68.w83-114.abo.wanadoo.fr) has quit (Remote host closed the connection)
+2016-10-02 05:01:50	-->	yumaokao (~yumaokao@218-161-54-18.HINET-IP.hinet.net) has joined ##c++
+2016-10-02 05:03:05	<--	Smx (Elite8556@gateway/shell/elitebnc/x-wmxewekjautinwmn) has quit (Ping timeout: 248 seconds)
+2016-10-02 05:03:11	-->	Fischmiep (~Fischmiep@46-59-168-5.lsn5.wtnet.de) has joined ##c++
+2016-10-02 05:06:28	wasutton3	so I have an int N being declared before all my functions and main. I'd like to make an array of length N a global variable. This should be doable, right? just call int Array[N] right?
+2016-10-02 05:06:52	<--	FreeBirdLjj (~freebirdl@117.172.26.212) has quit (Remote host closed the connection)
+2016-10-02 05:07:19	-->	tete94 (~tete94@201.206.234.251) has joined ##c++
+2016-10-02 05:07:55	-->	zacts (~zacts@dragora/developer/zacts) has joined ##c++
+2016-10-02 05:08:02	va	see the book.
+2016-10-02 05:08:21	-->	Robin___ (~Damien@535304C0.cm-6-4a.dynamic.ziggo.nl) has joined ##c++
+2016-10-02 05:08:55	wasutton3	va: ?
+2016-10-02 05:09:01	w3z	no, since that would be a variable length array
+2016-10-02 05:09:18	w3z	now if N were const or constexpr, then yes
+2016-10-02 05:09:19	Robin___	What happens if i assign a value out of the short ints range? Overflow is created? And how come for example that short int = 33000  gives -32536? thx
+2016-10-02 05:09:42	wasutton3	well the good news is N doesn't change, so i can change it from an int to a const
+2016-10-02 05:10:40	wasutton3	hmm still not happy
+2016-10-02 05:11:09	w3z	{} const int N=10; int A[N];
+2016-10-02 05:11:10	geordi	<no output>
+2016-10-02 05:11:27	-->	Karyon (~yaaic@unaffiliated/karyon) has joined ##c++
+2016-10-02 05:12:09	-->	narendraj9 (~user@182.70.27.137) has joined ##c++
+2016-10-02 05:12:27	-->	lalp (~legop314@212-186-38-238.cable.dynamic.surfer.at) has joined ##c++
+2016-10-02 05:12:27		[05:12]
+2016-10-02 05:12:40	-->	chasmo77 (~chas77@158.183-62-69.ftth.swbr.surewest.net) has joined ##c++
+2016-10-02 05:12:56	wasutton3	const unsigned N=image.GetWidth(); int W[N]; doesnt work. Commenting out the W[N] means it compiles nicely and I can read the value of N without issue.
+2016-10-02 05:13:15	-->	Lowl3v3l (~Lowl3v3l@dslb-094-218-186-013.094.218.pools.vodafone-ip.de) has joined ##c++
+2016-10-02 05:13:29	-->	snover (~Adium@unaffiliated/snover) has joined ##c++
+2016-10-02 05:13:51	wasutton3	GetWidth() comes from an #include .h file
+2016-10-02 05:14:01	-->	longxia (~irc@unaffiliated/longxia) has joined ##c++
+2016-10-02 05:14:15	w3z	which is presumably not constexpr, and which can not be evaluated at compile time
+2016-10-02 05:14:38	w3z	so therefore will not work
+2016-10-02 05:14:42	wasutton3	ok
+2016-10-02 05:15:08	wasutton3	so alternatively, how can I get my W variable to pass to a pthread_create function?
+2016-10-02 05:15:09	<--	plee (~kurt@89.10.219.180) has quit (Read error: Connection reset by peer)
+2016-10-02 05:15:23	TinoDidriksen	Use std::thread instead.
+2016-10-02 05:15:31	<--	lalp (~legop314@212-186-38-238.cable.dynamic.surfer.at) has quit (Quit: leaving)
+2016-10-02 05:15:44	-->	plee (~kurt@89.10.219.180) has joined ##c++
+2016-10-02 05:15:49	wasutton3	TinoDidriksen, no can do. gotta use pthreading
+2016-10-02 05:16:05	-->	lalp (~legop314@212-186-38-238.cable.dynamic.surfer.at) has joined ##c++
+2016-10-02 05:17:11	w3z	you can not create an automatic variable length builtin array .... use a vector, or if you insist a free store allocated array
+2016-10-02 05:17:11	<--	Karyon (~yaaic@unaffiliated/karyon) has quit (Remote host closed the connection)
+2016-10-02 05:17:25	<--	topshell (~wew@447495.s.dedikuoti.lt) has quit (Remote host closed the connection)
+2016-10-02 05:17:33	w3z	also,
+2016-10-02 05:17:40	w3z	!give wasutton3 book
+2016-10-02 05:17:41	nolyc	wasutton3: A nice C++ book guide and list can be found at http://stackoverflow.com/q/388242/1090079
+2016-10-02 05:18:11	wasutton3	grats. ill poke through those and see if i find something
+2016-10-02 05:18:57	w3z	youll find a number of introductory books, which youll have to read in order to pick up the language basics
+2016-10-02 05:18:59	<--	geoferg (~george@host-89-243-205-30.as13285.net) has quit (Quit: Leaving)
+2016-10-02 05:19:16	w3z	(or at least pick them up systematically and quickly)
+2016-10-02 05:19:36	SlashLife	Robin___: Integer types in C++ have a limited range, as you seemingly know already. Assigning a value outside of its range results in implementation defined behavior.
+2016-10-02 05:19:51	<--	lalp (~legop314@212-186-38-238.cable.dynamic.surfer.at) has quit (Client Quit)
+2016-10-02 05:20:16	<--	stnik (~quassel@2001:980:bdf7:1:c539:b250:24a9:6225) has quit (Remote host closed the connection)
+2016-10-02 05:20:31	Robin___	SlashLife: thanks, but how come short int = 33000  gives -32536 and not some other value? :)
+2016-10-02 05:20:58	SlashLife	Because the implementation thinks that this is the value it should have.
+2016-10-02 05:21:06	TinoDidriksen	Because of two's complement implementations.
+2016-10-02 05:21:53	-->	snowkidind (~textual@pool-96-255-207-158.washdc.fios.verizon.net) has joined ##c++
+2016-10-02 05:21:58	SlashLife	It may very well be a different value on another implementation, so either choose an integer type that can hold 33000, or choose a value that will fit your short int.
+2016-10-02 05:22:37	-->	Smx (Elite8556@gateway/shell/elitebnc/x-xoweaeyyayrnqmhl) has joined ##c++
+2016-10-02 05:22:43	Robin___	ok thanks
+2016-10-02 05:22:51	-->	lconcon (~legop314@212-186-38-238.cable.dynamic.surfer.at) has joined ##c++
+2016-10-02 05:23:43	-->	stnik (~quassel@2001:980:bdf7:1:1928:2cfc:49c1:8b87) has joined ##c++
+2016-10-02 05:24:18	<--	stupidystupid (~stupidyst@usa-67-224-108-138.sohonet.co.uk) has quit (Quit: Textual IRC Client: www.textualapp.com)
+2016-10-02 05:24:24	<--	GenteelBen (~GenteelBe@cpc70133-lutn12-2-0-cust324.9-3.cable.virginm.net) has quit
+2016-10-02 05:24:25	-->	allen29 (~all@unaffiliated/allen29) has joined ##c++
+2016-10-02 05:25:23	lconcon	i am trying to use jsoncpp library but get linking erros with g++. flags: g++ -L/usr/lib/i386-linux-gnu/ -ljsoncpp test.cc ; in /usr/lib/i386-linux-gnu/ i have libjsoncpp.{a,so,so.1,so.1.7.2}. compiling works fine, however when linking i get undefined reference to Json::Value::Value(Json::ValueType). what did i miss?
+2016-10-02 05:25:36	lconcon	host: ubuntu 16.04 on 32bit
+2016-10-02 05:25:47	-->	aslant (~aslant@cpc5-lewi14-2-0-cust79.2-4.cable.virginm.net) has joined ##c++
+2016-10-02 05:25:55	SlashLife	Robin___: And as a side note: If you had an unsigned short instead of a signed one, the behavior would be defined by the standard (on top of the fact that 33000 is guaranteed to fit an unsigned short in any conforming implementation).
+2016-10-02 05:26:21	<--	idontcarebear (~idontcare@50.35.14.24) has quit (Ping timeout: 272 seconds)
+2016-10-02 05:26:22	SlashLife	lconcon: ##C++-general please
+2016-10-02 05:26:41	lconcon	oh, sry + thanks
+2016-10-02 05:26:47	-->	jstein_ (~quassel@gentoo/developer/jstein) has joined ##c++
+2016-10-02 05:26:47	--	jstein is now known as Guest41619
+2016-10-02 05:26:48	Robin___	thanks man, helped me alot
+2016-10-02 05:26:50	<--	jstein_ (~quassel@gentoo/developer/jstein) has quit (Read error: Connection reset by peer)
+2016-10-02 05:27:15	-->	idontcarebear (~idontcare@50.35.14.24) has joined ##c++
+2016-10-02 05:27:42	-->	renlo (~renlo@c-73-231-172-250.hsd1.ca.comcast.net) has joined ##c++
+2016-10-02 05:27:42		[05:27]
+2016-10-02 05:28:02	<--	renlo (~renlo@c-73-231-172-250.hsd1.ca.comcast.net) has quit (Client Quit)
+2016-10-02 05:28:18	<--	a3pq51 (~a3pq51@41-25-179-94.pool.ukrtel.net) has quit (Quit: Leaving)
+2016-10-02 05:28:35	-->	damme (~damme@2001:16d8:cc75::802) has joined ##c++
+2016-10-02 05:28:40	<--	qis (~qis@ip-178-200-100-75.hsi07.unitymediagroup.de) has quit (Quit: brb)
+2016-10-02 05:30:49	<--	Guest41619 (~quassel@gentoo/developer/jstein) has quit (Ping timeout: 248 seconds)
+2016-10-02 05:31:06	<--	UnlikeSuika (~UnlikeSui@117.123.105.126) has quit (Ping timeout: 264 seconds)
+2016-10-02 05:32:36	-->	rtkt (~rtkt@ptr-2hj4tbw74k45t52mbuids2e8l.ip6.access.telenet.be) has joined ##c++
+2016-10-02 05:33:29	<--	m_antis (~mantis@ool-6894a2e9.dyn.optonline.net) has quit (Ping timeout: 248 seconds)
+2016-10-02 05:33:47	-->	sgflt (~sgflt@p4FDF24EA.dip0.t-ipconnect.de) has joined ##c++
+2016-10-02 05:34:07	<--	RedOrangeZ (~RedOrange@c-73-30-227-113.hsd1.pa.comcast.net) has quit (Ping timeout: 265 seconds)
+2016-10-02 05:34:13	<--	longxia (~irc@unaffiliated/longxia) has left ##c++
+2016-10-02 05:35:28	<--	aslant (~aslant@cpc5-lewi14-2-0-cust79.2-4.cable.virginm.net) has quit (Remote host closed the connection)
+2016-10-02 05:36:40	-->	qis (~qis@ip-178-200-100-75.hsi07.unitymediagroup.de) has joined ##c++
+2016-10-02 05:36:52	<--	qis (~qis@ip-178-200-100-75.hsi07.unitymediagroup.de) has quit (Client Quit)
+2016-10-02 05:37:43	-->	qis (~qis@ip-178-200-100-75.hsi07.unitymediagroup.de) has joined ##c++
+2016-10-02 05:38:05	<--	ewanshin (~ewanshin@183.101.46.30) has quit (Quit: Leaving...)
+2016-10-02 05:38:31	<--	narendraj9 (~user@182.70.27.137) has left ##c++ ("ERC (IRC client for Emacs 24.5.1)")
+2016-10-02 05:44:00		[05:38]
+2016-10-02 05:44:18	<--	Lowl3v3l (~Lowl3v3l@dslb-094-218-186-013.094.218.pools.vodafone-ip.de) has quit (Ping timeout: 264 seconds)
+2016-10-02 05:45:45	<--	the_2nd (~the_2nd@2a02:8070:4584:9e00:be5f:f4ff:fe08:eb05) has quit (Quit: Leaving)
+2016-10-02 05:47:34	<--	jbud (~jbud@ip-24-54-73-229.user.start.ca) has quit (Quit: leaving)
+2016-10-02 05:51:54	-->	ascheel (~ascheel@ampache/staff/ascheel) has joined ##c++
+2016-10-02 05:51:56	-->	RebelCoder (~Yuriy@cpc74579-lewi13-2-0-cust201.2-4.cable.virginm.net) has joined ##c++
+2016-10-02 05:52:30	ascheel	Quick question.  I'm overloading operator++ for an iterator class (yes, this is homework) and the ++ POSTFIX operator has a parameter input of just "int" and I don't understand why.  It seems that it's "int" for any ++ postfix operator overload.  Is it always "int"?  Can someone explain why?
+2016-10-02 05:53:24	va	if it did not, how would you distinguish it from prefix-type operator++?
+2016-10-02 05:54:48	-->	Nitrodev (~Nitrodev@87-92-124-216.bb.dnainternet.fi) has joined ##c++
+2016-10-02 05:55:16	-->	TMM (~hp@fsf/member/pdpc.professional.tmm) has joined ##c++
+2016-10-02 05:55:22	ascheel	I understand that it has to be distinguished somehow, but is there a specific reason it's "int" and why it's JUST the datatype?  Was it just chosen at random because it's typically used to increment an int?
+2016-10-02 05:55:25	ville	va: by using the static keyword of course, what else?
+2016-10-02 05:56:47	-->	Lowl3v3l (~Lowl3v3l@dslb-092-076-214-237.092.076.pools.vodafone-ip.de) has joined ##c++
+2016-10-02 05:58:26	<--	PlasmaStar (Plasma@unaffiliated/plasmastar) has quit (Ping timeout: 252 seconds)
+2016-10-02 05:59:21	-->	RedOrangeZ (~RedOrange@c-73-30-227-113.hsd1.pa.comcast.net) has joined ##c++
+2016-10-02 05:59:21		[05:59]
+2016-10-02 06:00:05	<--	Tyilo (~Tyilo@188-180-186-57-dynamic.dk.customer.tdc.net) has quit (Quit: My MacBook Pro has gone to sleep. ZZZzzz…)
+2016-10-02 06:01:42	<--	Lowl3v3l (~Lowl3v3l@dslb-092-076-214-237.092.076.pools.vodafone-ip.de) has quit (Ping timeout: 244 seconds)
+2016-10-02 06:01:50	<--	Fischmiep (~Fischmiep@46-59-168-5.lsn5.wtnet.de) has quit (Ping timeout: 272 seconds)
+2016-10-02 06:02:01	-->	PlasmaStar (Plasma@unaffiliated/plasmastar) has joined ##c++
+2016-10-02 06:03:46	-->	gelignite (~gelignite@x4db6b866.dyn.telefonica.de) has joined ##c++
+2016-10-02 06:04:38	va	ascheel: the comittee could have equally put a nothrow_t there instead of an int
+2016-10-02 06:04:48	<--	wget (~wget@unaffiliated/wget) has quit (Ping timeout: 244 seconds)
+2016-10-02 06:04:55	-->	sophia7 (~sophia7@unaffiliated/sophia7) has joined ##c++
+2016-10-02 06:05:23	<--	sophia7 (~sophia7@unaffiliated/sophia7) has quit (Remote host closed the connection)
+2016-10-02 06:06:03	ascheel	So for my limited reasoning right now, I just need to know operator++(int) is how the postfix operator is defined and it's always int?
+2016-10-02 06:06:08	-->	Judge_Dredd (~Judge_Dre@unaffiliated/judge-dredd/x-2170742) has joined ##c++
+2016-10-02 06:06:28	SlashLife	Although I think they indeed strived for something that makes sense in a ++ context; but yes, it's an arbitrary choice.
+2016-10-02 06:07:15	-->	willy23123 (~willy2312@51-171-151-33-dynamic.agg2.lky.bge-rtd.eircom.net) has joined ##c++
+2016-10-02 06:07:23	SlashLife	Although I always mix up the pre and post increment forms. :|
+2016-10-02 06:07:43	-->	wget (~wget@82.212.185.202) has joined ##c++
+2016-10-02 06:07:44	<--	wget (~wget@82.212.185.202) has quit (Changing host)
+2016-10-02 06:07:44	-->	wget (~wget@unaffiliated/wget) has joined ##c++
+2016-10-02 06:07:50	-->	Tyilo (~Tyilo@188-180-186-57-dynamic.dk.customer.tdc.net) has joined ##c++
+2016-10-02 06:08:39	-->	traquila (~traquila@digi00622.digicube.fr) has joined ##c++
+2016-10-02 06:08:44	ascheel	Thank you.  :)  I was just trying to make sense of it.
+2016-10-02 06:09:53	<--	fluter (~fluter@fedora/fluter) has quit (Ping timeout: 265 seconds)
+2016-10-02 06:11:18	-->	t0by (~t0by@host146-232-dynamic.48-82-r.retail.telecomitalia.it) has joined ##c++
+2016-10-02 06:11:33	<--	paracyst[M] (paracyst@unaffiliated/paracyst) has quit (Read error: Connection reset by peer)
+2016-10-02 06:11:48	-->	paracyst (paracyst@unaffiliated/paracyst) has joined ##c++
+2016-10-02 06:11:49	<--	paracyst (paracyst@unaffiliated/paracyst) has quit (Remote host closed the connection)
+2016-10-02 06:12:11	<--	Tachyon_ (~Thunderbi@95.76.184.120) has quit (Ping timeout: 252 seconds)
+2016-10-02 06:13:08	-->	davidstone (~davidston@174-29-1-22.hlrn.qwest.net) has joined ##c++
+2016-10-02 06:13:49	w3z	there was just a committee of one when the choice was made, its an eyesore, but eh
+2016-10-02 06:14:14	<--	pylbrecht (~pylbrecht@2a02:8109:8a00:b6c:e6:6be5:827e:7b01) has quit (Quit: Segmentation fault (core dumped))
+2016-10-02 06:15:32	-->	blackbird1 (~blackbird@41.230.179.62) has joined ##c++
+2016-10-02 06:15:32		[06:15]
+2016-10-02 06:15:55	<--	hosified (~hosified@unaffiliated/hosified) has quit (Quit: Leaving)
+2016-10-02 06:16:16	-->	hosified (~hosified@unaffiliated/hosified) has joined ##c++
+2016-10-02 06:16:29	<--	hosified (~hosified@unaffiliated/hosified) has quit (Max SendQ exceeded)
+2016-10-02 06:16:52	-->	hosified (~hosified@unaffiliated/hosified) has joined ##c++
+2016-10-02 06:17:13	<--	karakedi (~eAC53C340@unaffiliated/orphan) has quit (Ping timeout: 248 seconds)
+2016-10-02 06:17:13	<--	hosified (~hosified@unaffiliated/hosified) has quit (Max SendQ exceeded)
+2016-10-02 06:17:44	-->	hosified (~hosified@unaffiliated/hosified) has joined ##c++
+2016-10-02 06:17:57	ville	plenty of syntax i'd clean before spending time and effort on that
+2016-10-02 06:18:05	<--	hosified (~hosified@unaffiliated/hosified) has quit (Max SendQ exceeded)
+2016-10-02 06:18:17	<--	pied (~kwisatz@2600:8801:d304:f100:1a57:b7d4:ca0:c6fe) has quit (Ping timeout: 272 seconds)
+2016-10-02 06:18:28	-->	NeXTSUN (~textual@2601:83:8100:42cf:7878:7030:1043:4c59) has joined ##c++
+2016-10-02 06:19:22	-->	hosified (~hosified@unaffiliated/hosified) has joined ##c++
+2016-10-02 06:19:30	-->	codercodi (~codercodi@108-192-148-40.lightspeed.gnvlsc.sbcglobal.net) has joined ##c++
+2016-10-02 06:19:48	<--	hosified (~hosified@unaffiliated/hosified) has quit (Max SendQ exceeded)
+2016-10-02 06:19:50	<--	damme (~damme@2001:16d8:cc75::802) has quit (Remote host closed the connection)
+2016-10-02 06:20:03	-->	damme_ (~damme@h-203-16.a216.priv.bahnhof.se) has joined ##c++
+2016-10-02 06:20:07	<--	sterniste (~sstern@188.189.153.211) has quit (Quit: sterniste)
+2016-10-02 06:20:18	-->	paracyst (paracyst@unaffiliated/paracyst) has joined ##c++
+2016-10-02 06:20:22	-->	hosified (~hosified@185.108.128.4) has joined ##c++
+2016-10-02 06:20:23	-->	AxldenieD (~MetAxl@109.120.77.14) has joined ##c++
+2016-10-02 06:20:50	<--	hosified (~hosified@185.108.128.4) has quit (Changing host)
+2016-10-02 06:20:50	-->	hosified (~hosified@unaffiliated/hosified) has joined ##c++
+2016-10-02 06:20:59	<--	hosified (~hosified@unaffiliated/hosified) has quit (Max SendQ exceeded)
+2016-10-02 06:21:04	-->	g_ (~g@dynamic-78-8-97-169.ssp.dialog.net.pl) has joined ##c++
+2016-10-02 06:21:17	-->	hosified (~hosified@185.108.128.4) has joined ##c++
+2016-10-02 06:21:28	--	g_ is now known as Guest42760
+2016-10-02 06:21:35	<--	hosified (~hosified@185.108.128.4) has quit (Changing host)
+2016-10-02 06:21:35	-->	hosified (~hosified@unaffiliated/hosified) has joined ##c++
+2016-10-02 06:21:55	<--	hosified (~hosified@unaffiliated/hosified) has quit (Max SendQ exceeded)
+2016-10-02 06:21:58	-->	dv_ (~quassel@62.178.118.86) has joined ##c++
+2016-10-02 06:22:05	<--	dv__ (~quassel@62.178.118.86) has quit (Ping timeout: 272 seconds)
+2016-10-02 06:22:10	<--	willy23123 (~willy2312@51-171-151-33-dynamic.agg2.lky.bge-rtd.eircom.net) has quit (Quit: Colloquy for iPhone - http://colloquy.mobi)
+2016-10-02 06:22:32	<--	kilbith (4ee51c3e@gateway/web/cgi-irc/kiwiirc.com/ip.78.229.28.62) has quit (Quit: http://www.kiwiirc.com/ - A hand crafted IRC client)
+2016-10-02 06:23:06	-->	Griwes (~griwes@znc.reaver-project.org) has joined ##c++
+2016-10-02 06:23:22	<--	Tyilo (~Tyilo@188-180-186-57-dynamic.dk.customer.tdc.net) has quit (Quit: My MacBook Pro has gone to sleep. ZZZzzz…)
+2016-10-02 06:24:25	-->	Tyilo (~Tyilo@188-180-186-57-dynamic.dk.customer.tdc.net) has joined ##c++
+2016-10-02 06:24:28	-->	moony22 (moony22@wikipedia/Moony22) has joined ##c++
+2016-10-02 06:26:16	-->	hosified (~hosified@unaffiliated/hosified) has joined ##c++
+2016-10-02 06:26:25	--	kamog` is now known as kamog
+2016-10-02 06:26:37	<--	hosified (~hosified@unaffiliated/hosified) has quit (Max SendQ exceeded)
+2016-10-02 06:27:04	-->	hosified (~hosified@unaffiliated/hosified) has joined ##c++
+2016-10-02 06:27:37	-->	Tachyon_ (~Thunderbi@95.76.184.120) has joined ##c++
+2016-10-02 06:27:43	<--	hosified (~hosified@unaffiliated/hosified) has quit (Max SendQ exceeded)
+2016-10-02 06:29:06	<--	Enhex (~Enhex@77.138.252.82) has quit (Read error: Connection reset by peer)
+2016-10-02 06:29:11	-->	moongazer (~moongazer@103.61.67.176) has joined ##c++
+2016-10-02 06:29:17	moongazer	Hey
+2016-10-02 06:29:44	moongazer	What is the difference between this channel and ##C++-general?
+2016-10-02 06:30:16	megaTherion	read topic's
+2016-10-02 06:30:39	moongazer	megaTherion, Ok
+2016-10-02 06:30:39		[06:30]
+2016-10-02 06:31:09	<--	RedOrangeZ (~RedOrange@c-73-30-227-113.hsd1.pa.comcast.net) has quit (Ping timeout: 244 seconds)
+2016-10-02 06:31:15	SlashLife	No, reading topics is not the difference, megaTherion. You should actually do that in EVERY channel you join.
+2016-10-02 06:31:37	<--	NeXTSUN (~textual@2601:83:8100:42cf:7878:7030:1043:4c59) has quit (Quit: Textual IRC Client: www.textualapp.com)
+2016-10-02 06:31:40	SlashLife	If only to be able to say "now THAT's two seconds of my life I'll never get back"
+2016-10-02 06:32:04	megaTherion	*shrugs*
+2016-10-02 06:33:34	-->	Hajime (~Hajime@c-71-57-78-141.hsd1.il.comcast.net) has joined ##c++
+2016-10-02 06:33:55	<--	Tyilo (~Tyilo@188-180-186-57-dynamic.dk.customer.tdc.net) has quit (Quit: My MacBook Pro has gone to sleep. ZZZzzz…)
+2016-10-02 06:34:33	-->	sphenxes02 (~sphenxes@178-190-233-26.adsl.highway.telekom.at) has joined ##c++
+2016-10-02 06:34:42	-->	paul424 (~chatzilla@5.172.239.17) has joined ##c++
+2016-10-02 06:35:04	-->	inkjetunito (~ben@unaffiliated/inkjetunit) has joined ##c++
+2016-10-02 06:35:11	-->	Tyilo (~Tyilo@188-180-186-57-dynamic.dk.customer.tdc.net) has joined ##c++
+2016-10-02 06:35:45	-->	Lowl3v3l (~Lowl3v3l@dslb-094-216-015-242.094.216.pools.vodafone-ip.de) has joined ##c++
+2016-10-02 06:36:28	<--	josef_k (~jeremy@203-213-41-139.tpgi.com.au) has quit (Ping timeout: 265 seconds)
+2016-10-02 06:36:59	<--	Lord_Dagothur (Dagothur@2607:fea8:9220:688:2118:9c94:9dcf:b3e7) has quit (Quit: Leaving)
+2016-10-02 06:37:21	<--	VlijmenFileer42 (~vlijmenfi@199.195.193.181) has quit (Ping timeout: 244 seconds)
+2016-10-02 06:37:29	<--	sphenxes (~sphenxes@91-115-169-235.adsl.highway.telekom.at) has quit (Ping timeout: 252 seconds)
+2016-10-02 06:38:09	-->	sphenxes (~sphenxes@178-190-233-26.adsl.highway.telekom.at) has joined ##c++
+2016-10-02 06:38:48	<--	talisein (~talisein@april-fools/2013/sixth/talisein) has quit (Remote host closed the connection)
+2016-10-02 06:38:58	-->	matkatmusic (~matkatmus@pool-108-54-229-138.nycmny.fios.verizon.net) has joined ##c++
+2016-10-02 06:39:16	-->	talisein (~talisein@april-fools/2013/sixth/talisein) has joined ##c++
+2016-10-02 06:39:50	AxldenieD	Hello
+2016-10-02 06:40:42	-->	karakedi (~eAC53C340@unaffiliated/orphan) has joined ##c++
+2016-10-02 06:41:07	-->	nilg (~user@77.70.2.229) has joined ##c++
+2016-10-02 06:43:10	moongazer	AxldenieD, Hey
+2016-10-02 06:43:17	<--	Tyilo (~Tyilo@188-180-186-57-dynamic.dk.customer.tdc.net) has quit (Quit: My MacBook Pro has gone to sleep. ZZZzzz…)
+2016-10-02 06:43:53	<--	matkatmusic (~matkatmus@pool-108-54-229-138.nycmny.fios.verizon.net) has quit (Ping timeout: 248 seconds)
+2016-10-02 06:44:14	-->	hosified (~hosified@unaffiliated/hosified) has joined ##c++
+2016-10-02 06:44:28	<--	TheGun (~ronnyma@89.10.253.157) has quit (Remote host closed the connection)
+2016-10-02 06:45:37	<--	pasasap (~pasasap@unaffiliated/pasasap) has quit (Excess Flood)
+2016-10-02 06:45:46	-->	pasasap (~pasasap@unaffiliated/pasasap) has joined ##c++
+2016-10-02 06:45:46		[06:45]
+2016-10-02 06:46:06	<--	sphenxes (~sphenxes@178-190-233-26.adsl.highway.telekom.at) has quit (Ping timeout: 264 seconds)
+2016-10-02 06:46:08	<--	sphenxes02 (~sphenxes@178-190-233-26.adsl.highway.telekom.at) has quit (Ping timeout: 265 seconds)
+2016-10-02 06:47:04	-->	sphenxes (~sphenxes@178-191-164-224.adsl.highway.telekom.at) has joined ##c++
+2016-10-02 06:47:06	-->	sphenxes02 (~sphenxes@178-191-164-224.adsl.highway.telekom.at) has joined ##c++
+2016-10-02 06:48:09	-->	jbud (~jbud@ip-24-54-73-229.user.start.ca) has joined ##c++
+2016-10-02 06:48:51	-->	skweek (~skweek@USF-Gold-Wifi-nat-58.laptops.usf.edu) has joined ##c++
+2016-10-02 06:49:06	<--	reveredge (~reveredge@111.119.209.213) has quit (Ping timeout: 264 seconds)
+2016-10-02 06:49:12	-->	FreeBirdLjj (~freebirdl@117.172.26.212) has joined ##c++
+2016-10-02 06:49:36	-->	P1RATEZ (piratez@unaffiliated/p1ratez) has joined ##c++
+2016-10-02 06:50:29	<--	pheenx (~pheenx@2a02:8071:b68a:1c00:225:22ff:fee7:7dc5) has quit (Ping timeout: 265 seconds)
+2016-10-02 06:50:37	-->	Dagothur (Dagothur@2607:fea8:9220:688:2118:9c94:9dcf:b3e7) has joined ##c++
+2016-10-02 06:51:53	<--	RajRajRaj (uid72176@gateway/web/irccloud.com/x-vkpexnmgghckclns) has quit (Quit: Connection closed for inactivity)
+2016-10-02 06:52:40	<--	strelox (~user@p200300754F24F500625718FFFED193E0.dip0.t-ipconnect.de) has quit (Remote host closed the connection)
+2016-10-02 06:53:06	AxldenieD	I'm trying
+2016-10-02 06:53:37	AxldenieD	to use an objet, which contain a dynamic array of another object
+2016-10-02 06:54:02	AxldenieD	has anyone an exemple which show how to do this ?
+2016-10-02 06:54:32	Eelis	struct A { std::vector<B> bs; };
+2016-10-02 06:55:14	AxldenieD	i can't use a classical array which i fix the size in te constructor  ?
+2016-10-02 06:55:20	AxldenieD	*the
+2016-10-02 06:55:21	-->	TheGun (~ronnyma@157.89-10-253.nextgentel.com) has joined ##c++
+2016-10-02 06:55:26	Eelis	indeed
+2016-10-02 06:57:38	-->	daniel-s (~daniel-s@bla31-1-82-241-231-138.fbx.proxad.net) has joined ##c++
+2016-10-02 06:58:40	-->	Markow (~Markow@176.122.215.103) has joined ##c++
+2016-10-02 06:59:28	<--	Lowl3v3l (~Lowl3v3l@dslb-094-216-015-242.094.216.pools.vodafone-ip.de) has quit (Ping timeout: 272 seconds)
+2016-10-02 06:59:41	-->	pdtpatrick (~Patrick@2620:10d:c090:180::da33) has joined ##c++
+2016-10-02 07:01:00	-->	pied (~kwisatz@2600:8801:d304:f100:1a57:b7d4:ca0:c6fe) has joined ##c++
+2016-10-02 07:01:00		[07:01]
+2016-10-02 07:01:02	-->	reveredge (~reveredge@115.110.126.75) has joined ##c++
+2016-10-02 07:01:18	-->	ffilozov (~ffilozov@pool-72-69-174-106.nycmny.fios.verizon.net) has joined ##c++
+2016-10-02 07:01:52	<--	nilg (~user@77.70.2.229) has quit (Remote host closed the connection)
+2016-10-02 07:02:55	<--	pdtpatrick (~Patrick@2620:10d:c090:180::da33) has quit (Remote host closed the connection)
+2016-10-02 07:03:41	<--	lescactus (~quassel@111.240.148.77.rev.sfr.net) has quit (Remote host closed the connection)
+2016-10-02 07:04:43	-->	strelox (~user@p200300754F24F5000F06B817556C2A51.dip0.t-ipconnect.de) has joined ##c++
+2016-10-02 07:04:43	-->	TikityTik (~TikityTik@162.223.44.49) has joined ##c++
+2016-10-02 07:05:09	-->	Kenran (~Kenran@p548D29AE.dip0.t-ipconnect.de) has joined ##c++
+2016-10-02 07:07:03	<--	reveredge (~reveredge@115.110.126.75) has quit (Ping timeout: 272 seconds)
+2016-10-02 07:08:17	-->	tadaa (~tadaaa@nat-wh-wz4-12.rz.uni-karlsruhe.de) has joined ##c++
+2016-10-02 07:08:26	-->	Pzcb (~Pzcb@mar13-2-82-246-223-195.fbx.proxad.net) has joined ##c++
+2016-10-02 07:08:43	<--	Pzcb (~Pzcb@mar13-2-82-246-223-195.fbx.proxad.net) has quit (Max SendQ exceeded)
+2016-10-02 07:09:23	<--	pied (~kwisatz@2600:8801:d304:f100:1a57:b7d4:ca0:c6fe) has quit (Ping timeout: 252 seconds)
+2016-10-02 07:09:51	-->	Lqaj (~Lqaj@mar13-2-82-246-223-195.fbx.proxad.net) has joined ##c++
+2016-10-02 07:10:10	<--	tete94 (~tete94@201.206.234.251) has quit (Quit: Leaving)
+2016-10-02 07:10:12	<--	Lqaj (~Lqaj@mar13-2-82-246-223-195.fbx.proxad.net) has quit (Max SendQ exceeded)
+2016-10-02 07:10:26	talisein	not if you want a 'dynamic array' :)
+2016-10-02 07:11:12	-->	Limona_ (~Origin@BSN-142-187-200.dynamic.siol.net) has joined ##c++
+2016-10-02 07:11:12	<--	Limona (~Origin@BSN-142-187-200.dynamic.siol.net) has quit (Read error: Connection reset by peer)
+2016-10-02 07:12:08	<--	mitch0 (~mitch@77-234-86-98.pool.digikabel.hu) has quit (Ping timeout: 252 seconds)
+2016-10-02 07:12:23	-->	Lowl3v3l (~Lowl3v3l@ipservice-092-208-176-053.092.208.pools.vodafone-ip.de) has joined ##c++
+2016-10-02 07:13:32	-->	al1o (~al1o@236.red-88-16-49.dynamicip.rima-tde.net) has joined ##c++
+2016-10-02 07:13:35	-->	sophia7 (~sophia7@unaffiliated/sophia7) has joined ##c++
+2016-10-02 07:13:59	<--	zwliew (uid161395@gateway/web/irccloud.com/x-siwqhyeppgilvppm) has quit (Quit: Connection closed for inactivity)
+2016-10-02 07:14:24	-->	Murii (~Murii@79.113.206.236) has joined ##c++
+2016-10-02 07:18:16	<--	sophia7 (~sophia7@unaffiliated/sophia7) has quit (Client Quit)
+2016-10-02 07:18:16		[07:18]
+2016-10-02 07:19:53	cbreak	AxldenieD: C arrays do not have a constructor, they are pod
+2016-10-02 07:19:55	-->	araml (~araml@unaffiliated/araml) has joined ##c++
+2016-10-02 07:19:58	<--	xameada (~xameada@ip98-165-190-88.ph.ph.cox.net) has quit (Ping timeout: 265 seconds)
+2016-10-02 07:20:03	-->	jyo4 (~jyo4@AStrasbourg-653-1-84-172.w90-26.abo.wanadoo.fr) has joined ##c++
+2016-10-02 07:20:04	cbreak	their size is determined at compile time, and can not be changed later
+2016-10-02 07:20:08	cbreak	it is part of their type
+2016-10-02 07:20:24	<--	jyo4 (~jyo4@AStrasbourg-653-1-84-172.w90-26.abo.wanadoo.fr) has quit (Max SendQ exceeded)
+2016-10-02 07:20:55	cbreak	in C++ it is impossible to create types at runtime, and it is impossible to change the static type of an object at runtime
+2016-10-02 07:21:16	-->	Kjvj6 (~Kjvj6@AStrasbourg-653-1-84-172.w90-26.abo.wanadoo.fr) has joined ##c++
+2016-10-02 07:21:36	<--	Kjvj6 (~Kjvj6@AStrasbourg-653-1-84-172.w90-26.abo.wanadoo.fr) has quit (Max SendQ exceeded)
+2016-10-02 07:21:57	-->	reveredge (~reveredge@111.119.209.213) has joined ##c++
+2016-10-02 07:22:49	<--	JSharpe (~JSharpe@192.40.88.14) has quit (Ping timeout: 248 seconds)
+2016-10-02 07:23:51	-->	dhk (~dhk@138.59.24.18) has joined ##c++
+2016-10-02 07:27:32	-->	vdamewood (~vdamewood@unaffiliated/vdamewood) has joined ##c++
+2016-10-02 07:29:13	<--	ambro718 (~ambro@unaffiliated/ambro718) has quit (Ping timeout: 272 seconds)
+2016-10-02 07:30:07	-->	willy23123 (~willy2312@51-171-151-33-dynamic.agg2.lky.bge-rtd.eircom.net) has joined ##c++
+2016-10-02 07:30:33	-->	Birchy (~Birchy@178-164-108.52.3p.ntebredband.no) has joined ##c++
+2016-10-02 07:31:56	-->	ScorpionJack (~Scorpion@unaffiliated/scorpionjack) has joined ##c++
+2016-10-02 07:33:01	<--	rtkt (~rtkt@ptr-2hj4tbw74k45t52mbuids2e8l.ip6.access.telenet.be) has quit (Ping timeout: 265 seconds)
+2016-10-02 07:37:47	<--	dhk (~dhk@138.59.24.18) has quit (Quit: Leaving)
+2016-10-02 07:37:47		[07:37]
+2016-10-02 07:42:17	w3z	saying theyre pod is, theyre aggregates and may be pod depending on the subobject type but ... eh whatever its the weekend
+2016-10-02 07:42:47	-->	Fischmiep (~Fischmiep@46-59-168-5.lsn5.wtnet.de) has joined ##c++
+2016-10-02 07:43:41	<--	willy23123 (~willy2312@51-171-151-33-dynamic.agg2.lky.bge-rtd.eircom.net) has quit (Quit: Colloquy for iPhone - http://colloquy.mobi)
+2016-10-02 07:44:11	<--	wanderman (~wanderman@unaffiliated/wanderman) has quit (Quit: Leaving)
+2016-10-02 07:44:27	-->	whitelion (~whitelion@93-33-167-231.ip45.fastwebnet.it) has joined ##c++
+2016-10-02 07:45:43	-->	snyp (~Snyp@nas4.meghbelabroadband.in) has joined ##c++
+2016-10-02 07:46:26	-->	aslant (~aslant@cpc5-lewi14-2-0-cust79.2-4.cable.virginm.net) has joined ##c++
+2016-10-02 07:46:39	-->	willy23123 (~willy2312@51-171-151-33-dynamic.agg2.lky.bge-rtd.eircom.net) has joined ##c++
+2016-10-02 07:47:51	<--	armyriad (~armyriad@198.8.80.167) has quit (Quit: Leaving)
+2016-10-02 07:47:53	-->	logan_e_ (uid164592@gateway/web/irccloud.com/x-yckkckziibhhwgce) has joined ##c++
+2016-10-02 07:48:17	-->	Betal (~Betal@unaffiliated/betal) has joined ##c++
+2016-10-02 07:48:42	-->	sophia7 (~sophia7@unaffiliated/sophia7) has joined ##c++
+2016-10-02 07:48:51	-->	seattletech (ac3a28f6@gateway/web/freenode/ip.172.58.40.246) has joined ##c++
+2016-10-02 07:49:07	-->	armyriad (~armyriad@gateway/vpn/privateinternetaccess/armyriad) has joined ##c++
+2016-10-02 07:49:14	<--	Mayzie (~Maisie.is@unaffiliated/mayzie) has quit (Quit: Leaving)
+2016-10-02 07:50:15	-->	supay (nebuzen@gateway/shell/fnordserver.eu/x-twpgdhpyhdbmrjyn) has joined ##c++
+2016-10-02 07:50:15	catern	hey ##c++
+2016-10-02 07:50:20	-->	pheenx (~pheenx@2a02:8071:b68a:1c00:225:22ff:fee7:7dc5) has joined ##c++
+2016-10-02 07:50:49	catern	if I have an unordered_map<int, MyClass> m, and I do m[0] = foo; where foo is an instance of MyClass
+2016-10-02 07:51:05	<--	skweek (~skweek@USF-Gold-Wifi-nat-58.laptops.usf.edu) has quit (Ping timeout: 248 seconds)
+2016-10-02 07:51:09	catern	and I've just allocated m, so it doesn't yet have any elements in it
+2016-10-02 07:51:17	<--	hk238 (~kvirc@unaffiliated/hk238) has quit (Quit: http://www.kvirc.net/ 4.9.2 Aria)
+2016-10-02 07:52:02	catern	will foo be move-constructed into m? will any other instances of MyClass be constructed before that happens?
+2016-10-02 07:52:36	-->	pied (~kwisatz@2600:8801:d304:f100:1a57:b7d4:ca0:c6fe) has joined ##c++
+2016-10-02 07:53:47	-->	dokma (~vlatko@cpe-94-253-185-218.zg.cable.xnet.hr) has joined ##c++
+2016-10-02 07:53:47		[07:53]
+2016-10-02 07:53:55	w3z	{unordered_map<int,tracked::B> m; tracked::B b; m[0]=b;}
+2016-10-02 07:53:56	geordi	error: symbol `.Lubsan_type3' is already defined
+2016-10-02 07:54:01	w3z	geordi: use --clang
+2016-10-02 07:54:03	geordi	B0* B1* B1=B0 B0~ B1~
+2016-10-02 07:55:05	dokma	How would I istringstream iss(string("10 12 42 12 13")) >> vector<unsigned char> where the numbers get converted into numerical values rather than copied as characters?
+2016-10-02 07:55:21	<--	jamesaxl (~jamesaxl@176.98.129.195) has quit (Ping timeout: 248 seconds)
+2016-10-02 07:55:31	-->	malinus (~malinus@unaffiliated/malinus) has joined ##c++
+2016-10-02 07:55:34	-->	jamesaxl (~jamesaxl@176.98.129.195) has joined ##c++
+2016-10-02 07:55:34	<--	pheenx (~pheenx@2a02:8071:b68a:1c00:225:22ff:fee7:7dc5) has quit (Remote host closed the connection)
+2016-10-02 07:55:42	w3z	accessing the unordered_map using [] on a non existent element, constructs a new instance, subsequent assignment copy assigns the other instance in to the newly created instance unless you explicitly move
+2016-10-02 07:56:07	catern	w3z: ah, I see, thanks!
+2016-10-02 07:56:20	malinus	Hello there. What is this notation (:24 after variable name)? What is it called? "int32_t varName:24;"
+2016-10-02 07:56:33	w3z	malinus: bitfield
+2016-10-02 07:56:38	malinus	cheers
+2016-10-02 07:57:54	-->	Leovale (~Leovale@108.161.112.10) has joined ##c++
+2016-10-02 07:58:19	-->	symm- (~symm-@188.25.203.101) has joined ##c++
+2016-10-02 07:58:21	AxldenieD	thank you w3z =)
+2016-10-02 07:59:48	<--	bendem (~bendem@irc.bendem.be) has quit (Remote host closed the connection)
+2016-10-02 08:00:02	-->	bendem (~bendem@irc.bendem.be) has joined ##c++
+2016-10-02 08:00:45	<--	Fischmiep (~Fischmiep@46-59-168-5.lsn5.wtnet.de) has quit (Quit: WeeChat 1.5)
+2016-10-02 08:02:01	<--	soksok_3612 (~IceChat9@197.39.174.227) has quit (Quit: Given the choice between you, I'll take the sea-sick crocodile.)
+2016-10-02 08:02:16	w3z	depending on what you mean by store the numbers, since you elected to use a vector<char> ... its a little problematic but eh:
+2016-10-02 08:02:23	w3z	{stringstream SS{"11 22 33"}; vector<char> V{istream_iterator<int>{SS},istream_iterator<int>{}}; cout<<V;}
+2016-10-02 08:02:24	geordi	{'\v', '\x16', '!'}
+2016-10-02 08:02:36	w3z	{stringstream SS{"11 22 33"}; vector<char> V{istream_iterator<char>{SS},istream_iterator<char>{}}; cout<<V;}
+2016-10-02 08:02:37	geordi	{'1', '1', '2', '2', '3', '3'}
+2016-10-02 08:03:05	<--	willy23123 (~willy2312@51-171-151-33-dynamic.agg2.lky.bge-rtd.eircom.net) has quit (Quit: Colloquy for iPhone - http://colloquy.mobi)
+2016-10-02 08:03:52	-->	nyarmith (~reader@2601:14c:8100:1400:19df:1565:3459:3816) has joined ##c++
+2016-10-02 08:04:05	w3z	its problematic because if your intention was to get a vector like the first, reading the contents of the stream as a series of integers can mean that the read value wont fit in a char
+2016-10-02 08:04:31	w3z	{stringstream SS{"1100 22 33"}; vector<char> V{istream_iterator<int>{SS},istream_iterator<int>{}}; cout<<V;}
+2016-10-02 08:04:32	geordi	{'L', '\x16', '!'}
+2016-10-02 08:05:11	<--	Neomex (~Neomex@brj145.neoplus.adsl.tpnet.pl) has quit (Quit: Leaving)
+2016-10-02 08:05:58	<--	whitelion (~whitelion@93-33-167-231.ip45.fastwebnet.it) has quit (Read error: Connection reset by peer)
+2016-10-02 08:06:40	-->	whitelion (~whitelion@93-33-167-231.ip45.fastwebnet.it) has joined ##c++
+2016-10-02 08:06:49	-->	Goplat (~goplat@reactos/developer/Goplat) has joined ##c++
+2016-10-02 08:06:49	-->	haix64 (~gamma@unaffiliated/haix64) has joined ##c++
+2016-10-02 08:07:12	<--	haix64 (~gamma@unaffiliated/haix64) has quit (Client Quit)
+2016-10-02 08:08:58	-->	sharazam (~sharazam@x590d6a94.dyn.telefonica.de) has joined ##c++
+2016-10-02 08:08:58		[08:08]
+2016-10-02 08:10:48	-->	drozdziak1 (~drozdziak@89-70-116-45.dynamic.chello.pl) has joined ##c++
+2016-10-02 08:11:00	-->	rosten (~rosten@cpe-45-48-9-161.socal.res.rr.com) has joined ##c++
+2016-10-02 08:11:12	<--	daniel-s (~daniel-s@bla31-1-82-241-231-138.fbx.proxad.net) has quit (Ping timeout: 265 seconds)
+2016-10-02 08:11:58	-->	fluter (~fluter@fedora/fluter) has joined ##c++
+2016-10-02 08:12:54	<--	TikityTik (~TikityTik@162.223.44.49) has quit (Read error: Connection reset by peer)
+2016-10-02 08:13:50	-->	Vicfred (~I||I||II|@177.238.84.36) has joined ##c++
+2016-10-02 08:15:19	-->	nilg (~user@77.70.2.229) has joined ##c++
+2016-10-02 08:17:27	<--	nyarmith (~reader@2601:14c:8100:1400:19df:1565:3459:3816) has left ##c++ ("Leaving")
+2016-10-02 08:18:32	dokma	w3z: thank you
+2016-10-02 08:19:26	-->	sanct (~sanct@212.35.67.11) has joined ##c++
+2016-10-02 08:19:36	-->	CodeWar (~CodeWar@c-98-210-116-46.hsd1.ca.comcast.net) has joined ##c++
+2016-10-02 08:19:39	dokma	w3z: I know in advance that it will fit
+2016-10-02 08:20:57	<--	seattletech (ac3a28f6@gateway/web/freenode/ip.172.58.40.246) has left ##c++
+2016-10-02 08:24:37	-->	splabs (~Idan@bzq-109-64-140-223.red.bezeqint.net) has joined ##c++
+2016-10-02 08:24:37		[08:24]
+2016-10-02 08:26:37	<--	nilg (~user@77.70.2.229) has quit (Read error: Connection reset by peer)
+2016-10-02 08:26:53	<--	speidy` (~Idan@bzq-109-64-140-223.red.bezeqint.net) has quit (Ping timeout: 244 seconds)
+2016-10-02 08:28:05	-->	ferdna (~ferdna@cpe-69-23-141-130.elp.res.rr.com) has joined ##c++
+2016-10-02 08:34:00		[08:28]
+2016-10-02 08:34:56	-->	cbot (~FS@ool-2f12e4fc.dyn.optonline.net) has joined ##c++
+2016-10-02 08:35:34	--	munch is now known as munch[MORPHINE]
+2016-10-02 08:36:21	--	munch[MORPHINE] is now known as munch
+2016-10-02 08:37:05	<--	aslant (~aslant@cpc5-lewi14-2-0-cust79.2-4.cable.virginm.net) has quit (Remote host closed the connection)
+2016-10-02 08:40:51	-->	matkatmusic (~matkatmus@pool-108-54-229-138.nycmny.fios.verizon.net) has joined ##c++
+2016-10-02 08:42:04	<--	blackbird1 (~blackbird@41.230.179.62) has quit (Quit: Leaving)
+2016-10-02 08:42:04	-->	Guest40 (~textual@151.16.1.240) has joined ##c++
+2016-10-02 08:42:21	<--	irco (~irco@HSI-KBW-134-3-111-4.hsi14.kabel-badenwuerttemberg.de) has quit (Remote host closed the connection)
+2016-10-02 08:42:47	-->	pdm0205 (sid156665@gateway/web/irccloud.com/x-ynhqtgzihzenadas) has joined ##c++
+2016-10-02 08:43:07	-->	aslant (~aslant@cpc5-lewi14-2-0-cust79.2-4.cable.virginm.net) has joined ##c++
+2016-10-02 08:44:17	<--	aslant (~aslant@cpc5-lewi14-2-0-cust79.2-4.cable.virginm.net) has quit (Remote host closed the connection)
+2016-10-02 08:45:03	<--	Guest40 (~textual@151.16.1.240) has left ##c++
+2016-10-02 08:45:21	-->	ragecryx (~ragecryx@188.4.53.134.dsl.dyn.forthnet.gr) has joined ##c++
+2016-10-02 08:45:22	<--	Jackneill (~Jackneill@unaffiliated/jackneill) has quit (Remote host closed the connection)
+2016-10-02 08:45:30	<--	matkatmusic (~matkatmus@pool-108-54-229-138.nycmny.fios.verizon.net) has quit (Ping timeout: 264 seconds)
+2016-10-02 08:47:07	<--	pied (~kwisatz@2600:8801:d304:f100:1a57:b7d4:ca0:c6fe) has quit (Ping timeout: 272 seconds)
+2016-10-02 08:47:44	-->	xameada (~xameada@ip98-165-175-172.ph.ph.cox.net) has joined ##c++
+2016-10-02 08:47:54	-->	Fischmiep (~Fischmiep@46-59-168-5.lsn5.wtnet.de) has joined ##c++
+2016-10-02 08:48:05	-->	i44 (~i44@dynamic-78-30-147-42.adsl.eunet.rs) has joined ##c++
+2016-10-02 08:48:43	--	baudejogos is now known as o]
+2016-10-02 08:49:58	<--	vdamewood (~vdamewood@unaffiliated/vdamewood) has quit (Quit: Life beckons.)
+2016-10-02 08:49:58		[08:49]
+2016-10-02 08:50:44	<--	Guest42760 (~g@dynamic-78-8-97-169.ssp.dialog.net.pl) has quit (Remote host closed the connection)
+2016-10-02 08:51:14	-->	ddl0ck3d (~ddl0ck3d@151.16.1.240) has joined ##c++
+2016-10-02 08:51:54	Hummer12007	is there a 'zip' function in Standard C++?
+2016-10-02 08:52:27	o]	no
+2016-10-02 08:52:37	o]	but you can easily make one
+2016-10-02 08:52:45	TinoDidriksen	Or just use Boost's
+2016-10-02 08:52:59	o]	if you don't mind eternal build times, yes :)
+2016-10-02 08:53:16	o]	a hand rolled zip iterator adapter is like 10 lines or less
+2016-10-02 08:53:24	rebb	we will build eternal, shiny and chrome
+2016-10-02 08:53:36	Hummer12007	i'm using boost rationals anyway
+2016-10-02 08:53:39	Hummer12007	thanks
+2016-10-02 08:53:48	o]	ah so you are already assimilated. then use boost indeed
+2016-10-02 08:55:32	m_ben	Hummer12007: https://github.com/ryanhaining/cppitertools.git
+2016-10-02 08:55:40	<--	WizJin (WizJin@gateway/shell/fnordserver.eu/x-ucrdjjpiuffoxaim) has quit (Ping timeout: 265 seconds)
+2016-10-02 08:55:52	-->	harha_ (harha_@y55.ip4.netikka.fi) has joined ##c++
+2016-10-02 08:56:00	Hummer12007	functional niceties for cxx, nice
+2016-10-02 08:56:10	<--	supay (nebuzen@gateway/shell/fnordserver.eu/x-twpgdhpyhdbmrjyn) has quit (Quit: https://fnordserver.eu)
+2016-10-02 08:57:04	o]	tuples zip. cool
+2016-10-02 08:57:31	-->	Shadowblitz16 (~Shadowbli@63-155-152-52.eugn.qwest.net) has joined ##c++
+2016-10-02 08:57:34	o]	This library is header-only and relies only on the C++ standard library. The only exception is zip_longest which uses boost::optional.
+2016-10-02 08:57:37	o]	why??
+2016-10-02 08:57:45	<--	moony22 (moony22@wikipedia/Moony22) has quit (Quit: https://fnordserver.eu)
+2016-10-02 08:59:04	m_ben	zip_longest: Terminates on the longest sequence instead of the shortest. Repeatedly yields a tuple of boost::optional<T>s where T is the type yielded by the sequences' respective iterators. Because of its boost dependency, zip_longest is not in itertools.hpp and must be included separately.
+2016-10-02 08:59:37	<--	jamesaxl (~jamesaxl@176.98.129.195) has quit (Read error: Connection reset by peer)
+2016-10-02 09:00:01	o]	C++14/17 hello?
+2016-10-02 09:00:23	m_ben	std::optional is c++17. this library is c++14
+2016-10-02 09:00:24	-->	nilg (~user@77.70.2.229) has joined ##c++
+2016-10-02 09:00:34	-->	jamesaxl (~jamesaxl@176.98.129.195) has joined ##c++
+2016-10-02 09:00:46	o]	experimental. hello :D
+2016-10-02 09:01:03	<--	dv_ (~quassel@62.178.118.86) has quit (Ping timeout: 272 seconds)
+2016-10-02 09:01:12	-->	dv__ (~quassel@62.178.118.86) has joined ##c++
+2016-10-02 09:01:17	-->	CaptainPi (~edx@dslb-094-218-175-192.094.218.pools.vodafone-ip.de) has joined ##c++
+2016-10-02 09:01:37	o]	I would use experimental or even copy/paste the standalone optional implementation that is the basis of C++14 experimental, but I would never introduce such dependency to boost in a header only lib
+2016-10-02 09:01:47	o]	it seems like laziness. sorry
+2016-10-02 09:02:01	<--	xameada (~xameada@ip98-165-175-172.ph.ph.cox.net) has quit (Ping timeout: 248 seconds)
+2016-10-02 09:02:57	-->	skweek (~skweek@68-200-146-225.res.bhn.net) has joined ##c++
+2016-10-02 09:03:52	<--	codercodi (~codercodi@108-192-148-40.lightspeed.gnvlsc.sbcglobal.net) has quit (Quit: Leaving)
+2016-10-02 09:05:07	<--	JoshS (~jshjsh@172.56.40.13) has quit (Quit: Leaving)
+2016-10-02 09:05:07		[09:05]
+2016-10-02 09:05:17	<--	piling (~piling@unaffiliated/piling) has quit (Quit: Lost terminal)
+2016-10-02 09:10:10	<--	AxldenieD (~MetAxl@109.120.77.14) has quit (Quit: Leaving)
+2016-10-02 09:10:23	-->	ne0ndrag0n (~ne0ndrag0@pool-96-244-118-192.bltmmd.fios.verizon.net) has joined ##c++
+2016-10-02 09:11:00	<--	moongazer (~moongazer@103.61.67.176) has quit (Quit: Leaving)
+2016-10-02 09:13:05	<--	rendar (~I@host59-182-dynamic.12-79-r.retail.telecomitalia.it) has quit (Ping timeout: 272 seconds)
+2016-10-02 09:13:24	<--	Lowl3v3l (~Lowl3v3l@ipservice-092-208-176-053.092.208.pools.vodafone-ip.de) has quit (Remote host closed the connection)
+2016-10-02 09:14:49	-->	Lowl3v3l (~Lowl3v3l@ipservice-092-208-176-053.092.208.pools.vodafone-ip.de) has joined ##c++
+2016-10-02 09:15:16	<--	cbot (~FS@ool-2f12e4fc.dyn.optonline.net) has quit (Quit: Leaving)
+2016-10-02 09:15:38	<--	Vicfred (~I||I||II|@177.238.84.36) has quit (Read error: Connection reset by peer)
+2016-10-02 09:16:33	-->	Gluesticky (~nobody@unaffiliated/gluesticky) has joined ##c++
+2016-10-02 09:16:53	<--	Judge_Dredd (~Judge_Dre@unaffiliated/judge-dredd/x-2170742) has quit (Quit: Leaving.)
+2016-10-02 09:18:52	-->	doppel (~chatzilla@ip70-189-197-158.lv.lv.cox.net) has joined ##c++
+2016-10-02 09:20:10	<--	Markow (~Markow@176.122.215.103) has quit (Remote host closed the connection)
+2016-10-02 09:20:10		[09:20]
+2016-10-02 09:23:50	-->	syem (~s@unaffiliated/syem) has joined ##c++
+2016-10-02 09:25:28	-->	jkhl (~j@host86-182-59-122.range86-182.btcentralplus.com) has joined ##c++
+2016-10-02 09:25:29	<--	t0by (~t0by@host146-232-dynamic.48-82-r.retail.telecomitalia.it) has quit (Remote host closed the connection)
+2016-10-02 09:26:20	<--	reveredge (~reveredge@111.119.209.213) has quit (Ping timeout: 252 seconds)
+2016-10-02 09:27:07	-->	xameada (~xameada@ip98-165-175-172.ph.ph.cox.net) has joined ##c++
+2016-10-02 09:27:28	<--	Nilesh_ (uid116340@gateway/web/irccloud.com/x-jmpjvvepzzsrlkde) has quit (Quit: Connection closed for inactivity)
+2016-10-02 09:27:51	<--	jamesaxl (~jamesaxl@176.98.129.195) has quit (Ping timeout: 244 seconds)
+2016-10-02 09:28:32	-->	jamesaxl (~jamesaxl@176.98.129.195) has joined ##c++
+2016-10-02 09:29:13	<--	The_CooIest (~Arthur_Li@bzq-84-108-121-56.cablep.bezeqint.net) has quit (Ping timeout: 248 seconds)
+2016-10-02 09:29:56	-->	Unee0x (~Unee0x@166.170.58.18) has joined ##c++
+2016-10-02 09:30:28	-->	pied (~kwisatz@2600:8801:d304:f100:1a57:b7d4:ca0:c6fe) has joined ##c++
+2016-10-02 09:30:57	-->	nealshire (~Nealshire@unaffiliated/nealshire) has joined ##c++
+2016-10-02 09:32:18	<--	Fischmiep (~Fischmiep@46-59-168-5.lsn5.wtnet.de) has quit (Ping timeout: 264 seconds)
+2016-10-02 09:32:34	<--	SteffanW (~steffanw@ip4da40774.direct-adsl.nl) has quit (Read error: Connection reset by peer)
+2016-10-02 09:33:49	-->	vuoto (~vuoto@80-71-135-9.u.parknet.dk) has joined ##c++
+2016-10-02 09:34:22	-->	uyei (~uyei@ARennes-656-1-390-182.w2-2.abo.wanadoo.fr) has joined ##c++
+2016-10-02 09:34:24	-->	pmercado (~pmercado@186.104.189.48) has joined ##c++
+2016-10-02 09:34:50	<--	uyei (~uyei@ARennes-656-1-390-182.w2-2.abo.wanadoo.fr) has quit (Max SendQ exceeded)
+2016-10-02 09:34:50	-->	The_Coolest (~Arthur_Li@bzq-84-108-121-56.cablep.bezeqint.net) has joined ##c++
+2016-10-02 09:35:03	-->	irco (~irco@HSI-KBW-134-3-111-4.hsi14.kabel-badenwuerttemberg.de) has joined ##c++
+2016-10-02 09:35:21	-->	Eqjeo (~Eqjeo@ARennes-656-1-390-182.w2-2.abo.wanadoo.fr) has joined ##c++
+2016-10-02 09:35:21		[09:35]
+2016-10-02 09:35:54	-->	DEElekgolo (~DEElekgol@2602:30a:2e0e:a7a0:1183:bb17:6575:b1db) has joined ##c++
+2016-10-02 09:36:08	<--	Eqjeo (~Eqjeo@ARennes-656-1-390-182.w2-2.abo.wanadoo.fr) has quit (Max SendQ exceeded)
+2016-10-02 09:36:28	<--	CodeWar (~CodeWar@c-98-210-116-46.hsd1.ca.comcast.net) has quit (Quit: (null))
+2016-10-02 09:37:05	-->	Afruu (~Afruu@ADijon-553-1-22-48.w92-161.abo.wanadoo.fr) has joined ##c++
+2016-10-02 09:37:06	<--	vuoto (~vuoto@80-71-135-9.u.parknet.dk) has quit (Remote host closed the connection)
+2016-10-02 09:37:29	<--	Afruu (~Afruu@ADijon-553-1-22-48.w92-161.abo.wanadoo.fr) has quit (Max SendQ exceeded)
+2016-10-02 09:37:51	-->	aqd (~aqd@ADijon-553-1-22-48.w92-161.abo.wanadoo.fr) has joined ##c++
+2016-10-02 09:38:05	-->	systemfault (~rcyr@unaffiliated/rcyr) has joined ##c++
+2016-10-02 09:38:21	<--	aqd (~aqd@ADijon-553-1-22-48.w92-161.abo.wanadoo.fr) has quit (Max SendQ exceeded)
+2016-10-02 09:39:05	<--	whitelion (~whitelion@93-33-167-231.ip45.fastwebnet.it) has quit (Read error: Connection reset by peer)
+2016-10-02 09:39:36	-->	reveredge (~reveredge@115.110.126.75) has joined ##c++
+2016-10-02 09:40:33	-->	Tyilo (~Tyilo@dhcp-5-186-121-139.cgn.ip.fibianet.dk) has joined ##c++
+2016-10-02 09:41:09	<--	strelox (~user@p200300754F24F5000F06B817556C2A51.dip0.t-ipconnect.de) has quit (Remote host closed the connection)
+2016-10-02 09:41:11	<--	satifant (~sati@unaffiliated/satifant) has quit (Quit: Verlassend)
+2016-10-02 09:42:14	-->	strelox (~user@p200300754F24F5000F06B817556C2A51.dip0.t-ipconnect.de) has joined ##c++
+2016-10-02 09:42:28	<--	TheGun (~ronnyma@157.89-10-253.nextgentel.com) has quit (Remote host closed the connection)
+2016-10-02 09:42:58	-->	rendar (~I@host59-182-dynamic.12-79-r.retail.telecomitalia.it) has joined ##c++
+2016-10-02 09:43:26	-->	plw (~plw@ackj123.neoplus.adsl.tpnet.pl) has joined ##c++
+2016-10-02 09:45:42	<--	cbreak (~cbreak@77-58-73-149.dclient.hispeed.ch) has quit (Read error: Connection reset by peer)
+2016-10-02 09:45:53	<--	Lowl3v3l (~Lowl3v3l@ipservice-092-208-176-053.092.208.pools.vodafone-ip.de) has quit (Read error: Connection reset by peer)
+2016-10-02 09:46:16	-->	Lowl3v3l (~Lowl3v3l@ipservice-092-208-176-053.092.208.pools.vodafone-ip.de) has joined ##c++
+2016-10-02 09:46:34	<--	Lowl3v3l (~Lowl3v3l@ipservice-092-208-176-053.092.208.pools.vodafone-ip.de) has quit (Remote host closed the connection)
+2016-10-02 09:47:19	-->	jstein_ (~quassel@gentoo/developer/jstein) has joined ##c++
+2016-10-02 09:47:25	<--	jstein_ (~quassel@gentoo/developer/jstein) has quit (Read error: Connection reset by peer)
+2016-10-02 09:47:34	-->	cbreak (~cbreak@77-58-73-149.dclient.hispeed.ch) has joined ##c++
+2016-10-02 09:49:02	-->	Ender13 (uid187286@gateway/web/irccloud.com/x-eqeeglxgycltbjfb) has joined ##c++
+2016-10-02 09:49:11	<--	reveredge (~reveredge@115.110.126.75) has quit (Ping timeout: 272 seconds)
+2016-10-02 09:50:12	-->	rtkt (~rtkt@ptr-2hj4tbw74k45t52mbuids2e8l.ip6.access.telenet.be) has joined ##c++
+2016-10-02 09:53:41	<--	dv- (~dv@unaffiliated/dv-) has quit (Ping timeout: 244 seconds)
+2016-10-02 09:53:41		[09:53]
+2016-10-02 09:54:02	-->	dataangel (~user@c-50-165-224-148.hsd1.il.comcast.net) has joined ##c++
+2016-10-02 09:54:12	-->	Munnu (~timo@91-158-145-247.elisa-laajakaista.fi) has joined ##c++
+2016-10-02 09:54:52	-->	baotiao (~baotiao@43.255.178.184) has joined ##c++
+2016-10-02 09:55:26	-->	inad922 (~inad925@188-143-37-21.pool.digikabel.hu) has joined ##c++
+2016-10-02 09:55:55	-->	TheGun (~ronnyma@89.10.253.157) has joined ##c++
+2016-10-02 09:56:37	<--	ragecryx (~ragecryx@188.4.53.134.dsl.dyn.forthnet.gr) has quit (Quit: Leaving)
+2016-10-02 09:58:00	<--	paul424 (~chatzilla@5.172.239.17) has quit (Quit: ChatZilla 0.9.92 [Firefox 48.0.1/20160818000000])
+2016-10-02 09:59:58	<--	Tyilo (~Tyilo@dhcp-5-186-121-139.cgn.ip.fibianet.dk) has quit (Quit: Textual IRC Client: www.textualapp.com)
+2016-10-02 10:00:38	-->	yong (~vayne@pD9E44DDE.dip0.t-ipconnect.de) has joined ##c++
+2016-10-02 10:01:14	<--	nilg (~user@77.70.2.229) has quit (Remote host closed the connection)
+2016-10-02 10:01:40	<--	Unee0x (~Unee0x@166.170.58.18) has quit (Remote host closed the connection)
+2016-10-02 10:01:58	<--	yong (~vayne@pD9E44DDE.dip0.t-ipconnect.de) has quit (Remote host closed the connection)
+2016-10-02 10:02:04	-->	primary11 (~primary15@187.20.175.157) has joined ##c++
+2016-10-02 10:02:42	-->	dv- (~dv@BSN-77-153-149.static.siol.net) has joined ##c++
+2016-10-02 10:03:09	<--	velco (~chill@vlan-153-aitos-36.comnet.bg) has quit (Quit: Leaving)
+2016-10-02 10:03:49	<--	chang (~vayne@pD9E44DDE.dip0.t-ipconnect.de) has quit (Ping timeout: 265 seconds)
+2016-10-02 10:04:06	-->	reveredge (~reveredge@111.119.209.213) has joined ##c++
+2016-10-02 10:04:35	<--	inkjetunito (~ben@unaffiliated/inkjetunit) has quit (Quit: q)
+2016-10-02 10:05:28	-->	neurrowcat (~neurrowca@h-152-251.a163.priv.bahnhof.se) has joined ##c++
+2016-10-02 10:06:54	-->	nnead (5ce471df@gateway/web/freenode/ip.92.228.113.223) has joined ##c++
+2016-10-02 10:07:28	<--	logan_e_ (uid164592@gateway/web/irccloud.com/x-yckkckziibhhwgce) has quit (Quit: Connection closed for inactivity)
+2016-10-02 10:08:34	-->	KNRO_ (~quassel@94.187.209.247) has joined ##c++
+2016-10-02 10:09:01	<--	systemfault (~rcyr@unaffiliated/rcyr) has quit (Quit: Bye!)
+2016-10-02 10:09:01		[10:09]
+2016-10-02 10:10:34	-->	SwiftMatt (~Objective@162.242.94.224) has joined ##c++
+2016-10-02 10:10:42	<--	rtkt (~rtkt@ptr-2hj4tbw74k45t52mbuids2e8l.ip6.access.telenet.be) has quit (Quit: Leaving)
+2016-10-02 10:13:18	-->	ionzernfa (2ec1405c@gateway/web/freenode/ip.46.193.64.92) has joined ##c++
+2016-10-02 10:13:19	<--	Tachyon_ (~Thunderbi@95.76.184.120) has quit (Quit: Tachyon_)
+2016-10-02 10:13:21	<--	jamesaxl (~jamesaxl@176.98.129.195) has quit (Quit: Leaving)
+2016-10-02 10:14:19	-->	LunarJetman (~LunarJetm@79-64-100-87.host.pobb.as13285.net) has joined ##c++
+2016-10-02 10:15:01	<--	LunarJetman (~LunarJetm@79-64-100-87.host.pobb.as13285.net) has left ##c++
+2016-10-02 10:15:22	<--	FreeBirdLjj (~freebirdl@117.172.26.212) has quit (Remote host closed the connection)
+2016-10-02 10:15:39	-->	aalex_ (uid189135@gateway/web/irccloud.com/x-jcruiuegrahykspx) has joined ##c++
+2016-10-02 10:16:42	-->	systemfault (~rcyr@unaffiliated/rcyr) has joined ##c++
+2016-10-02 10:17:19	-->	hypercube32 (~nick@96.32.239.106) has joined ##c++
+2016-10-02 10:19:17	<--	pied (~kwisatz@2600:8801:d304:f100:1a57:b7d4:ca0:c6fe) has quit (Ping timeout: 265 seconds)
+2016-10-02 10:21:45	-->	pied (~kwisatz@2600:8801:d304:f100:1a57:b7d4:ca0:c6fe) has joined ##c++
+2016-10-02 10:22:55	<--	Nitrodev (~Nitrodev@87-92-124-216.bb.dnainternet.fi) has quit (Read error: Connection reset by peer)
+2016-10-02 10:23:17	<--	King_Hual (~failed@unaffiliated/king-hual/x-1207580) has quit (Read error: Connection reset by peer)
+2016-10-02 10:23:29	<--	i44 (~i44@dynamic-78-30-147-42.adsl.eunet.rs) has quit (Quit: Leaving)
+2016-10-02 10:23:43	-->	perrier-jouet (~perrier-j@bas1-montreal30-1177586835.dsl.bell.ca) has joined ##c++
+2016-10-02 10:27:20	-->	thesh (~thesh@124.40.246.86) has joined ##c++
+2016-10-02 10:27:20		[10:27]
+2016-10-02 10:28:16	zagabar	http://ideone.com/MgNVsY How come this call is ambiguous? I am trying to make the function act differently based on if the lambda returns a LoopResult or returns nothing (void) and in this example I use std::result_of on the passed Functor to test for this
+2016-10-02 10:28:18	<--	karab44 (~karab44@unaffiliated/karab44) has quit (Quit: Bye bye! o/)
+2016-10-02 10:28:32	zagabar	Isn't the return type of a lambda that doesn't return anything void?
+2016-10-02 10:29:09	doppel	yes.
+2016-10-02 10:29:27	-->	JoshS (~jshjsh@172.56.40.33) has joined ##c++
+2016-10-02 10:29:51	zagabar	So why would it in this case think that the overload where it checks against if the return type is a LoopResult be a valid candidate?
+2016-10-02 10:30:13	-->	kofter (~kofter@95.111.38.234) has joined ##c++
+2016-10-02 10:30:32	zagabar	oh, nvm figured it out
+2016-10-02 10:30:41	zagabar	I forgot to chuck ::type after enable_if
+2016-10-02 10:31:14	-->	M-ou-se2 (~m-ou-se@2a01:7c8:aab5:37a:5054:ff:fe8d:e06c) has joined ##c++
+2016-10-02 10:32:22	<--	kofter (~kofter@95.111.38.234) has quit (Client Quit)
+2016-10-02 10:32:28	<--	rimdeker (~rimdeker@unaffiliated/rimdeker) has quit (Remote host closed the connection)
+2016-10-02 10:33:11	<--	mkramer (~Adium@c-76-30-207-152.hsd1.tx.comcast.net) has quit (Quit: Leaving.)
+2016-10-02 10:33:41	-->	callousfury (~thraxxus@2602:302:d1fb:3360:a1ef:a39f:299f:377c) has joined ##c++
+2016-10-02 10:33:54	-->	FreeBirdLjj (~freebirdl@117.139.205.138) has joined ##c++
+2016-10-02 10:35:57	<--	baotiao (~baotiao@43.255.178.184) has quit (Quit: baotiao)
+2016-10-02 10:36:05	-->	Mike11 (~Mike@unaffiliated/mike11) has joined ##c++
+2016-10-02 10:37:17	<--	pied (~kwisatz@2600:8801:d304:f100:1a57:b7d4:ca0:c6fe) has quit (Ping timeout: 252 seconds)
+2016-10-02 10:37:25	<--	ddl0ck3d (~ddl0ck3d@151.16.1.240) has quit (Quit: Textual IRC Client: www.textualapp.com)
+2016-10-02 10:38:29	cbreak	enable_if_t? :)
+2016-10-02 10:40:44	<--	harha_ (harha_@y55.ip4.netikka.fi) has quit
+2016-10-02 10:41:38	<--	nnead (5ce471df@gateway/web/freenode/ip.92.228.113.223) has quit (Quit: Page closed)
+2016-10-02 10:42:28	<--	de-facto (~de-facto@gateway/tor-sasl/de-facto) has quit (Ping timeout: 258 seconds)
+2016-10-02 10:42:28		[10:42]
+2016-10-02 10:43:07	<--	FreeBirdLjj (~freebirdl@117.139.205.138) has quit (Remote host closed the connection)
+2016-10-02 10:44:54	-->	de-facto (~de-facto@gateway/tor-sasl/de-facto) has joined ##c++
+2016-10-02 10:46:04	<--	pmercado (~pmercado@186.104.189.48) has quit (Quit: Konversation terminated!)
+2016-10-02 10:47:14	<--	Murii (~Murii@79.113.206.236) has quit
+2016-10-02 10:47:17	<--	M-ou-se2 (~m-ou-se@2a01:7c8:aab5:37a:5054:ff:fe8d:e06c) has quit (Quit: Bye.)
+2016-10-02 10:47:34	<--	blackbeard420 (~blackbear@dynamic-acs-24-154-82-158.zoominternet.net) has quit (Quit: Lost terminal)
+2016-10-02 10:47:51	zagabar	Nice, I've missed that one
+2016-10-02 10:48:27	<--	jan64 (~jan64@abbh241.neoplus.adsl.tpnet.pl) has quit (Ping timeout: 244 seconds)
+2016-10-02 10:48:51	<--	wasutton3 (~wasutton3@c-50-180-86-14.hsd1.ga.comcast.net) has quit (Remote host closed the connection)
+2016-10-02 10:49:12	zagabar	Hmmm how can you use std::result_of on a functor that might take arguments by non-const reference?
+2016-10-02 10:49:13	-->	etvsteva (uid110233@gateway/web/irccloud.com/x-gcrndzctilfvnxii) has joined ##c++
+2016-10-02 10:50:23	zagabar	http://ideone.com/MgNVsY Seen here, it doesn't work when you pass in a lambda that takes an std::string& as opposed to std::string only, because I assume that when std::result_of does its checking, it fails because temporaries can't bind to references that are not const?
+2016-10-02 10:53:22	-->	cbot (~FS@ool-2f12e4fc.dyn.optonline.net) has joined ##c++
+2016-10-02 10:54:10	<--	plitter (~plitter@66.209.202.84.customer.cdi.no) has quit (Quit: WeeChat 1.5)
+2016-10-02 10:54:19	<--	navidr (uid112413@gateway/web/irccloud.com/x-annwhewegebtgutg) has quit (Quit: Connection closed for inactivity)
+2016-10-02 10:54:50	<--	traquila (~traquila@digi00622.digicube.fr) has quit (Quit: Konversation terminated!)
+2016-10-02 10:56:24	-->	Cohedrin_ (~textual@73.93.141.53) has joined ##c++
+2016-10-02 10:57:35	<--	Cohedrin (~textual@c-73-170-239-253.hsd1.ca.comcast.net) has quit (Ping timeout: 272 seconds)
+2016-10-02 10:57:35		[10:57]
+2016-10-02 10:59:06	SlashLife	zagabar: You're missing the return type in both cases, don't you?
+2016-10-02 10:59:31	o]	zagabar: use enable_if_t
+2016-10-02 10:59:34	SlashLife	enable_if< is_same<> >
+2016-10-02 10:59:40	w3z	<<TYPE<result_of_t<decltype(&f)(int&)>>; int f(int&) {return 0;}
+2016-10-02 10:59:41	geordi	int
+2016-10-02 10:59:54	o]	and is_same_t
+2016-10-02 11:00:14	SlashLife	geordi: replace last int& with int
+2016-10-02 11:00:15	geordi	int
+2016-10-02 11:00:30	w3z	anyway, result_of doesnt take objects, it takes types
+2016-10-02 11:00:52	<--	lconcon (~legop314@212-186-38-238.cable.dynamic.surfer.at) has quit (Quit: leaving)
+2016-10-02 11:01:21	w3z	replacing the last int wouldnt be problematic, it would mean calling a function that takes its argument with a value passing in a lvalue ref
+2016-10-02 11:01:41	SlashLife	w3z: Yes, but that'd be the more interesting case for zagabar, so I wanted to demonstrate it.
+2016-10-02 11:02:07	SlashLife	Should be pretty clear to him that he can always call something that has an exactly matching signature.
+2016-10-02 11:02:08	-->	nikki93 (~nikki93@2601:645:8104:cb10:58d3:5e12:a110:b428) has joined ##c++
+2016-10-02 11:02:39	-->	mizazlord (026ef7e2@gateway/web/freenode/ip.2.110.247.226) has joined ##c++
+2016-10-02 11:03:20	<--	drozdziak1 (~drozdziak@89-70-116-45.dynamic.chello.pl) has quit (Quit: WeeChat 1.5)
+2016-10-02 11:03:35	zagabar	Well, in my case, the lambda given will sometimes have a value-type parameter, sometimes a reference and sometimes a const reference and I wanted to use the same enable_if overload for all of those cases, using std::result_of, but I can't figure out how to make std::result_of work in the case of the lambda taking by non-const reference
+2016-10-02 11:03:54	zagabar	also, SlashLife, o] thanks for the *_t, I replaced it with that in my code
+2016-10-02 11:04:15	-->	gravitation (~gravitati@32.220.39.198) has joined ##c++
+2016-10-02 11:05:01	<--	sbell1099 (~fusionet2@82-69-55-63.dsl.in-addr.zen.co.uk) has quit (Read error: Connection reset by peer)
+2016-10-02 11:05:37	zagabar	As seen in this updated snippet, it works fine when the string is passed by value or const-ref into the lambda: http://ideone.com/MgNVsY
+2016-10-02 11:05:54	SlashLife	zagabar: w3z has already shown you the answer.
+2016-10-02 11:06:05	SlashLife	s/answer/solution/
+2016-10-02 11:06:30	zagabar	I was suspecting that, but I don't understand the explanation
+2016-10-02 11:06:53	Eelis	result_of_t<F(T&)> means the result of calling F with an lvalue T
+2016-10-02 11:07:00	Eelis	*an F
+2016-10-02 11:07:21	Eelis	which is what you want, because everything binds to a nonconst lvalue
+2016-10-02 11:07:55	-->	sammyg (~sammyg@176.10.248.234) has joined ##c++
+2016-10-02 11:08:08	Eelis	you currently have result_of<F(T)>, which means the result of calling F with an rvalue T
+2016-10-02 11:08:12	Eelis	*an F
+2016-10-02 11:08:34	Eelis	which only works by-value and by-ref-to-const
+2016-10-02 11:08:57	zagabar	Ah yeah, that explanation makes sense, thanks.
+2016-10-02 11:09:09	zagabar	It does indeed work in my code, nice.
+2016-10-02 11:09:30	<--	bjz (~bjz@14-201-215-168.tpgi.com.au) has quit (Quit: My MacBook Pro has gone to sleep. ZZZzzz…)
+2016-10-02 11:09:49	-->	Rutix (~rutix@4daece29.ftth.telfortglasvezel.nl) has joined ##c++
+2016-10-02 11:09:49	<--	Rutix (~rutix@4daece29.ftth.telfortglasvezel.nl) has quit (Changing host)
+2016-10-02 11:09:49	-->	Rutix (~rutix@april-fools/2013/runnerup/Rutix) has joined ##c++
+2016-10-02 11:11:59	-->	plitter (~plitter@66.209.202.84.customer.cdi.no) has joined ##c++
+2016-10-02 11:13:31	<--	andrzejku (~andrzejku@90-156-117-46.internetia.net.pl) has quit (Remote host closed the connection)
+2016-10-02 11:13:31		[11:13]
+2016-10-02 11:14:24	<--	gravitation (~gravitati@32.220.39.198) has quit (Quit: gravitation)
+2016-10-02 11:14:36	-->	SpaceDanceCJ (~Sasha@178.121.162.223) has joined ##c++
+2016-10-02 11:15:15	-->	ambro718 (~ambro@unaffiliated/ambro718) has joined ##c++
+2016-10-02 11:16:19	<--	SwiftMatt (~Objective@162.242.94.224) has quit (Quit: My MacBook Pro has gone to sleep. ZZZzzz…)
+2016-10-02 11:18:32	<--	orbiter (~UNIX2@ipb21bf875.dynamic.kabel-deutschland.de) has quit (Ping timeout: 252 seconds)
+2016-10-02 11:18:58	-->	orbiter (~UNIX2@ipb21bf875.dynamic.kabel-deutschland.de) has joined ##c++
+2016-10-02 11:19:28	<--	neurrowcat (~neurrowca@h-152-251.a163.priv.bahnhof.se) has quit (Quit: Deebidappidoodah!)
+2016-10-02 11:19:29	-->	tete94 (~tete94@201.206.234.251) has joined ##c++
+2016-10-02 11:20:22	<--	thesh (~thesh@124.40.246.86) has quit (Remote host closed the connection)
+2016-10-02 11:20:28	-->	manuel (~manuelsch@p20030072AF6BC2001EEA2F3E8805DBF5.dip0.t-ipconnect.de) has joined ##c++
+2016-10-02 11:20:40	<--	inad922 (~inad925@188-143-37-21.pool.digikabel.hu) has quit (Ping timeout: 265 seconds)
+2016-10-02 11:21:01	-->	PaulN (~PaulN@2601:87:100:222c:b11e:b2ad:df8f:883c) has joined ##c++
+2016-10-02 11:21:02	-->	nucc1 (~nucc1@pdpc/supporter/student/nucc1) has joined ##c++
+2016-10-02 11:22:22	-->	Cohedrin (~textual@c-73-170-239-253.hsd1.ca.comcast.net) has joined ##c++
+2016-10-02 11:22:53	nucc1	hi, i'm trying to use a map of <int,int> to keep a frequency table but it seems my logic is incorrect https://paste.fedoraproject.org/442163/75443325/
+2016-10-02 11:23:05	nucc1	i wonder if any one can advise what I'm doing wrong?
+2016-10-02 11:23:50	<--	mizazlord (026ef7e2@gateway/web/freenode/ip.2.110.247.226) has quit (Quit: Page closed)
+2016-10-02 11:24:11	<--	Cohedrin_ (~textual@73.93.141.53) has quit (Ping timeout: 272 seconds)
+2016-10-02 11:25:22	<--	syem (~s@unaffiliated/syem) has quit (Quit: leaving)
+2016-10-02 11:25:45	<--	doppel (~chatzilla@ip70-189-197-158.lv.lv.cox.net) has quit (Quit: ChatZilla 0.9.92 [Firefox 49.0.1/20160922113459])
+2016-10-02 11:25:57	TinoDidriksen	Your whole if/else can be replaced with ++table[a[i]];
+2016-10-02 11:26:23	TinoDidriksen	Also, your map should be <int,size_t> and your counters should be type size_t instead of int.
+2016-10-02 11:26:41	nucc1	facepalm
+2016-10-02 11:26:47	nucc1	seen.
+2016-10-02 11:26:53	nucc1	thanks
+2016-10-02 11:27:28	SlashLife	TinoDidriksen: Unless of course that make_pair(i, 1) is actually not a mistake. :)
+2016-10-02 11:27:31	TinoDidriksen	Map will default-construct the element on op[] access, so for a histogram you don't need any .find() check since default is 0.
+2016-10-02 11:27:46	nucc1	it should be a[i] i should be using into the table, not i
+2016-10-02 11:27:56	-->	orbiter2 (~UNIX2@ipb21bf875.dynamic.kabel-deutschland.de) has joined ##c++
+2016-10-02 11:28:04	nucc1	TinoDidriksen, i didn't realise that the map would update the key if it didn't exist
+2016-10-02 11:28:37	nucc1	make_pair() was added after the umpteenth attempt to get it right :)
+2016-10-02 11:28:37		[11:28]
+2016-10-02 11:28:40	nucc1	will simplify.
+2016-10-02 11:28:42	<--	orbiter (~UNIX2@ipb21bf875.dynamic.kabel-deutschland.de) has quit (Ping timeout: 264 seconds)
+2016-10-02 11:28:55	SlashLife	nucc1: Mind that for the same reason you can't [] a const map.
+2016-10-02 11:29:47	<--	damme_ (~damme@h-203-16.a216.priv.bahnhof.se) has quit (Ping timeout: 244 seconds)
+2016-10-02 11:30:07	-->	FreeBirdLjj (~freebirdl@183.221.90.233) has joined ##c++
+2016-10-02 11:30:07	<--	stnik (~quassel@2001:980:bdf7:1:1928:2cfc:49c1:8b87) has quit (Read error: Connection reset by peer)
+2016-10-02 11:31:30	-->	vdamewood (~vdamewood@unaffiliated/vdamewood) has joined ##c++
+2016-10-02 11:31:53	<--	seishun (~Kakera@78.84.184.3) has quit (Ping timeout: 248 seconds)
+2016-10-02 11:32:20	-->	velco (~chill@vlan-153-aitos-36.comnet.bg) has joined ##c++
+2016-10-02 11:32:49	<--	marcofe (~marcofe@31.161.52.18) has quit (Quit: Konversation terminated!)
+2016-10-02 11:34:27	o]	WHY ==> [17:26] <TinoDidriksen> Also, your map should be <int,size_t> and your counters should be type size_t instead of int.
+2016-10-02 11:34:50	o]	I see no reason to involve an unsigned type on this
+2016-10-02 11:34:52	-->	Sepsis (~trevor00@108-214-101-167.lightspeed.sntcca.sbcglobal.net) has joined ##c++
+2016-10-02 11:34:59	o]	you just are adding overhead
+2016-10-02 11:35:23	-->	Enhex (~Enhex@77.138.252.82) has joined ##c++
+2016-10-02 11:35:25	<--	Limona_ (~Origin@BSN-142-187-200.dynamic.siol.net) has quit (Read error: Connection reset by peer)
+2016-10-02 11:35:35	<--	FreeBirdLjj (~freebirdl@183.221.90.233) has quit (Ping timeout: 272 seconds)
+2016-10-02 11:36:28	-->	RedOrangeZ (~RedOrange@c-73-30-227-113.hsd1.pa.comcast.net) has joined ##c++
+2016-10-02 11:36:34	o]	nucc1: TinoDidriksen is right in all aspects except on the size_t thing. it is better keeping using int :)
+2016-10-02 11:36:34	Eelis	the reason is simply so that the code is neutral and can handle all sizes
+2016-10-02 11:36:37	<--	przemkovv (~przemkovv@d82-83.icpnet.pl) has quit (Ping timeout: 265 seconds)
+2016-10-02 11:37:05	<--	bolt (r00t@unaffiliated/bolt) has quit (Remote host closed the connection)
+2016-10-02 11:37:09	o]	Eelis: i don't see a point of adding more machine code instructions by just gaining one more bit. he can use long or even long long instead of size_t
+2016-10-02 11:37:11	nucc1	i thought using int kept things simple for me as well, o]
+2016-10-02 11:37:14	<--	sanct (~sanct@212.35.67.11) has quit (Ping timeout: 252 seconds)
+2016-10-02 11:37:20	TinoDidriksen	There is no reason to involve an unsigned type, but there IS a reason to involve a non-negative type.
+2016-10-02 11:37:25	nucc1	although i can understand the intent of using size_t.
+2016-10-02 11:37:31	o]	nucc1: there is a CppCon presentation that talks about narrow contracts and why they are good
+2016-10-02 11:37:33	-->	orbiter (~UNIX2@ipb21bf875.dynamic.kabel-deutschland.de) has joined ##c++
+2016-10-02 11:37:34	Eelis	o]: oh well, i just told you the point.
+2016-10-02 11:37:40	o]	they cover this signed vs unsigned case
+2016-10-02 11:37:41	-->	noone (~noone@176.244.62.94.rev.vodafone.pt) has joined ##c++
+2016-10-02 11:37:53	-->	sanct (~sanct@212.35.67.11) has joined ##c++
+2016-10-02 11:37:55	o]	and the came with a rule of thumb: using BitMask = unsigned;
+2016-10-02 11:38:10	TinoDidriksen	long long is not a non-negative type, so it has the wrong semantics.
+2016-10-02 11:38:34	<--	orbiter2 (~UNIX2@ipb21bf875.dynamic.kabel-deutschland.de) has quit (Ping timeout: 244 seconds)
+2016-10-02 11:38:47	-->	topshell (~wew@447495.s.dedikuoti.lt) has joined ##c++
+2016-10-02 11:39:10	<--	topshell (~wew@447495.s.dedikuoti.lt) has quit (Excess Flood)
+2016-10-02 11:39:11	o]	so you prefer adding more machine code to your executable just to "preserve semantics"?  lol
+2016-10-02 11:39:29	-->	topshell (~wew@447495.s.dedikuoti.lt) has joined ##c++
+2016-10-02 11:39:55	<--	topshell (~wew@447495.s.dedikuoti.lt) has quit (Excess Flood)
+2016-10-02 11:40:12	-->	topshell (~wew@447495.s.dedikuoti.lt) has joined ##c++
+2016-10-02 11:40:28	noone	What does &(pointer_to_struct + 1) mean?
+2016-10-02 11:40:34	TinoDidriksen	Yes? Obviously? Semantics are very important, and the optimizer turns 99% of them into nothing.
+2016-10-02 11:40:53	Eelis	sounds like someone got it into their head that unsigned integers are inefficient?
+2016-10-02 11:40:59	nucc1	would have used "unsigned int"
+2016-10-02 11:41:08	o]	not for unsigned types, since they don't have a narrower contract than signed types
+2016-10-02 11:41:13	nucc1	but for what i'm doing, overflow or underflow aren't a concern.
+2016-10-02 11:41:28	nucc1	what's the presentation about narrow contracts?
+2016-10-02 11:41:31	o]	nucc1: keep using int. easier to debug and easier for the compiler
+2016-10-02 11:41:55	o]	nucc1: they explained that narrow contracts are better for the optimizer. in practice, you get less instructions generated
+2016-10-02 11:42:07	nucc1	googling cppcon narrow contracts brings up a John Lakos video about defensive programming done right.
+2016-10-02 11:42:19	o]	cppcon 2016 it should be
+2016-10-02 11:42:41	o]	they demoed replacing unsigned variables that were being used as a counters with signed ones and they compared the generated asm
+2016-10-02 11:42:53	o]	nucc1: that one was presented by chandler
+2016-10-02 11:43:30	TinoDidriksen	Unsigned semantics are usually bad and surprising, I fully agree. But, C++ doesn't have any other types that offer the non-negative semantic. And I didn't say use an unsigned type - I said use size_t, because size_t is the semantic type you should be using for all sizes, lengths, counts, etc. I don't care that it's unsigned, only that it's correct.
+2016-10-02 11:43:57	o]	"size_t is the semantic type you should be using for all sizes, lengths, counts" --> that is a very bold statement
+2016-10-02 11:43:57		[11:43]
+2016-10-02 11:44:13	o]	I would keep only the "sizes" part
+2016-10-02 11:44:18	o]	counts is debatable
+2016-10-02 11:44:33	-->	gravitation (~gravitati@180.sub-174-199-8.myvzw.com) has joined ##c++
+2016-10-02 11:44:46	-->	nic_k (~nic_k@152.208.19.182) has joined ##c++
+2016-10-02 11:44:54	Eelis	if you're counting how many times something occurs in something that has a size, it means you need the same type
+2016-10-02 11:45:54	Eelis	if you want the code not to express assumptions about numbers of occurrences that will appear in practice
+2016-10-02 11:46:01	<--	Munnu (~timo@91-158-145-247.elisa-laajakaista.fi) has quit (Quit: Follow the white rabbit. Compile the desert of the real. 3301.)
+2016-10-02 11:46:19	<--	xameada (~xameada@ip98-165-175-172.ph.ph.cox.net) has quit (Ping timeout: 244 seconds)
+2016-10-02 11:46:34	TinoDidriksen	.size() returns a size_t, or the guaranteed equivalent - use the same type. When they come with an STL2 that uses int64_t, use int64_t.
+2016-10-02 11:47:03	SlashLife	int64_t sounds like a bad choice.
+2016-10-02 11:47:24	TinoDidriksen	intmax_t then.
+2016-10-02 11:47:24	SlashLife	Shouldn't you rather go with the according ::size_type?
+2016-10-02 11:47:38	o]	he is starting from 0 and only using ++ . int is the right choice
+2016-10-02 11:47:40	TinoDidriksen	That's guaranteed to be <= size_t
+2016-10-02 11:47:51	-->	dv_ (~quassel@62.178.118.86) has joined ##c++
+2016-10-02 11:47:53	SlashLife	>=?
+2016-10-02 11:47:54	<--	dv__ (~quassel@62.178.118.86) has quit (Ping timeout: 264 seconds)
+2016-10-02 11:48:10	TinoDidriksen	size_type is guaranteed to be <= size_t
+2016-10-02 11:48:18	SlashLife	Ah
+2016-10-02 11:48:27	SlashLife	I thought you were continuing on intmax_t
+2016-10-02 11:48:41	Eelis	"int is the right choice" and then he compiles on win32 where int is only 32 bit, and he has a container with more than 4 billion elements, and everything explodes because you wrote shitty code that makes unnecessary assumptions about counts :)
+2016-10-02 11:48:49	Eelis	or even win64, iirc
+2016-10-02 11:48:57	SlashLife	"Oh, for big integers we have intmax_t. That's the largest integer type we have. And if that doesn't suffice, there's size_t."
+2016-10-02 11:49:10	TinoDidriksen	int would require a cast from .size(), which should be an immediate code smell.
+2016-10-02 11:50:19	-->	przemkovv (~przemkovv@d82-83.icpnet.pl) has joined ##c++
+2016-10-02 11:51:08	<--	Sepsis (~trevor00@108-214-101-167.lightspeed.sntcca.sbcglobal.net) has quit
+2016-10-02 11:52:01	Eelis	intmax_t is also not necessarily a natural choice for sizes of things. a fancy architecture might have fast native 512 bit ints, but still only have 64 bit addressable memory, in which case 512 bit size_t would be a complete waste
+2016-10-02 11:52:06	<--	rorro (~rorro@c-227-220.eduroam.liu.se) has quit (Ping timeout: 264 seconds)
+2016-10-02 11:52:35	TinoDidriksen	True
+2016-10-02 11:53:00	TinoDidriksen	So for STL2, ssize_t can be blessed into the standard...
+2016-10-02 11:53:19	<--	dataangel (~user@c-50-165-224-148.hsd1.il.comcast.net) has quit (Remote host closed the connection)
+2016-10-02 11:57:10	-->	matkatmusic (~matkatmus@pool-108-54-229-138.nycmny.fios.verizon.net) has joined ##c++
+2016-10-02 11:57:41	<--	ambro718 (~ambro@unaffiliated/ambro718) has quit (Ping timeout: 244 seconds)
+2016-10-02 11:58:22	-->	dataangel (~user@c-50-165-224-148.hsd1.il.comcast.net) has joined ##c++
+2016-10-02 11:58:48	<--	zagabar (~zagabar@unaffiliated/zagabar) has quit (Quit: WeeChat 1.5)
+2016-10-02 11:59:13	<--	tadaa (~tadaaa@nat-wh-wz4-12.rz.uni-karlsruhe.de) has quit
+2016-10-02 11:59:13		[11:59]
+2016-10-02 11:59:15	<--	Tectu (~Tectu@193.231.195.178.dynamic.wline.res.cust.swisscom.ch) has quit (Quit: Leaving)
+2016-10-02 12:00:12	et	there's no guarantee that size_t can index all elements of a container either
+2016-10-02 12:01:33	-->	Zxpr1jk (~zxpr1jk@24.214.61.47) has joined ##c++
+2016-10-02 12:01:35	Eelis	don't you believe "<TinoDidriksen> size_type is guaranteed to be <= size_t" ?
+2016-10-02 12:01:40	<--	Robin___ (~Damien@535304C0.cm-6-4a.dynamic.ziggo.nl) has quit (Quit: Leaving)
+2016-10-02 12:01:59	chaiomanot	<et> there's no guarantee that size_t can index all elements of a container either
+2016-10-02 12:02:01	<--	biglama (~Day_dream@ram31-1-82-234-77-18.fbx.proxad.net) has quit (Remote host closed the connection)
+2016-10-02 12:02:08	chaiomanot	of a 1:1 memory container, there is
+2016-10-02 12:02:12	-->	bolt (r00t@unaffiliated/bolt) has joined ##c++
+2016-10-02 12:02:23	chaiomanot	meaning, std::vector, std::list, etc
+2016-10-02 12:02:24	TinoDidriksen	For the standard containers and standard allocators, it's guaranteed.
+2016-10-02 12:02:44	<--	Shoelaces (~shoelaces@pool-173-56-47-240.nycmny.fios.verizon.net) has quit (Quit: Lost terminal)
+2016-10-02 12:03:46	-->	orbiter2 (~UNIX2@ipb21bf875.dynamic.kabel-deutschland.de) has joined ##c++
+2016-10-02 12:03:50	et	chaiomanot: what is a "1:1 memory container"?
+2016-10-02 12:04:55	<--	orbiter (~UNIX2@ipb21bf875.dynamic.kabel-deutschland.de) has quit (Ping timeout: 244 seconds)
+2016-10-02 12:04:58	chaiomanot	et, i meant injective
+2016-10-02 12:05:05	chaiomanot	couldn't think of the word
+2016-10-02 12:05:59	<--	Zxpr2jk (~zxpr1jk@24.214.61.47) has quit (Ping timeout: 272 seconds)
+2016-10-02 12:06:04	chaiomanot	*byte injective
+2016-10-02 12:06:35	chaiomanot	i suppose a bit injective container could theoretically be 8x > max size_t
+2016-10-02 12:07:01	<--	verm1n (~verm1n@209-6-236-59.c3-0.wrx-ubr1.sbo-wrx.ma.cable.rcn.com) has quit (Ping timeout: 240 seconds)
+2016-10-02 12:07:09	et	you may not be able to enumerate your memory with a size_t
+2016-10-02 12:07:33	et	size_t is big enough for a single allocation
+2016-10-02 12:08:01	<--	dreampwnzor (~dreampwnz@unaffiliated/dreampwnzor) has quit (Ping timeout: 244 seconds)
+2016-10-02 12:08:07	<--	dataangel (~user@c-50-165-224-148.hsd1.il.comcast.net) has quit (Remote host closed the connection)
+2016-10-02 12:09:13	chaiomanot	hm, good point. i suppose a ptrdiff_t would be enough, though
+2016-10-02 12:11:20	et	you are not allowed to subtract pointers from the same array, so same thing
+2016-10-02 12:11:24	et	er
+2016-10-02 12:11:25	et	*only
+2016-10-02 12:11:55	et	(well, plus a few other cases, but not across allocations)
+2016-10-02 12:12:03	<--	praisethemoon_ (~quassel@197.17.61.169) has quit (Remote host closed the connection)
+2016-10-02 12:12:04	<--	topshell (~wew@447495.s.dedikuoti.lt) has quit (Remote host closed the connection)
+2016-10-02 12:12:16	<--	P1RATEZ (piratez@unaffiliated/p1ratez) has quit
+2016-10-02 12:14:00	<--	snyp (~Snyp@nas4.meghbelabroadband.in) has quit (Quit: WeeChat 1.5)
+2016-10-02 12:15:35	<--	blueness_ (~blueness@gentoo/developer/blueness) has quit (Quit: blueness_)
+2016-10-02 12:15:35		[12:15]
+2016-10-02 12:15:58	<--	vdamewood (~vdamewood@unaffiliated/vdamewood) has quit (Quit: Life beckons.)
+2016-10-02 12:16:07	<--	pasasap (~pasasap@unaffiliated/pasasap) has quit (Remote host closed the connection)
+2016-10-02 12:16:08	chaiomanot	<et> you are not allowed to subtract pointers from the same array, so same thing
+2016-10-02 12:16:11	chaiomanot	is that in the spec?
+2016-10-02 12:17:18	et	http://eel.is/c++draft/expr.add#5
+2016-10-02 12:17:32	-->	dataangel (~user@c-50-165-224-148.hsd1.il.comcast.net) has joined ##c++
+2016-10-02 12:17:46	-->	xameada (~xameada@ip98-165-175-172.ph.ph.cox.net) has joined ##c++
+2016-10-02 12:20:00	chaiomanot	> If the expressions P and Q point to, respectively, elements x[i] and x[j] of the same array object x, the expression P - Q has the value i - j; otherwise, the behavior is undefine
+2016-10-02 12:20:05	chaiomanot	what does this mean
+2016-10-02 12:20:07	chaiomanot	ugh
+2016-10-02 12:20:10	<--	Kenran (~Kenran@p548D29AE.dip0.t-ipconnect.de) has quit (Quit: leaving)
+2016-10-02 12:20:32	Eelis	what part of it gives you trouble?
+2016-10-02 12:20:58	chaiomanot	it sounds like it's saying what the result of &x[i] - &x[j] *IS* i - j
+2016-10-02 12:21:02	<--	multiproc (~multiproc@unaffiliated/multiproc) has quit (Quit: multiproc)
+2016-10-02 12:21:07	chaiomanot	but then it goes on to say "otherwise" it's UB
+2016-10-02 12:21:24	chaiomanot	what is this otherwise? they just defined it
+2016-10-02 12:21:25	et	there is an if at the start
+2016-10-02 12:21:29	Eelis	the "otherwise" is for when the expressions do not point to, respectively, elements x[i] and x[j] of the same array object x
+2016-10-02 12:21:41	chaiomanot	oh i see
+2016-10-02 12:21:41	chaiomanot	ok
+2016-10-02 12:22:33	<--	xameada (~xameada@ip98-165-175-172.ph.ph.cox.net) has quit (Ping timeout: 248 seconds)
+2016-10-02 12:23:28	-->	verm1n (~verm1n@209-6-236-59.c3-0.wrx-ubr1.sbo-wrx.ma.cable.rcn.com) has joined ##c++
+2016-10-02 12:23:43	<--	JoshS (~jshjsh@172.56.40.33) has quit (Ping timeout: 272 seconds)
+2016-10-02 12:25:53	-->	JoshS (~jshjsh@172.56.40.33) has joined ##c++
+2016-10-02 12:26:40	<--	dataangel (~user@c-50-165-224-148.hsd1.il.comcast.net) has quit (Remote host closed the connection)
+2016-10-02 12:26:54	<--	matkatmusic (~matkatmus@pool-108-54-229-138.nycmny.fios.verizon.net) has quit (Remote host closed the connection)
+2016-10-02 12:27:09	<--	biberu (~biberu@c-cf2d72d5.08-441-7570702.cust.bredbandsbolaget.se) has quit
+2016-10-02 12:28:14	<--	MrP[Home] (~Palsson@c-a46fe555.06-213-6e6b701.cust.bredbandsbolaget.se) has quit (Read error: Connection reset by peer)
+2016-10-02 12:29:44	<--	JoshS (~jshjsh@172.56.40.33) has quit (Client Quit)
+2016-10-02 12:30:06	-->	JoshS (~jshjsh@172.56.40.33) has joined ##c++
+2016-10-02 12:32:18	<--	irco (~irco@HSI-KBW-134-3-111-4.hsi14.kabel-badenwuerttemberg.de) has quit (Ping timeout: 244 seconds)
+2016-10-02 12:32:18		[12:32]
+2016-10-02 12:32:41	<--	kamog (~kamog@95.73.41.155) has quit (Ping timeout: 265 seconds)
+2016-10-02 12:33:13	<--	Aph3x-WL (Aph3x@2600:3c03::f03c:91ff:fe6e:5ed9) has quit (Ping timeout: 272 seconds)
+2016-10-02 12:34:02	-->	blueness_ (~blueness@gentoo/developer/blueness) has joined ##c++
+2016-10-02 12:34:20	noone	iS __FILE_H_INCLUDED__ the same as FILE_H_INCLUDED?
+2016-10-02 12:34:47	V-ille	no
+2016-10-02 12:34:54	V-ille	and the first is using a reserved name
+2016-10-02 12:36:02	<--	gravitation (~gravitati@180.sub-174-199-8.myvzw.com) has quit (Read error: Connection reset by peer)
+2016-10-02 12:36:38	<--	nikki93 (~nikki93@2601:645:8104:cb10:58d3:5e12:a110:b428) has quit (Remote host closed the connection)
+2016-10-02 12:36:51	noone	Which one is used on a header file.hpp? (the file is not called file)
+2016-10-02 12:37:14	m_ben	noone: are you talking about include guards?
+2016-10-02 12:37:55	noone	yes
+2016-10-02 12:37:59	-->	vralphv (~vralp@d137-186-58-40.abhsia.telus.net) has joined ##c++
+2016-10-02 12:38:48	noone	Which one is more correct to use?
+2016-10-02 12:39:00	m_ben	you can pick any name
+2016-10-02 12:39:21	--	irc: disconnected from server

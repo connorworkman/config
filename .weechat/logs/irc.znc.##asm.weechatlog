@@ -13769,3 +13769,577 @@
 2016-10-01 01:55:55	ggole_	I know, but most uses of test/cmp are for branches
 2016-10-01 02:00:06	-->	m8 (~m8@unaffiliated/m8) has joined ##asm
 2016-10-01 02:00:06		[02:00]
+2016-10-01 02:07:42	<--	yokel (~yokel@unaffiliated/contempt) has quit (Ping timeout: 244 seconds)
+2016-10-01 02:13:00		[02:07]
+2016-10-01 02:14:51	-->	yokel (~yokel@unaffiliated/contempt) has joined ##asm
+2016-10-01 02:17:01	<--	durant (48be08f6@gateway/web/cgi-irc/kiwiirc.com/ip.72.190.8.246) has quit (Quit: http://www.kiwiirc.com/ - A hand crafted IRC client)
+2016-10-01 02:17:11	<--	codfection (~codfectio@unaffiliated/codfection) has quit (Remote host closed the connection)
+2016-10-01 02:23:00		[02:17]
+2016-10-01 02:23:36	<--	phinxy (~tehhhd@unaffiliated/phinxy) has quit (Read error: Connection reset by peer)
+2016-10-01 02:24:44	roxfan	about that xor... https://randomascii.wordpress.com/2012/12/29/the-surprising-subtleties-of-zeroing-a-register/
+2016-10-01 02:25:09	-->	slash (~unknown@2001:a61:2150:a401:50bf:b94a:a0c:5098) has joined ##asm
+2016-10-01 02:25:40	<--	damme (~damme@2001:16d8:cc75::802) has quit (Ping timeout: 272 seconds)
+2016-10-01 02:27:14	-->	damme (~damme@2001:16d8:cc75::802) has joined ##asm
+2016-10-01 02:29:27	<--	slash_ (~unknown@2001:a61:2150:a401:50bf:b94a:a0c:5098) has quit (Ping timeout: 272 seconds)
+2016-10-01 02:31:01	<--	fredbert (~user@dslb-088-073-025-127.088.073.pools.vodafone-ip.de) has quit (Remote host closed the connection)
+2016-10-01 02:31:28	vulture	roxfan: that article is out of date
+2016-10-01 02:32:07	vulture	it's actually even better than that because you can clear dependency chains of buggy instructions that have false destination dependencies :D
+2016-10-01 02:35:10	<--	damme (~damme@2001:16d8:cc75::802) has quit (Ping timeout: 272 seconds)
+2016-10-01 02:35:48	<--	metachr0n (~nobody@46.166.190.168) has quit (Ping timeout: 272 seconds)
+2016-10-01 02:38:28	-->	devonrevenge (~devonreve@cpc48-slam6-2-0-cust245.2-4.cable.virginm.net) has joined ##asm
+2016-10-01 02:38:28		[02:38]
+2016-10-01 02:38:28	<--	devonrevenge (~devonreve@cpc48-slam6-2-0-cust245.2-4.cable.virginm.net) has quit (Changing host)
+2016-10-01 02:38:28	-->	devonrevenge (~devonreve@unaffiliated/devonrevenge) has joined ##asm
+2016-10-01 02:40:13	-->	warrshrike (~kuchki@39.46.105.16) has joined ##asm
+2016-10-01 02:40:38	warrshrike	Hi guys
+2016-10-01 02:40:39	warrshrike	I'm trying to do the binary bomb lab. Basically I only have the binary and have to figure out what six numbers the program takes as input by disassembling
+2016-10-01 02:41:08	warrshrike	I've been stuck for days
+2016-10-01 02:41:08	warrshrike	could anyone take a look? assembly of function: http://codepad.org/pEunKGjv
+2016-10-01 02:41:08	warrshrike	call graph http://tinypic.com/r/2d8ktxs/9
+2016-10-01 02:41:08	warrshrike	decompiled version http://codepad.org/7h7ZsAyk
+2016-10-01 02:41:58	-->	metachr0n (~nobody@gateway/vpn/privateinternetaccess/metachr0n) has joined ##asm
+2016-10-01 02:42:26	-->	Suchorski (regex@unaffiliated/suchorski) has joined ##asm
+2016-10-01 02:44:11	GeDaMo	I'm not sure what line 16 is doing in the disassembly
+2016-10-01 02:44:45	-->	navidr (uid112413@gateway/web/irccloud.com/x-sckthvazrfotozwg) has joined ##asm
+2016-10-01 02:44:55	GeDaMo	Also how are the numbers getting into the variables?
+2016-10-01 02:45:26	warrshrike	jump equals?
+2016-10-01 02:45:51	warrshrike	the function read__six_numbers is putting them
+2016-10-01 02:46:57	GeDaMo	Yes, but how? It doesn't return any values
+2016-10-01 02:47:04	warrshrike	doesn't line 7 in assembly mean first number is 0?
+2016-10-01 02:47:04	-->	control (~control@unaffiliated/control) has joined ##asm
+2016-10-01 02:47:05	GeDaMo	It must be accessing the stack frame directly
+2016-10-01 02:47:37	warrshrike	yeah i think so
+2016-10-01 02:47:43	warrshrike	il paste its assembly
+2016-10-01 02:48:04	warrshrike	http://codepad.org/NoETMxn5 here
+2016-10-01 02:49:26	-->	JSharpe (~JSharpe@31.205.112.57) has joined ##asm
+2016-10-01 02:49:27	<--	JSharpe (~JSharpe@31.205.112.57) has quit (Remote host closed the connection)
+2016-10-01 02:50:13	-->	JSharpe (~JSharpe@192.40.88.71) has joined ##asm
+2016-10-01 02:51:23	warrshrike	should i paste its decompilation too?
+2016-10-01 02:53:37	GeDaMo	Presumably $0x402835 is the sscanf format string
+2016-10-01 02:53:37		[02:53]
+2016-10-01 02:53:54	<--	ararob (~yaaic@c-f78472d5.043-274-73746f25.cust.bredbandsbolaget.se) has quit (Ping timeout: 264 seconds)
+2016-10-01 02:54:10	-->	ararob (~yaaic@46-227-67-165.pool.ovpn.se) has joined ##asm
+2016-10-01 02:55:00	warrshrike	hmm cant find that in assembly
+2016-10-01 02:55:08	warrshrike	but yeah it does use sscanf
+2016-10-01 02:55:29	<--	zBB (zBB@187-7-61-224.bnut3700.dsl.brasiltelecom.net.br) has quit (Ping timeout: 240 seconds)
+2016-10-01 02:57:42	warrshrike	so is read numbers accessing stack directly
+2016-10-01 02:58:10	warrshrike	i cant figure it out because
+2016-10-01 02:58:11	warrshrike	theres no push command
+2016-10-01 02:58:59	GeDaMo	Is this on Windows or Linux?
+2016-10-01 02:59:15	GeDaMo	On 64 bit systems, parameters are passed in registers
+2016-10-01 02:59:31	GeDaMo	At least the first 6 are
+2016-10-01 03:00:22	warrshrike	linux
+2016-10-01 03:00:26	warrshrike	yeah i know
+2016-10-01 03:00:34	warrshrike	its 64 bit linux
+2016-10-01 03:00:49	GeDaMo	The first six integer or pointer arguments are passed in registers RDI, RSI, RDX, RCX, R8, and R9
+2016-10-01 03:01:21	warrshrike	but what about return values?
+2016-10-01 03:01:36	warrshrike	i mean read 6 numbers takes nothing
+2016-10-01 03:01:43	warrshrike	but gives six numbers
+2016-10-01 03:01:50	GeDaMo	sscanf takes source string, format string, pointers to variables
+2016-10-01 03:01:52	warrshrike	does it just place them in registers maybe?
+2016-10-01 03:03:02	GeDaMo	So presumably rdi is set at some earlier point, esi (rsi) is set in the read function
+2016-10-01 03:03:45	warrshrike	yeah looks like it
+2016-10-01 03:05:17	GeDaMo	So the first number read should be v2 and the next is v3
+2016-10-01 03:05:18	GeDaMo	Not surprising I suppose :P
+2016-10-01 03:05:39	warrshrike	hahaa yeah
+2016-10-01 03:05:56	warrshrike	so judging from decompilation these should be 0 and 1?
+2016-10-01 03:06:02	GeDaMo	Yeah
+2016-10-01 03:08:05	<--	slash (~unknown@2001:a61:2150:a401:50bf:b94a:a0c:5098) has quit (Ping timeout: 272 seconds)
+2016-10-01 03:10:02	GeDaMo	warrshrike: for your 6 numbers try 0 1 2 1 1 0
+2016-10-01 03:10:02		[03:10]
+2016-10-01 03:10:14	warrshrike	okay trying
+2016-10-01 03:10:31	@Jester01	ah the bomb
+2016-10-01 03:10:34	@Jester01	is it a new version?
+2016-10-01 03:10:41	warrshrike	yeah
+2016-10-01 03:10:42	warrshrike	3rd ed
+2016-10-01 03:11:30	warrshrike	nope
+2016-10-01 03:11:37	warrshrike	EXPLODED
+2016-10-01 03:11:55	GeDaMo	It does seem strange there are only 5 'v' variables in the disassembly
+2016-10-01 03:12:13	@Jester01	looks like an old  version :D
+2016-10-01 03:12:27	@Jester01	from a glance, pretty sure that's fibonacci
+2016-10-01 03:12:58	@Jester01	so 0 1 1 2 3 5
+2016-10-01 03:14:52	warrshrike	yeah
+2016-10-01 03:14:54	warrshrike	exactly
+2016-10-01 03:15:16	 *	Jester01 slaps himself for giving away the solution
+2016-10-01 03:15:21	warrshrike	no
+2016-10-01 03:15:24	warrshrike	not that exactly
+2016-10-01 03:15:27	GeDaMo	That's what I get for trusting the disassembly :/
+2016-10-01 03:15:27	@Jester01	lol
+2016-10-01 03:15:34	warrshrike	exactly that there are 5vs
+2016-10-01 03:15:39	GeDaMo	Er, the decompilation
+2016-10-01 03:15:45	warrshrike	this isnt the solution :/
+2016-10-01 03:16:06	@Jester01	mov    -0x8(%rbx),%eax   ;   add    -0x4(%rbx),%eax  ;  cmp    %eax,(%rbx)
+2016-10-01 03:16:18	@Jester01	that does check whether the number is the sum of the previous two
+2016-10-01 03:16:42	@Jester01	the beginning must be 0 1 since that's checked explicitly
+2016-10-01 03:16:51	GeDaMo	The decompilation doesn't show the variables being updated in the loop
+2016-10-01 03:16:51	@Jester01	so how come that isn't the solution :)
+2016-10-01 03:17:13	warrshrike	lemme try again
+2016-10-01 03:17:13	-->	XOCKET (~XOCKET@unaffiliated/xocket) has joined ##asm
+2016-10-01 03:19:18	GeDaMo	Yeah, the decompilation is not accurate
+2016-10-01 03:19:27	warrshrike	it worked!
+2016-10-01 03:19:34	warrshrike	you rock!
+2016-10-01 03:19:38	warrshrike	BOW
+2016-10-01 03:20:06	@Jester01	you should nevertheless try to understand how the code worked
+2016-10-01 03:20:14	@Jester01	there are more phases after this :D
+2016-10-01 03:21:57	-->	codfection (~codfectio@unaffiliated/codfection) has joined ##asm
+2016-10-01 03:22:06	<--	ropeney (~ropeney@101.103.8.51) has quit (Quit: Leaving)
+2016-10-01 03:22:23	warrshrike	yeah
+2016-10-01 03:22:24	warrshrike	lol
+2016-10-01 03:22:28	warrshrike	theres 7
+2016-10-01 03:22:31	warrshrike	so explain me?
+2016-10-01 03:22:45	-->	Ropeney (~Ropeney@101.103.8.51) has joined ##asm
+2016-10-01 03:24:24	 *	vulture gets Jester01 a bigger spoon
+2016-10-01 03:25:22	GeDaMo	warrshrike: do you understand fibonacci?
+2016-10-01 03:25:22		[03:25]
+2016-10-01 03:45:54	warrshrike	yeah
+2016-10-01 03:45:54		[03:45]
+2016-10-01 03:45:55	warrshrike	i do
+2016-10-01 03:46:01	warrshrike	did in in maths class
+2016-10-01 03:47:27	GeDaMo	The thing that's wrong about the decompilation is that it doesn't show v6, v7, v8 being updated
+2016-10-01 03:47:49	warrshrike	yeah exactly
+2016-10-01 03:47:56	<--	blackwind_123 (~IceChat9@117.192.137.141) has quit (Ping timeout: 244 seconds)
+2016-10-01 03:48:14	GeDaMo	Instead of if (v6 != v7 + v8) it should be something like if ((*rbx4) != (*rbx4-1) + (*rbx4-2))
+2016-10-01 03:49:36	<--	MyCuriosity (~MyCuriosi@unaffiliated/mycuriosity) has quit (Remote host closed the connection)
+2016-10-01 03:50:33	-->	blackwind_123 (~IceChat9@117.192.139.229) has joined ##asm
+2016-10-01 03:51:30	warrshrike	yeah makes sense
+2016-10-01 03:52:25	GeDaMo	You can see that on lines 13-15 of the disassembly of phase2
+2016-10-01 03:55:30	warrshrike	add comp jump
+2016-10-01 03:55:31	warrshrike	yeah
+2016-10-01 03:59:47	<--	X-Scale (~ARM@2001:0:53aa:64c:0:fbf7:b176:3a49) has quit (Read error: Connection reset by peer)
+2016-10-01 04:00:00	-->	X-Scale (~ARM@2001:0:53aa:64c:0:fbf7:b176:3a49) has joined ##asm
+2016-10-01 04:00:20	<--	metachr0n (~nobody@gateway/vpn/privateinternetaccess/metachr0n) has quit (Ping timeout: 244 seconds)
+2016-10-01 04:02:22	--	paule32_ is now known as paule32
+2016-10-01 04:02:22		[04:02]
+2016-10-01 04:02:37	zerobaud	Anybody knows a good way to deplay kerberos keytabs? I could make the clients login with kadmin and amdin privileges, but then any compromised server means somebody can make himself admin...
+2016-10-01 04:03:08	zerobaud	I could also do it on the kerberos server with kadmin.local but the clients still need the key...
+2016-10-01 04:03:47	zerobaud	cant modules share binary data with eachother?
+2016-10-01 04:06:34	-->	Jackneill (~Jackneill@unaffiliated/jackneill) has joined ##asm
+2016-10-01 04:12:00		[04:06]
+2016-10-01 04:15:43	roxfan	zerobaud: wrong channel?
+2016-10-01 04:16:22	zerobaud	ops
+2016-10-01 04:16:27	zerobaud	thanks for informing me
+2016-10-01 04:16:34	-->	pie_ (~pie_@78-131-51-137.pool.digikabel.hu) has joined ##asm
+2016-10-01 04:22:00		[04:16]
+2016-10-01 04:23:46	-->	thegamingguy (~thegaming@2.126.218.232) has joined ##asm
+2016-10-01 04:24:02	<--	thegamingguy (~thegaming@2.126.218.232) has quit (Client Quit)
+2016-10-01 04:27:46	-->	crakrjak (~merc@unaffiliated/crakrjak) has joined ##asm
+2016-10-01 04:33:00		[04:27]
+2016-10-01 04:39:41	-->	kirotawa2 (~kirotawa@187-40-144-120.user.veloxzone.com.br) has joined ##asm
+2016-10-01 04:44:45	<--	X-Scale (~ARM@2001:0:53aa:64c:0:fbf7:b176:3a49) has quit (Read error: Connection reset by peer)
+2016-10-01 04:45:22	-->	X-Scale (~ARM@2001:0:53aa:64c:0:fbf7:b176:3a49) has joined ##asm
+2016-10-01 04:51:00		[04:45]
+2016-10-01 04:53:54	<--	ararob (~yaaic@46-227-67-165.pool.ovpn.se) has quit (Ping timeout: 264 seconds)
+2016-10-01 04:55:21	<--	XOCKET (~XOCKET@unaffiliated/xocket) has quit (Disconnected by services)
+2016-10-01 04:55:21	-->	XOCK_STREAM (~XOCKET@unaffiliated/xocket) has joined ##asm
+2016-10-01 04:56:40	-->	notwithstanding (elysian234@14-201-217-198.tpgi.com.au) has joined ##asm
+2016-10-01 04:58:07	-->	SwiftMatt (~Objective@162.242.95.17) has joined ##asm
+2016-10-01 05:04:00		[04:58]
+2016-10-01 05:04:35	-->	sanct (~sanct@212.35.67.11) has joined ##asm
+2016-10-01 05:08:01	<--	jan64 (~jan64@aazr231.neoplus.adsl.tpnet.pl) has quit (Ping timeout: 244 seconds)
+2016-10-01 05:09:27	<--	osa1 (~omer@haskell/developer/osa1) has quit (Read error: No route to host)
+2016-10-01 05:09:39	-->	osa1 (~omer@50-253-193-254-static.hfc.comcastbusiness.net) has joined ##asm
+2016-10-01 05:09:39	<--	osa1 (~omer@50-253-193-254-static.hfc.comcastbusiness.net) has quit (Changing host)
+2016-10-01 05:09:39	-->	osa1 (~omer@haskell/developer/osa1) has joined ##asm
+2016-10-01 05:12:34	-->	jan64 (~jan64@aazr231.neoplus.adsl.tpnet.pl) has joined ##asm
+2016-10-01 05:15:26	<--	osa1 (~omer@haskell/developer/osa1) has quit (Ping timeout: 272 seconds)
+2016-10-01 05:19:11	-->	sophia7 (~sophia7@unaffiliated/sophia7) has joined ##asm
+2016-10-01 05:19:11		[05:19]
+2016-10-01 05:21:05	<--	kirotawa2 (~kirotawa@187-40-144-120.user.veloxzone.com.br) has quit (Ping timeout: 272 seconds)
+2016-10-01 05:24:33	<--	titankiller (~user@103.16.70.183) has quit (Ping timeout: 244 seconds)
+2016-10-01 05:27:25	-->	Goplat (~goplat@reactos/developer/Goplat) has joined ##asm
+2016-10-01 05:29:48	-->	StereoBucket (~StereoBuc@31.223.131.24) has joined ##asm
+2016-10-01 05:30:01	-->	Judge_Dredd (~Judge_Dre@unaffiliated/judge-dredd/x-2170742) has joined ##asm
+2016-10-01 05:32:54	<--	kolobyte (~aaa@unaffiliated/kolobyte) has quit (Ping timeout: 264 seconds)
+2016-10-01 05:33:03	-->	jan64_ (~jan64@aazr231.neoplus.adsl.tpnet.pl) has joined ##asm
+2016-10-01 05:33:54	<--	CheckDavid (uid14990@gateway/web/irccloud.com/x-xgahswdwzeuvpevl) has quit (Quit: Connection closed for inactivity)
+2016-10-01 05:35:24	<--	jan64 (~jan64@aazr231.neoplus.adsl.tpnet.pl) has quit (Ping timeout: 244 seconds)
+2016-10-01 05:35:24		[05:35]
+2016-10-01 05:38:12	-->	kolobyte (~aaa@unaffiliated/kolobyte) has joined ##asm
+2016-10-01 05:44:00		[05:38]
+2016-10-01 05:48:09	-->	osa1 (~omer@haskell/developer/osa1) has joined ##asm
+2016-10-01 05:50:55	-->	fnodeuser (~irssiuser@ppp-2-86-141-255.home.otenet.gr) has joined ##asm
+2016-10-01 05:52:05	<--	osa1 (~omer@haskell/developer/osa1) has quit (Client Quit)
+2016-10-01 05:52:28	-->	osa1 (~omer@2001:18e8:2:28b6:2ab2:bdff:fedf:fa66) has joined ##asm
+2016-10-01 05:52:38	<--	osa1 (~omer@2001:18e8:2:28b6:2ab2:bdff:fedf:fa66) has quit (Changing host)
+2016-10-01 05:52:39	-->	osa1 (~omer@haskell/developer/osa1) has joined ##asm
+2016-10-01 05:53:22	<--	fnodeuser (~irssiuser@ppp-2-86-141-255.home.otenet.gr) has left ##asm
+2016-10-01 05:56:31	-->	XOCKET (~XOCKET@unaffiliated/xocket) has joined ##asm
+2016-10-01 05:59:18	<--	XOCK_STREAM (~XOCKET@unaffiliated/xocket) has quit (Ping timeout: 264 seconds)
+2016-10-01 05:59:18		[05:59]
+2016-10-01 06:02:56	<--	kolobyte (~aaa@unaffiliated/kolobyte) has quit (Ping timeout: 252 seconds)
+2016-10-01 06:05:37	-->	kolobyte (~aaa@unaffiliated/kolobyte) has joined ##asm
+2016-10-01 06:08:27	<--	Ropeney (~Ropeney@101.103.8.51) has quit (Quit: My Mac has gone to sleep. ZZZzzz…)
+2016-10-01 06:09:17	-->	VaticanCameos (~VaticanCa@182.68.109.83) has joined ##asm
+2016-10-01 06:12:25	<--	notwithstanding (elysian234@14-201-217-198.tpgi.com.au) has quit
+2016-10-01 06:15:05	<--	osa1 (~omer@haskell/developer/osa1) has quit (Ping timeout: 248 seconds)
+2016-10-01 06:15:05		[06:15]
+2016-10-01 06:16:47	<--	hawes (uid158378@gateway/web/irccloud.com/x-eqpnozjzuddhoght) has quit (Quit: Connection closed for inactivity)
+2016-10-01 06:18:30	<--	warrshrike (~kuchki@39.46.105.16) has quit (Ping timeout: 264 seconds)
+2016-10-01 06:20:36	<--	gdx90 (gdx90@gateway/shell/fnordserver.eu/x-qvctuagtcckfamhy) has quit (Quit: https://fnordserver.eu)
+2016-10-01 06:21:20	<--	Antares (~Antares@ppp91-78-123-238.pppoe.mtu-net.ru) has quit (Quit: Leaving)
+2016-10-01 06:21:40	-->	Antares (~Antares@ppp91-78-123-238.pppoe.mtu-net.ru) has joined ##asm
+2016-10-01 06:27:00		[06:21]
+2016-10-01 06:28:36	-->	_0xAX (~alex@147.30.67.14) has joined ##asm
+2016-10-01 06:34:00		[06:28]
+2016-10-01 06:34:44	<--	SwiftMatt (~Objective@162.242.95.17) has quit (Quit: My MacBook Pro has gone to sleep. ZZZzzz…)
+2016-10-01 06:40:00		[06:34]
+2016-10-01 06:42:40	-->	brt (~brt@x1-6-8c-10-d4-9a-fe-7a.cpe.webspeed.dk) has joined ##asm
+2016-10-01 06:44:31	-->	bkboggy (~bkboggy@cpe-172-250-147-60.socal.res.rr.com) has joined ##asm
+2016-10-01 06:50:00		[06:44]
+2016-10-01 06:50:06	-->	ropeney (~ropeney@101.103.8.51) has joined ##asm
+2016-10-01 06:55:52	<--	XOCKET (~XOCKET@unaffiliated/xocket) has quit (Disconnected by services)
+2016-10-01 07:01:00		[06:55]
+2016-10-01 07:01:52	-->	osa1 (~omer@50-253-193-254-static.hfc.comcastbusiness.net) has joined ##asm
+2016-10-01 07:01:52	<--	osa1 (~omer@50-253-193-254-static.hfc.comcastbusiness.net) has quit (Changing host)
+2016-10-01 07:01:52	-->	osa1 (~omer@haskell/developer/osa1) has joined ##asm
+2016-10-01 07:04:19	<--	navidr (uid112413@gateway/web/irccloud.com/x-sckthvazrfotozwg) has quit (Quit: Connection closed for inactivity)
+2016-10-01 07:04:38	-->	ARM9 (~ARM9@46-236-101-61.customer.t3.se) has joined ##asm
+2016-10-01 07:04:41	-->	araml (~araml@unaffiliated/araml) has joined ##asm
+2016-10-01 07:05:00	<--	King_Hual (~failed@unaffiliated/king-hual/x-1207580) has quit (Read error: Connection reset by peer)
+2016-10-01 07:10:00		[07:05]
+2016-10-01 07:10:05	<--	m8 (~m8@unaffiliated/m8) has quit (Read error: Connection reset by peer)
+2016-10-01 07:14:21	-->	osa1_ (~omer@50-253-193-254-static.hfc.comcastbusiness.net) has joined ##asm
+2016-10-01 07:14:26	<--	osa1 (~omer@haskell/developer/osa1) has quit (Ping timeout: 252 seconds)
+2016-10-01 07:17:10	-->	CheckDavid (uid14990@gateway/web/irccloud.com/x-hgnbsdmezdherwvg) has joined ##asm
+2016-10-01 07:17:53	<--	Antares (~Antares@ppp91-78-123-238.pppoe.mtu-net.ru) has quit (Read error: Connection reset by peer)
+2016-10-01 07:23:00		[07:17]
+2016-10-01 07:24:40	-->	hoe` (~hoe@c-71-237-236-28.hsd1.or.comcast.net) has joined ##asm
+2016-10-01 07:26:34	-->	gdx90 (gdx90@gateway/shell/fnordserver.eu/x-oehtinwvhmtrzisw) has joined ##asm
+2016-10-01 07:28:13	-->	ararob (~yaaic@c-f78472d5.043-274-73746f25.cust.bredbandsbolaget.se) has joined ##asm
+2016-10-01 07:28:39	-->	sh4 (~sh4@unaffiliated/sh4) has joined ##asm
+2016-10-01 07:30:41	-->	XOCKET (~XOCKET@unaffiliated/xocket) has joined ##asm
+2016-10-01 07:32:02	-->	feliwir (Elite16673@gateway/shell/elitebnc/x-rtzxalhfzysxuhww) has joined ##asm
+2016-10-01 07:32:54	<--	jan64_ (~jan64@aazr231.neoplus.adsl.tpnet.pl) has quit (Ping timeout: 264 seconds)
+2016-10-01 07:33:00	<--	sophia7 (~sophia7@unaffiliated/sophia7) has quit (Quit: sophia7)
+2016-10-01 07:34:43	<--	sh4 (~sh4@unaffiliated/sh4) has quit (Ping timeout: 272 seconds)
+2016-10-01 07:35:33	-->	sh4 (~sh4@unaffiliated/sh4) has joined ##asm
+2016-10-01 07:36:11	-->	ahrc333ff (~ahrc333ff@172.111.169.176) has joined ##asm
+2016-10-01 07:37:22	-->	slash^ (~unknown@2001:a61:2150:a401:70dc:d9a9:ed87:a04b) has joined ##asm
+2016-10-01 07:41:57	-->	Demon_Fox (~Demon_Fox@71.94.3.176) has joined ##asm
+2016-10-01 07:41:57		[07:41]
+2016-10-01 07:49:57	<--	rendar (~rendar@95.239.176.236) has quit (Remote host closed the connection)
+2016-10-01 07:51:33	-->	snyp (~Snyp@nas4.meghbelabroadband.in) has joined ##asm
+2016-10-01 07:57:00		[07:51]
+2016-10-01 08:07:46	<--	ahrc333ff (~ahrc333ff@172.111.169.176) has left ##asm
+2016-10-01 08:08:20	<--	JSharpe (~JSharpe@192.40.88.71) has quit (Ping timeout: 244 seconds)
+2016-10-01 08:09:00	-->	phinxy (~tehhhd@unaffiliated/phinxy) has joined ##asm
+2016-10-01 08:14:00		[08:09]
+2016-10-01 08:18:32	<--	XOCKET (~XOCKET@unaffiliated/xocket) has quit (Disconnected by services)
+2016-10-01 08:18:32	-->	XOCK_STREAM (~XOCKET@unaffiliated/xocket) has joined ##asm
+2016-10-01 08:19:49	-->	hmmmm (~sdfgsf@pool-72-79-163-57.sctnpa.east.verizon.net) has joined ##asm
+2016-10-01 08:25:00		[08:19]
+2016-10-01 08:33:22	--	Z8029857 is now known as Z80
+2016-10-01 08:33:28	<--	Z80 (~ASAP@pool-173-63-56-218.nwrknj.fios.verizon.net) has quit (Changing host)
+2016-10-01 08:33:28	-->	Z80 (~ASAP@unaffiliated/lokomotiv) has joined ##asm
+2016-10-01 08:39:00		[08:33]
+2016-10-01 08:42:02	-->	XOCKET (~XOCKET@unaffiliated/xocket) has joined ##asm
+2016-10-01 08:42:45	<--	VaticanCameos (~VaticanCa@182.68.109.83) has quit (Remote host closed the connection)
+2016-10-01 08:42:48	<--	XOCKET (~XOCKET@unaffiliated/xocket) has quit (Max SendQ exceeded)
+2016-10-01 08:43:29	-->	XOCKET (~XOCKET@unaffiliated/xocket) has joined ##asm
+2016-10-01 08:44:05	<--	XOCKET (~XOCKET@unaffiliated/xocket) has quit (Max SendQ exceeded)
+2016-10-01 08:44:38	<--	XOCK_STREAM (~XOCKET@unaffiliated/xocket) has quit (Ping timeout: 252 seconds)
+2016-10-01 08:45:40	<--	araml (~araml@unaffiliated/araml) has quit (Quit: WeeChat 1.0.1)
+2016-10-01 08:51:00		[08:45]
+2016-10-01 08:53:33	-->	XOCKET (~XOCKET@unaffiliated/xocket) has joined ##asm
+2016-10-01 08:54:28	<--	XOCKET (~XOCKET@unaffiliated/xocket) has quit (Max SendQ exceeded)
+2016-10-01 08:55:25	-->	XOCKET (~XOCKET@unaffiliated/xocket) has joined ##asm
+2016-10-01 08:55:35	-->	palantir (~palantir@anj75-2-88-162-182-55.fbx.proxad.net) has joined ##asm
+2016-10-01 08:55:39	<--	codfection (~codfectio@unaffiliated/codfection) has quit (Remote host closed the connection)
+2016-10-01 08:55:52	<--	brt (~brt@x1-6-8c-10-d4-9a-fe-7a.cpe.webspeed.dk) has quit (Ping timeout: 244 seconds)
+2016-10-01 08:56:15	<--	XOCKET (~XOCKET@unaffiliated/xocket) has quit (Max SendQ exceeded)
+2016-10-01 08:57:15	-->	XOCKET (~XOCKET@unaffiliated/xocket) has joined ##asm
+2016-10-01 09:00:50	<--	snyp (~Snyp@nas4.meghbelabroadband.in) has quit (Quit: WeeChat 1.5)
+2016-10-01 09:06:00		[09:00]
+2016-10-01 09:11:16	<--	bitspleaz (~sapgan@202.3.77.209) has quit (Quit: Leaving)
+2016-10-01 09:15:23	<--	slash^ (~unknown@2001:a61:2150:a401:70dc:d9a9:ed87:a04b) has quit (Read error: Connection reset by peer)
+2016-10-01 09:16:44	<--	XOCKET (~XOCKET@unaffiliated/xocket) has quit (Disconnected by services)
+2016-10-01 09:16:44	-->	XOCK_STREAM (~XOCKET@unaffiliated/xocket) has joined ##asm
+2016-10-01 09:16:47	-->	sophia7 (~sophia7@unaffiliated/sophia7) has joined ##asm
+2016-10-01 09:21:09	<--	sophia7 (~sophia7@unaffiliated/sophia7) has quit (Client Quit)
+2016-10-01 09:21:09		[09:21]
+2016-10-01 09:22:13	<--	osa1_ (~omer@50-253-193-254-static.hfc.comcastbusiness.net) has quit (Ping timeout: 244 seconds)
+2016-10-01 09:22:19	-->	yonder (~yonder@unaffiliated/yonder) has joined ##asm
+2016-10-01 09:24:43	-->	rtkt (~rtkt@ptr-2hj4tbw74k45ro7vwd4vwqhkv.ip6.access.telenet.be) has joined ##asm
+2016-10-01 09:26:21	<--	PJBoy (~PJBoy_@unaffiliated/pjboy) has quit (Ping timeout: 244 seconds)
+2016-10-01 09:29:06	-->	durant (48be08f6@gateway/web/cgi-irc/kiwiirc.com/ip.72.190.8.246) has joined ##asm
+2016-10-01 09:34:41	<--	bkboggy (~bkboggy@cpe-172-250-147-60.socal.res.rr.com) has quit (Ping timeout: 252 seconds)
+2016-10-01 09:35:53	-->	poq (~0x7f]@tinfoilhat.net) has joined ##asm
+2016-10-01 09:36:14	<--	Judge_Dredd (~Judge_Dre@unaffiliated/judge-dredd/x-2170742) has quit (Quit: Leaving.)
+2016-10-01 09:36:14		[09:36]
+2016-10-01 09:36:31	-->	bkboggy (~bkboggy@cpe-172-250-147-60.socal.res.rr.com) has joined ##asm
+2016-10-01 09:37:18	<--	_0xAX (~alex@147.30.67.14) has quit (Quit: Leaving)
+2016-10-01 09:39:06	<--	poq (~0x7f]@tinfoilhat.net) has left ##asm
+2016-10-01 09:40:25	<--	ararob (~yaaic@c-f78472d5.043-274-73746f25.cust.bredbandsbolaget.se) has quit (Ping timeout: 248 seconds)
+2016-10-01 09:43:29	<--	bkboggy (~bkboggy@cpe-172-250-147-60.socal.res.rr.com) has quit (Ping timeout: 252 seconds)
+2016-10-01 09:43:50	-->	ararob (~yaaic@c-f78472d5.043-274-73746f25.cust.bredbandsbolaget.se) has joined ##asm
+2016-10-01 09:44:15	-->	EI24 (~EI24@90-224-11-165-no124.tbcn.telia.com) has joined ##asm
+2016-10-01 09:44:54	-->	bkboggy (~bkboggy@cpe-172-250-147-60.socal.res.rr.com) has joined ##asm
+2016-10-01 09:46:41	<--	ggole_ (~ggole@106-69-236-96.dyn.iinet.net.au) has quit
+2016-10-01 09:46:49	<--	bkboggy (~bkboggy@cpe-172-250-147-60.socal.res.rr.com) has quit (Max SendQ exceeded)
+2016-10-01 09:49:57	-->	bkboggy (~bkboggy@cpe-172-250-147-60.socal.res.rr.com) has joined ##asm
+2016-10-01 09:50:28	-->	XOCKET (~XOCKET@unaffiliated/xocket) has joined ##asm
+2016-10-01 09:51:22	<--	XOCKET (~XOCKET@unaffiliated/xocket) has quit (Max SendQ exceeded)
+2016-10-01 09:51:22		[09:51]
+2016-10-01 09:51:36	<--	ARM9 (~ARM9@46-236-101-61.customer.t3.se) has quit (Remote host closed the connection)
+2016-10-01 09:52:09	<--	XOCK_STREAM (~XOCKET@unaffiliated/xocket) has quit (Ping timeout: 272 seconds)
+2016-10-01 09:58:00		[09:52]
+2016-10-01 10:01:38	<--	Jackneill (~Jackneill@unaffiliated/jackneill) has quit (Remote host closed the connection)
+2016-10-01 10:02:36	-->	m8 (~m8@unaffiliated/m8) has joined ##asm
+2016-10-01 10:06:12	-->	jan64 (~jan64@aazr231.neoplus.adsl.tpnet.pl) has joined ##asm
+2016-10-01 10:07:01	-->	ent0nces (~ent0nces@c-73-221-134-56.hsd1.wa.comcast.net) has joined ##asm
+2016-10-01 10:09:16	-->	SwiftMatt (~Objective@162.242.95.213) has joined ##asm
+2016-10-01 10:11:42	<--	ent0nces (~ent0nces@c-73-221-134-56.hsd1.wa.comcast.net) has quit (Ping timeout: 265 seconds)
+2016-10-01 10:11:47	<--	kolobyte (~aaa@unaffiliated/kolobyte) has quit (Ping timeout: 272 seconds)
+2016-10-01 10:12:41	-->	ent0nces (~ent0nces@linux-stakaya1.xn--cdaan2d.be) has joined ##asm
+2016-10-01 10:16:22	-->	damme (~damme@2001:16d8:cc75::802) has joined ##asm
+2016-10-01 10:16:22		[10:16]
+2016-10-01 10:17:26	-->	kolobyte (~aaa@unaffiliated/kolobyte) has joined ##asm
+2016-10-01 10:18:46	<--	durant (48be08f6@gateway/web/cgi-irc/kiwiirc.com/ip.72.190.8.246) has quit (Quit: http://www.kiwiirc.com/ - A hand crafted IRC client)
+2016-10-01 10:23:11	<--	lowin (~lowin@151.245.121.3) has quit (Remote host closed the connection)
+2016-10-01 10:24:08	-->	osa1 (~omer@haskell/developer/osa1) has joined ##asm
+2016-10-01 10:30:00		[10:24]
+2016-10-01 10:30:04	<--	osa1 (~omer@haskell/developer/osa1) has quit (Ping timeout: 265 seconds)
+2016-10-01 10:30:14	<--	ararob (~yaaic@c-f78472d5.043-274-73746f25.cust.bredbandsbolaget.se) has quit (Ping timeout: 252 seconds)
+2016-10-01 10:32:53	-->	a3f (~a3f@unaffiliated/a3f) has joined ##asm
+2016-10-01 10:33:25	bkboggy	How popular is MIPS in the industry?  I haven't heard of it until last week in my Computer Architecture class.
+2016-10-01 10:34:05	kaos	ARM pwns MIPS
+2016-10-01 10:34:26	kaos	but to what extent i do not know
+2016-10-01 10:34:31	bkboggy	Isn't ARMv8 very similar to MIPS?
+2016-10-01 10:34:38	bkboggy	More than to ARMv7
+2016-10-01 10:36:01	bkboggy	In 2011 there were over 9 billion ARM chips manufactured, so it's hard to contest its popularity, but I'm just curious if anyone actually uses MIPS.  I went to their website (https://imgtec.com/ ) and there's some very interesting stuff.
+2016-10-01 10:36:38	meowrobot	i hardly hear of it nowadays
+2016-10-01 10:36:42	GeDaMo	They're used in some network routers
+2016-10-01 10:36:45	meowrobot	except perhaps routers and such
+2016-10-01 10:36:50	meowrobot	small embedded applications
+2016-10-01 10:36:59	bkboggy	It seems they're pushing the whole "VR" thing very hard on their website,
+2016-10-01 10:37:20	bkboggy	Vision and graphics key words everywhere.
+2016-10-01 10:37:21	OxFEEDBACC	MIPS is mostly embedded... if you want to patch your laundry machine, go for it ;-)
+2016-10-01 10:37:25	GeDaMo	MIPS has changed owners quite a few times
+2016-10-01 10:38:09	GeDaMo	https://en.wikipedia.org/wiki/Loongson
+2016-10-01 10:38:22	meowrobot	mips used to be a very huge workstation architecture.  also game consoles.  but...since then, x86 and arm have pretty much taken over every scene.
+2016-10-01 10:38:29	<--	Rev (~Rev@revciu.pl) has quit (Disconnected by services)
+2016-10-01 10:38:33	bkboggy	GeDaMo, is that a derivative?
+2016-10-01 10:38:38	GeDaMo	Yeah
+2016-10-01 10:38:41	bkboggy	k
+2016-10-01 10:39:38	-->	Rev` (~Rev@revciu.pl) has joined ##asm
+2016-10-01 10:39:51	bkboggy	Welp... I'll get to play with it this quarter, we'll see how I like it.  I enjoyed x86 when I took a course in it a few years back at a community college.
+2016-10-01 10:40:20	bkboggy	Used LC-3 in spring... that was a huge step down from x86.
+2016-10-01 10:41:14	kaos	mc68hc12 looks a lot like 6502, as if they had extended the assembly to 16-bit. but it just looks so at the assembler language level, i think. perhaps its just that they wished to make it easy to learn for programmers. perhaps that is so with mips and armv8 (IDK)
+2016-10-01 10:41:40	-->	osa1 (~omer@haskell/developer/osa1) has joined ##asm
+2016-10-01 10:42:15	kaos	btw, in the movie terminator 2, the terminators HUD shows 6502-assembly printouts. so i guess terminator runs on nintendo 8-bit
+2016-10-01 10:42:25	--	paracyst is now known as paracyst[M]
+2016-10-01 10:42:25	 *	kaos is random
+2016-10-01 10:42:29	meowrobot	it would make a weird sort of sense.  the 6502 is actually an indirect descendant of 6800.
+2016-10-01 10:42:30	GeDaMo	So does Bender from Futurama :P
+2016-10-01 10:43:27	meowrobot	6502's origins could be more or less boiled down to "let's make the 6800 but much less expensive"
+2016-10-01 10:43:30	GeDaMo	bkboggy: apart from ImgTecs boards, there have been some Kickstarted MIPS devices
+2016-10-01 10:43:48	bkboggy	GeDaMo, oh?  Why MIPS over ARM?
+2016-10-01 10:44:00	<--	ent0nces (~ent0nces@linux-stakaya1.xn--cdaan2d.be) has quit (Read error: Connection reset by peer)
+2016-10-01 10:44:03	bkboggy	GeDaMo, probably what the project owners knew, I'm guessing?
+2016-10-01 10:44:10	GeDaMo	Probably because there were MIPS chips with WiFi
+2016-10-01 10:44:27	GeDaMo	Same chips used in routers and suchlike
+2016-10-01 10:44:39	bkboggy	ah
+2016-10-01 10:44:57	bkboggy	What about Imp, though?
+2016-10-01 10:45:03	GeDaMo	E.g. http://vocore.io/
+2016-10-01 10:45:03		[10:45]
+2016-10-01 10:45:32	bkboggy	GeDaMo, holy cow, that's neat.
+2016-10-01 10:46:37	<--	gdx90 (gdx90@gateway/shell/fnordserver.eu/x-oehtinwvhmtrzisw) has quit (Quit: https://fnordserver.eu)
+2016-10-01 10:47:12	GeDaMo	There's also this thing https://wiki.hackerspace.pl/projects:zsun-wifi-card-reader
+2016-10-01 10:47:53	<--	osa1 (~omer@haskell/developer/osa1) has quit (Ping timeout: 272 seconds)
+2016-10-01 10:48:15	bkboggy	GeDaMo, things are getting smaller and smaller.  Crazy.
+2016-10-01 10:48:47	GeDaMo	MIPS and ARM don't compete with x86 for processing power though
+2016-10-01 10:49:06	bkboggy	Well, to be fair, they're addressing different markets.
+2016-10-01 10:49:12	bkboggy	Some overlap, but not huge.
+2016-10-01 10:50:55	kaos	omg, vocore is like perfect for sneaking it into a building and attaching it to the network in a hidden way
+2016-10-01 10:51:03	bkboggy	I remember having to drag my PC tower to the school's LAN party over 20 miles away when I was a kid, and that thing had less power than my rPi, which I can put in my pocket.
+2016-10-01 10:51:36	kaos	like in offices there are always places noone looks for years and years, in cable runs or whatever
+2016-10-01 10:53:28	OxFEEDBACC	anything more elegant to set bit 0 of al iff bit 1 of al is unset, otherwise leave it alone? my current way is: mov %al,%cl; shr $2,%cl; setnc %cl; or %cl,%al
+2016-10-01 10:53:52	-->	XOCKET (~XOCKET@unaffiliated/xocket) has joined ##asm
+2016-10-01 10:54:25	bkboggy	kaos, I'm not a network guy, but our Admins are able to detect new devices on the network if they don't have an assigned encrypted mnemonic id.
+2016-10-01 10:54:30	GeDaMo	Don't you just want the bit to be 1?
+2016-10-01 10:54:40	GeDaMo	Oh, I see what you mean
+2016-10-01 10:55:02	kaos	bkboggy: yes. not perfect. but i guess it works in most places
+2016-10-01 10:55:30	OxFEEDBACC	actually, i try to map -1 => 4, -2 => 3, -3 => 2, -4 => 2
+2016-10-01 10:55:32	-->	osa1 (~omer@haskell/developer/osa1) has joined ##asm
+2016-10-01 10:55:33	GeDaMo	OxFEEDBACC: does it matter if the other bits in al are changed?
+2016-10-01 10:56:08	OxFEEDBACC	ummm... trying to think fast... i guess the other bits are "disposable" ;-)
+2016-10-01 10:56:37	OxFEEDBACC	well, 4 ops isn't that bad...
+2016-10-01 10:57:43	<--	XOCKET (~XOCKET@unaffiliated/xocket) has quit (Disconnected by services)
+2016-10-01 10:57:43	-->	XOCK_STREAM (~XOCKET@unaffiliated/xocket) has joined ##asm
+2016-10-01 10:57:47	bkboggy	kaos, reminds me Mr. Robot, though, where they used rPi.  I guess they could use thing to make it even more discreet.
+2016-10-01 10:57:52	kaos	bkboggy: i guess it could be possible to insert a device into such a network if it had two network interfaces and acted exactly like a stupid hub. and only communicated when the line was already bussy. but that would probably require soldering and stuff, depending on how good one wants to make it
+2016-10-01 10:58:03	OxFEEDBACC	errr... 5 ops... need a final neg anyway...
+2016-10-01 10:58:18	OxFEEDBACC	no, sub... wtf...
+2016-10-01 10:58:23	GeDaMo	OxFEEDBACC: does -4 => 2 ?
+2016-10-01 10:58:53	OxFEEDBACC	what do you mean, GeDaMo?
+2016-10-01 10:59:06	bkboggy	kaos, not sure, my network is very low.  I just remember one of the offices installed a hub they bought to attach a few extra devices to the network and the network guys were there the same day lecturing them on network security.
+2016-10-01 10:59:08	GeDaMo	Well, if -4 => 1 you could do add al, 5 :P
+2016-10-01 10:59:22	bkboggy	kaos, my network knowledge is very low* (enough for a programmer, but I should improve it)
+2016-10-01 10:59:55	kaos	bkboggy: i was thinking it would have to reuse the same ip and mac as the device that registred
+2016-10-01 11:00:05	kaos	it would require some extra work
+2016-10-01 11:00:05		[11:00]
+2016-10-01 11:00:06	OxFEEDBACC	yes, add... as i already said, "wtf"... my thinking machine isn't working properly... :-/
+2016-10-01 11:00:46	bkboggy	kaos, yeah.
+2016-10-01 11:01:05	kaos	and even yet some extra work if one does not wish to make the network guys wonder why the lamp says the cable is connected, when its clearly not (for that: soldering and stuff)
+2016-10-01 11:01:15	<--	devonrevenge (~devonreve@unaffiliated/devonrevenge) has quit (Quit: WeeChat 1.5)
+2016-10-01 11:01:59	bkboggy	kaos, as almost anything else, if someone wants to get it done badly enough, I'm sure there's a way.
+2016-10-01 11:02:20	bkboggy	Most of the things we design have one common flaw -- they were implemented by humans.
+2016-10-01 11:03:18	kaos	and humans dont care unless they are passionate or suffer from some diagnosis. most places are lax, the vocore would fit right in at my current job ;)
+2016-10-01 11:04:25	OxFEEDBACC	http://pastebin.com/fCHvYK0U should be it...
+2016-10-01 11:04:50	-->	sophia7 (~sophia7@unaffiliated/sophia7) has joined ##asm
+2016-10-01 11:05:15	<--	GeDaMo (~GeDaMo@212.225.83.199) has quit (Remote host closed the connection)
+2016-10-01 11:08:43	<--	sophia7 (~sophia7@unaffiliated/sophia7) has quit (Client Quit)
+2016-10-01 11:14:00		[11:08]
+2016-10-01 11:16:21	-->	osa1_ (~omer@50-253-193-254-static.hfc.comcastbusiness.net) has joined ##asm
+2016-10-01 11:16:57	-->	hawes (uid158378@gateway/web/irccloud.com/x-bcfdlmxbdpyzlkqv) has joined ##asm
+2016-10-01 11:16:59	<--	osa1 (~omer@haskell/developer/osa1) has quit (Ping timeout: 252 seconds)
+2016-10-01 11:17:08	-->	XOCKET (~XOCKET@unaffiliated/xocket) has joined ##asm
+2016-10-01 11:18:43	<--	Suchorski (regex@unaffiliated/suchorski) has quit
+2016-10-01 11:20:09	<--	XOCK_STREAM (~XOCKET@unaffiliated/xocket) has quit (Ping timeout: 248 seconds)
+2016-10-01 11:20:34	-->	XOCK_STREAM (~XOCKET@unaffiliated/xocket) has joined ##asm
+2016-10-01 11:20:34	<--	XOCKET (~XOCKET@unaffiliated/xocket) has quit (Disconnected by services)
+2016-10-01 11:20:41	-->	kbw_ (~KeyboardW@68-204-170-7.res.bhn.net) has joined ##asm
+2016-10-01 11:20:48	<--	a3f (~a3f@unaffiliated/a3f) has quit (Quit: Zzzzz..)
+2016-10-01 11:23:54	-->	JSharpe (~JSharpe@192.40.88.14) has joined ##asm
+2016-10-01 11:27:30	<--	extor (~xtorr@unaffiliated/extor) has quit (Ping timeout: 264 seconds)
+2016-10-01 11:29:10	-->	ent0nces (~ent0nces@c-73-221-134-56.hsd1.wa.comcast.net) has joined ##asm
+2016-10-01 11:29:10		[11:29]
+2016-10-01 11:30:09	--	kbw_ is now known as kbw
+2016-10-01 11:32:16	-->	Manticore (~Manticore@2001-0678-00f0-1011-df3f-898b-05f1-3e6d.pool6.ovpn.se) has joined ##asm
+2016-10-01 11:32:40	--	Manticore is now known as Guest11671
+2016-10-01 11:37:05	<--	Guest11671 (~Manticore@2001-0678-00f0-1011-df3f-898b-05f1-3e6d.pool6.ovpn.se) has quit (Remote host closed the connection)
+2016-10-01 11:37:18	<--	sigtrm (quassel@quassel.woboq.de) has quit (Ping timeout: 272 seconds)
+2016-10-01 11:38:48	<--	Demon_Fox (~Demon_Fox@71.94.3.176) has quit (Quit: Leaving)
+2016-10-01 11:43:29	-->	Manticore_ (~Manticore@2001-0678-00f0-2011-25d1-2597-1d4f-0792.pool6.ovpn.se) has joined ##asm
+2016-10-01 11:45:57	-->	XOCKET (~XOCKET@unaffiliated/xocket) has joined ##asm
+2016-10-01 11:45:57		[11:45]
+2016-10-01 11:46:41	<--	osa1_ (~omer@50-253-193-254-static.hfc.comcastbusiness.net) has quit (Ping timeout: 252 seconds)
+2016-10-01 11:48:03	<--	ent0nces (~ent0nces@c-73-221-134-56.hsd1.wa.comcast.net) has quit (Remote host closed the connection)
+2016-10-01 11:48:20	<--	XOCK_STREAM (~XOCKET@unaffiliated/xocket) has quit (Ping timeout: 252 seconds)
+2016-10-01 11:53:17	<--	bkboggy (~bkboggy@cpe-172-250-147-60.socal.res.rr.com) has quit (Ping timeout: 252 seconds)
+2016-10-01 11:55:00	-->	bkboggy (~bkboggy@cpe-172-250-147-60.socal.res.rr.com) has joined ##asm
+2016-10-01 12:00:00		[11:55]
+2016-10-01 12:11:55	<--	kbw (~KeyboardW@68-204-170-7.res.bhn.net) has quit (Quit: My MacBook Air has gone to sleep. ZZZzzz…)
+2016-10-01 12:15:05	-->	kbw (~KeyboardW@68-204-170-7.res.bhn.net) has joined ##asm
+2016-10-01 12:15:05		[12:15]
+2016-10-01 12:15:49	<--	Ewomire (~Ender@192.95.25.150) has quit (Ping timeout: 244 seconds)
+2016-10-01 12:21:00		[12:15]
+2016-10-01 12:28:12	<--	daBL (darkblack@67.53.153.59) has quit (Ping timeout: 276 seconds)
+2016-10-01 12:28:56	-->	Judge_Dredd (~Judge_Dre@unaffiliated/judge-dredd/x-2170742) has joined ##asm
+2016-10-01 12:30:25	-->	durant (48be08f6@gateway/web/cgi-irc/kiwiirc.com/ip.72.190.8.246) has joined ##asm
+2016-10-01 12:30:30	<--	palantir (~palantir@anj75-2-88-162-182-55.fbx.proxad.net) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-10-01 12:36:00		[12:30]
+2016-10-01 12:37:21	-->	daBL (darkblack@67.53.153.59) has joined ##asm
+2016-10-01 12:38:46	-->	king_jah (~jah@S0106503955715ed3.ss.shawcable.net) has joined ##asm
+2016-10-01 12:39:41	<--	m8 (~m8@unaffiliated/m8) has quit (Quit: Leaving)
+2016-10-01 12:40:13	<--	kbw (~KeyboardW@68-204-170-7.res.bhn.net) has quit (Quit: My MacBook Air has gone to sleep. ZZZzzz…)
+2016-10-01 12:44:33	<--	StereoBucket (~StereoBuc@31.223.131.24) has quit (Read error: Connection reset by peer)
+2016-10-01 12:46:40	-->	Heasummn (~Heasummn@2601:246:802:d0c1:ee97:c29:3aa1:8a88) has joined ##asm
+2016-10-01 12:52:00		[12:46]
+2016-10-01 12:52:50	-->	navidr (uid112413@gateway/web/irccloud.com/x-ydruzytsiwmnitba) has joined ##asm
+2016-10-01 12:58:00		[12:52]
+2016-10-01 13:00:21	--	irc: disconnected from server
+2016-10-01 13:06:00		[13:00]
+2016-10-01 13:16:27	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined ##asm
+2016-10-01 13:16:27	--	Topic for ##asm is "Assembly programming channel, all architectures welcome (please specify). Don't ask to ask! Use a pastebin if appropriate! Check your manuals! *** AT&T vs Intel flamers will be banned."
+2016-10-01 13:16:27	--	Topic set by Jester01 (~Jester01@62.100.244.69) on Fri, 30 Sep 2016 06:54:51
+2016-10-01 13:16:27	--	Channel ##asm: 289 nicks (1 op, 0 voices, 288 normals)
+2016-10-01 13:17:59	<--	osa1 (~omer@haskell/developer/osa1) has quit (Ping timeout: 252 seconds)
+2016-10-01 13:18:13	--	Channel created on Sun, 27 May 2007 05:31:12
+2016-10-01 13:19:54	<--	durant (48be08f6@gateway/web/cgi-irc/kiwiirc.com/ip.72.190.8.246) has quit (Quit: http://www.kiwiirc.com/ - A hand crafted IRC client)
+2016-10-01 13:24:17	pie_	paule32, i dont really know what you want but you can make objdump just dump everything as if it was raw assembly
+2016-10-01 13:24:17		[13:24]
+2016-10-01 13:24:23	pie_	i dont remember the flags though
+2016-10-01 13:24:57	paule32	yeah
+2016-10-01 13:24:58	paule32	objdump -D -Mintel,i386 -b binary -m i386 foo.bin
+2016-10-01 13:25:03	<--	osa1_ (~omer@50-253-193-254-static.hfc.comcastbusiness.net) has quit (Ping timeout: 244 seconds)
+2016-10-01 13:25:27	--	irc: disconnected from server
+2016-10-01 13:31:00		[13:25]
+2016-10-01 13:36:20	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined ##asm
+2016-10-01 13:36:20	--	Topic for ##asm is "Assembly programming channel, all architectures welcome (please specify). Don't ask to ask! Use a pastebin if appropriate! Check your manuals! *** AT&T vs Intel flamers will be banned."
+2016-10-01 13:36:20	--	Topic set by Jester01 (~Jester01@62.100.244.69) on Fri, 30 Sep 2016 06:54:51
+2016-10-01 13:36:20	--	Channel ##asm: 284 nicks (1 op, 0 voices, 283 normals)
+2016-10-01 13:37:30	--	Channel created on Sun, 27 May 2007 05:31:12
+2016-10-01 13:38:07	-->	osa1 (~omer@50-253-193-254-static.hfc.comcastbusiness.net) has joined ##asm
+2016-10-01 13:38:07	<--	osa1 (~omer@50-253-193-254-static.hfc.comcastbusiness.net) has quit (Changing host)
+2016-10-01 13:38:07	-->	osa1 (~omer@haskell/developer/osa1) has joined ##asm
+2016-10-01 13:39:16	-->	PJBoy (~PJBoy_@unaffiliated/pjboy) has joined ##asm
+2016-10-01 13:41:25	<--	paule32 (~jens@dslb-188-103-045-130.188.103.pools.vodafone-ip.de) has quit (Ping timeout: 272 seconds)
+2016-10-01 13:41:49	<--	XOCKET (~XOCKET@unaffiliated/xocket) has quit (Disconnected by services)
+2016-10-01 13:41:49	-->	XOCK_STREAM (~XOCKET@unaffiliated/xocket) has joined ##asm
+2016-10-01 13:47:00		[13:41]
+2016-10-01 13:47:01	<--	rtkt (~rtkt@ptr-2hj4tbw74k45ro7vwd4vwqhkv.ip6.access.telenet.be) has quit (Ping timeout: 265 seconds)
+2016-10-01 13:47:34	-->	rtkt (~rtkt@ptr-2hj4tbw74k45rbq4qb0x1wdv1.ip6.access.telenet.be) has joined ##asm
+2016-10-01 13:47:40	--	irc: disconnected from server
+2016-10-01 13:53:00		[13:47]
+2016-10-01 14:02:04	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined ##asm
+2016-10-01 14:02:04	--	Topic for ##asm is "Assembly programming channel, all architectures welcome (please specify). Don't ask to ask! Use a pastebin if appropriate! Check your manuals! *** AT&T vs Intel flamers will be banned."
+2016-10-01 14:02:04	--	Topic set by Jester01 (~Jester01@62.100.244.69) on Fri, 30 Sep 2016 06:54:51
+2016-10-01 14:02:04	--	Channel ##asm: 286 nicks (1 op, 0 voices, 285 normals)
+2016-10-01 14:03:20	--	irc: disconnected from server
+2016-10-01 14:06:27	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined ##asm
+2016-10-01 14:06:27	--	Topic for ##asm is "Assembly programming channel, all architectures welcome (please specify). Don't ask to ask! Use a pastebin if appropriate! Check your manuals! *** AT&T vs Intel flamers will be banned."
+2016-10-01 14:06:27	--	Topic set by Jester01 (~Jester01@62.100.244.69) on Fri, 30 Sep 2016 06:54:51
+2016-10-01 14:06:27	--	Channel ##asm: 287 nicks (1 op, 0 voices, 286 normals)
+2016-10-01 14:06:27	***	Buffer Playback...
+2016-10-01 14:06:27	meowrobot	[20:42:29] it would make a weird sort of sense.  the 6502 is actually an indirect descendant of 6800. [20:42:29]
+2016-10-01 14:06:27	GeDaMo	[20:42:30] So does Bender from Futurama :P [20:42:30]
+2016-10-01 14:06:27	meowrobot	[20:43:27] 6502's origins could be more or less boiled down to "let's make the 6800 but much less expensive" [20:43:27]
+2016-10-01 14:06:27	GeDaMo	[20:43:30] bkboggy: apart from ImgTecs boards, there have been some Kickstarted MIPS devices [20:43:30]
+2016-10-01 14:06:27	bkboggy	[20:43:47] GeDaMo, oh?  Why MIPS over ARM? [20:43:47]
+2016-10-01 14:06:27	bkboggy	[20:44:02] GeDaMo, probably what the project owners knew, I'm guessing? [20:44:02]
+2016-10-01 14:06:27	GeDaMo	[20:44:09] Probably because there were MIPS chips with WiFi [20:44:09]
+2016-10-01 14:06:27	GeDaMo	[20:44:27] Same chips used in routers and suchlike [20:44:27]
+2016-10-01 14:06:27	bkboggy	[20:44:39] ah [20:44:39]
+2016-10-01 14:06:27	bkboggy	[20:44:57] What about Imp, though? [20:44:57]
+2016-10-01 14:06:27	GeDaMo	[20:45:03] E.g. http://vocore.io/ [20:45:03]
+2016-10-01 14:06:27	bkboggy	[20:45:32] GeDaMo, holy cow, that's neat. [20:45:32]
+2016-10-01 14:06:27	GeDaMo	[20:47:12] There's also this thing https://wiki.hackerspace.pl/projects:zsun-wifi-card-reader [20:47:12]
+2016-10-01 14:06:27	bkboggy	[20:48:15] GeDaMo, things are getting smaller and smaller.  Crazy. [20:48:15]
+2016-10-01 14:06:27	GeDaMo	[20:48:47] MIPS and ARM don't compete with x86 for processing power though [20:48:47]
+2016-10-01 14:06:27	bkboggy	[20:49:06] Well, to be fair, they're addressing different markets. [20:49:06]
+2016-10-01 14:06:27	bkboggy	[20:49:11] Some overlap, but not huge. [20:49:11]
+2016-10-01 14:06:27	kaos	[20:50:55] omg, vocore is like perfect for sneaking it into a building and attaching it to the network in a hidden way [20:50:55]
+2016-10-01 14:06:27	bkboggy	[20:51:03] I remember having to drag my PC tower to the school's LAN party over 20 miles away when I was a kid, and that thing had less power than my rPi, which I can put in my pocket. [20:51:03]
+2016-10-01 14:06:27	kaos	[20:51:36] like in offices there are always places noone looks for years and years, in cable runs or whatever [20:51:36]
+2016-10-01 14:06:27	OxFEEDBACC	[20:53:28] anything more elegant to set bit 0 of al iff bit 1 of al is unset, otherwise leave it alone? my current way is: mov %al,%cl; shr $2,%cl; setnc %cl; or %cl,%al [20:53:28]
+2016-10-01 14:06:27	bkboggy	[20:54:24] kaos, I'm not a network guy, but our Admins are able to detect new devices on the network if they don't have an assigned encrypted mnemonic id. [20:54:24]
+2016-10-01 14:06:27	GeDaMo	[20:54:30] Don't you just want the bit to be 1? [20:54:30]
+2016-10-01 14:06:27	GeDaMo	[20:54:40] Oh, I see what you mean [20:54:40]
+2016-10-01 14:06:27	kaos	[20:55:02] bkboggy: yes. not perfect. but i guess it works in most places [20:55:02]
+2016-10-01 14:06:27	OxFEEDBACC	[20:55:30] actually, i try to map -1 => 4, -2 => 3, -3 => 2, -4 => 2 [20:55:30]
+2016-10-01 14:06:27	GeDaMo	[20:55:33] OxFEEDBACC: does it matter if the other bits in al are changed? [20:55:33]
+2016-10-01 14:06:27	OxFEEDBACC	[20:56:08] ummm... trying to think fast... i guess the other bits are "disposable" ;-) [20:56:08]
+2016-10-01 14:06:27	OxFEEDBACC	[20:56:37] well, 4 ops isn't that bad... [20:56:37]
+2016-10-01 14:06:27	bkboggy	[20:57:47] kaos, reminds me Mr. Robot, though, where they used rPi.  I guess they could use thing to make it even more discreet. [20:57:47]
+2016-10-01 14:06:27	kaos	[20:57:52] bkboggy: i guess it could be possible to insert a device into such a network if it had two network interfaces and acted exactly like a stupid hub. and only communicated when the line was already bussy. but that would probably require soldering and stuff, depending on how good one wants to make it [20:57:52]
+2016-10-01 14:06:27	OxFEEDBACC	[20:58:03] errr... 5 ops... need a final neg anyway... [20:58:03]
+2016-10-01 14:06:27	OxFEEDBACC	[20:58:18] no, sub... wtf... [20:58:18]
+2016-10-01 14:06:27	GeDaMo	[20:58:23] OxFEEDBACC: does -4 => 2 ? [20:58:23]
+2016-10-01 14:06:27	OxFEEDBACC	[20:58:53] what do you mean, GeDaMo? [20:58:53]
+2016-10-01 14:06:27	bkboggy	[20:59:06] kaos, not sure, my network is very low.  I just remember one of the offices installed a hub they bought to attach a few extra devices to the network and the network guys were there the same day lecturing them on network security. [20:59:06]
+2016-10-01 14:06:27	GeDaMo	[20:59:08] Well, if -4 => 1 you could do add al, 5 :P [20:59:08]
+2016-10-01 14:06:27	bkboggy	[20:59:22] kaos, my network knowledge is very low* (enough for a programmer, but I should improve it) [20:59:22]
+2016-10-01 14:06:27	kaos	[20:59:55] bkboggy: i was thinking it would have to reuse the same ip and mac as the device that registred [20:59:55]
+2016-10-01 14:06:27	kaos	[21:00:05] it would require some extra work [21:00:05]
+2016-10-01 14:06:27	OxFEEDBACC	[21:00:06] yes, add... as i already said, "wtf"... my thinking machine isn't working properly... :-/ [21:00:06]
+2016-10-01 14:06:27	bkboggy	[21:00:46] kaos, yeah. [21:00:46]
+2016-10-01 14:06:27	kaos	[21:01:05] and even yet some extra work if one does not wish to make the network guys wonder why the lamp says the cable is connected, when its clearly not (for that: soldering and stuff) [21:01:05]
+2016-10-01 14:06:27	bkboggy	[21:01:59] kaos, as almost anything else, if someone wants to get it done badly enough, I'm sure there's a way. [21:01:59]
+2016-10-01 14:06:27	bkboggy	[21:02:20] Most of the things we design have one common flaw -- they were implemented by humans. [21:02:20]
+2016-10-01 14:06:27	kaos	[21:03:18] and humans dont care unless they are passionate or suffer from some diagnosis. most places are lax, the vocore would fit right in at my current job ;) [21:03:18]
+2016-10-01 14:06:27	OxFEEDBACC	[21:04:25] http://pastebin.com/fCHvYK0U should be it... [21:04:25]
+2016-10-01 14:06:27	pie_	[23:24:17] paule32, i dont really know what you want but you can make objdump just dump everything as if it was raw assembly [23:24:17]
+2016-10-01 14:06:27	pie_	[23:24:23] i dont remember the flags though [23:24:23]
+2016-10-01 14:06:27	paule32	[23:24:57] yeah [23:24:57]
+2016-10-01 14:06:27	***	Playback Complete.
+2016-10-01 14:07:43	--	Channel created on Sun, 27 May 2007 05:31:12
+2016-10-01 14:10:06	--	irc: disconnected from server
+2016-10-01 14:10:06		[14:10]
+2016-10-02 13:03:30	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined ##asm
+2016-10-02 13:03:30		[13:03]
+2016-10-02 13:03:30	--	Topic for ##asm is "Assembly programming channel, all architectures welcome (please specify). Don't ask to ask! Use a pastebin if appropriate! Check your manuals! *** AT&T vs Intel flamers will be banned."
+2016-10-02 13:03:30	--	Topic set by Jester01 (~Jester01@62.100.244.69) on Fri, 30 Sep 2016 06:54:51
+2016-10-02 13:03:30	--	Channel ##asm: 281 nicks (0 ops, 0 voices, 281 normals)
+2016-10-02 13:03:34	-->	retx (~marcorami@88-149-141-132.v4.ngi.it) has joined ##asm
+2016-10-02 13:04:35	--	Channel created on Sun, 27 May 2007 05:31:12
