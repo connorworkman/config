@@ -13309,3 +13309,106 @@
 2016-10-02 13:46:15	tom-	oh. 5.4 is release? 
 2016-10-02 13:46:27	tom-	hah
 2016-10-02 13:47:50	<--	krabador (~krabador@unaffiliated/krabador) has quit (Quit: Leaving)
+2016-10-02 13:50:42	tom-	high five! best release ever
+2016-10-02 13:50:42		[13:50]
+2016-10-02 13:54:56	-->	electronicsleep (~electroni@2603:3024:180e:1f00:ee08:6bff:fec8:262b) has joined #ardour
+2016-10-02 13:56:35	 *	tom- couldn't find the 5.4 album name
+2016-10-02 13:58:01	<--	yann-kaelig (~inyan@89-64-15-158.dynamic.chello.pl) has quit (Quit: Leaving)
+2016-10-02 14:03:51	 *	tom- now found after compiling
+2016-10-02 14:05:36	tom-	but hm.. a recent git ardour shows 5.3.100 Music for Films. does that only change on waf configure? 
+2016-10-02 14:06:12	tom-	rev 5.4-1-ga...
+2016-10-02 14:06:12		[14:06]
+2016-10-02 14:15:28	tom-	rgareus: if found out something that at first confused me but it seems logical: i have this plugin that does not draw anything but other non-rt stuff.
+2016-10-02 14:15:47	tom-	when disabled, it stops to work, if enabled it starts to work as expected
+2016-10-02 14:16:06	tom-	now if it is moved out of sight in the processor box, it also stops working!
+2016-10-02 14:16:23	tom-	which sort of makes sense since you'd want not to draw stuff that's not visible
+2016-10-02 14:16:28	<--	easyshekels (~easysheke@bzq-79-178-63-106.red.bezeqint.net) has quit (Remote host closed the connection)
+2016-10-02 14:16:32	rgareus	tom-: correct
+2016-10-02 14:16:44	rgareus	tom-: gdk does partial exposure
+2016-10-02 14:18:26	tom-	rgareus: could there be a method for non-rt non-ui things?
+2016-10-02 14:19:47	rgareus	tom-: there could be, but there's none yet
+2016-10-02 14:21:09	tom-	rgareus: how would it be called?
+2016-10-02 14:21:24	rgareus	tom-: I don't see it happen.
+2016-10-02 14:21:24		[14:21]
+2016-10-02 14:21:40	rgareus	it's conceptually a mess
+2016-10-02 14:22:02	tom-	rgareus: why?
+2016-10-02 14:22:28	rgareus	because plugins lack context of using threads internally
+2016-10-02 14:22:52	rgareus	also it won't be in sync with anything..
+2016-10-02 14:23:16	tom-	i see
+2016-10-02 14:23:17	rgareus	so it'll always be a kludge at best
+2016-10-02 14:23:54	tom-	i was thinking of "this or that", i.e. ui or non-ui (non-rt)
+2016-10-02 14:24:17	tom-	no sync issues iiuc
+2016-10-02 14:26:56	tom-	rgareus: it would at the same time enable more power in hardev 
+2016-10-02 14:32:00		[14:26]
+2016-10-02 14:34:45	tom-	rgareus: "i don't see it happen". you sound like las in the past :)
+2016-10-02 14:38:07	<--	Yruama_Lairba (~UTILISATE@mut38-h04-89-80-39-202.dsl.sta.abo.bbox.fr) has quit (Read error: Connection reset by peer)
+2016-10-02 14:38:33	-->	Fam_ (490b6dfc@gateway/web/freenode/ip.73.11.109.252) has joined #ardour
+2016-10-02 14:40:10	Fam_	am having trouble exporting to WAV file. It exports, however when played in another player it does not play the WAV
+2016-10-02 14:40:11	rgareus	tom-: I'm on safe ground, though,  concepts are pretty solid.
+2016-10-02 14:40:34	rgareus	Fam_: is ardour/jack still running and blocking the soundcard maybe?
+2016-10-02 14:41:22	rgareus	Fam_: if you're on linux, check            sndfile-info /path/to/the/file.wav
+2016-10-02 14:41:51	rgareus	(sndfile-info comes with the   sndfile-programs  package on most GNU/Linux distros ;  handy tool)
+2016-10-02 14:43:15	tom-	rgareus: it's yet unclear why a method (which is a reduced variant of render_inline) should be conceptually wrong ..
+2016-10-02 14:43:47	Fam_	Alright, am checking for JACK being stopped, and will try the sndfile-info.
+2016-10-02 14:44:10	tom-	conceptually it enables the plugin to work when off-processorbox and in headless environments
+2016-10-02 14:44:31	tom-	it won't do anything that it can't do now, it would do less
+2016-10-02 14:45:00	rgareus	tom-: calling non-gui functions in the inline display is wrong, too.
+2016-10-02 14:45:32	rgareus	even though everyting is possible in software, it does not mean it's good to do it
+2016-10-02 14:45:40	tom-	rgareus: it wouldn't be called "inline display" since it would be just using the non-rt aspect of the todays render_inline
+2016-10-02 14:47:55	tom-	something along process()
+2016-10-02 14:47:55		[14:47]
+2016-10-02 14:48:24	rgareus	"worker" maybe
+2016-10-02 14:48:40	tom-	non-rt_work()
+2016-10-02 14:48:45	rgareus	e.g. for loading files for a sampler.  one-shot tasks
+2016-10-02 14:48:48	tom-	non-rt_cycle()
+2016-10-02 14:48:59	tom-	yep. one-shot too
+2016-10-02 14:49:05	tom-	loading a bitmap etc
+2016-10-02 14:49:12	rgareus	and a work-response to synchronize to realtime
+2016-10-02 14:50:07	tom-	that i don't fully understand. means giving back data to the rt-cycle?
+2016-10-02 14:50:15	rgareus	yes
+2016-10-02 14:50:30	tom-	is that needed?
+2016-10-02 14:50:42	<--	Fam_ (490b6dfc@gateway/web/freenode/ip.73.11.109.252) has quit (Ping timeout: 240 seconds)
+2016-10-02 14:50:49	rgareus	tom-: for background:  http://lv2plug.in/ns/ext/worker/
+2016-10-02 14:50:50	LAbot	Title: LV2 Worker (at lv2plug.in)
+2016-10-02 14:50:55	tom-	if the cycle worker would in place of render_inline
+2016-10-02 14:51:33	tom-	you take your favourites from audiounit and lv2, that makes a good mix :)
+2016-10-02 14:51:44	rgareus	it has nothing to do with the GUI (render_inline)
+2016-10-02 14:51:45	<--	las (~las@177.sub-70-197-11.myvzw.com) has quit (Remote host closed the connection)
+2016-10-02 14:52:36	rgareus	tom-: if you enter "freewheeling" offline mode.  the GUI will still only run at ~25fps or whatever the gui can do.   a worker can become synchronous
+2016-10-02 14:53:02	rgareus	if run() itself is not realtime (during freewheeling or export)   the worker can be called immediately in sync
+2016-10-02 14:53:22	tom-	i see
+2016-10-02 14:53:29	rgareus	a generic background thread can't do that.
+2016-10-02 14:54:46	tom-	i didn't consider freewheeling
+2016-10-02 14:56:07	rgareus	tom-: why don't you just write a LV2 plugin?
+2016-10-02 14:56:39	rgareus	use lua-dsp *if and only if* you need to access ardour-internals.
+2016-10-02 14:56:57	rgareus	for everything else a normal plugin is much preferable.
+2016-10-02 14:57:15	<--	strixdio (~brian@ool-18bf73c9.dyn.optonline.net) has quit (Read error: Connection reset by peer)
+2016-10-02 14:57:24	tom-	rgareus: i like the luadsp plugin concept, right at the point of ease i can still handle
+2016-10-02 14:57:43	-->	strixdio (~brian@ool-18bf73c9.dyn.optonline.net) has joined #ardour
+2016-10-02 14:58:12	tom-	it's not per se less performant than other such apis/hosts, pure speculation
+2016-10-02 14:58:47	tom-	if it's using methods that do the hard work from ardour
+2016-10-02 14:59:29	-->	krabador (~krabador@unaffiliated/krabador) has joined #ardour
+2016-10-02 14:59:32	tom-	rgareus: a normal plugin would be lv2
+2016-10-02 14:59:36	rgareus	yeah, but while it's quick to do some prototype or quick DSP, it is rather limited
+2016-10-02 14:59:58	rgareus	tom-: or VST or LADSPA or ...
+2016-10-02 15:00:06	tom-	the absolutely nice thing. i can put such plugins in a session and it's fully self-contained. a big plus
+2016-10-02 15:01:40	tom-	rgareus: re yesterday / article / plugins
+2016-10-02 15:01:40	tom-	rgareus: the inline scope is the best example of both how useful it can be and how powerful the plugin api is
+2016-10-02 15:01:40	nstewart	I hate to ask such a stupid question, but I'm trying to figure out what to do with vamp plugins. Not sure ardour is finding them for starters. 
+2016-10-02 15:01:40	tom-	i remember there was someone asking if these inline displays were mockups when they first appeared
+2016-10-02 15:02:30	rgareus	nstewart: I'm about to git push  an API to load and call vamp plugins.
+2016-10-02 15:02:30	nstewart	brb
+2016-10-02 15:02:30	tom-	and *that* could be mentioned, when the heading says "scripting" or similar :) -- end of intermezzo
+2016-10-02 15:02:30	nstewart	ah ok. 
+2016-10-02 15:02:52	nstewart	you're right rgareus - there's a crapload of useful looking stuff in there.
+2016-10-02 15:02:54	<--	Freejack (~Freejack@unaffiliated/freejack) has quit (Ping timeout: 264 seconds)
+2016-10-02 15:03:23	nstewart	I 'd forgotten a ton of stuff from when I looked into this a while back.
+2016-10-02 15:03:23		[15:03]
+2016-10-02 15:03:23	<--	nstewart (~nps@cpe-24-163-95-15.nc.res.rr.com) has quit (Remote host closed the connection)
+2016-10-02 15:07:03	rhydermike	Anyone else finding this problem with MIDI quantize in 5.4? The "snap note end" parameter is ignored. Instead it always snaps to the snap/grid parameter at the top of main window.
+2016-10-02 15:07:18	-->	Freejack (~Freejack@unaffiliated/freejack) has joined #ardour
+2016-10-02 15:07:22	tom-	rgareus: controlling vamp plugins from the lua script? yipee :)
+2016-10-02 15:07:48	-->	nstewart (~nps@cpe-24-163-95-15.nc.res.rr.com) has joined #ardour
+2016-10-02 15:09:34	rgareus	the problem is that the Vamp C++ api is somewhat nasty for scripting.  
+2016-10-02 15:09:48	rgareus	  typedef std::vector<Feature> FeatureList  ;   typedef std::map<int, FeatureList> FeatureSet; 
+2016-10-02 15:10:10	rgareus	and Feature  itself is a struct that has    std::vector<float> values;

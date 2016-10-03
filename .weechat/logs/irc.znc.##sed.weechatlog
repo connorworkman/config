@@ -7112,3 +7112,32 @@
 2016-10-02 13:45:11	-->	cheater (~cheater@80-110-89-203.cgn.dynamic.surfer.at) has joined ##sed
 2016-10-02 13:45:19	cheater	hi
 2016-10-02 13:46:22	cheater	how would i modify a string to make (only) words that are all upper case become camel case? e.g. "foo BAR.BAZ QuUX" -> "foo Bar.Baz QuUX"
+2016-10-02 13:52:00		[13:46]
+2016-10-02 14:05:31	Riviera	cheater: preferably not with sed but a more appropriate tool
+2016-10-02 14:06:03	Riviera	cheater: if it only needs to work with GNU sed:  sed -r 's/\<([[:upper:]])([[:upper:]]+)\>/\1\L\2/g'
+2016-10-02 14:06:28	Riviera	this might also work:
+2016-10-02 14:07:09	Riviera	cheater: sed -r 's/\<([[:upper:]]+)\>/\L\u&/g'
+2016-10-02 14:07:09		[14:07]
+2016-10-02 14:15:26	cheater	Riviera: ok. what other tool do you suggest?
+2016-10-02 14:15:44	cheater	yeah, no posix compat needed actually
+2016-10-02 14:16:25	Riviera	Python perhaps
+2016-10-02 14:16:30	cheater	OK
+2016-10-02 14:16:32	Riviera	if POSIX is required then awk
+2016-10-02 14:16:41	cheater	none of that
+2016-10-02 14:16:48	cheater	the gnu sed one will work actually
+2016-10-02 14:20:16	<--	hush_ (~hush_@S010696103e138ce0.vc.shawcable.net) has quit (Quit: Leaving)
+2016-10-02 14:20:28	Riviera	okies
+2016-10-02 14:22:23	Riviera	ah, even shorter
+2016-10-02 14:22:23		[14:22]
+2016-10-02 14:22:37	Riviera	sed -r 's/\<[[:upper:]]+\>/\L\u&/g'
+2016-10-02 14:23:30	cheater	hmm what does that do Riviera?
+2016-10-02 14:23:40	cheater	I understood the first one but not the second one
+2016-10-02 14:24:07	cheater	and not the third one
+2016-10-02 14:24:23	cheater	btw - do you know of a good way to check if two files are on the same file system?
+2016-10-02 14:25:21	cheater	o, you can with stat
+2016-10-02 14:27:05	Riviera	sorry, am a bit too tired to explain it thoroughly; \< and \> match word boundaries, [[:upper:]]+ uppercase strings, \L lowercases everything until \U or \E (or so, better check the docs), and \u uppercases the next character
+2016-10-02 14:27:39	Riviera	so it's like "match whole uppercase strings, lowercase them entirely, then uppercase their first character again"
+2016-10-02 14:33:00		[14:27]
+2016-10-02 14:54:41	cheater	thanks. why does \u only uppercase one character? what does the & do?
+2016-10-02 14:54:41		[14:54]
+2016-10-02 15:08:01	-->	johnmilton (~johnmilto@192.206.23.197) has joined ##sed
