@@ -137,7 +137,9 @@ nnoremap <Leader>= <Esc>:set rnu!<CR>
 "nnoremap <Leader>, :s/.*[0-9]*[\.\]] \([A-Z].*\) \[.*\]$/\1/
 nnoremap <Leader>, :%s/ .*:[0-9][0-9]//
 nnoremap <Leader>. :%s/[0-9]*\. //
-nnoremap <Leader>/ :%s/ by / - /
+"nnoremap <Leader>/ :%s/ by / - /
+nnoremap <Leader>/ <Esc>i<C-r>=system('')
+
 
 "nnoremap <Leader>. V"+y<Esc>:call system("xclip -i -selection clipboard", getreg("\""))
 "\<CR>:call system("xclip -i", getreg("\""))<CR>
@@ -159,14 +161,16 @@ map <Esc><F8> <M-F8>
 map <Esc><F9> <M-F9>
 nnoremap <F2> ^
 nnoremap <C-F2> 0dw
-nnoremap <M-F2> <Esc>:set scrollbind<CR>
+nnoremap <M-F2> <Esc>:tabn<CR>
 nnoremap <F3> $
 nnoremap <C-F3> gi
-nnoremap <M-F3> <Esc>:set noscb<CR>
+nnoremap <M-F3> <Esc>:tabp<CR>
 nnoremap <F4> <C-u>
-nnoremap <C-F4> <Esc>:tabn<CR>
+nnoremap <M-F4> <Esc>:tabn<CR>
+nnoremap <M-F4> <Esc>:set scrollbind<CR>
 nnoremap <F5> <C-d>
-nnoremap <C-F5> <Esc>:tabp<CR>
+nnoremap <M-F5> <Esc>:tabp<CR>
+nnoremap <M-F5> <Esc>:set noscb<CR>
 " Clipboard mappings
 vmap <F6> "+y<Esc>:call system("xclip -i -selection clipboard", getreg("\""))
 \<CR>:call system("xclip -i", getreg("\""))<CR>
