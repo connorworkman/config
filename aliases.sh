@@ -11,7 +11,10 @@ alias zshconfig='vim ${HOME}/.zshrc '
 alias ohmyzsh='pushd ${ZSH} '
 
 ## Custom aliases
-
+		printf "\n \033[32m %s \n\033[0m" "Pull successful!" || \
+		printf "\n \033[31m %s \n\033[0m" "Error during pull..."
+alias zswap='printf "\n\033[32m%s \033[31m%s\033[0m\n\n" "ZSWAP Enabled:" "$(grep --color=always "[YN]" /sys/module/zswap/parameters/enabled)" && sudo grep -R . /sys/kernel/debug/zswap && echo '
+alias tzswap='sudo su -c "(sed 'y/NY/YN/' /sys/module/zswap/parameters/enabled >|/sys/module/zswap/parameters/enabled && cat /sys/module/zswap/parameters/enabled)" '
 alias slog='git log --show-signature '
 alias scommit='git commit -S '
 alias nmixxx='sudo renice -n -20 -p `pgrep mixxx | paste -s -d " "` '
@@ -170,7 +173,6 @@ alias dg-btrfs='sudo btrfs filesystem defragment -r -v / '
 
 alias lfd='ls -lAhqiQFs1 --color=auto /proc/$$/fd '
 alias lbc='bc -l /store/scripts/funcs.bc '
-alias tzswap="sudo su -c 'sed y/NY/YN/ /sys/module/zswap/parameters/enabled >|/sys/module/zswap/parameters/enabled && cat /sys/module/zswap/parameters/enabled' "
 alias sgcc='gcc -O2 -S -c '
 alias show-sgcc='gcc -c -g -Wa,-a,-ad '
 alias nostdgcc='gcc -m32 -nostdlib -Wl,-melf_x86_64 -o '
