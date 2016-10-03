@@ -12,6 +12,8 @@ alias ohmyzsh='pushd ${ZSH} '
 
 ## Custom aliases
 
+alias slog='git log --show-signature '
+alias scommit='git commit -S '
 alias nmixxx='sudo renice -n -20 -p `pgrep mixxx | paste -s -d " "` '
 #alias nmixxx="mixxx >/dev/null 2>&1 & renice -n -20 -p $! && disown "
 alias kpulse='systemctl --user stop pulseaudio.socket && pulseaudio --kill || pulseaudio --kill '
@@ -531,8 +533,8 @@ pscg() {
 scg() {
 	[[ "$PWD" != /store/config ]] && pushd /store/config &>/dev/null || local DIRVAR=1
 	git add .
-	#git commit -F <(printf "Configuration backup on $(date).\n") && {
-	git commit -m "Configuration backup on $(date)." && {
+	#git commit -S -F <(printf "Configuration backup on $(date).\n") && {
+	git commit -S -m "Configuration backup on $(date)." && {
 		git push && \
 			printf "\n \033[32m %s \n\033[0m" "Commit successful!" || \
 			printf "\n \033[31m %s \n\033[0m" "Error during push..."; } || {

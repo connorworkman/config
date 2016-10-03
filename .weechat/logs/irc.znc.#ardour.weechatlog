@@ -13440,3 +13440,38 @@
 2016-10-02 15:18:18	rgareus	 FeatureSet Vamp::Plugin::getRemainingFeatures ()   works.
 2016-10-02 15:18:23	-->	Vulpes`` (~user@ip68-2-62-254.ph.ph.cox.net) has joined #ardour
 2016-10-02 15:18:23		[15:18]
+2016-10-02 15:18:41	tom-	nice
+2016-10-02 15:18:44	rgareus	nstewart: one guess:  gcc4/5  C++11
+2016-10-02 15:20:08	tom-	nstewart: you could .. hm.. rename the plugin folder
+2016-10-02 15:20:09	<--	Vulpes` (~user@ip68-2-62-254.ph.ph.cox.net) has quit (Ping timeout: 248 seconds)
+2016-10-02 15:20:36	tom-	nstewart: to see if it's plugin related, depending on how sonic visualizer loads them
+2016-10-02 15:21:23	nstewart	http://pastebin.com/XGP1qTva
+2016-10-02 15:27:00		[15:21]
+2016-10-02 15:33:57	-->	Joschii (~joschii@82.113.106.196) has joined #ardour
+2016-10-02 15:34:19	tom-	hard to say what goes wrong there..
+2016-10-02 15:36:32	tom-	it just hit me, ardour osc ports
+2016-10-02 15:36:59	tom-	midi ports that carry osc messages as events, exposed as ports, directly readable and writable from plugins, like midi
+2016-10-02 15:37:36	rgareus	tom-: OSC os not realtime safe
+2016-10-02 15:37:39	rgareus	tom-: MIDI is
+2016-10-02 15:38:10	tom-	if that's an issue, rtosc would be
+2016-10-02 15:38:33	rgareus	tom-: there's a LV2 project to encapsulate generic Messages in LV2 Atoms and bridge them to OSC  https://github.com/OpenMusicKontrollers/
+2016-10-02 15:39:32	tom-	rgareus: i'm not too much into LV2, it could support OSC since long with a corresponding generic "ui" (using the non-rt aspect)
+2016-10-02 15:39:42	tom-	rgareus: shipping osc via midi events also not new
+2016-10-02 15:39:59	nstewart	I should open a ticket that they spelled visualizer wrong. man that S is bothering me more than the core dump.  can not type it that way
+2016-10-02 15:40:14	nstewart	but being british they probably wouldn't get the joke.
+2016-10-02 15:40:33	-->	Ebardie (~Ebardie@aelfric.plus.com) has joined #ardour
+2016-10-02 15:40:49	rgareus	tom-: IIRC rtosc is for creating messages - it does not include network stack etc.
+2016-10-02 15:41:11	tom-	rgareus: yes
+2016-10-02 15:41:21	tom-	rgareus: what i'm talking is jack-specific
+2016-10-02 15:41:24	<--	krabador (~krabador@unaffiliated/krabador) has quit (Quit: Leaving)
+2016-10-02 15:41:36	rgareus	nstewart: I'm facing similar issue.  ardour's internal API is AE,  the Vamp API BE
+2016-10-02 15:41:44	rgareus	analyze() vs analyse() in this case
+2016-10-02 15:41:46	tom-	rgareus: and all inside-jack, where osc is just a data container (no networking involved inside jack)
+2016-10-02 15:42:24	tom-	rgareus: so that ardour could an input and output port type like midi but for osc events
+2016-10-02 15:42:24		[15:42]
+2016-10-02 15:42:31	<--	dsr1204 (~dsr1204@99-111-235-130.lightspeed.cicril.sbcglobal.net) has quit (Ping timeout: 264 seconds)
+2016-10-02 15:42:42	tom-	rgareus: processable like midi in a plugin chain on the strip
+2016-10-02 15:44:45	nstewart	I did a programming class in Sweden once. Their keyboards are pretty normal with a few extra characters, except for the location of {}[]/.&#; and ,  had to lear some swedish swear words. cause I couldn't even type !@#$^&
+2016-10-02 15:45:24	-->	dbolton (~Thunderbi@50-83-92-171.client.mchsi.com) has joined #ardour
+2016-10-02 15:46:35	tom-	nstewart: because of s vs z? no .. :)
+2016-10-02 15:47:14	tom-	vizualiser ehm
