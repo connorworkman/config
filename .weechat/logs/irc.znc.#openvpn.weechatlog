@@ -2406,3 +2406,335 @@
 2016-10-02 19:55:05	-->	iokill (~dave@pippin.sigma-star.at) has joined #openvpn
 2016-10-02 20:01:00		[19:55]
 2016-10-02 20:12:51	--	irc: disconnected from server
+2016-10-03 04:53:21	-->	alyptik_ (~alyptik@unaffiliated/alyptik) has joined #openvpn
+2016-10-03 04:53:21		[04:53]
+2016-10-03 04:53:21	--	Topic for #openvpn is "openvpn: OpenVPN Community Support Channel || PLEASE read entire topic || Current Release: 2.3.12 (23 Aug 2016) || First time? Use !welcome and !goal || Access-Server? /join #openvpn-as || Your problem is probably firewall. Really || TAP/bridging is almost always a bad idea || Vulninfo: !heartbleed !poodle !ovpnuke !sweet32 || Patience is a virtue"
+2016-10-03 04:53:21	--	Topic set by danhunsaker (sid145261@openvpn/corp/danhunsaker) on Fri, 23 Sep 2016 09:00:56
+2016-10-03 04:53:21	--	Channel #openvpn: 230 nicks (7 ops, 2 voices, 221 normals)
+2016-10-03 04:53:21	***	Buffer Playback...
+2016-10-03 04:53:21	dyce	[23:20:29] i see so a traceroute works from clients of the remote router to local router. ping doesn't because local route sees an IP from something that isn't 192.168.1.0/24 and doesn't know where to send the packet? [23:20:29]
+2016-10-03 04:53:21	dyce	[23:20:40] local router* [23:20:40]
+2016-10-03 04:53:21	@danhunsaker	[23:20:44] Indeed so. [23:20:44]
+2016-10-03 04:53:21	@danhunsaker	[23:21:07] That's the whole point of routes - telling routers (or servers, or whatever) where to send packtes. [23:21:07]
+2016-10-03 04:53:21	@danhunsaker	[23:21:10] *packets [23:21:10]
+2016-10-03 04:53:21	deadevilboy	[01:08:57] hi there [01:08:57]
+2016-10-03 04:53:21	deadevilboy	[01:10:48] !welcome [01:10:48]
+2016-10-03 04:53:21	@vpnHelper	[01:10:50] "welcome" is (#1) Start by stating your !goal, such as 'I would like to access the internet over my vpn', or (#2) New to IRC? see the link in !ask, or (#3) We may need you to !paste your !logs and !configs and maybe !interface to help you, or (#4) See !howto for beginners, or (#5) See !route for lans behind openvpn, or (#6) !redirect for sending inet traffic through the server, or (#7) Also [01:10:50]
+2016-10-03 04:53:21	@vpnHelper	[01:10:51] interesting: !man !/30 !topology !iporder !sample !forum !wiki !mitm, or (#8) Don't use 192.168.1.0/24 or 192.168.0.0/24 (too much potential for conflict), or (#9) And again, if you think you need !tap, you're probably wrong [01:10:51]
+2016-10-03 04:53:21	Zer0Pings	[11:33:20] !tcp-nodelay [11:33:20]
+2016-10-03 04:53:21	Zer0Pings	[11:33:22] !tcp [11:33:22]
+2016-10-03 04:53:21	@vpnHelper	[11:33:23] "tcp" is (#1) Sometimes you cannot avoid tunneling over tcp, but if you can avoid it, DO. http://sites.inka.de/~bigred/devel/tcp-tcp.html Why TCP Over TCP Is A Bad Idea., or (#2) http://www.openvpn.net/papers/BLUG-talk/14.html for a presentation by James Yonan (OpenVPN lead developer), or (#3) if you must use tcp, you likely want --tcp-nodelay [11:33:23]
+2016-10-03 04:53:21	Zer0Pings	[11:33:33] !--tcp-nodelay [11:33:33]
+2016-10-03 04:53:21	Zer0Pings	[12:11:40] well I'm facing a weird problem [12:11:40]
+2016-10-03 04:53:21	Zer0Pings	[12:11:47] I'm able to connect to the openvpn server [12:11:47]
+2016-10-03 04:53:21	Zer0Pings	[12:11:52] set my default gateways via pfsense [12:11:52]
+2016-10-03 04:53:21	Zer0Pings	[12:11:56] but I get 100% packet loss [12:11:56]
+2016-10-03 04:53:21	Zer0Pings	[12:12:15] and no incoming packets are sent to me [12:12:15]
+2016-10-03 04:53:21	Zer0Pings	[12:12:16] but all outgoing packets are sent [12:12:16]
+2016-10-03 04:53:21	Zer0Pings	[12:12:32] I've tried with and without tcp-nodelay the same result [12:12:32]
+2016-10-03 04:53:21	Zer0Pings	[12:13:04] 1 second, pasting configuration of server [12:13:04]
+2016-10-03 04:53:21	Zer0Pings	[12:16:36] https://bpaste.net/show/026d18df487a [12:16:36]
+2016-10-03 04:53:21	Zer0Pings	[12:18:57] this is very weird [12:18:57]
+2016-10-03 04:53:21	Zer0Pings	[12:21:54] Yet I can ping 10.8.0.1 [12:21:54]
+2016-10-03 04:53:21	Zer0Pings	[12:47:54] someone here at all? [12:47:54]
+2016-10-03 04:53:21	Zer0Pings	[12:49:36] Connection timing out [12:49:36]
+2016-10-03 04:53:21	@dazo	[12:51:04] !redirect [12:51:04]
+2016-10-03 04:53:21	@vpnHelper	[12:51:05] "redirect" is (#1) to make all inet traffic flow through the vpn, you will need --redirect-gateway (see !def1), as well as IP forwarding (see !ipforward) and NAT (see !nat) enabled on the server., or (#2) you may need to use a different dns server when redirecting gateway, see !dns or !pushdns, or (#3) if using ipv6 try: route-ipv6 2000::/3, or (#4) Handy troubleshooting flowchart: [12:51:05]
+2016-10-03 04:53:21	@vpnHelper	[12:51:06] http://pekster.sdf.org/misc/redirect.png [12:51:06]
+2016-10-03 04:53:21	Zer0Pings	[12:57:46] I did add it [12:57:46]
+2016-10-03 04:53:21	Zer0Pings	[12:57:46] Redirect-gateway is enabled and pushed [12:57:46]
+2016-10-03 04:53:21	Zer0Pings	[12:57:46] !nat [12:57:46]
+2016-10-03 04:53:21	Zer0Pings	[12:57:46] !ipforward [12:57:46]
+2016-10-03 04:53:21	@vpnHelper	[12:57:46] "nat" is (#1) http://openvpn.net/howto.html#redirect for an explanation of NAT as it applies to openvpn, or (#2) http://www.secure-computing.net/wiki/index.php/OpenVPN/FAQ#Traffic_forwarding_doesn.27t_work_when_using_client_specific_access_rules, or (#3) dont forget to turn on ip forwarding, or (#4) please choose between !linnat !openvznat !winnat and !fbsdnat for specific howto [12:57:46]
+2016-10-03 04:53:21	Zer0Pings	[12:57:47] IP forwarding is enabled too [12:57:47]
+2016-10-03 04:53:21	@vpnHelper	[12:57:48] "ipforward" is (#1) ip forwarding is needed any time you want packets to flow from 1 interface to another, so from tun to eth, eth to tun, tun to tun, etc etc. it must be enabled in the kernel AND allowed in the firewall, or (#2) please choose between !linipforward !winipforward !osxipforward and !fbsdipforward [12:57:48]
+2016-10-03 04:53:21	Zer0Pings	[12:58:16] !linnat [12:58:16]
+2016-10-03 04:53:21	@vpnHelper	[12:58:17] "linnat" is (#1) for a basic iptables NAT where 10.8.0.x is the vpn network: iptables -t nat -I POSTROUTING -s 10.8.0.0/24 -o eth0 -j MASQUERADE, or (#2) to choose what IP address to NAT as, you can use iptables -t nat -I POSTROUTING -o eth0 -j SNAT --to <IP ADDRESS>, or (#3) http://netfilter.org/documentation/HOWTO//NAT-HOWTO.html for more info [12:58:17]
+2016-10-03 04:53:21	Zer0Pings	[12:58:20] !openvznat [12:58:20]
+2016-10-03 04:53:21	Zer0Pings	[12:59:08] NAT fixed it seems [12:59:08]
+2016-10-03 04:53:21	Zer0Pings	[13:07:50] !openuke [13:07:50]
+2016-10-03 04:53:21	Zer0Pings	[13:07:54] !ovpnuke [13:07:54]
+2016-10-03 04:53:21	@vpnHelper	[13:07:55] "ovpnuke" is https://community.openvpn.net/openvpn/wiki/SecurityAnnouncement-97597e732b for info on CVE-2014-8104 which is a DOS that allows an authenticated client to crash an openvpn server running openvpn before 2.3.6 [13:07:55]
+2016-10-03 04:53:21	Zer0Pings	[13:07:57] !openvznat [13:07:57]
+2016-10-03 04:53:21	Zer0Pings	[13:23:57] !linipforward [13:23:57]
+2016-10-03 04:53:21	Zer0Pings	[13:23:57] !fbsdipforward [13:23:57]
+2016-10-03 04:53:21	Zer0Pings	[13:23:57] !fbsdnat [13:23:57]
+2016-10-03 04:53:21	@vpnHelper	[13:23:57] "linipforward" is (#1) echo 1 > /proc/sys/net/ipv4/ip_forward for a temp solution (til reboot) or set net.ipv4.ip_forward = 1 in sysctl.conf for perm solution, or (#2) chmod +x /etc/rc.d/rc.ip_forward for perm solution in slackware, or (#3) you also must allow forwarding in your forward chain in iptables. iptables -I FORWARD -i tun+ -j ACCEPT [13:23:57]
+2016-10-03 04:53:21	@vpnHelper	[13:23:58] "fbsdipforward" is is set gateway_enable="YES" in /etc/rc.conf to enable ip forwarding in freebsd [13:23:58]
+2016-10-03 04:53:21	@vpnHelper	[13:23:59] "fbsdnat" is nat on $ext_if from $vpn_network to any -> ($ext_if) (this is for PF) [13:23:59]
+2016-10-03 04:53:21	***	Playback Complete.
+2016-10-03 04:54:21	-->	Ryushin (~Ryushin@50-203-182-130-static.hfc.comcastbusiness.net) has joined #openvpn
+2016-10-03 04:54:23	--	Channel created on Sat, 25 Nov 2006 20:42:40
+2016-10-03 05:00:00		[04:54]
+2016-10-03 05:01:12	<--	luckman212 (~luckman21@unaffiliated/luckman212) has quit (Ping timeout: 244 seconds)
+2016-10-03 05:04:07	-->	luckman212 (~luckman21@unaffiliated/luckman212) has joined #openvpn
+2016-10-03 05:10:00		[05:04]
+2016-10-03 05:19:01	--	irc: disconnected from server
+2016-10-03 05:19:36	-->	alyptik_ (~alyptik@unaffiliated/alyptik) has joined #openvpn
+2016-10-03 05:19:36	--	Topic for #openvpn is "openvpn: OpenVPN Community Support Channel || PLEASE read entire topic || Current Release: 2.3.12 (23 Aug 2016) || First time? Use !welcome and !goal || Access-Server? /join #openvpn-as || Your problem is probably firewall. Really || TAP/bridging is almost always a bad idea || Vulninfo: !heartbleed !poodle !ovpnuke !sweet32 || Patience is a virtue"
+2016-10-03 05:19:36	--	Topic set by danhunsaker (sid145261@openvpn/corp/danhunsaker) on Fri, 23 Sep 2016 09:00:56
+2016-10-03 05:19:36	--	Channel #openvpn: 231 nicks (7 ops, 2 voices, 222 normals)
+2016-10-03 05:19:36	***	Buffer Playback...
+2016-10-03 05:19:36	dyce	[23:20:29] i see so a traceroute works from clients of the remote router to local router. ping doesn't because local route sees an IP from something that isn't 192.168.1.0/24 and doesn't know where to send the packet? [23:20:29]
+2016-10-03 05:19:36	dyce	[23:20:40] local router* [23:20:40]
+2016-10-03 05:19:36	@danhunsaker	[23:20:44] Indeed so. [23:20:44]
+2016-10-03 05:19:36	@danhunsaker	[23:21:07] That's the whole point of routes - telling routers (or servers, or whatever) where to send packtes. [23:21:07]
+2016-10-03 05:19:36	@danhunsaker	[23:21:10] *packets [23:21:10]
+2016-10-03 05:19:36	deadevilboy	[01:08:57] hi there [01:08:57]
+2016-10-03 05:19:36	deadevilboy	[01:10:48] !welcome [01:10:48]
+2016-10-03 05:19:36	@vpnHelper	[01:10:50] "welcome" is (#1) Start by stating your !goal, such as 'I would like to access the internet over my vpn', or (#2) New to IRC? see the link in !ask, or (#3) We may need you to !paste your !logs and !configs and maybe !interface to help you, or (#4) See !howto for beginners, or (#5) See !route for lans behind openvpn, or (#6) !redirect for sending inet traffic through the server, or (#7) Also [01:10:50]
+2016-10-03 05:19:36	@vpnHelper	[01:10:51] interesting: !man !/30 !topology !iporder !sample !forum !wiki !mitm, or (#8) Don't use 192.168.1.0/24 or 192.168.0.0/24 (too much potential for conflict), or (#9) And again, if you think you need !tap, you're probably wrong [01:10:51]
+2016-10-03 05:19:36	Zer0Pings	[11:33:20] !tcp-nodelay [11:33:20]
+2016-10-03 05:19:36	Zer0Pings	[11:33:22] !tcp [11:33:22]
+2016-10-03 05:19:36	@vpnHelper	[11:33:23] "tcp" is (#1) Sometimes you cannot avoid tunneling over tcp, but if you can avoid it, DO. http://sites.inka.de/~bigred/devel/tcp-tcp.html Why TCP Over TCP Is A Bad Idea., or (#2) http://www.openvpn.net/papers/BLUG-talk/14.html for a presentation by James Yonan (OpenVPN lead developer), or (#3) if you must use tcp, you likely want --tcp-nodelay [11:33:23]
+2016-10-03 05:19:36	Zer0Pings	[11:33:33] !--tcp-nodelay [11:33:33]
+2016-10-03 05:19:36	Zer0Pings	[12:11:40] well I'm facing a weird problem [12:11:40]
+2016-10-03 05:19:36	Zer0Pings	[12:11:47] I'm able to connect to the openvpn server [12:11:47]
+2016-10-03 05:19:36	Zer0Pings	[12:11:52] set my default gateways via pfsense [12:11:52]
+2016-10-03 05:19:37	Zer0Pings	[12:11:56] but I get 100% packet loss [12:11:56]
+2016-10-03 05:19:37	Zer0Pings	[12:12:15] and no incoming packets are sent to me [12:12:15]
+2016-10-03 05:19:37	Zer0Pings	[12:12:16] but all outgoing packets are sent [12:12:16]
+2016-10-03 05:19:37	Zer0Pings	[12:12:32] I've tried with and without tcp-nodelay the same result [12:12:32]
+2016-10-03 05:19:37	Zer0Pings	[12:13:04] 1 second, pasting configuration of server [12:13:04]
+2016-10-03 05:19:37	Zer0Pings	[12:16:36] https://bpaste.net/show/026d18df487a [12:16:36]
+2016-10-03 05:19:37	Zer0Pings	[12:18:57] this is very weird [12:18:57]
+2016-10-03 05:19:37	Zer0Pings	[12:21:54] Yet I can ping 10.8.0.1 [12:21:54]
+2016-10-03 05:19:37	Zer0Pings	[12:47:54] someone here at all? [12:47:54]
+2016-10-03 05:19:37	Zer0Pings	[12:49:36] Connection timing out [12:49:36]
+2016-10-03 05:19:37	@dazo	[12:51:04] !redirect [12:51:04]
+2016-10-03 05:19:37	@vpnHelper	[12:51:05] "redirect" is (#1) to make all inet traffic flow through the vpn, you will need --redirect-gateway (see !def1), as well as IP forwarding (see !ipforward) and NAT (see !nat) enabled on the server., or (#2) you may need to use a different dns server when redirecting gateway, see !dns or !pushdns, or (#3) if using ipv6 try: route-ipv6 2000::/3, or (#4) Handy troubleshooting flowchart: [12:51:05]
+2016-10-03 05:19:37	@vpnHelper	[12:51:06] http://pekster.sdf.org/misc/redirect.png [12:51:06]
+2016-10-03 05:19:37	Zer0Pings	[12:57:46] I did add it [12:57:46]
+2016-10-03 05:19:37	Zer0Pings	[12:57:46] Redirect-gateway is enabled and pushed [12:57:46]
+2016-10-03 05:19:37	Zer0Pings	[12:57:46] !nat [12:57:46]
+2016-10-03 05:19:37	Zer0Pings	[12:57:46] !ipforward [12:57:46]
+2016-10-03 05:19:37	@vpnHelper	[12:57:46] "nat" is (#1) http://openvpn.net/howto.html#redirect for an explanation of NAT as it applies to openvpn, or (#2) http://www.secure-computing.net/wiki/index.php/OpenVPN/FAQ#Traffic_forwarding_doesn.27t_work_when_using_client_specific_access_rules, or (#3) dont forget to turn on ip forwarding, or (#4) please choose between !linnat !openvznat !winnat and !fbsdnat for specific howto [12:57:46]
+2016-10-03 05:19:37	Zer0Pings	[12:57:47] IP forwarding is enabled too [12:57:47]
+2016-10-03 05:19:37	@vpnHelper	[12:57:48] "ipforward" is (#1) ip forwarding is needed any time you want packets to flow from 1 interface to another, so from tun to eth, eth to tun, tun to tun, etc etc. it must be enabled in the kernel AND allowed in the firewall, or (#2) please choose between !linipforward !winipforward !osxipforward and !fbsdipforward [12:57:48]
+2016-10-03 05:19:37	Zer0Pings	[12:58:16] !linnat [12:58:16]
+2016-10-03 05:19:37	@vpnHelper	[12:58:17] "linnat" is (#1) for a basic iptables NAT where 10.8.0.x is the vpn network: iptables -t nat -I POSTROUTING -s 10.8.0.0/24 -o eth0 -j MASQUERADE, or (#2) to choose what IP address to NAT as, you can use iptables -t nat -I POSTROUTING -o eth0 -j SNAT --to <IP ADDRESS>, or (#3) http://netfilter.org/documentation/HOWTO//NAT-HOWTO.html for more info [12:58:17]
+2016-10-03 05:19:37	Zer0Pings	[12:58:20] !openvznat [12:58:20]
+2016-10-03 05:19:37	Zer0Pings	[12:59:08] NAT fixed it seems [12:59:08]
+2016-10-03 05:19:37	Zer0Pings	[13:07:50] !openuke [13:07:50]
+2016-10-03 05:19:37	Zer0Pings	[13:07:54] !ovpnuke [13:07:54]
+2016-10-03 05:19:37	@vpnHelper	[13:07:55] "ovpnuke" is https://community.openvpn.net/openvpn/wiki/SecurityAnnouncement-97597e732b for info on CVE-2014-8104 which is a DOS that allows an authenticated client to crash an openvpn server running openvpn before 2.3.6 [13:07:55]
+2016-10-03 05:19:37	Zer0Pings	[13:07:57] !openvznat [13:07:57]
+2016-10-03 05:19:37	Zer0Pings	[13:23:57] !linipforward [13:23:57]
+2016-10-03 05:19:37	Zer0Pings	[13:23:57] !fbsdipforward [13:23:57]
+2016-10-03 05:19:37	Zer0Pings	[13:23:57] !fbsdnat [13:23:57]
+2016-10-03 05:19:37	@vpnHelper	[13:23:57] "linipforward" is (#1) echo 1 > /proc/sys/net/ipv4/ip_forward for a temp solution (til reboot) or set net.ipv4.ip_forward = 1 in sysctl.conf for perm solution, or (#2) chmod +x /etc/rc.d/rc.ip_forward for perm solution in slackware, or (#3) you also must allow forwarding in your forward chain in iptables. iptables -I FORWARD -i tun+ -j ACCEPT [13:23:57]
+2016-10-03 05:19:37	@vpnHelper	[13:23:58] "fbsdipforward" is is set gateway_enable="YES" in /etc/rc.conf to enable ip forwarding in freebsd [13:23:58]
+2016-10-03 05:19:37	@vpnHelper	[13:23:59] "fbsdnat" is nat on $ext_if from $vpn_network to any -> ($ext_if) (this is for PF) [13:23:59]
+2016-10-03 05:19:37	***	Playback Complete.
+2016-10-03 05:21:27	--	Channel created on Sat, 25 Nov 2006 20:42:40
+2016-10-03 05:27:00		[05:21]
+2016-10-03 05:27:13	-->	navidr (uid112413@gateway/web/irccloud.com/x-jknujvgpgbmgnemx) has joined #openvpn
+2016-10-03 05:33:00		[05:27]
+2016-10-03 05:34:16	-->	j12t (~j12t@c-50-131-55-96.hsd1.ca.comcast.net) has joined #openvpn
+2016-10-03 05:38:54	<--	j12t (~j12t@c-50-131-55-96.hsd1.ca.comcast.net) has quit (Ping timeout: 264 seconds)
+2016-10-03 05:44:00		[05:38]
+2016-10-03 05:46:16	-->	dcarmich (~dcarmich@c-73-22-88-72.hsd1.il.comcast.net) has joined #openvpn
+2016-10-03 05:52:00		[05:46]
+2016-10-03 05:54:35	<--	[0xAA] (~zenified@unaffiliated/thisiszenified) has quit (Ping timeout: 252 seconds)
+2016-10-03 05:55:26	-->	[0xAA] (~zenified@unaffiliated/thisiszenified) has joined #openvpn
+2016-10-03 05:56:26	-->	gffa (~unknown@unaffiliated/gffa) has joined #openvpn
+2016-10-03 05:56:30	<--	[0xAA] (~zenified@unaffiliated/thisiszenified) has quit (Max SendQ exceeded)
+2016-10-03 05:59:02	-->	j12t (~j12t@c-50-131-55-96.hsd1.ca.comcast.net) has joined #openvpn
+2016-10-03 06:01:13	<--	deadhead9 (~deadhead@162.253.128.130) has quit (Quit: Leaving)
+2016-10-03 06:02:27	-->	ws2k3 (freenodeyc@bnc.freegamehosting.eu) has joined #openvpn
+2016-10-03 06:02:27	<--	ws2k3 (freenodeyc@bnc.freegamehosting.eu) has left #openvpn
+2016-10-03 06:02:41	-->	ws2k3 (freenodeyc@bnc.freegamehosting.eu) has joined #openvpn
+2016-10-03 06:02:41	<--	ws2k3 (freenodeyc@bnc.freegamehosting.eu) has left #openvpn
+2016-10-03 06:02:45	-->	ws2k3 (freenodeyc@bnc.freegamehosting.eu) has joined #openvpn
+2016-10-03 06:02:45	<--	ws2k3 (freenodeyc@bnc.freegamehosting.eu) has left #openvpn
+2016-10-03 06:02:54	-->	ws2k3 (freenodeyc@bnc.freegamehosting.eu) has joined #openvpn
+2016-10-03 06:02:54	<--	ws2k3 (freenodeyc@bnc.freegamehosting.eu) has left #openvpn
+2016-10-03 06:04:08	-->	ws2k3 (freenodeyc@bnc.freegamehosting.eu) has joined #openvpn
+2016-10-03 06:04:36	ws2k3	im trying to use openvpn on windows 10 but when im connected with openvpn dns suddenly stops working anyone an idea what this could be?
+2016-10-03 06:10:00		[06:04]
+2016-10-03 06:13:11	<--	subzero79 (~subzero79@CPE-123-211-165-47.lnse3.woo.bigpond.net.au) has quit (Quit: Ping timeout (120 seconds))
+2016-10-03 06:18:27	-->	defsdoor (~andy@cpc8-sutt4-2-0-cust254.perr.cable.virginm.net) has joined #openvpn
+2016-10-03 06:18:32	-->	[0xAA] (~zenified@unaffiliated/thisiszenified) has joined #openvpn
+2016-10-03 06:20:14	--	You are now known as alyptik
+2016-10-03 06:20:15	<--	[0xAA] (~zenified@unaffiliated/thisiszenified) has quit (Read error: Connection reset by peer)
+2016-10-03 06:21:01	-->	[0xAA] (~zenified@unaffiliated/thisiszenified) has joined #openvpn
+2016-10-03 06:26:10	<--	luckman212 (~luckman21@unaffiliated/luckman212) has quit (Ping timeout: 240 seconds)
+2016-10-03 06:26:10		[06:26]
+2016-10-03 06:29:15	-->	luckman212 (~luckman21@unaffiliated/luckman212) has joined #openvpn
+2016-10-03 06:35:00		[06:29]
+2016-10-03 06:35:43	<--	Saxon1066 (~1066_Saxo@185.100.84.246) has quit (Quit: Leaving)
+2016-10-03 06:39:33	-->	SCHAPiE (~bla@unaffiliated/schaap137) has joined #openvpn
+2016-10-03 06:45:00		[06:39]
+2016-10-03 06:45:51	<--	fengshaun (~fengshaun@unaffiliated/fengshaun) has quit (Ping timeout: 272 seconds)
+2016-10-03 06:46:14	-->	fengshaun (~fengshaun@unaffiliated/fengshaun) has joined #openvpn
+2016-10-03 06:49:22	<--	Noldorin (~noldorin@unaffiliated/noldorin) has quit (Quit: Textual IRC Client: www.textualapp.com)
+2016-10-03 06:55:00		[06:49]
+2016-10-03 07:02:48	--	[0xAA] is now known as Zer0Pings
+2016-10-03 07:08:00		[07:02]
+2016-10-03 07:11:11	-->	Naeil (~nzoueidi@ubuntu/member/na3il) has joined #openvpn
+2016-10-03 07:17:00		[07:11]
+2016-10-03 07:22:36	<--	Naeil (~nzoueidi@ubuntu/member/na3il) has quit (Ping timeout: 272 seconds)
+2016-10-03 07:28:00		[07:22]
+2016-10-03 07:37:19	<--	Zer0Pings (~zenified@unaffiliated/thisiszenified) has quit (Ping timeout: 248 seconds)
+2016-10-03 07:38:25	-->	Noldorin (~noldorin@unaffiliated/noldorin) has joined #openvpn
+2016-10-03 07:44:00		[07:38]
+2016-10-03 07:47:45	-->	Oiu (9d19a23e@gateway/web/freenode/ip.157.25.162.62) has joined #openvpn
+2016-10-03 07:49:40	-->	wknapik (wknapik@gateway/vpn/mullvad/x-bbvujntbclanjdih) has joined #openvpn
+2016-10-03 07:49:40	wknapik	hi
+2016-10-03 07:52:44	Oiu	Hello, I have a vm on 10.0.20.0/24 subnet that connects to a vpn server. When the vm successfully connects I am no longer able to ping/access the vm from a client on a different subnet 10.0.0.0/24. Is there a way to allow such connections? I have tried iptables/ufw but nothing works. Dont know if that matters but when the vm connects it has a 10.3.1.x ip address
+2016-10-03 07:56:30	-->	[0xAA] (~zenified@unaffiliated/thisiszenified) has joined #openvpn
+2016-10-03 07:57:04	<--	[0xAA] (~zenified@unaffiliated/thisiszenified) has quit (Max SendQ exceeded)
+2016-10-03 07:57:18	wknapik	is it possible to combine --user nobody/--group nobody with --redirect-gateway def1 ? i'm not having any problems at --up and i'm using openvpn-plugin-down-root.so to handle my own teardown, but openvpn itself is having trouble removing routes at teardown. i'm getting "RTNETLINK answers: Operation not permitted." for all calls to iproute2.
+2016-10-03 07:58:39	wknapik	weirdly, all the routes (except the one to my --remote) do get removed before openvpn exits, despite multiple "operataion not permitted" error messages...
+2016-10-03 08:01:25	-->	[0xAA] (~zenified@unaffiliated/thisiszenified) has joined #openvpn
+2016-10-03 08:01:25		[08:01]
+2016-10-03 08:02:17	<--	[0xAA] (~zenified@unaffiliated/thisiszenified) has quit (Max SendQ exceeded)
+2016-10-03 08:03:39	-->	[0xAA] (~zenified@unaffiliated/thisiszenified) has joined #openvpn
+2016-10-03 08:04:26	-->	patcable (sid11336@lopsa/member/mrbucket) has joined #openvpn
+2016-10-03 08:04:45	<--	[0xAA] (~zenified@unaffiliated/thisiszenified) has quit (Max SendQ exceeded)
+2016-10-03 08:07:26	-->	[0xAA] (~zenified@unaffiliated/thisiszenified) has joined #openvpn
+2016-10-03 08:08:33	<--	[0xAA] (~zenified@unaffiliated/thisiszenified) has quit (Max SendQ exceeded)
+2016-10-03 08:09:56	-->	[0xAA] (~zenified@unaffiliated/thisiszenified) has joined #openvpn
+2016-10-03 08:11:19	--	[0xAA] is now known as Zer0Pings
+2016-10-03 08:17:00		[08:11]
+2016-10-03 08:19:02	<--	JackWinter (~jack@vodsl-9352.vo.lu) has quit (Quit: Konversation terminated!)
+2016-10-03 08:21:42	-->	JackWinter (~jack@vodsl-9352.vo.lu) has joined #openvpn
+2016-10-03 08:27:00		[08:21]
+2016-10-03 08:30:39	wknapik	?
+2016-10-03 08:31:41	wknapik	anyone ? i get that it's about the priveleges being dropped, but the man page doesn't say that --redirect-gateway can't work with --user/--group.
+2016-10-03 08:37:00		[08:31]
+2016-10-03 08:38:52	Zer0Pings	yes
+2016-10-03 08:39:06	Zer0Pings	if privs are dropped iptables won't work
+2016-10-03 08:40:04	Zer0Pings	I mean ip route 2
+2016-10-03 08:41:57	wknapik	that would be something to mention in the man page - either in the description of --redirect-gateway, or --user/--group...
+2016-10-03 08:42:02	<--	wknapik (wknapik@gateway/vpn/mullvad/x-bbvujntbclanjdih) has left #openvpn
+2016-10-03 08:48:00		[08:42]
+2016-10-03 08:51:54	<--	AlexRussia_ (~Alex@unaffiliated/alexrussia) has quit (Ping timeout: 272 seconds)
+2016-10-03 08:57:00		[08:51]
+2016-10-03 09:03:30	patcable	hey. i've got a root/server/client certs signed sha384 and am trying to use a tls-cipher setting of TLS-DHE-RSA-WITH-AES-256-GCM-SHA384:TLS-RSA-WITH-AES-256-GCM-SHA384
+2016-10-03 09:03:59	patcable	when I try connecting I get "SSL3_GET_CLIENT_HELLO:no shared cipher"
+2016-10-03 09:04:18	<--	irco (~irco@HSI-KBW-134-3-111-4.hsi14.kabel-badenwuerttemberg.de) has quit (Ping timeout: 265 seconds)
+2016-10-03 09:04:37	<--	mcp (~mcp@wolk-project.de) has quit (Quit: ZNC - http://znc.sourceforge.net)
+2016-10-03 09:04:52	<--	Zer0Pings (~zenified@unaffiliated/thisiszenified) has quit (Read error: Connection reset by peer)
+2016-10-03 09:05:40	-->	AlexRussia_ (~Alex@unaffiliated/alexrussia) has joined #openvpn
+2016-10-03 09:05:54	<--	shio (~shio@134.121.101.84.rev.sfr.net) has quit (Read error: Connection reset by peer)
+2016-10-03 09:11:00		[09:05]
+2016-10-03 09:11:15	-->	shio (~shio@134.121.101.84.rev.sfr.net) has joined #openvpn
+2016-10-03 09:17:00		[09:11]
+2016-10-03 09:20:49	-->	elastix (~Thunderbi@cpc85186-haye23-2-0-cust65.17-4.cable.virginm.net) has joined #openvpn
+2016-10-03 09:25:51	patcable	helps a ton if youre running the right version. oops.
+2016-10-03 09:31:00		[09:25]
+2016-10-03 09:34:24	<--	navidr (uid112413@gateway/web/irccloud.com/x-jknujvgpgbmgnemx) has quit (Quit: Connection closed for inactivity)
+2016-10-03 09:36:52	-->	huck5 (~huck5@184.70.2.30) has joined #openvpn
+2016-10-03 09:37:45	huck5	Hi there! I'm connected to a remote network with OpenVPN. I'm now trying, yet unable, to access a "local" (on the connected environment) IP Address from within my web browser.
+2016-10-03 09:38:04	huck5	Address is "http://192.168.1.5:8080/". Yet I'm getting no response from this.
+2016-10-03 09:38:14	huck5	Are there any special steps I need to take in order for this to work?
+2016-10-03 09:40:32	-->	oscuroaa (~huck5@184.70.2.30) has joined #openvpn
+2016-10-03 09:40:46	oscuroaa	I just disabled Windows Firewall, and am still getting the same results...
+2016-10-03 09:43:49	<--	huck5 (~huck5@184.70.2.30) has quit (Ping timeout: 272 seconds)
+2016-10-03 09:45:53	<--	Taftse|Mac (~taftse@unaffiliated/taftse) has quit (Quit: My Mac Mini has gone to sleep. ZZZzzz…)
+2016-10-03 09:48:08	<--	fp7 (~fp7@unaffiliated/fp7) has quit (Ping timeout: 264 seconds)
+2016-10-03 09:48:08		[09:48]
+2016-10-03 09:52:25	-->	fp7 (~fp7@unaffiliated/fp7) has joined #openvpn
+2016-10-03 09:58:00		[09:52]
+2016-10-03 09:59:17	-->	Taftse|Mac (~taftse@unaffiliated/taftse) has joined #openvpn
+2016-10-03 10:05:00		[09:59]
+2016-10-03 10:13:30	Oiu	Hello, I have a vm on 10.0.20.0/24 subnet that connects to a vpn server. When the vm successfully connects I am no longer able to ping/access the vm from a client on a different subnet 10.0.0.0/24. Is there a way to allow such connections? I have tried iptables/ufw but nothing works. Dont know if that matters but when the vm connects it has a 10.3.1.x ip address
+2016-10-03 10:19:00		[10:13]
+2016-10-03 10:22:01	-->	skywall (~skywall@184.69.55.242) has joined #openvpn
+2016-10-03 10:22:31	skywall	!welcome
+2016-10-03 10:22:31	@vpnHelper	"welcome" is (#1) Start by stating your !goal, such as 'I would like to access the internet over my vpn', or (#2) New to IRC? see the link in !ask, or (#3) We may need you to !paste your !logs and !configs and maybe !interface to help you, or (#4) See !howto for beginners, or (#5) See !route for lans behind openvpn, or (#6) !redirect for sending inet traffic through the server, or (#7) Also
+2016-10-03 10:22:31	@vpnHelper	interesting: !man !/30 !topology !iporder !sample !forum !wiki !mitm, or (#8) Don't use 192.168.1.0/24 or 192.168.0.0/24 (too much potential for conflict), or (#9) And again, if you think you need !tap, you're probably wrong
+2016-10-03 10:23:09	skywall	Anyone here have experience with the EasyRSA project?
+2016-10-03 10:27:59	-->	deadevilboy (bcfb518a@gateway/web/freenode/ip.188.251.81.138) has joined #openvpn
+2016-10-03 10:28:04	deadevilboy	hi there guys
+2016-10-03 10:30:21	-->	lujara (~lujara@unaffiliated/lujara) has joined #openvpn
+2016-10-03 10:32:01	lujara	I'm trying to restore my openvpn server after reinstalling the OS (Ubuntu server 16). Now my client gets the well-known "TLS handshake failed" error. The server does not have any firewall, all ports open, address, port and protocol are correct. Any ideas?
+2016-10-03 10:33:24	lujara	I "restored" by simply copying the server.conf, ca.crt, keyfile and cert
+2016-10-03 10:39:00		[10:33]
+2016-10-03 10:39:15	patcable	is there a place an openvpn roadmap exists? curious about when 2.4 will exist for ecdhe support for auth
+2016-10-03 10:43:04	@plaisthos	patcable: 2014 :)
+2016-10-03 10:43:23	patcable	oh exciting
+2016-10-03 10:43:33	patcable	lol
+2016-10-03 10:43:38	@plaisthos	to be honest, we try to get openvpn 2.4 out as soon as possible but it has been slow over the last months
+2016-10-03 10:43:57	@plaisthos	but we hope get an alpha/beta at the end of the year
+2016-10-03 10:44:42	deadevilboy	guys is it possible to make a reverse vpn connection and gain access to the client intranet?
+2016-10-03 10:48:48	<--	skywall (~skywall@184.69.55.242) has left #openvpn
+2016-10-03 10:54:00		[10:48]
+2016-10-03 10:57:11	<--	lujara (~lujara@unaffiliated/lujara) has quit (Read error: Connection reset by peer)
+2016-10-03 11:00:19	<--	ExoUNX (~textual@unaffiliated/exounx) has quit (Quit: I'm outta here)
+2016-10-03 11:01:08	<--	jamesaxl (~jamesaxl@176.98.129.195) has quit (Quit: Leaving)
+2016-10-03 11:06:08	-->	lujara (~lujara@unaffiliated/lujara) has joined #openvpn
+2016-10-03 11:06:08	<--	lujara (~lujara@unaffiliated/lujara) has left #openvpn
+2016-10-03 11:12:00		[11:06]
+2016-10-03 11:15:19	<--	Oiu (9d19a23e@gateway/web/freenode/ip.157.25.162.62) has quit (Quit: Page closed)
+2016-10-03 11:15:48	<--	deadevilboy (bcfb518a@gateway/web/freenode/ip.188.251.81.138) has quit (Ping timeout: 240 seconds)
+2016-10-03 11:21:00		[11:15]
+2016-10-03 11:22:12	-->	navidr (uid112413@gateway/web/irccloud.com/x-keywqyqjaxxltcbx) has joined #openvpn
+2016-10-03 11:28:00		[11:22]
+2016-10-03 11:33:30	<--	Taftse|Mac (~taftse@unaffiliated/taftse) has quit (Quit: My Mac Mini has gone to sleep. ZZZzzz…)
+2016-10-03 11:34:58	-->	Oiu (9d19a23e@gateway/web/freenode/ip.157.25.162.62) has joined #openvpn
+2016-10-03 11:35:18	Oiu	 Hello, I have a vm on 10.0.20.0/24 subnet that connects to a vpn server. When the vm successfully connects I am no longer able to ping/access the vm from a client on a different subnet 10.0.0.0/24. Is there a way to allow such connections?
+2016-10-03 11:39:55	-->	Taftse|Mac (~taftse@unaffiliated/taftse) has joined #openvpn
+2016-10-03 11:40:09	Oiu	I can still ping/connect if i remote to a different vm on the same subnet 10.0.20.0/24. So something is blocking connections between subnets, firewall is set to allow all.
+2016-10-03 11:40:14	<--	Taftse|Mac (~taftse@unaffiliated/taftse) has quit (Client Quit)
+2016-10-03 11:46:00		[11:40]
+2016-10-03 11:46:15	Oiu	anyone? please im sitting on this for 10 hours...
+2016-10-03 11:52:00		[11:46]
+2016-10-03 11:56:41	Oiu	omg, i think this worked: "ip route 10.0.0.0/24 via 10.0.20.1 dev eth0". Seems legit?
+2016-10-03 12:02:00		[11:56]
+2016-10-03 12:04:25	-->	Naeil (~nzoueidi@ubuntu/member/na3il) has joined #openvpn
+2016-10-03 12:07:19	Oiu	guys you talk to much, I cant keep up
+2016-10-03 12:13:00		[12:07]
+2016-10-03 12:13:51	<--	elastix (~Thunderbi@cpc85186-haye23-2-0-cust65.17-4.cable.virginm.net) has quit (Quit: elastix)
+2016-10-03 12:15:37	<--	oscuroaa (~huck5@184.70.2.30) has quit (Ping timeout: 264 seconds)
+2016-10-03 12:21:00		[12:15]
+2016-10-03 12:22:32	<--	gffa (~unknown@unaffiliated/gffa) has quit (Quit: sleep)
+2016-10-03 12:25:03	-->	ipx (~ipx@gateway/tor-sasl/ipx) has joined #openvpn
+2016-10-03 12:25:22	-->	j0hncart3r (05a9e231@gateway/web/freenode/ip.5.169.226.49) has joined #openvpn
+2016-10-03 12:30:23	<--	j0hncart3r (05a9e231@gateway/web/freenode/ip.5.169.226.49) has quit (Quit: Page closed)
+2016-10-03 12:36:00		[12:30]
+2016-10-03 12:39:24	<--	Naeil (~nzoueidi@ubuntu/member/na3il) has quit (Read error: Connection reset by peer)
+2016-10-03 12:45:00		[12:39]
+2016-10-03 12:45:46	<--	Envil (~envil@x55b5fc5f.dyn.telefonica.de) has quit (Remote host closed the connection)
+2016-10-03 12:47:41	-->	tave (~Octavio@pool-98-115-116-118.phlapa.fios.verizon.net) has joined #openvpn
+2016-10-03 12:50:11	<--	ipx (~ipx@gateway/tor-sasl/ipx) has quit (Quit: ipx)
+2016-10-03 12:56:00		[12:50]
+2016-10-03 12:59:13	<--	Noldorin (~noldorin@unaffiliated/noldorin) has quit (Ping timeout: 252 seconds)
+2016-10-03 13:01:24	-->	forgotten (~forgotten@unaffiliated/forgotten) has joined #openvpn
+2016-10-03 13:02:07	forgotten	anyone know how to make ovpn client install on server 2016.  the installer constantly reports it's already running, but there is no other openvpn anything running.
+2016-10-03 13:08:00		[13:02]
+2016-10-03 13:09:09	tave	I have 2 nic interfaces on my client and would like to have all encrypted traffic to go through the first nic to the second nic only. The second nic will be used as a gateway to systems a part of that subnet https://postimg.org/image/ao0ivtr0h/decce230/
+2016-10-03 13:09:09	@vpnHelper	Title: Sketch — Postimage.org (at postimg.org)
+2016-10-03 13:09:13	<--	defsdoor (~andy@cpc8-sutt4-2-0-cust254.perr.cable.virginm.net) has quit (Remote host closed the connection)
+2016-10-03 13:09:23	tave	how can I do something like this?
+2016-10-03 13:13:41	Oiu	go ask on forums, no one responds here
+2016-10-03 13:13:46	forgotten	tave first you need to make that diagram work without a vpn
+2016-10-03 13:14:15	<--	Oiu (9d19a23e@gateway/web/freenode/ip.157.25.162.62) has quit (Quit: Page closed)
+2016-10-03 13:19:20	-->	j0hncart3r (05a9e231@gateway/web/freenode/ip.5.169.226.49) has joined #openvpn
+2016-10-03 13:21:34	j0hncart3r	Hi guys, I'm following this guide (https://community.openvpn.net/openvpn/wiki/UnprivilegedUser) to start openvpn as unprivileged user. The process doesn't start since I get this error: ERROR: Cannot ioctl TUNSETIFF tun0: Operation not permitted (errno=1) .  Seems that I haven't the privilege to work on tun0 interface. Can someone help me please?
+2016-10-03 13:21:34	@vpnHelper	Title: UnprivilegedUser – OpenVPN Community (at community.openvpn.net)
+2016-10-03 13:22:50	tave	forgotten, howso?
+2016-10-03 13:22:55	tave	how so?
+2016-10-03 13:23:48	j0hncart3r	what?
+2016-10-03 13:23:48		[13:23]
+2016-10-03 13:26:47	forgotten	tave, get your NAT working, then connect the vpn up.  Unless it's completely private unless you establish the vpn.
+2016-10-03 13:27:35	forgotten	j0hncart3r: you have to have local admin on the machine. to change routing tables and such.
+2016-10-03 13:29:59	<--	NoSleeves (uid180082@gateway/web/irccloud.com/x-trodgeazwehucspc) has quit (Quit: Connection closed for inactivity)
+2016-10-03 13:35:00		[13:29]
+2016-10-03 13:35:10	j0hncart3r	forgotten, in the wiki there is a script to create the tun interface as openvpn user but it works only when executed by root.
+2016-10-03 13:37:31	-->	Hink (~Hink@unaffiliated/hink) has joined #openvpn
+2016-10-03 13:37:50	Hink	Are there any decent Community WebGUI projects?
+2016-10-03 13:38:31	Hink	I'm looking for one that integrates into the OpenVPN community edition, unlike access server.
+2016-10-03 13:39:49	<--	j0hncart3r (05a9e231@gateway/web/freenode/ip.5.169.226.49) has quit (Quit: Page closed)
+2016-10-03 13:45:00		[13:39]
+2016-10-03 13:46:15	-->	bluenemo (~bluenemo@unaffiliated/bluenemo) has joined #openvpn
+2016-10-03 13:47:36	<--	Ryushin (~Ryushin@50-203-182-130-static.hfc.comcastbusiness.net) has quit (Ping timeout: 252 seconds)
+2016-10-03 13:52:54	<--	SCHAPiE (~bla@unaffiliated/schaap137) has quit (Remote host closed the connection)
+2016-10-03 13:58:00		[13:52]
+2016-10-03 14:00:13	<--	tave (~Octavio@pool-98-115-116-118.phlapa.fios.verizon.net) has quit (Ping timeout: 244 seconds)
+2016-10-03 14:06:00		[14:00]
+2016-10-03 14:15:50	<--	fp7 (~fp7@unaffiliated/fp7) has quit (Quit: .)
+2016-10-03 14:21:00		[14:15]
+2016-10-03 14:35:04	@danhunsaker	Hink: Not that I know of.
+2016-10-03 14:41:00		[14:35]

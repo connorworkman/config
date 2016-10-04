@@ -16960,3 +16960,200 @@
 2016-10-03 03:52:21	-->	hwygeek (~hwygeek@75-166-106-15.hlrn.qwest.net) has joined #bash
 2016-10-03 03:53:19	-->	AaronMT (~textual@2607:fea8:3ca0:2:9dca:b026:ffbb:f869) has joined #bash
 2016-10-03 03:53:21	<--	AaronMT (~textual@2607:fea8:3ca0:2:9dca:b026:ffbb:f869) has quit (Client Quit)
+2016-10-03 03:53:54	<--	BobbyJr_ (~BobbyJr@robsworld.plus.com) has quit (Ping timeout: 264 seconds)
+2016-10-03 03:53:55	-->	AaronMT (~textual@2607:fea8:3ca0:2:9dca:b026:ffbb:f869) has joined #bash
+2016-10-03 03:53:57	-->	tristanp (~tristanp@c-73-97-112-36.hsd1.wa.comcast.net) has joined #bash
+2016-10-03 03:54:34	-->	BobbyJr_ (~BobbyJr@212.159.79.241) has joined #bash
+2016-10-03 03:54:58	-->	Tanta (~tanta@50-201-37-70-static.hfc.comcastbusiness.net) has joined #bash
+2016-10-03 03:55:03	-->	JeanCarloMachado (~jean@189.35.201.232) has joined #bash
+2016-10-03 03:55:36	-->	TyrfingMjolnir (~Tyrfing@62.92.82.250) has joined #bash
+2016-10-03 03:55:44	TyrfingMjolnir	How would I make a conditional in a curl pipe? using crontab? curl "http://1337x.to/popular-tv" | grep -i luke | wc -l | if [not 0] | mail -s "Luke is availble" user@domain.tld as example
+2016-10-03 03:56:41	alyptik	for what like periodic or one shot?
+2016-10-03 03:56:46	dreisner	gebruiker: if you want to selectively apply a patch, it'll be easiest to apply it to a git repo and revert the bits you don't want.
+2016-10-03 03:56:46		[03:56]
+2016-10-03 03:56:58	dreisner	gebruiker: parsing a patch will end poorly for you.
+2016-10-03 03:57:15	geirha	curl "http://1337x.to/popular-tv" | grep -qi luke && mail -s "Luke is availble" user@domain.tld as example
+2016-10-03 03:57:53	<--	BobbyJr (~BobbyJr@robsworld.plus.com) has quit (Ping timeout: 272 seconds)
+2016-10-03 03:58:25	john_s	thanks, that did it. Well, I just used eval. I'm always afraid eval will do weird things with existing quotes but I guess that's not the case?
+2016-10-03 03:58:41	alyptik	weird like what
+2016-10-03 03:58:45	<--	Al3xG0 (~unix@unaffiliated/al3xg0) has quit (Ping timeout: 265 seconds)
+2016-10-03 03:58:56	-->	[1]tom99 (~tom99@38.120.10.99) has joined #bash
+2016-10-03 03:58:59	-->	Al3xG0 (~unix@177.159.139.108) has joined #bash
+2016-10-03 03:58:59	<--	Al3xG0 (~unix@177.159.139.108) has quit (Changing host)
+2016-10-03 03:58:59	-->	Al3xG0 (~unix@unaffiliated/al3xg0) has joined #bash
+2016-10-03 03:59:17	geirha	You read faq 50 yet still ended up with eval?
+2016-10-03 03:59:19	-->	khanman (khanydapoo@unaffiliated/khanman) has joined #bash
+2016-10-03 03:59:38	osse	TyrfingMjolnir: curl "http://1337x.to/popular-tv" | if grep -q -i luke; then mail -s ...; fi
+2016-10-03 03:59:41	TyrfingMjolnir	grep -qi gives an error
+2016-10-03 04:00:15	geirha	I doubt that
+2016-10-03 04:00:44	TyrfingMjolnir	When q is used I get: curl: (23) Failed writing body (0 != 4380)
+2016-10-03 04:01:02	<--	Ishaq (~Ishaq@budgetnode/management) has quit (Excess Flood)
+2016-10-03 04:01:06	alyptik	can you pipe to an if?
+2016-10-03 04:01:13	<--	tom99 (~tom99@38.120.10.99) has quit (Ping timeout: 248 seconds)
+2016-10-03 04:01:13	geirha	TyrfingMjolnir: that's curl failing, not grep
+2016-10-03 04:01:14	--	[1]tom99 is now known as tom99
+2016-10-03 04:01:21	<--	harryh (~night-owl@69.61.174.133) has quit (Read error: Connection reset by peer)
+2016-10-03 04:01:30	TyrfingMjolnir	curl fails only when -q option is used with grep?
+2016-10-03 04:01:38	geirha	grep -q causes grep to exit as soon as the first match is found, because it doesn't need to look any further at that point
+2016-10-03 04:01:39	osse	maybe curl doesn't like it when grep quits early and the pipe is closed
+2016-10-03 04:02:01	geirha	and curl's output is closed before curl is done writing
+2016-10-03 04:02:01	TyrfingMjolnir	That's no good
+2016-10-03 04:02:10	-->	}ls{ (~kalle@p5DCEC3B8.dip0.t-ipconnect.de) has joined #bash
+2016-10-03 04:02:11	<--	}ls{ (~kalle@p5DCEC3B8.dip0.t-ipconnect.de) has quit (Changing host)
+2016-10-03 04:02:11	-->	}ls{ (~kalle@unaffiliated/ls/x-8089558) has joined #bash
+2016-10-03 04:02:21	<--	grettke (~textual@cpe-65-28-162-236.wi.res.rr.com) has quit (Quit: Textual IRC Client: www.textualapp.com)
+2016-10-03 04:02:26	geirha	why not?
+2016-10-03 04:02:37	john_s	Idk, like if you pass quoted strings (such as a directory path with spaces in it, or something) that it will remove the quotes as it passes the variable.
+2016-10-03 04:02:47	john_s	apparently that doesn't happen.
+2016-10-03 04:02:49	osse	curl ... | awk '{exit}' works just fine here
+2016-10-03 04:03:05	TyrfingMjolnir	This works
+2016-10-03 04:03:06	TyrfingMjolnir	curl -s "http://1337x.to/popular-tv" | if grep -q -i luke; then echo "avail"; fi
+2016-10-03 04:03:09	geirha	it only happens if the output is large enough
+2016-10-03 04:03:15	TyrfingMjolnir	Using positive testing
+2016-10-03 04:03:32	osse	prints "avail" here
+2016-10-03 04:03:35	alyptik	you could use grep -q -i 'luke' <(curl "http://1337x.to/popular-tv") && foor || bar
+2016-10-03 04:03:41	-->	Ishaq (~Ishaq@budgetnode/management) has joined #bash
+2016-10-03 04:04:01	TyrfingMjolnir	Thanks
+2016-10-03 04:04:01	TyrfingMjolnir	!
+2016-10-03 04:04:33	<--	Limes_ (~limes@132.185.153.5) has quit
+2016-10-03 04:04:42	-->	Limes_ (~limes@132.185.153.5) has joined #bash
+2016-10-03 04:05:08	<--	jmpp (~jmpp@opendarwin/developer/jmpp) has quit (Read error: Connection reset by peer)
+2016-10-03 04:05:27	-->	WayToDoor (~milk.bott@193.55.29.169) has joined #bash
+2016-10-03 04:05:36	-->	jmpp (~jmpp@opendarwin/developer/jmpp) has joined #bash
+2016-10-03 04:05:48	-->	malcon (~malcon@104.132.34.73) has joined #bash
+2016-10-03 04:06:14	osse	Netflix doesn't cost *that* much
+2016-10-03 04:06:18	osse	:po
+2016-10-03 04:06:29	john_s	geirha: yes point 3 mentioned eval ping -q "${count:+'-c' \"\$count\"}" '"$HOSTNAME"' as a way to do it; but I don't really need the ${xx:+ } part.
+2016-10-03 04:06:53	john_s	point 5 mentions you can use arrays.
+2016-10-03 04:07:29	-->	harryh (~night-owl@69.61.174.133) has joined #bash
+2016-10-03 04:08:01	-->	aldarsior (~shahar.go@pool-100-15-86-110.washdc.fios.verizon.net) has joined #bash
+2016-10-03 04:09:10	<--	Limes_ (~limes@132.185.153.5) has quit (Remote host closed the connection)
+2016-10-03 04:09:22	-->	Limes_ (~limes@132.185.153.5) has joined #bash
+2016-10-03 04:09:31	<--	Limes_ (~limes@132.185.153.5) has quit (Remote host closed the connection)
+2016-10-03 04:09:41	-->	Limes_ (~limes@132.185.153.5) has joined #bash
+2016-10-03 04:10:20	-->	hahuang62 (~hahuang65@c-50-136-152-183.hsd1.ca.comcast.net) has joined #bash
+2016-10-03 04:11:02	-->	FatDarrel (~FatDarrel@104-244-25-154.PUBLIC.monkeybrains.net) has joined #bash
+2016-10-03 04:11:10	geirha	oh right, that mess with the odd quoting behavior of ${param:+...}
+2016-10-03 04:13:05	<--	nixvin (~nixvin@197.232.18.245) has quit (Ping timeout: 272 seconds)
+2016-10-03 04:13:05		[04:13]
+2016-10-03 04:13:06	-->	mmazing (~mmazing@unaffiliated/mmazing) has joined #bash
+2016-10-03 04:13:21	TyrfingMjolnir	Arrays? In BASh? How?
+2016-10-03 04:13:53	osse	!faq array > TyrfingMjolnir
+2016-10-03 04:13:53	greybot	TyrfingMjolnir: http://mywiki.wooledge.org/BashFAQ/005 -- How can I use array variables?
+2016-10-03 04:14:21	<--	Limes_ (~limes@132.185.153.5) has quit (Ping timeout: 272 seconds)
+2016-10-03 04:15:30	<--	hahuang62 (~hahuang65@c-50-136-152-183.hsd1.ca.comcast.net) has quit (Ping timeout: 264 seconds)
+2016-10-03 04:16:00	geirha	Arrays in bash is a fairly new feature. Only added around 20 years ago
+2016-10-03 04:16:11	-->	golya (5b52643b@gateway/web/cgi-irc/kiwiirc.com/ip.91.82.100.59) has joined #bash
+2016-10-03 04:16:51	alyptik	 associative arrays would be cool to have in bash
+2016-10-03 04:17:15	osse	yes it would
+2016-10-03 04:17:19	-->	Limes_ (~limes@132.185.153.5) has joined #bash
+2016-10-03 04:17:21	osse	maybe something like:
+2016-10-03 04:17:48	<--	lstieb_ (~lstieb@80-110-32-172.static.upcbusiness.at) has quit (Ping timeout: 244 seconds)
+2016-10-03 04:17:49	<--	Limes_ (~limes@132.185.153.5) has quit (Remote host closed the connection)
+2016-10-03 04:17:50	osse	# declare -A my_assoc; my_assoc[alyptik]="it works"; echo "${my_assoc[alyptik]}"
+2016-10-03 04:17:51	shbot	osse: it works
+2016-10-03 04:17:54	osse	:O
+2016-10-03 04:18:04	alyptik	oh snap
+2016-10-03 04:18:14	 *	osse falls backwards
+2016-10-03 04:18:20	-->	Limes_ (~limes@132.185.153.5) has joined #bash
+2016-10-03 04:19:03	golya	How can I list and iterate all files and directories, where I can differentiate between files and directories in one go?
+2016-10-03 04:19:04	-->	BobbyJr (~BobbyJr@robsworld.plus.com) has joined #bash
+2016-10-03 04:19:08	golya	find . -mindepth 1 -maxdepth 1
+2016-10-03 04:19:28	golya	it is almost ok, but I cannot tell, wheter an item is a directory or file
+2016-10-03 04:19:28	geirha	for file in ./*; do
+2016-10-03 04:19:58	osse	for f in *; do if [[ -d $f ]]; then echo "$f is a dir"; else echo "it's something else (prolly a file)"; fi; done
+2016-10-03 04:19:58	geirha	if [[ -f $file ]]; then ...
+2016-10-03 04:20:31	golya	just need to return that info to remote. So 2 finds seems to be quicker then.
+2016-10-03 04:20:40	<--	Danny_B (~danny_b@wikimedia/Danny-B.) has left #bash ("The future is in small hands.")
+2016-10-03 04:20:46	osse	Very seldom do I remember both the "do" and the "then" keywords when writing code directly in my irc client. I will remember this day forever.
+2016-10-03 04:20:46	<--	Laif (~mp@unaffiliated/laif) has quit (Quit: Leaving)
+2016-10-03 04:21:00	geirha	return info to remote? this sounds broken from the start
+2016-10-03 04:21:29	<--	BobbyJr_ (~BobbyJr@212.159.79.241) has quit (Ping timeout: 248 seconds)
+2016-10-03 04:21:34	twkm	geirha: heh.
+2016-10-03 04:21:51	-->	semeion (~semeion@unaffiliated/semeion) has joined #bash
+2016-10-03 04:22:01	-->	ayogi (~yogesh@182.75.130.222) has joined #bash
+2016-10-03 04:22:07	golya	geirha: Yep, it is in a docker container in a remote host
+2016-10-03 04:22:20	geirha	Ah, of course it is
+2016-10-03 04:22:25	geirha	!b29
+2016-10-03 04:22:26	greybot	It's always git. or python virtualenv, or docker, puppet, ansible, Amazon s3, or mysql. ALWAYS.
+2016-10-03 04:22:27	twkm	ahh, fucked again by dorker.
+2016-10-03 04:22:47	-->	rafi2 (Thunderbir@nat/redhat/x-beknknhqgcnpaywy) has joined #bash
+2016-10-03 04:22:58	golya	cannot change that #notmyfault
+2016-10-03 04:23:03	<--	kepler (~kepler@pool-96-236-133-191.pitbpa.fios.verizon.net) has quit (Changing host)
+2016-10-03 04:23:03	-->	kepler (~kepler@unaffiliated/kepler) has joined #bash
+2016-10-03 04:23:42	john_s	so reading faq 48 and thinking of ways to pass data to eval while handling all the edge cases today LOL\
+2016-10-03 04:24:03	osse	what does docker have to do with it? you can use if to check whether a pathname is a dir or file. how to return the info is a different problem
+2016-10-03 04:24:09	<--	rafi (Thunderbir@nat/redhat/x-ypcapcnvowrqhwyq) has quit (Ping timeout: 248 seconds)
+2016-10-03 04:24:10	--	rafi2 is now known as rafi
+2016-10-03 04:24:17	<--	Kont (~Kont@unaffiliated/kont) has quit (Ping timeout: 252 seconds)
+2016-10-03 04:24:26	osse	or maybe when docker is used "if" doesn't work properly, but I doubt that.
+2016-10-03 04:24:35	twkm	"return to" is the issue.
+2016-10-03 04:25:03	geirha	The CRs will be a nice surprise for later
+2016-10-03 04:25:03	golya	just reacted to geirha
+2016-10-03 04:25:06	osse	But it's not the issue that was asked about
+2016-10-03 04:25:16	golya	yes, it is irrelevant
+2016-10-03 04:25:22	<--	ayogi (~yogesh@182.75.130.222) has quit (Client Quit)
+2016-10-03 04:25:27	twkm	if i were seduced by that dark-side i'd "return" directories with a trailing /.
+2016-10-03 04:25:31	-->	ayogi (~yogesh@182.75.130.222) has joined #bash
+2016-10-03 04:25:46	-->	troulouliou_div2 (~troulouli@unaffiliated/troulouliou-div2/x-0271439) has joined #bash
+2016-10-03 04:25:51	golya	I guess I will run 2 different scripts on remote, or I also thought about twkm's blackmagic
+2016-10-03 04:26:01	<--	ayogi (~yogesh@182.75.130.222) has quit (Read error: Connection reset by peer)
+2016-10-03 04:26:32	golya	that woud be some find ...| sed 's#$#/#';find ...
+2016-10-03 04:27:02	twkm	*gag*
+2016-10-03 04:27:07	<--	Sparklyballs (~sparklyba@unaffiliated/sparklyballs) has quit (Quit: Outta here folks....)
+2016-10-03 04:28:48	-->	ayogi (~yogesh@182.75.130.222) has joined #bash
+2016-10-03 04:28:48		[04:28]
+2016-10-03 04:29:27	-->	shishir-a412ed (shishir-a4@nat/redhat/x-wkigilydbewvyobs) has joined #bash
+2016-10-03 04:30:09	Tanta	the key is to join a company before it's made dumb decisions like using Docker, and having enough authority to veto that proposal
+2016-10-03 04:30:12	-->	Sparklyballs (~sparklyba@unaffiliated/sparklyballs) has joined #bash
+2016-10-03 04:30:47	-->	whippythellama (~whippythe@cpe-2606-A000-4FCA-D900-EDC4-A75-3AB6-DC0B.dyn6.twc.com) has joined #bash
+2016-10-03 04:31:52	<--	Limes_ (~limes@132.185.153.5) has quit (Remote host closed the connection)
+2016-10-03 04:32:01	golya	ok, I'll do that rather than writing a 2/line bash script for them instead :)
+2016-10-03 04:32:12	-->	lstieb_ (~lstieb@80-110-32-172.static.upcbusiness.at) has joined #bash
+2016-10-03 04:32:19	-->	Limes_ (~limes@132.185.153.5) has joined #bash
+2016-10-03 04:33:33	sopparus	can I sed my way out of this? string is either "globalassets/img/stuff" or "/globalassets/img/stuff" and I want end result to be "img/stuff"
+2016-10-03 04:33:57	<--	malcon (~malcon@104.132.34.73) has quit (Quit: My Mac has gone to sleep. ZZZzzz…)
+2016-10-03 04:34:01	golya	use another separator
+2016-10-03 04:34:12	golya	sed 's#a/b/c#d/e/f#'
+2016-10-03 04:34:38	<--	Limes_ (~limes@132.185.153.5) has quit (Read error: Connection reset by peer)
+2016-10-03 04:35:07	osse	sopparus: what are the unknown parts?  end_result="img/stuff"
+2016-10-03 04:35:26	sopparus	s#globalassets## I did like that, but breaks if / is before globalassets ofcourse
+2016-10-03 04:35:31	<--	FatDarrel (~FatDarrel@104-244-25-154.PUBLIC.monkeybrains.net) has quit (Quit: FatDarrel)
+2016-10-03 04:35:35	sopparus	osse if line starts with / or not
+2016-10-03 04:35:44	-->	az (uaa@gateway/shell/panicbnc/x-yvrajswexoibxmcw) has joined #bash
+2016-10-03 04:35:49	-->	Blackpajamas (~Blackpaja@mail.cria.ca) has joined #bash
+2016-10-03 04:35:59	alyptik	sed 's@[/]?[a-z]**/\(.*/.*\)@\1@'
+2016-10-03 04:36:02	john_s	any difference between Docker and LXC in that regard?
+2016-10-03 04:36:05	osse	sopparus: there must be something else... why not just assign "img/stuff" to a string, then?
+2016-10-03 04:36:07	alyptik	shit too many *
+2016-10-03 04:36:32	alyptik	sed 's@[/]?[a-z]*/\(.*/.*\)@\1@' 
+2016-10-03 04:36:33	sopparus	osse, yeah after img/stuff there can be plenty of stuff
+2016-10-03 04:36:43	az	hi, I've script stuck after fi. I want to process a command in a following line. how do I do that?
+2016-10-03 04:36:51	sopparus	but I want whatever is in the string after "globalassets/"
+2016-10-03 04:36:52	<--	steevo (~steevo@64.22.231.226) has quit (Quit: Leaving)
+2016-10-03 04:37:20	osse	# str='/globalassets/img/stuff/esfgadrtgharegraeg'; stripped=${str#*globalassets/}; echo "$stripped"
+2016-10-03 04:37:21	shbot	osse: img/stuff/esfgadrtgharegraeg
+2016-10-03 04:37:25	osse	Hooray!
+2016-10-03 04:37:45	<--	troulouliou_div2 (~troulouli@unaffiliated/troulouliou-div2/x-0271439) has quit (Ping timeout: 276 seconds)
+2016-10-03 04:38:07	john_s	az: there should be no issue if the fi correctly closes the if?
+2016-10-03 04:38:33	sopparus	thanks alot osse
+2016-10-03 04:39:09	az	john_s, yeah it closes the if but I see it stuck then. after finishing the rsync command
+2016-10-03 04:39:17	twkm	sopparus: as an aside, ##sed.
+2016-10-03 04:40:11	-->	enet (~enet@87.229.213.94) has joined #bash
+2016-10-03 04:40:19	john_s	az: so maybe you have unclosed quotes or something like that.
+2016-10-03 04:40:40	<--	golya (5b52643b@gateway/web/cgi-irc/kiwiirc.com/ip.91.82.100.59) has quit (Quit: http://www.kiwiirc.com/ - A hand crafted IRC client)
+2016-10-03 04:40:45	az	mmm, will check. thanks
+2016-10-03 04:40:53	-->	jottr_ (~jottr@unaffiliated/jottr) has joined #bash
+2016-10-03 04:41:19	-->	malcon (~malcon@104.132.34.77) has joined #bash
+2016-10-03 04:42:22	<--	ayogi (~yogesh@182.75.130.222) has quit (Remote host closed the connection)
+2016-10-03 04:43:07	<--	tdy (~tdy@unaffiliated/tdy) has quit (Ping timeout: 244 seconds)
+2016-10-03 04:43:27	<--	cowl (~sean@128.163.8.25) has left #bash ("WeeChat 1.4")
+2016-10-03 04:44:01	<--	nobusada (bd393af7@gateway/web/freenode/ip.189.57.58.247) has left #bash
+2016-10-03 04:44:01		[04:44]
+2016-10-03 04:45:06	-->	ash_workz (~chatzilla@50-243-5-153-static.hfc.comcastbusiness.net) has joined #bash
+2016-10-03 04:45:42	<--	jottr_ (~jottr@unaffiliated/jottr) has quit (Ping timeout: 244 seconds)
+2016-10-03 04:46:25	nadim_	Hi, can I push, from a script, the text for the next command?
+2016-10-03 04:46:50	<--	jass93 (~ifillj@rrcs-24-39-217-250.nys.biz.rr.com) has quit (Ping timeout: 252 seconds)
+2016-10-03 04:47:03	-->	conino (~conino_@2001:978:2300:30a:d779:39dc:45a0:9df0) has joined #bash
+2016-10-03 04:47:17	twkm	depends.  how does the next command obtain text?  (e.g., stdin or argument(s), or something else)
+2016-10-03 04:47:56	--	irc: disconnected from server

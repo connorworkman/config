@@ -14598,3 +14598,774 @@
 2016-10-02 20:03:57	-->	MyCuriosity (~MyCuriosi@unaffiliated/mycuriosity) has joined ##asm
 2016-10-02 20:09:00		[20:03]
 2016-10-02 20:12:51	--	irc: disconnected from server
+2016-10-03 04:53:17	-->	alyptik_ (~alyptik@unaffiliated/alyptik) has joined ##asm
+2016-10-03 04:53:17		[04:53]
+2016-10-03 04:53:17	--	Topic for ##asm is "Assembly programming channel, all architectures welcome (please specify). Don't ask to ask! Use a pastebin if appropriate! Check your manuals! *** AT&T vs Intel flamers will be banned."
+2016-10-03 04:53:17	--	Topic set by Jester01 (~Jester01@62.100.244.69) on Fri, 30 Sep 2016 06:54:51
+2016-10-03 04:53:17	--	Channel ##asm: 294 nicks (0 ops, 0 voices, 294 normals)
+2016-10-03 04:53:17	***	Buffer Playback...
+2016-10-03 04:53:17	meowrobot	[02:54:59] well, to put it simply, the stack pointer is a pointer to the most recent item on your stack, whereas the base pointer (also called frame pointer) is a pointer to the top of your current stack frame, where (usually) you see references to parameters and local variables in an easier-to-read way than rsp+very_high_number [02:54:59]
+2016-10-03 04:53:17	meowrobot	[02:55:21] any more than that goes into calling conventions and other things you're better reading documentation on [02:55:21]
+2016-10-03 04:53:17	AverageJ0e	[02:55:51] buffer overflows. seems thats why anyone bothers with asm anymore [02:55:51]
+2016-10-03 04:53:17	AverageJ0e	[02:56:08] nevermind cheating at video games or making software free, its always BOF's [02:56:08]
+2016-10-03 04:53:17	johnnybgood	[02:56:17] so you set the base pointer to allocate memory [02:56:17]
+2016-10-03 04:53:17	meowrobot	[02:56:41] the stack pointer you mean [02:56:41]
+2016-10-03 04:53:17	johnnybgood	[02:56:45] then you subtract from its adress to write variables [02:56:45]
+2016-10-03 04:53:17	johnnybgood	[02:56:55] ah ok yeah stack pointer [02:56:55]
+2016-10-03 04:53:17	meowrobot	[02:57:11] also make sure you don't confuse allocating memory via stack versus heap [02:57:11]
+2016-10-03 04:53:17	meowrobot	[02:57:17] heap is a totally different field [02:57:17]
+2016-10-03 04:53:17	johnnybgood	[02:57:44] how do you write to the heap or allocate a heap [02:57:44]
+2016-10-03 04:53:17	meowrobot	[02:57:56] that requires a lot of reading :p [02:57:56]
+2016-10-03 04:53:17	AverageJ0e	[03:00:30] I use HeapAlloc https://msdn.microsoft.com/en-us/library/windows/desktop/aa366597(v=vs.85).aspx [03:00:30]
+2016-10-03 04:53:17	johnnybgood	[03:03:55] movl	$10, -8(%rbp) is move the opcode to write a number from the register to ram address? [03:03:55]
+2016-10-03 04:53:17	johnnybgood	[03:04:17] or start of ram adress [03:04:17]
+2016-10-03 04:53:17	meowrobot	[03:09:59] $10 is an immediate value, that is, a number hardcoded to be copied into the destination, whereas -8(%rbp) dereferences (rbp-8) into a memory location [03:09:59]
+2016-10-03 04:53:17	meowrobot	[03:11:18] if you're new to reading asm i'd recommend looking at intel syntax if you can.  at&t syntax can be strange to parse sometimes, but that's my opinion. [03:11:18]
+2016-10-03 04:53:17	johnnybgood	[03:12:26] ok thanks [03:12:26]
+2016-10-03 04:53:17	johnnybgood	[03:12:30] makes sense now [03:12:30]
+2016-10-03 04:53:17	johnnybgood	[03:13:04] i know ill have to remember that but i can kinda figure it out by looking at the code how its going [03:13:04]
+2016-10-03 04:53:17	johnnybgood	[03:15:06] if you can can you explain what movl	$10, -8(%rbp) is actually looking like in the ram [03:15:06]
+2016-10-03 04:53:17	meowrobot	[03:20:07] looking like in the ram?  do you mean the raw binary code? [03:20:07]
+2016-10-03 04:53:17	meowrobot	[03:20:35] http://x86.renejeschke.de/ is a good site for that [03:20:35]
+2016-10-03 04:53:17	johnnybgood	[03:21:00] or maybe just what does the number for a register look like in memory [03:21:00]
+2016-10-03 04:53:17	johnnybgood	[03:21:16] what is the number for an opcode to know its using a register [03:21:16]
+2016-10-03 04:53:17	meowrobot	[03:21:59] it's not really a single number [03:21:59]
+2016-10-03 04:53:17	johnnybgood	[03:22:04] oh [03:22:04]
+2016-10-03 04:53:17	johnnybgood	[03:22:12] what is it then [03:22:12]
+2016-10-03 04:53:17	meowrobot	[03:22:34] it could be encoded in a lot of ways, like the scale-index-base byte [03:22:34]
+2016-10-03 04:53:17	meowrobot	[03:22:44] that's another thing that'd require reading [03:22:44]
+2016-10-03 04:53:17	johnnybgood	[03:24:01] oh snap whats a control register [03:24:01]
+2016-10-03 04:53:17	zid	[03:24:10] they... control things [03:24:10]
+2016-10-03 04:53:17	zid	[03:24:13] rather than being general purpose [03:24:13]
+2016-10-03 04:53:17	zid	[03:24:37] turning cpu features on or off, mainly [03:24:37]
+2016-10-03 04:53:17	johnnybgood	[03:24:59] ok [03:24:59]
+2016-10-03 04:53:17	johnnybgood	[03:25:21] Move r/m16 to r16. what does r/m mean register or ram? [03:25:21]
+2016-10-03 04:53:17	zid	[03:25:31] why don't you just read the manual [03:25:31]
+2016-10-03 04:53:17	zid	[03:25:42] literally every question you could have is answered in it, mainly just in the preface [03:25:42]
+2016-10-03 04:53:17	meowrobot	[03:26:07] r/m means register or memory, 8/16/32/64 means the bit width [03:26:07]
+2016-10-03 04:53:17	meowrobot	[03:26:16] and yea what zid said [03:26:16]
+2016-10-03 04:53:17	johnnybgood	[03:26:22] ok thanks meowrobot [03:26:22]
+2016-10-03 04:53:17	johnnybgood	[03:26:50] ok thanks zid [03:26:50]
+2016-10-03 04:53:17	meowrobot	[03:26:58] things like control registers are very architectural, which you'll naturally get into the more you learn/experiment [03:26:58]
+2016-10-03 04:53:17	johnnybgood	[04:49:22] meowrobot, is there a way to see a programs assem code during execution or the hex [04:49:22]
+2016-10-03 04:53:17	johnnybgood	[04:49:30] on linux [04:49:30]
+2016-10-03 04:53:17	meowrobot	[04:51:14] you'd need to learn how to debug [04:51:14]
+2016-10-03 04:53:17	meowrobot	[04:51:22] gdb is a commonly used one on linux [04:51:22]
+2016-10-03 04:53:17	johnnybgood	[04:51:48] but i dont thing it shows hex or low level [04:51:48]
+2016-10-03 04:53:17	johnnybgood	[05:09:09] oh gdb does nice!! [05:09:09]
+2016-10-03 04:53:17	meowrobot	[05:14:42] :) [05:14:42]
+2016-10-03 04:53:17	***	Playback Complete.
+2016-10-03 04:53:23	--	Channel created on Sun, 27 May 2007 05:31:12
+2016-10-03 04:54:34	-->	damme_ (~damme@2001:16d8:cc75::802) has joined ##asm
+2016-10-03 04:57:26	<--	dqi (~dqi@ip-145-116-178-181.wlan-int.ru.nl) has quit (Ping timeout: 272 seconds)
+2016-10-03 04:57:30	<--	devman (~textual@209.194.136.34) has quit (Quit: Textual IRC Client: www.textualapp.com)
+2016-10-03 04:58:50	-->	BW^- (~Bwbwbwbwb@unaffiliated/bw-/x-2460362) has joined ##asm
+2016-10-03 04:58:52	-->	slither (~jesus@2.26.134.158) has joined ##asm
+2016-10-03 04:58:55	BW^-	on ARM, doing a data scan for a sequence of bytes, are unaligned memory accesses much slowed than aligned?
+2016-10-03 04:59:27	-->	MarkX (~MarkX@38.117.90.63) has joined ##asm
+2016-10-03 05:00:15	BW^-	(I didn't decide yet if it's an 1-byte, 2-byte or 4-byte sequence that I would like to search for, that is a design choice that is in my hands.)
+2016-10-03 05:00:46	<--	snyp (~Snyp@nas4.meghbelabroadband.in) has quit (Quit: WeeChat 1.5)
+2016-10-03 05:00:59	ARM9	depends on the arm, some don't support unaligned accesses
+2016-10-03 05:01:38	BW^-	if unaligned 2-byte or 4-byte accesses are suuuperslow, then perhaps the most efficient thing would be that I keep it to a one-byte sequence e.g. just like having a char* (or shortint, anyhow a type that has been established to be 8 bits)  pointer that I scan by increasing it by one and then check the content at the destination..?
+2016-10-03 05:01:48	BW^-	arm9: omg rly, how does a C compiler deal with that??
+2016-10-03 05:02:02	BW^-	arm9: I think some 64bit ARMv8 e.g. Allwinner A64, Exynos 8890, that kind of device
+2016-10-03 05:02:03	ARM9	it probably doesn't
+2016-10-03 05:02:20	BW^-	rly???
+2016-10-03 05:02:33	BW^-	arm9: so the process would die, if I attempted it??
+2016-10-03 05:02:39	ARM9	I see, then it should be ok if it's in userland
+2016-10-03 05:02:47	ARM9	`it depends`
+2016-10-03 05:02:50	BW^-	e.g. a struct with a single-byte slot and then a dword-slot, accessing the dword would take the process down?
+2016-10-03 05:02:59	BW^-	arm9: depends on what?? =)
+2016-10-03 05:03:08	ARM9	no, the compiler would align the dword appropriately
+2016-10-03 05:03:23	ARM9	sounded to me like you were talking about accessing an array of bytes as an array of words
+2016-10-03 05:03:37	-->	hmmmm (~sdfgsf@pool-72-79-163-57.sctnpa.east.verizon.net) has joined ##asm
+2016-10-03 05:03:41	BW^-	arm9: aha, you mean, it would add 3 bytes of padding within the struct, or reorganize somehow?
+2016-10-03 05:03:50	ARM9	padding
+2016-10-03 05:04:06	BW^-	arm9: i have an array of bytes.   within that array, i will do scans for a particular sequence (a "hello code" ;) )
+2016-10-03 05:04:12	ARM9	pretty sure the standard doesn't allow reorganizing structs
+2016-10-03 05:04:25	-->	Judge_Dredd (~Judge_Dre@unaffiliated/judge-dredd/x-2170742) has joined ##asm
+2016-10-03 05:04:30	BW^-	arm9: I can decide myself how many bytes long that sequence should be, my options are 1, 2 or 4 i.e. the standard.
+2016-10-03 05:04:58	BW^-	arm9: traversing a byte array hunting for a particular byte, or hunting for a particular 2-byte, or hunting for a particular 4-byte, how should these traversal be compared in speed do you think?
+2016-10-03 05:05:10	ARM9	so if you're using C what's wrong with memcmp or strcmp
+2016-10-03 05:05:17	BW^-	e.g. the Exynos 8890 has 17GB/sec RAM throughput I think.   would all those scans go at 17GB/sec??
+2016-10-03 05:05:32	ARM9	neglible
+2016-10-03 05:05:41	BW^-	arm9: negligible difference?
+2016-10-03 05:05:44	ARM9	yes
+2016-10-03 05:05:48	BW^-	aha interesting.
+2016-10-03 05:06:01	-->	objeck (~objeck@c-71-198-185-204.hsd1.ca.comcast.net) has joined ##asm
+2016-10-03 05:06:02	ARM9	you're scanning a 10 character string constant
+2016-10-03 05:06:19	ARM9	an L2 cache miss would probably take longer
+2016-10-03 05:06:22	BW^-	arm9: why would I use memcmp or strcmp calls when I could just do    char* c = whatever; while { if (&c == mysequence) break; }  while (true);  sth like this
+2016-10-03 05:06:31	Jester01	note that if the type itself is char* the compiler won't align that, so if you want to scan it using 32 bit units you will need to do the beginning and the end separately
+2016-10-03 05:06:34	BW^-	arm9: noo it could be veeery big!
+2016-10-03 05:06:49	ARM9	because strcmp is 3 times less code and more clear?
+2016-10-03 05:07:17	BW^-	arm9: does the compiler inline strcmp??  so you would do while { if (strcmp(c,"\myseq",1) == 0) break; .. } while (true);  ??
+2016-10-03 05:07:22	Jester01	also, do you know whether your 32 bits will be aligned to 32 bits in the string you are scanning?
+2016-10-03 05:07:25	ARM9	probably
+2016-10-03 05:07:36	BW^-	jester01,arm9: they will NOT be aligned (if they're above 1 byte)
+2016-10-03 05:08:15	ARM9	I'm not convinced the difference would be 'veeery big'
+2016-10-03 05:08:27	Jester01	the string can be very big :)
+2016-10-03 05:08:27		[05:08]
+2016-10-03 05:08:54	Jester01	<ARM9> you're scanning a 10 character string constant
+2016-10-03 05:08:54	Jester01	<BW^-> arm9: noo it could be veeery big!
+2016-10-03 05:08:59	Jester01	I think that's how he meant it :)
+2016-10-03 05:09:28	ARM9	maybe
+2016-10-03 05:09:42	BW^-	jester01: the string i'm searching in could be big as in 4KB or more.   the sequence I am looking for would in no case be bigger than 4 bytes.
+2016-10-03 05:09:51	ARM9	it's also possible that the loop iterates faster than L1 can supply data
+2016-10-03 05:15:00		[05:09]
+2016-10-03 05:18:59	--	irc: disconnected from server
+2016-10-03 05:19:31	-->	alyptik_ (~alyptik@unaffiliated/alyptik) has joined ##asm
+2016-10-03 05:19:31	--	Topic for ##asm is "Assembly programming channel, all architectures welcome (please specify). Don't ask to ask! Use a pastebin if appropriate! Check your manuals! *** AT&T vs Intel flamers will be banned."
+2016-10-03 05:19:31	--	Topic set by Jester01 (~Jester01@62.100.244.69) on Fri, 30 Sep 2016 06:54:51
+2016-10-03 05:19:31	--	Channel ##asm: 297 nicks (0 ops, 0 voices, 297 normals)
+2016-10-03 05:19:31	***	Buffer Playback...
+2016-10-03 05:19:31	ARM9	[15:06:02] you're scanning a 10 character string constant [15:06:02]
+2016-10-03 05:19:31	ARM9	[15:06:19] an L2 cache miss would probably take longer [15:06:19]
+2016-10-03 05:19:31	BW^-	[15:06:22] arm9: why would I use memcmp or strcmp calls when I could just do    char* c = whatever; while { if (&c == mysequence) break; }  while (true);  sth like this [15:06:22]
+2016-10-03 05:19:31	Jester01	[15:06:31] note that if the type itself is char* the compiler won't align that, so if you want to scan it using 32 bit units you will need to do the beginning and the end separately [15:06:31]
+2016-10-03 05:19:31	BW^-	[15:06:34] arm9: noo it could be veeery big! [15:06:34]
+2016-10-03 05:19:31	ARM9	[15:06:49] because strcmp is 3 times less code and more clear? [15:06:49]
+2016-10-03 05:19:31	BW^-	[15:07:17] arm9: does the compiler inline strcmp??  so you would do while { if (strcmp(c,"\myseq",1) == 0) break; .. } while (true);  ?? [15:07:17]
+2016-10-03 05:19:31	Jester01	[15:07:22] also, do you know whether your 32 bits will be aligned to 32 bits in the string you are scanning? [15:07:22]
+2016-10-03 05:19:31	ARM9	[15:07:25] probably [15:07:25]
+2016-10-03 05:19:31	BW^-	[15:07:36] jester01,arm9: they will NOT be aligned (if they're above 1 byte) [15:07:36]
+2016-10-03 05:19:31	ARM9	[15:08:15] I'm not convinced the difference would be 'veeery big' [15:08:15]
+2016-10-03 05:19:31	Jester01	[15:08:27] the string can be very big :) [15:08:27]
+2016-10-03 05:19:31	Jester01	[15:08:54] <ARM9> you're scanning a 10 character string constant [15:08:54]
+2016-10-03 05:19:31	Jester01	[15:08:54] <BW^-> arm9: noo it could be veeery big! [15:08:54]
+2016-10-03 05:19:31	Jester01	[15:08:59] I think that's how he meant it :) [15:08:59]
+2016-10-03 05:19:31	ARM9	[15:09:28] maybe [15:09:28]
+2016-10-03 05:19:31	BW^-	[15:09:42] jester01: the string i'm searching in could be big as in 4KB or more.   the sequence I am looking for would in no case be bigger than 4 bytes. [15:09:42]
+2016-10-03 05:19:31	ARM9	[15:09:51] it's also possible that the loop iterates faster than L1 can supply data [15:09:51]
+2016-10-03 05:19:31	ARM9	[15:10:17] I wouldn't classify 4KB as big [15:10:17]
+2016-10-03 05:19:31	ARM9	[15:10:31] that would even fit within a page [15:10:31]
+2016-10-03 05:19:31	BW^-_	[15:10:52] diss [15:10:52]
+2016-10-03 05:19:31	BW^-_	[15:10:54] jester01,arm9: do I need to make particular precautions for my process not to crash? [15:10:54]
+2016-10-03 05:19:31	BW^-_	[15:11:10] last I saw was: ] ARM9: I wouldn't classify 4KB as big [15:11:10]
+2016-10-03 05:19:31	ARM9	[15:11:14] don't dereference a null pointer [15:11:14]
+2016-10-03 05:19:31	Jester01	[15:11:14] yes, if you want to use 32 bit accesses [15:11:14]
+2016-10-03 05:19:31	Jester01	[15:11:25] since, as I said, the char* won't be aligned [15:11:25]
+2016-10-03 05:19:31	Jester01	[15:12:00] so if you try to traverse that using word accesses, you might have problems [15:12:00]
+2016-10-03 05:19:31	BW^-_	[15:12:24] really wow aha. [15:12:24]
+2016-10-03 05:19:31	BW^-_	[15:12:26] hmm. [15:12:26]
+2016-10-03 05:19:31	BW^-_	[15:12:40] those problems could be such that they would take more CPU cycles to compensate for, right? [15:12:40]
+2016-10-03 05:19:31	Jester01	[15:12:44] also since you said the match could start anywhere, you are already screwed. [15:12:44]
+2016-10-03 05:19:31	BW^-_	[15:12:56] so if so, it looks to me like that, since I truly not will know anything about alignment of the sequence, [15:12:56]
+2016-10-03 05:19:31	BW^-_	[15:13:05] then, what I should do is to do a BYTE scan. [15:13:05]
+2016-10-03 05:19:31	BW^-_	[15:13:15] of course if it's a 1-byte sequence, then a match would be a match for the whole sequence [15:13:15]
+2016-10-03 05:19:31	Jester01	[15:13:41] the trivial solution for small needles is that yes. for long needles, there are tricks. [15:13:41]
+2016-10-03 05:19:31	ARM9	[15:13:50] if the sequence can be shorter than 4 bytes you can't use words anyway [15:13:50]
+2016-10-03 05:19:31	BW^-_	[15:14:04] however if i would scan for a 2- or 4-byte sequence, then, a match for the first byte would just mean "there might be another 1/3 bytes here to check too". the point here would be that byte scan is the most effective method also for 2- and 4- byte sequences. [15:14:04]
+2016-10-03 05:19:31	BW^-_	[15:14:12] on X86 you'd just do unaligned checks [15:14:12]
+2016-10-03 05:19:31	BW^-	[15:14:31] jester01: like what tricks? [15:14:31]
+2016-10-03 05:19:31	BW^-	[15:14:43] arm9: are there 16bit word instructions on ARM? [15:14:43]
+2016-10-03 05:19:31	Jester01	[15:15:02] you don't have a long needle, so those tricks are not applicable [15:15:02]
+2016-10-03 05:19:31	ARM9	[15:15:09] yes, still won't work if the sequence can be as short as 1 byte [15:15:09]
+2016-10-03 05:19:31	ARM9	[15:15:28] how are you determining the size of the sequence anyway? what kind of data is it you're working with? [15:15:28]
+2016-10-03 05:19:31	ARM9	[15:15:42] what's the actual problem you're trying to solve? [15:15:42]
+2016-10-03 05:19:31	BW^-	[15:16:15] arm9: looking for a terminator byte e.g. null byte [15:16:15]
+2016-10-03 05:19:32	BW^-	[15:17:10] aha http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.faqs/ka15414.html says "In many cases a processor cannot generate an unaligned access on its interfaces to the memory system. This applies to caches, TCMs and the system bus.  In these situations, the processor will generate a series of accesses, to implement the unaligned access.  This is similar to the software routines used for previous processors.". [15:17:10]
+2016-10-03 05:19:32	BW^-	[15:17:57] wait! - if the processor is 2Ghz/sec, then byte-hunting on an ARMv53 should be 2GB/sec even if the  machine's memory bus has 17GB/sec throughput, no? [15:17:57]
+2016-10-03 05:19:32	Jester01	[15:18:13] lol @ 2GHz/sec :) [15:18:13]
+2016-10-03 05:19:32	ARM9	[15:18:49] that's not how modern processors work [15:18:49]
+2016-10-03 05:19:32	Jester01	[15:19:07] also remember that you need more than 1 instruction to do a comparison [15:19:07]
+2016-10-03 05:19:32	***	Playback Complete.
+2016-10-03 05:19:38	ARM9	and keep in mind that an instruction may take anywhere from 1/3 cycles to thousands of cycles
+2016-10-03 05:19:49	BW^-	jester01: yeah, so 1GB/sec or 512MB/sec :}
+2016-10-03 05:19:56	BW^-	jester01,arm9: no i mean seriously as a matter of principle ..
+2016-10-03 05:20:04	BW^-	on the level of rule of thumb
+2016-10-03 05:20:19	BW^-	arm9: yeah I know.
+2016-10-03 05:20:31	BW^-	do you think the CPU could do bytestring comparison faster than 1 byte per cycle.. hmm!..
+2016-10-03 05:20:38	ARM9	sure
+2016-10-03 05:20:43	--	Channel created on Sun, 27 May 2007 05:31:12
+2016-10-03 05:20:50	BW^-	i don't know ARM assembly well enough to know if it has any construct to scan a byte array for a particular byte
+2016-10-03 05:20:53	BW^-	arm9: how?
+2016-10-03 05:20:58	ARM9	simd
+2016-10-03 05:21:04	BW^-	like "REP CMP-LODSB \0xmysequence" hehe
+2016-10-03 05:21:21	BW^-	arm9: that's an.. assembly instruction?
+2016-10-03 05:21:43	ARM9	a set of instructions
+2016-10-03 05:21:52	ARM9	single instruction multiple data
+2016-10-03 05:22:17	ARM9	google it if you want to know more, but it's not going to give you any leverage in solving your problem
+2016-10-03 05:23:28	BW^-	mhm
+2016-10-03 05:23:54	BW^-	arm9,jester01: on some ARMv8 architecture from C, how would you do to scan for a byte in a byte vector, the fastest?
+2016-10-03 05:24:09	BW^-	e.g. c* points to N bytes, give me the pointer to the first occurrence of 0x00
+2016-10-03 05:24:23	Jester01	strstr :)
+2016-10-03 05:24:35	Jester01	and let the compiler/library writers worry about it?
+2016-10-03 05:24:46	Jester01	(strchr for a char obviously)
+2016-10-03 05:25:04	Jester01	for 0x00 strlen even more obviously
+2016-10-03 05:25:33	BW^-	excellent point, thanks!
+2016-10-03 05:26:10	ggole	There are SIMD methods of searching for particular bytes, but I don't think they are suitable for searching for a terminator (since they would run off the end of the string)
+2016-10-03 05:26:17	ARM9	and we've come full circle again
+2016-10-03 05:27:51	-->	navidr (uid112413@gateway/web/irccloud.com/x-jknujvgpgbmgnemx) has joined ##asm
+2016-10-03 05:32:28	BW^-	interesting.
+2016-10-03 05:32:28		[05:32]
+2016-10-03 05:32:34	BW^-	hmm!
+2016-10-03 05:32:57	BW^-	ggole,arm9: if I would ensure that there is indeed a terminator *right after* my byte vector, then, I could use the SIMD method for searching for a particular byte!!
+2016-10-03 05:33:17	-->	sophia7 (~sophia7@unaffiliated/sophia7) has joined ##asm
+2016-10-03 05:33:20	BW^-	e.g.    i'm scanning the array "123\0567890",  as long there's a "\0" just after it, I could use match with that last \0 as meaning no match
+2016-10-03 05:34:05	BW^-	ggole,arm9: I guess that instruction is fairly likely faster than strlen().  anyhow it would be faster than strlenv() which takes a max length argument and which would be the typical "secure" option for doing that (strlen considered insecure
+2016-10-03 05:34:06	BW^-	)
+2016-10-03 05:35:10	ARM9	your guess would be wrong then
+2016-10-03 05:35:23	ARM9	or perhaps misguided
+2016-10-03 05:35:51	ARM9	sounds like they're solving completely different problems, in which case not executing any code would be the fastest way to not solve the problem
+2016-10-03 05:36:25	<--	slither (~jesus@2.26.134.158) has quit (Ping timeout: 265 seconds)
+2016-10-03 05:37:26	BW^-	=))
+2016-10-03 05:37:44	BW^-	ggole: how would you do it?
+2016-10-03 05:37:51	-->	vdamewood (~vdamewood@unaffiliated/vdamewood) has joined ##asm
+2016-10-03 05:40:55	<--	Judge_Dredd (~Judge_Dre@unaffiliated/judge-dredd/x-2170742) has quit (Quit: Leaving.)
+2016-10-03 05:41:07	-->	jan64 (~jan64@bjh184.neoplus.adsl.tpnet.pl) has joined ##asm
+2016-10-03 05:41:08	-->	XOCK_STREAM (~XOCKET@unaffiliated/xocket) has joined ##asm
+2016-10-03 05:41:08	<--	XOCKET (~XOCKET@unaffiliated/xocket) has quit (Disconnected by services)
+2016-10-03 05:45:39	<--	sophia7 (~sophia7@unaffiliated/sophia7) has quit (Quit: sophia7)
+2016-10-03 05:46:21	ggole	How would I do which thing, the thing I said or searching for a terminator?
+2016-10-03 05:46:39	-->	WilburPB (~WilburPB@146.197.246.70) has joined ##asm
+2016-10-03 05:48:34	<--	WilburPB (~WilburPB@146.197.246.70) has quit (Client Quit)
+2016-10-03 05:48:34		[05:48]
+2016-10-03 05:57:59	BW^-	ggole: searching for first occurrence of byte B , with scan starting at pointer (to a byte vector) P
+2016-10-03 05:58:22	BW^-	I guarantee that there is one occurrence of the byte B, at P or a subsequent location, that is reachable given current memory access, virtual memory mappings etc.
+2016-10-03 06:00:21	<--	MulleDK19 (MulleDK19@unaffiliated/mulledk19) has quit
+2016-10-03 06:01:59	-->	MulleDK19 (MulleDK19@unaffiliated/mulledk19) has joined ##asm
+2016-10-03 06:03:32	<--	Keshl (~Purple@24.115.181.94.res-cmts.gld.ptd.net) has quit (Quit: Konversation terminated!)
+2016-10-03 06:03:55	-->	Keshl (~Purple@24.115.181.94.res-cmts.gld.ptd.net) has joined ##asm
+2016-10-03 06:03:55		[06:03]
+2016-10-03 06:04:18	ggole	strchr sounds like the way to go
+2016-10-03 06:09:05	-->	warchild (~smurf@198.162.93.26) has joined ##asm
+2016-10-03 06:09:05	-->	dqi (~dqi@92-111-39-233.static.chello.nl) has joined ##asm
+2016-10-03 06:12:57	-->	mra90 (~Martin@host-85-202-159-241.sta.tvknaszapraca.pl) has joined ##asm
+2016-10-03 06:13:16	<--	deselect1 (~deselect@188.123.241.122) has quit (Ping timeout: 252 seconds)
+2016-10-03 06:14:26	-->	thewormkill (~thewormki@ip31-214.kullen.rwth-aachen.de) has joined ##asm
+2016-10-03 06:16:54	<--	ararob (~yaaic@host-95-199-19-87.mobileonline.telia.com) has quit (Read error: Connection reset by peer)
+2016-10-03 06:16:58	-->	booboojio (~yaaic@c-f78472d5.043-274-73746f25.cust.bredbandsbolaget.se) has joined ##asm
+2016-10-03 06:18:13	<--	zap0 (~moofy@14-201-222-143.tpgi.com.au) has quit (Quit: zap0)
+2016-10-03 06:18:22	-->	Heasummn (~Heasummn@2601:246:802:d0c1:ee97:c29:3aa1:8a88) has joined ##asm
+2016-10-03 06:20:14	--	You are now known as alyptik
+2016-10-03 06:20:14		[06:20]
+2016-10-03 06:21:43	<--	dqi (~dqi@92-111-39-233.static.chello.nl) has quit (Ping timeout: 264 seconds)
+2016-10-03 06:23:34	-->	slither (~jesus@2.26.134.158) has joined ##asm
+2016-10-03 06:25:18	-->	XOCKET (~XOCKET@unaffiliated/xocket) has joined ##asm
+2016-10-03 06:27:33	<--	control (~control@unaffiliated/control) has quit (Remote host closed the connection)
+2016-10-03 06:28:01	<--	XOCK_STREAM (~XOCKET@unaffiliated/xocket) has quit (Ping timeout: 248 seconds)
+2016-10-03 06:28:42	<--	damme_ (~damme@2001:16d8:cc75::802) has quit (Ping timeout: 272 seconds)
+2016-10-03 06:29:52	zid	re the conversation earlier, I thik x86 strcmp memcmp etc read 8 bytes at a time then ANDs them together to see if there was a null byte somewhere
+2016-10-03 06:30:08	zid	or at least memmem
+2016-10-03 06:30:37	<--	Jesin (~Jesin@pool-96-231-49-118.washdc.fios.verizon.net) has quit (Quit: Leaving)
+2016-10-03 06:30:56	ARM9	for undisclosed implementation of libc
+2016-10-03 06:31:00	-->	dqi (~dqi@92-111-39-233.static.chello.nl) has joined ##asm
+2016-10-03 06:33:49	-->	snyp (~Snyp@150.129.132.221) has joined ##asm
+2016-10-03 06:36:01	zid	ya
+2016-10-03 06:36:01		[06:36]
+2016-10-03 06:36:01	BW^-	ggole: could I trust that it's fast? hm
+2016-10-03 06:36:11	zid	I had to do an emergency poo or I would have elucidated
+2016-10-03 06:37:03	boru	...
+2016-10-03 06:38:27	<--	dqi (~dqi@92-111-39-233.static.chello.nl) has quit (Ping timeout: 264 seconds)
+2016-10-03 06:40:20	-->	kaleid0 (~kaleid0@174.sub-174-219-131.myvzw.com) has joined ##asm
+2016-10-03 06:46:00		[06:40]
+2016-10-03 06:47:28	BW^-	ggole: how would you write the same in ARMv8 ASM??
+2016-10-03 06:48:15	-->	VaticanCameos (~VaticanCa@182.68.109.83) has joined ##asm
+2016-10-03 06:52:45	<--	freakazoid0223 (~Administr@pool-108-52-4-99.phlapa.fios.verizon.net) has quit (Quit: Leaving)
+2016-10-03 06:52:54	-->	Antares (~Antares@ppp91-78-123-238.pppoe.mtu-net.ru) has joined ##asm
+2016-10-03 06:54:20	-->	freakazoid0223 (~Administr@pool-108-52-4-99.phlapa.fios.verizon.net) has joined ##asm
+2016-10-03 06:54:39	<--	fr0gRIP (~fr0gRIP@163.5.223.177) has quit (Ping timeout: 252 seconds)
+2016-10-03 06:59:24	ARM9	it's fast enough for most people
+2016-10-03 07:01:18	BW^-	arm9,ggole,jester01: http://cvsweb.openbsd.org/cgi-bin/cvsweb/~checkout~/src/lib/libc/string/strchr.c?rev=1.3&content-type=text/plain     :o !!!!! so unoptimized!!
+2016-10-03 07:01:18		[07:01]
+2016-10-03 07:01:36	ARM9	lol
+2016-10-03 07:01:51	ARM9	it's C, the compiler optimizes it
+2016-10-03 07:01:51	BW^-	ah.
+2016-10-03 07:01:55	ARM9	you can see one implementation in assembly here https://github.molgen.mpg.de/git-mirror/glibc/blob/master/sysdeps/aarch64/strchr.S
+2016-10-03 07:01:56	BW^-	so that's the magic format for the C compiler to catch it?
+2016-10-03 07:02:05	ARM9	the `magic format`?
+2016-10-03 07:02:10	-->	_0xAX (~alex@2.133.2.75) has joined ##asm
+2016-10-03 07:02:19	ARM9	it's just a loop with a couple ifs
+2016-10-03 07:02:28	Jester01	also it may be a compiler builtin
+2016-10-03 07:02:48	ARM9	mhm
+2016-10-03 07:02:52	BW^-	arm9: eek, isn't that one slower??
+2016-10-03 07:03:27	ARM9	I can't answer that
+2016-10-03 07:03:32	zid	gcc is spooky about that, it'll turn while(*a) *a++ = b++; into 400 lines of SSE magic by itself
+2016-10-03 07:03:55	-->	damme_ (~damme@2001:16d8:cc75::802) has joined ##asm
+2016-10-03 07:04:00	BW^-	arm9: ahaaaaa they have optimized variants too!! http://cvsweb.openbsd.org/cgi-bin/cvsweb/~checkout~/src/lib/libc/arch/amd64/string/strchr.S?rev=1.8&content-type=text/plain
+2016-10-03 07:04:04	OxFEEDBACC	what is __cxa_finalize() for?
+2016-10-03 07:04:28	ARM9	different implementations may be faster or slower on different working sets, something being 'fast' usually depends on a lot of specifics
+2016-10-03 07:04:56	ARM9	BW^- that's x64
+2016-10-03 07:05:16	ARM9	the one I linked was aarch64 which I thought was your target
+2016-10-03 07:05:20	BW^-	yeah I know
+2016-10-03 07:05:25	BW^-	they have none for amd64 yet
+2016-10-03 07:05:25	BW^-	arm64 i meant
+2016-10-03 07:05:31	BW^-	mhm
+2016-10-03 07:05:44	BW^-	arm9: very well, nice to know that it's generally optimized anyhow.
+2016-10-03 07:05:53	ggole	C compilers have non-standard machinery for built-ins. They don't tend to rely on pattern matching (although memcpy is often recognised these days)
+2016-10-03 07:05:53	BW^-	would still be curious how to write it in ARM ASM though.
+2016-10-03 07:06:12	BW^-	btw why is the implementation so big ?? https://github.molgen.mpg.de/git-mirror/glibc/blob/master/sysdeps/aarch64/strchr.S
+2016-10-03 07:06:17	BW^-	it's to scan for a freaking byte
+2016-10-03 07:06:31	ARM9	because it tries to be cute
+2016-10-03 07:06:36	ARM9	welcome to `optimized` assembly
+2016-10-03 07:06:42	BW^-	arm9: interesting. aha.
+2016-10-03 07:06:51	ARM9	this is why people generally prefer higher level languages
+2016-10-03 07:06:56	BW^-	ggole: how do you write the "scan for a byte and give me the pointer" in ARM ASM??
+2016-10-03 07:07:06	BW^-	arm9: yeah gotcha. it's so close to the metal.
+2016-10-03 07:07:10	<--	chr1s (~chris@212-147-34-113.fix.access.vtx.ch) has quit (Quit: Konversation terminated!)
+2016-10-03 07:07:57	ARM9	0: ldrb r2, [r0]; cmp r1, r2; bne 0
+2016-10-03 07:08:23	ARM9	assuming pointer to haystack is in r0 and r1 contains the needle
+2016-10-03 07:08:37	ARM9	ldrb r2, [r0],#1
+2016-10-03 07:08:56	ARM9	or something, I haven't written arm assembly in years
+2016-10-03 07:09:05	BW^-	arm9: where is the increment?
+2016-10-03 07:09:19	zid	it's arm, so there's probably an armful of punctuation to do it
+2016-10-03 07:09:19	ARM9	ldrb does the increment
+2016-10-03 07:09:19	BW^-	if it doesn't equal, you need to increment r0
+2016-10-03 07:09:31	BW^-	cool aha
+2016-10-03 07:09:31	BW^-	ok! =)
+2016-10-03 07:09:50	ARM9	[r0],#1 does post increment
+2016-10-03 07:09:50	BW^-	arm9: on a 2Ghz processor with 17GB/sec memory bus throughput, wildly what performance would you expect of this traversal?
+2016-10-03 07:09:55	BW^-	in GB/sec
+2016-10-03 07:10:00	zid	homework detected
+2016-10-03 07:10:14	BW^-	zid: no!
+2016-10-03 07:10:14	ARM9	good eye
+2016-10-03 07:10:14	zid	false positive probability: 20%
+2016-10-03 07:10:19	BW^-	i'm just curious
+2016-10-03 07:10:19	BW^-	zid: i'm the 20%
+2016-10-03 07:10:37	zid	depends on the chip, anyway
+2016-10-03 07:10:42	ARM9	we don't particularly care for your kind round these parts
+2016-10-03 07:10:47	BW^-	zid: Allwinner A64 or Exynos 8890
+2016-10-03 07:10:52	zid	an arm7tdmi? probably not a lot compared to a modern one
+2016-10-03 07:11:01	BW^-	zid: 64bit arm
+2016-10-03 07:11:25	-->	otherflow (~otherflow@unaffiliated/otherflow) has joined ##asm
+2016-10-03 07:11:25	zid	I don't know the names of any 64bit arm chips sorry
+2016-10-03 07:11:34	BW^-	zid: Allwinner A64 and Exynos 8890 and Snapdragon 620 and 820 would be good picks.
+2016-10-03 07:11:49	zid	They sound like chinese clones of real chips :P
+2016-10-03 07:11:53	BW^-	they're not.
+2016-10-03 07:12:17	ARM9	samsung is korean so close enough
+2016-10-03 07:12:36	zid	arm is still doing the licence the core and fab them yourself stuff right?
+2016-10-03 07:12:55	ARM9	yup
+2016-10-03 07:13:23	warchild	indeed
+2016-10-03 07:13:48	zid	nvidia isn't allowed to make x86 chips because of a ruling, makes me sad, we'd have amazing socs :(
+2016-10-03 07:14:11	warchild	bleh anything but x86
+2016-10-03 07:14:40	zid	warchild: I want a PC the size of a pencil that can play crysis though :(
+2016-10-03 07:14:49	ARM9	denver broh
+2016-10-03 07:14:49	-->	sn1c (~sn1c@ip-94-114-69-24.unity-media.net) has joined ##asm
+2016-10-03 07:14:54	warchild	haha
+2016-10-03 07:15:32	warchild	i have been out of gaming for like years
+2016-10-03 07:16:00	warchild	i was watching some gameplay videos on yt yesterday and they really haven't come that far imo
+2016-10-03 07:16:09	zid	warchild: it's just impossible to make small gaming machines because of the card having to be connected via pci-e
+2016-10-03 07:16:33	zid	there are TINY intel systems, but the gpu is 10x the size
+2016-10-03 07:16:33		[07:16]
+2016-10-03 07:16:43	zid	even the micro format half height half width ones
+2016-10-03 07:16:52	BW^-	warchild: x86 is trapped in a corner.
+2016-10-03 07:17:02	warchild	all our arm soc boards that we spin up are crazy small
+2016-10-03 07:17:06	ARM9	because gpus have a brazillion cores these days
+2016-10-03 07:17:11	zid	yea but games sadly don't run on arm :(
+2016-10-03 07:17:25	BW^-	warchild,arm9: you can go and buy those.. Cavium III or what are they called. gigantic. arm.
+2016-10-03 07:17:25	zid	I'm porting a game to C so I can compile it for arm atm
+2016-10-03 07:17:30	ARM9	can't squeeze em much tighter until someone invents sub 1nm fab
+2016-10-03 07:17:49	warchild	but you have power supply issues that i think are probably more significant that the size of the pci-e connector
+2016-10-03 07:18:03	zid	warchild: GT210 is ran from the pci-e bus
+2016-10-03 07:18:12	zid	pci-e bus can deliver tens of watts
+2016-10-03 07:18:17	zid	and the GT210 is huge and has a fan
+2016-10-03 07:18:21	BW^-	arm9,ggole: wait, your " 0: ldrb r2, [r0]; cmp r1, r2; bne 0" does NOT utilize the SIMD or what it's called, no ??
+2016-10-03 07:18:32	warchild	instantaeous power consumption on a clock edge in mutiple hundreds of watts iirc
+2016-10-03 07:18:37	ARM9	BW^-, that's right
+2016-10-03 07:18:51	zid	warchild: capacitors exist for a reason, and no they don't :P
+2016-10-03 07:18:56	warchild	its just averaged out over a cap net
+2016-10-03 07:18:56	zid	else mobile phones wouldn't exist
+2016-10-03 07:19:27	warchild	yeah this was old intel desktop numbers
+2016-10-03 07:19:27	warchild	p2/p3 era
+2016-10-03 07:19:36	boru	I think it'd be tough to meet floor plan constraints putting an nvidia gpu into an intel SoC.
+2016-10-03 07:19:36	warchild	no idea what arm and qualcomm draw
+2016-10-03 07:19:41	zid	I don't t hink that was ever true
+2016-10-03 07:19:55	zid	boru: if nvidia could make the core you could just put the x86 chip on the nvidia board, rther than the other way around
+2016-10-03 07:20:00	zid	or even inside the gpu
+2016-10-03 07:20:19	zid	they're flat out not allowed, nvidia shield and tegra etc are all arm for a reason
+2016-10-03 07:20:19	BW^-	arm9,ggole: how would the SIMD variant look?
+2016-10-03 07:20:28	boru	Between TDP and thermal density, I think you'd have other problems, also.
+2016-10-03 07:20:28	BW^-	arm9,ggole: that one should be faster!.. I presume
+2016-10-03 07:20:33	ARM9	BW^-, something like the strchr.S that I linked
+2016-10-03 07:20:43	zid	they actually had a chip that could interpret x86 and run it as native code, but they're not allowed to use it
+2016-10-03 07:20:43	boru	Clock domains (considering QDR etc), power domains and so on.
+2016-10-03 07:20:52	ARM9	BW^-, it'll only be faster for larger working sets
+2016-10-03 07:21:01	-->	control (~control@unaffiliated/control) has joined ##asm
+2016-10-03 07:21:11	BW^-	arm9: noo that one loads 32bit chunks and compares! :o
+2016-10-03 07:21:20	ARM9	BW^-, that's simd
+2016-10-03 07:21:35	ARM9	it's working with bytes, loading 4 bytes at a time
+2016-10-03 07:21:39	ARM9	one instruction, 4 pieces of data
+2016-10-03 07:21:44	boru	I think it'll be interesting to see where Intel goes next; their Xeon+FPGA packages are interesting.
+2016-10-03 07:21:49	BW^-	ahaa. interesting.
+2016-10-03 07:21:53	ARM9	or were you specifically looking for a solution utilizing a vector extension like NEON?
+2016-10-03 07:21:53	BW^-	arm9: okay, so you're telling me to go use strchr() then. :))
+2016-10-03 07:21:58	boru	But at the rate they're delaying new architectures, I suspect they're having design problems.
+2016-10-03 07:21:58	zid	boru: fuck the fpgas I want the stacked ram
+2016-10-03 07:22:08	BW^-	arm9: noo just the absolutely fastest way to scan for a byte. :)
+2016-10-03 07:22:12	boru	Well, you can have stacked FPGAs, so it's a start.
+2016-10-03 07:23:04	BW^-	arm9: okay, thanks for showing! :D
+2016-10-03 07:23:09	zid	let me know when I can use the fpga as an mmu + 6502 so I can run a nes emulator natively in system ram :P
+2016-10-03 07:23:23	boru	Okay, you can do that now.
+2016-10-03 07:23:27	zid	sweet
+2016-10-03 07:23:56	<--	aleph- (~hatter@unaffiliated/church-) has quit (Ping timeout: 244 seconds)
+2016-10-03 07:23:56	zid	I bet that isn't quite true though, and requires some abstraction crud
+2016-10-03 07:24:19	boru	Personally, I'm waiting for the first RISC-V tapeout.
+2016-10-03 07:24:29	zid	oh, tapeout, not teapot
+2016-10-03 07:24:43	zid	I want an ARM teapot
+2016-10-03 07:24:53	ARM9	I'd settle for an ARM mug
+2016-10-03 07:25:02	BW^-	arm9: thanks again.
+2016-10-03 07:25:07	boru	Where are you? I have several.
+2016-10-03 07:25:21	zid	You could make a cool mug with a thermistor and a tiny cell that showed the temperature of the liquid
+2016-10-03 07:25:30	boru	That would be a warm mug.
+2016-10-03 07:25:59	zid	use a comparitor and a pot to set an alarm temperature too
+2016-10-03 07:26:14	boru	That would be an annoying mug.
+2016-10-03 07:26:36	-->	dqi (~dqi@92-111-39-233.static.chello.nl) has joined ##asm
+2016-10-03 07:26:40	zid	It'd just chirp or light an LED when my tea is getting cold
+2016-10-03 07:26:50	zid	I bet you could kickstarter this
+2016-10-03 07:27:23	boru	And be libel for the heavy metal poisoning of your patrons.
+2016-10-03 07:27:32	boru	And have you product end up being reviewed by Big Clive.
+2016-10-03 07:27:37	zid	pro tip, the gubbins go  under the mug in a false bottom
+2016-10-03 07:28:00	zid	could even sell it with some glue to add it to a normal mug
+2016-10-03 07:28:05	boru	You've giving away all of your trade secrets.
+2016-10-03 07:28:24	zid	It's alright I'm writing it down over irc so it's now copyrighted
+2016-10-03 07:28:33	zid	trademarks are for people who aren't manufacturing in china
+2016-10-03 07:28:52	-->	lapinozz (~lapinozz@45.74.164.117) has joined ##asm
+2016-10-03 07:34:00		[07:28]
+2016-10-03 07:34:00	<--	phinxy (~tehhhd@unaffiliated/phinxy) has quit (Read error: Connection reset by peer)
+2016-10-03 07:34:48	-->	phinxy (~tehhhd@unaffiliated/phinxy) has joined ##asm
+2016-10-03 07:36:41	<--	snyp (~Snyp@150.129.132.221) has quit (Quit: WeeChat 1.5)
+2016-10-03 07:36:56	-->	snyp (~Snyp@150.129.132.221) has joined ##asm
+2016-10-03 07:38:25	<--	dqi (~dqi@92-111-39-233.static.chello.nl) has quit (Ping timeout: 272 seconds)
+2016-10-03 07:40:08	-->	snyp_ (~Snyp@14.96.68.155) has joined ##asm
+2016-10-03 07:41:33	<--	snyp (~Snyp@150.129.132.221) has quit (Ping timeout: 272 seconds)
+2016-10-03 07:47:00		[07:41]
+2016-10-03 07:50:46	<--	objeck (~objeck@c-71-198-185-204.hsd1.ca.comcast.net) has quit (Ping timeout: 244 seconds)
+2016-10-03 07:56:00		[07:50]
+2016-10-03 07:59:32	-->	sophia7 (~sophia7@unaffiliated/sophia7) has joined ##asm
+2016-10-03 08:00:19	-->	Jesin (~Jesin@2600:1003:b11b:944f:d030:bdff:fea2:7bee) has joined ##asm
+2016-10-03 08:00:47	<--	VaticanCameos (~VaticanCa@182.68.109.83) has quit (Remote host closed the connection)
+2016-10-03 08:02:07	-->	VaticanCameos (~VaticanCa@182.68.109.83) has joined ##asm
+2016-10-03 08:04:45	<--	EI24 (~EI24@90-224-11-165-no124.tbcn.telia.com) has quit (Quit: Leaving)
+2016-10-03 08:04:45	<--	booboojio (~yaaic@c-f78472d5.043-274-73746f25.cust.bredbandsbolaget.se) has quit (Ping timeout: 244 seconds)
+2016-10-03 08:04:50	<--	Jesin (~Jesin@2600:1003:b11b:944f:d030:bdff:fea2:7bee) has quit (Client Quit)
+2016-10-03 08:05:13	-->	Jesin (~Jesin@2600:1003:b11b:944f:d030:bdff:fea2:7bee) has joined ##asm
+2016-10-03 08:07:07	<--	VaticanCameos (~VaticanCa@182.68.109.83) has quit (Ping timeout: 252 seconds)
+2016-10-03 08:09:46	-->	rtkt (~rtkt@ptr-2hj4tbw74k45qy233cedp3q7i.ip6.access.telenet.be) has joined ##asm
+2016-10-03 08:12:01	<--	vdamewood (~vdamewood@unaffiliated/vdamewood) has quit (Remote host closed the connection)
+2016-10-03 08:12:01		[08:12]
+2016-10-03 08:13:27	-->	vdamewood (~vdamewood@unaffiliated/vdamewood) has joined ##asm
+2016-10-03 08:16:15	<--	paule32 (~jens@dslb-188-103-040-123.188.103.pools.vodafone-ip.de) has quit (Read error: Connection reset by peer)
+2016-10-03 08:16:34	-->	MoALTz (~no@78-11-247-26.static.ip.netia.com.pl) has joined ##asm
+2016-10-03 08:17:13	-->	rtkt_ (~rtkt@ptr-2hj4tbw74k45qy233cedp3q7i.ip6.access.telenet.be) has joined ##asm
+2016-10-03 08:18:00	-->	Xylitol (~temari@unaffiliated/xylitol) has joined ##asm
+2016-10-03 08:18:58	<--	XOCKET (~XOCKET@unaffiliated/xocket) has quit (Ping timeout: 248 seconds)
+2016-10-03 08:19:51	<--	rendar (~I@host22-161-dynamic.1-87-r.retail.telecomitalia.it) has quit (Ping timeout: 265 seconds)
+2016-10-03 08:20:49	<--	rtkt (~rtkt@ptr-2hj4tbw74k45qy233cedp3q7i.ip6.access.telenet.be) has quit (Ping timeout: 265 seconds)
+2016-10-03 08:23:45	-->	rtkt (~rtkt@ptr-2hj4tbw74k45qy233cedp3q7i.ip6.access.telenet.be) has joined ##asm
+2016-10-03 08:24:56	<--	MoALTz (~no@78-11-247-26.static.ip.netia.com.pl) has quit (Quit: Leaving)
+2016-10-03 08:25:44	-->	MoALTz (~no@78-11-247-26.static.ip.netia.com.pl) has joined ##asm
+2016-10-03 08:26:41	<--	rtkt_ (~rtkt@ptr-2hj4tbw74k45qy233cedp3q7i.ip6.access.telenet.be) has quit (Ping timeout: 265 seconds)
+2016-10-03 08:29:42	-->	XOCKET (~XOCKET@unaffiliated/xocket) has joined ##asm
+2016-10-03 08:29:42		[08:29]
+2016-10-03 08:35:12	-->	rtkt_ (~rtkt@ptr-2hj4tbw74k45qajmbyg5odfyy.ip6.access.telenet.be) has joined ##asm
+2016-10-03 08:36:19	<--	rtkt (~rtkt@ptr-2hj4tbw74k45qy233cedp3q7i.ip6.access.telenet.be) has quit (Ping timeout: 252 seconds)
+2016-10-03 08:39:02	-->	King_Hual` (~failed@94.26.28.68) has joined ##asm
+2016-10-03 08:42:21	<--	sbingner (~sam@phathack/sbingner) has quit (Ping timeout: 272 seconds)
+2016-10-03 08:42:35	<--	King_Hual (~failed@unaffiliated/king-hual/x-1207580) has quit (Ping timeout: 265 seconds)
+2016-10-03 08:43:39	--	ybden is now known as vmunix
+2016-10-03 08:44:27	-->	sbingner (~sam@phathack/sbingner) has joined ##asm
+2016-10-03 08:49:22	-->	rendar (~I@host22-161-dynamic.1-87-r.retail.telecomitalia.it) has joined ##asm
+2016-10-03 08:49:22		[08:49]
+2016-10-03 08:54:36	<--	MyCuriosity (~MyCuriosi@unaffiliated/mycuriosity) has quit (Ping timeout: 264 seconds)
+2016-10-03 09:00:00		[08:54]
+2016-10-03 09:04:23	<--	warchild (~smurf@198.162.93.26) has quit (Ping timeout: 252 seconds)
+2016-10-03 09:08:57	<--	XOCKET (~XOCKET@unaffiliated/xocket) has quit (Disconnected by services)
+2016-10-03 09:08:57	-->	XOCK_STREAM (~XOCKET@unaffiliated/xocket) has joined ##asm
+2016-10-03 09:09:12	<--	Antares (~Antares@ppp91-78-123-238.pppoe.mtu-net.ru) has quit (Ping timeout: 265 seconds)
+2016-10-03 09:13:58	-->	ararob (~yaaic@c-f78472d5.043-274-73746f25.cust.bredbandsbolaget.se) has joined ##asm
+2016-10-03 09:19:00		[09:13]
+2016-10-03 09:21:36	-->	Fiki (~Fiki@80-109-242-183.cable.dynamic.surfer.at) has joined ##asm
+2016-10-03 09:24:15	-->	WilburPB (~WilburPB@146.197.246.70) has joined ##asm
+2016-10-03 09:26:05	<--	rtkt_ (~rtkt@ptr-2hj4tbw74k45qajmbyg5odfyy.ip6.access.telenet.be) has quit (Quit: Leaving)
+2016-10-03 09:26:10	-->	warchild (~smurf@198.162.93.26) has joined ##asm
+2016-10-03 09:27:15	<--	slash^ (~unknown@2001:a61:116e:ab01:c6:6da1:fc22:4075) has quit (Read error: Connection reset by peer)
+2016-10-03 09:27:56	<--	sophia7 (~sophia7@unaffiliated/sophia7) has quit (Quit: sophia7)
+2016-10-03 09:28:48	<--	_0xAX (~alex@2.133.2.75) has quit (Quit: Leaving)
+2016-10-03 09:30:09	<--	ARM9 (~ARM9@46-236-101-61.customer.t3.se) has quit (Quit: Leaving)
+2016-10-03 09:30:19	<--	m8 (~m8@unaffiliated/m8) has quit (Read error: Connection reset by peer)
+2016-10-03 09:34:24	<--	navidr (uid112413@gateway/web/irccloud.com/x-jknujvgpgbmgnemx) has quit (Quit: Connection closed for inactivity)
+2016-10-03 09:34:24		[09:34]
+2016-10-03 09:36:52	<--	supay_ (~supay@unaffiliated/supay) has quit (Ping timeout: 272 seconds)
+2016-10-03 09:42:00		[09:36]
+2016-10-03 09:55:51	-->	crankslider (~slidercra@unaffiliated/slidercrank) has joined ##asm
+2016-10-03 10:01:00		[09:55]
+2016-10-03 10:12:32	<--	XOCK_STREAM (~XOCKET@unaffiliated/xocket) has quit (Ping timeout: 252 seconds)
+2016-10-03 10:13:11	-->	vigole (~Thunderbi@178.252.165.108) has joined ##asm
+2016-10-03 10:13:49	-->	XOCKET (~XOCKET@unaffiliated/xocket) has joined ##asm
+2016-10-03 10:14:18	<--	vigole (~Thunderbi@178.252.165.108) has left ##asm
+2016-10-03 10:14:47	-->	vigole (~Thunderbi@178.252.165.108) has joined ##asm
+2016-10-03 10:16:29	--	vmunix is now known as ybden
+2016-10-03 10:16:29		[10:16]
+2016-10-03 10:17:08	<--	slither (~jesus@2.26.134.158) has quit (Quit: Leaving)
+2016-10-03 10:20:05	<--	ararob (~yaaic@c-f78472d5.043-274-73746f25.cust.bredbandsbolaget.se) has quit (Ping timeout: 244 seconds)
+2016-10-03 10:25:08	<--	i44 (~i44@dynamic-78-30-147-42.adsl.eunet.rs) has quit (Quit: odo')
+2016-10-03 10:25:18	<--	jan64 (~jan64@bjh184.neoplus.adsl.tpnet.pl) has quit (Ping timeout: 244 seconds)
+2016-10-03 10:25:33	-->	i44 (~i44@dynamic-78-30-147-42.adsl.eunet.rs) has joined ##asm
+2016-10-03 10:26:12	<--	i44 (~i44@dynamic-78-30-147-42.adsl.eunet.rs) has quit (Client Quit)
+2016-10-03 10:28:14	-->	ararob (~yaaic@c-f78472d5.043-274-73746f25.cust.bredbandsbolaget.se) has joined ##asm
+2016-10-03 10:31:47	<--	XOCKET (~XOCKET@unaffiliated/xocket) has quit (Disconnected by services)
+2016-10-03 10:31:47		[10:31]
+2016-10-03 10:31:47	-->	XOCK_STREAM (~XOCKET@unaffiliated/xocket) has joined ##asm
+2016-10-03 10:32:02	<--	GeDaMo (~GeDaMo@212.225.83.199) has quit (Remote host closed the connection)
+2016-10-03 10:32:20	-->	ch3rn0byl (~ch3rn0byl@cpe-24-26-250-190.satx.res.rr.com) has joined ##asm
+2016-10-03 10:32:20	<--	ch3rn0byl (~ch3rn0byl@cpe-24-26-250-190.satx.res.rr.com) has quit (Changing host)
+2016-10-03 10:32:20	-->	ch3rn0byl (~ch3rn0byl@unaffiliated/ch3rn0byl) has joined ##asm
+2016-10-03 10:32:30	<--	ararob (~yaaic@c-f78472d5.043-274-73746f25.cust.bredbandsbolaget.se) has quit (Ping timeout: 244 seconds)
+2016-10-03 10:38:00		[10:32]
+2016-10-03 10:47:25	<--	Jesin (~Jesin@2600:1003:b11b:944f:d030:bdff:fea2:7bee) has quit (Quit: Leaving)
+2016-10-03 10:49:42	<--	vigole (~Thunderbi@178.252.165.108) has left ##asm ("0xF4")
+2016-10-03 10:55:00		[10:49]
+2016-10-03 10:56:46	<--	Kostenko (~Kostenko@bl14-204-63.dsl.telepac.pt) has quit (Remote host closed the connection)
+2016-10-03 10:58:40	<--	MDude (~MDude@pa-67-234-97-58.dhcp.embarqhsd.net) has quit (Remote host closed the connection)
+2016-10-03 10:59:24	-->	Kostenko (~Kostenko@bl14-204-63.dsl.telepac.pt) has joined ##asm
+2016-10-03 10:59:44	<--	otherflow (~otherflow@unaffiliated/otherflow) has quit (Quit: Quitte)
+2016-10-03 11:00:19	<--	Fiki (~Fiki@80-109-242-183.cable.dynamic.surfer.at) has quit (Read error: Connection reset by peer)
+2016-10-03 11:00:24	<--	sn1c (~sn1c@ip-94-114-69-24.unity-media.net) has quit (Ping timeout: 244 seconds)
+2016-10-03 11:03:37	-->	sn1c (~sn1c@ip-94-114-69-24.unity-media.net) has joined ##asm
+2016-10-03 11:04:02	<--	King_Hual` (~failed@94.26.28.68) has quit (Read error: Connection reset by peer)
+2016-10-03 11:05:51	<--	lowin (~lowin@151.245.121.3) has quit (Ping timeout: 248 seconds)
+2016-10-03 11:07:32	<--	ggole (~ggole@106-68-200-229.dyn.iinet.net.au) has quit (Ping timeout: 252 seconds)
+2016-10-03 11:12:53	-->	_rnsanchez_ (~rnsanchez@177.204.76.6.dynamic.adsl.gvt.net.br) has joined ##asm
+2016-10-03 11:12:53		[11:12]
+2016-10-03 11:14:49	Smirnov	really basic question but does a regular mov eax, [ecx+1234] type of LOAD set the zero flag?
+2016-10-03 11:14:59	Smirnov	or do I need to do a test eax,eax ?
+2016-10-03 11:15:19	zid	neither
+2016-10-03 11:15:24	<--	rnsanchez_ (~rnsanchez@187.115.107.175) has quit (Ping timeout: 244 seconds)
+2016-10-03 11:15:39	Smirnov	huh what, I need to do a load followed by a jump if its not zero, whats the best way?
+2016-10-03 11:15:39	OxFEEDBACC	neither?
+2016-10-03 11:16:03	OxFEEDBACC	when you need it's 0 or not, you must test it...
+2016-10-03 11:16:13	OxFEEDBACC	data move instructions don't set flags...
+2016-10-03 11:16:18	<--	lapinozz (~lapinozz@45.74.164.117) has quit (Ping timeout: 272 seconds)
+2016-10-03 11:16:27	Smirnov	so why is it "neither" it sounds like using TEST instruction was the right answer
+2016-10-03 11:16:32	OxFEEDBACC	s/need/need to know/
+2016-10-03 11:16:47	OxFEEDBACC	yes, i agree...
+2016-10-03 11:17:01	zid	you can bypass eax entirely, if you don't mind the constant in the instruction stream
+2016-10-03 11:17:01	OxFEEDBACC	(note the question mark after my "neither")
+2016-10-03 11:17:25	OxFEEDBACC	constant?
+2016-10-03 11:17:30	zid	constant zero
+2016-10-03 11:17:45	vulture	AverageJ0e or anyone: ever seen a process reserve space in a 32 bit process, following KUSER_SHARED_DATA to the base of x64 ntdll.dll (i.e. 7fff0000 to 7ffcXXXXXXXX) which is like 138TB or w/e? or is that just vmmap being awful?
+2016-10-03 11:17:49	OxFEEDBACC	where is a constant zero?
+2016-10-03 11:18:04	zid	The one you add if you bypass eax
+2016-10-03 11:18:21	OxFEEDBACC	sober up, man...
+2016-10-03 11:18:31	zid	OxFEEDBACC: test [ecx+1234], 0
+2016-10-03 11:18:36	zid	or cmp
+2016-10-03 11:18:55	OxFEEDBACC	maybe the value is still needed?
+2016-10-03 11:19:00	OxFEEDBACC	in a reg?
+2016-10-03 11:19:00	zid	unspecified, he said needed
+2016-10-03 11:19:10	-->	lowin (~lowin@151.245.65.173) has joined ##asm
+2016-10-03 11:19:25	zid	could also do a polymorphic style jump
+2016-10-03 11:19:39	OxFEEDBACC	but "not needed" is neither specified...
+2016-10-03 11:22:45	-->	navidr (uid112413@gateway/web/irccloud.com/x-keywqyqjaxxltcbx) has joined ##asm
+2016-10-03 11:22:54	-->	dqi (~dqi@165-218-045-062.dynamic.caiway.nl) has joined ##asm
+2016-10-03 11:23:38	Smirnov	hmm yeah unfortunately my load is a bit more complicated than that so it has to be done separately
+2016-10-03 11:23:53	Smirnov	I think its loading off a thread or something like that
+2016-10-03 11:25:28	-->	paule32 (~jens@dslb-188-103-040-123.188.103.pools.vodafone-ip.de) has joined ##asm
+2016-10-03 11:25:48	Smirnov	cmp eax, 0 will work just as test eax,0 right?
+2016-10-03 11:25:53	Smirnov	if I have a jz after that
+2016-10-03 11:25:58	zid	yea
+2016-10-03 11:26:07	Smirnov	I always get confused by the zero flag aliasing equals
+2016-10-03 11:26:07	zid	or won't
+2016-10-03 11:26:12	zid	i forget, who knows
+2016-10-03 11:26:12	OxFEEDBACC	no
+2016-10-03 11:26:17	zid	yea you want cmp in that case not test
+2016-10-03 11:26:22	OxFEEDBACC	test eax, 0 is always 0
+2016-10-03 11:26:22	zid	test is if they're the same, for jz
+2016-10-03 11:26:41	Jester01	you want test eax, eax
+2016-10-03 11:26:46	zid	you'll want to use test eax, eax if possible because it's shorter
+2016-10-03 11:26:56	Jester01	and because that actually works as opposed to test eax, 0 :)
+2016-10-03 11:27:01	-->	Suchorski (regex@unaffiliated/suchorski) has joined ##asm
+2016-10-03 11:27:05	zid	but if it's possible to not have the load in the first place that can be a lot quicker
+2016-10-03 11:27:10	zid	or slower, x86 is fun
+2016-10-03 11:27:10	OxFEEDBACC	and because it's working as expected in the first place :-p
+2016-10-03 11:27:10	<--	sbingner (~sam@phathack/sbingner) has quit (Ping timeout: 248 seconds)
+2016-10-03 11:27:30	 *	Jester01 pours coffee on zid
+2016-10-03 11:27:39	OxFEEDBACC	mem must be accessed anyway... so no big speed issue....
+2016-10-03 11:27:59	OxFEEDBACC	s/issue/difference/
+2016-10-03 11:27:59		[11:27]
+2016-10-03 11:28:09	OxFEEDBACC	at the time the value is loaded, the separate cmp instruction will be fully prepared...
+2016-10-03 11:28:13	zid	OxFEEDBACC: unless you fuck up the registers
+2016-10-03 11:28:29	zid	atoms are particularly caring about which regs you use when
+2016-10-03 11:28:34	OxFEEDBACC	you assume bullshitty circumstances, zid...
+2016-10-03 11:28:48	zid	No, I deliberately mentioned not to assume it
+2016-10-03 11:28:48	OxFEEDBACC	that is more confusing than helpful...
+2016-10-03 11:28:53	zid	are you retarded
+2016-10-03 11:29:12	-->	axisg4 (~sergi@2.152.8.9.dyn.user.ono.com) has joined ##asm
+2016-10-03 11:29:17	zid	You can't assume some random snippet of x86 is faster or slower than another, because x86 is a vast range of chips, and context is important
+2016-10-03 11:29:51	Jester01	the only retarded thing so far came from you, zid :)
+2016-10-03 11:29:56	zid	which one?
+2016-10-03 11:30:11	OxFEEDBACC	and i first think positive and assume that the load into a register is reasonable in the context of the OP's code...
+2016-10-03 11:30:15	Jester01	<zid> OxFEEDBACC: test [ecx+1234], 0
+2016-10-03 11:30:35	zid	Jester01: that was a typo/thinko, to be fair
+2016-10-03 11:30:49	Jester01	:)
+2016-10-03 11:30:59	OxFEEDBACC	nothing fair about that... just an excuse....
+2016-10-03 11:30:59	zid	Next time you make one remind me to be merciless :p
+2016-10-03 11:31:19	zid	OxFEEDBACC: Are you going to stop being autisticly pedantic at any point or should I just write you off as a lost cause?
+2016-10-03 11:31:28	-->	sbingner (~sam@phathack/sbingner) has joined ##asm
+2016-10-03 11:31:43	OxFEEDBACC	i wonder who declared "autis*" buzzwords.... :-/
+2016-10-03 11:32:02	<--	Heasummn (~Heasummn@2601:246:802:d0c1:ee97:c29:3aa1:8a88) has quit (Quit: Leaving)
+2016-10-03 11:32:17	zid	well that answered that
+2016-10-03 11:32:32	<--	Jester01 (~Jester01@62.100.244.69) has quit (Quit: ZNC - http://znc.sourceforge.net)
+2016-10-03 11:34:10	<--	blackwind_123 (~IceChat9@117.192.149.151) has quit (Ping timeout: 265 seconds)
+2016-10-03 11:34:29	<--	unreal (~unreal@unaffiliated/unreal) has quit (Quit: Very funny Scotty. Now beam down my clothes!)
+2016-10-03 11:34:53	-->	Jester01 (~Jester01@62.100.244.69) has joined ##asm
+2016-10-03 11:36:45	AverageJ0e	vulture, never
+2016-10-03 11:37:05	zid	yea seems odd
+2016-10-03 11:39:11	<--	araml (~araml@unaffiliated/araml) has quit (Quit: WeeChat 1.4)
+2016-10-03 11:39:30	-->	blackwind_123 (~IceChat9@117.192.143.75) has joined ##asm
+2016-10-03 11:39:45	-->	XOCKET (~XOCKET@unaffiliated/xocket) has joined ##asm
+2016-10-03 11:40:24	<--	Stmeter (~Stmeter@unaffiliated/stmeter) has quit (Ping timeout: 276 seconds)
+2016-10-03 11:40:34	<--	sbingner (~sam@phathack/sbingner) has quit (Ping timeout: 248 seconds)
+2016-10-03 11:42:30	-->	zBB (~user@191.240.218.174) has joined ##asm
+2016-10-03 11:42:40	<--	XOCK_STREAM (~XOCKET@unaffiliated/xocket) has quit (Ping timeout: 248 seconds)
+2016-10-03 11:44:31	-->	sbingner (~sam@phathack/sbingner) has joined ##asm
+2016-10-03 11:44:31		[11:44]
+2016-10-03 11:45:07	-->	Stmeter (~Stmeter@unaffiliated/stmeter) has joined ##asm
+2016-10-03 11:48:24	-->	kbw (~KeyboardW@68-204-170-7.res.bhn.net) has joined ##asm
+2016-10-03 11:49:03	<--	rendar (~I@host22-161-dynamic.1-87-r.retail.telecomitalia.it) has quit (Quit: std::lower_bound + std::less_equal *works* with a vector without duplicates!)
+2016-10-03 11:51:00	<--	sn1c (~sn1c@ip-94-114-69-24.unity-media.net) has quit (Ping timeout: 244 seconds)
+2016-10-03 11:52:11	-->	Demon_Fox (~Demon_Fox@71.94.3.176) has joined ##asm
+2016-10-03 11:53:13	<--	BW^- (~Bwbwbwbwb@unaffiliated/bw-/x-2460362) has quit (Quit: BW^-)
+2016-10-03 11:55:11	-->	sn1c (~sn1c@ip-94-114-69-24.unity-media.net) has joined ##asm
+2016-10-03 11:59:10	<--	Xylitol (~temari@unaffiliated/xylitol) has quit (Ping timeout: 248 seconds)
+2016-10-03 12:01:49	-->	VaticanCameos (~VaticanCa@182.68.109.83) has joined ##asm
+2016-10-03 12:01:49		[12:01]
+2016-10-03 12:04:25	<--	blackwind_123 (~IceChat9@117.192.143.75) has quit (Ping timeout: 272 seconds)
+2016-10-03 12:04:39	-->	blackwind_123 (~IceChat9@103.62.68.24) has joined ##asm
+2016-10-03 12:05:52	<--	mra90 (~Martin@host-85-202-159-241.sta.tvknaszapraca.pl) has quit (Quit: Leaving)
+2016-10-03 12:06:55	<--	VaticanCameos (~VaticanCa@182.68.109.83) has quit (Ping timeout: 252 seconds)
+2016-10-03 12:12:00		[12:06]
+2016-10-03 12:15:21	-->	araml (~araml@unaffiliated/araml) has joined ##asm
+2016-10-03 12:16:30	mpetch	Yo Jester01
+2016-10-03 12:16:40	Jester01	what's up
+2016-10-03 12:16:59	mpetch	I actually have an asm question for you
+2016-10-03 12:17:09	mpetch	have time?
+2016-10-03 12:17:20	mpetch	few mins
+2016-10-03 12:17:20	Jester01	yeah
+2016-10-03 12:17:59	mpetch	Okay, my question is based on http://stackoverflow.com/questions/39822804/how-to-avoid-caching-when-writing-to-mmio-registers   . Ignore the question itself. I want your opinion on the code in ioapic_read
+2016-10-03 12:18:08	mpetch	This is MMIO on x86
+2016-10-03 12:18:13	mpetch	the question is
+2016-10-03 12:18:32	-->	rnsanchez_ (~rnsanchez@177.18.101.222) has joined ##asm
+2016-10-03 12:18:47	mpetch	writing to the first memory location must be done before the second completes
+2016-10-03 12:19:01	mpetch	I mean before the second is started
+2016-10-03 12:19:06	mpetch	they hve to be done in order
+2016-10-03 12:19:15	mpetch	so  is an sfence ncessary between those 2 insstructions?
+2016-10-03 12:20:13	<--	damme_ (~damme@2001:16d8:cc75::802) has quit (Ping timeout: 272 seconds)
+2016-10-03 12:21:43	<--	_rnsanchez_ (~rnsanchez@177.204.76.6.dynamic.adsl.gvt.net.br) has quit (Ping timeout: 272 seconds)
+2016-10-03 12:21:43	-->	vigole (~Thunderbi@178.252.165.108) has joined ##asm
+2016-10-03 12:22:07	mpetch	My question comes based upon the outof order execution of thex86. It can reorder a store with older loads if it is a differing memory address
+2016-10-03 12:22:22	Jester01	yeah I have found that so far too
+2016-10-03 12:23:00	Jester01	however the section of the manual I am looking at only applies to write-back cacheable
+2016-10-03 12:23:10	Jester01	I assume the mmio isn't marked as such?
+2016-10-03 12:23:10	mpetch	Aha
+2016-10-03 12:23:15	<--	phinxy (~tehhhd@unaffiliated/phinxy) has quit (Read error: Connection reset by peer)
+2016-10-03 12:23:19	mpetch	And that is where I am leading
+2016-10-03 12:23:29	mpetch	Assume that it is uncached
+2016-10-03 12:23:38	mpetch	that the page for that MMIO is uncached
+2016-10-03 12:24:30	mpetch	so it was marked as such in the page table
+2016-10-03 12:24:35	mpetch	emtry
+2016-10-03 12:24:44	Jester01	"The strong uncached (UC) memory type forces a strong-ordering model on memory accesses. Here, all reads and writes to the UC memory region appear on the bus and out-of-order or speculative accesses are not performed. This memory type can be applied to an address range dedicated to memory mapped I/O devices to force strong memory ordering."
+2016-10-03 12:25:41	mpetch	Agreed so we agree if it is uncached it isn't necessary
+2016-10-03 12:25:46	Jester01	yeah
+2016-10-03 12:25:51	mpetch	Okay
+2016-10-03 12:25:56	mpetch	followup
+2016-10-03 12:26:49	mpetch	If cachign was enabled and it was was write through
+2016-10-03 12:27:36	<--	vigole (~Thunderbi@178.252.165.108) has quit (Quit: 0xF4)
+2016-10-03 12:27:36		[12:27]
+2016-10-03 12:28:48	<--	sn1c (~sn1c@ip-94-114-69-24.unity-media.net) has quit (Quit: sn1c)
+2016-10-03 12:28:58	<--	WilburPB (~WilburPB@146.197.246.70) has quit (Quit: My Mac has gone to sleep. ZZZzzz…)
+2016-10-03 12:31:55	<--	MoALTz (~no@78-11-247-26.static.ip.netia.com.pl) has quit (Quit: Leaving)
+2016-10-03 12:33:55	<--	axisg4 (~sergi@2.152.8.9.dyn.user.ono.com) has quit (Quit: leaving)
+2016-10-03 12:34:19	-->	Heasummn (~Heasummn@2601:246:802:d0c1:ee97:c29:3aa1:8a88) has joined ##asm
+2016-10-03 12:35:32	-->	Xylitol (~temari@unaffiliated/xylitol) has joined ##asm
+2016-10-03 12:36:25	Jester01	I would say ioapic_write would still be fine, but ioapic_read not, since [r8+0x10] might have been cached
+2016-10-03 12:37:13	 *	zid tries to imagine a machine where memory ordering to addresses in different rows are required for proper function
+2016-10-03 12:38:16	mpetch	Agred on that point
+2016-10-03 12:38:21	mpetch	now one last question
+2016-10-03 12:38:40	mpetch	if those two memory locations are always in the same cacheline, would it be necessary?
+2016-10-03 12:38:59	mpetch	I assume not
+2016-10-03 12:40:27	-->	WilburPB (~WilburPB@146.197.246.70) has joined ##asm
+2016-10-03 12:40:51	<--	XOCKET (~XOCKET@unaffiliated/xocket) has quit (Disconnected by services)
+2016-10-03 12:40:51	-->	XOCK_STREAM (~XOCKET@unaffiliated/xocket) has joined ##asm
+2016-10-03 12:41:00	Jester01	makes sense
+2016-10-03 12:41:25	Jester01	"When writing through to memory, invalid cache lines are never filled, and valid cache lines are either filled or invalidated."
+2016-10-03 12:41:39	Smirnov	so there's a nice JECXZ unfortunately I'm forced to use EAX, blargh.
+2016-10-03 12:42:19	zid	Smirnov: if you're waiting on that memory access there's no reason to try make the 'code' faster
+2016-10-03 12:42:24	mpetch	Yup Jester01 and that was the reason for my last question, and what my assumption was based on
+2016-10-03 12:42:24	<--	sh4 (~sh4@unaffiliated/sh4) has quit (Ping timeout: 272 seconds)
+2016-10-03 12:43:12	zid	Jester01: I can think of a way in which that cache line thing doesn't work, but I don't know what the cpu actually does: I have stale data in a line, I write to line+8 and it flushes my write, and the stale data it shouldn't have
+2016-10-03 12:43:12		[12:43]
+2016-10-03 12:43:45	zid	if that's possible? I hate thinking about smp and cache and stuff :(
+2016-10-03 12:44:04	<--	OwariDa (~je@c-f0d871d5.014-410-7570702.cust.bredbandsbolaget.se) has quit (Ping timeout: 276 seconds)
+2016-10-03 12:44:04	zid	need coffee for that
+2016-10-03 12:46:38	<--	WilburPB (~WilburPB@146.197.246.70) has quit (Quit: My Mac has gone to sleep. ZZZzzz…)
+2016-10-03 12:47:46	zid	I'm going with: if that memory is shared you need to take a lock and flush
+2016-10-03 12:48:54	Jester01	I doubt write through works with line writes, it's more likely partial writes as dictated by the instructions
+2016-10-03 12:49:18	Jester01	that's what would make sense, but haven't found explicit source for that yet
+2016-10-03 12:50:30	<--	dqi (~dqi@165-218-045-062.dynamic.caiway.nl) has quit (Ping timeout: 252 seconds)
+2016-10-03 12:52:33	zid	http://mechanical-sympathy.blogspot.co.uk/2013/02/cpu-cache-flushing-fallacy.html might be a read
+2016-10-03 12:53:41	-->	WilburPB (~WilburPB@146.197.246.70) has joined ##asm
+2016-10-03 12:55:13	 *	warchild ignores
+2016-10-03 12:55:17	zid	too many long wods?
+2016-10-03 12:55:22	zid	words*
+2016-10-03 12:56:16	-->	objeck (~objeck@c-71-198-185-204.hsd1.ca.comcast.net) has joined ##asm
+2016-10-03 12:56:16	<--	WilburPB (~WilburPB@146.197.246.70) has quit (Client Quit)
+2016-10-03 12:56:30	warchild	haha
+2016-10-03 12:56:45	warchild	yeah i need more pictures when it comes to cache architecture
+2016-10-03 12:57:38	warchild	no joke when the associativity levels start to become a factor i have to draw it out lol
+2016-10-03 12:57:52	zid	I've never had to deal with that thankfully
+2016-10-03 13:03:00		[12:57]
+2016-10-03 13:04:32	-->	adu (~ajr@pool-173-73-75-233.washdc.fios.verizon.net) has joined ##asm
+2016-10-03 13:07:26	-->	SwiftMatt (~Objective@205.185.214.40) has joined ##asm
+2016-10-03 13:09:33	-->	vigole (~Thunderbi@178.252.165.108) has joined ##asm
+2016-10-03 13:10:35	Jester01	the amd manual does say this: " A load (wp, wt, wb, wc, wc+) may pass a previous non-conflicting store (wp, wt, wb, wc, wc+, nt)."
+2016-10-03 13:10:40	zid	https://fgiesen.wordpress.com/2014/07/07/cache-coherency/ this article is way better
+2016-10-03 13:10:40	Jester01	so with WT memory even if same cache line, that ioapic_read might not work
+2016-10-03 13:10:45	Jester01	because the load may happen before the store
+2016-10-03 13:12:52	<--	vigole (~Thunderbi@178.252.165.108) has quit (Client Quit)
+2016-10-03 13:13:12	-->	vigole (~Thunderbi@178.252.165.108) has joined ##asm
+2016-10-03 13:14:00	-->	WilburPB (~WilburPB@146.197.246.70) has joined ##asm
+2016-10-03 13:14:20	<--	vigole (~Thunderbi@178.252.165.108) has quit (Client Quit)
+2016-10-03 13:16:49	<--	objeck (~objeck@c-71-198-185-204.hsd1.ca.comcast.net) has quit (Ping timeout: 244 seconds)
+2016-10-03 13:17:18	-->	OwariDa (~je@c-f0d871d5.014-410-7570702.cust.bredbandsbolaget.se) has joined ##asm
+2016-10-03 13:18:13	zid	okay as far as I can find out, cache lines are irrelevent
+2016-10-03 13:18:13		[13:18]
+2016-10-03 13:18:18	-->	XOCKET (~XOCKET@unaffiliated/xocket) has joined ##asm
+2016-10-03 13:19:53	zid	all you have to care about is ordering, not lines, as lines look after themselves very well
+2016-10-03 13:20:37	<--	hoe` (~hoe@c-71-237-236-28.hsd1.or.comcast.net) has left ##asm
+2016-10-03 13:21:00	<--	XOCK_STREAM (~XOCKET@unaffiliated/xocket) has quit (Ping timeout: 272 seconds)
+2016-10-03 13:24:17	<--	Xylitol (~temari@unaffiliated/xylitol) has quit (Quit: Sharpen your sickle at sunset)
+2016-10-03 13:30:00		[13:24]
+2016-10-03 13:32:23	<--	XOCKET (~XOCKET@unaffiliated/xocket) has quit (Disconnected by services)
+2016-10-03 13:32:23	-->	XOCKET (~XOCKET@unaffiliated/xocket) has joined ##asm
+2016-10-03 13:37:36	-->	MDude (~MDude@c-73-187-225-46.hsd1.pa.comcast.net) has joined ##asm
+2016-10-03 13:38:12	-->	MDead (~MDude@c-73-187-225-46.hsd1.pa.comcast.net) has joined ##asm
+2016-10-03 13:40:09	<--	MDude (~MDude@c-73-187-225-46.hsd1.pa.comcast.net) has quit (Client Quit)
+2016-10-03 13:40:09	<--	MDead (~MDude@c-73-187-225-46.hsd1.pa.comcast.net) has quit (Client Quit)
+2016-10-03 13:40:38	-->	MDude (~MDude@c-73-187-225-46.hsd1.pa.comcast.net) has joined ##asm
+2016-10-03 13:46:00		[13:40]
+2016-10-03 13:47:46	<--	control (~control@unaffiliated/control) has quit (Ping timeout: 244 seconds)
+2016-10-03 13:48:15	-->	unreal (~unreal@unaffiliated/unreal) has joined ##asm
+2016-10-03 13:48:45	-->	objeck (~objeck@c-71-198-185-204.hsd1.ca.comcast.net) has joined ##asm
+2016-10-03 13:54:00		[13:48]
+2016-10-03 13:55:34	<--	ryonaloli (~gurochan@unaffiliated/ryonaloli) has quit (Ping timeout: 244 seconds)
+2016-10-03 13:56:31	<--	freakazoid0223 (~Administr@pool-108-52-4-99.phlapa.fios.verizon.net) has quit (Ping timeout: 248 seconds)
+2016-10-03 13:57:01	<--	hawes (uid158378@gateway/web/irccloud.com/x-jaafpdctfonwzcof) has quit (Quit: Connection closed for inactivity)
+2016-10-03 14:03:00		[13:57]
+2016-10-03 14:03:50	<--	vdamewood (~vdamewood@unaffiliated/vdamewood) has quit (Quit: Life beckons.)
+2016-10-03 14:09:00		[14:03]
+2016-10-03 14:16:48	<--	WilburPB (~WilburPB@146.197.246.70) has quit (Quit: My Mac has gone to sleep. ZZZzzz…)
+2016-10-03 14:21:01	<--	snyp_ (~Snyp@14.96.68.155) has quit (Ping timeout: 264 seconds)
+2016-10-03 14:24:48	<--	j00ru (~j00ru@80-219-209-110.dclient.hispeed.ch) has quit (Ping timeout: 276 seconds)
+2016-10-03 14:24:48		[14:24]
+2016-10-03 14:25:02	<--	Gynvael (~gynvael@80-219-209-110.dclient.hispeed.ch) has quit (Ping timeout: 272 seconds)
+2016-10-03 14:25:38	<--	oshogbo (~oshogbo@80-219-209-110.dclient.hispeed.ch) has quit (Ping timeout: 276 seconds)
+2016-10-03 14:27:44	-->	paule32_ (~jens@dslb-188-106-252-066.188.106.pools.vodafone-ip.de) has joined ##asm
+2016-10-03 14:31:02	<--	paule32 (~jens@dslb-188-103-040-123.188.103.pools.vodafone-ip.de) has quit (Ping timeout: 265 seconds)
+2016-10-03 14:37:00		[14:31]
+2016-10-03 14:37:12	-->	j00ru (~j00ru@80-219-209-110.dclient.hispeed.ch) has joined ##asm
+2016-10-03 14:37:12	-->	Gynvael (~gynvael@80-219-209-110.dclient.hispeed.ch) has joined ##asm
+2016-10-03 14:37:52	-->	oshogbo (~oshogbo@80-219-209-110.dclient.hispeed.ch) has joined ##asm
+2016-10-03 14:40:55	<--	nogagplz_ (~nogagplz@124-170-218-254.dyn.iinet.net.au) has quit (Quit: ZNC 1.6.3 - http://znc.in)
+2016-10-03 14:41:45	<--	adu (~ajr@pool-173-73-75-233.washdc.fios.verizon.net) has quit (Quit: adu)
+2016-10-03 14:42:01	-->	Ropeney (~Ropeney@tank.mindvision.com.au) has joined ##asm

@@ -12,7 +12,7 @@ runtime! archlinux.vim
 " and configure vim to your own liking!
 " If you prefer the old-style vim functionalty, add 'runtime! vimrc_example.vim'
 " Or better yet, read /usr/share/vim/vim74/vimrc_example.vim or the vim manual
-" and configure vim to your own liking!
+" and configure vim to your own liking
 
 " vimpager options
 let vimpager_use_gvim = 1
@@ -140,6 +140,11 @@ nnoremap <Leader>. :%s/[0-9]*\. //
 "nnoremap <Leader>/ :%s/ by / - /
 nnoremap <Leader>/ <Esc>i<C-r>=system('')
 
+nnoremap <Leader>dg <Esc>:diffget<CR>
+nnoremap <Leader>dp <Esc>:diffput<CR>
+vnoremap <Leader>dg <Esc>:'<,'>diffget<CR>
+vnoremap <Leader>dp <Esc>:'<,'>diffput<CR>
+nnoremap <Leader>dw <Esc>:wincmd p<CR>
 
 "nnoremap <Leader>. V"+y<Esc>:call system("xclip -i -selection clipboard", getreg("\""))
 "\<CR>:call system("xclip -i", getreg("\""))<CR>
@@ -290,12 +295,17 @@ else
 endif
 let g:solarized_diffmode="high"	"default value is normal
 let g:solarized_hitrail=1	"default value is 0
+let g:gruvbox_contrast_dark="high"
+let g:gruvbox_contrast_light="high"
+let g:gruvbox_improved_strings=0
+let g:gruvbox_improved_warnings=0
 " colorscheme solarized
 colorscheme gruvbox
 syntax on
 syntax enable
 filetype on
 filetype plugin on
+set diffopt=filler,context:5,iwhite,vertical
 set omnifunc=syntaxcomplete#Complete
 set nocp
 set background=dark
