@@ -13951,3 +13951,186 @@
 2016-10-03 14:40:05	-->	mbenson__ (~mbenson@108-87-152-117.lightspeed.nsvltn.sbcglobal.net) has joined #ardour
 2016-10-03 14:40:05		[14:40]
 2016-10-03 14:40:15	<--	remixvinil (~remix@95.46.18.239) has quit (Ping timeout: 248 seconds)
+2016-10-03 14:45:19	rgareus	Defcronyke: in the top-level wscript
+2016-10-03 14:45:44	rgareus	Defcronyke:  compiler_flags.append ('-DPROGRAM_NAME="' + Options.options.program_name + '"')  
+2016-10-03 14:45:49	Defcronyke	really?! in plain sight?
+2016-10-03 14:45:49	rgareus	Defcronyke: already has quotes around it
+2016-10-03 14:46:03	Defcronyke	it's not being substituted with quotes on MinGW
+2016-10-03 14:46:33	rgareus	works just fine with mingw on GNU/Linux
+2016-10-03 14:46:38	Defcronyke	yes... of course it does
+2016-10-03 14:46:43	rgareus	and it used to work for waves/tracks (who build using mingw on windows -- but no msys)
+2016-10-03 14:47:28	Defcronyke	everything is showing as "Ardour is not defined"
+2016-10-03 14:47:37	Defcronyke	because it's substituting with Ardour instead of "Ardour"
+2016-10-03 14:47:47	rgareus	odd
+2016-10-03 14:50:38	rgareus	maybe some python issue when calling the compiler on windows. 
+2016-10-03 14:51:08	<--	unclechu (~unclechu@188.17.11.75) has quit (Quit: Leaving)
+2016-10-03 14:51:08	rgareus	ie literally using system   (...  -DPROGRAM_NAME="Ardour" )   which would remove the quotes instead of  exec ()
+2016-10-03 14:51:38	rgareus	then again. it worked for waves.
+2016-10-03 14:52:13	<--	at0m (~at0m@unaffiliated/at0mc/x-0198672) has quit (Ping timeout: 272 seconds)
+2016-10-03 14:52:18	rgareus	Defcronyke: can you run   ./waf -vv ?
+2016-10-03 14:52:38	Defcronyke	i have been
+2016-10-03 14:52:43	rgareus	all the runner []  args here are in single-quotes
+2016-10-03 14:53:17	Defcronyke	i'm wondering if i could do something like #define PROGRAM_NAME "PROGRAM_NAME"
+2016-10-03 14:54:11	rgareus	Defcronyke: https://gcc.gnu.org/onlinedocs/cpp/Stringification.html
+2016-10-03 14:54:16	LAbot	Title: Stringification - The C Preprocessor (at gcc.gnu.org)
+2016-10-03 14:54:36	<--	aisyk (~aisyk@2a02-8429-8179-d500-61d0-5afd-f3b9-49b9.rev.sfr.net) has quit (Remote host closed the connection)
+2016-10-03 14:54:41	rgareus	then again, the issue at hand is not at source-level but rather how the compiler is invoked
+2016-10-03 14:54:56	rgareus	Defcronyke: I expect you'll have similar issues with e.g.   u'-DDATA_DIR="/usr/share/ardour5"'
+2016-10-03 14:55:20	rgareus	and  '-DLOCALEDIR="/usr/share/ardour5/locale"'  and a couple more
+2016-10-03 14:55:20		[14:55]
+2016-10-03 14:55:48	Defcronyke	hmm, we'll see
+2016-10-03 14:56:17	Defcronyke	so it's #define PROGRAM_NAME #PROGRAM_NAME ?
+2016-10-03 14:56:57	Defcronyke	building this stuff on MinGW MSYS2 is making me a bit superstitious lol
+2016-10-03 14:57:35	rgareus	I'm not sure if you can do that (redeclare a define)
+2016-10-03 14:58:15	Defcronyke	i could save the value in another define, and then undef it before redefining...
+2016-10-03 14:58:15	<--	mbenson__ (~mbenson@108-87-152-117.lightspeed.nsvltn.sbcglobal.net) has quit (Ping timeout: 256 seconds)
+2016-10-03 14:58:35	rgareus	Defcronyke: probably not.
+2016-10-03 14:58:40	Defcronyke	idk if that works, i haven't used macros much
+2016-10-03 14:58:40	rgareus	Defcronyke: you can't "save"
+2016-10-03 14:59:00	Defcronyke	hmm okay
+2016-10-03 14:59:05	rgareus	it'll just be expanded. (the preprocessor is stateless)
+2016-10-03 14:59:36	rgareus	indirection may work  like str(s)  xstr(s)  example on the page linked above
+2016-10-03 15:00:20	rgareus	Defcronyke: can you pastebin a  runner []  line from ./waf -vv ?
+2016-10-03 15:01:15	rgareus	on Linux it looks like  http://pastebin.com/aE1LrHD7  
+2016-10-03 15:01:35	rgareus	so  ...  , '-DPROGRAM_NAME="Ardour"', ...
+2016-10-03 15:02:57	<--	Freejack (~Freejack@unaffiliated/freejack) has quit (Ping timeout: 265 seconds)
+2016-10-03 15:03:22	-->	mbenson__ (~mbenson@108-87-152-117.lightspeed.nsvltn.sbcglobal.net) has joined #ardour
+2016-10-03 15:04:18	Defcronyke	it's showing correctly as '-DPROGRAM_NAME="Ardour"'
+2016-10-03 15:04:33	Defcronyke	but it's def expanding to just Ardour without the quotes
+2016-10-03 15:06:09	<--	olinuxx (~capturixe@unaffiliated/olinuxx) has quit (Remote host closed the connection)
+2016-10-03 15:06:19	Defcronyke	ah this is it: http://stackoverflow.com/questions/9928595/how-do-i-pass-a-quoted-string-with-d-to-gcc-in-cmd-exe
+2016-10-03 15:06:19	LAbot	Title: How do I pass a quoted string with -D to gcc in cmd.exe? - Stack Overflow (at stackoverflow.com)
+2016-10-03 15:07:30	Defcronyke	it needs the quote literals inside the quotes
+2016-10-03 15:07:35	Defcronyke	i'll try it and let you know for sure
+2016-10-03 15:07:50	-->	Freejack (~Freejack@unaffiliated/freejack) has joined #ardour
+2016-10-03 15:13:00		[15:07]
+2016-10-03 15:14:46	Defcronyke	i keep forgetting i have to run waf configure all the time after editing wscripts
+2016-10-03 15:14:51	Defcronyke	I'm used to cmake which mostly refreshes itself
+2016-10-03 15:19:17	<--	mbenson__ (~mbenson@108-87-152-117.lightspeed.nsvltn.sbcglobal.net) has quit (Ping timeout: 256 seconds)
+2016-10-03 15:21:55	-->	krabador (~krabador@unaffiliated/krabador) has joined #ardour
+2016-10-03 15:23:00	-->	NickSB2 (~NickSB2__@cpc5-harb9-2-0-cust141.perr.cable.virginm.net) has joined #ardour
+2016-10-03 15:26:20	<--	krabador (~krabador@unaffiliated/krabador) has quit (Client Quit)
+2016-10-03 15:28:18	-->	at0m (~at0m@78-21-156-218.access.telenet.be) has joined #ardour
+2016-10-03 15:28:18		[15:28]
+2016-10-03 15:28:45	--	at0m is now known as Guest17662
+2016-10-03 15:34:00		[15:28]
+2016-10-03 15:35:58	<--	karswell` (~user@13.239.113.87.dyn.plus.net) has quit (Ping timeout: 272 seconds)
+2016-10-03 15:36:30	nstewart	just through pulling in build deps, I have waaay too many plugins. Makes it tough to find anything. 
+2016-10-03 15:39:29	-->	karswell` (~user@216.160.115.87.dyn.plus.net) has joined #ardour
+2016-10-03 15:45:00		[15:39]
+2016-10-03 15:48:39	-->	dsr1204 (~dsr1204@99.111.235.130) has joined #ardour
+2016-10-03 15:52:10	-->	dbolton (~Thunderbi@50-83-92-171.client.mchsi.com) has joined #ardour
+2016-10-03 15:58:00		[15:52]
+2016-10-03 16:01:40	<--	karswell` (~user@216.160.115.87.dyn.plus.net) has quit (Ping timeout: 244 seconds)
+2016-10-03 16:02:05	nstewart	rgareus:  do you have a jumping off point for the vamp stuff? 
+2016-10-03 16:08:00		[16:02]
+2016-10-03 16:09:01	-->	the_CLA (~the_CLA@p57B99344.dip0.t-ipconnect.de) has joined #ardour
+2016-10-03 16:09:56	-->	karswell` (~user@187.124.114.87.dyn.plus.net) has joined #ardour
+2016-10-03 16:13:01	<--	the_CLA_2 (~the_CLA@p57B994F6.dip0.t-ipconnect.de) has quit (Ping timeout: 265 seconds)
+2016-10-03 16:19:00		[16:13]
+2016-10-03 16:28:45	<--	clark|w (~clark_wil@173-25-41-60.client.mchsi.com) has quit (Quit: Leaving)
+2016-10-03 16:34:00		[16:28]
+2016-10-03 16:36:34	<--	kyan (~kyan@cpe-74-78-187-9.maine.res.rr.com) has quit (Read error: Connection reset by peer)
+2016-10-03 16:40:31	<--	karswell` (~user@187.124.114.87.dyn.plus.net) has quit (Ping timeout: 272 seconds)
+2016-10-03 16:46:00		[16:40]
+2016-10-03 17:03:38	-->	falktx (~falktx@dslb-088-075-019-116.088.075.pools.vodafone-ip.de) has joined #ardour
+2016-10-03 17:03:38		[17:03]
+2016-10-03 17:07:48	<--	falktx` (~falktx@dslb-094-223-084-055.094.223.pools.vodafone-ip.de) has quit (Ping timeout: 272 seconds)
+2016-10-03 17:13:00		[17:07]
+2016-10-03 17:15:17	<--	nstewart (~nps@cpe-24-163-95-15.nc.res.rr.com) has left #ardour
+2016-10-03 17:21:00		[17:15]
+2016-10-03 17:22:07	-->	karswell` (~user@187.124.114.87.dyn.plus.net) has joined #ardour
+2016-10-03 17:28:00		[17:22]
+2016-10-03 17:34:38	<--	naturally (~naturally@unaffiliated/naturally) has quit (Ping timeout: 244 seconds)
+2016-10-03 17:40:00		[17:34]
+2016-10-03 17:43:28	<--	naught101 (~naught101@124-169-154-182.dyn.iinet.net.au) has quit (Ping timeout: 244 seconds)
+2016-10-03 17:43:54	<--	dsr1204 (~dsr1204@99.111.235.130) has quit (Ping timeout: 244 seconds)
+2016-10-03 17:49:00		[17:43]
+2016-10-03 17:58:07	--	Vulpes`` is now known as Vulpes
+2016-10-03 17:58:17	<--	Vulpes (~user@ip68-2-62-254.ph.ph.cox.net) has quit (Changing host)
+2016-10-03 17:58:17	-->	Vulpes (~user@unaffiliated/vulpes) has joined #ardour
+2016-10-03 18:04:00		[17:58]
+2016-10-03 18:07:03	-->	GrusGrus (~Thunderbi@176.12.107.137) has joined #ardour
+2016-10-03 18:10:35	<--	henkz (~henke@c-c4c671d5.215-6-64736c10.cust.bredbandsbolaget.se) has quit (Quit: Leaving)
+2016-10-03 18:11:57	-->	GrusGrus1 (~Thunderbi@ne3put60cwpv6hsm0-1.v6.elisa-mobile.fi) has joined #ardour
+2016-10-03 18:13:35	<--	GrusGrus (~Thunderbi@176.12.107.137) has quit (Ping timeout: 272 seconds)
+2016-10-03 18:14:06	--	GrusGrus1 is now known as GrusGrus
+2016-10-03 18:17:19	<--	GrusGrus (~Thunderbi@ne3put60cwpv6hsm0-1.v6.elisa-mobile.fi) has quit (Remote host closed the connection)
+2016-10-03 18:18:53	-->	GrusGrus (~Thunderbi@ne3put60cwpv6hsm0-1.v6.elisa-mobile.fi) has joined #ardour
+2016-10-03 18:21:25	<--	GrusGrus (~Thunderbi@ne3put60cwpv6hsm0-1.v6.elisa-mobile.fi) has quit (Read error: Connection reset by peer)
+2016-10-03 18:21:25		[18:21]
+2016-10-03 18:23:38	-->	_FrnchFrgg_ (~Icedove@2a01:e35:2e92:63f0:fa16:54ff:fef7:e1a8) has joined #ardour
+2016-10-03 18:25:16	-->	GrusGrus (~Thunderbi@ne3put60cwpv6hsm0-1.v6.elisa-mobile.fi) has joined #ardour
+2016-10-03 18:31:00		[18:25]
+2016-10-03 18:34:48	<--	drobilla (~user@172-97-220-102.cpe.distributel.net) has quit (Read error: Connection reset by peer)
+2016-10-03 18:34:52	<--	jpbouza (~Juan@191.85.176.191) has quit (Remote host closed the connection)
+2016-10-03 18:35:10	-->	drobilla (~user@172-97-220-102.cpe.distributel.net) has joined #ardour
+2016-10-03 18:41:00		[18:35]
+2016-10-03 18:43:56	-->	GrusGrus1 (~Thunderbi@85-76-132-239-nat.elisa-mobile.fi) has joined #ardour
+2016-10-03 18:45:16	<--	GrusGrus (~Thunderbi@ne3put60cwpv6hsm0-1.v6.elisa-mobile.fi) has quit (Ping timeout: 272 seconds)
+2016-10-03 18:45:20	--	GrusGrus1 is now known as GrusGrus
+2016-10-03 18:51:00		[18:45]
+2016-10-03 18:52:30	-->	sniff_ (~sniff@81-175-151-76.bb.dnainternet.fi) has joined #ardour
+2016-10-03 18:56:47	sniff_	ardour 5.4.0 crashed, and now it's gone into a state where it's no longer updating jackd transport mode and not sending midi clock to my hardware. the midi routings are there, tried resetting components but to no avail
+2016-10-03 18:57:05	sniff_	any ideas?
+2016-10-03 19:00:32	<--	AlexRussia_ (~Alex@unaffiliated/alexrussia) has quit (Ping timeout: 252 seconds)
+2016-10-03 19:05:43	-->	remixvinil (~remix@95.46.18.239) has joined #ardour
+2016-10-03 19:08:19	-->	naught101 (~naught101@124-169-154-182.dyn.iinet.net.au) has joined #ardour
+2016-10-03 19:08:19		[19:08]
+2016-10-03 19:14:02	sniff_	for what it's worth, i reset alsa/jackd/a2j/ardour again, and furthermore sent HUP to dbus, now it seems to work again :)
+2016-10-03 19:14:11	-->	takuan (~takuan@178-118-89-163.access.telenet.be) has joined #ardour
+2016-10-03 19:20:00		[19:14]
+2016-10-03 19:27:22	<--	remixvinil (~remix@95.46.18.239) has quit (Read error: No route to host)
+2016-10-03 19:27:37	-->	remixvinil (~remix@95.46.18.239) has joined #ardour
+2016-10-03 19:27:49	<--	sniff_ (~sniff@81-175-151-76.bb.dnainternet.fi) has quit (Quit: leaving)
+2016-10-03 19:33:00		[19:27]
+2016-10-03 19:33:26	<--	remixvinil (~remix@95.46.18.239) has quit (Ping timeout: 252 seconds)
+2016-10-03 19:38:17	<--	GrusGrus (~Thunderbi@85-76-132-239-nat.elisa-mobile.fi) has quit (Ping timeout: 248 seconds)
+2016-10-03 19:44:00		[19:38]
+2016-10-03 19:46:37	<--	dbolton (~Thunderbi@50-83-92-171.client.mchsi.com) has quit (Ping timeout: 272 seconds)
+2016-10-03 19:47:29	NoCode	Hrm. How do you use drumkv1 in Ardour? O.o I loaded a sample in, but have no idea otherwise.
+2016-10-03 19:53:00		[19:47]
+2016-10-03 20:01:25	-->	GrusGrus (~Thunderbi@194.100.8.254) has joined #ardour
+2016-10-03 20:01:37	-->	remixvinil (~remix@176.60.213.3) has joined #ardour
+2016-10-03 20:07:00		[20:01]
+2016-10-03 20:07:00	<--	_FrnchFrgg_ (~Icedove@2a01:e35:2e92:63f0:fa16:54ff:fef7:e1a8) has quit (Ping timeout: 252 seconds)
+2016-10-03 20:14:30	-->	naught101_ (~naught101@n114-74-83-1.sbr2.nsw.optusnet.com.au) has joined #ardour
+2016-10-03 20:15:47	<--	naught101 (~naught101@124-169-154-182.dyn.iinet.net.au) has quit (Ping timeout: 252 seconds)
+2016-10-03 20:21:00		[20:15]
+2016-10-03 20:56:33	-->	aisyk (~aisyk@2a02-8429-8179-d500-6c99-48c9-c5eb-4083.rev.sfr.net) has joined #ardour
+2016-10-03 20:56:33		[20:56]
+2016-10-03 21:05:12	<--	DrCode (~DrCode@5.28.134.3) has quit (Quit: ZNC - http://znc.in)
+2016-10-03 21:11:00		[21:05]
+2016-10-03 21:12:13	-->	UlrichH (~UlrichH@1-213-190-109.dsl.ovh.fr) has joined #ardour
+2016-10-03 21:18:00		[21:12]
+2016-10-03 21:21:24	<--	Stuzz (~Stuzz@124-170-158-120.dyn.iinet.net.au) has quit (Quit: Vote Ziltoid!)
+2016-10-03 21:25:50	NoCode	Oh man, drum sequencer strapped to a delay is fun as heck! :D
+2016-10-03 21:26:43	-->	falktx|work (~falktx@185.19.197.52) has joined #ardour
+2016-10-03 21:32:00		[21:26]
+2016-10-03 21:35:03	-->	Caterpillar (~caterpill@unaffiliated/caterpillar) has joined #ardour
+2016-10-03 21:41:00		[21:35]
+2016-10-03 21:43:08	-->	papachef (~compsogna@cxr69-h06-212-195-56-168.dsl.sta.abo.bbox.fr) has joined #ardour
+2016-10-03 21:49:00		[21:43]
+2016-10-03 21:50:18	-->	ahellquist_wrk (~aht@109-124-147-131.customer.t3.se) has joined #ardour
+2016-10-03 21:50:51	-->	dbolton (~Thunderbi@50-83-92-171.client.mchsi.com) has joined #ardour
+2016-10-03 21:56:00		[21:50]
+2016-10-03 21:57:29	<--	Caterpillar (~caterpill@unaffiliated/caterpillar) has quit (Ping timeout: 248 seconds)
+2016-10-03 22:03:00		[21:57]
+2016-10-03 22:03:58	-->	jbitdrop (~jbitdrop@x4db42185.dyn.telefonica.de) has joined #ardour
+2016-10-03 22:04:13	-->	ocbtec (~ocbtec@dslb-088-075-066-122.088.075.pools.vodafone-ip.de) has joined #ardour
+2016-10-03 22:07:02	-->	Caterpillar (~caterpill@unaffiliated/caterpillar) has joined #ardour
+2016-10-03 22:13:00		[22:07]
+2016-10-03 22:14:07	-->	prokoudine (~prokoudin@46.148.192.213) has joined #ardour
+2016-10-03 22:20:00		[22:14]
+2016-10-03 22:22:12	<--	rhydermike (~quassel@cpc80381-grim18-2-0-cust221.12-3.cable.virginm.net) has quit (Remote host closed the connection)
+2016-10-03 22:27:28	-->	nils (nils@nat/redhat/x-wdsbwbolaqcfdobj) has joined #ardour
+2016-10-03 22:33:00		[22:27]
+2016-10-03 23:10:51	<--	dbolton (~Thunderbi@50-83-92-171.client.mchsi.com) has quit (Ping timeout: 244 seconds)
+2016-10-03 23:10:51		[23:10]
+2016-10-03 23:16:51	-->	rghvdberg (~rob@145.130.225.41) has joined #ardour
+2016-10-03 23:18:58	-->	creatid (~creatid@s5596bf76.adsl.online.nl) has joined #ardour
+2016-10-03 23:24:00		[23:18]
+2016-10-03 23:26:44	-->	oofus_lt (~quassel@213.218.193.138) has joined #ardour
+2016-10-03 23:32:00		[23:26]
+2016-10-03 23:35:02	<--	NoCode (~NoCode@unaffiliated/nocode) has quit (Quit: Leaving)
+2016-10-03 23:40:47	-->	electro-flinch (~colinf@84-45-155-109.static.enta.net) has joined #ardour
