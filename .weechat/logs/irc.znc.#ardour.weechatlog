@@ -14810,3 +14810,215 @@
 2016-10-05 03:39:14	<--	rghvdberg (~rob@145.130.225.41) has quit (Remote host closed the connection)
 2016-10-05 03:45:00		[03:39]
 2016-10-05 03:56:55	<--	remixvinil (~remix@176.60.213.3) has quit (Quit: Leaving.)
+2016-10-05 04:02:00		[03:56]
+2016-10-05 04:03:18	-->	yann-kaelig (~inyan@89-64-20-122.dynamic.chello.pl) has joined #ardour
+2016-10-05 04:05:25	<--	Lex_NewtoN (~quassel@5.44.169.197) has quit (Remote host closed the connection)
+2016-10-05 04:08:06	<--	edogawa (~quassel@88-117-117-12.adsl.highway.telekom.at) has quit (Remote host closed the connection)
+2016-10-05 04:11:29	-->	edogawa (~quassel@88-117-117-12.adsl.highway.telekom.at) has joined #ardour
+2016-10-05 04:13:22	-->	nstewart_ (d855aa91@gateway/web/freenode/ip.216.85.170.145) has joined #ardour
+2016-10-05 04:13:40	-->	grumpy (~grumpy@cpe-24-209-42-2.neo.res.rr.com) has joined #ardour
+2016-10-05 04:16:13	grumpy	hi, what does "Home directory not accessible: Permission denied" mean during install ?  http://pastebin.com/y0anCXGg
+2016-10-05 04:17:30	rgareus	grumpy: are you maybe running the installer as root?
+2016-10-05 04:17:30		[04:17]
+2016-10-05 04:18:31	grumpy	yes.. 
+2016-10-05 04:18:37	grumpy	not supposed to? 
+2016-10-05 04:19:18	-->	jpbouza (~Juan@191.85.176.191) has joined #ardour
+2016-10-05 04:19:39	rgareus	yeah, run it as normal user,  the installer will ask for  sudo or su permissions  for the tasks that require admin privs
+2016-10-05 04:20:06	rgareus	and will use normal permissions to check for jackd/rt-permissions
+2016-10-05 04:20:41	rgareus	since root always has access to all devices .. and root can always run tasks at high-priority those checks will return invalid results
+2016-10-05 04:20:57	rgareus	as for the message at hand, I think that comes from jackd
+2016-10-05 04:21:56	nstewart_	For amusement purposes only: The function 'remove_unused_regions_action' is never used
+2016-10-05 04:22:11	grumpy	ok.. I'll try that. recommend using  bash or sh for install ? 
+2016-10-05 04:22:29	-->	JL__ (52e3be7c@gateway/web/freenode/ip.82.227.190.124) has joined #ardour
+2016-10-05 04:23:03	rgareus	nstewart_: it's probably not the only cruft
+2016-10-05 04:23:22	rgareus	grumpy: should not make a difference. the script is portable
+2016-10-05 04:23:33	nstewart_	oh its not. But its perhaps the most ironic. 
+2016-10-05 04:23:46	<--	krabador (~krabador@unaffiliated/krabador) has quit (Remote host closed the connection)
+2016-10-05 04:23:47	rgareus	nstewart_: indeed.
+2016-10-05 04:23:52	grumpy	jus doing "sh ./Ardour_64bit-5.4.0.run"  seems fine.  I didnt want to chmod it. 
+2016-10-05 04:24:16	grumpy	thanks!
+2016-10-05 04:24:25	nstewart_	grep "never used" cpp_check.log |wc    1088    9124  116652
+2016-10-05 04:29:03	rgareus	nstewart_: is that a complete static analysis?
+2016-10-05 04:29:32	rgareus	nstewart_: in some cases signal/slot relations between ui and library code are hard to follow.
+2016-10-05 04:29:54	nstewart_	yes. I figured a good chunk of those are such
+2016-10-05 04:29:59	rgareus	I'd have guessed mayb 10 to 20 unused methods at most
+2016-10-05 04:30:03	nstewart_	I was more looking for whole folders full of them
+2016-10-05 04:36:00		[04:30]
+2016-10-05 04:38:33	JL__	rgareus: hi, odd ... i'll try :  sudo mv /System/Library/Caches/com.apple.coresymbolicationd/data /tmp   and then reboot. After the reboot you can delete the file from /tmp with   sudo rm /tmp/data
+2016-10-05 04:38:44	<--	dobey (~dobey@pool-108-17-146-58.nrflva.fios.verizon.net) has quit (*.net *.split)
+2016-10-05 04:38:44	<--	henkz (~henke@c-c4c671d5.215-6-64736c10.cust.bredbandsbolaget.se) has quit (*.net *.split)
+2016-10-05 04:38:44	<--	freedom01 (~freedom@112.202.1.179) has quit (*.net *.split)
+2016-10-05 04:38:45	<--	ocbtec (~ocbtec@dslb-088-075-066-222.088.075.pools.vodafone-ip.de) has quit (*.net *.split)
+2016-10-05 04:38:46	<--	rosslagerwall_ (~rosslager@41.217.198.146.dyn.plus.net) has quit (*.net *.split)
+2016-10-05 04:38:46	<--	chaot4 (~irssi@mailrelay.hostingcloud24.de) has quit (*.net *.split)
+2016-10-05 04:38:46	<--	Freejack (~Freejack@unaffiliated/freejack) has quit (*.net *.split)
+2016-10-05 04:38:47	<--	at0m (~at0m@unaffiliated/at0mc/x-0198672) has quit (*.net *.split)
+2016-10-05 04:38:47	<--	melanie__ (~melanie@d86-32-65-24.cust.tele2.at) has quit (*.net *.split)
+2016-10-05 04:38:48	<--	nick_m (~nick_m@CPE-121-218-215-124.lnse4.cht.bigpond.net.au) has quit (*.net *.split)
+2016-10-05 04:38:48	<--	dl2s4 (~dsl2@2605:6400:1:fed5:22:2aec:234f:5a46) has quit (*.net *.split)
+2016-10-05 04:39:01	-->	ocbtec (~ocbtec@dslb-088-075-066-222.088.075.pools.vodafone-ip.de) has joined #ardour
+2016-10-05 04:39:02	-->	at0m (~at0m@78-21-156-218.access.telenet.be) has joined #ardour
+2016-10-05 04:39:04	-->	dobey (~dobey@pool-108-17-146-58.nrflva.fios.verizon.net) has joined #ardour
+2016-10-05 04:39:07	-->	henkz (~henke@c-c4c671d5.215-6-64736c10.cust.bredbandsbolaget.se) has joined #ardour
+2016-10-05 04:39:09	-->	melanie__ (~melanie@d86-32-65-24.cust.tele2.at) has joined #ardour
+2016-10-05 04:39:10	-->	chaot4 (~irssi@mailrelay.hostingcloud24.de) has joined #ardour
+2016-10-05 04:39:10	-->	rosslagerwall_ (~rosslager@41.217.198.146.dyn.plus.net) has joined #ardour
+2016-10-05 04:39:12	-->	nick_m (~nick_m@CPE-121-218-215-124.lnse4.cht.bigpond.net.au) has joined #ardour
+2016-10-05 04:39:28	--	at0m is now known as Guest57848
+2016-10-05 04:40:15	JL__	rgareus: reboot  :)
+2016-10-05 04:40:57	<--	JL__ (52e3be7c@gateway/web/freenode/ip.82.227.190.124) has quit (Quit: Page closed)
+2016-10-05 04:40:58	-->	Freejack (~Freejack@unaffiliated/freejack) has joined #ardour
+2016-10-05 04:41:32	-->	nilg (~user@77.70.2.229) has joined #ardour
+2016-10-05 04:41:43	-->	dl2s4 (~dsl2@humble.cf) has joined #ardour
+2016-10-05 04:43:27	-->	freedom01 (~freedom@112.202.1.179) has joined #ardour
+2016-10-05 04:43:39	<--	petererer (~petern@lachesis.fuzzle.org) has quit (Ping timeout: 250 seconds)
+2016-10-05 04:44:29	-->	JL__ (52e3be7c@gateway/web/freenode/ip.82.227.190.124) has joined #ardour
+2016-10-05 04:50:00		[04:44]
+2016-10-05 05:05:25	<--	strixdio (~brian@ool-18bf73c9.dyn.optonline.net) has quit (Read error: No route to host)
+2016-10-05 05:05:25		[05:05]
+2016-10-05 05:05:42	-->	strixdio (~brian@ool-18bf73c9.dyn.optonline.net) has joined #ardour
+2016-10-05 05:11:00		[05:05]
+2016-10-05 05:11:26	<--	son0p (~AndChat32@181.33.147.176) has quit (Ping timeout: 265 seconds)
+2016-10-05 05:14:09	JL__	da isser :)  https://snag.gy/Jywlko.jpg
+2016-10-05 05:14:20	JL__	sorry
+2016-10-05 05:14:59	JL__	it was for rgareus 
+2016-10-05 05:19:39	<--	Arnvidr (~arve@32.89-10-241.nextgentel.com) has quit (Ping timeout: 265 seconds)
+2016-10-05 05:25:00		[05:19]
+2016-10-05 05:34:10	-->	avoca (~avoca@92.251.139.163.threembb.ie) has joined #ardour
+2016-10-05 05:34:46	<--	JL__ (52e3be7c@gateway/web/freenode/ip.82.227.190.124) has quit (Quit: Page closed)
+2016-10-05 05:37:33	<--	yann-kaelig (~inyan@89-64-20-122.dynamic.chello.pl) has quit (Quit: Leaving)
+2016-10-05 05:39:25	<--	falktx|work (~falktx@185.19.197.52) has quit (Quit: Konversation terminated!)
+2016-10-05 05:40:47	-->	_FrnchFrgg_ (~Icedove@2a01:e35:2e92:63f0:fa16:54ff:fef7:e1a8) has joined #ardour
+2016-10-05 05:40:47		[05:40]
+2016-10-05 05:44:12	-->	Lex_NewtoN (~quassel@5.44.169.197) has joined #ardour
+2016-10-05 05:46:08	-->	c3r1c3_Win (~c3r1c3@ip72-211-87-79.no.no.cox.net) has joined #ardour
+2016-10-05 05:46:35	<--	c3r1c3-Win (~c3r1c3@ip72-211-87-79.no.no.cox.net) has quit (Ping timeout: 252 seconds)
+2016-10-05 05:48:45	-->	krabador (~krabador@unaffiliated/krabador) has joined #ardour
+2016-10-05 05:49:57	-->	son0p (~AndChat32@152.201.25.251) has joined #ardour
+2016-10-05 05:54:29	-->	oofus_lt (~quassel@213.205.194.85) has joined #ardour
+2016-10-05 05:58:41	<--	sigma6 (~mbeer@gate.codingtechnologies.de) has quit (Ping timeout: 252 seconds)
+2016-10-05 05:58:41		[05:58]
+2016-10-05 05:59:58	<--	nils (nils@nat/redhat/x-dzuciqculykvpvwh) has quit (Quit: Leaving)
+2016-10-05 06:04:32	-->	Arnvidr (~arve@89.10.241.32) has joined #ardour
+2016-10-05 06:09:08	<--	Arnvidr (~arve@89.10.241.32) has quit (Ping timeout: 252 seconds)
+2016-10-05 06:14:44	-->	NoteOn (~noteon@s174004.ppp.asahi-net.or.jp) has joined #ardour
+2016-10-05 06:14:44		[06:14]
+2016-10-05 06:18:44	<--	edogawa (~quassel@88-117-117-12.adsl.highway.telekom.at) has quit (Remote host closed the connection)
+2016-10-05 06:24:00		[06:18]
+2016-10-05 06:24:02	-->	edogawa (~quassel@88-117-117-12.adsl.highway.telekom.at) has joined #ardour
+2016-10-05 06:28:00	<--	clark|w (~clark_wil@173-25-41-60.client.mchsi.com) has quit (Quit: Leaving)
+2016-10-05 06:33:00		[06:28]
+2016-10-05 06:35:45	<--	edogawa (~quassel@88-117-117-12.adsl.highway.telekom.at) has quit (Remote host closed the connection)
+2016-10-05 06:40:59	-->	polosson (~polosson@lns-bzn-57-82-249-57-93.adsl.proxad.net) has joined #ardour
+2016-10-05 06:46:00		[06:40]
+2016-10-05 06:59:09	<--	oofus_lt (~quassel@213.205.194.85) has quit (Read error: Connection reset by peer)
+2016-10-05 07:02:58	<--	prokoudine (~prokoudin@46.148.192.219) has quit (Quit: Nettalk6 - www.ntalk.de)
+2016-10-05 07:02:58		[07:02]
+2016-10-05 07:06:02	-->	Arnvidr (~arve@89.10.241.32) has joined #ardour
+2016-10-05 07:10:11	-->	yann-kaelig (~inyan@89-64-20-122.dynamic.chello.pl) has joined #ardour
+2016-10-05 07:12:29	<--	audiophilo (~audiophil@82.84.64.105) has quit (Remote host closed the connection)
+2016-10-05 07:15:44	<--	NoCode (~NoCode@unaffiliated/nocode) has quit (Quit: Leaving)
+2016-10-05 07:21:00		[07:15]
+2016-10-05 07:24:21	<--	polosson (~polosson@lns-bzn-57-82-249-57-93.adsl.proxad.net) has quit (Ping timeout: 265 seconds)
+2016-10-05 07:30:00		[07:24]
+2016-10-05 07:39:21	<--	phoracek (~phoracek@ip-89-102-24-203.net.upcbroadband.cz) has quit (Quit: WeeChat 1.5)
+2016-10-05 07:41:58	<--	ocbtec (~ocbtec@dslb-088-075-066-222.088.075.pools.vodafone-ip.de) has quit (Quit: leaving)
+2016-10-05 07:45:48	-->	octave (~octave@unaffiliated/octave) has joined #ardour
+2016-10-05 07:45:48		[07:45]
+2016-10-05 07:59:52	-->	Joschii (~joschii@89.204.138.34) has joined #ardour
+2016-10-05 08:01:51	<--	jbitdrop (~jbitdrop@x4db41823.dyn.telefonica.de) has quit (Quit: Lost terminal)
+2016-10-05 08:01:51		[08:01]
+2016-10-05 08:07:23	<--	_FrnchFrgg_ (~Icedove@2a01:e35:2e92:63f0:fa16:54ff:fef7:e1a8) has quit (Ping timeout: 252 seconds)
+2016-10-05 08:08:18	-->	unclechu (~unclechu@188.17.19.233) has joined #ardour
+2016-10-05 08:10:01	-->	Valvalion (~Valvalion@187.104-201-80.adsl-dyn.isp.belgacom.be) has joined #ardour
+2016-10-05 08:11:07	-->	GrusGrus (~Thunderbi@a88-113-110-199.elisa-laajakaista.fi) has joined #ardour
+2016-10-05 08:17:00		[08:11]
+2016-10-05 08:19:28	<--	avoca (~avoca@92.251.139.163.threembb.ie) has quit (Quit: WeeChat 1.5)
+2016-10-05 08:22:45	-->	_FrnchFrgg_ (~Icedove@2a01:e35:2e92:63f0:fa16:54ff:fef7:e1a8) has joined #ardour
+2016-10-05 08:23:47	-->	unclechu_ (~unclechu@5.141.60.14) has joined #ardour
+2016-10-05 08:25:30	<--	analphabet (Mb7zSGRHix@markab.uberspace.de) has quit (Changing host)
+2016-10-05 08:25:30	-->	analphabet (Mb7zSGRHix@unaffiliated/analphabet) has joined #ardour
+2016-10-05 08:26:13	<--	unclechu (~unclechu@188.17.19.233) has quit (Ping timeout: 265 seconds)
+2016-10-05 08:28:51	-->	NoCode (~NoCode@unaffiliated/nocode) has joined #ardour
+2016-10-05 08:32:18	<--	Headwar (~edouard@2a01cb00054ce4007dcccb400152cfce.ipv6.abo.wanadoo.fr) has quit (Quit: Leaving)
+2016-10-05 08:32:18		[08:32]
+2016-10-05 08:36:33	<--	son0p (~AndChat32@152.201.25.251) has quit (Read error: Connection reset by peer)
+2016-10-05 08:36:49	-->	Miblo_ (~matt@37.152.223.114) has joined #ardour
+2016-10-05 08:37:10	-->	remixvinil (~remix@95.46.18.239) has joined #ardour
+2016-10-05 08:38:54	<--	Miblo (~matt@37.152.223.222) has quit (Ping timeout: 264 seconds)
+2016-10-05 08:38:54	--	Miblo_ is now known as Miblo
+2016-10-05 08:44:00		[08:38]
+2016-10-05 08:49:25	<--	NoCode (~NoCode@unaffiliated/nocode) has quit (Quit: Leaving)
+2016-10-05 08:51:15	-->	JL__ (52e3be7c@gateway/web/freenode/ip.82.227.190.124) has joined #ardour
+2016-10-05 08:52:33	<--	Lex_NewtoN (~quassel@5.44.169.197) has quit (Remote host closed the connection)
+2016-10-05 08:54:54	JL__	rgareus: if you have 2 minutes, is this important ? https://paste.fedoraproject.org/444332/14756936/
+2016-10-05 08:56:15	nstewart_	nah. it's mac. 
+2016-10-05 08:56:15	nstewart_	jk
+2016-10-05 08:56:36	nstewart_	y
+2016-10-05 08:57:29	JL__	yes, its a mac, sorry
+2016-10-05 09:01:46	rgareus	no minute
+2016-10-05 09:01:46		[09:01]
+2016-10-05 09:02:06	JL__	rgareus: no problem, ciap
+2016-10-05 09:02:07	rgareus	but crash in com.apple.GeForceGLDriver ... 
+2016-10-05 09:02:17	rgareus	takes a lot more than 2 mins :)
+2016-10-05 09:02:50	JL__	rgareus: we forget :) wgat means jk ?
+2016-10-05 09:03:04	rgareus	hiding the mouse-cursor?
+2016-10-05 09:03:33	nstewart_	just kidding. mac joke
+2016-10-05 09:03:35	JL__	nste wa wrote this
+2016-10-05 09:03:53	JL__	ah ok
+2016-10-05 09:05:25	rgareus	nstewart_: did you make some headway with lua + vamp, yet?
+2016-10-05 09:05:47	nstewart_	not yet. haven't found the jumping off point. Nor have I had much time to look at it.
+2016-10-05 09:06:09	rgareus	nstewart_: I've pushed 2 simple scripts   scripts/_*vamp*
+2016-10-05 09:07:02	rgareus	ardour sets a VAMP search-path to only list vamp plugins bundled with ardour... that's somewhat limiting.
+2016-10-05 09:08:01	<--	krabador (~krabador@unaffiliated/krabador) has quit (Remote host closed the connection)
+2016-10-05 09:08:46	rgareus	still, for implementing Audio to MIDI,  using some vamp-plugin is IMHO the best way.
+2016-10-05 09:09:58	rgareus	update qm-dsp lib and  copy a couple of plugins from http://vamp-plugins.org/download.html (x-platform, bundled with Ardour) I think.
+2016-10-05 09:09:59	LAbot	Title: Vamp Plugins (at vamp-plugins.org)
+2016-10-05 09:10:03	nstewart_	yeah - saw some really promising looking stuff in there. I've been trying to get sonic-visualiser / vamp going first.
+2016-10-05 09:11:16	rgareus	i'm 50/50 on relaxing the search path to include locally installed Vamp plugins.   it's nice for prototyping,  but less so for portable use of scripts
+2016-10-05 09:11:47	rgareus	nstewart_: did you try the binary from http://www.sonicvisualiser.org/download.html ?
+2016-10-05 09:11:48	LAbot	Title: Download Sonic Visualiser (at www.sonicvisualiser.org)
+2016-10-05 09:11:59	JL__	rgareus: forget the screen, i delete it again, it was only to show were is: /System/Library/Caches/com.apple.coresymbolicationd/
+2016-10-05 09:11:59	-->	NoCode (~NoCode@unaffiliated/nocode) has joined #ardour
+2016-10-05 09:12:07	rgareus	JL__: OK
+2016-10-05 09:12:47	rgareus	nstewart_: then again it smells a bit like a gcc4/5 issue.  Vamp plugins have a C++ API.
+2016-10-05 09:13:01	rgareus	and even just indexing plugins can cause crashes if there's a mismatch.
+2016-10-05 09:13:27	nstewart_	the stack trace was looking at seems to imply it's actually some vamp plugin blowing up (in plugin getdescriptor) rather than SV actually being the one blowing up
+2016-10-05 09:13:43	JL__	rgareus: and to find who wrote what to this place is another story, thanks and ciao
+2016-10-05 09:14:10	nstewart_	that actually sounds like what its doing
+2016-10-05 09:15:43	rgareus	nstewart_: try      export VAMP_PATH=/nothinghere
+2016-10-05 09:17:25	<--	JL__ (52e3be7c@gateway/web/freenode/ip.82.227.190.124) has quit (Quit: Page closed)
+2016-10-05 09:17:25		[09:17]
+2016-10-05 09:18:55	nstewart_	that'd be it. thanks. will see if I can get my plugins recompiled correctly.
+2016-10-05 09:23:15	-->	petererer (~petern@lachesis.fuzzle.org) has joined #ardour
+2016-10-05 09:25:18	<--	electro-flinch (~colinf@axicon.plus.com) has quit (Quit: Leaving.)
+2016-10-05 09:26:24	-->	son0p (~AndChat32@152.200.255.101) has joined #ardour
+2016-10-05 09:26:31	<--	NoCode (~NoCode@unaffiliated/nocode) has quit (Quit: Leaving)
+2016-10-05 09:31:00	<--	son0p (~AndChat32@152.200.255.101) has quit (Read error: Connection reset by peer)
+2016-10-05 09:31:51	-->	electro-flinch (~colinf@axicon.plus.com) has joined #ardour
+2016-10-05 09:36:31	<--	GrusGrus (~Thunderbi@a88-113-110-199.elisa-laajakaista.fi) has quit (Quit: GrusGrus)
+2016-10-05 09:36:31		[09:36]
+2016-10-05 09:43:30	-->	son0p (~AndChat32@152.201.10.175) has joined #ardour
+2016-10-05 09:46:53	<--	electro-flinch (~colinf@axicon.plus.com) has quit (Quit: Leaving.)
+2016-10-05 09:47:17	-->	oofus (~chris@oofus1-adsl.demon.co.uk) has joined #ardour
+2016-10-05 09:47:51	-->	NoCode (~NoCode@unaffiliated/nocode) has joined #ardour
+2016-10-05 09:53:00		[09:47]
+2016-10-05 10:05:24	<--	son0p (~AndChat32@152.201.10.175) has quit (Ping timeout: 244 seconds)
+2016-10-05 10:11:00		[10:05]
+2016-10-05 10:28:29	<--	NoCode (~NoCode@unaffiliated/nocode) has quit (Quit: Leaving)
+2016-10-05 10:28:29		[10:28]
+2016-10-05 10:29:24	<--	nilg (~user@77.70.2.229) has quit (Remote host closed the connection)
+2016-10-05 10:30:10	-->	polosson (~polosson@lns-bzn-57-82-249-57-93.adsl.proxad.net) has joined #ardour
+2016-10-05 10:32:26	-->	nilg (~user@77.70.2.229) has joined #ardour
+2016-10-05 10:33:27	-->	rghvdberg (~rghvdberg@145.130.225.41) has joined #ardour
+2016-10-05 10:35:35	-->	krabador (~krabador@unaffiliated/krabador) has joined #ardour
+2016-10-05 10:36:58	<--	nilg (~user@77.70.2.229) has quit (Remote host closed the connection)
+2016-10-05 10:39:40	<--	polosson (~polosson@lns-bzn-57-82-249-57-93.adsl.proxad.net) has left #ardour ("http://quassel-irc.org - Discuter simplement. Partout.")
+2016-10-05 10:40:33	-->	edogawa (~quassel@88-117-117-12.adsl.highway.telekom.at) has joined #ardour
+2016-10-05 10:46:00		[10:40]
+2016-10-05 10:48:42	<--	oofus (~chris@oofus1-adsl.demon.co.uk) has quit (Ping timeout: 272 seconds)
+2016-10-05 10:49:09	-->	oofus (~chris@oofus1-adsl.demon.co.uk) has joined #ardour
+2016-10-05 10:52:06	<--	takuan (~takuan@178-118-89-163.access.telenet.be) has quit (Ping timeout: 263 seconds)
+2016-10-05 10:58:00		[10:52]
+2016-10-05 11:06:13	<--	Valvalion (~Valvalion@187.104-201-80.adsl-dyn.isp.belgacom.be) has quit (Remote host closed the connection)
+2016-10-05 11:12:00		[11:06]
