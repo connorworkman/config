@@ -46,7 +46,7 @@ export LANG="en_US.UTF-8"
 export LANGUAGE="en_US.UTF-8"
 export LC="en_US.UTF-8"
 ## Tell ccache to only use compilers here
-#export CCACHE_PATH="/usr/bin"
+export CCACHE_PATH="/usr/bin"
 #export CCACHE_PATH=/usr/lib/distcc/bin:/usr/bin:/usr/bin
 #export CCACHE_PREFIX="distcc"
 ## Less env
