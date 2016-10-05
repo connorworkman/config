@@ -10,8 +10,17 @@
 alias zshconfig='vim ${HOME}/.zshrc '
 alias ohmyzsh='pushd ${ZSH} '
 
+2>/dev/null unalias c
 ## Custom aliases
 
+alias c='colordiff '
+## install colordiff package :)
+alias vcdiff='colordiff -swBW 150 '
+alias hcdiff='colordiff -swByW 150 '
+alias bvcdiff='colordiff -swBW 150 --suppress-blank-empty '
+alias bhcdiff='colordiff -swByW 150 --suppress-blank-empty '
+alias svcdiff='colordiff -swBW 150 --suppress-blank-empty --suppress-common-lines '
+alias shcdiff='colordiff -swByW 150 --suppress-blank-empty --suppress-common-lines '
 alias zswap='printf "\n\033[32m%s \033[31m%s\033[0m\n\n" "ZSWAP Enabled:" "$(grep --color=always "[YN]" /sys/module/zswap/parameters/enabled)" && sudo grep -R . /sys/kernel/debug/zswap && echo '
 alias tzswap='sudo su -c "(sed 'y/NY/YN/' /sys/module/zswap/parameters/enabled >|/sys/module/zswap/parameters/enabled && cat /sys/module/zswap/parameters/enabled)" '
 alias slog='git log --show-signature '
@@ -1346,13 +1355,6 @@ alias fgrep='fgrep --color=auto '
 ## Generate sha1 digest
 alias sha1='openssl sha1 '
 alias mkdir='mkdir -pv '
-## install colordiff package :)
-alias vcdiff='colordiff -swBW 150 '
-alias hcdiff='colordiff -swByW 150 '
-alias bvcdiff='colordiff -swBW 150 --suppress-blank-empty '
-alias bhcdiff='colordiff -swByW 150 --suppress-blank-empty '
-alias svcdiff='colordiff -swBW 150 --suppress-blank-empty --suppress-common-lines '
-alias shcdiff='colordiff -swByW 150 --suppress-blank-empty --suppress-common-lines '
 
 ## Stop after sending count ECHO_REQUEST packets
 alias pong='ping -c 5 '
