@@ -9662,3 +9662,58 @@
 2016-10-05 12:32:37	krishna	I can use awk to filter out a line if a column has been seen with awk '!seen[$1]++'. Can I instead use awk to use the most recently version of the line?
 2016-10-05 12:38:00		[12:32]
 2016-10-05 12:44:15	-->	shesek (~shesek@bzq-84-110-55-54.red.bezeqint.net) has joined #awk
+2016-10-05 12:44:52	Riviera	krishna: the relative order matters, i guess?  That is, if the last line with "xxx" comes before "yyy" it should not be printed as "yyy" and then "xxx"?
+2016-10-05 12:50:00		[12:44]
+2016-10-05 12:52:06	-->	lgc (~lgc@silicio.qteorica.cinvestav.mx) has joined #awk
+2016-10-05 12:53:26	lgc	Hi. I want to extract lines when $2 is 1.406, but '$2==1.406' fails. Any ideas?
+2016-10-05 12:55:56	nal	yeah
+2016-10-05 12:56:33	lgc	I'm all ears.
+2016-10-05 12:56:51	nal	$2 == "1.406"
+2016-10-05 12:57:18	lgc	No luck.
+2016-10-05 12:57:37	nal	mmm interesting
+2016-10-05 12:57:58	lgc	Funny thing, if I try to extract 1.400, it does fine.
+2016-10-05 12:59:00	nal	is it because 406 doesnt exist?
+2016-10-05 12:59:49	lgc	Actually, there are 10 occurrences. Grep does fine picking them out.
+2016-10-05 13:00:02	lgc	Awk only finds one.
+2016-10-05 13:00:16	Riviera	hard to believe if even the string comparison fails
+2016-10-05 13:00:37	krishna	Riviera: Not sure I understand the question. Order isn't so important in the boutput. Just if `xxx b` appears before `xxx c`. Show `xxx c` instead.
+2016-10-05 13:00:40	lgc	It's a shame, Riviera. Unless I'm doing something wrong.
+2016-10-05 13:01:09	Riviera	krishna: Try:  awk '{ a[$1] = $0 } END { for (b in a) print a[b] }'
+2016-10-05 13:01:17	Riviera	lgc: well, show a reproducer :)
+2016-10-05 13:01:36	Riviera	lgc: You should be able to show one line that awk should catch, but does not.
+2016-10-05 13:01:41	lgc	That went off my head, I'm afraid, Riviera.
+2016-10-05 13:02:22	krishna	Riviera: Ah. That makes sense thanks. Sometimes I forget that awk is this fully fledged programming language.
+2016-10-05 13:02:33	nal	if grep works, then cat -v and inspect the string itself
+2016-10-05 13:02:33	lgc	Here, Riviera : "( 5,65)  1.406 85.191	5->65 (p)".
+2016-10-05 13:02:52	nal	ah
+2016-10-05 13:02:56	nal	its not $2 then
+2016-10-05 13:02:56	Riviera	lgc: $2 is 5,65)
+2016-10-05 13:03:29	lgc	No, Riviera. $1 is ( 5,65).
+2016-10-05 13:03:42	nal	...
+2016-10-05 13:03:51	Riviera	lgc: What is your field separator?
+2016-10-05 13:03:59	lgc	Space.
+2016-10-05 13:04:14	Riviera	lgc: There is a space between ( and 5.
+2016-10-05 13:05:05	lgc	Oh, that might be it, yes...
+2016-10-05 13:05:05		[13:05]
+2016-10-05 13:05:06	nal	just {print $2} and see for yourself
+2016-10-05 13:05:56	lgc	what does "cat -v" do, nal?
+2016-10-05 13:06:43	nal	from manpage "-v      Display non-printing characters so they are visible."
+2016-10-05 13:07:47	lgc	It did nothing, actually, nal.
+2016-10-05 13:07:56	lgc	Except for an echo
+2016-10-05 13:08:40	lgc	Perhaps it is because the space is a visible character, after all.
+2016-10-05 13:08:40	nal	that was if there was something between 1.406, but because there isnt and 1.406 is actually $3 you dont need cat -v
+2016-10-05 13:09:08	lgc	Right, nal.
+2016-10-05 13:10:54	<--	talsamon (~talsamon@91-115-88-139.adsl.highway.telekom.at) has quit (Ping timeout: 244 seconds)
+2016-10-05 13:11:14	lgc	I found it easier to do '$(NF-3)==1.406' and avoid the fumble. :).
+2016-10-05 13:11:16	rods-tab3	2016 Edition  http://pubs.opengroup.org/onlinepubs/9699919799/utilities/awk.html
+2016-10-05 13:11:20	-->	talsamon (~talsamon@193-83-242-22.adsl.highway.telekom.at) has joined #awk
+2016-10-05 13:16:59	lgc	I almost forget to thank youRiviera and nal.
+2016-10-05 13:17:03	lgc	I almost forget to thank you Riviera and nal.
+2016-10-05 13:17:24	Riviera	welcome
+2016-10-05 13:23:00		[13:17]
+2016-10-05 13:27:57	<--	ljharb (sid43720@oftn/oswg-member/ljharb) has quit (Ping timeout: 244 seconds)
+2016-10-05 13:32:46	-->	ljharb (sid43720@oftn/oswg-member/ljharb) has joined #awk
+2016-10-05 13:38:00		[13:32]
+2016-10-05 13:39:25	<--	lgc (~lgc@silicio.qteorica.cinvestav.mx) has quit (Quit: Leaving)
+2016-10-05 13:39:42	nal	:)
+2016-10-05 13:45:00		[13:39]

@@ -24537,3 +24537,65 @@
 2016-10-05 12:43:15	-->	guzzlefry (~guzzlefry@unaffiliated/guzzlefry) has joined #znc
 2016-10-05 12:43:15		[12:43]
 2016-10-05 12:43:23	guzzlefry	is it normal for ZNC to eat around 10% CPU?
+2016-10-05 12:47:16	MetaNova	no
+2016-10-05 12:47:20	MetaNova	not even close
+2016-10-05 12:47:27	guzzlefry	well, something is wrong. >_>
+2016-10-05 12:47:33	MetaNova	very wrong
+2016-10-05 12:47:42	guzzlefry	Suggestions?
+2016-10-05 12:48:03	MetaNova	log module loaded? savebuff loaded?
+2016-10-05 12:48:25	MetaNova	how many users? how many networks?
+2016-10-05 12:48:33	MetaNova	are you bouncing dcc?
+2016-10-05 12:48:36	<--	CaTtleyA (~CaTtleyA@lfbn-1-3377-77.w90-127.abo.wanadoo.fr) has quit (Ping timeout: 268 seconds)
+2016-10-05 12:49:10	guzzlefry	Just me on two networks. Mods are log, webadmin, nickserv, simple_away. I'm not sure what bouncing DCC means.
+2016-10-05 12:50:04	MetaNova	normally ZNC hands off DCC sessions between the remote user and the client IP which is connected to ZNC, if [[bounce_dcc]] is loaded, ZNC acts as an intermediary for DCC transfers
+2016-10-05 12:50:04	ZNC-Linker	http://wiki.znc.in/bounce_dcc
+2016-10-05 12:50:14	MetaNova	which can eat up CPU and bandwidth a lot more than normal
+2016-10-05 12:50:35	MetaNova	what hardware are you running ZNC on?
+2016-10-05 12:52:13	<--	dgtlchlk (~uhmm@2001:470:1f11:5a0::18) has quit (Ping timeout: 256 seconds)
+2016-10-05 12:52:37	guzzlefry	MetaNova: http://www.newegg.com/Product/Product.aspx?Item=N82E16859107921 one of those.  AMD Turion II Model Neo N54L
+2016-10-05 12:53:03	MetaNova	oh
+2016-10-05 12:53:08	MetaNova	so, plenty of room
+2016-10-05 12:53:26	<--	TAARs (~user@unaffiliated/taars) has quit (Ping timeout: 265 seconds)
+2016-10-05 12:53:38	MetaNova	(by room I mean, hardware capabilities/overhead to handle tasks like ZNC)
+2016-10-05 12:53:52	MetaNova	if it had been a first-generation RPi I might have been concerned
+2016-10-05 12:53:57	MetaNova	well, uh ..
+2016-10-05 12:54:28	MetaNova	... try unloading the log module, and restarting ZNC
+2016-10-05 12:55:03	MetaNova	if the CPU activity drops down to next-to-nothing, where it ought to be, load the log module while ZNC is running
+2016-10-05 12:55:10	MetaNova	if it spikes, we know it's the culprit
+2016-10-05 12:55:27	MetaNova	if the CPU activity stays around 10% with the log module unloaded, well, we'll have to look at other explanations
+2016-10-05 12:56:33	guzzlefry	k, attempting
+2016-10-05 12:57:36	-->	bugzc (~1@unaffiliated/bugzc) has joined #znc
+2016-10-05 12:58:16	guzzlefry	well, it should respond to kill, right? I also have two ZNC processes under my user.
+2016-10-05 12:58:17		[12:58]
+2016-10-05 12:58:57	-->	TAARs (~user@unaffiliated/taars) has joined #znc
+2016-10-05 12:59:05	-->	dgtlchlk (~uhmm@2001:470:1f11:5a0::18) has joined #znc
+2016-10-05 13:00:11	-->	tfgbd_znc (tfgbd_@2002:2d3e:f754::2d3e:f754) has joined #znc
+2016-10-05 13:00:13	guzzlefry	MetaNova: mystery solved. I had a second process running that went wrong somehow.
+2016-10-05 13:00:52	MetaNova	oi
+2016-10-05 13:00:59	MetaNova	well, I'm glad it's sorted
+2016-10-05 13:01:10	guzzlefry	thanks for the help
+2016-10-05 13:03:05	<--	tfgbd_znc (tfgbd_@2002:2d3e:f754::2d3e:f754) has left #znc
+2016-10-05 13:04:15	<--	kingkong- (antalya@shellium/member/kingkong) has quit (Remote host closed the connection)
+2016-10-05 13:06:42	-->	kingkong- (antalya@shellium/member/kingkong) has joined #znc
+2016-10-05 13:11:15	-->	bathtub_shark (Zarthus@trivialand/guesser/zarthus) has joined #znc
+2016-10-05 13:14:20	<--	zncuser (~zncuser@p4FE94F27.dip0.t-ipconnect.de) has quit (Ping timeout: 256 seconds)
+2016-10-05 13:14:20		[13:14]
+2016-10-05 13:16:42	-->	zncuser (~zncuser@p4FE95F16.dip0.t-ipconnect.de) has joined #znc
+2016-10-05 13:20:18	<--	guzzlefry (~guzzlefry@unaffiliated/guzzlefry) has left #znc ("Leaving")
+2016-10-05 13:26:00		[13:20]
+2016-10-05 13:27:00	<--	Guest50_ (~textual@111.94.135.178) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-10-05 13:28:09	<--	vectr0n|cloud (uid25562@gateway/web/irccloud.com/x-wwsmnznpmewpuise) has quit (Read error: Connection reset by peer)
+2016-10-05 13:33:26	-->	vectr0n|cloud (uid25562@gateway/web/irccloud.com/x-fpyjqohxfxyyvdnp) has joined #znc
+2016-10-05 13:39:00		[13:33]
+2016-10-05 13:42:36	-->	EricGonczer_ (~textual@70.114.232.51) has joined #znc
+2016-10-05 13:42:54	-->	ExorcisE (L@unaffiliated/exorcise) has joined #znc
+2016-10-05 13:42:56	<--	duckydan (~duckydan@192.111.79.220) has quit (Ping timeout: 244 seconds)
+2016-10-05 13:43:57	<--	Colti (Miramar-FL@2a00:c1e0:0:2:0:1:208:ab5e) has quit (Excess Flood)
+2016-10-05 13:44:16	-->	Colti (Miramar-FL@2a00:c1e0:0:2:0:1:208:ab5e) has joined #znc
+2016-10-05 13:50:00		[13:44]
+2016-10-05 13:50:32	-->	duckydan (~duckydan@192.111.79.220) has joined #znc
+2016-10-05 13:53:15	-->	nightfrog (nightfrog@65-35-35-108.res.bhn.net) has joined #znc
+2016-10-05 13:56:19	-->	EricGonc_ (~textual@72.32.180.178) has joined #znc
+2016-10-05 13:56:53	<--	EricGonczer_ (~textual@70.114.232.51) has quit (Ping timeout: 244 seconds)
+2016-10-05 13:58:45	<--	kazimuth (~james@ec2-54-172-24-246.compute-1.amazonaws.com) has quit (Quit: ZNC - http://znc.in)
+2016-10-05 13:59:15	-->	kazimuth (~james@ec2-54-172-24-246.compute-1.amazonaws.com) has joined #znc

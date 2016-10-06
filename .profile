@@ -8,7 +8,7 @@
 #export PATH="/opt/openresty/bin:/opt/openresty/nginx/sbin:${PATH}"
 #export PATH="/opt/android-sdk/platform-tools:${HOME}/.gem/ruby/2.3.0/bin:${HOME}/bin:/store/scripts:/store/local/Wolfram/CDFPlayer/10.3/Executables:/store/local/bin:${HOME}/.linuxbrew/bin:${PATH}"
 #export PATH="/usr/lib/colorgcc/bin:${PATH}"    # As per usual colorgcc installation, leave unchanged (don't add ccache)
-export PATH=/usr/lib/distcc/bin:/store/config/scripts:/usr/lib/colorgcc/bin:/opt/android-sdk/platform-tools:${HOME}/.gem/ruby/2.3.0/bin:${HOME}/bin:/store/scripts:/store/local/Wolfram/CDFPlayer/10.3/Executables:/store/local/bin:${HOME}/.linuxbrew/bin:/opt/openresty/bin:/opt/openresty/nginx/sbin:${HOME}/GNUstep/Tools:/bin:/sbin:/usr/local/sbin:/usr/local/bin:/usr/bin:/usr/lib/jvm/default/bin:/usr/bin/site_perl:/usr/bin/vendor_perl:/usr/bin/core_perl
+export PATH=/usr/lib/distcc/bin:/store/config/scripts:/usr/lib/colorgcc/bin:/opt/android-sdk/platform-tools:${HOME}/.gem/ruby/2.3.0/bin:${HOME}/bin:/store/scripts:/store/local/Wolfram/CDFPlayer/10.3/Executables:/store/local/bin:${HOME}/.linuxbrew/bin:/opt/openresty/bin:/opt/openresty/nginx/sbin:${HOME}/GNUstep/Tools:/bin:/sbin:/usr/local/sbin:/usr/local/bin:/usr/bin:/usr/lib/jvm/default/bin:/usr/bin/site_perl:/usr/bin/vendor_perl:/usr/bin/core_perl:${HOME}/code/go/bin
 #export PATH=/usr/lib/ccache/bin:${PATH}
 #export MANPATH="/usr/local/man:${MANPATH}"
 export MANPATH=/usr/local/man:${MANPATH}:${HOME}/.linuxbrew/share/man
@@ -49,6 +49,7 @@ export LC="en_US.UTF-8"
 export CCACHE_PATH="/usr/bin"
 #export CCACHE_PATH=/usr/lib/distcc/bin:/usr/bin:/usr/bin
 #export CCACHE_PREFIX="distcc"
+export GOPATH=${HOME}/code/go
 ## Less env
 export PAGER="less"
 #export SYSTEMD_LESS='-FRXMK' journalctl
