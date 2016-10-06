@@ -1,0 +1,47 @@
+# Maintainer: Justin Dray <justin@dray.be>
+# Previous maintainer: bobpaul (bobpaul on archlinux forumsBoohbah <boohbah at gmail.com>)
+# Contributor: Mikeserv
+
+_gitname=bcachefs-tools
+pkgname=${_gitname}-git
+pkgver=0.9.r128.g85069b4
+pkgrel=1
+pkgdesc="Userspace tools for bcache until bcache merges with either dm or md"
+changelog=bcache-tools-git.changelog
+arch=('i686' 'x86_64')
+url="http://bcache.evilpiepirate.org/"
+license=('GPL')
+depends=('util-linux' 'libnih' 'scrypt' 'libscrypt')
+makedepends=('git')
+
+# set _gitrev to a git revision (man gitrevisions) like a tag, a commit sha1
+# hash or a branch name to build from this tree instead of master
+
+# _gitrev=""
+#_gitrev="89f11b135d1"
+
+pkgver() {
+	cd "${srcdir}/${_gitname}"
+	[[ -n $_gitrev ]] && git reset --hard "$_gitrev"
+	git describe --long --tags | sed -E 's/([^-]*-g)/r\1/;s/-/./g;s/^v//'
+}
+
+prepare() {
+	[[ ! -d "${srcdir}/${_gitname}" ]] || rm -rf "${srcdir}/${_gitname}"
+	cd "${srcdir}"
+	git clone -b dev https://evilpiepirate.org/git/bcache-tools.git "$srcdir/${_gitname}"
+}
+
+build() {
+	cd "${srcdir}/${_gitname}"
+	make clean
+	sed -i 's/-static//
+		s@=/sbin@=usr/sbin@
+		s/sbin/bin/g' Makefile
+	make
+}
+
+package() {
+	cd "${srcdir}/${_gitname}"
+	make DESTDIR="${pkgdir}/" install
+}
