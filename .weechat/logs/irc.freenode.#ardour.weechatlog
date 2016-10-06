@@ -5554,3 +5554,187 @@
 2016-10-05 15:29:37	<--	vekoon (~vekoon@188-141-112-94.dynamic.upc.ie) has quit (Ping timeout: 265 seconds)
 2016-10-05 15:34:24	-->	alyptik_ (~alyptik@unaffiliated/alyptik) has joined #ardour
 2016-10-05 15:40:00		[15:34]
+2016-10-05 15:41:48	-->	strixdio (~brian@ool-18bf73c9.dyn.optonline.net) has joined #ardour
+2016-10-05 15:41:58	-->	NoCode (~NoCode@unaffiliated/nocode) has joined #ardour
+2016-10-05 15:44:42	-->	Al-Magna (4f4eb160@gateway/web/freenode/ip.79.78.177.96) has joined #ardour
+2016-10-05 15:45:04	<--	Miblo (~matt@37.152.223.114) has quit (Ping timeout: 256 seconds)
+2016-10-05 15:47:40	<--	unclechu_ (~unclechu@5.141.60.14) has quit (Quit: Leaving)
+2016-10-05 15:48:59	-->	Miblo (~matt@37.152.223.11) has joined #ardour
+2016-10-05 15:50:07	Al-Magna	Hello all, I hope everyone is feeling splendid? I have a question, just chucked Ubuntu Studio 16.04 x64 on a refurbished Dell OptiPlex 745 -- core2duo 2.2ghz, 6gb ram, 160gb 7200rpm sata OS drive, 500gb 7200rpm data drive.. this connects to a Soundcraft Si-Compact 32 via it's MADI-USB combo card, direct outs set for all channels, getting audio into to ardour is fine (going via Jack).. however, I can't seem to route it back on any of 
+2016-10-05 15:51:33	Al-Magna	I've been using LiveProfessor for live DSP experimentation with this card on a mac, so I know that my IN's are set correctly on the desk to the corresponding ones on the MADI-USB card.
+2016-10-05 15:51:42	las	Al-Magna: test this without Ardour first
+2016-10-05 15:51:48	las	Al-Magna: in fact, if possible, without JACK
+2016-10-05 15:51:49	Al-Magna	^ :)
+2016-10-05 15:52:00	Al-Magna	Okay... cheers @Las
+2016-10-05 15:52:22	las	Al-Magna: Ubuntu is unfortunately known for shipping kernel versions with occasional/periodic ALSA driver breakage
+2016-10-05 15:52:54	las	Al-Magna: also, i don't personally know the status of MADI-USB support on Linux. it may just work. or ... it maynot.
+2016-10-05 15:53:02	Al-Magna	I've just got no budget in this venue, and am basically trying to come up with a recording solution
+2016-10-05 15:53:28	las	Al-Magna: "MADI-USB with a Soundcraft Si-Compact 32" is not "no budget" :)
+2016-10-05 15:54:19	Al-Magna	Las: like I say, and excuse my IRC ettique - not been on in a while, getting stuff into Ardour is okay, I see live metering etc, just routing out of either a specific channel or even the master bus just yields nada
+2016-10-05 15:54:44	-->	_milky_ (~Dustin@71.91.14.203) has joined #ardour
+2016-10-05 15:55:12	Al-Magna	Las: lol, taken me about a year of begging and pleading to get this card, if I have to go Windows > Cubase whatever to get recording in place I will, I'd rather not though :)
+2016-10-05 15:55:12		[15:55]
+2016-10-05 15:55:36	las	Al-Magna: just use tools like aplay to do basic audio i/o testing
+2016-10-05 15:55:47	Al-Magna	Thanks Las, 
+2016-10-05 15:55:48	las	Al-Magna: then use JACK to try input->output monitoring pathways. 
+2016-10-05 15:56:01	las	Al-Magna: if they both work, then your issue is just internal routing in Ardour
+2016-10-05 15:56:16	las	Al-Magna: if aplay can't be made to work, then the problem is in the device driver
+2016-10-05 15:56:30	las	Al-Magna: if JACK can't be made to work, then i don't know what's wrong
+2016-10-05 15:57:32	 *	Al-Magna loads aplay...
+2016-10-05 15:59:41	-->	nstewart (~nps@cpe-24-163-95-15.nc.res.rr.com) has joined #ardour
+2016-10-05 15:59:49	nstewart	someone's been busy I see
+2016-10-05 16:01:24	<--	timbyr_ (~timbyr@101.163.72.79) has quit (Ping timeout: 244 seconds)
+2016-10-05 16:01:24	<--	chaot4 (~irssi@mailrelay.hostingcloud24.de) has quit (Read error: Connection reset by peer)
+2016-10-05 16:02:17	-->	chaot4 (~irssi@mailrelay.hostingcloud24.de) has joined #ardour
+2016-10-05 16:03:01	Al-Magna	Las: the driver definitions are interesting to say the least.. here's a snipper from the middle: surround71:CARD=COMBO,DEV=0 \n     Soundcraft MADI-USB COMBO, USB Audio \n     7.1 Surround output to Front, Center, Side, Rear and Woofer speakers
+2016-10-05 16:04:09	Al-Magna	Las: Puter see's the card as: 5.1, a 7.1, 2.1, 4.1, 4.0, 5.0 etc capable :D
+2016-10-05 16:04:22	las	Al-Magna: that's completely normal for ALSA
+2016-10-05 16:04:25	las	Al-Magna: ignore it
+2016-10-05 16:04:57	las	Al-Magna: the only device names you're interested in are of the form hw:COMBO or hw:N 
+2016-10-05 16:05:02	Al-Magna	las: I guess it's trying to make sense of so many channels
+2016-10-05 16:05:06	las	Al-Magna: something like that. Do this: 
+2016-10-05 16:05:08	las	in a terminal window, run this command: cd /tmp && wget http://jackaudio.org/downloads/adevices.sh && bash ./adevices.sh
+2016-10-05 16:05:19	las	Al-Magna: then use pastebin or some similar website to show the output
+2016-10-05 16:05:33	las	Al-Magna: no, it isn't trying to make sense of the channels. it is just builtin stuff for ALSA
+2016-10-05 16:05:35	Al-Magna	las: scared of flooding here tbh, good idea..
+2016-10-05 16:06:39	-->	timbyr_ (~timbyr@101.163.72.79) has joined #ardour
+2016-10-05 16:07:06	Al-Magna	las: http://pastebin.com/pPkKtQwq
+2016-10-05 16:08:49	las	Al-Magna: yep, hw:COMBO or hw:1 are the only device names you should consider using (hw:COMBO is portable across reboots, too)
+2016-10-05 16:09:11	las	Al-Magna: aplay will not work if jack or pulseaudio are using the device
+2016-10-05 16:09:32	-->	the_CLA (~the_CLA@p57B99A58.dip0.t-ipconnect.de) has joined #ardour
+2016-10-05 16:10:58	Al-Magna	las: I've quit qjackctl
+2016-10-05 16:10:58		[16:10]
+2016-10-05 16:11:32	Al-Magna	las: Gonna fire up Ardour and see if it's possible to bypass Jack then and pray it's kept all my routing on my saved preset (27 channels)
+2016-10-05 16:12:44	las	Al-Magna: you should try aplay first
+2016-10-05 16:12:55	las	Al-Magna: by default it should replicate audio across all channels of the device
+2016-10-05 16:13:31	las	Al-Magna: then use JACK to route something (input, or some other application, eg. jack_metro) to some outputs
+2016-10-05 16:13:35	<--	the_CLA_2 (~the_CLA@p57B99BD7.dip0.t-ipconnect.de) has quit (Ping timeout: 272 seconds)
+2016-10-05 16:14:03	Al-Magna	las: well, trying to use ALSA as the audio system just specifies failed to open the audio device with the Audio/Setup window
+2016-10-05 16:14:22	Al-Magna	las: so am I aiming to use Jack > ALSA > Ardour or ALSA > Ardour?
+2016-10-05 16:16:24	<--	las (~paul@24.48.108.164) has quit (Quit: Leaving)
+2016-10-05 16:22:00		[16:16]
+2016-10-05 16:28:30	Al-Magna	Mmm, interesting.. I see las has had to go so will re-pose the question from the room, so using aplay I'm getting output from the internal soundcard but not the USB.. aplay -D plughw:CARD=COMBO,DEV=0 -v ~/Downloads/LRMonoPhase4.wav aplay: main:722: audio open error: Device or resource busy
+2016-10-05 16:34:00		[16:28]
+2016-10-05 16:34:14	<--	NoCode (~NoCode@unaffiliated/nocode) has quit (Quit: Leaving)
+2016-10-05 16:38:40	Al-Magna	Yah.. same shizzle.. I think this is basically, fuck proaudio use & even casual desktop use on Linux (the same way it has been for the last 15 years!). I'll stick to my Debian servers thanxxx, just tried to go the *Nix -- yes, yes.. I know I'm using evil Ubuntu (kern: 4.4.0-31-lowlatency) but I'm using a build specifically built for Audio work! Windows 7 and Cubase it is for meeee! Ardour is a great piece of software when used on OS 
+2016-10-05 16:39:58	Al-Magna	I don't hate the project, I'm just fed up of seeing the same basic issues with audio hardware I saw soooo  many years ago, keep up the good work guys :)
+2016-10-05 16:45:00		[16:39]
+2016-10-05 16:50:54	-->	NoCode_ (~NoCode@135-23-43-125.cpe.pppoe.ca) has joined #ardour
+2016-10-05 16:50:55	ristic_	In the insert time dialog, I can't seem to enter 3 bars.
+2016-10-05 16:51:57	ristic_	From what I understand I need to right click and change the clock to bars:beats
+2016-10-05 16:52:13	ristic_	And then key in 003000000
+2016-10-05 16:52:29	ristic_	but I hit enter and it changed it back to all 0's
+2016-10-05 16:53:15	ristic_	Is there something I'm doing wrong or is is broken in the 5.4.0 release?
+2016-10-05 16:56:05	ristic_	brb
+2016-10-05 16:56:07	<--	ristic_ (~risitc@46.101.231.43) has quit (Quit: WeeChat 0.4.2)
+2016-10-05 16:56:34	-->	ristic (~risitc@46.101.231.43) has joined #ardour
+2016-10-05 17:00:24	-->	dsr1204 (~dsr1204@99-111-235-130.lightspeed.cicril.sbcglobal.net) has joined #ardour
+2016-10-05 17:00:24		[17:00]
+2016-10-05 17:10:05	-->	bcode (~bcode@189.217.223.110) has joined #ardour
+2016-10-05 17:12:31	bcode	Hi every time i compile Ardour 5.4 I get an error every time I get out of the routing grid and click on a different track
+2016-10-05 17:12:56	bcode	I do not get that error when I download a nightly build
+2016-10-05 17:13:25	bcode	I get the error only when I compile Ardour
+2016-10-05 17:14:14	bcode	This is the error: g_log: os_bar_hide: assertion 'OS_IS_BAR (bar)' failed
+2016-10-05 17:16:52	bcode	First I submited a bug on mantis but I realized only my compiles were affected by the error
+2016-10-05 17:16:52		[17:16]
+2016-10-05 17:17:35	bcode	Any one familiar with that who can point me in the right direction.
+2016-10-05 17:18:14	bcode	I can work with ardour but the problem comes when I have to assign a track output
+2016-10-05 17:18:36	bcode	I have to save there and reopen ardour every time I work on a new track
+2016-10-05 17:19:10	bcode	But I am realy excited about the midi loop mix
+2016-10-05 17:20:19	bcode	I knew something was wrong with MIDI loops on previous versions
+2016-10-05 17:22:17	bcode	I'll live this window open for a while just in case anyone wants to give me some advice
+2016-10-05 17:24:27	Al-Magna	I actually am taunting myself by still fiddling with this even further.. I have to manually select every track and tell that to route out of playback 1/2 --- I'm sure there is a better way to do this but it works, Thank you "las" for your patience and troubleshooting. However my view is still the same.. The Linux desktop environment & sound drivers are still in massive disrepeair.. This box will very likely go Windows sadly as I'll n
+2016-10-05 17:30:00		[17:24]
+2016-10-05 17:33:35	<--	son0p (~AndChat32@152.201.137.52) has quit (Quit: Bye)
+2016-10-05 17:33:46	-->	son0p (~ff@186.159.112.30) has joined #ardour
+2016-10-05 17:37:07	bcode	I am reading it may be a combination of wxwidgets3 and overlay-scrollbar causing this in my system
+2016-10-05 17:38:49	-->	takuan (~takuan@178-118-89-163.access.telenet.be) has joined #ardour
+2016-10-05 17:40:39	<--	son0p (~ff@186.159.112.30) has quit (Ping timeout: 256 seconds)
+2016-10-05 17:42:12	-->	son0p (~ff@152.201.61.85) has joined #ardour
+2016-10-05 17:48:00		[17:42]
+2016-10-05 17:53:21	<--	bcode (~bcode@189.217.223.110) has quit (Quit: Konversation terminated!)
+2016-10-05 17:54:47	<--	dsr1204 (~dsr1204@99-111-235-130.lightspeed.cicril.sbcglobal.net) has quit (Ping timeout: 252 seconds)
+2016-10-05 17:55:32	nstewart	well, I let qm-transcribe take a crack at my sample 2-note polyphony isolated guitar track. Rhythmwise it was pretty much spot on. Pitch... it's obvious what's being played, but there's a lot of next-note errors.
+2016-10-05 17:56:50	nstewart	trying to recall, but I'm pretty certain I tuned very carefully because it was a test track for auto transcription.  A few octave errors as well, but they're a bit more understandable.
+2016-10-05 17:58:05	<--	son0p (~ff@152.201.61.85) has quit (Ping timeout: 272 seconds)
+2016-10-05 17:58:36	<--	henkz (~henke@c-c4c671d5.215-6-64736c10.cust.bredbandsbolaget.se) has quit (Quit: Leaving)
+2016-10-05 17:58:57	-->	falktx` (~falktx@dslb-088-072-189-199.088.072.pools.vodafone-ip.de) has joined #ardour
+2016-10-05 17:59:37	-->	grumpy_ (~grumpy@cpe-24-209-42-2.neo.res.rr.com) has joined #ardour
+2016-10-05 17:59:38	<--	grumpy (~grumpy@cpe-24-209-42-2.neo.res.rr.com) has quit (Read error: Connection reset by peer)
+2016-10-05 17:59:38	-->	son0p (~ff@186.159.112.30) has joined #ardour
+2016-10-05 18:02:29	<--	falktx (~falktx@dslb-094-223-088-245.094.223.pools.vodafone-ip.de) has quit (Ping timeout: 252 seconds)
+2016-10-05 18:08:00		[18:02]
+2016-10-05 18:08:27	<--	son0p (~ff@186.159.112.30) has quit (Quit: Lost terminal)
+2016-10-05 18:14:00		[18:08]
+2016-10-05 18:17:38	<--	nstewart (~nps@cpe-24-163-95-15.nc.res.rr.com) has left #ardour
+2016-10-05 18:20:49	-->	dbolton (~Thunderbi@50-83-92-171.client.mchsi.com) has joined #ardour
+2016-10-05 18:26:00		[18:20]
+2016-10-05 18:26:48	<--	NoCode_ (~NoCode@135-23-43-125.cpe.pppoe.ca) has quit (Read error: Connection reset by peer)
+2016-10-05 18:32:00		[18:26]
+2016-10-05 18:35:27	<--	Guest15286 (~Thunderbi@d118-75-67-2.try.wideopenwest.com) has quit (Ping timeout: 272 seconds)
+2016-10-05 18:38:31	<--	jpbouza (~Juan@191.85.176.191) has quit (Remote host closed the connection)
+2016-10-05 18:44:00		[18:38]
+2016-10-05 18:50:04	-->	tweed (~Thunderbi@d118-75-67-2.try.wideopenwest.com) has joined #ardour
+2016-10-05 18:50:29	--	tweed is now known as Guest22200
+2016-10-05 18:55:07	-->	nilg (~user@77.70.2.229) has joined #ardour
+2016-10-05 18:56:12	-->	NoCode (~NoCode@unaffiliated/nocode) has joined #ardour
+2016-10-05 19:02:00		[18:56]
+2016-10-05 19:09:33	-->	remixvinil (~remix@95.46.18.239) has joined #ardour
+2016-10-05 19:09:53	<--	NoCode (~NoCode@unaffiliated/nocode) has quit (Quit: Leaving)
+2016-10-05 19:15:00		[19:09]
+2016-10-05 19:17:53	-->	rghvdberg (~rghvdberg@145.130.225.41) has joined #ardour
+2016-10-05 19:19:16	-->	ssj71 (~spencer@c-67-177-34-187.hsd1.ut.comcast.net) has joined #ardour
+2016-10-05 19:19:55	ssj71	anybody happen to know how to recover a session that won't load and gives the error did not load successfully: Cannot configure audio/midi engine with session parameters
+2016-10-05 19:25:00		[19:19]
+2016-10-05 19:30:00	rghvdberg	ssj71: don't tell me the podcast won't load o.O
+2016-10-05 19:30:39	ssj71	how did you guess :\
+2016-10-05 19:32:10	rghvdberg	aarrghhh
+2016-10-05 19:33:21	rghvdberg	I guess you can always get the wav files from the project
+2016-10-05 19:33:34	rghvdberg	don't remember the foldername
+2016-10-05 19:34:12	ssj71	peaks iirc
+2016-10-05 19:34:12	rghvdberg	*directory (this is linux ;-) )
+2016-10-05 19:34:23	rghvdberg	no 
+2016-10-05 19:34:28	rghvdberg	hold on
+2016-10-05 19:34:33	ssj71	exchange
+2016-10-05 19:34:48	ssj71	either way its not going to be tonight
+2016-10-05 19:35:10	ssj71	I'm going to bed. ttyl
+2016-10-05 19:35:17	<--	ssj71 (~spencer@c-67-177-34-187.hsd1.ut.comcast.net) has quit (Quit: leaving)
+2016-10-05 19:41:00		[19:35]
+2016-10-05 19:48:44	<--	dbolton (~Thunderbi@50-83-92-171.client.mchsi.com) has quit (Ping timeout: 244 seconds)
+2016-10-05 19:54:00		[19:48]
+2016-10-05 20:01:27	-->	GrusGrus (~Thunderbi@yor3.gofore.com) has joined #ardour
+2016-10-05 20:07:00		[20:01]
+2016-10-05 20:07:03	<--	remixvinil (~remix@95.46.18.239) has quit (Ping timeout: 265 seconds)
+2016-10-05 20:08:54	-->	NoteOn (~noteon@s174004.ppp.asahi-net.or.jp) has joined #ardour
+2016-10-05 20:14:00		[20:08]
+2016-10-05 20:18:39	<--	aloiscochard (uid2076@gateway/web/irccloud.com/x-vrigwqpkkujbinlc) has quit (Ping timeout: 265 seconds)
+2016-10-05 20:20:26	-->	remixvinil (~remix@176.60.213.3) has joined #ardour
+2016-10-05 20:20:27	<--	naught101_ (~naught101@14-202-176-150.static.tpgi.com.au) has quit (Ping timeout: 256 seconds)
+2016-10-05 20:22:13	-->	naught101_ (~naught101@14-202-176-150.static.tpgi.com.au) has joined #ardour
+2016-10-05 20:23:04	-->	aisyk (~aisyk@2a02-8429-8179-d500-05f8-cc40-4cf4-e659.rev.sfr.net) has joined #ardour
+2016-10-05 20:23:13	-->	aloiscochard (uid2076@gateway/web/irccloud.com/x-cqyhnckvddwjjunc) has joined #ardour
+2016-10-05 20:29:00		[20:23]
+2016-10-05 20:47:10	<--	aloiscochard (uid2076@gateway/web/irccloud.com/x-cqyhnckvddwjjunc) has quit (Ping timeout: 265 seconds)
+2016-10-05 20:47:10		[20:47]
+2016-10-05 20:51:50	-->	aloiscochard (uid2076@gateway/web/irccloud.com/x-ttgpyobwhekwwhjc) has joined #ardour
+2016-10-05 20:54:54	<--	freedom01 (~freedom@112.202.1.179) has quit (Ping timeout: 265 seconds)
+2016-10-05 21:00:00		[20:54]
+2016-10-05 21:13:29	<--	Stuzz (~Stuzz@124-170-158-120.dyn.iinet.net.au) has quit (Quit: Vote Ziltoid!)
+2016-10-05 21:16:18	-->	freedom01 (~freedom@112.202.19.189) has joined #ardour
+2016-10-05 21:16:18		[21:16]
+2016-10-05 21:37:20	-->	falktx|work (~falktx@185.19.197.52) has joined #ardour
+2016-10-05 21:37:20		[21:37]
+2016-10-05 21:45:12	<--	grumpy_ (~grumpy@cpe-24-209-42-2.neo.res.rr.com) has quit (Read error: Connection reset by peer)
+2016-10-05 21:45:29	-->	grumpy_ (~grumpy@cpe-24-209-42-2.neo.res.rr.com) has joined #ardour
+2016-10-05 21:51:00		[21:45]
+2016-10-05 21:54:06	-->	sigma6 (~mbeer@gate.codingtechnologies.de) has joined #ardour
+2016-10-05 22:00:00		[21:54]
+2016-10-05 22:05:24	-->	olinuxx (~capturixe@ANancy-653-1-532-187.w83-196.abo.wanadoo.fr) has joined #ardour
+2016-10-05 22:05:24	<--	olinuxx (~capturixe@ANancy-653-1-532-187.w83-196.abo.wanadoo.fr) has quit (Changing host)
+2016-10-05 22:05:24	-->	olinuxx (~capturixe@unaffiliated/olinuxx) has joined #ardour
+2016-10-05 22:10:07	-->	nils (nils@nat/redhat/x-pqzzlxrlglwrdbgo) has joined #ardour
+2016-10-05 22:10:11	-->	Caterpillar (~caterpill@unaffiliated/caterpillar) has joined #ardour
+2016-10-05 22:16:00		[22:10]
+2016-10-05 22:17:09	-->	epaladin (32960dd1@gateway/web/freenode/ip.50.150.13.209) has joined #ardour
+2016-10-05 22:18:16	<--	epaladin (32960dd1@gateway/web/freenode/ip.50.150.13.209) has left #ardour
+2016-10-05 22:20:54	-->	prokoudine (~prokoudin@46.148.192.211) has joined #ardour

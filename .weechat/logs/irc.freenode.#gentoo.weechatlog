@@ -25934,3 +25934,822 @@
 2016-10-05 15:40:51	deathlire	I have a hardware oddity myself, seems if i do not put this on suspend and wake it back up, kvm never kicks on. took me 3 months to find the work around for that :(
 2016-10-05 15:40:51		[15:40]
 2016-10-05 15:41:12	<--	zone_twelve (~eshafer@162-207-148-113.lightspeed.jcsnms.sbcglobal.net) has quit (Quit: Leaving)
+2016-10-05 15:41:31	-->	castlelore (~castlelor@cpe-66-8-186-100.hawaii.res.rr.com) has joined #gentoo
+2016-10-05 15:41:48	-->	strixdio (~brian@ool-18bf73c9.dyn.optonline.net) has joined #gentoo
+2016-10-05 15:42:46	-->	Judge_Dredd (~Judge_Dre@unaffiliated/judge-dredd/x-2170742) has joined #gentoo
+2016-10-05 15:45:53	wokko	*acpi sleep disorders* sounds like an episode on 'Dr Phil' :)
+2016-10-05 15:46:21	-->	justsomeguy (~justsomeg@unaffiliated/--/x-3805311) has joined #gentoo
+2016-10-05 15:47:11	gotwf	and the term 'gentoo virgin' sounds like one is just about to be screwed...
+2016-10-05 15:47:18	<--	tdr (~tdr@unaffiliated/tdr) has quit (Remote host closed the connection)
+2016-10-05 15:47:30	gotwf	sets a stage I don't want to contemplate...heh
+2016-10-05 15:47:39	-->	mudler (~weechat@unaffiliated/mudler) has joined #gentoo
+2016-10-05 15:47:39	<--	goodghost (~goodghost@kacnep.ru) has quit (Quit: goodghost)
+2016-10-05 15:48:53	-->	XuR__ (~quassel@ip98-165-85-128.ph.ph.cox.net) has joined #gentoo
+2016-10-05 15:49:50	-->	Tommy[D] (~TommyD]@gentoo/developer/tommy) has joined #gentoo
+2016-10-05 15:49:51	--	Mode #gentoo [+v Tommy[D]] by ChanServ
+2016-10-05 15:50:37	<--	mathjoke (~jon@c-98-200-187-8.hsd1.tx.comcast.net) has quit (Quit: leaving)
+2016-10-05 15:51:51	<--	XuR_ (~quassel@ip98-165-85-128.ph.ph.cox.net) has quit (Ping timeout: 265 seconds)
+2016-10-05 15:52:13	justsomeguy	lol
+2016-10-05 15:52:49	<--	fstd (~fstd@unaffiliated/fisted) has quit (Ping timeout: 265 seconds)
+2016-10-05 15:53:06	-->	fstd (~fstd@unaffiliated/fisted) has joined #gentoo
+2016-10-05 15:53:08	<--	jstypo (~jstypo@148.103.43.59) has quit (Remote host closed the connection)
+2016-10-05 15:53:49	-->	jstypo (~jstypo@148.103.43.59) has joined #gentoo
+2016-10-05 15:55:04	deathlire	ole Dr. Phil, wish i could hold him down and shave that moustache of his off..lol
+2016-10-05 15:56:03	-->	leat1 (~leat@198.199.127.213) has joined #gentoo
+2016-10-05 15:56:03		[15:56]
+2016-10-05 15:56:21	<--	Garibaldi (~adalton@cpe-98-26-67-154.nc.res.rr.com) has quit (Quit: leaving)
+2016-10-05 15:56:43	-->	Garibaldi (~adalton@cpe-98-26-67-154.nc.res.rr.com) has joined #gentoo
+2016-10-05 15:57:26	-->	duderonomy (~duderonom@2620:149:5:1b04:3c92:b733:ff4c:b81e) has joined #gentoo
+2016-10-05 15:58:11	justsomeguy	Is it possible to use the kernel and initramfs from my fedora install to boot gentoo? (I'm installing gentoo to a btrfs subvolume from an existing fedora installation.)
+2016-10-05 15:58:43	justsomeguy	I figure all I have to do is create the appropriate menuentry in grub, but I've never tried anything like that before.
+2016-10-05 15:59:15	deathlire	are you looking for a chroot?
+2016-10-05 15:59:40	<--	optiz0r (~quassel@higgins.sihnon.net) has quit (Ping timeout: 272 seconds)
+2016-10-05 15:59:49	-->	inteq (~justin.si@23-113-69-15.lightspeed.tukrga.sbcglobal.net) has joined #gentoo
+2016-10-05 15:59:54	<--	castlelore (~castlelor@cpe-66-8-186-100.hawaii.res.rr.com) has quit (Ping timeout: 264 seconds)
+2016-10-05 16:00:28	justsomeguy	I have it installed into a chroot already, but would like to boot into it directly in the future. The reason I'm contemplating booting using fedoras kernel + initramfs it in order to avoid setting up SecureBoot, since fedora's kernel is already signed and loaded into an EFI shim.
+2016-10-05 16:00:43	deathlire	the install of gentoo is the same no matter if you are using ubuntu live cd, arch, debian, sysrecue, or gentoo minimal.
+2016-10-05 16:01:23	deathlire	but don't believe you can 'boot' into gentoo with a fedora kernel
+2016-10-05 16:02:15	justsomeguy	Ok, good to know. I thought it would be as simple as changing the destination subvolume to boot from in a grub menuentry.
+2016-10-05 16:02:18	deathlire	why not turn secureboot off until after gentoo is installed, and then turn it back on afterwards?
+2016-10-05 16:02:58	<--	huva (~huva@207-255-240-205-dhcp.unt.pa.atlanticbb.net) has quit (Remote host closed the connection)
+2016-10-05 16:03:22	justsomeguy	deathlire: Well, gentoo is already installed. I was just hoping there was a way to avoid setting up secureboot entirely by using fedoras kernel. #justlazythings
+2016-10-05 16:04:05	deathlire	do you even need to keep secure boot on? hehe, that's my lazy trick by keeping it off
+2016-10-05 16:04:31	<--	Colti (Miramar-FL@2a00:c1e0:0:2:0:1:208:ab5e) has quit (Excess Flood)
+2016-10-05 16:04:34	<--	loriot (~tro0o0on@dslb-178-007-168-123.178.007.pools.vodafone-ip.de) has quit (Quit: Leaving.)
+2016-10-05 16:05:02	deathlire	but i'm not having people sticking weird devices into my desktop at home since the case is lockable anyways, so I'm not to worried about that
+2016-10-05 16:05:07	-->	Colti (Miramar-FL@2a00:c1e0:0:2:0:1:208:ab5e) has joined #gentoo
+2016-10-05 16:05:13	<--	jstypo (~jstypo@148.103.43.59) has quit (Remote host closed the connection)
+2016-10-05 16:05:56	justsomeguy	I dont really need to, but I'd really like to keep securboot on. I'll probably end up reading a couple hundered pages before I decide it's not worth the effort.
+2016-10-05 16:06:03	-->	jstypo (~jstypo@148.103.43.59) has joined #gentoo
+2016-10-05 16:06:24	-->	muffindrake (~muffindra@unaffiliated/muffindrake) has joined #gentoo
+2016-10-05 16:08:14	justsomeguy	I guess it just seems like a good idea since EFI wont allow me to encrypt the EFI system partition, and the machine is a laptop (so other people may have physical access to it at some point).
+2016-10-05 16:09:20	--	Guest62166 is now known as ponbiki
+2016-10-05 16:09:29	justsomeguy	But mostly it's just because I'm stubborn. :P
+2016-10-05 16:09:39	<--	muffindr1ke (~muffindra@unaffiliated/muffindrake) has quit (Ping timeout: 244 seconds)
+2016-10-05 16:10:29	-->	KWhat4 (~kwhat@47.150.72.111) has joined #gentoo
+2016-10-05 16:11:51	<--	Colti (Miramar-FL@2a00:c1e0:0:2:0:1:208:ab5e) has quit (Max SendQ exceeded)
+2016-10-05 16:11:51		[16:11]
+2016-10-05 16:12:19	<--	sls404 (~sls404@p5B046B63.dip0.t-ipconnect.de) has quit (Ping timeout: 272 seconds)
+2016-10-05 16:12:25	-->	Colti (Miramar-FL@2a00:c1e0:0:2:0:1:208:ab5e) has joined #gentoo
+2016-10-05 16:13:33	-->	rparkhurst (~rparkhurs@cpe-66-68-160-213.austin.res.rr.com) has joined #gentoo
+2016-10-05 16:14:06	deathlire	well probably a good idea if it's a laptop, you do have the bios password protected and also booting it passworded then?
+2016-10-05 16:14:10	-->	loa (~loki@broadband-188-32-186-142.nationalcablenetworks.ru) has joined #gentoo
+2016-10-05 16:14:13	<--	Ashareth_ (~Ashareth@AMontsouris-559-1-65-242.w92-140.abo.wanadoo.fr) has quit (Ping timeout: 272 seconds)
+2016-10-05 16:14:30	<--	loa (~loki@broadband-188-32-186-142.nationalcablenetworks.ru) has quit (Client Quit)
+2016-10-05 16:14:46	deathlire	seems to me that locking them out before they can even boot anything would be more secure hehe
+2016-10-05 16:14:56	-->	rtm1046 (~john@104.224.158.166.16clouds.com) has joined #gentoo
+2016-10-05 16:15:01	maolang	justsomeguy: what you want to do, boot the OS completely encrypted?
+2016-10-05 16:15:10	deathlire	throw some lo-jack on it as well
+2016-10-05 16:15:30	-->	sls404 (~sls404@p5B047451.dip0.t-ipconnect.de) has joined #gentoo
+2016-10-05 16:15:30	<--	cbrown (~cbrown@107.170.41.138) has quit (Quit: ZNC - http://znc.in)
+2016-10-05 16:15:40	-->	loa (~loki@broadband-188-32-186-142.nationalcablenetworks.ru) has joined #gentoo
+2016-10-05 16:15:51	justsomeguy	maolang: Yes. '/' will be mounted to a BTRFS subvolume which live on encrypted LUKS.
+2016-10-05 16:15:57	justsomeguy	*lives
+2016-10-05 16:16:00	-->	cbrown (~cbrown@107.170.41.138) has joined #gentoo
+2016-10-05 16:16:12	<--	loa (~loki@broadband-188-32-186-142.nationalcablenetworks.ru) has quit (Client Quit)
+2016-10-05 16:16:27	-->	loa (~loki@broadband-188-32-186-142.nationalcablenetworks.ru) has joined #gentoo
+2016-10-05 16:16:45	<--	duderonomy (~duderonom@2620:149:5:1b04:3c92:b733:ff4c:b81e) has quit (Ping timeout: 272 seconds)
+2016-10-05 16:16:58	maolang	justsomeguy: you are aware, that in order to boot, some part cannot be encrypted, unless you boot from a USB dongle etc so your HD on laptop could be a-z encrypted....
+2016-10-05 16:17:16	justsomeguy	deathlire: I do have the UEFI firmware password protected.
+2016-10-05 16:17:30	deathlire	I need to get unlazy and actually do all of that fun stuff, so i can lazily not do a @world emerge and deal with 500 blocks since i haven't updated but core essentials i use in over a year :P
+2016-10-05 16:17:42	<--	inteq (~justin.si@23-113-69-15.lightspeed.tukrga.sbcglobal.net) has quit (Read error: Connection reset by peer)
+2016-10-05 16:18:11	<--	loa (~loki@broadband-188-32-186-142.nationalcablenetworks.ru) has quit (Client Quit)
+2016-10-05 16:18:20	deathlire	So i can actually be of more help to all the luks and btrfs people, although i hear btrfs is quite slow.
+2016-10-05 16:18:24	-->	loa (~loki@broadband-188-32-186-142.nationalcablenetworks.ru) has joined #gentoo
+2016-10-05 16:18:25	wokko	justsomeguy: some light reading https://wiki.gentoo.org/wiki/Sakaki%27s_EFI_Install_Guide/Configuring_Secure_Boot
+2016-10-05 16:18:54	-->	inteq (~justin.si@23-113-69-15.lightspeed.tukrga.sbcglobal.net) has joined #gentoo
+2016-10-05 16:19:10	deathlire	wokko, figured everyone has stumbled onto Sakaki's guides by now :)
+2016-10-05 16:20:05	<--	rtm1046 (~john@104.224.158.166.16clouds.com) has quit (Remote host closed the connection)
+2016-10-05 16:20:14	deathlire	think I actually tried to follow that one, but was using a non uefi'ed booted usb with gentoo minimal, and took me a few tries to figure out the problem hehe
+2016-10-05 16:20:20	justsomeguy	maolang: If I understand it correctly, I think that's the point of SecureBoot. It will only boot kernels with a signature that's stored on a database stored in UEFI, or a VeriSign endored signature.
+2016-10-05 16:21:06	wokko	deathlire: Yeah there are plenty of guides around the donkeyweb, justa matter of picking parts of each to get what you want.
+2016-10-05 16:21:17	maolang	justsomeguy: "even" if you use secureboot from UEFI, that kernel will need to be read from an unencrypted partition, no way around that
+2016-10-05 16:21:37	deathlire	point is: so people can't stick the ultimate boot disk in your dvd drive, and boot into it giving them all of your passwords /files, I would have thought + encryption
+2016-10-05 16:21:42	-->	rtm1046 (~john@104.224.158.166.16clouds.com) has joined #gentoo
+2016-10-05 16:22:01	loa	i give on my installation of gentoo(( dunno what is wrong. installed ubuntu just for test all working ok.
+2016-10-05 16:22:09	justsomeguy	maolang: But it wont boot if you use UEFI. That at least will give you some time to chroot in and make a new kernel instead of rootkiting yourself.
+2016-10-05 16:22:26	justsomeguy	s/ UEFI./ SecureBoot. /g
+2016-10-05 16:22:32	loa	maybe i have just bad hands, but it was 12 hours maraphone of trying setup things right.
+2016-10-05 16:23:04	loa	with ubuntu even efi partition was setuped right without me (sad)
+2016-10-05 16:23:16	wokko	loa: Dont give up just keep trying until it works
+2016-10-05 16:23:49	deathlire	don't feel bad loa, took me more than a few months to get my volume keys working, among other odd things when i first installed gentoo
+2016-10-05 16:24:19	justsomeguy	loa: It too me a while, too. I still have trouble on new installs, but I think it's worth the effort.
+2016-10-05 16:24:20	deathlire	video actually wasn't a problem in the beginning, but everything else was hehe
+2016-10-05 16:24:35	maolang	justsomeguy: secureboot is nothing really other than companies paying some license of some sort to have a key signed on their OS kernel etc, nothing more
+2016-10-05 16:24:38	loa	i was one year setup, one year of nice time and now it only works on system which is 1000km from here.
+2016-10-05 16:24:41	-->	m0n0lith|zZz (~mono@dyndsl-082-149-184-173.ewe-ip-backbone.de) has joined #gentoo
+2016-10-05 16:24:45	loa	it was
+2016-10-05 16:24:52	 *	wokko was strauggling with cracking open a can of beer while installing gentoo so dont feel to bad :)
+2016-10-05 16:25:20	justsomeguy	maolang: You can use your own database and keys.
+2016-10-05 16:25:32	-->	spareproject (~bob@gateway/tor-sasl/spareproject) has joined #gentoo
+2016-10-05 16:25:36	<--	manado1952 (~Marc-Andr@24.225.204.112) has quit (Quit: Leaving)
+2016-10-05 16:25:36	 *	deathlire thinks wokko was also struggling with spelling too hehe :)
+2016-10-05 16:25:50	wokko	true
+2016-10-05 16:26:18	-->	Ashareth_ (~Ashareth@AMontsouris-559-1-59-198.w83-202.abo.wanadoo.fr) has joined #gentoo
+2016-10-05 16:26:24	wokko	deathlire: missed signal between brain and fingers :)
+2016-10-05 16:26:28	deathlire	Now that you mention it, i was getting drunk on my first install, since had to have something to do while it compiled, other than chat on irc :P
+2016-10-05 16:26:33	-->	[ui] (uid21688@gateway/web/irccloud.com/x-dkgkeyxuttcmshsy) has joined #gentoo
+2016-10-05 16:26:48	-->	castlelore (~castlelor@cpe-66-8-186-100.hawaii.res.rr.com) has joined #gentoo
+2016-10-05 16:27:07	justsomeguy	lol
+2016-10-05 16:27:07		[16:27]
+2016-10-05 16:27:40	maolang	justsomeguy: you might but secureboot or not, its the same thing really, just like porn sites can pay the fee to certify their web sites certificates is active, which does not mean once you get on their site with https that it is a secure site, thats just a phychological illusion of safety, aboslutely nothing more...
+2016-10-05 16:27:49	deathlire	was also about drunk when i decided to waste half a tree when printing out the entire gentoo wiki including Sekaki's guides and even nvidia, and i don't even plan to use an nvidia
+2016-10-05 16:27:53	<--	m0n0lith (~mono@dyndsl-089-166-168-155.ewe-ip-backbone.de) has quit (Ping timeout: 252 seconds)
+2016-10-05 16:29:39	wokko	wonder why there a storms in the usa at the moment not trees left
+2016-10-05 16:29:47	maolang	you want security with encryption, you use 2 factor encryption, partition encrypted and 1 secondary required key read on boot from a usb dongle, keylogger then dont mather since you still miss the key which you do not type on the usb key which is attached to your necklace, if you get what i mean
+2016-10-05 16:31:36	deathlire	I wouldn't mind having a bit more than that with a cheap card reader, and having my key placed onto that, and always stored in some aluminum wallet
+2016-10-05 16:31:53	justsomeguy	maolang: I kind of feel like you're missing the point. If the kernel is modified to contain a rootkit while you're away it won't boot unless it's checksum is signed with a key in the database. The alternative is to always be vuneralble to an evil maid type attack if someone has the time to take out your hard drive.
+2016-10-05 16:32:08	justsomeguy	if you're using EFI, that is.
+2016-10-05 16:32:19	gotwf	loa: Don't feel bad.  Gentoo is not for everybody.  Get some more experience wiht Ubuntu and when you feel you've outgrown it, come back to where the flavor is ;D
+2016-10-05 16:32:49	<--	aggi (~aggi@ipbcc02766.dynamic.kabel-deutschland.de) has quit (Quit: Leaving)
+2016-10-05 16:32:54	deathlire	if somebody takes out your hard drive you are screwed already, most people would just take the whole thing instead of messing around with that, unless you have some kind of top secret CIA stuff on there
+2016-10-05 16:33:34	justsomeguy	But if it's fully encrypted, you wouldn't be screwed.
+2016-10-05 16:33:51	justsomeguy	Unless someone decided to modify your firmware and had the firmware password.
+2016-10-05 16:33:57	<--	konefriikki (konnosh1@gateway/shell/tkk.fi/x-bbcrjpjjrdctjcao) has quit (Ping timeout: 244 seconds)
+2016-10-05 16:34:09	maolang	justsomeguy: if someone did that without you knowing... then you better change where you leave your laptop and put it in a safe or lock your door with a key which only you have.... :)
+2016-10-05 16:34:31	deathlire	all bout that hashcat, it can be done, especially with a mega farm of about 30 titans
+2016-10-05 16:34:43	maolang	or better yet ... ultimate solution never leave without your laptop hd....
+2016-10-05 16:34:49	-->	konefriikki (konnosh1@gateway/shell/tkk.fi/x-nidpjvmydiwqqjft) has joined #gentoo
+2016-10-05 16:35:18	deathlire	or better yet, never take it out of the house :P
+2016-10-05 16:35:44	maolang	i  mean there is paranoia and then well you know what i mean....
+2016-10-05 16:36:08	<--	castlelore (~castlelor@cpe-66-8-186-100.hawaii.res.rr.com) has quit (Ping timeout: 252 seconds)
+2016-10-05 16:36:32	deathlire	throw it in a bank safe, and put a faraday cage around that safe type of paranoia maolang ?
+2016-10-05 16:36:46	maolang	hehehe
+2016-10-05 16:37:32	justsomeguy	This is all purely theoretical, I'm not really worreid about it. It's mostly for the learning experience.
+2016-10-05 16:37:50	deathlire	always have to wear my foil hat in case somebody is trying to break into my brain over wifi yaknow :P just joking, but it's fun to do that and tell people that while on the street
+2016-10-05 16:38:25	maolang	you could always store critical top secret pentagon nsa type of secrets only in your head.... safest unless you get hacked via cia torture....
+2016-10-05 16:38:35	justsomeguy	lol
+2016-10-05 16:38:49	justsomeguy	I'm more worreid about my fincaial documents
+2016-10-05 16:38:53	-->	_ohm (~research@unaffiliated/-ohm/x-0955948) has joined #gentoo
+2016-10-05 16:39:08	justsomeguy	especially since I had my identity stolen a little while ago
+2016-10-05 16:39:41	justsomeguy	Well, presumably, since the company that did my background check leaked all my personal info.
+2016-10-05 16:41:11	maolang	best without being completely overboard about it, is two factor key safety, you keep your usb key and they do make very small ones, with you at all times, bios password protect, so computer needs to be purged of electricity and reset meaning memory content is gone, a good os password and partition encrypted
+2016-10-05 16:41:37	deathlire	that sucks, i just use cash anymore, so not much documentation or a paper trail
+2016-10-05 16:41:47	justsomeguy	That does seem like the best option maolang.
+2016-10-05 16:42:21	justsomeguy	deathlire: Nice. I wish I could do that. I'm prety much stuck on the grid.
+2016-10-05 16:42:21		[16:42]
+2016-10-05 16:43:20	maolang	thats the best options really and if your key password and usb key key stored on it are good enough, to resist computer farms trying to break the code and they manage to do it in 20 years... then congratulations to them...
+2016-10-05 16:43:30	deathlire	nobody is stuck, if they are willing, wasn't hard for me when I grew up doing everything with cash, so wasn't too hard to switch hehe. But i do by burner debit cards whenever i need something
+2016-10-05 16:43:31	generic	maolang: isn't that awfully slow ?
+2016-10-05 16:44:02	maolang	two factor does not slow anymore than just entering a password to open your luks encrypted partition
+2016-10-05 16:44:13	deathlire	what is the highest encryption capable of that usb? 1028 or 2056?
+2016-10-05 16:44:18	maolang	its just the two are required to know how to decrypt it...
+2016-10-05 16:44:39	generic	maolang: luks encryption .. speed ?
+2016-10-05 16:44:58	-->	lwlvl_ (~lwlvl@x4dba36a4.dyn.telefonica.de) has joined #gentoo
+2016-10-05 16:45:02	wokko	justsomeguy: Encrypt all your important files and store important files in ~/.<dir> so that it isn't visible when some looks in your /home dir
+2016-10-05 16:45:09	-->	rpifan (~rpi@73.106.75.83) has joined #gentoo
+2016-10-05 16:45:31	wokko	someone*
+2016-10-05 16:45:33	maolang	depends if using intel encryption cpu flag for hardware encryption, i am on 256 bit and using cpu feature thats supported is able to handle decrypting about 2GB a sec....
+2016-10-05 16:46:18	deathlire	wokko, or put it in /usr/src/dev/
+2016-10-05 16:46:51	wokko	deathlire: Yeah even there if you like
+2016-10-05 16:46:57	<--	loa (~loki@broadband-188-32-186-142.nationalcablenetworks.ru) has quit (Ping timeout: 265 seconds)
+2016-10-05 16:47:01	maolang	which is faster than the speed the hd can read and write at the same time, so its not slowing the computer in anyway...
+2016-10-05 16:47:18	<--	_ohm (~research@unaffiliated/-ohm/x-0955948) has quit (Ping timeout: 264 seconds)
+2016-10-05 16:47:44	deathlire	bottlenecked speed, though would notice a bit of  difference on an ssd
+2016-10-05 16:49:00	deathlire	maolang, still though what is the highest encryption that is capable for an auth key for the usb?
+2016-10-05 16:49:03	<--	lwlvl (~lwlvl@x4dbab67c.dyn.telefonica.de) has quit (Ping timeout: 272 seconds)
+2016-10-05 16:49:04	-->	emmett1 (~emmett@115.132.158.117) has joined #gentoo
+2016-10-05 16:49:13	justsomeguy	Hardware encryption looks nice. I haven't gotten around to figuring out OPAL drives or anything like that.
+2016-10-05 16:50:13	deathlire	you would also think it would use gpu for decryption instead of a cpu flag
+2016-10-05 16:50:53	-->	aggi (~aggi@ipbcc02766.dynamic.kabel-deutschland.de) has joined #gentoo
+2016-10-05 16:51:32	<--	maolang (~maolang@2a01:e35:2e6c:5620:c77e:c4ff:15e1:718) has quit (Ping timeout: 252 seconds)
+2016-10-05 16:51:57	<--	jstypo (~jstypo@148.103.43.59) has quit (Remote host closed the connection)
+2016-10-05 16:52:01	-->	poeppman__ (~poeppman@xdsl-213-196-250-222.netcologne.de) has joined #gentoo
+2016-10-05 16:52:24	-->	poeppman1 (~Thunderbi@xdsl-213-196-250-222.netcologne.de) has joined #gentoo
+2016-10-05 16:53:38	justsomeguy	Well, I think I'm going to take off my tinfoil hat for a while see if I can get something useful done. :~}
+2016-10-05 16:53:41	-->	jstypo (~jstypo@148.103.43.59) has joined #gentoo
+2016-10-05 16:54:30	<--	poeppman (~Thunderbi@xdsl-84-44-194-27.netcologne.de) has quit (Ping timeout: 264 seconds)
+2016-10-05 16:54:30	--	poeppman1 is now known as poeppman
+2016-10-05 16:54:31	<--	mints (~mints@unaffiliated/mints) has quit
+2016-10-05 16:54:50	<--	poeppman_ (~poeppman@xdsl-84-44-194-27.netcologne.de) has quit (Ping timeout: 252 seconds)
+2016-10-05 16:55:02	deathlire	also a good tip, don't buy more than 10 or more of those walmart burner cards a year :P they tend to label you as a terrorist or something after like 3, and need confirmation that you aren't
+2016-10-05 16:56:54	-->	maolang (~maolang@2a01:e35:2e6c:5620:c77e:c4ff:15e1:718) has joined #gentoo
+2016-10-05 16:57:50	-->	NextHendrix (~chris@cpc106649-shef15-2-0-cust409.17-1.cable.virginm.net) has joined #gentoo
+2016-10-05 16:57:50		[16:57]
+2016-10-05 16:58:15	justsomeguy	Lol. I'm already on a lists just for using linux and TOR.
+2016-10-05 16:58:47	-->	jtriley (~jtriley@209-6-38-104.c3-0.smr-ubr2.sbo-smr.ma.cable.rcn.com) has joined #gentoo
+2016-10-05 16:59:16	deathlire	i still haven't seen anything turn up on my google alert's so guessing if i am on a list, it surely isn't published anywhere google can reach
+2016-10-05 17:02:02	Mad7Scientist	deathlire, how do they know you bought them?
+2016-10-05 17:02:09	-->	rparkhur_ (~rparkhurs@cpe-66-68-160-213.austin.res.rr.com) has joined #gentoo
+2016-10-05 17:02:22	deathlire	I'm working on a totally free alternative to data recovery, that will accept donations, but still going to be the only data recovery software that will do as advertised for free, and hopefully later down the line also include support for encrypted drives
+2016-10-05 17:02:24	Mad7Scientist	OR do they track spending them?
+2016-10-05 17:02:44	deathlire	Mad7Scientist, they track you by your ssn
+2016-10-05 17:03:00	Mad7Scientist	People who buy prepaid cell phones are put on the list!
+2016-10-05 17:03:01	deathlire	and probably spending as well
+2016-10-05 17:03:13	Mad7Scientist	The AMerican EXpress prepaid cards don't require any SSN
+2016-10-05 17:03:15	<--	waltercool (~waltercoo@pc-51-63-86-200.cm.vtr.net) has quit (Ping timeout: 256 seconds)
+2016-10-05 17:03:17	-->	castlelore (~castlelor@cpe-66-8-186-100.hawaii.res.rr.com) has joined #gentoo
+2016-10-05 17:03:26	deathlire	yeah but nobody takes those junkers :P
+2016-10-05 17:03:30	<--	rparkhurst (~rparkhurs@cpe-66-68-160-213.austin.res.rr.com) has quit (Ping timeout: 264 seconds)
+2016-10-05 17:03:39	Mad7Scientist	Nearly every place accepts American Express
+2016-10-05 17:04:02	generic	Mad7Scientist: don't you pay your prepaid card in cash ?
+2016-10-05 17:04:03	kurly	I'm sure there's a good place to talk about conspiracies; this isn't one of them
+2016-10-05 17:04:13	Mad7Scientist	The merchants at least generally can't differentiate it from a non prepaid AE card
+2016-10-05 17:04:45	Mad7Scientist	generic, of course. IN fact you are often required to, else it leads to the free card bonus points & airline miles loophole
+2016-10-05 17:05:54	deathlire	oii yeah forgot #gentoo-chat exists.
+2016-10-05 17:06:01	Mad7Scientist	I'm going there
+2016-10-05 17:11:20	<--	rparkhur_ (~rparkhurs@cpe-66-68-160-213.austin.res.rr.com) has quit (Ping timeout: 252 seconds)
+2016-10-05 17:11:55	-->	Adbray (~Adbtay@2001:470:1f11:def:b0d8:fac5:fe7a:4778) has joined #gentoo
+2016-10-05 17:12:05	<--	watersoul (~ircuser@172.245.255.61) has quit (Ping timeout: 265 seconds)
+2016-10-05 17:12:59	<--	justan0theruser (~justanoth@unaffiliated/justanotheruser) has quit (Ping timeout: 252 seconds)
+2016-10-05 17:12:59		[17:12]
+2016-10-05 17:13:06	<--	jstypo (~jstypo@148.103.43.59) has quit (Remote host closed the connection)
+2016-10-05 17:13:46	-->	jstypo (~jstypo@148.103.43.59) has joined #gentoo
+2016-10-05 17:13:57	-->	Flikker (~mattnospa@pool-108-52-150-244.phlapa.fios.verizon.net) has joined #gentoo
+2016-10-05 17:15:02	<--	FilipNortic_ (~quassel@h-143-38.a192.priv.bahnhof.se) has quit (Read error: Connection reset by peer)
+2016-10-05 17:15:57	-->	watersoul (~ircuser@172.245.255.61) has joined #gentoo
+2016-10-05 17:18:54	<--	castlelore (~castlelor@cpe-66-8-186-100.hawaii.res.rr.com) has quit (Ping timeout: 244 seconds)
+2016-10-05 17:24:00		[17:18]
+2016-10-05 17:24:42	<--	hotaronohanako (~user@unaffiliated/hotaronohanako) has quit (Remote host closed the connection)
+2016-10-05 17:27:28	-->	duderonomy (~duderonom@c-73-189-177-212.hsd1.ca.comcast.net) has joined #gentoo
+2016-10-05 17:28:15	<--	hellrazor (~hellrazor@p4FEEA923.dip0.t-ipconnect.de) has quit (Quit: Verlassend)
+2016-10-05 17:30:43	<--	thunderrd_ (~thunderrd@110.77.212.19) has quit (Quit: Leaving)
+2016-10-05 17:31:46	<--	Flikker (~mattnospa@pool-108-52-150-244.phlapa.fios.verizon.net) has left #gentoo
+2016-10-05 17:32:42	-->	thunderrd (~thunderrd@110.77.212.19) has joined #gentoo
+2016-10-05 17:33:57	<--	NextHendrix (~chris@cpc106649-shef15-2-0-cust409.17-1.cable.virginm.net) has quit (Remote host closed the connection)
+2016-10-05 17:35:00	-->	optiz0r (~quassel@higgins.sihnon.net) has joined #gentoo
+2016-10-05 17:37:13	<--	duderonomy (~duderonom@c-73-189-177-212.hsd1.ca.comcast.net) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-10-05 17:38:56	<--	Keiko (~gentoo@ezecom.110.74.193.127.ezecom.com.kh) has quit (Quit: Leaving)
+2016-10-05 17:39:25	-->	eseifert_ (~erich@p5B078A8E.dip0.t-ipconnect.de) has joined #gentoo
+2016-10-05 17:39:25		[17:39]
+2016-10-05 17:41:24	-->	nglsr (quasselcor@gentoo/developer/angelos) has joined #gentoo
+2016-10-05 17:41:24	--	Mode #gentoo [+v nglsr] by ChanServ
+2016-10-05 17:41:54	<--	eseifert (~erich@p5B078F10.dip0.t-ipconnect.de) has quit (Ping timeout: 264 seconds)
+2016-10-05 17:44:29	-->	NextHendrix (~chris@cpc106649-shef15-2-0-cust409.17-1.cable.virginm.net) has joined #gentoo
+2016-10-05 17:45:14	-->	mkaindl_ (~mkaindl@p5B2990BD.dip0.t-ipconnect.de) has joined #gentoo
+2016-10-05 17:45:30	<--	angelos (quasselcor@gentoo/developer/angelos) has quit (Ping timeout: 264 seconds)
+2016-10-05 17:45:49	-->	castlelore (~castlelor@cpe-66-8-186-100.hawaii.res.rr.com) has joined #gentoo
+2016-10-05 17:46:13	<--	alextai (~alextai@94.230.84.52) has quit (Read error: Connection reset by peer)
+2016-10-05 17:47:45	-->	alextai (~alextai@5.102.226.113) has joined #gentoo
+2016-10-05 17:48:52	<--	mkaindl (~mkaindl@p5B2983F0.dip0.t-ipconnect.de) has quit (Ping timeout: 244 seconds)
+2016-10-05 17:48:52	--	mkaindl_ is now known as mkaindl
+2016-10-05 17:50:09	-->	Zorroness (~albert@ool-18ba9789.dyn.optonline.net) has joined #gentoo
+2016-10-05 17:50:30	<--	anunnaki (~chris@unaffiliated/anunnaki) has quit (Ping timeout: 272 seconds)
+2016-10-05 17:52:08	-->	chief1983 (~chief1983@71-81-80-152.dhcp.stls.mo.charter.com) has joined #gentoo
+2016-10-05 17:53:52	-->	nE0sIghT (~Thunderbi@unaffiliated/ne0sight) has joined #gentoo
+2016-10-05 17:53:55	<--	mguillech (~mguillech@181.95.48.249) has quit (Remote host closed the connection)
+2016-10-05 17:54:17	-->	mguillech (~mguillech@181.95.48.249) has joined #gentoo
+2016-10-05 17:54:45	<--	mguillech (~mguillech@181.95.48.249) has quit (Remote host closed the connection)
+2016-10-05 17:54:45		[17:54]
+2016-10-05 17:55:07	-->	_ohm (~research@unaffiliated/-ohm/x-0955948) has joined #gentoo
+2016-10-05 18:01:00		[17:55]
+2016-10-05 18:03:24	-->	anunnaki (~chris@unaffiliated/anunnaki) has joined #gentoo
+2016-10-05 18:04:12	-->	hydrogen (~hydrogen@amarok/developer/hydrogen) has joined #gentoo
+2016-10-05 18:07:21	<--	chief1983 (~chief1983@71-81-80-152.dhcp.stls.mo.charter.com) has left #gentoo ("Sayonara")
+2016-10-05 18:08:13	<--	XuR__ (~quassel@ip98-165-85-128.ph.ph.cox.net) has quit (Ping timeout: 272 seconds)
+2016-10-05 18:10:45	<--	cilly (pluto@unaffiliated/cilly) has quit (Ping timeout: 272 seconds)
+2016-10-05 18:10:47	-->	waltercool (~waltercoo@pc-51-63-86-200.cm.vtr.net) has joined #gentoo
+2016-10-05 18:12:09	-->	cilly (pluto@unaffiliated/cilly) has joined #gentoo
+2016-10-05 18:12:10	<--	rpifan (~rpi@73.106.75.83) has quit (Remote host closed the connection)
+2016-10-05 18:13:12	<--	jstypo (~jstypo@148.103.43.59) has quit (Remote host closed the connection)
+2016-10-05 18:13:46	-->	rpifan (~rpi@73.106.75.83) has joined #gentoo
+2016-10-05 18:13:52	-->	jstypo (~jstypo@148.103.43.59) has joined #gentoo
+2016-10-05 18:18:32	-->	AndChat|85241 (~AndChat85@75-138-230-75.dhcp.jcsn.tn.charter.com) has joined #gentoo
+2016-10-05 18:18:32		[18:18]
+2016-10-05 18:18:33	-->	methylherd (~quassel@p5DEB5785.dip0.t-ipconnect.de) has joined #gentoo
+2016-10-05 18:21:25	AndChat|85241	Hello, I am installing gentoo on a new desktop with a WiFi dongal. What would be the right driver for a "Ralink Technology, Corp. RT5372 Wireless Adapter"?
+2016-10-05 18:21:41	<--	methylherd_ (~quassel@p5DEB5FE2.dip0.t-ipconnect.de) has quit (Ping timeout: 265 seconds)
+2016-10-05 18:22:50	<--	Woogie6794 (~arortell@d15-169.rt-bras.wnvl.centurytel.net) has quit (Quit: WeeChat 1.4)
+2016-10-05 18:24:30	<--	latenite (~latenite@p5B3748B7.dip0.t-ipconnect.de) has quit (Ping timeout: 264 seconds)
+2016-10-05 18:24:56	-->	rustPushmaster (~rusty@ip72-196-214-135.dc.dc.cox.net) has joined #gentoo
+2016-10-05 18:26:19	-->	eshlox (uid44222@gateway/web/irccloud.com/x-fkplhiejjyuhnjfs) has joined #gentoo
+2016-10-05 18:27:01	AndChat|85241	Oh wait I found it.
+2016-10-05 18:27:04	<--	AndChat|85241 (~AndChat85@75-138-230-75.dhcp.jcsn.tn.charter.com) has quit (Quit: Bye)
+2016-10-05 18:30:54	<--	waltercool (~waltercoo@pc-51-63-86-200.cm.vtr.net) has quit (Quit: Konversation terminated!)
+2016-10-05 18:30:58	<--	[ui] (uid21688@gateway/web/irccloud.com/x-dkgkeyxuttcmshsy) has quit (Quit: Connection closed for inactivity)
+2016-10-05 18:35:18	<--	hydrogen (~hydrogen@amarok/developer/hydrogen) has quit (Remote host closed the connection)
+2016-10-05 18:35:18		[18:35]
+2016-10-05 18:36:28	<--	minimalism (~minimalis@unaffiliated/minimalism) has quit (Quit: minimalism)
+2016-10-05 18:36:44	<--	nE0sIghT (~Thunderbi@unaffiliated/ne0sight) has quit (Remote host closed the connection)
+2016-10-05 18:41:49	-->	aybabtu (~aybabtu@177.98.127.147) has joined #gentoo
+2016-10-05 18:42:01	<--	blind_ob1erver (~blind_obs@62.1.141.61.dsl.dyn.forthnet.gr) has quit (Quit: leaving)
+2016-10-05 18:47:41	-->	exxi (~exxi@unaffiliated/exxi) has joined #gentoo
+2016-10-05 18:48:37	-->	tzero (~tzero@unaffiliated/tzero) has joined #gentoo
+2016-10-05 18:52:04	misterjack	hey, gnustep-base says: C compiler cannot create executables: https://paste.pound-python.org/show/GfV5kXn5eUj8U49bDq65/ | emerge --info: https://paste.pound-python.org/show/kGjTBfh1yQJqVqI5526p/
+2016-10-05 18:52:04		[18:52]
+2016-10-05 18:54:30	<--	_sfiguser (~sfigguser@93-35-253-193.ip57.fastwebnet.it) has quit (Ping timeout: 264 seconds)
+2016-10-05 18:57:56	<--	jstypo (~jstypo@148.103.43.59) has quit (Ping timeout: 265 seconds)
+2016-10-05 18:59:34	Hoolootwo	is your drive full?
+2016-10-05 18:59:41	<--	rhonabwy (~rhonabwy@95.157.58.47.dynamic.cablesurf.de) has quit (Quit: Leaving)
+2016-10-05 19:00:16	misterjack	nope, 38% free. any other package compiles fine
+2016-10-05 19:00:41	-->	rhonabwy (~rhonabwy@95.157.58.47.dynamic.cablesurf.de) has joined #gentoo
+2016-10-05 19:01:27	<--	rpifan (~rpi@73.106.75.83) has quit (Remote host closed the connection)
+2016-10-05 19:04:06	Hoolootwo	hmm, no idea then
+2016-10-05 19:05:17	 *	kurly sniffs the air
+2016-10-05 19:05:31	kurly	maybe bug #588118
+2016-10-05 19:05:33	willikins	kurly: https://bugs.gentoo.org/588118 "gnustep-base/gnustep-base will not rebuild; C compiler cannot create executables"; Gentoo Linux, Current packages; UNCO; deference:gnustep
+2016-10-05 19:07:36	-->	_sfiguser (~sfigguser@93-35-253-193.ip57.fastwebnet.it) has joined #gentoo
+2016-10-05 19:07:36		[19:07]
+2016-10-05 19:09:37	misterjack	ty, seems so
+2016-10-05 19:10:21	zrts	hey, my laptop seems to be using more battery than normal... what can I use to monitor its temperature?
+2016-10-05 19:14:19	-->	justanotheruser (~justanoth@unaffiliated/justanotheruser) has joined #gentoo
+2016-10-05 19:15:11	-->	`VL (~Real@broadband-46-188-31-14.2com.net) has joined #gentoo
+2016-10-05 19:16:52	<--	bizarro_1 (~bizarro_1@67.red-88-5-41.dynamicip.rima-tde.net) has quit (Quit: Leaving)
+2016-10-05 19:18:04	<--	justsomeguy (~justsomeg@unaffiliated/--/x-3805311) has quit (Remote host closed the connection)
+2016-10-05 19:18:36	wokko	zrts: On the battery side of things, have a browse here https://wiki.gentoo.org/wiki/Power_management/Guide
+2016-10-05 19:19:42	<--	`VL (~Real@broadband-46-188-31-14.2com.net) has quit (Ping timeout: 264 seconds)
+2016-10-05 19:19:48	zrts	wokko: thanks!  its fan is being constantly on a high volume, meaning that its somewhat being overheated
+2016-10-05 19:20:02	<--	Ashareth_ (~Ashareth@AMontsouris-559-1-59-198.w83-202.abo.wanadoo.fr) has quit (Ping timeout: 252 seconds)
+2016-10-05 19:20:14	zrts	which doesnt happen on its native os
+2016-10-05 19:20:53	<--	lwlvl_ (~lwlvl@x4dba36a4.dyn.telefonica.de) has quit (Quit: Taking the cat for a walk!)
+2016-10-05 19:24:30	-->	Mowgli (~mowgli@182.74.206.26) has joined #gentoo
+2016-10-05 19:24:30		[19:24]
+2016-10-05 19:26:57	-->	justsomeguy (~justsomeg@unaffiliated/--/x-3805311) has joined #gentoo
+2016-10-05 19:27:21	<--	turmfalke (~turmfalke@p5DCE3AC7.dip0.t-ipconnect.de) has quit (Quit: turmfalke)
+2016-10-05 19:27:32	-->	afh_ (~afh@177.204.226.21.dynamic.adsl.gvt.net.br) has joined #gentoo
+2016-10-05 19:29:01	-->	nullify (~nullify@unaffiliated/nullify) has joined #gentoo
+2016-10-05 19:29:11	<--	nullbyte_ (~ghost@unaffiliated/nullby7e) has quit (Quit: leaving)
+2016-10-05 19:29:12	-->	eTeddy (~Thunderbi@p200300460C06040075CDDCB6D8504B00.dip0.t-ipconnect.de) has joined #gentoo
+2016-10-05 19:29:35	afh_	Hi. gpasswd says `Adding user user to group group` and exits successfully, but the user is not added to the group (checked with `groups group` and I don't get permission to move files). What's going on?
+2016-10-05 19:29:46	afh_	`gpasswd -a user group`, that is.
+2016-10-05 19:30:11	<--	sineer (~sineer@modemcable248.127-22-96.mc.videotron.ca) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-10-05 19:31:12	<--	jtriley (~jtriley@209-6-38-104.c3-0.smr-ubr2.sbo-smr.ma.cable.rcn.com) has quit (Ping timeout: 272 seconds)
+2016-10-05 19:31:13	phredus_	how does this work gentoo-sources-4.4.6 is older than gentoo-sources-4.4.21 ?   In this order of release from packages.gentoo.org:  4.1.33, 4.4.6 4.4.19, 4.4.20, 4.4.21,  I'm not understanding the math?
+2016-10-05 19:31:21	<--	afh_ (~afh@177.204.226.21.dynamic.adsl.gvt.net.br) has quit (Client Quit)
+2016-10-05 19:32:27	-->	obarun (~obarun@154.67.14.64) has joined #gentoo
+2016-10-05 19:32:35	<--	mutiny (~mutiny@cpe-104-174-95-147.socal.res.rr.com) has quit (Remote host closed the connection)
+2016-10-05 19:33:10	-->	Ashareth_ (~Ashareth@AMontsouris-559-1-21-70.w90-24.abo.wanadoo.fr) has joined #gentoo
+2016-10-05 19:34:11	<--	Deda_Zych (~zerom@unaffiliated/deda-zych/x-1167266) has quit (Ping timeout: 265 seconds)
+2016-10-05 19:35:57	-->	mutiny (~mutiny@cpe-104-174-95-147.socal.res.rr.com) has joined #gentoo
+2016-10-05 19:36:29	wokko	phredus_: 21 is higher than 6 so it is a newer version
+2016-10-05 19:37:16	-->	zatteliet (~kv@178.118.155.229) has joined #gentoo
+2016-10-05 19:38:13	phredus_	wokko: so this is not math because in math .1 .2  .3 .4 .5  .6  etc, there must be some other meaning for whatever sits after 4.6.-->
+2016-10-05 19:38:49	-->	elder (~noname@195-71-139-78.kamensktel.ru) has joined #gentoo
+2016-10-05 19:38:51	phredus_	wokko: I could not find any expalnation for the 3rd octet at https://packages.gentoo.org/packages/sys-kernel/gentoo-sources
+2016-10-05 19:38:55	<--	Ashareth_ (~Ashareth@AMontsouris-559-1-21-70.w90-24.abo.wanadoo.fr) has quit (Ping timeout: 244 seconds)
+2016-10-05 19:40:27	wokko	phredus_: http://www.linfo.org/kernel_version_numbering.html
+2016-10-05 19:40:27		[19:40]
+2016-10-05 19:41:22	phredus_	wokko: great that is what I was looking for, thanks
+2016-10-05 19:41:34	wokko	np
+2016-10-05 19:41:54	<--	Judge_Dredd (~Judge_Dre@unaffiliated/judge-dredd/x-2170742) has quit (Quit: Leaving.)
+2016-10-05 19:42:38	nullify	[C] Listening in the current process
+2016-10-05 19:42:39	nullify	[X] Listening in another process
+2016-10-05 19:42:39	nullify	[-] No Listening
+2016-10-05 19:42:47	nullify	Whoops sorry fellas
+2016-10-05 19:46:21	<--	Zorroness (~albert@ool-18ba9789.dyn.optonline.net) has quit (Remote host closed the connection)
+2016-10-05 19:46:53	-->	Zorroness (~albert@ool-18ba9789.dyn.optonline.net) has joined #gentoo
+2016-10-05 19:47:15	-->	phredus (~phredus@cpe-172-251-146-100.socal.res.rr.com) has joined #gentoo
+2016-10-05 19:47:32	-->	blind_observer (~blind_obs@62.1.141.61.dsl.dyn.forthnet.gr) has joined #gentoo
+2016-10-05 19:48:22	-->	hydrapolic (~hydrapoli@aa2.sygic-dc.ba.cust.gts.sk) has joined #gentoo
+2016-10-05 19:48:38	<--	Sleepy63 (~Sleepy63@71.97.91.117) has quit (Ping timeout: 252 seconds)
+2016-10-05 19:50:34	-->	phredus__ (~phredus@cpe-172-251-146-100.socal.res.rr.com) has joined #gentoo
+2016-10-05 19:52:26	<--	phredus (~phredus@cpe-172-251-146-100.socal.res.rr.com) has quit (Quit: leaving)
+2016-10-05 19:52:31	-->	Ashareth (~Ashareth@92.140.91.114) has joined #gentoo
+2016-10-05 19:53:19	<--	viaCrucis (~scott@91.33.233.220.static.exetel.com.au) has quit (Remote host closed the connection)
+2016-10-05 19:54:14	<--	spareproject (~bob@gateway/tor-sasl/spareproject) has quit (Quit: spareproject)
+2016-10-05 19:54:27	<--	Zorroness (~albert@ool-18ba9789.dyn.optonline.net) has quit (Remote host closed the connection)
+2016-10-05 19:54:51	-->	Zorroness (~albert@ool-18ba9789.dyn.optonline.net) has joined #gentoo
+2016-10-05 19:55:56	<--	Atomic_2yYCn (~atomic@net-188-152-88-186.cust.vodafonedsl.it) has quit (Ping timeout: 265 seconds)
+2016-10-05 19:55:56		[19:55]
+2016-10-05 19:57:07	-->	Atomic_2yYCn (~atomic@91.253.137.106) has joined #gentoo
+2016-10-05 19:57:22	-->	dmp450 (~chatzilla@S01063085a96a39f6.ss.shawcable.net) has joined #gentoo
+2016-10-05 19:57:33	<--	dmp450 (~chatzilla@S01063085a96a39f6.ss.shawcable.net) has quit (Client Quit)
+2016-10-05 19:57:36	-->	reinzelmann (~reinzelma@host-92-17-63-206.as13285.net) has joined #gentoo
+2016-10-05 19:58:55	<--	Atomic_2yYCn (~atomic@91.253.137.106) has quit (Client Quit)
+2016-10-05 19:59:35	<--	Ashareth (~Ashareth@92.140.91.114) has quit (Ping timeout: 244 seconds)
+2016-10-05 20:00:06	<--	metachr0n (~nobody@109.201.154.242) has quit (Ping timeout: 244 seconds)
+2016-10-05 20:00:44	-->	neuraload (~Thunderbi@5.2.152.160) has joined #gentoo
+2016-10-05 20:00:46	<--	generic (~user@84-115-107-68.wifi.dynamic.surfer.at) has quit (Remote host closed the connection)
+2016-10-05 20:02:49	<--	mutiny (~mutiny@cpe-104-174-95-147.socal.res.rr.com) has quit (Remote host closed the connection)
+2016-10-05 20:03:58	<--	eTeddy (~Thunderbi@p200300460C06040075CDDCB6D8504B00.dip0.t-ipconnect.de) has quit (Quit: eTeddy)
+2016-10-05 20:05:00	-->	Sleepy63 (~Sleepy63@47.185.207.30) has joined #gentoo
+2016-10-05 20:06:05	-->	mutiny (~mutiny@cpe-104-174-95-147.socal.res.rr.com) has joined #gentoo
+2016-10-05 20:06:36	-->	eTeddy (~Thunderbi@p200300460C06040075CDDCB6D8504B00.dip0.t-ipconnect.de) has joined #gentoo
+2016-10-05 20:10:06	-->	gentoo (~gentoo@221.1.116.18) has joined #gentoo
+2016-10-05 20:10:26	exxi	in my kernel source code there is dir net/appletalk, but i don't have any options enabled for appletalk than how come there are source file present for it ?
+2016-10-05 20:12:43	-->	Ashareth (~Ashareth@AMontsouris-559-1-79-117.w92-140.abo.wanadoo.fr) has joined #gentoo
+2016-10-05 20:12:43		[20:12]
+2016-10-05 20:13:19	-->	ARCADIVS (~RMM@24-179-11-74.dhcp.leds.al.charter.com) has joined #gentoo
+2016-10-05 20:14:06	ARCADIVS	I just switched to radeon from fglrx and need to check that I am getting hardware acceleration. What do I do?
+2016-10-05 20:18:06	-->	FireBurnUK (~fireburnu@no-sources/fireburn) has joined #gentoo
+2016-10-05 20:18:39	<--	happy-dude (uid62780@gateway/web/irccloud.com/x-qdeshhaxlggrbptg) has quit (Ping timeout: 265 seconds)
+2016-10-05 20:18:42	<--	p_l (sid98063@gateway/web/irccloud.com/x-shrfxbdkinqrammo) has quit (Ping timeout: 272 seconds)
+2016-10-05 20:19:22	ARCADIVS	answer: glxinfo
+2016-10-05 20:20:57	ARCADIVS	Well it seems my 2d rendering is slow now
+2016-10-05 20:21:30	<--	KWhat4 (~kwhat@47.150.72.111) has quit (Ping timeout: 264 seconds)
+2016-10-05 20:21:33	ARCADIVS	I can see rxvt-unicode actually drawing its window now
+2016-10-05 20:21:47	ARCADIVS	when I switch workspaces.
+2016-10-05 20:21:53	-->	p_l (sid98063@gateway/web/irccloud.com/x-kndjsalbvndejvkk) has joined #gentoo
+2016-10-05 20:22:46	-->	FroZnShiva (~FroZnShiv@CM-POP2-732.catv.wtnet.de) has joined #gentoo
+2016-10-05 20:22:58	-->	ShiPa (~shipa@134.17.26.210) has joined #gentoo
+2016-10-05 20:23:02	-->	happy-dude (uid62780@gateway/web/irccloud.com/x-yfyencuyuvagxfui) has joined #gentoo
+2016-10-05 20:23:12	-->	duderonomy (~duderonom@c-73-189-177-212.hsd1.ca.comcast.net) has joined #gentoo
+2016-10-05 20:25:52	-->	Ycarus (~ycarus@2a01:e34:eda7:b1f0:5e3d:ee40:8bba:20a1) has joined #gentoo
+2016-10-05 20:26:02	<--	rustPushmaster (~rusty@ip72-196-214-135.dc.dc.cox.net) has quit (Quit: Leaving)
+2016-10-05 20:27:47	<--	justsomeguy (~justsomeg@unaffiliated/--/x-3805311) has quit (Quit: WeeChat 1.5)
+2016-10-05 20:27:47		[20:27]
+2016-10-05 20:28:47	anunnaki	anyone know where in the output of lsusb -v shows the controller id of the usb device?
+2016-10-05 20:29:33	<--	gentoo (~gentoo@221.1.116.18) has quit (Ping timeout: 244 seconds)
+2016-10-05 20:32:05	-->	amyascwk (~amyas@dhcp-7-181.caltech.edu) has joined #gentoo
+2016-10-05 20:33:37	-->	ali_bush (~ali_bush@gentoo/developer/alibush) has joined #gentoo
+2016-10-05 20:33:38	--	Mode #gentoo [+v ali_bush] by ChanServ
+2016-10-05 20:34:35	<--	NP-Hardass (~NP-Hardas@gentoo/developer/np-hardass) has quit (Quit: WeeChat 1.5)
+2016-10-05 20:36:02	-->	NP-Hardass (~NP-Hardas@gentoo/developer/np-hardass) has joined #gentoo
+2016-10-05 20:36:02	--	Mode #gentoo [+v NP-Hardass] by ChanServ
+2016-10-05 20:37:01	-->	gattler (~gattler@x4db3dd5d.dyn.telefonica.de) has joined #gentoo
+2016-10-05 20:37:15	deathlire	ARCADIVS, what is it saying as your renderer? does it say Gallium or does it happen to say VMware something?
+2016-10-05 20:37:15	-->	bearsh|work (~quassel@71.243.107.92.dynamic.wline.res.cust.swisscom.ch) has joined #gentoo
+2016-10-05 20:38:40	<--	misterjack (misterjack@voyager.le-hosting.de) has quit (Quit: foo bar brattttzzzzzzz)
+2016-10-05 20:40:06	-->	misterjack (misterjack@voyager.le-hosting.de) has joined #gentoo
+2016-10-05 20:40:54	-->	wdna (~wdna@bzq-79-182-63-225.red.bezeqint.net) has joined #gentoo
+2016-10-05 20:41:23	<--	gattler (~gattler@x4db3dd5d.dyn.telefonica.de) has quit (Client Quit)
+2016-10-05 20:44:21	-->	CMoH (~cipi@unaffiliated/c-moh) has joined #gentoo
+2016-10-05 20:44:21		[20:44]
+2016-10-05 20:45:50	<--	happy-dude (uid62780@gateway/web/irccloud.com/x-yfyencuyuvagxfui) has quit (Ping timeout: 252 seconds)
+2016-10-05 20:46:06	<--	p_l (sid98063@gateway/web/irccloud.com/x-kndjsalbvndejvkk) has quit (Ping timeout: 264 seconds)
+2016-10-05 20:46:45	-->	khj (~Thunderbi@dslb-088-070-149-219.088.070.pools.vodafone-ip.de) has joined #gentoo
+2016-10-05 20:47:42	<--	enki (~enki@dynamic-78-30-165-161.adsl.eunet.rs) has quit (Ping timeout: 276 seconds)
+2016-10-05 20:47:54	ARCADIVS	deathlire: it says gallium
+2016-10-05 20:48:23	-->	ANero (~nero@unaffiliated/anero) has joined #gentoo
+2016-10-05 20:48:28	ARCADIVS	do I need to make a file in /etc/X11/xorg.conf.d to specify which features of my card to enable?
+2016-10-05 20:49:49	-->	PoPpiLLs (~damien@108-251-90-175.lightspeed.bcvloh.sbcglobal.net) has joined #gentoo
+2016-10-05 20:49:55	deathlire	and it says..actually let me check out my info, I had to do this quite a bit ago, and i was amazed at the gains i got
+2016-10-05 20:52:03	-->	p_l (sid98063@gateway/web/irccloud.com/x-wzotuoykubtlvfnx) has joined #gentoo
+2016-10-05 20:52:14	deathlire	sorry here..but run glxinfo | grep 'vendor'
+2016-10-05 20:52:14	-->	happy-dude (uid62780@gateway/web/irccloud.com/x-noupapicatlfttok) has joined #gentoo
+2016-10-05 20:52:19	deathlire	server glx vendor string: SGI
+2016-10-05 20:52:19	deathlire	client glx vendor string: Mesa Project and SGI
+2016-10-05 20:52:19	deathlire	OpenGL vendor string: X.Org
+2016-10-05 20:52:25	deathlire	should be very similar
+2016-10-05 20:53:03	deathlire	hrmm what happened to my galium..hrm
+2016-10-05 20:53:18	-->	ng0 (~ng0@unaffiliated/niasterisk) has joined #gentoo
+2016-10-05 20:53:43	ARCADIVS	my output matches yours.
+2016-10-05 20:54:23	deathlire	and do you have this, without the flgrx of course.. in make.conf VIDEO_CARDS="radeon r600 fglrx"
+2016-10-05 20:54:34	deathlire	actually which card do you have?
+2016-10-05 20:54:55	ARCADIVS	Yes. (Mine says "radeon")
+2016-10-05 20:55:12	ARCADIVS	HD6790 (Northern Islands)
+2016-10-05 20:56:02	deathlire	i'm thinking that also covers r600 or sumo..have you ran glxgears in a terminal?
+2016-10-05 20:56:08	-->	leat2 (~leat@198.199.127.213) has joined #gentoo
+2016-10-05 20:56:34	ARCADIVS	Yes, but the problem seems I'm not getting 2d acceleration
+2016-10-05 20:57:15	<--	leat2 (~leat@198.199.127.213) has quit (Remote host closed the connection)
+2016-10-05 20:57:17	<--	leat1 (~leat@198.199.127.213) has quit (Ping timeout: 256 seconds)
+2016-10-05 20:57:20	ARCADIVS	I get to watch my terminal emulator draw its window now.
+2016-10-05 20:57:32	-->	leat2 (~leat@198.199.127.213) has joined #gentoo
+2016-10-05 20:58:01	-->	g-zu_ (~xception@91.195.44.252) has joined #gentoo
+2016-10-05 20:58:05	deathlire	it doesn't have any kind of warning or anything in the terminal when running glxgears?
+2016-10-05 20:58:31	ARCADIVS	Running synchronized to the vertical refresh.  The framerate should be
+2016-10-05 20:58:34	ARCADIVS	approximately the same as the monitor refresh rate.
+2016-10-05 20:58:42	deathlire	switch over to alt+ctrl+f12 and then back to F7 after reading
+2016-10-05 20:59:08	deathlire	yes it should be 60 or 30 depending on what it is
+2016-10-05 20:59:17	ARCADIVS	yep
+2016-10-05 21:00:11	deathlire	let me look up northern islands and make sure it uses the r600 driver as well, thinking it does
+2016-10-05 21:00:11		[21:00]
+2016-10-05 21:01:24	ARCADIVS	I dunno, but the Northern Islands family is after the r600 family.
+2016-10-05 21:01:24	<--	mvaenskae (~mvaenskae@unaffiliated/mvaenskae) has quit (Read error: Connection reset by peer)
+2016-10-05 21:02:03	-->	mvaenskae (~mvaenskae@unaffiliated/mvaenskae) has joined #gentoo
+2016-10-05 21:02:18	-->	enki (~enki@dynamic-213-198-253-239.adsl.eunet.rs) has joined #gentoo
+2016-10-05 21:02:23	<--	Zorroness (~albert@ool-18ba9789.dyn.optonline.net) has quit (Ping timeout: 272 seconds)
+2016-10-05 21:02:58	ARCADIVS	I switched from fglrx after it wouldn't accept a newer xorg-server
+2016-10-05 21:03:04	<--	mvaenskae (~mvaenskae@unaffiliated/mvaenskae) has quit (Read error: Connection reset by peer)
+2016-10-05 21:03:33	-->	Mut (~jinx@75-138-230-75.dhcp.jcsn.tn.charter.com) has joined #gentoo
+2016-10-05 21:03:36	<--	zread (~zread@n218103229120.netvigator.com) has quit (Ping timeout: 265 seconds)
+2016-10-05 21:04:47	-->	shiggitayhtpcreb (~shiggitay@209-6-227-50.c3-0.wtr-ubr1.sbo-wtr.ma.cable.rcn.com) has joined #gentoo
+2016-10-05 21:04:56	-->	cdown (~cdown@82.132.243.219) has joined #gentoo
+2016-10-05 21:05:16	-->	endstille (~endstille@mail02.grolman-group.com) has joined #gentoo
+2016-10-05 21:05:19	-->	xmorph (~xt_@unaffiliated/xmorph) has joined #gentoo
+2016-10-05 21:06:19	Mut	OK, here is an odd one for you all. I got the base system running on my new desktop but am unable to use the WiFi dongle. When I looked under /etc/init.d/ there was no net.* for the WiFi, only net.lo and net.eth0.
+2016-10-05 21:06:36	Mut	What do I do?
+2016-10-05 21:06:48	--	shiggitayhtpcreb is now known as ShiggitayHTPC
+2016-10-05 21:06:50	ARCADIVS	Is this dongle a usb device?
+2016-10-05 21:06:51	-->	justsomeguy (~justsomeg@unaffiliated/--/x-3805311) has joined #gentoo
+2016-10-05 21:06:57	Mut	Yes.
+2016-10-05 21:07:06	-->	mvaenskae (~mvaenskae@unaffiliated/mvaenskae) has joined #gentoo
+2016-10-05 21:07:08	justsomeguy	Anyone here put things in RAM for better performance? I'm playing around with the idea of mounting a bunch of directories to tmpfs since I have a lot of unused ram, and could use some tips.
+2016-10-05 21:07:23	ARCADIVS	Make sure you have the appropriate usb drivers enabled for it in your kernel configuration, Mut.
+2016-10-05 21:07:30	<--	leat2 (~leat@198.199.127.213) has quit (Remote host closed the connection)
+2016-10-05 21:07:41	Mut	You mean the drivers for the dongal itself?
+2016-10-05 21:07:48	-->	leat2 (~leat@198.199.127.213) has joined #gentoo
+2016-10-05 21:08:08	ARCADIVS	Yes, there could either be a generic usb wifi driver or one specific for your device. I dunno which.
+2016-10-05 21:08:09	deathlire	ok, yep it is r600 sorry it took so long add r600 to VIDEO_CARDS
+2016-10-05 21:08:28	ARCADIVS	deathlire: what is that going to do?
+2016-10-05 21:08:58	Mut	Yes, I needed rt2800usb which I have as a module.
+2016-10-05 21:09:04	deathlire	and you will have to rebuild quite a few things, which was the pain of my switching from flgrx as well, but it turned out greater than the prop drivers
+2016-10-05 21:09:43	ARCADIVS	Mut: where is the documentation that lists the appropriate values for VIDEO_CARDS?
+2016-10-05 21:09:52	Mut	Me?
+2016-10-05 21:09:56	ARCADIVS	sorry
+2016-10-05 21:09:59	ARCADIVS	deathlire
+2016-10-05 21:10:05	Mut	Ish OK.
+2016-10-05 21:10:15	-->	Turingtoast (~Tino@p54BCD20A.dip0.t-ipconnect.de) has joined #gentoo
+2016-10-05 21:10:40	<--	endstille (~endstille@mail02.grolman-group.com) has quit (Quit: I'll be back.)
+2016-10-05 21:10:48	Frog_	I recently upgraded openrc and know I get an error on boot telling me that the hostname service fails to start because the hostname command can't be found. I have the right hostname init script in /etc/init.d but sure enough I cant find the 'hostname' program in either /bin or /usr/bin. Is there a specific package I should install? emerge --search hostname doesn't seem to bring anything interesting.
+2016-10-05 21:11:10	deathlire	ARCADIVS, 3023 frames in 5.0 seconds = 603.915 FPS and i have an older card than you :)
+2016-10-05 21:11:32	deathlire	course i also used vblank_mode=0 glxgears
+2016-10-05 21:11:38	ARCADIVS	oh I must be doing software accel then
+2016-10-05 21:12:23	-->	Naeil (~nzoueidi@ubuntu/member/na3il) has joined #gentoo
+2016-10-05 21:12:33	ARCADIVS	https://packages.gentoo.org/useflags/video_cards_vesa found it, deathlire
+2016-10-05 21:12:48	deathlire	ARCADIVS, type glxinfo | grep 'render'
+2016-10-05 21:12:56	deathlire	see if it says this OpenGL renderer string: Gallium 0.4 on AMD SUMO (DRM 2.43.0, LLVM 3.5.0)
+2016-10-05 21:12:57	<--	rtm1046 (~john@104.224.158.166.16clouds.com) has quit (Ping timeout: 244 seconds)
+2016-10-05 21:13:22	deathlire	https://wiki.gentoo.org/wiki/Radeon actually it is here ARCADIVS
+2016-10-05 21:13:38	ARCADIVS	OpenGL renderer string: Gallium 0.4 on AMD BARTS (DRM 2.43.0 / 4.4.6-gentoo, LLVM 3.7.1)
+2016-10-05 21:14:16	deathlire	but yeah you need a whatyamacallit in your kernel, that flgrx didn't allow before as well
+2016-10-05 21:14:18	ARCADIVS	Oh I missed that part
+2016-10-05 21:14:40	ARCADIVS	I reconfigured the kernel but missed the "r600" part
+2016-10-05 21:15:06	-->	fekepp1 (~Thunderbi@openvpn-cl-200-244.scc.kit.edu) has joined #gentoo
+2016-10-05 21:15:14	-->	zread (~zread@n218103229120.netvigator.com) has joined #gentoo
+2016-10-05 21:15:14		[21:15]
+2016-10-05 21:15:16	-->	endstille (~endstille@mail02.grolman-group.com) has joined #gentoo
+2016-10-05 21:15:22	deathlire	yeah i missed it to, but i also left flgrx in my video cards because guess why? :P
+2016-10-05 21:15:24	username234	Frog_: it's part of net-tools.  make sure you have the hostname USE flag set on that package.
+2016-10-05 21:15:44	ARCADIVS	thanks, deathlire. I hope this will work.
+2016-10-05 21:16:00	deathlire	you can ultimately switch between them later on with a script if you want to switch back
+2016-10-05 21:16:05	<--	fekepp (~Thunderbi@HSI-KBW-046-005-165-144.hsi8.kabel-badenwuerttemberg.de) has quit (Ping timeout: 252 seconds)
+2016-10-05 21:16:06	--	fekepp1 is now known as fekepp
+2016-10-05 21:16:21	Frog_	username234: Yup, just found the culprit, thanks a lot!
+2016-10-05 21:16:21	ARCADIVS	only mesa is rebuilding
+2016-10-05 21:16:24	ARCADIVS	not bad
+2016-10-05 21:16:43	<--	endstille (~endstille@mail02.grolman-group.com) has quit (Read error: Connection reset by peer)
+2016-10-05 21:17:01	deathlire	i had a bunch of blocks when i did mine and many upgrades, good thing you caught it quick
+2016-10-05 21:17:08	<--	watersoul (~ircuser@172.245.255.61) has quit (Ping timeout: 256 seconds)
+2016-10-05 21:17:29	ARCADIVS	It's not desirable to switch back and forth with fglrx needs an older xorg-server.
+2016-10-05 21:17:31	-->	xmorphx (~user@1a.06.01a8.ip4.static.sl-reverse.com) has joined #gentoo
+2016-10-05 21:17:34	Frog_	username234: I wonder, how did you figure it was in the net-tools package? I google "gentoo hostname" and found the USE flag page but there must be a better way, isn't it?
+2016-10-05 21:17:45	<--	leat2 (~leat@198.199.127.213) has quit (Remote host closed the connection)
+2016-10-05 21:18:02	-->	leat2 (~leat@198.199.127.213) has joined #gentoo
+2016-10-05 21:18:17	deathlire	but i have mine built in a way that with some framebuffer unloading/loading and driver switching by a script i can change between radeon or the prop driver, but the prop driver is no way near the level of r600
+2016-10-05 21:18:42	username234	Frog_: I used e-file
+2016-10-05 21:19:06	-->	laumann (~thomas@2.109.38.18) has joined #gentoo
+2016-10-05 21:19:10	deathlire	hmm i just rebuilt fglrx to use a newer xorg instead of letting it want to keep it
+2016-10-05 21:19:33	ARCADIVS	oh?
+2016-10-05 21:20:13	deathlire	ARCADIVS, also my fps is slow atm, usually it's around 5000 for that test, i haven't rebooted X in a month or so..so it's running slow
+2016-10-05 21:20:22	ARCADIVS	ha
+2016-10-05 21:20:37	Mut	I will just wait until you are done. ^^;
+2016-10-05 21:20:54	ARCADIVS	You make it sound like windows getting slower with uptime.
+2016-10-05 21:21:17	-->	watersoul (~ircuser@172.245.255.61) has joined #gentoo
+2016-10-05 21:21:39	Frog_	username234: thanks
+2016-10-05 21:21:46	-->	endstille (~endstille@mail02.grolman-group.com) has joined #gentoo
+2016-10-05 21:22:39	deathlire	well i accidentally ran compiz since my window borders dissapeared one day, and well once you run that, unless somebody knows a secret? it stays killing resources
+2016-10-05 21:22:54	ARCADIVS	Mut: what does running ifconfig say?
+2016-10-05 21:23:10	<--	endstille (~endstille@mail02.grolman-group.com) has quit (Client Quit)
+2016-10-05 21:23:31	-->	endstille (~endstille@mail02.grolman-group.com) has joined #gentoo
+2016-10-05 21:23:35	deathlire	i run some uhmm memory hogging and video intensive stuff so it actually does degrade over time, but a simple log out and wait a few minutes and log in and startx works like a charm
+2016-10-05 21:23:57	Mut	Ir brings up the data for lo that one would see if the desktop was not connected.
+2016-10-05 21:25:12	ARCADIVS	ifconfig -a?
+2016-10-05 21:25:13	deathlire	net-tools is usually one of the main things you should have, so most people know it by heart Frog_
+2016-10-05 21:26:19	deathlire	Mut, type iwconfig
+2016-10-05 21:26:19	Mut	Now it includes "enp5s0" and "sit0".
+2016-10-05 21:27:01	ARCADIVS	Does enp6s0 say "(Ethernet)" somewhere or is that your usb device?
+2016-10-05 21:27:05	<--	mar77i (~mar77i@77-56-218-203.dclient.hispeed.ch) has quit (Ping timeout: 272 seconds)
+2016-10-05 21:27:06	deathlire	enp5s0 is your ethernet, guessing sit0 is now your wifi
+2016-10-05 21:27:11	-->	bitcraft_ (~bitcraft_@173-23-165-29.client.mchsi.com) has joined #gentoo
+2016-10-05 21:27:13	Kelsar	sit0 is a tunnel
+2016-10-05 21:27:16	-->	tina- (~quassel@78-21-34-87.access.telenet.be) has joined #gentoo
+2016-10-05 21:27:18	deathlire	or that.
+2016-10-05 21:27:21	<--	BlackCobra (~BlackCobr@79.132.250.13) has quit (Ping timeout: 276 seconds)
+2016-10-05 21:27:23	Kelsar	ipv6 in 4
+2016-10-05 21:27:49	Kelsar	iw instead of iwconfig, also better use ip instead of ifconfig
+2016-10-05 21:27:49	Mut	Ya, that seems to be so you two. What do I do about that?
+2016-10-05 21:28:30	deathlire	but still iwconfig should list the device name for the wifi if its built in and running as a module or builtin
+2016-10-05 21:28:35	Kelsar	deathlire: nope
+2016-10-05 21:28:40	ARCADIVS	oh yeah deathlire, in one of my xorg config files says the driver is "Radeon". Do I add "r600" in there somewhere?
+2016-10-05 21:28:53	deathlire	sorry, i am deprecated Kelsar lol
+2016-10-05 21:29:00	<--	endstille (~endstille@mail02.grolman-group.com) has quit (Read error: Connection reset by peer)
+2016-10-05 21:29:14	deathlire	ARCADIVS, hold on let me look in mine
+2016-10-05 21:29:14	Kelsar	Mut: did you build the driver for your wlan card?
+2016-10-05 21:29:24	-->	BlackCobra (~BlackCobr@2a02:578:4402:77::777:27) has joined #gentoo
+2016-10-05 21:29:34	Kelsar	ARCADIVS: no, radeon is the one, r600 is only inside mesa
+2016-10-05 21:29:36	Mut	It's a dongal but yes.
+2016-10-05 21:29:46	Kelsar	Mut: well, what chip is on it?
+2016-10-05 21:29:47	ARCADIVS	okay
+2016-10-05 21:29:54	<--	bitcraft (~bitcraft_@173-23-165-29.client.mchsi.com) has quit (Ping timeout: 264 seconds)
+2016-10-05 21:30:03	-->	plhu (~plhu@62.84.155.101) has joined #gentoo
+2016-10-05 21:30:11	Mut	What chip? Sorry I do not know follow.
+2016-10-05 21:30:28	ARCADIVS	model name
+2016-10-05 21:30:28		[21:30]
+2016-10-05 21:30:37	Kelsar	Mut: you need a driver, the driver depends on what wlan chip is used
+2016-10-05 21:31:09	deathlire	#Driver      "fglrx"        Driver      "radeon" ..so yeah radeon is there r600 loads in as a module
+2016-10-05 21:31:15	Mut	Ah that. Let me look it up.
+2016-10-05 21:31:22	shields-	lsusb
+2016-10-05 21:31:28	-->	lefou__ (~lefou@p5B086B47.dip0.t-ipconnect.de) has joined #gentoo
+2016-10-05 21:31:48	deathlire	thats on two lines btw ARCADIVS i just omitted it
+2016-10-05 21:32:08	ARCADIVS	thanks, mesa finished building. brb
+2016-10-05 21:32:09	Kelsar	if you want to use radeon, you don't need any config file at all
+2016-10-05 21:32:16	-->	endstille (~endstille@mail02.grolman-group.com) has joined #gentoo
+2016-10-05 21:32:20	Mut	"Ralink Technology, Corp. RT5372 Wireless Adapter".
+2016-10-05 21:32:47	Kelsar	Mut: did you build a modle for that card into your kernel?
+2016-10-05 21:32:48	deathlire	i use one because of multi monitors
+2016-10-05 21:32:50	ARCADIVS	Kelsar: what about my dual monitor setup? It was mirroring them until I made some config files.
+2016-10-05 21:33:00	<--	endstille (~endstille@mail02.grolman-group.com) has quit (Client Quit)
+2016-10-05 21:33:06	Mut	Yes, I thought I said that.
+2016-10-05 21:33:30	Kelsar	ARCADIVS: you can make a config, but radeon would get auto selected without a driver part
+2016-10-05 21:33:44	<--	ARCADIVS (~RMM@24-179-11-74.dhcp.leds.al.charter.com) has quit (Quit: ARCADIVS)
+2016-10-05 21:33:57	deathlire	ARCADIVS, yeah thats what you will keep because of that, like right-of and so on, i have my 2nd and 3rd disabled in the conf now
+2016-10-05 21:34:01	Kelsar	then pastebin your dmesg output, like wgetpaste -c "dmesg"
+2016-10-05 21:34:01	-->	endstille (~endstille@mail02.grolman-group.com) has joined #gentoo
+2016-10-05 21:34:31	Kelsar	Mut: ^
+2016-10-05 21:35:33	<--	endstille (~endstille@mail02.grolman-group.com) has quit (Client Quit)
+2016-10-05 21:35:54	deathlire	Kelsar, there is a reason to my madness, it's called switching from and to radeon or flgrx, although i will say since I switched to the open source i haven't switched back
+2016-10-05 21:36:06	-->	ARCADIVS (~RMM@24-179-11-74.dhcp.leds.al.charter.com) has joined #gentoo
+2016-10-05 21:36:23	Kelsar	deathlire: yes, using radeon and amdgpu myself.
+2016-10-05 21:36:30	<--	BL4DE (~BL4DE@host213-122-242-203.range213-122.btcentralplus.com) has quit (Ping timeout: 264 seconds)
+2016-10-05 21:36:56	Kelsar	and i got a rather complicated display setup ;)
+2016-10-05 21:37:03	deathlire	ARCADIVS, any changes? probably should either unload or a full reboot and make sure you have an fb in the kernel
+2016-10-05 21:37:35	ARCADIVS	did full reboot
+2016-10-05 21:37:49	ARCADIVS	glxgears does exactly 300 frames in 5 seconds
+2016-10-05 21:37:50	deathlire	which card for amdgpu? i'm still wondering if they work on 65xx+
+2016-10-05 21:37:56	-->	tholin (~tholin@c-1baad954.501201651104-0-757473696b74.cust.bredbandsbolaget.se) has joined #gentoo
+2016-10-05 21:38:05	deathlire	better than before right?
+2016-10-05 21:38:30	ARCADIVS	actually it's still slowing drawing my terminal windows when I switch workspaces
+2016-10-05 21:38:33	-->	vpi (~vpi@195.66.82.9) has joined #gentoo
+2016-10-05 21:38:35	ARCADIVS	*slowly
+2016-10-05 21:38:54	<--	brrm (~brrm@HSI-KBW-095-208-160-185.hsi5.kabel-badenwuerttemberg.de) has quit (Ping timeout: 264 seconds)
+2016-10-05 21:38:54	Kelsar	deathlire: tx 480, i have no choice ;)
+2016-10-05 21:38:57	Kelsar	rx
+2016-10-05 21:39:03	deathlire	and no complaints of r600 or dri not loading ARCADIVS ?
+2016-10-05 21:39:18	ARCADIVS	in the xorg log?
+2016-10-05 21:39:26	deathlire	480, you lucky maf lol
+2016-10-05 21:39:43	deathlire	well it would have told you when running glxgears actually
+2016-10-05 21:39:44	<--	ayjay_t (~ajp_@24-151-28-56.dhcp.nwtn.ct.charter.com) has quit (Quit: Leaving)
+2016-10-05 21:40:01	-->	ayjay_t (~ajp_@24-151-28-56.dhcp.nwtn.ct.charter.com) has joined #gentoo
+2016-10-05 21:40:09	deathlire	but you should see r600.so loading in the log
+2016-10-05 21:40:24	-->	endstille (~endstille@mail01.grolman-group.com) has joined #gentoo
+2016-10-05 21:41:24	deathlire	did you make sure you enabled an fb or framebuffer in your kernel for radeon? if you remember ati-drivers does not allow fb's at all
+2016-10-05 21:41:50	<--	cdown (~cdown@82.132.243.219) has quit (Remote host closed the connection)
+2016-10-05 21:42:16	deathlire	not actually sure if that will matter, perhaps Kelsar knows
+2016-10-05 21:42:18	<--	BenLand100 (~bland@207.144.56.236) has quit (Ping timeout: 276 seconds)
+2016-10-05 21:42:53	exxi	i am done with trimming done my kernel, now what stuff should i do first to secure my gentoo instance ? firewall, ssh ?
+2016-10-05 21:42:55	Kelsar	you need radeon drm inside the kernel
+2016-10-05 21:42:58	ARCADIVS	https://wiki.gentoo.org/wiki/Radeon#Kernel this shows the ATI Radeon framebuffer module as not installed
+2016-10-05 21:43:10	-->	egon2003 (~erik@5-44-200-253.customer.universal.se) has joined #gentoo
+2016-10-05 21:43:13	-->	PsyLok (~PsyLok@151-0-192-247.ip282.fastwebnet.it) has joined #gentoo
+2016-10-05 21:43:14	<--	PsyLok (~PsyLok@151-0-192-247.ip282.fastwebnet.it) has quit (Changing host)
+2016-10-05 21:43:14	-->	PsyLok (~PsyLok@unaffiliated/psylok) has joined #gentoo
+2016-10-05 21:43:27	Kelsar	ARCADIVS: because radeon fb is for very very old cards, the name radeon is old
+2016-10-05 21:43:43	Kelsar	ARCADIVS: make sure you got no firmware load fails in dmesg
+2016-10-05 21:44:13	<--	endstille (~endstille@mail01.grolman-group.com) has quit (Client Quit)
+2016-10-05 21:44:23	-->	bifidotftw (~bifidotft@host116-2.natpool.mwn.de) has joined #gentoo
+2016-10-05 21:44:24	Kelsar	did you make radeon a Moudle or Builtin?
+2016-10-05 21:44:51	deathlire	i know i had a few of those but it sure told me whenever i ran anything all about it..but yep check dmesg, also disabling a screen will improve performance if you game or anything
+2016-10-05 21:45:05	ARCADIVS	Kelsar: only firmware failure was for a network card
+2016-10-05 21:45:55	Kelsar	300 frames in 5 s is 60FPS, vsync enabled most likely
+2016-10-05 21:45:55		[21:45]
+2016-10-05 21:46:00	deathlire	.config:3121:CONFIG_DRM_RADEON=m made mine a module, for 2 reasons
+2016-10-05 21:46:03	ARCADIVS	ATI Radeon is builtin
+2016-10-05 21:46:22	deathlire	ARCADIVS, vblank_mode=0 glxgears
+2016-10-05 21:46:25	deathlire	run that
+2016-10-05 21:46:53	-->	j3nkins (~jenkins@df.85.7a9f.ip4.static.sl-reverse.com) has joined #gentoo
+2016-10-05 21:46:54	Kelsar	ARCADIVS: what problem are you trying to solve, sounds like working as expected
+2016-10-05 21:47:09	-->	endstille (~endstille@mail01.grolman-group.com) has joined #gentoo
+2016-10-05 21:47:11	ARCADIVS	661 frames in 5 seconds without vsync.
+2016-10-05 21:47:33	deathlire	2d stutter, and seems 3d as well. you aren't using compiz are you?
+2016-10-05 21:47:40	--	nik0 is now known as niko
+2016-10-05 21:47:44	ARCADIVS	no compiz
+2016-10-05 21:47:48	-->	BenLand100 (~bland@207.144.56.236) has joined #gentoo
+2016-10-05 21:48:07	deathlire	check eselect and see what it's running
+2016-10-05 21:49:00	deathlire	my card is actually on board of my cpu it's an A-series
+2016-10-05 21:49:08	deathlire	Graphics:Advanced Micro Devices, Inc. [AMD/ATI] BeaverCreek [Radeon HD 6530D] Screen Res.: 1920x1080 pixels (508x285 millimeters) (32 bpp)
+2016-10-05 21:49:17	ARCADIVS	opengl → [1]   xorg-x11 *
+2016-10-05 21:49:19	deathlire	6530d..couldn't remember
+2016-10-05 21:49:29	ARCADIVS	eselect mesa list is kind of long
+2016-10-05 21:49:35	ARCADIVS	sec
+2016-10-05 21:49:39	deathlire	and that is the only option for mesa and ahh whats the other one
+2016-10-05 21:49:51	Kelsar	ARCADIVS: you could pastebin xorg.log, but as it sounds it just works
+2016-10-05 21:50:16	deathlire	or wgetpaste -c "eselect mesa list"
+2016-10-05 21:50:43	Kelsar	useless
+2016-10-05 21:50:49	deathlire	yeah it might be the 2nd monitor performance hit, but it shouldn't be lagging on switching desks
+2016-10-05 21:51:14	<--	endstille (~endstille@mail01.grolman-group.com) has quit (Client Quit)
+2016-10-05 21:51:18	ARCADIVS	https://gist.github.com/ARCADIVS/cc7dc04df737d810fb0fcf2fef4d6346
+2016-10-05 21:51:20	deathlire	even with compiz running i'm doing higher
+2016-10-05 21:51:38	-->	Mavis (~Mavis@unaffiliated/mavis) has joined #gentoo
+2016-10-05 21:51:58	deathlire	oyyy is that a laptop?
+2016-10-05 21:52:13	-->	brrm (~brrm@HSI-KBW-095-208-160-185.hsi5.kabel-badenwuerttemberg.de) has joined #gentoo
+2016-10-05 21:52:33	deathlire	and why is i915 being loaded at all..
+2016-10-05 21:52:37	ARCADIVS	https://gist.github.com/ARCADIVS/022efb2c8d1626941a75a9e234f696d4
+2016-10-05 21:52:50	ARCADIVS	desktop
+2016-10-05 21:53:04	ARCADIVS	I dunno why that's there
+2016-10-05 21:54:18	Kelsar	beside your monito config is not used, everything is shiny, it is working as it should
+2016-10-05 21:55:22	ARCADIVS	could that be the problem?
+2016-10-05 21:55:35	Kelsar	no, according to your log, there is no problem
+2016-10-05 21:55:56	Kelsar	if dmesg is clean too, that is just the power it has
+2016-10-05 21:56:15	exxi	any server guys ? let me know what stuff should i add on my gentoo server to make is secure ?
+2016-10-05 21:56:18	ARCADIVS	Well, all I can say then is that in fglrx, I didn't have to watch the terminal windows draw
+2016-10-05 21:56:59	-->	loriot (~tro0o0on@dslb-092-075-112-191.092.075.pools.vodafone-ip.de) has joined #gentoo
+2016-10-05 21:57:13	deathlire	yeah i didn't see any problem with the xorg log either, but hmm are both monitors at 1092x1080?
+2016-10-05 21:57:27	<--	ShiggitayHTPC (~shiggitay@209-6-227-50.c3-0.wtr-ubr1.sbo-wtr.ma.cable.rcn.com) has quit (Quit: Leaving)
+2016-10-05 21:57:33	ARCADIVS	1920x1080 yes
+2016-10-05 21:58:32	-->	endstille (~endstille@mail01.grolman-group.com) has joined #gentoo
+2016-10-05 21:58:43	-->	ShiggitayHTPC (~Shiggitay@209-6-227-50.c3-0.wtr-ubr1.sbo-wtr.ma.cable.rcn.com) has joined #gentoo
+2016-10-05 21:58:46	deathlire	kind of odd, i was having major problems with flgrx and framerate, but with r600/radeon that quadrupled my fps
+2016-10-05 21:58:58	Kelsar	and there is no intel modul loaded
+2016-10-05 21:59:04	-->	eeL (~bit0@80.78.5.106) has joined #gentoo
+2016-10-05 21:59:13	-->	ShiggitayHTPC_ (~Shiggitay@209-6-227-50.c3-0.wtr-ubr1.sbo-wtr.ma.cable.rcn.com) has joined #gentoo
+2016-10-05 21:59:20	<--	ShiggitayHTPC (~Shiggitay@209-6-227-50.c3-0.wtr-ubr1.sbo-wtr.ma.cable.rcn.com) has quit (Client Quit)
+2016-10-05 21:59:32	--	ShiggitayHTPC_ is now known as ShiggitayHTPC
+2016-10-05 21:59:32	<--	s_kunk (~s_kunk@unaffiliated/s-kunk/x-5139101) has quit (Ping timeout: 252 seconds)
+2016-10-05 21:59:38	-->	cristianonet (~cristi@79.113.76.180) has joined #gentoo
+2016-10-05 21:59:58	<--	endstille (~endstille@mail01.grolman-group.com) has quit (Client Quit)
+2016-10-05 22:00:04	deathlire	i didn't see it being loaded either Kelsar. Hmm have a way to disable that intel on board in bios ARCADIVS ? just tweaking
+2016-10-05 22:00:21	ARCADIVS	https://gist.github.com/ARCADIVS/660c320606f4c7bffdec72180bbea0e3 xrandr lists one monitor as HDMI-0 but a wiki page suggested in this config file the '-' should be removed as I have it. Could this be why my config for the monitors is not used?
+2016-10-05 22:00:23	Kelsar	deathlire: there is no hint of a loaded intel
+2016-10-05 22:00:37	Mut	OK, I have partly figured it out now. For those just joining us, I am trying to get my WiFi working and am sure I have the drivers.
+2016-10-05 22:00:37	Mut	And now, it seems that there should be a file named net.enp5s0 along with the net.lo and net.eth0 files.
+2016-10-05 22:00:41	Mut	What do I do?
+2016-10-05 22:00:54	Kelsar	ARCADIVS: output need to be named like xrandr names them, exactly like that
+2016-10-05 22:01:05	ARCADIVS	ok
+2016-10-05 22:01:05		[22:01]
+2016-10-05 22:01:09	Kelsar	Mut: en is ethernet
+2016-10-05 22:01:15	Mut	Yes.
+2016-10-05 22:01:16	Kelsar	Mut: upload your dmesg please
+2016-10-05 22:01:33	Mut	I can't the WiFi is not working. ^^l
+2016-10-05 22:01:35	deathlire	i noticed that but just trying to get the screens being 'drawn' to go away
+2016-10-05 22:01:52	Kelsar	Mut: do you have a ethernet connection?
+2016-10-05 22:01:57	Mut	Nope.
+2016-10-05 22:01:59	shuzzle	dmesg >> dmesg.file . Put it on an usb stick and then upload it ;)
+2016-10-05 22:02:13	Kelsar	Mut: then writge dmesg to a file and upload it via livecd
+2016-10-05 22:02:24	ARCADIVS	deathlire: there shouldn't be any intel hardware in this machine, so it shouldn't show up in the bios.
+2016-10-05 22:02:28	Mut	Or put it on a USB like they said.
+2016-10-05 22:02:31	Mut	Hold on.
+2016-10-05 22:02:42	Kelsar	ARCADIVS: i don't know where he sees intel...
+2016-10-05 22:02:54	ARCADIVS	in the eselect mesa list output
+2016-10-05 22:03:08	Kelsar	with no renderer, it is just a headline
+2016-10-05 22:03:31	Kelsar	and even if it was listed, that just means there is a renderer installed, not that it is used
+2016-10-05 22:03:47	deathlire	Kelsar, https://gist.github.com/ARCADIVS/cc7dc04df737d810fb0fcf2fef4d6346 from there, it shouldn't be in eselect especially if it doesn't even exist
+2016-10-05 22:04:06	<--	mvaenskae (~mvaenskae@unaffiliated/mvaenskae) has quit (Ping timeout: 264 seconds)
+2016-10-05 22:04:13	deathlire	which is a whole other can of worms
+2016-10-05 22:04:15	Kelsar	deathlire: you are wrong about that
+2016-10-05 22:04:23	-->	rndevfx (~rnespitha@host-93-104-237-213.customer.m-online.net) has joined #gentoo
+2016-10-05 22:04:28	Kelsar	that is just how eselect works
+2016-10-05 22:04:47	deathlire	hmm really? it doesn't show up in mine anywhere
+2016-10-05 22:04:48	<--	grawity (grawity@virgule.cluenet.org) has quit (Read error: Connection reset by peer)
+2016-10-05 22:04:56	Kelsar	different version maybe
+2016-10-05 22:04:57	-->	amitprakash (~amitpraka@111.93.120.74) has joined #gentoo
+2016-10-05 22:05:07	Kelsar	it just doesn't matter
+2016-10-05 22:05:20	amitprakash	Hi, while mounting a raid volume I am getting "mount: mount /dev/md0 on /var/lib/mongodb failed: Function not implemented"
+2016-10-05 22:05:22	Kelsar	ARCADIVS: only thing left would be dmesg, as said multiple times
+2016-10-05 22:05:27	amitprakash	Any ideas why?
+2016-10-05 22:05:28	-->	mvaenskae (~mvaenskae@unaffiliated/mvaenskae) has joined #gentoo
+2016-10-05 22:05:44	Kelsar	amitprakash: is it assembled? listed in /proc/mdtab?
+2016-10-05 22:05:54	amitprakash	Kelsar, yes
+2016-10-05 22:05:57	deathlire	alright i'll give you that, could just be on intel chips altogether, but having things being 'drawn' sure isn't right
+2016-10-05 22:06:12	amitprakash	Kelsar, created md0 as mdadm --create /dev/md0 --level=0 --chunk=512 --raid-devices=2 /dev/xvdb /dev/xvdc and formatted as mkfs.xfs -L mongo -b size=16384 /dev/md0
+2016-10-05 22:06:30	amitprakash	Kelsar, Mounting it as LABEL=mongo             /var/lib/mongodb    xfs  defaults,auto,noatime,noexec,noquota 0 0
+2016-10-05 22:06:41	<--	ShiggitayHTPC (~Shiggitay@209-6-227-50.c3-0.wtr-ubr1.sbo-wtr.ma.cable.rcn.com) has quit (Ping timeout: 252 seconds)
+2016-10-05 22:06:49	Kelsar	amitprakash: does dmesg tell anything?
+2016-10-05 22:06:55	ARCADIVS	Kelsar: why would dmesg say [fglrx] module loaded - fglrx 15.30.3 [Dec 17 2015] with 1 minors
+2016-10-05 22:07:04	amitprakash	Kelsar, /proc/mdstat, no file such as /proc/mdtab
+2016-10-05 22:07:05	Kelsar	amitprakash: well there you go
+2016-10-05 22:07:13	Kelsar	ARCADIVS: ^
+2016-10-05 22:07:26	Kelsar	amitprakash: sorry... yeah mdstat
+2016-10-05 22:07:47	Kelsar	ARCADIVS: you need to blacklist or remove fglrx
+2016-10-05 22:08:03	ARCADIVS	ati-drivers is not installed :'( what have I done
+2016-10-05 22:08:04	Kelsar	ARCADIVS: from your modules directory
+2016-10-05 22:08:07	-->	Lowl3v3l (~Lowl3v3l@ipservice-092-208-181-079.092.208.pools.vodafone-ip.de) has joined #gentoo
+2016-10-05 22:08:32	Kelsar	ARCADIVS: doesn't mean the module is not left over
+2016-10-05 22:08:46	deathlire	actually might need to look at the xorg.conf that is being loaded, the line with flgrx should be commented out or gone if you plan to not use either or
+2016-10-05 22:08:59	Kelsar	deathlire: yorg.log does not show it loading
+2016-10-05 22:09:15	Kelsar	amitprakash: hmm, forgot xfs in kernel?
+2016-10-05 22:09:18	-->	loa (~loki@broadband-188-32-186-142.nationalcablenetworks.ru) has joined #gentoo
+2016-10-05 22:09:31	<--	cristianonet (~cristi@79.113.76.180) has quit (Ping timeout: 272 seconds)
+2016-10-05 22:09:33	amitprakash	Kelsar, nope.. something to do with block size
+2016-10-05 22:10:05	amitprakash	Kelsar, omitting block size param on xfs mounts it fine, how ever with block size set to 16384 (16k), the error is thrown
+2016-10-05 22:10:13	deathlire	hmm so why is it even loading, never had that problem.. but that would explain things a bit for screen rendering being slow
+2016-10-05 22:10:20	Kelsar	amitprakash: sorry, not much experience with xfs
+2016-10-05 22:10:25	--	eseifert_ is now known as eseifert
+2016-10-05 22:10:32	<--	johnnyreb (~tth@unaffiliated/johnnyreb) has quit (Quit: If a frog had wings, he wouldn't bump his ass)
+2016-10-05 22:10:43	<--	atis_ (5b52619e@gateway/web/freenode/ip.91.82.97.158) has quit (Quit: Page closed)
+2016-10-05 22:11:09	Kelsar	ARCADIVS: find /lib/modules -name fglrx.ko
+2016-10-05 22:11:38	ARCADIVS	I see it. It won't be added to /lib/modules again unless I install ati-drivers again right?
+2016-10-05 22:12:01	deathlire	is it set in modules.conf?
+2016-10-05 22:12:07	amitprakash	Kelsar, [ 1587.170196] XFS (md0): File system with blocksize 16384 bytes. Only pagesize (4096) or less will currently work.
+2016-10-05 22:12:10	Kelsar	ARCADIVS: no, it won't
+2016-10-05 22:12:10	amitprakash	Got this!
+2016-10-05 22:12:21	Kelsar	amitprakash: ^^
+2016-10-05 22:12:25	ARCADIVS	Where is modules.conf?
+2016-10-05 22:12:52	Kelsar	ARCADIVS: if you have removed the module and rebooted everything should be fine
+2016-10-05 22:13:05	-->	Keiko (~gentoo@ezecom.110.74.193.127.ezecom.com.kh) has joined #gentoo
+2016-10-05 22:13:33	 *	Kelsar has to get to work...
+2016-10-05 22:13:44	ARCADIVS	thanks kelsar
+2016-10-05 22:13:46	wokko	amitprakash: On linus xfs can only use 4kiB
+2016-10-05 22:13:49	Keiko	livecd gentoo # cd /dev/sda6
+2016-10-05 22:13:50	Keiko	-bash: cd: /dev/sda6: Not a directory
+2016-10-05 22:13:55	wokko	linux*
+2016-10-05 22:13:56	deathlire	ARCADIVS, meant /etc/conf.d/modules
+2016-10-05 22:14:20	ARCADIVS	It's empty. Thanks
+2016-10-05 22:14:38	ARCADIVS	rebooting again
+2016-10-05 22:14:39	deathlire	the file? modules
+2016-10-05 22:14:55	ARCADIVS	/etc/conf.d/modules is empty
+2016-10-05 22:15:06	deathlire	hmm has that changes as well lately? to not have a modules file
+2016-10-05 22:15:19	ARCADIVS	(It has comments in it.)
+2016-10-05 22:15:30	ARCADIVS	I build everything into my kernel
+2016-10-05 22:15:59	<--	ARCADIVS (~RMM@24-179-11-74.dhcp.leds.al.charter.com) has quit (Quit: ARCADIVS)
+2016-10-05 22:16:03	deathlire	although mine only has one line modules="ohci1394 amd8111e r8169 mii kvm vboxdrv vboxnetflt vboxnetadp"
+2016-10-05 22:16:18	Keiko	Hi, can someone please guide me to how i can access my root partition from Live DVD root terminal?
+2016-10-05 22:16:18		[22:16]
+2016-10-05 22:16:39	-->	Roues (~Miranda@mt-office.tis-dialog.ru) has joined #gentoo
+2016-10-05 22:16:40	deathlire	no wonder, you don't build radeon, but as a module
+2016-10-05 22:17:04	<--	Shentino (~Shentino@gentoo/contributor/shentino) has quit (Read error: Connection reset by peer)
+2016-10-05 22:17:54	-->	ARCADIVS (~RMM@24-179-11-74.dhcp.leds.al.charter.com) has joined #gentoo
+2016-10-05 22:17:58	-->	cdown (~cdown@199.201.66.0) has joined #gentoo
+2016-10-05 22:18:32	wokko	deathlire: do you get any errors with loading modules twice with your entries in /etc/conf.d/modules?
+2016-10-05 22:18:47	amitprakash	wokko, seems so :(
+2016-10-05 22:18:59	amitprakash	wokko, However, I know every document I store will be ~16k
+2016-10-05 22:19:16	<--	tina- (~quassel@78-21-34-87.access.telenet.be) has quit (Read error: Connection reset by peer)
+2016-10-05 22:19:17	amitprakash	always > 8k and < 16k
+2016-10-05 22:19:20	<--	Roues (~Miranda@mt-office.tis-dialog.ru) has left #gentoo
+2016-10-05 22:19:20	-->	bsrd (~ukk@0133902281.0.fullrate.ninja) has joined #gentoo
+2016-10-05 22:19:27	-->	tina- (~quassel@78-21-34-87.access.telenet.be) has joined #gentoo
+2016-10-05 22:20:17	ARCADIVS	deathlire: how many frames did you say glxgears gives you?
+2016-10-05 22:20:29	deathlire	wokko, actually nope, kvm doesn't even load until i suspend and resume
+2016-10-05 22:21:07	deathlire	ARCADIVS, i'll run it while it's slow hold on.
+2016-10-05 22:21:07	-->	toralf (~toralf@x4e3692d2.dyn.telefonica.de) has joined #gentoo
+2016-10-05 22:21:21	wokko	deathlire: it maybe fine as your uptime is always great compared to rebooting
