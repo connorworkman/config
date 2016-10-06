@@ -147,6 +147,9 @@ vnoremap <Leader>dg <Esc>:'<,'>diffget<CR>
 vnoremap <Leader>dp <Esc>:'<,'>diffput<CR>
 nnoremap <Leader>dw <Esc>:wincmd p<CR>
 
+" Allow saving of files as sudo when I forgot to start vim using sudo.
+cnoremap w!! w !sudo tee % > /dev/null
+
 "nnoremap <Leader>. V"+y<Esc>:call system("xclip -i -selection clipboard", getreg("\""))
 "\<CR>:call system("xclip -i", getreg("\""))<CR>
 map [1;5Q <C-F2>
