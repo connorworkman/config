@@ -329,6 +329,8 @@ au BufNewFile,BufRead *vimpagerrc setf vim
 au BufNewFile,BufRead *.\(service\|socket\|target\|timer\)* setf sysctl
 au BufNewFile,BufRead *\(nftables.conf\|.nft\)* set filetype=nftables
 au BufNewFile,BufRead *conf setf config
+au BufNewFile,BufRead db.* setf bindzone
+
 " Tell vim to remember certain things when we exit
 "  '10  :  marks will be remembered for up to 10 previously edited files
 "  "100 :  will save up to 100 lines for each register
