@@ -122,23 +122,24 @@ nnoremap <Leader>rac :%s/<C-v><Esc>\[\(\d\{1,2}\(;\d\{1,2}\)\{0,2\}\)\?[m\|K]//g
 " onoremap af :<C-u>normal! ggVG<CR>
 nnoremap <silent> <expr> j (v:count ? 'j' : 'gj')
 nnoremap <silent> <expr> k (v:count ? 'k' : 'gk')
-nnoremap <Leader>ew :tabe <C-r>=expand("%:p:h")."/"<CR>
-nnoremap <Leader>[ :q<CR>
-nnoremap <Leader>] :w<CR>
-nnoremap <Leader>; :q!<CR>
-nnoremap <Leader>' :w!<CR>
+nnoremap <Leader>ew <Esc>:tabe <C-r>=expand("%:p:h")."/"<CR>
+nnoremap <Leader>[ <Esc>:q<CR>
+nnoremap <Leader>] <Esc>:w<CR>
+nnoremap <Leader>; <Esc>:q!<CR>
+nnoremap <Leader>' <Esc>:w!<CR>
 nnoremap <Leader>" mzI# <Esc>`z
-nnoremap <Leader>h :silent !cat /store/config/mappings-vim.txt \| sed 's/^[ ]*//' \| less<CR>:redraw!<CR>
-nnoremap <Leader>v :silent !cat /store/config/100vimcommands.txt \| sed 's/^[ ]*//' \| less<CR>:redraw!<CR>
+nnoremap <Leader>h <Esc>:silent !cat /store/config/mappings-vim.txt \| sed 's/^[ ]*//' \| less<CR>:redraw!<CR>
+nnoremap <Leader>v <Esc>:silent !cat /store/config/100vimcommands.txt \| sed 's/^[ ]*//' \| less<CR>:redraw!<CR>
 
 " nnoremap <Leader>" mzI" <Esc>`z
 nnoremap <Leader>- <Esc>:set nu!<CR>
 nnoremap <Leader>= <Esc>:set rnu!<CR>
 "nnoremap <Leader>, :s/.*[0-9]*[\.\]] \([A-Z].*\) \[.*\]$/\1/
-nnoremap <Leader>, :%s/ .*:[0-9][0-9]//
-nnoremap <Leader>. :%s/[0-9]*\. //
+nnoremap <Leader>, <Esc>:%s/ .*:[0-9][0-9]//
+nnoremap <Leader>. <Esc>:%s/[0-9]*\. //
 "nnoremap <Leader>/ :%s/ by / - /
 nnoremap <Leader>/ <Esc>i<C-r>=system('')
+nnoremap <Leader>u <Esc>:silent w !sudo tee % >/dev/null<CR>
 
 nnoremap <Leader>dg <Esc>:diffget<CR>
 nnoremap <Leader>dp <Esc>:diffput<CR>
