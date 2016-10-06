@@ -8086,3 +8086,162 @@
 2016-10-06 00:45:41	-->	sph0841 (~shenness@50.58.91.120) has joined ##sed
 2016-10-06 00:48:30	<--	sph084 (~shenness@50.58.91.120) has quit (Ping timeout: 264 seconds)
 2016-10-06 00:54:00		[00:48]
+2016-10-06 01:14:30	<--	waldner (waldner@openvpn/user/waldner) has quit (Ping timeout: 272 seconds)
+2016-10-06 01:14:30		[01:14]
+2016-10-06 01:21:43	-->	waldner (waldner@openvpn/user/waldner) has joined ##sed
+2016-10-06 01:27:00		[01:21]
+2016-10-06 01:42:29	<--	johnmilton (~johnmilto@192.206.23.197) has quit (Remote host closed the connection)
+2016-10-06 01:42:29		[01:42]
+2016-10-06 02:09:13	-->	johnmilton (~johnmilto@192.206.23.197) has joined ##sed
+2016-10-06 02:09:13		[02:09]
+2016-10-06 02:16:56	<--	X-Scale (~ARM@2001:0:53aa:64c:0:fbf7:b176:3a49) has quit (Ping timeout: 252 seconds)
+2016-10-06 02:19:06	<--	tinkersh (~TinkerSh@103.10.28.8) has quit (Ping timeout: 264 seconds)
+2016-10-06 02:20:16	-->	tinkersh (~TinkerSh@103.10.28.8) has joined ##sed
+2016-10-06 02:26:00		[02:20]
+2016-10-06 02:29:23	-->	X-Scale (~ARM@2001:0:53aa:64c:0:9d4f:b176:3a49) has joined ##sed
+2016-10-06 02:35:00		[02:29]
+2016-10-06 02:43:52	<--	tinkersh (~TinkerSh@103.10.28.8) has quit (Ping timeout: 265 seconds)
+2016-10-06 02:49:00		[02:43]
+2016-10-06 02:53:31	-->	cyborg-one (~cyborg-on@31.31.112.40) has joined ##sed
+2016-10-06 02:53:54	<--	slon (slon@ip-78-45-105-131.net.upcbroadband.cz) has quit (Ping timeout: 264 seconds)
+2016-10-06 02:57:50	-->	slon (slon@ip-78-45-105-131.net.upcbroadband.cz) has joined ##sed
+2016-10-06 03:03:00		[02:57]
+2016-10-06 03:06:46	-->	tinkersh (~TinkerSh@103.10.28.8) has joined ##sed
+2016-10-06 03:12:00		[03:06]
+2016-10-06 03:21:53	izalove	# sed "s/^\(.\{1,2\}\)\(\(...\)*\)$/\1'\2/; s/[0-9]\{3\}/&'/g; s/'$//" <<< 123456
+2016-10-06 03:21:54	shbot	izalove: 123'456
+2016-10-06 03:21:56	izalove	# sed "s/^\(.\{1,2\}\)\(\(...\)*\)$/\1'\2/; s/[0-9]\{3\}/&'/g; s/'$//" <<< 1234567
+2016-10-06 03:21:57	shbot	izalove: 1'234'567
+2016-10-06 03:21:58	izalove	# sed "s/^\(.\{1,2\}\)\(\(...\)*\)$/\1'\2/; s/[0-9]\{3\}/&'/g; s/'$//" <<< 12345678
+2016-10-06 03:21:59	shbot	izalove: 12'345'678
+2016-10-06 03:22:03	izalove	is there a simpler way?
+2016-10-06 03:25:06	<--	Al3xG0 (~unix@unaffiliated/al3xg0) has quit (Ping timeout: 264 seconds)
+2016-10-06 03:25:09	geirha	# LC_NUMERIC=en_US.UTF-8 printf "%'d\n" 12345678
+2016-10-06 03:25:10	shbot	geirha: 12,345,678
+2016-10-06 03:25:27	izalove	geirha: i need it for arbitrarily long numbers
+2016-10-06 03:25:48	-->	Al3xG0 (~unix@unaffiliated/al3xg0) has joined ##sed
+2016-10-06 03:28:27	-->	rgrinberg (~rgrinberg@24-246-56-85.cable.teksavvy.com) has joined ##sed
+2016-10-06 03:28:27		[03:28]
+2016-10-06 03:29:25	geirha	# sed -e :a -e 's/\([0-9]\)\([0-9]\{3\}\),/\1,\2,/; ta; s/,$//' <<< 12345678,
+2016-10-06 03:29:27	shbot	geirha: 12,345,678
+2016-10-06 03:29:40	geirha	don't know if that counts as simpler
+2016-10-06 03:29:51	geirha	# sed -e 's/$/,/' -e :a -e 's/\([0-9]\)\([0-9]\{3\}\),/\1,\2,/; ta; s/,$//' <<< 12345678
+2016-10-06 03:29:52	shbot	geirha: 12,345,678
+2016-10-06 03:30:44	Petter	# sed ':a;s/\B[0-9]\{3\}\>/,&/;ta' <<< 12345678
+2016-10-06 03:30:45	shbot	Petter: 12,345,678
+2016-10-06 03:31:01	izalove	nice
+2016-10-06 03:32:07	izalove	both of your solutions
+2016-10-06 03:35:23	waldner	# sed 's/[0-9]\{3\}/&,/g' <<< $(rev 12345678) | rev   # not really serious
+2016-10-06 03:35:24	shbot	waldner: gawk4: /bin/rev:25: fatal: cannot open file `12345678' for reading (No such file or directory)
+2016-10-06 03:35:28	waldner	er
+2016-10-06 03:35:33	waldner	# sed 's/[0-9]\{3\}/&,/g' <<< $(rev <<< 12345678) | rev   # not really serious
+2016-10-06 03:35:34	shbot	waldner: 12,345,678
+2016-10-06 03:36:10	waldner	and wrong!
+2016-10-06 03:36:53	waldner	needs a s/,$// at the end
+2016-10-06 03:38:47	waldner	or s/[0-9]\{3\}\B/&,/g
+2016-10-06 03:42:09	izalove	that's cheating tho
+2016-10-06 03:43:37	Petter	It makes 123,456,78 and not 12,345,678.
+2016-10-06 03:43:37		[03:43]
+2016-10-06 03:44:02	izalove	you forgot to re
+2016-10-06 03:44:04	izalove	v
+2016-10-06 03:44:25	Petter	Ah, it's for the rev thing.
+2016-10-06 03:45:32	waldner	# sed 's/[0-9]\{3\}\B/&,/g' <<< $(rev <<< 12345678) | rev
+2016-10-06 03:45:34	shbot	waldner: 12,345,678
+2016-10-06 03:46:43	izalove	that's nice but plz stahp writing <<< $(
+2016-10-06 03:46:50	izalove	# rev <<< 123456 | sed 's/[0-9]\{3\}\B/&,/g' | rev
+2016-10-06 03:46:51	shbot	izalove: 123,456
+2016-10-06 03:47:54	waldner	in general I agree, in this case it does no harm
+2016-10-06 03:48:23	 *	izalove hits waldner with the saucepan =====\_____/
+2016-10-06 03:48:58	waldner	do people in #bash insult newcomers if they see that one does eg echo foo | command rather than connamd <<< foo ?
+2016-10-06 03:49:17	waldner	UUOE, useless use of echo, I wouldn't be surprised if they came up with that
+2016-10-06 03:49:56	izalove	you're not exactly a newcomer
+2016-10-06 03:50:24	waldner	well, in general they insult regardless of whether the asker is a newcomer or not
+2016-10-06 03:50:32	Petter	#bash is too hostile and insulting for my taste.
+2016-10-06 03:51:09	izalove	it's not that hostile
+2016-10-06 03:51:14	waldner	they should put "WE KNOW BETTER THAN YOU, SHUT UP!" in the topic
+2016-10-06 03:51:55	geirha	Ah, you've met greycat
+2016-10-06 03:52:33	waldner	vaguely in a remote past, and on mailing lists
+2016-10-06 03:58:00		[03:52]
+2016-10-06 04:01:26	<--	niee (~user@MIND.THE.GAP.NIEE.INFO) has quit (Ping timeout: 252 seconds)
+2016-10-06 04:01:35	-->	niee (~user@MIND.THE.GAP.NIEE.INFO) has joined ##sed
+2016-10-06 04:07:00		[04:01]
+2016-10-06 04:22:11	-->	al-damiri (uid142631@gateway/web/irccloud.com/x-jezobzxdsutuwgbq) has joined ##sed
+2016-10-06 04:22:11		[04:22]
+2016-10-06 04:46:04	<--	gigetoo (~gigetoo@c83-250-44-242.bredband.comhem.se) has quit (Ping timeout: 244 seconds)
+2016-10-06 04:46:04		[04:46]
+2016-10-06 04:46:59	-->	gigetoo (~gigetoo@c83-250-44-242.bredband.comhem.se) has joined ##sed
+2016-10-06 04:52:00		[04:46]
+2016-10-06 04:54:20	<--	ggherdov (sid11402@gateway/web/irccloud.com/x-czzemykokqmwtqpz) has quit (Ping timeout: 244 seconds)
+2016-10-06 04:55:41	<--	tinkersh (~TinkerSh@103.10.28.8) has quit (Remote host closed the connection)
+2016-10-06 05:01:00		[04:55]
+2016-10-06 05:01:24	-->	tinkersh (~TinkerSh@103.10.28.8) has joined ##sed
+2016-10-06 05:01:51	<--	riemann (~riemann@84-10-11-234.static.chello.pl) has quit (Quit: Leaving)
+2016-10-06 05:05:11	<--	cyborg-one (~cyborg-on@31.31.112.40) has quit (Quit: cyborg-one)
+2016-10-06 05:11:00		[05:05]
+2016-10-06 05:12:58	-->	apus (~tux@p200300422C21D18EBEAEC5FFFE6B0505.dip0.t-ipconnect.de) has joined ##sed
+2016-10-06 05:18:00		[05:12]
+2016-10-06 05:27:08	-->	Virtual (Virtual@2604:180:1::5d19:8c83) has joined ##sed
+2016-10-06 05:27:30	Virtual	how to remove [] characters from a file? I can use \to escape [, but it won't work for ]
+2016-10-06 05:30:13	waldner	sed 's/[][]//g'
+2016-10-06 05:30:18	waldner	or just use tr
+2016-10-06 05:31:35	Virtual	thanks
+2016-10-06 05:31:36	-->	zipe31 (~zipe31@min31-1-82-224-11-112.fbx.proxad.net) has joined ##sed
+2016-10-06 05:37:00		[05:31]
+2016-10-06 05:39:52	-->	ggherdov (sid11402@gateway/web/irccloud.com/x-zkpyelpnllrhlgmj) has joined ##sed
+2016-10-06 05:41:41	-->	geggam__wk (~geggam@ec2-107-20-130-165.compute-1.amazonaws.com) has joined ##sed
+2016-10-06 05:42:14	--	geggam__wk is now known as geggam_wk
+2016-10-06 05:48:00		[05:42]
+2016-10-06 06:12:28	<--	elastix (~Thunderbi@cpc85186-haye23-2-0-cust65.17-4.cable.virginm.net) has quit (Quit: elastix)
+2016-10-06 06:12:28		[06:12]
+2016-10-06 06:24:20	<--	navidr (uid112413@gateway/web/irccloud.com/x-kuamwuxbrckvkmrx) has quit (Quit: Connection closed for inactivity)
+2016-10-06 06:30:00		[06:24]
+2016-10-06 06:45:34	<--	geggam_wk (~geggam@ec2-107-20-130-165.compute-1.amazonaws.com) has quit (Remote host closed the connection)
+2016-10-06 06:45:34		[06:45]
+2016-10-06 06:58:02	-->	nal (~nal@adsl-64-237-237-165.prtc.net) has joined ##sed
+2016-10-06 07:04:00		[06:58]
+2016-10-06 07:10:12	-->	Canaimero-e64b9 (~canaima@201.211.96.159) has joined ##sed
+2016-10-06 07:14:05	Canaimero-e64b9	hols grupoo
+2016-10-06 07:15:00	Canaimero-e64b9	mmmmmmmm
+2016-10-06 07:17:05	<--	Canaimero-e64b9 (~canaima@201.211.96.159) has left ##sed
+2016-10-06 07:23:00		[07:17]
+2016-10-06 07:27:35	<--	nal (~nal@adsl-64-237-237-165.prtc.net) has quit (Ping timeout: 265 seconds)
+2016-10-06 07:33:00		[07:27]
+2016-10-06 07:35:29	<--	TomyWork (~tomy@85.199.84.100) has quit (Ping timeout: 240 seconds)
+2016-10-06 07:41:00		[07:35]
+2016-10-06 07:51:26	-->	nal (~nal@adsl-64-237-237-165.prtc.net) has joined ##sed
+2016-10-06 07:57:00		[07:51]
+2016-10-06 07:59:41	-->	_geoff_ (~geoff@50-199-206-213-static.hfc.comcastbusiness.net) has joined ##sed
+2016-10-06 08:02:54	<--	_geoff (~geoff@50-199-206-213-static.hfc.comcastbusiness.net) has quit (Ping timeout: 264 seconds)
+2016-10-06 08:08:00		[08:02]
+2016-10-06 08:25:25	<--	abernix (~abernix@unaffiliated/abernix) has quit (Quit: Bye)
+2016-10-06 08:25:25		[08:25]
+2016-10-06 08:25:26	-->	Nimitz14 (~Nimitz14@p200300E273C40100452E35E5BDA1A2D1.dip0.t-ipconnect.de) has joined ##sed
+2016-10-06 08:31:00		[08:25]
+2016-10-06 09:13:19	<--	johnmilton (~johnmilto@192.206.23.197) has quit (Remote host closed the connection)
+2016-10-06 09:13:19		[09:13]
+2016-10-06 09:27:07	<--	apus (~tux@p200300422C21D18EBEAEC5FFFE6B0505.dip0.t-ipconnect.de) has quit (Quit: Konversation terminated!)
+2016-10-06 09:30:59	<--	nal (~nal@adsl-64-237-237-165.prtc.net) has quit (Ping timeout: 272 seconds)
+2016-10-06 09:30:59		[09:30]
+2016-10-06 09:38:48	-->	johnmilton (~johnmilto@192.206.23.197) has joined ##sed
+2016-10-06 09:40:45	-->	bowhunter (~textual@24-155-227-17.dyn.grandenetworks.net) has joined ##sed
+2016-10-06 09:46:00		[09:40]
+2016-10-06 09:46:55	<--	zipe31 (~zipe31@min31-1-82-224-11-112.fbx.proxad.net) has quit (Quit: Leaving)
+2016-10-06 09:52:00		[09:46]
+2016-10-06 10:12:21	<--	bowhunter (~textual@24-155-227-17.dyn.grandenetworks.net) has quit (Quit: My Mac has gone to sleep. ZZZzzz…)
+2016-10-06 10:12:21		[10:12]
+2016-10-06 10:17:05	<--	Al3xG0 (~unix@unaffiliated/al3xg0) has quit (Ping timeout: 252 seconds)
+2016-10-06 10:19:28	-->	bowhunter (~textual@24-155-227-17.dyn.grandenetworks.net) has joined ##sed
+2016-10-06 10:25:00		[10:19]
+2016-10-06 10:31:09	-->	Al3xG0 (~unix@unaffiliated/al3xg0) has joined ##sed
+2016-10-06 10:35:31	<--	Al3xG0 (~unix@unaffiliated/al3xg0) has quit (Read error: Connection reset by peer)
+2016-10-06 10:35:45	-->	Al3xG0 (~unix@186.214.166.172) has joined ##sed
+2016-10-06 10:35:45	<--	Al3xG0 (~unix@186.214.166.172) has quit (Changing host)
+2016-10-06 10:35:45	-->	Al3xG0 (~unix@unaffiliated/al3xg0) has joined ##sed
+2016-10-06 10:41:00		[10:35]
+2016-10-06 10:42:28	<--	bowhunter (~textual@24-155-227-17.dyn.grandenetworks.net) has quit (Quit: My Mac has gone to sleep. ZZZzzz…)
+2016-10-06 10:48:00		[10:42]
+2016-10-06 10:51:12	-->	rawrschach (~textual@c-73-221-194-192.hsd1.wa.comcast.net) has joined ##sed
+2016-10-06 10:57:00		[10:51]
+2016-10-06 11:18:42	<--	geggam (~geggam@108-218-203-177.uvs.sntcca.sbcglobal.net) has quit (Remote host closed the connection)
+2016-10-06 11:18:42		[11:18]
+2016-10-06 11:26:34	-->	geggam (~geggam@108-218-203-177.uvs.sntcca.sbcglobal.net) has joined ##sed

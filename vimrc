@@ -168,17 +168,17 @@ map <Esc><F6> <M-F6>
 map <Esc><F7> <M-F7>
 map <Esc><F8> <M-F8>
 map <Esc><F9> <M-F9>
-nnoremap <F2> ^
-nnoremap <C-F2> 0dw
-nnoremap <M-F2> <Esc>:tabn<CR>
-nnoremap <F3> $
-nnoremap <C-F3> gi
-nnoremap <M-F3> <Esc>:tabp<CR>
+nnoremap <F2> <Esc>:tabn<CR>
+nnoremap <C-F2> ^
+nnoremap <M-F2> 0dw
+nnoremap <F3> <Esc>:tabp<CR>
+nnoremap <C-F3> $
+nnoremap <M-F3> gi
 nnoremap <F4> <C-u>
-nnoremap <M-F4> <Esc>:tabn<CR>
+nnoremap <C-F4> <Esc>:tabn<CR>
 nnoremap <M-F4> <Esc>:set scrollbind<CR>
 nnoremap <F5> <C-d>
-nnoremap <M-F5> <Esc>:tabp<CR>
+nnoremap <C-F5> <Esc>:tabp<CR>
 nnoremap <M-F5> <Esc>:set noscb<CR>
 " Clipboard mappings
 vmap <F6> "+y<Esc>:call system("xclip -i -selection clipboard", getreg("\""))
