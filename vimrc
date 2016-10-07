@@ -303,6 +303,7 @@ let g:gruvbox_contrast_dark="high"
 let g:gruvbox_contrast_light="high"
 let g:gruvbox_improved_strings=0
 let g:gruvbox_improved_warnings=0
+
 " colorscheme solarized
 colorscheme gruvbox
 syntax on
@@ -325,6 +326,7 @@ set incsearch
 set smartcase
 set magic
 "set relativenumber
+
 "formal: au BufNewFile,BufRead * setf {filetype}
 au BufNewFile,BufRead *.jq setf javascript
 au BufNewFile,BufRead *tmux.conf setf tmux
@@ -364,7 +366,7 @@ set viminfo=!,\'100,\"100,:100,%,n~/.viminfo
 " Plug '~/my-prototype-plugin'
 "Plug 'mhinz/vim-startify'
 "call plug#end()
-"
+
 function! ResCur()
   if line("'\"") <= line("$")
     normal! g`"
@@ -412,6 +414,7 @@ augroup END
 "  au BufReadPost * call setpos(".", getpos("'\""))
 "  au BufWinLeave * mkview
 "augroup END
+
 " vim -b : edit binary using xxd-format!
 augroup Binary
   au!

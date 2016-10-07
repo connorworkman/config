@@ -523,33 +523,38 @@ tgv() {
 
 
 setup-scg() {
-	[[ "$PWD" != /store/config ]] && pushd /store/config &>/dev/null || local DIRVAR=1
+	[[ "$PWD" != /store/config ]] && pushd /store/config 2>&1 >/dev/null || local dirvar=1
 	#git init .
 	#git remote add origin git+ssh://git@github.com/alyptik/config.git
-	git remote set-url origin git+ssh://git@github.com/alyptik/config.git
-	(($DIRVAR)) || popd &>/dev/null
+	git remote set-url origin "git+ssh://git@github.com/alyptik/config.git"
+	#(($dirvar)) || popd &>/dev/null
+	[[ "$dirvar" -eq 0 ]] && popd 2>&1 >/dev/null
 }
 
 
 pscg() {
-	[[ "$PWD" != /store/config ]] && pushd /store/config &>/dev/null || local DIRVAR=1
+	[[ "$PWD" != /store/config ]] && pushd /store/config 2>&1 >/dev/null || local dirvar=1
 	git pull &&
-		printf "\n \033[32m %s \n\033[0m" "Pull successful!" || \
-		printf "\n \033[31m %s \n\033[0m" "Error during pull..."
-	(($DIRVAR)) || popd &>/dev/null
+		printf '\n \033[32m %s \n\033[0m' "Pull successful!" || \
+		printf '\n \033[31m %s \n\033[0m' "Error during pull..."
+	#(($dirvar)) || popd 2>&1 >/dev/null
+	[[ "$dirvar" -eq 0 ]] && popd 2>&1 >/dev/null
 }
 
 
 scg() {
-	[[ "$PWD" != /store/config ]] && pushd /store/config &>/dev/null || local DIRVAR=1
+	[[ "$PWD" != /store/config ]] && pushd /store/config 2>&1 >/dev/null || local dirvar=1
 	git add .
 	#git commit -S -F <(printf "Configuration backup on $(date).\n") && {
-	git commit -S -m "Configuration backup on $(date)." && {
+	git commit -a -S -m "Configuration backup on $(date)." && {
 		git push && \
-			printf "\n \033[32m %s \n\033[0m" "Commit successful!" || \
-			printf "\n \033[31m %s \n\033[0m" "Error during push..."; } || {
-		printf "\n \033[31m %s \n\033[0m" "Nothing to commit..."; }
-	(($DIRVAR)) || popd &>/dev/null
+			printf '\n \033[32m %s \n\033[0m' "Commit successful!" || \
+			printf '\n \033[31m %s \n\033[0m' "Error during push..."
+	} || {
+		printf '\n \033[31m %s \n\033[0m' "Nothing to commit..."
+	}
+	#[[ $dirvar -eq 0 ]] && popd 2>&1 >/dev/null
+	[[ $dirvar -eq 0 ]] && popd 2>&1 >/dev/null
 }
 
 par() {
