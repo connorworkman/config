@@ -154,5 +154,3 @@ export LESS_TERMCAP_us=$'\E[4;32;4;132m' LESS_TERMCAP_ue=$'\E[0m' LESS_TERMCAP_s
 #	TERM="$(sed -r 's/^([[:alnum:]]+)(|\-256color)*$/\1-256color/' <<<${TERM/1/xterm} )"
 #	echo ${testvar/-256color*/}$(<<<"xterm-urxvt-unicode-256color-256color-256color-256color"  sed -r 's/([u]?rxvt)(\-unicode|)/\1/; s/^([^\-]*\-[^\-]*?|[^\-]*)(\-256color)+$/\2/ ' )
 #	sed -r 's/^([^\-]*)(\-256color)+$/\1\2/ '
-
-
