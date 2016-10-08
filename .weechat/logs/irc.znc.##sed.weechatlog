@@ -9038,3 +9038,69 @@
 2016-10-07 14:39:54		[14:39]
 2016-10-07 14:40:40	nal	is using sed s///w a good idea? is it constantly writing each line?
 2016-10-07 14:46:00		[14:40]
+2016-10-07 15:26:37	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined ##sed
+2016-10-07 15:26:37		[15:26]
+2016-10-07 15:26:37	--	Topic for ##sed is "The Stream EDitor | Paste at: http://sprunge.us (/msg greybot sprunge) | FAQ: http://sed.sf.net/sedfaq.html | Intro/Tutorial: http://xrl.us/sedintro#uh-0 | POSIX: http://xrl.us/sedstd | Reference: http://xrl.us/gnused | Regex: #regex | Do NOT try to parse markup (html, xml, etc) with sed! /msg greybot html | Please ask your question and be patient, someone will get to you soon"
+2016-10-07 15:26:37	--	Topic set by e36freak (~daniel.mi@auriga.kiwilight.com) on Wed, 21 Aug 2013 16:29:09
+2016-10-07 15:26:37	--	Channel ##sed: 131 nicks (0 ops, 0 voices, 131 normals)
+2016-10-07 15:26:37	***	Buffer Playback...
+2016-10-07 15:26:37	izalove	[13:22:03] is there a simpler way? [13:22:03]
+2016-10-07 15:26:37	geirha	[13:25:09] # LC_NUMERIC=en_US.UTF-8 printf "%'d\n" 12345678 [13:25:09]
+2016-10-07 15:26:37	shbot	[13:25:10] geirha: 12,345,678 [13:25:10]
+2016-10-07 15:26:37	izalove	[13:25:27] geirha: i need it for arbitrarily long numbers [13:25:27]
+2016-10-07 15:26:37	geirha	[13:29:25] # sed -e :a -e 's/\([0-9]\)\([0-9]\{3\}\),/\1,\2,/; ta; s/,$//' <<< 12345678, [13:29:25]
+2016-10-07 15:26:37	shbot	[13:29:27] geirha: 12,345,678 [13:29:27]
+2016-10-07 15:26:37	geirha	[13:29:40] don't know if that counts as simpler [13:29:40]
+2016-10-07 15:26:37	geirha	[13:29:51] # sed -e 's/$/,/' -e :a -e 's/\([0-9]\)\([0-9]\{3\}\),/\1,\2,/; ta; s/,$//' <<< 12345678 [13:29:51]
+2016-10-07 15:26:37	shbot	[13:29:52] geirha: 12,345,678 [13:29:52]
+2016-10-07 15:26:37	Petter	[13:30:44] # sed ':a;s/\B[0-9]\{3\}\>/,&/;ta' <<< 12345678 [13:30:44]
+2016-10-07 15:26:37	shbot	[13:30:45] Petter: 12,345,678 [13:30:45]
+2016-10-07 15:26:37	izalove	[13:31:01] nice [13:31:01]
+2016-10-07 15:26:37	izalove	[13:32:07] both of your solutions [13:32:07]
+2016-10-07 15:26:37	waldner	[13:35:23] # sed 's/[0-9]\{3\}/&,/g' <<< $(rev 12345678) | rev   # not really serious [13:35:23]
+2016-10-07 15:26:37	shbot	[13:35:24] waldner: gawk4: /bin/rev:25: fatal: cannot open file `12345678' for reading (No such file or directory) [13:35:24]
+2016-10-07 15:26:37	waldner	[13:35:28] er [13:35:28]
+2016-10-07 15:26:37	waldner	[13:35:33] # sed 's/[0-9]\{3\}/&,/g' <<< $(rev <<< 12345678) | rev   # not really serious [13:35:33]
+2016-10-07 15:26:37	shbot	[13:35:34] waldner: 12,345,678 [13:35:34]
+2016-10-07 15:26:37	waldner	[13:36:10] and wrong! [13:36:10]
+2016-10-07 15:26:37	waldner	[13:36:53] needs a s/,$// at the end [13:36:53]
+2016-10-07 15:26:37	waldner	[13:38:47] or s/[0-9]\{3\}\B/&,/g [13:38:47]
+2016-10-07 15:26:37	izalove	[13:42:09] that's cheating tho [13:42:09]
+2016-10-07 15:26:37	Petter	[13:43:37] It makes 123,456,78 and not 12,345,678. [13:43:37]
+2016-10-07 15:26:37	izalove	[13:44:02] you forgot to re [13:44:02]
+2016-10-07 15:26:37	izalove	[13:44:04] v [13:44:04]
+2016-10-07 15:26:37	Petter	[13:44:25] Ah, it's for the rev thing. [13:44:25]
+2016-10-07 15:26:37	waldner	[13:45:32] # sed 's/[0-9]\{3\}\B/&,/g' <<< $(rev <<< 12345678) | rev [13:45:32]
+2016-10-07 15:26:37	shbot	[13:45:34] waldner: 12,345,678 [13:45:34]
+2016-10-07 15:26:37	izalove	[13:46:43] that's nice but plz stahp writing <<< $( [13:46:43]
+2016-10-07 15:26:37	izalove	[13:46:50] # rev <<< 123456 | sed 's/[0-9]\{3\}\B/&,/g' | rev [13:46:50]
+2016-10-07 15:26:37	shbot	[13:46:51] izalove: 123,456 [13:46:51]
+2016-10-07 15:26:37	waldner	[13:47:54] in general I agree, in this case it does no harm [13:47:54]
+2016-10-07 15:26:37	 *	izalove [13:48:23] hits waldner with the saucepan =====\_____/ [13:48:23]
+2016-10-07 15:26:37	waldner	[13:48:58] do people in #bash insult newcomers if they see that one does eg echo foo | command rather than connamd <<< foo ? [13:48:58]
+2016-10-07 15:26:37	waldner	[13:49:17] UUOE, useless use of echo, I wouldn't be surprised if they came up with that [13:49:17]
+2016-10-07 15:26:37	izalove	[13:49:56] you're not exactly a newcomer [13:49:56]
+2016-10-07 15:26:37	waldner	[13:50:24] well, in general they insult regardless of whether the asker is a newcomer or not [13:50:24]
+2016-10-07 15:26:37	Petter	[13:50:32] #bash is too hostile and insulting for my taste. [13:50:32]
+2016-10-07 15:26:37	izalove	[13:51:09] it's not that hostile [13:51:09]
+2016-10-07 15:26:37	waldner	[13:51:14] they should put "WE KNOW BETTER THAN YOU, SHUT UP!" in the topic [13:51:14]
+2016-10-07 15:26:37	geirha	[13:51:55] Ah, you've met greycat [13:51:55]
+2016-10-07 15:26:37	waldner	[13:52:33] vaguely in a remote past, and on mailing lists [13:52:33]
+2016-10-07 15:26:37	Virtual	[15:27:30] how to remove [] characters from a file? I can use \to escape [, but it won't work for ] [15:27:30]
+2016-10-07 15:26:37	waldner	[15:30:13] sed 's/[][]//g' [15:30:13]
+2016-10-07 15:26:37	waldner	[15:30:18] or just use tr [15:30:18]
+2016-10-07 15:26:37	Virtual	[15:31:35] thanks [15:31:35]
+2016-10-07 15:26:37	Canaimero-e64b9	[17:14:05] hols grupoo [17:14:05]
+2016-10-07 15:26:37	Canaimero-e64b9	[17:15:00] mmmmmmmm [17:15:00]
+2016-10-07 15:26:37	nal	[00:40:40] is using sed s///w a good idea? is it constantly writing each line? [00:40:40]
+2016-10-07 15:26:37	Riviera	[01:20:09] "constantly writing each line?" [01:20:09]
+2016-10-07 15:26:37	***	Playback Complete.
+2016-10-07 15:27:14	--	Channel created on Wed, 09 Sep 2009 05:53:00
+2016-10-07 15:29:50	nal	i have no idea how editing a file works
+2016-10-07 15:30:22	-->	Nimitz141 (~Nimitz14@p200300E273CDC70069F59BA406DC877E.dip0.t-ipconnect.de) has joined ##sed
+2016-10-07 15:33:50	<--	Nimitz14 (~Nimitz14@p200300E273C2410069F59BA406DC877E.dip0.t-ipconnect.de) has quit (Ping timeout: 258 seconds)
+2016-10-07 15:36:57	<--	D630 (~D630@unaffiliated/d630) has quit (Quit: quit)
+2016-10-07 15:37:40	<--	Nimitz141 (~Nimitz14@p200300E273CDC70069F59BA406DC877E.dip0.t-ipconnect.de) has quit (Quit: Leaving)
+2016-10-07 15:41:04	<--	navidr (uid112413@gateway/web/irccloud.com/x-kumnhxkveujaegxo) has quit (Quit: Connection closed for inactivity)
+2016-10-07 15:46:12	<--	bibibi (~bibibi@unaffiliated/bibibi) has quit (Ping timeout: 260 seconds)
+2016-10-07 15:46:12		[15:46]
