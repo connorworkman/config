@@ -11267,3 +11267,247 @@
 2016-10-07 21:49:14	-->	llua (~llua@zsh/developer/llua) has joined #awk
 2016-10-07 21:55:00		[21:49]
 2016-10-07 22:00:12	<--	llua (~llua@zsh/developer/llua) has quit (Ping timeout: 250 seconds)
+2016-10-07 22:04:41	-->	llua (~llua@zsh/developer/llua) has joined #awk
+2016-10-07 22:06:36	<--	sbine (~sbine@unaffiliated/sbine) has quit (Remote host closed the connection)
+2016-10-07 22:07:10	-->	sbine (~sbine@unaffiliated/sbine) has joined #awk
+2016-10-07 22:13:00		[22:07]
+2016-10-07 22:44:40	-->	vuoto (~vuoto@80-71-135-9.u.parknet.dk) has joined #awk
+2016-10-07 22:44:40		[22:44]
+2016-10-08 03:17:55	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined #awk
+2016-10-08 03:17:55		[03:17]
+2016-10-08 03:17:55	--	Topic for #awk is ""Paste at: http://gist.github.com or http://sprunge.us | Wiki: http://awk.freeshell.org/ | Reference: http://xrl.us/gnuref | FAQ: http://xrl.us/4wkf4q | POSIX: http://xrl.us/awk1p | Regex: #regex | e36freak's libs: https://github.com/e36freak/awk-libs | HTML input?  Use scrapy instead - http://scrapy.org | Please ask your question and be patient, someone will get to you."
+2016-10-08 03:17:55	--	Topic set by pr3d4t0r (~zhenya01@varenka.cime.net) on Wed, 27 Apr 2016 07:56:45
+2016-10-08 03:17:55	--	Channel #awk: 148 nicks (0 ops, 0 voices, 148 normals)
+2016-10-08 03:17:55	***	Buffer Playback...
+2016-10-08 03:17:55	nal	[00:08:48] encountered or a subsequent exit statement with an expression is executed. [00:08:48]
+2016-10-08 03:17:55	nal	[00:08:54] http://pubs.opengroup.org/onlinepubs/9699919799/utilities/awk.html [00:08:54]
+2016-10-08 03:17:55	nal	[00:09:24] so an if (vecinos) exit should do [00:09:24]
+2016-10-08 03:17:55	nal	[00:10:05] (that inside the END) [00:10:05]
+2016-10-08 03:17:55	nal	[00:10:46] its a good idea, handy for some code, tedious for other types [00:10:46]
+2016-10-08 03:17:55	lgc	[00:11:17] Oh, I finally got, it, nal. Thanks. :) . [00:11:17]
+2016-10-08 03:17:55	nal	[00:19:54] this is great though, more sloc than i've ever written for awk, good luck :) [00:19:54]
+2016-10-08 03:17:55	nal	[00:22:39] (actually you even put the exit on ayuda(), so you kinda knew [00:22:39]
+2016-10-08 03:17:55	nal	[00:26:31] the why this was a design decision idk. i can theorize that awk being a data reporting language, it should act more like an accumulator of data, so once you get what you want, you goto END and well... report. [00:26:31]
+2016-10-08 03:17:55	lgc	[00:31:00] It's easier than C, nal, and it does reasonably well. The files I'm reading so far are not awfully big. [00:31:00]
+2016-10-08 03:17:55	nal	[00:32:28] everything is easier than C though [00:32:28]
+2016-10-08 03:17:55	lgc	[00:32:39] Indeed. [00:32:39]
+2016-10-08 03:17:55	nal	[00:32:51] except, maybe, esoteric languages [00:32:51]
+2016-10-08 03:17:55	lgc	[00:33:40] Oh, well... except from file I/O and such things, AWK is very much like C. [00:33:40]
+2016-10-08 03:17:55	lgc	[00:33:59] And, of course, no declaration of variables. [00:33:59]
+2016-10-08 03:17:55	JacobsLadd3r	[00:34:05] Anyone happen to know any tricks to speed up awk on a large file? I already use (LC_ALL=C) to set the locale to ASCII instead of UTF-8 and that improves performance greatly, but wandering if there was anything else I should look at. [00:34:05]
+2016-10-08 03:17:55	nal	[00:35:17] lgc: well, local variables must be declared if you want them [00:35:17]
+2016-10-08 03:17:55	lgc	[00:35:44] You mean in AWK? [00:35:44]
+2016-10-08 03:17:55	nal	[00:35:49] yeah [00:35:49]
+2016-10-08 03:17:55	nal	[00:35:58] or else its global [00:35:58]
+2016-10-08 03:17:55	nal	[00:36:11] and global always messes things up [00:36:11]
+2016-10-08 03:17:55	nal	[00:36:31] try doing a for loop within a for loop [00:36:31]
+2016-10-08 03:17:55	lgc	[00:36:45] Oh, yes, that is something I don't like much about AWK's global-by-default values. [00:36:45]
+2016-10-08 03:17:55	nal	[00:36:57] JacobsLadd3r: use perl [00:36:57]
+2016-10-08 03:17:55	lgc	[00:36:58] It's kind of sloppy. [00:36:58]
+2016-10-08 03:17:55	nal	[00:37:23] JacobsLadd3r: or use sed, if its still too slow use C [00:37:23]
+2016-10-08 03:17:55	nal	[00:37:32] or use mawk [00:37:32]
+2016-10-08 03:17:55	nal	[00:38:21] lgc: its good for one liners but not good for... anything else [00:38:21]
+2016-10-08 03:17:55	nal	[00:39:48] JacobsLadd3r: this is of course, if you cant make the code any faster, then switch interpreter/languages [00:39:48]
+2016-10-08 03:17:55	nal	[00:40:09] hopefully someone else will answer [00:40:09]
+2016-10-08 03:17:55	lgc	[00:40:22] Not in my experience, nal. :) . It can do much more than that. [00:40:22]
+2016-10-08 03:17:55	rods-tab3	[00:40:25] !paddlin [00:40:25]
+2016-10-08 03:17:55	jamesd	[00:40:37] get a faster computer..   i haven't found awk slow at anything in the last decade... not even this century awk was slow back in the 90's when i didn't own a floating point processor... [00:40:37]
+2016-10-08 03:17:55	rods-tab3	[00:41:47] try mawk - its sometimes much fasster [00:41:47]
+2016-10-08 03:17:55	JacobsLadd3r	[00:41:53] If you attempt to awk search over a 5GB file it's going to take quite a while. Forcing ASCII instead of UTF-8 can give you an over 1000% performance increase. So I was just curious if there were any other Linux tricks that might help in general just speed up awk. [00:41:53]
+2016-10-08 03:17:55	JacobsLadd3r	[00:42:04] Ahh that's true I forgot about mawk, thanks! [00:42:04]
+2016-10-08 03:17:55	nal	[00:42:15] oh gosh, why are you even... [00:42:15]
+2016-10-08 03:17:55	rods-tab3	[00:44:59] xpt: hawkbot down ? [00:44:59]
+2016-10-08 03:17:55	nal	[00:47:28] i always see that question asked in stack overflow, by that point, isnt it better to convert the file into sql or something like that? [00:47:28]
+2016-10-08 03:17:55	JacobsLadd3r	[00:52:27] So this is what I'm trying to speed up, looking across all logs files on a web-server at once, and in many cases this totals over GBs and GBs of data. I have awk looking just for today's date, so if there would be a faster way to not read from the start of files until getting to today's date that is the next place I can think of for speed improvements, but not sure if that's doable in any way. [00:52:27]
+2016-10-08 03:17:55	JacobsLadd3r	[00:52:27] http://pastebin.com/2AHCSFVK [00:52:27]
+2016-10-08 03:17:55	nal	[00:56:37] gnu grep is faster for searching [00:56:37]
+2016-10-08 03:17:55	JacobsLadd3r	[00:58:05] Yeah, if you Google "Speed up grep" I wrote an article about that, that's where I got the LC_ALL=C trick to use with awk. I was just curious if I was missing out on any other speed boosts I could use directly with awk instead of having to grep first. [00:58:05]
+2016-10-08 03:17:55	rods-tab3	[01:06:22] which awk ? [01:06:22]
+2016-10-08 03:17:55	xpt	[06:05:19] hawkbot: !help [06:05:19]
+2016-10-08 03:17:55	xpt	[06:05:32] !help [06:05:32]
+2016-10-08 03:17:55	hawkbot	[06:05:32] Available commands: `!add word description' to add new factoid, `!foo' to trigger response to "foo" factoid. `!forget foo' to remove factoid. `!facts' to list all factoids available. [06:05:32]
+2016-10-08 03:17:55	xpt	[06:05:57] rods-tab3: working. thanls for info [06:05:57]
+2016-10-08 03:17:55	xpt	[06:06:10] s,l,k, [06:06:10]
+2016-10-08 03:17:55	Camusensei	[11:25:37] JacobsLadd3r: since it seems you are doing this daily, I would recommend you saved the index where you found yesterday's date and start from that line [11:25:37]
+2016-10-08 03:17:55	***	Playback Complete.
+2016-10-08 03:18:42	--	Channel created on Sat, 25 Nov 2006 20:42:48
+2016-10-08 03:23:28	-->	llua (~llua@zsh/developer/llua) has joined #awk
+2016-10-08 03:25:05	-->	mute (m@unaffiliated/mute) has joined #awk
+2016-10-08 03:30:13	<--	mute (m@unaffiliated/mute) has quit (Ping timeout: 248 seconds)
+2016-10-08 03:36:00		[03:30]
+2016-10-08 03:37:24	<--	llua (~llua@zsh/developer/llua) has quit (Ping timeout: 260 seconds)
+2016-10-08 03:43:00		[03:37]
+2016-10-08 03:45:08	-->	llua (~llua@zsh/developer/llua) has joined #awk
+2016-10-08 03:51:00		[03:45]
+2016-10-08 03:57:07	<--	izalove (~izabera@unaffiliated/izabera) has quit (Ping timeout: 258 seconds)
+2016-10-08 04:01:02	-->	}ls{ (~kalle@p5DC9BC37.dip0.t-ipconnect.de) has joined #awk
+2016-10-08 04:01:02	<--	}ls{ (~kalle@p5DC9BC37.dip0.t-ipconnect.de) has quit (Changing host)
+2016-10-08 04:01:02	-->	}ls{ (~kalle@unaffiliated/ls/x-8089558) has joined #awk
+2016-10-08 04:01:33	-->	izalove (~izabera@unaffiliated/izabera) has joined #awk
+2016-10-08 04:07:00		[04:01]
+2016-10-08 04:17:28	-->	anewuser (~anewuser@unaffiliated/anewuser) has joined #awk
+2016-10-08 04:23:00		[04:17]
+2016-10-08 04:30:41	<--	anewuser (~anewuser@unaffiliated/anewuser) has quit (Read error: Connection reset by peer)
+2016-10-08 04:31:07	-->	anewuser (~anewuser@unaffiliated/anewuser) has joined #awk
+2016-10-08 04:36:39	-->	vuoto (~vuoto@80-71-135-9.u.parknet.dk) has joined #awk
+2016-10-08 04:38:06	-->	m1st (~m1st@93.85.173.215) has joined #awk
+2016-10-08 04:38:06		[04:38]
+2016-10-08 05:25:14	<--	johnmilton (~johnmilto@192.206.23.197) has quit (Ping timeout: 250 seconds)
+2016-10-08 05:25:14		[05:25]
+2016-10-08 05:38:31	<--	bolt (r00t@unaffiliated/bolt) has quit (Remote host closed the connection)
+2016-10-08 05:44:00		[05:38]
+2016-10-08 05:46:01	<--	bipul (~bipul7@2400:6180:100:d0::65:5001) has quit (Changing host)
+2016-10-08 05:46:01	-->	bipul (~bipul7@linuxpadawan/padawan/bipul) has joined #awk
+2016-10-08 05:52:00		[05:46]
+2016-10-08 05:56:55	-->	nal (~nal@adsl-64-237-237-101.prtc.net) has joined #awk
+2016-10-08 06:02:00		[05:56]
+2016-10-08 06:06:57	<--	vuoto (~vuoto@80-71-135-9.u.parknet.dk) has quit (Quit: Lost terminal)
+2016-10-08 06:10:42	-->	vuoto (~vuoto@80-71-135-9.u.parknet.dk) has joined #awk
+2016-10-08 06:11:28	<--	vuoto (~vuoto@80-71-135-9.u.parknet.dk) has quit (Remote host closed the connection)
+2016-10-08 06:13:48	-->	bolt (r00t@unaffiliated/bolt) has joined #awk
+2016-10-08 06:19:00		[06:13]
+2016-10-08 06:22:26	<--	hid3 (~arnoldas@78.157.71.116) has quit (Ping timeout: 250 seconds)
+2016-10-08 06:28:00		[06:22]
+2016-10-08 06:32:29	<--	genpaku (~genpaku@107.191.100.185) has quit (Quit: leaving)
+2016-10-08 06:34:30	-->	genpaku (~genpaku@107.191.100.185) has joined #awk
+2016-10-08 06:40:00		[06:34]
+2016-10-08 06:41:44	<--	axisys (~axisys@unaffiliated/axisys) has quit (Ping timeout: 260 seconds)
+2016-10-08 06:47:00		[06:41]
+2016-10-08 06:59:41	-->	johnmilton (~johnmilto@96-58-242-186.res.bhn.net) has joined #awk
+2016-10-08 07:05:00		[06:59]
+2016-10-08 07:17:09	-->	vuoto (~vuoto@80-71-135-9.u.parknet.dk) has joined #awk
+2016-10-08 07:21:09	<--	nal (~nal@adsl-64-237-237-101.prtc.net) has quit (Ping timeout: 248 seconds)
+2016-10-08 07:21:09		[07:21]
+2016-10-08 07:36:37	<--	rods-tab3 (~rods-tab3@172.56.38.176) has quit (Remote host closed the connection)
+2016-10-08 07:36:37		[07:36]
+2016-10-08 07:40:05	-->	rods-tab3 (~rods-tab3@172.56.38.176) has joined #awk
+2016-10-08 07:43:17	<--	rods-tab3 (~rods-tab3@172.56.38.176) has quit (Remote host closed the connection)
+2016-10-08 07:46:10	<--	rodsirc (~rodsirc@172.56.38.176) has quit (Remote host closed the connection)
+2016-10-08 07:48:21	-->	lel (~lel@unaffiliated/lel) has joined #awk
+2016-10-08 07:49:38	<--	bolt (r00t@unaffiliated/bolt) has quit (Remote host closed the connection)
+2016-10-08 07:50:45	-->	rods-tab3 (~rods-tab3@172.56.38.176) has joined #awk
+2016-10-08 07:56:00		[07:50]
+2016-10-08 07:58:11	<--	lel (~lel@unaffiliated/lel) has quit (Quit: leaving)
+2016-10-08 07:59:47	<--	Nimitz14 (~Nimitz14@p200300E273CDC700A50187EC7218BCA6.dip0.t-ipconnect.de) has quit (Quit: Leaving)
+2016-10-08 07:59:56	-->	oliverio (~oliverio@186.214.134.89) has joined #awk
+2016-10-08 07:59:56	<--	oliverio (~oliverio@186.214.134.89) has quit (Changing host)
+2016-10-08 07:59:56	-->	oliverio (~oliverio@unaffiliated/oliverio) has joined #awk
+2016-10-08 08:05:00		[07:59]
+2016-10-08 08:07:03	-->	p3rs3us (~jduro@host86-177-56-186.range86-177.btcentralplus.com) has joined #awk
+2016-10-08 08:13:00		[08:07]
+2016-10-08 08:19:37	-->	hid3 (~arnoldas@78.157.71.116) has joined #awk
+2016-10-08 08:23:37	-->	bolt (r00t@unaffiliated/bolt) has joined #awk
+2016-10-08 08:29:00		[08:23]
+2016-10-08 08:30:28	-->	mute (m@unaffiliated/mute) has joined #awk
+2016-10-08 08:35:32	<--	bolt (r00t@unaffiliated/bolt) has quit (Quit: telnet irc.freenode.net 6667)
+2016-10-08 08:41:00		[08:35]
+2016-10-08 09:08:11	-->	mute1 (m@unaffiliated/mute) has joined #awk
+2016-10-08 09:08:11		[09:08]
+2016-10-08 09:11:33	<--	mute (m@unaffiliated/mute) has quit (Ping timeout: 248 seconds)
+2016-10-08 09:17:00		[09:11]
+2016-10-08 09:21:07	<--	navidr (uid112413@gateway/web/irccloud.com/x-twhsacsquokiwnhu) has quit (Quit: Connection closed for inactivity)
+2016-10-08 09:25:54	<--	vuoto (~vuoto@80-71-135-9.u.parknet.dk) has quit (Remote host closed the connection)
+2016-10-08 09:28:07	<--	CustosLim3n (~CustosLim@unaffiliated/cust0slim3n) has quit (Quit: CustosLimen)
+2016-10-08 09:28:22	-->	CustosLimen (~CustosLim@unaffiliated/cust0slim3n) has joined #awk
+2016-10-08 09:28:54	-->	PryMar56 (~prymar@unaffiliated/prymar56) has joined #awk
+2016-10-08 09:34:00		[09:28]
+2016-10-08 09:42:16	--	CustosLimen is now known as CustosLim3n
+2016-10-08 09:42:42	--	CustosLim3n is now known as CustosL1m3n
+2016-10-08 09:45:41	<--	mute1 (m@unaffiliated/mute) has quit (Ping timeout: 248 seconds)
+2016-10-08 09:51:00		[09:45]
+2016-10-08 09:53:42	--	CustosL1m3n is now known as Cu5tosLim3n
+2016-10-08 09:54:57	<--	rods-tab3 (~rods-tab3@172.56.38.176) has quit (Remote host closed the connection)
+2016-10-08 09:59:45	<--	D630 (~D630@unaffiliated/d630) has quit (Quit: quit)
+2016-10-08 10:01:36	<--	anewuser (~anewuser@unaffiliated/anewuser) has quit (Quit: anewuser)
+2016-10-08 10:06:07	--	Cu5tosLim3n is now known as CustosLimen
+2016-10-08 10:06:07		[10:06]
+2016-10-08 10:08:20	-->	lel (~lel@unaffiliated/lel) has joined #awk
+2016-10-08 10:09:58	<--	lel (~lel@unaffiliated/lel) has quit (Client Quit)
+2016-10-08 10:12:09	-->	rods-tab3 (~rods-tab3@172.56.38.176) has joined #awk
+2016-10-08 10:13:42	-->	lel (~lel@unaffiliated/lel) has joined #awk
+2016-10-08 10:14:50	-->	elastix (~Thunderbi@cpc85186-haye23-2-0-cust65.17-4.cable.virginm.net) has joined #awk
+2016-10-08 10:15:51	<--	CustosLimen (~CustosLim@unaffiliated/cust0slim3n) has quit (Quit: CustosLimen)
+2016-10-08 10:16:23	-->	CustosLimen (~CustosLim@unaffiliated/cust0slim3n) has joined #awk
+2016-10-08 10:17:23	<--	lel (~lel@unaffiliated/lel) has quit (Client Quit)
+2016-10-08 10:19:19	-->	lel (~lel@unaffiliated/lel) has joined #awk
+2016-10-08 10:21:42	-->	Coldblackice (~anonz@unaffiliated/coldblackice) has joined #awk
+2016-10-08 10:21:42		[10:21]
+2016-10-08 10:22:15	-->	Miner_48er (~Miner_48e@68.67.255.139) has joined #awk
+2016-10-08 10:28:00		[10:22]
+2016-10-08 10:30:13	<--	lel (~lel@unaffiliated/lel) has quit (Quit: Lost terminal)
+2016-10-08 10:32:26	<--	shbot (~shbot@37.139.2.101) has quit (Remote host closed the connection)
+2016-10-08 10:32:37	-->	shbot (~shbot@37.139.2.101) has joined #awk
+2016-10-08 10:38:00		[10:32]
+2016-10-08 11:02:48	<--	Coldblackice (~anonz@unaffiliated/coldblackice) has quit
+2016-10-08 11:02:48		[11:02]
+2016-10-08 11:06:17	-->	Coldblackice (~anonz@unaffiliated/coldblackice) has joined #awk
+2016-10-08 11:06:17	<--	Coldblackice (~anonz@unaffiliated/coldblackice) has quit (Client Quit)
+2016-10-08 11:10:36	<--	johnmilton (~johnmilto@96-58-242-186.res.bhn.net) has quit (Ping timeout: 260 seconds)
+2016-10-08 11:14:49	-->	nal (~nal@adsl-64-237-237-101.prtc.net) has joined #awk
+2016-10-08 11:19:46	-->	bolt (r00t@unaffiliated/bolt) has joined #awk
+2016-10-08 11:19:46		[11:19]
+2016-10-08 11:24:10	-->	johnmilton (~johnmilto@192.206.23.197) has joined #awk
+2016-10-08 11:25:11	<--	bolt (r00t@unaffiliated/bolt) has quit (Ping timeout: 268 seconds)
+2016-10-08 11:26:03	-->	bolt (r00t@unaffiliated/bolt) has joined #awk
+2016-10-08 11:37:43	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined #awk
+2016-10-08 11:37:43		[11:37]
+2016-10-08 11:37:43	--	Topic for #awk is ""Paste at: http://gist.github.com or http://sprunge.us | Wiki: http://awk.freeshell.org/ | Reference: http://xrl.us/gnuref | FAQ: http://xrl.us/4wkf4q | POSIX: http://xrl.us/awk1p | Regex: #regex | e36freak's libs: https://github.com/e36freak/awk-libs | HTML input?  Use scrapy instead - http://scrapy.org | Please ask your question and be patient, someone will get to you."
+2016-10-08 11:37:43	--	Topic set by pr3d4t0r (~zhenya01@varenka.cime.net) on Wed, 27 Apr 2016 07:56:45
+2016-10-08 11:37:43	--	Channel #awk: 153 nicks (0 ops, 0 voices, 153 normals)
+2016-10-08 11:37:43	***	Buffer Playback...
+2016-10-08 11:37:43	nal	[00:08:48] encountered or a subsequent exit statement with an expression is executed. [00:08:48]
+2016-10-08 11:37:43	nal	[00:08:54] http://pubs.opengroup.org/onlinepubs/9699919799/utilities/awk.html [00:08:54]
+2016-10-08 11:37:43	nal	[00:09:24] so an if (vecinos) exit should do [00:09:24]
+2016-10-08 11:37:43	nal	[00:10:05] (that inside the END) [00:10:05]
+2016-10-08 11:37:43	nal	[00:10:46] its a good idea, handy for some code, tedious for other types [00:10:46]
+2016-10-08 11:37:43	lgc	[00:11:17] Oh, I finally got, it, nal. Thanks. :) . [00:11:17]
+2016-10-08 11:37:43	nal	[00:19:54] this is great though, more sloc than i've ever written for awk, good luck :) [00:19:54]
+2016-10-08 11:37:43	nal	[00:22:39] (actually you even put the exit on ayuda(), so you kinda knew [00:22:39]
+2016-10-08 11:37:43	nal	[00:26:31] the why this was a design decision idk. i can theorize that awk being a data reporting language, it should act more like an accumulator of data, so once you get what you want, you goto END and well... report. [00:26:31]
+2016-10-08 11:37:43	lgc	[00:31:00] It's easier than C, nal, and it does reasonably well. The files I'm reading so far are not awfully big. [00:31:00]
+2016-10-08 11:37:43	nal	[00:32:28] everything is easier than C though [00:32:28]
+2016-10-08 11:37:43	lgc	[00:32:39] Indeed. [00:32:39]
+2016-10-08 11:37:43	nal	[00:32:51] except, maybe, esoteric languages [00:32:51]
+2016-10-08 11:37:43	lgc	[00:33:40] Oh, well... except from file I/O and such things, AWK is very much like C. [00:33:40]
+2016-10-08 11:37:43	lgc	[00:33:59] And, of course, no declaration of variables. [00:33:59]
+2016-10-08 11:37:43	JacobsLadd3r	[00:34:05] Anyone happen to know any tricks to speed up awk on a large file? I already use (LC_ALL=C) to set the locale to ASCII instead of UTF-8 and that improves performance greatly, but wandering if there was anything else I should look at. [00:34:05]
+2016-10-08 11:37:43	nal	[00:35:17] lgc: well, local variables must be declared if you want them [00:35:17]
+2016-10-08 11:37:43	lgc	[00:35:44] You mean in AWK? [00:35:44]
+2016-10-08 11:37:43	nal	[00:35:49] yeah [00:35:49]
+2016-10-08 11:37:43	nal	[00:35:58] or else its global [00:35:58]
+2016-10-08 11:37:43	nal	[00:36:11] and global always messes things up [00:36:11]
+2016-10-08 11:37:43	nal	[00:36:31] try doing a for loop within a for loop [00:36:31]
+2016-10-08 11:37:43	lgc	[00:36:45] Oh, yes, that is something I don't like much about AWK's global-by-default values. [00:36:45]
+2016-10-08 11:37:43	nal	[00:36:57] JacobsLadd3r: use perl [00:36:57]
+2016-10-08 11:37:43	lgc	[00:36:58] It's kind of sloppy. [00:36:58]
+2016-10-08 11:37:43	nal	[00:37:23] JacobsLadd3r: or use sed, if its still too slow use C [00:37:23]
+2016-10-08 11:37:43	nal	[00:37:32] or use mawk [00:37:32]
+2016-10-08 11:37:43	nal	[00:38:21] lgc: its good for one liners but not good for... anything else [00:38:21]
+2016-10-08 11:37:43	nal	[00:39:48] JacobsLadd3r: this is of course, if you cant make the code any faster, then switch interpreter/languages [00:39:48]
+2016-10-08 11:37:43	nal	[00:40:09] hopefully someone else will answer [00:40:09]
+2016-10-08 11:37:43	lgc	[00:40:22] Not in my experience, nal. :) . It can do much more than that. [00:40:22]
+2016-10-08 11:37:43	rods-tab3	[00:40:25] !paddlin [00:40:25]
+2016-10-08 11:37:43	jamesd	[00:40:37] get a faster computer..   i haven't found awk slow at anything in the last decade... not even this century awk was slow back in the 90's when i didn't own a floating point processor... [00:40:37]
+2016-10-08 11:37:43	rods-tab3	[00:41:47] try mawk - its sometimes much fasster [00:41:47]
+2016-10-08 11:37:43	JacobsLadd3r	[00:41:53] If you attempt to awk search over a 5GB file it's going to take quite a while. Forcing ASCII instead of UTF-8 can give you an over 1000% performance increase. So I was just curious if there were any other Linux tricks that might help in general just speed up awk. [00:41:53]
+2016-10-08 11:37:43	JacobsLadd3r	[00:42:04] Ahh that's true I forgot about mawk, thanks! [00:42:04]
+2016-10-08 11:37:43	nal	[00:42:15] oh gosh, why are you even... [00:42:15]
+2016-10-08 11:37:43	rods-tab3	[00:44:59] xpt: hawkbot down ? [00:44:59]
+2016-10-08 11:37:43	nal	[00:47:28] i always see that question asked in stack overflow, by that point, isnt it better to convert the file into sql or something like that? [00:47:28]
+2016-10-08 11:37:43	JacobsLadd3r	[00:52:27] So this is what I'm trying to speed up, looking across all logs files on a web-server at once, and in many cases this totals over GBs and GBs of data. I have awk looking just for today's date, so if there would be a faster way to not read from the start of files until getting to today's date that is the next place I can think of for speed improvements, but not sure if that's doable in any way. [00:52:27]
+2016-10-08 11:37:43	JacobsLadd3r	[00:52:27] http://pastebin.com/2AHCSFVK [00:52:27]
+2016-10-08 11:37:43	nal	[00:56:37] gnu grep is faster for searching [00:56:37]
+2016-10-08 11:37:43	JacobsLadd3r	[00:58:05] Yeah, if you Google "Speed up grep" I wrote an article about that, that's where I got the LC_ALL=C trick to use with awk. I was just curious if I was missing out on any other speed boosts I could use directly with awk instead of having to grep first. [00:58:05]
+2016-10-08 11:37:43	rods-tab3	[01:06:22] which awk ? [01:06:22]
+2016-10-08 11:37:43	xpt	[06:05:19] hawkbot: !help [06:05:19]
+2016-10-08 11:37:43	xpt	[06:05:32] !help [06:05:32]
+2016-10-08 11:37:43	hawkbot	[06:05:32] Available commands: `!add word description' to add new factoid, `!foo' to trigger response to "foo" factoid. `!forget foo' to remove factoid. `!facts' to list all factoids available. [06:05:32]
+2016-10-08 11:37:43	xpt	[06:05:57] rods-tab3: working. thanls for info [06:05:57]
+2016-10-08 11:37:43	xpt	[06:06:10] s,l,k, [06:06:10]
+2016-10-08 11:37:43	Camusensei	[11:25:37] JacobsLadd3r: since it seems you are doing this daily, I would recommend you saved the index where you found yesterday's date and start from that line [11:25:37]
+2016-10-08 11:37:43	***	Playback Complete.
+2016-10-08 11:38:29	--	Channel created on Sat, 25 Nov 2006 20:42:48
+2016-10-08 11:40:37	<--	jetchisel (~jetchisel@opensuse/member/jetchisel) has quit (Ping timeout: 240 seconds)
+2016-10-08 11:46:00		[11:40]
+2016-10-08 11:48:10	<--	elastix (~Thunderbi@cpc85186-haye23-2-0-cust65.17-4.cable.virginm.net) has quit (Quit: elastix)
+2016-10-08 11:54:00		[11:48]
