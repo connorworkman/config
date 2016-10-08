@@ -323,6 +323,7 @@ set timeout timeoutlen=2500 ttimeoutlen=100
 set pastetoggle=<F10>
 set number
 set incsearch
+set ignorecase
 set smartcase
 set magic
 "set relativenumber

@@ -19691,3 +19691,165 @@
 2016-10-07 13:10:16		[13:10]
 2016-10-07 13:10:16	<--	dijital1 (~dijital1@24.159.118.117) has quit (Changing host)
 2016-10-07 13:10:16	-->	dijital1 (~dijital1@pdpc/supporter/active/dijital1) has joined ##asm
+2016-10-07 13:26:10	<--	kbw (~KeyboardW@68-204-170-7.res.bhn.net) has quit (Quit: My MacBook Air has gone to sleep. ZZZzzz…)
+2016-10-07 13:26:10		[13:26]
+2016-10-07 13:26:37	-->	AfroThundr (~AfroThund@2601:147:c002:901f:c1ee:ab5b:9616:f88d) has joined ##asm
+2016-10-07 13:26:37	<--	AfroThundr (~AfroThund@2601:147:c002:901f:c1ee:ab5b:9616:f88d) has quit (Max SendQ exceeded)
+2016-10-07 13:28:06	-->	angelsl (sid108369@pdpc/supporter/student/angelsl) has joined ##asm
+2016-10-07 13:31:52	-->	navidr (uid112413@gateway/web/irccloud.com/x-kumnhxkveujaegxo) has joined ##asm
+2016-10-07 13:36:43	-->	SunnyD (~SunnyD@cpe-72-178-78-211.hot.res.rr.com) has joined ##asm
+2016-10-07 13:37:30	-->	kbw (~KeyboardW@68-204-170-7.res.bhn.net) has joined ##asm
+2016-10-07 13:43:00		[13:37]
+2016-10-07 13:50:32	-->	makubi (25188cca@gateway/web/freenode/ip.37.24.140.202) has joined ##asm
+2016-10-07 13:51:07	-->	Heasummn (~Heasummn@c-73-73-21-171.hsd1.il.comcast.net) has joined ##asm
+2016-10-07 13:53:01	-->	MDude (~MDude@pa-67-234-97-58.dhcp.embarqhsd.net) has joined ##asm
+2016-10-07 13:54:33	<--	grublet (~grublet@cpe-74-131-112-99.kya.res.rr.com) has quit (Ping timeout: 260 seconds)
+2016-10-07 13:59:09	makubi	Hi there. I just started to learn assembly (I chose x86_64, Intel syntax) and am struggling with an easy example. I am just trying to compare passed arguments (just using numbers) and then jump (printing some text there). If I use the following code https://gist.github.com/makubi/967310b27490cde348d557c2bf704725 the condition is not met for a "jump equals". If I change the registers in line 21 / 23 from rcx / rbx to cl / bl, it works. C
+2016-10-07 13:59:09		[13:59]
+2016-10-07 13:59:45	zid	"it works. C" is where you got cut off
+2016-10-07 13:59:49	zid	there's line length limits on irc
+2016-10-07 14:00:10	<--	medicijnman (~methos@5ED27E76.cm-7-3b.dynamic.ziggo.nl) has quit (Quit: Leaving.)
+2016-10-07 14:00:20	makubi	"Can anybody tell me why?" :)
+2016-10-07 14:00:29	makubi	Thx for telling!
+2016-10-07 14:01:03	Jester01	because you treat your arguments as 64 bit binary numbers
+2016-10-07 14:01:04	makubi	I know that cl is a 8-bit register and rcx is a 64-bit one, but do not get why this makes a difference here.
+2016-10-07 14:01:09	zid	because you're reading 8 bytes
+2016-10-07 14:01:19	zid	makubi; imagine "42", that's 3 bytes
+2016-10-07 14:01:28	Jester01	command line arguments are strings.
+2016-10-07 14:01:37	zid	so if you copy it to rbx or whatever you have those three bytes then 5 bytes of random garbage off the stac
+2016-10-07 14:02:14	makubi	Uh oh, ok, I thought that may be true but why don't I get a segfault or has this nothing to do with memory access?
+2016-10-07 14:02:23	zid	because that's valid memory
+2016-10-07 14:02:26	zid	it's your stack
+2016-10-07 14:02:52	makubi	Ok, so I can only read relative bytes (at least with that method)
+2016-10-07 14:03:01	makubi	Gonna have a look at that
+2016-10-07 14:03:05	zid	there'll likely be valid addresses for a kilobyte or two in either direction or so
+2016-10-07 14:03:21	Jester01	to solve the problem properly, you will want to read strings and convert to numbers
+2016-10-07 14:03:40	zid	which means implementing strtol or atoi or something, good luck
+2016-10-07 14:03:41	Jester01	what you have (with the 8 bit registers) will work for single digits
+2016-10-07 14:04:16	zid	if you only compare the first digit, 500 and 5 will be equal
+2016-10-07 14:04:31	zid	if you compare them as strings, " 500" and "500" won't be equal
+2016-10-07 14:04:39	makubi	Yeah, I thought so and thought about reading each digit / character, but will definitely have a look at strtol / atoi as I just don't know many instructions yet
+2016-10-07 14:04:51	zid	those aren't instructions, they're functions
+2016-10-07 14:05:01	makubi	C functions?
+2016-10-07 14:05:12	shrood	yes
+2016-10-07 14:05:24	zid	You can either call them or reimplement them yourself, your call
+2016-10-07 14:05:29	Jester01	lOL
+2016-10-07 14:05:33	Jester01	nice pun
+2016-10-07 14:05:45	makubi	I guess this means "do not re-implement them" :D
+2016-10-07 14:05:51	Jester01	depends
+2016-10-07 14:05:59	Jester01	as a beginner, reimplementing them is good learning
+2016-10-07 14:06:12	zid	but might be too hard right this second, honestly
+2016-10-07 14:06:21	makubi	Alright, so I'm gonna try. I am coming from Scala so this is quite a difference :)
+2016-10-07 14:06:26	<--	red-001 (~red-001@51.37.201.51) has quit (Changing host)
+2016-10-07 14:06:26	-->	red-001 (~red-001@unaffiliated/red-001) has joined ##asm
+2016-10-07 14:06:54	zid	at least atoi is easier than the reverse :P
+2016-10-07 14:07:43	makubi	I am amazed how helpful are people here =)
+2016-10-07 14:07:52	-->	hzjd (~Adium@dhcp-18-189-39-55.dyn.mit.edu) has joined ##asm
+2016-10-07 14:08:09	Jester01	bah, this is nothing!
+2016-10-07 14:08:13	zid	well you asked a well formed question with a real answer
+2016-10-07 14:08:18	zid	99% of things aren't
+2016-10-07 14:08:32	Jester01	also you showed you did some work and wanted to understand things :)
+2016-10-07 14:08:33	makubi	you ever been to #gentoo ? :>
+2016-10-07 14:08:34	zid	how u compile asm are visual studio am? I click but say path wrong??/
+2016-10-07 14:08:45	makubi	Lol
+2016-10-07 14:09:04	zid	okey I fix no worri
+2016-10-07 14:09:04	Jester01	don't laugh, we had one such question earlier today
+2016-10-07 14:09:15	makubi	<.<
+2016-10-07 14:09:26	makubi	Yeah, I am no student so this is really just for fun
+2016-10-07 14:09:29	zid	makubi: I've been there a bunch to ask questions, ahve nobody know then supported other users for an hour >_<
+2016-10-07 14:09:47	zid	My problems are always pain in the arses though, I can solve the simple ones myself
+2016-10-07 14:09:50	makubi	zid: :D this sounds like them, yeah
+2016-10-07 14:10:05	zid	The no swearing policy always fucks me up though
+2016-10-07 14:10:32	zid	It's IRC not a christian values society meeting
+2016-10-07 14:10:34	makubi	This is why I got banned sometimes
+2016-10-07 14:10:56	zid	I should do some work, and by work I mean play shenzhen
+2016-10-07 14:11:02	makubi	:>
+2016-10-07 14:11:08	 *	zid fails to reach his mouse
+2016-10-07 14:11:18	makubi	I guess it is nice to do stuff like assembly for work
+2016-10-07 14:11:36	zid	I'd hate to do assembly for work, shit's a pain in the arse :P
+2016-10-07 14:11:50	makubi	:D
+2016-10-07 14:12:20	makubi	I sometimes think like "These people know what they do"
+2016-10-07 14:12:52	OxFEEDBACC	muahahahaaaaaa ;-)
+2016-10-07 14:13:29	<--	Affliction (affliction@2600:3c01::13:ffff) has quit (Remote host closed the connection)
+2016-10-07 14:13:44	-->	Affliction (affliction@2600:3c01::13:ffff) has joined ##asm
+2016-10-07 14:14:04	zid	I loved supporting in ##c but all the ops left so it just became trying to shout over idiots giving horrendous advice
+2016-10-07 14:14:15	makubi	Well, I do not want to start a discussion about it but is the toolset nasm / gdb / x86_64 a good one for starters?
+2016-10-07 14:14:15		[14:14]
+2016-10-07 14:15:03	OxFEEDBACC	gdb is not really user friendly, leave alone newbie friendly...
+2016-10-07 14:15:03	zid	yea sure, I personally use yasm over nasm because nasm died a while back but it's identical
+2016-10-07 14:15:14	OxFEEDBACC	otherwise i don't see anything wrong with that choice...
+2016-10-07 14:15:36	zid	x86_64 suffers from the compilers generating craaazy code though
+2016-10-07 14:15:54	zid	it's *really* hard to just quickly compile a function with gcc as a test to see how it handled it
+2016-10-07 14:16:08	vulture_	[19.14.04] <zid> I loved supporting in ##c but all the ops left so it just became trying to shout over idiots giving horrendous advice
+2016-10-07 14:16:10	vulture_	wait really
+2016-10-07 14:16:14	vulture_	all the trolls left?
+2016-10-07 14:16:34	makubi	uhm okay, I just thought like "why should I learn any other platform than x86_64 for start?"
+2016-10-07 14:16:54	vulture_	zid: no actually it's quite easy to quickly compile a function to see stuff
+2016-10-07 14:17:11	-->	amitan (uid133034@gateway/web/irccloud.com/x-fuxofgzirohpotdw) has joined ##asm
+2016-10-07 14:17:13	zid	vulture_: no, the trolls stayed, that's the problem
+2016-10-07 14:17:20	zid	vulture_: if you like staring at rip-rel nonsense sure
+2016-10-07 14:17:21	makubi	The fun thing is I never programmed C...
+2016-10-07 14:17:28	vulture_	you said "all the ops left" ... the ops were the trolls
+2016-10-07 14:17:49	zid	vulture_: if you didn't like it when the ops were there, at least they banned the loud wrong people
+2016-10-07 14:17:54	zid	now it's ONLY loud wrong people
+2016-10-07 14:18:43	vulture_	they banned the quiet right people too
+2016-10-07 14:18:51	makubi	lol
+2016-10-07 14:18:54	-->	Waywardsun (sid134771@gateway/web/irccloud.com/x-cbyucznawxfrepba) has joined ##asm
+2016-10-07 14:19:31	vulture_	zid: https://godbolt.org/g/6ZPAfP  looks easy to me
+2016-10-07 14:20:48	<--	kbw (~KeyboardW@68-204-170-7.res.bhn.net) has quit (Quit: My MacBook Air has gone to sleep. ZZZzzz…)
+2016-10-07 14:21:44	zid	nice, no rip-rel crap :P
+2016-10-07 14:22:09	<--	sneakers (~sneakers@unaffiliated/sneakerhead) has quit (Ping timeout: 258 seconds)
+2016-10-07 14:22:26	zid	https://godbolt.org/g/EuWnHY
+2016-10-07 14:22:39	zid	ouch :P
+2016-10-07 14:23:16	vulture_	would be less ouch if you made c unsigned
+2016-10-07 14:23:41	<--	dqi (~dqi@165-218-045-062.dynamic.caiway.nl) has quit (Ping timeout: 260 seconds)
+2016-10-07 14:24:34	-->	kbw (~KeyboardW@68-204-170-7.res.bhn.net) has joined ##asm
+2016-10-07 14:25:35	-->	snyp (~Snyp@150.129.132.224) has joined ##asm
+2016-10-07 14:27:12	makubi	As I understand, the ebp register holds pointers to stack elements (ebp, ebp + 4, ebp + 8,...). Is there any preference when to use ebp + 4 * x instead of just "pop" (if I want to read the items just once) or am I on the wrong path here?
+2016-10-07 14:28:21	-->	viro (~viro@unaffiliated/viro) has joined ##asm
+2016-10-07 14:29:19	Moose	It depends on what you expect to happen.
+2016-10-07 14:29:19		[14:29]
+2016-10-07 14:30:03	makubi	Substitute ebp with esp
+2016-10-07 14:30:08	zid	makubi: and the ebp crap isn't needed, either, you can use esp directly
+2016-10-07 14:30:46	makubi	How can you guys not mix them up? =D
+2016-10-07 14:31:05	zid	because you're the who one gets to pick, or you didn't get to pick and you just do what the guy above you did
+2016-10-07 14:31:06	Moose	When you use push and pop, it adjusts the stack pointer. Simply using mov eax, [esp + 4] you avoid adjusting the stack and simply are loading memory into the register.
+2016-10-07 14:31:20	<--	Albori (~Albori@64-15-82-48.fidnet.com) has quit (Quit: WeeChat 1.6-rc2)
+2016-10-07 14:31:30	-->	VA3VNA (~mayday_ja@BURLON0233W-LP140-1-3096588864.dsl.bell.ca) has joined ##asm
+2016-10-07 14:32:28	Moose	It sounded like you didn't quite see the difference. But the main reason you see compilers using esp relative addresses is because they re-use stack space and only adjust it at the beginning and end of a function instead of constantly in the middle. You also can keep pointers the same that way.
+2016-10-07 14:32:41	Moose	At least that's what I believe :)
+2016-10-07 14:32:57	-->	SwiftMatt (~Objective@162.242.95.127) has joined ##asm
+2016-10-07 14:33:21	<--	Gynvael (~gynvael@80-219-209-110.dclient.hispeed.ch) has quit (Ping timeout: 258 seconds)
+2016-10-07 14:33:31	zid	popping also destroys the value
+2016-10-07 14:33:40	makubi	Moose: Okay, thanks :) Gonna have to think about that one
+2016-10-07 14:33:45	zid	if you intended to read it twice, or leave it on the stack for a secondary function call it isn't as good
+2016-10-07 14:33:48	makubi	yeah, I know :)
+2016-10-07 14:34:16	-->	Gynvael (~gynvael@80-219-209-110.dclient.hispeed.ch) has joined ##asm
+2016-10-07 14:34:43	<--	hzjd (~Adium@dhcp-18-189-39-55.dyn.mit.edu) has quit (Quit: Leaving.)
+2016-10-07 14:35:28	zid	Time for more chinese assembly I think
+2016-10-07 14:35:41	makubi	What?
+2016-10-07 14:36:22	zid	http://www.zachtronics.com/shenzhen-io/
+2016-10-07 14:36:49	<--	hawes (uid158378@gateway/web/irccloud.com/x-uxtyxnepvtxsbdcv) has quit (Quit: Connection closed for inactivity)
+2016-10-07 14:38:13	-->	hzjd (~Adium@dhcp-18-189-39-55.dyn.MIT.EDU) has joined ##asm
+2016-10-07 14:38:21	makubi	CPU / microcontroller architecture will be the next thing to learn after / during assembly.
+2016-10-07 14:38:28	makubi	This all started with "Understanding the linux kernel" :>
+2016-10-07 14:38:34	-->	shakalaka (~shakalaka@ec2-52-52-27-0.us-west-1.compute.amazonaws.com) has joined ##asm
+2016-10-07 14:39:38	makubi	But I am kind of stuck on assembly right now
+2016-10-07 14:40:28	<--	lapinozz (~lapinozz@45.74.164.117) has quit (Remote host closed the connection)
+2016-10-07 14:40:33	-->	Albori (~Albori@64-15-82-48.fidnet.com) has joined ##asm
+2016-10-07 14:40:33	makubi	Because it's quite interesting
+2016-10-07 14:41:46	-->	lapinozz (~lapinozz@45.74.164.117) has joined ##asm
+2016-10-07 14:42:27	makubi	However, thanks for your help :) I guess I'll be back soon as that really was quite interesting and enlightening. I am out, it's 02:42
+2016-10-07 14:42:50	zid	wow this next lvel is nuts
+2016-10-07 14:43:28	Moose	Y'all ever see any code that is obfuscated by instead of calling a function they load the address of the function, add 6, and jump to that... but the immediate value for like an ADD instruction and the next part of some other unrelated instruction actually compose a RET with the real address on the stack or a JMP with the real address?
+2016-10-07 14:43:40	<--	AverageJ0e (~joe@ip68-3-197-107.ph.ph.cox.net) has quit (Ping timeout: 260 seconds)
+2016-10-07 14:43:48	-->	freakazoid0223 (~chatzilla@pool-108-52-4-99.phlapa.fios.verizon.net) has joined ##asm
+2016-10-07 14:44:44	<--	hzjd (~Adium@dhcp-18-189-39-55.dyn.MIT.EDU) has quit (Quit: Leaving.)
+2016-10-07 14:44:44		[14:44]
+2016-10-07 14:45:05	vulture_	that was entirely uncomprehendable, why not paste an example
+2016-10-07 14:45:47	Moose	Because I'm trying to understand it and it's malware from a client system and I can't share it. Let me make a small thing that kind of sort of demonstrates what I am seeing.
+2016-10-07 14:46:54	--	makubi is now known as makubi__
+2016-10-07 14:47:00	vulture_	nice to see someone following copyright privileges of malware developers :P
+2016-10-07 14:49:53	-->	makubi (~makubi@static.180.202.46.78.clients.your-server.de) has joined ##asm
+2016-10-07 14:50:08	Moose	It's not copyright privileges lol
+2016-10-07 14:50:10	<--	makubi__ (25188cca@gateway/web/freenode/ip.37.24.140.202) has quit (Quit: Page closed)

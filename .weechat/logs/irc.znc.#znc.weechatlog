@@ -28511,3 +28511,143 @@
 2016-10-07 13:13:36	<--	AntiSpamMeta (~MetaBot@AntiSpamMeta/.) has quit (Quit: Restart requested by ilbelkyr: bug fix)
 2016-10-07 13:14:20	-->	zncuser (~zncuser@p4FE95353.dip0.t-ipconnect.de) has joined #znc
 2016-10-07 13:18:04	-->	AntiSpamMeta (~MetaBot@AntiSpamMeta/.) has joined #znc
+2016-10-07 13:22:55	<--	agireud (~M00N@cpe-66-68-33-156.austin.res.rr.com) has quit (Ping timeout: 244 seconds)
+2016-10-07 13:22:55		[13:22]
+2016-10-07 13:27:22	<--	qwesste (~qwesste@d6.35.01a8.ip4.static.sl-reverse.com) has quit (Ping timeout: 268 seconds)
+2016-10-07 13:28:56	-->	scubacuda_ (sid109325@gateway/web/irccloud.com/x-uchbnknuqdnphlfh) has joined #znc
+2016-10-07 13:31:20	<--	FrozenWes (~FrozenWes@unaffiliated/frozenwes) has quit (Quit: FrozenWes)
+2016-10-07 13:31:50	--	Bread is now known as TD912
+2016-10-07 13:37:00		[13:31]
+2016-10-07 13:40:02	-->	RussellT________ (sid118864@gateway/web/irccloud.com/x-zgrvamsikmgbmcsx) has joined #znc
+2016-10-07 13:40:45	-->	TheWhisper (~TheWhispe@unaffiliated/thewhisper) has joined #znc
+2016-10-07 13:42:50	TheWhisper	I have a question about running znc with cron
+2016-10-07 13:43:15	TheWhisper	I see a section on it in the wiki, but the command it uses to run znc appears to be different than the one listed in my processes
+2016-10-07 13:43:38	TheWhisper	which is:  znc --datadir /home/user/.znc --no-color
+2016-10-07 13:45:10	TheWhisper	Is that the command I should run with cron, or is '/usr/local/bin/znc >/dev/null 2>&1'
+2016-10-07 13:45:14	TheWhisper	?
+2016-10-07 13:47:07	-->	techntoke_ (sid124863@gateway/web/irccloud.com/x-slbzuvfwgjkrptvh) has joined #znc
+2016-10-07 13:48:41	<--	b6s3d (~b00s3d@unaffiliated/b00s3d) has quit (Read error: Connection reset by peer)
+2016-10-07 13:49:18	-->	b6s3d (~b00s3d@unaffiliated/b00s3d) has joined #znc
+2016-10-07 13:52:05	<--	W8TVI (~me@75-129-10-208.dhcp.mdsn.wi.charter.com) has quit (Ping timeout: 256 seconds)
+2016-10-07 13:52:05		[13:52]
+2016-10-07 13:53:02	MetaNova	TheWhisper: step 1) determine where it is actually located, '/usr/local/bin/znc' is common, but just an example
+2016-10-07 13:53:11	TheWhisper	It is located there
+2016-10-07 13:53:27	MetaNova	step 2) be sure to place it in the _user_ crontab, not the system-wide (root) crontab
+2016-10-07 13:53:50	TheWhisper	Yup, did that too
+2016-10-07 13:53:53	MetaNova	step 3) if you used the default data directory for the user (~/.znc) then no --datadir is needed
+2016-10-07 13:54:00	TheWhisper	hm
+2016-10-07 13:54:01	-->	W8TVI (~me@75-129-10-208.dhcp.mdsn.wi.charter.com) has joined #znc
+2016-10-07 13:54:16	<--	Deimosian (~Deimos@pool-108-39-43-183.nrflva.fios.verizon.net) has quit (Remote host closed the connection)
+2016-10-07 13:54:17	MetaNova	the --datadir switch and path argument is only if you used the non-default location
+2016-10-07 13:54:18	TheWhisper	The default directory for the user would be /home/user/?
+2016-10-07 13:54:26	MetaNova	no, /home/username/.znc
+2016-10-07 13:54:41	TheWhisper	That's what I meant
+2016-10-07 13:54:47	TheWhisper	and what about --no-color
+2016-10-07 13:54:50	MetaNova	which is where it looks automatically if no --datadir is specified when you ran it with --makeconf
+2016-10-07 13:55:02	MetaNova	--no-color doesn't matter since there will be no output
+2016-10-07 13:55:13	MetaNova	so just put '* * * * * /usr/local/bin/znc > /dev/null 2>&1' in your user crontab
+2016-10-07 13:55:15	MetaNova	and you're done
+2016-10-07 13:55:19	TheWhisper	👌
+2016-10-07 13:55:20	TheWhisper	Thanks :)
+2016-10-07 13:55:23	MetaNova	np
+2016-10-07 13:55:23	TheWhisper	I'll give it a try in a minute
+2016-10-07 13:56:02	<--	blackest_mamba (~blackest_@2601:249:0:a313:906d:5c4c:6495:cf8c) has quit (Quit: Leaving...)
+2016-10-07 13:59:03	<--	TheWhisper (~TheWhispe@unaffiliated/thewhisper) has quit (Quit: It is with great ( ͡°;_ʖ ͡°;) that I must leave.)
+2016-10-07 14:00:09	-->	TheWhisper (~TheWhispe@unaffiliated/thewhisper) has joined #znc
+2016-10-07 14:01:13	-->	naos (naos@gateway/shell/fnordserver.eu/x-zqpctbrazixixfiv) has joined #znc
+2016-10-07 14:01:18	-->	TheWhisperSP3 (~TheWhispe@unaffiliated/thewhisper) has joined #znc
+2016-10-07 14:01:26	TheWhisperSP3	MetaNova, so I added it to cron @reboot
+2016-10-07 14:01:36	TheWhisperSP3	and rebooted, but ZNC doesn't appear to have started properly.
+2016-10-07 14:02:01	TheWhisperSP3	I see '/usr/local/bin/znc
+2016-10-07 14:02:01	TheWhisperSP3	' in my processes, but can't connect to it via my client or via the web interface
+2016-10-07 14:02:34	MetaNova	is it listening on the proper port?
+2016-10-07 14:04:29	TheWhisperSP3	I also don't see it listed in /syslog when grep 'cron'
+2016-10-07 14:04:41	-->	blackest_mamba (~blackest_@2601:249:0:a313:61bf:dda:16b6:2d2) has joined #znc
+2016-10-07 14:04:42	TheWhisperSP3	I see 'Running @reboot jobs' and I see one job, but not the ZNC one
+2016-10-07 14:05:08	TheWhisperSP3	yet the /usr/local/bin/znc is in my process list
+2016-10-07 14:05:31	TheWhisperSP3	How can I tell what port it's listening on?
+2016-10-07 14:05:57	TheWhisperSP3	something like netstat?
+2016-10-07 14:06:18	TheWhisperSP3	0.0.0.0:6697            0.0.0.0:*               LISTEN      1029/znc
+2016-10-07 14:12:00		[14:06]
+2016-10-07 14:12:43	<--	TheWhisper (~TheWhispe@unaffiliated/thewhisper) has quit (Quit: It is with great ( ͡°;_ʖ ͡°;) that I must leave.)
+2016-10-07 14:13:41	TheWhisperSP3	wait
+2016-10-07 14:13:45	TheWhisperSP3	I was in here?
+2016-10-07 14:14:00	TheWhisperSP3	well, I guess maybe ZNC was working, but I just couldn't connect to it, MetaNova lol
+2016-10-07 14:14:05	<--	XV8 (~XV8@c-73-135-228-73.hsd1.md.comcast.net) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-10-07 14:14:18	TheWhisperSP3	I killed the process and spawned a new one, but still can't connect to it
+2016-10-07 14:14:29	MetaNova	why not?
+2016-10-07 14:14:34	TheWhisperSP3	I don't know
+2016-10-07 14:14:41	TheWhisperSP3	I'm getting time outs
+2016-10-07 14:14:47	MetaNova	what port did you set it to listen on?
+2016-10-07 14:14:53	TheWhisperSP3	I think 6697
+2016-10-07 14:15:11	-->	TheWhisper (~TheWhispe@unaffiliated/thewhisper) has joined #znc
+2016-10-07 14:15:17	TheWhisperSP3	^ there's my znc
+2016-10-07 14:15:19	TheWhisperSP3	just joined
+2016-10-07 14:15:36	MetaNova	okay .. so, what client are you testing with it?
+2016-10-07 14:15:45	TheWhisperSP3	Both Hexchat and my browser
+2016-10-07 14:15:55	MetaNova	where is ZNC being hosted?
+2016-10-07 14:16:03	TheWhisperSP3	DO
+2016-10-07 14:16:13	MetaNova	PM me the address and port, please
+2016-10-07 14:16:21	MetaNova	I'll see if it responds
+2016-10-07 14:16:36	TheWhisperSP3	to a ping?
+2016-10-07 14:16:40	TheWhisperSP3	I can ping it and see
+2016-10-07 14:16:44	MetaNova	no, to an IRC session
+2016-10-07 14:17:00	TheWhisperSP3	ah
+2016-10-07 14:17:03	MetaNova	I don't need to log in, I just need to know if it'll even ask me to log in
+2016-10-07 14:17:14	TheWhisperSP3	I wonder if it's a firewall issue
+2016-10-07 14:17:21	TheWhisperSP3	as this is the first time I've rebooted my server
+2016-10-07 14:17:27	TheWhisperSP3	and I set up some firewall rules a bit ago
+2016-10-07 14:18:19	MetaNova	6697/tcp filtered unknown
+2016-10-07 14:18:25	MetaNova	seems to be a firewall issue
+2016-10-07 14:18:32	TheWhisperSP3	I just looked, and the firewall is inactive :P
+2016-10-07 14:18:54	MetaNova	are you sure about that?
+2016-10-07 14:19:08	MetaNova	the only open ports on your host seem to be 22, 80, and 443
+2016-10-07 14:19:20	TheWhisperSP3	Might be iptables
+2016-10-07 14:19:36	MetaNova	iptables *is* a firewall ...
+2016-10-07 14:19:46	TheWhisperSP3	Sorry, I meant the ubuntu firewall is inactive
+2016-10-07 14:19:48	TheWhisperSP3	but iptables is active
+2016-10-07 14:19:58	MetaNova	well the port is being filtered
+2016-10-07 14:20:01	TheWhisperSP3	I'm still new to all this, so apologize for not being clear
+2016-10-07 14:20:02	MetaNova	so, it's something you did
+2016-10-07 14:20:05	MetaNova	it's alright
+2016-10-07 14:20:15	TheWhisperSP3	going to pm you again
+2016-10-07 14:20:20	MetaNova	k
+2016-10-07 14:22:51	<--	Wyn (~Wyn@unaffiliated/wyn) has quit (Ping timeout: 244 seconds)
+2016-10-07 14:23:07	-->	XV8 (~XV8@2601:151:4400:3799:6522:c2fc:434:8937) has joined #znc
+2016-10-07 14:23:26	-->	[Amitz] (sid145588@gateway/web/irccloud.com/x-qqslswtnjgrfgssh) has joined #znc
+2016-10-07 14:25:20	-->	Wyn (~Wyn@unaffiliated/wyn) has joined #znc
+2016-10-07 14:26:21	<--	Mr_Sheesh (~mr_s@unaffiliated/mr-sheesh/x-0757054) has quit (Disconnected by services)
+2016-10-07 14:27:06	-->	Mr_Sheesh (~mr_s@unaffiliated/mr-sheesh/x-0757054) has joined #znc
+2016-10-07 14:27:06		[14:27]
+2016-10-07 14:28:17	<--	CEnnis91 (uid3543@gateway/web/irccloud.com/x-flklhwwfzgrtygzg) has quit (Quit: Connection closed for inactivity)
+2016-10-07 14:28:27	-->	W8TVI_ (~me@75-129-10-208.dhcp.mdsn.wi.charter.com) has joined #znc
+2016-10-07 14:29:45	<--	TheWhisper (~TheWhispe@unaffiliated/thewhisper) has quit (Quit: It is with great ( ͡°;_ʖ ͡°;) that I must leave.)
+2016-10-07 14:29:58	<--	MattE (~matt@64.137.218.4) has quit (Ping timeout: 250 seconds)
+2016-10-07 14:30:31	<--	Mr_Sheesh (~mr_s@unaffiliated/mr-sheesh/x-0757054) has quit (Disconnected by services)
+2016-10-07 14:30:54	-->	TheWhisper (~TheWhispe@unaffiliated/thewhisper) has joined #znc
+2016-10-07 14:31:09	<--	W8TVI (~me@75-129-10-208.dhcp.mdsn.wi.charter.com) has quit (Ping timeout: 260 seconds)
+2016-10-07 14:31:15	-->	Mr_Sheesh (~mr_s@unaffiliated/mr-sheesh/x-0757054) has joined #znc
+2016-10-07 14:32:29	-->	MattE (~matt@64.137.218.4) has joined #znc
+2016-10-07 14:34:58	-->	TheWhisper_ (~TheWhispe@unaffiliated/thewhisper) has joined #znc
+2016-10-07 14:35:25	-->	W8TVI (~me@75-129-10-208.dhcp.mdsn.wi.charter.com) has joined #znc
+2016-10-07 14:35:42	-->	shakalaka (~shakalaka@ec2-52-52-27-0.us-west-1.compute.amazonaws.com) has joined #znc
+2016-10-07 14:35:49	<--	TheWhisper (~TheWhispe@unaffiliated/thewhisper) has quit (Ping timeout: 268 seconds)
+2016-10-07 14:37:57	<--	W8TVI_ (~me@75-129-10-208.dhcp.mdsn.wi.charter.com) has quit (Ping timeout: 248 seconds)
+2016-10-07 14:38:12	-->	TheWhisper (~TheWhispe@unaffiliated/thewhisper) has joined #znc
+2016-10-07 14:39:02	<--	dkabot (~dkabot@dkabot.com) has quit (Quit: Leaving)
+2016-10-07 14:39:19	<--	boubou (boubou@unaffiliated/boubou) has quit (Quit: ZNC - http://znc.sourceforge.net)
+2016-10-07 14:40:46	<--	TheWhisper_ (~TheWhispe@unaffiliated/thewhisper) has quit (Disconnected by services)
+2016-10-07 14:42:19	-->	W8TVI_ (~me@75-129-10-208.dhcp.mdsn.wi.charter.com) has joined #znc
+2016-10-07 14:42:19		[14:42]
+2016-10-07 14:42:58	<--	TheWhisperSP3 (~TheWhispe@unaffiliated/thewhisper) has quit (Quit: Leaving)
+2016-10-07 14:43:02	<--	TheWhisper (~TheWhispe@unaffiliated/thewhisper) has left #znc
+2016-10-07 14:44:05	-->	jass93__ (~ifillj@slidex-149.dynamic.rpi.edu) has joined #znc
+2016-10-07 14:45:25	<--	W8TVI (~me@75-129-10-208.dhcp.mdsn.wi.charter.com) has quit (Ping timeout: 260 seconds)
+2016-10-07 14:45:58	<--	lucz (lucz@gateway/shell/linaro/x-ljobtnreyaaqyzfk) has quit (Changing host)
+2016-10-07 14:45:59	-->	lucz (lucz@linaro/lucz) has joined #znc
+2016-10-07 14:46:16	-->	KindOne_ (kindone@freenude/topless/kindone) has joined #znc
+2016-10-07 14:46:37	<--	jass93_ (~ifillj@dcc-wl-804.dynamic2.rpi.edu) has quit (Ping timeout: 240 seconds)
+2016-10-07 14:48:12	<--	KindOne (kindone@freenude/topless/kindone) has quit (Ping timeout: 256 seconds)
+2016-10-07 14:48:24	-->	agireud (~M00N@cpe-66-68-33-156.austin.res.rr.com) has joined #znc
+2016-10-07 14:48:41	<--	jass93__ (~ifillj@slidex-149.dynamic.rpi.edu) has quit (Ping timeout: 260 seconds)
+2016-10-07 14:49:08	--	Andrio- is now known as Andrio

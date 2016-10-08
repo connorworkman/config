@@ -11060,3 +11060,78 @@
 2016-10-07 13:12:04	-->	talsamon (~talsamon@194-96-160-133.adsl.highway.telekom.at) has joined #awk
 2016-10-07 13:13:40	-->	rods-tab3 (~rods-tab3@172.56.38.176) has joined #awk
 2016-10-07 13:19:00		[13:13]
+2016-10-07 13:22:59	-->	ec (sid1544@gateway/web/irccloud.com/x-iwnyfhgenutbewlu) has joined #awk
+2016-10-07 13:23:28	-->	maedox (sid2021@gateway/web/irccloud.com/x-lhbxahwhujmlgnsq) has joined #awk
+2016-10-07 13:28:50	-->	marky1991 (~marky1991@unaffiliated/marky1991) has joined #awk
+2016-10-07 13:31:40	-->	navidr (uid112413@gateway/web/irccloud.com/x-kumnhxkveujaegxo) has joined #awk
+2016-10-07 13:37:00		[13:31]
+2016-10-07 13:44:17	<--	tag (~tag@fw03.sfoffice.quantcast.com) has quit (Ping timeout: 240 seconds)
+2016-10-07 13:50:00		[13:44]
+2016-10-07 13:50:07	-->	lgc (~lgc@silicio.qteorica.cinvestav.mx) has joined #awk
+2016-10-07 13:51:08	lgc	Hi. I have something like this: 'BEGIN{ function(); statement} {...}'.
+2016-10-07 13:51:35	lgc	The problem is that, whatever the statement is, it gets ignored.
+2016-10-07 13:52:08	lgc	What happens?
+2016-10-07 13:52:53	jamesd	lgc: how do you exit the funtion?
+2016-10-07 13:52:58	jamesd	exit? return?
+2016-10-07 13:53:07	lgc	exit, james.
+2016-10-07 13:53:32	jamesd	try return,  exit dumps you to the shell
+2016-10-07 13:54:05	nal	are you defining the function in begin?
+2016-10-07 13:54:40	lgc	No luck, jamesd.
+2016-10-07 13:54:41	nal	oh, no. sorry
+2016-10-07 13:54:54	nal	pastebin lgc
+2016-10-07 13:57:40	lgc	nal, http://pastebin.com/W2JkVZb4.
+2016-10-07 14:00:12	lgc	Function "vecinos()" should kill the process, but it doesn't.
+2016-10-07 14:01:28	-->	macivy (~macivy@2600:8801:1800:6c:6183:cbc:2524:ffab) has joined #awk
+2016-10-07 14:04:22	nal	then exit is right
+2016-10-07 14:04:32	<--	johnmilton (~johnmilto@96-58-242-186.res.bhn.net) has quit (Ping timeout: 260 seconds)
+2016-10-07 14:05:05	lgc	but it doesn't kill the process. The execution continues merrily.
+2016-10-07 14:05:06		[14:05]
+2016-10-07 14:05:43	nal	exit goes to END
+2016-10-07 14:06:34	lgc	Oh, that explains the behavior, nal, but why?
+2016-10-07 14:07:44	nal	why it goes to END?
+2016-10-07 14:08:32	lgc	Exactly, nal.
+2016-10-07 14:08:47	nal	The exit statement shall invoke all END actions in the order in which they occur in the program source and then terminate the program without reading further input. An exit statement inside an END action shall terminate the program without further execution of END actions. If an expression is specified in an exit statement, its numeric value shall be the exit status of awk, unless subsequent errors are
+2016-10-07 14:08:48	nal	encountered or a subsequent exit statement with an expression is executed.
+2016-10-07 14:08:54	nal	http://pubs.opengroup.org/onlinepubs/9699919799/utilities/awk.html
+2016-10-07 14:09:22	-->	YP-Cloud__ (sid130155@gateway/web/irccloud.com/x-zbijpgbpqltwvoha) has joined #awk
+2016-10-07 14:09:24	nal	so an if (vecinos) exit should do
+2016-10-07 14:10:05	nal	(that inside the END)
+2016-10-07 14:10:46	nal	its a good idea, handy for some code, tedious for other types
+2016-10-07 14:11:17	lgc	Oh, I finally got, it, nal. Thanks. :) .
+2016-10-07 14:16:50	<--	macivy (~macivy@2600:8801:1800:6c:6183:cbc:2524:ffab) has quit (Remote host closed the connection)
+2016-10-07 14:19:54	nal	this is great though, more sloc than i've ever written for awk, good luck :)
+2016-10-07 14:22:39	nal	(actually you even put the exit on ayuda(), so you kinda knew
+2016-10-07 14:22:39		[14:22]
+2016-10-07 14:26:31	nal	the why this was a design decision idk. i can theorize that awk being a data reporting language, it should act more like an accumulator of data, so once you get what you want, you goto END and well... report.
+2016-10-07 14:31:00	lgc	It's easier than C, nal, and it does reasonably well. The files I'm reading so far are not awfully big.
+2016-10-07 14:32:28	nal	everything is easier than C though
+2016-10-07 14:32:39	lgc	Indeed.
+2016-10-07 14:32:51	nal	except, maybe, esoteric languages
+2016-10-07 14:33:40	lgc	Oh, well... except from file I/O and such things, AWK is very much like C.
+2016-10-07 14:33:59	lgc	And, of course, no declaration of variables.
+2016-10-07 14:34:05	JacobsLadd3r	Anyone happen to know any tricks to speed up awk on a large file? I already use (LC_ALL=C) to set the locale to ASCII instead of UTF-8 and that improves performance greatly, but wandering if there was anything else I should look at.
+2016-10-07 14:35:17	nal	lgc: well, local variables must be declared if you want them
+2016-10-07 14:35:44	lgc	You mean in AWK?
+2016-10-07 14:35:49	nal	yeah
+2016-10-07 14:35:58	nal	or else its global
+2016-10-07 14:36:12	nal	and global always messes things up
+2016-10-07 14:36:31	nal	try doing a for loop within a for loop
+2016-10-07 14:36:45	lgc	Oh, yes, that is something I don't like much about AWK's global-by-default values.
+2016-10-07 14:36:57	nal	JacobsLadd3r: use perl
+2016-10-07 14:36:58	lgc	It's kind of sloppy.
+2016-10-07 14:37:23	nal	JacobsLadd3r: or use sed, if its still too slow use C
+2016-10-07 14:37:32	nal	or use mawk
+2016-10-07 14:38:21	nal	lgc: its good for one liners but not good for... anything else
+2016-10-07 14:38:21		[14:38]
+2016-10-07 14:39:48	nal	JacobsLadd3r: this is of course, if you cant make the code any faster, then switch interpreter/languages
+2016-10-07 14:40:09	nal	hopefully someone else will answer
+2016-10-07 14:40:22	lgc	Not in my experience, nal. :) . It can do much more than that.
+2016-10-07 14:40:25	rods-tab3	!paddlin
+2016-10-07 14:40:37	jamesd	get a faster computer..   i haven't found awk slow at anything in the last decade... not even this century awk was slow back in the 90's when i didn't own a floating point processor...
+2016-10-07 14:41:47	rods-tab3	try mawk - its sometimes much fasster
+2016-10-07 14:41:53	JacobsLadd3r	If you attempt to awk search over a 5GB file it's going to take quite a while. Forcing ASCII instead of UTF-8 can give you an over 1000% performance increase. So I was just curious if there were any other Linux tricks that might help in general just speed up awk.
+2016-10-07 14:42:04	JacobsLadd3r	Ahh that's true I forgot about mawk, thanks!
+2016-10-07 14:42:15	nal	oh gosh, why are you even...
+2016-10-07 14:45:00	rods-tab3	xpt: hawkbot down ?
+2016-10-07 14:47:03	<--	PryMar56 (~prymar@unaffiliated/prymar56) has quit (Quit: Leaving)
+2016-10-07 14:47:28	nal	i always see that question asked in stack overflow, by that point, isnt it better to convert the file into sql or something like that?
