@@ -20985,3 +20985,70 @@
 2016-10-09 01:30:00		[01:24]
 2016-10-09 01:30:38	<--	damme (~damme@vps.thewiegerts.com) has quit (Ping timeout: 268 seconds)
 2016-10-09 01:36:00		[01:30]
+2016-10-09 01:41:13	<--	dqi (~dqi@165-218-045-062.dynamic.caiway.nl) has quit (Ping timeout: 260 seconds)
+2016-10-09 01:43:05	<--	VaticanCameos (~VaticanCa@182.68.109.83) has quit (Ping timeout: 260 seconds)
+2016-10-09 01:49:00		[01:43]
+2016-10-09 01:49:11	-->	w33 (~w33@unaffiliated/w33) has joined ##asm
+2016-10-09 01:51:04	<--	navidr (uid112413@gateway/web/irccloud.com/x-ovudbdofzdjgimee) has quit (Quit: Connection closed for inactivity)
+2016-10-09 01:56:03	-->	ggole_ (~ggole@125-209-148-213.dyn.iinet.net.au) has joined ##asm
+2016-10-09 01:57:16	-->	dqi (~dqi@165-218-045-062.dynamic.caiway.nl) has joined ##asm
+2016-10-09 01:58:36	<--	ggole (~ggole@106-68-182-79.dyn.iinet.net.au) has quit (Ping timeout: 260 seconds)
+2016-10-09 02:08:34	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined ##asm
+2016-10-09 02:08:34		[02:08]
+2016-10-09 02:08:34	--	Topic for ##asm is "Assembly programming channel, all architectures welcome (please specify). Don't ask to ask! Use a pastebin if appropriate! Check your manuals! *** AT&T vs Intel flamers will be banned."
+2016-10-09 02:08:34	--	Topic set by Jester01 (~Jester01@62.100.244.69) on Fri, 30 Sep 2016 06:54:51
+2016-10-09 02:08:34	--	Channel ##asm: 290 nicks (0 ops, 0 voices, 290 normals)
+2016-10-09 02:08:34	***	Buffer Playback...
+2016-10-09 02:08:34	zid	[07:19:57] it doesnt' know if you're making a pie or an elf with a fini section or a windows PE [07:19:57]
+2016-10-09 02:08:34	harrisi	[07:21:19] right, my mistake. [07:21:19]
+2016-10-09 02:08:34	zid	[07:21:45] none of the binaries I make gcc produce have those, for example [07:21:45]
+2016-10-09 02:08:34	harrisi	[07:21:47] so my investigation should be with ld, for example? [07:21:47]
+2016-10-09 02:08:34	zid	[07:22:13] I think C++ requires them because the standard library there uses them to implement destructors or something, I wouldn't know though not my field [07:22:13]
+2016-10-09 02:08:34	harrisi	[07:22:17] actually, I'm just assuming gcc will call ld for linking - I haven't gotten to linking in my book yet :) [07:22:17]
+2016-10-09 02:08:34	archivist	[07:23:53] you should google about_fini eg 5.2.1. Special functions _init and _fini (OBSOLETE/DANGEROUS) [07:23:53]
+2016-10-09 02:08:34	harrisi	[07:33:16] archivist: hey, thanks! [07:33:16]
+2016-10-09 02:08:34	harrisi	[07:46:24] I know I'm rapidly straing away from actual assembly-related questions, but based on some stuff I've seen about _init and _fini, it seems as though I don't want/need them anymore. is the reason for ld still including them in a binary for the purpose of giving it the ability to run on old systems which require it? this seems like an incorrect conclusion, because surely what I compile and link won't run on whatever old system requires _init and _fini anyway. [07:46:24]
+2016-10-09 02:08:34	zid	[07:47:49] You *might* need fini if you were runtime linking against something which did, maybe? [07:47:49]
+2016-10-09 02:08:34	harrisi	[07:49:12] hm, maybe. but unfortunately I think whatever answer or explanation may be available will be over my head anyway, so it probably wasn't worth asking in the first place. [07:49:12]
+2016-10-09 02:08:34	harrisi	[07:49:54] anyway, I very much appreciate the help and guidance from you both, zid and archivist. much appreciated! [07:49:54]
+2016-10-09 02:08:34	zid	[07:49:58] I don't know how you even came across it in the first place, gcc supports it with __attribute__((constructor)) or something [07:49:58]
+2016-10-09 02:08:34	zid	[07:50:07] but beyond that I'm not sure much uses it [07:50:07]
+2016-10-09 02:08:34	zid	[07:50:28] the linker scripts know what to do with symbols in those sections, good enough [07:50:28]
+2016-10-09 02:08:34	harrisi	[07:51:45] I'm not sure why it's ending up in the binary either. I started questioning it because the entirety of the _fini section for my binaries (all of them) is: sub $0x8, %rsp; add $0x8, %rsp; retq [07:51:45]
+2016-10-09 02:08:34	zid	[07:51:55] nothing, then [07:51:55]
+2016-10-09 02:08:34	zid	[07:52:31] I haven't seen what my default linker scripts do, I always use my own or don't care, respective of the task [07:52:31]
+2016-10-09 02:08:34	harrisi	[07:52:44] right, it just seemed strange for it to be there if it does nothing but take up a few bytes. [07:52:44]
+2016-10-09 02:08:34	zid	[07:53:59] if you're using gas I blame gas [07:53:59]
+2016-10-09 02:08:34	zid	[07:54:04] If you're using nasm I blame gas. [07:54:04]
+2016-10-09 02:08:34	zid	[07:54:21] also whenever I stub my toe, or lose some change [07:54:21]
+2016-10-09 02:08:34	harrisi	[07:55:18] I'll keep that in mind moving forward. :) [07:55:18]
+2016-10-09 02:08:34	zid	[07:55:59] just make your own linker scripts [07:55:59]
+2016-10-09 02:08:34	archivist	[07:56:13] I blame zid for my stubbed toe a couple of weeks ago [07:56:13]
+2016-10-09 02:08:34	zid	[07:56:20] archivist: you deserved that one [07:56:20]
+2016-10-09 02:08:34	zid	[07:56:33] I used my power as the almighty to rearrange the universe subtley to cause it to happen [07:56:33]
+2016-10-09 02:08:34	zid	[07:56:44] a buttery flap here, a breeze there, a toe stub yonder [07:56:44]
+2016-10-09 02:08:34	harrisi	[07:57:25] honestly I still don't really know anything about linking, so writing my own linker scripts is currently well out of reach. [07:57:25]
+2016-10-09 02:08:34	zid	[07:57:41] harrisi: linking is just replacing all the identifiers with addresses [07:57:41]
+2016-10-09 02:08:34	zid	[07:58:13] when you write mov [somelabel], 4 it just remembers you did it and when the linker decides where things live, it replaces the somelabel with the address [07:58:13]
+2016-10-09 02:08:34	zid	[07:58:26] that's called a relocation, and that's more or less what a linker does [07:58:26]
+2016-10-09 02:08:34	zid	[07:58:59] the object files you make will be some representation of your source, and some table of relocations that need to be performed for it to work. [07:58:59]
+2016-10-09 02:08:34	zid	[08:01:05] https://github.com/zid/boros/blob/new_boot/linker.ld They're horrifically complicated, abandon hope all ye who enter here. /s [08:01:05]
+2016-10-09 02:08:34	zid	[08:01:37] It just says that I want an elf, that starts at kmain, loaded to 0xfff.., and in the order .text .rodata .data .bss, aligned to 4k [08:01:37]
+2016-10-09 02:08:34	zid	[08:01:48] and to toss anything else [08:01:48]
+2016-10-09 02:08:34	harrisi	[10:30:44] that's not as scary and confusing as I was hoping. [10:30:44]
+2016-10-09 02:08:34	zid	[10:31:16] Well you can make it confusinger :P [10:31:16]
+2016-10-09 02:08:34	harrisi	[10:31:30] oh, perfect. I can't wait! [10:31:30]
+2016-10-09 02:08:34	zid	[10:31:36] well, get to it [10:31:36]
+2016-10-09 02:08:34	zid	[10:33:06] also, usefully, the linker can actually produce its own symbols, so you can do things like _banana_start = .; .banana {}; _banana_size = . - _banana_start [10:33:06]
+2016-10-09 02:08:34	zid	[10:33:15] and then reference those in your code [10:33:15]
+2016-10-09 02:08:34	zid	[10:33:39] a bit like an extern that appears by MAGIC without existing in any source file *spooky arm waving* [10:33:39]
+2016-10-09 02:08:34	harrisi	[10:33:44] by the way, if you recall that small c function that I was asking about a few hours ago, I noticed that with enough arguments, the contents of rdx are continually clobbered. each argument after 8 seems to be moved from the stack to rdx. [10:33:44]
+2016-10-09 02:08:34	zid	[10:34:27] I guess rax is just special then, so that it has a security flaw of leaking state of the function :P [10:34:27]
+2016-10-09 02:08:34	harrisi	[10:34:39] all of that sounds like real magic, but it's 3:30 am so nothing makes sense right now. [10:34:39]
+2016-10-09 02:08:34	zid	[10:34:54] harrisi: You could go rid a 400 page technical paper about register colouring if you like [10:34:54]
+2016-10-09 02:08:34	zid	[10:34:59] register allocators are magic [10:34:59]
+2016-10-09 02:08:34	zid	[10:35:13] and gcc is insane [10:35:13]
+2016-10-09 02:08:34	makubi	[11:21:55] Is it true that when using 64-bit I am only able to pop to 64-bit registers, because the memory address may be 64 bit wide? [11:21:55]
+2016-10-09 02:08:34	***	Playback Complete.
+2016-10-09 02:08:40	--	Channel created on Sun, 27 May 2007 05:31:12
+2016-10-09 02:12:05	-->	snyp (~Snyp@nas4.meghbelabroadband.in) has joined ##asm
