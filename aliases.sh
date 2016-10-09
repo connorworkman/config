@@ -194,6 +194,7 @@ alias ald='ld -I/lib64/ld-linux-x86-64.so.2 /usr/lib/crt1.o /usr/lib/crti.o -lc 
 
 ## shell functions
 
+echotest() { eval cat $(printf '%s' `eval "{ <<<"${@}" sed 's/\<\([a-zA-Z0-9]*\)\>/<(<<<\"\1\")/g;s@\-@/dev/stdin@g'; };"`) }
 tunssh() {
 	#sshuttle -r username@sshserver 0.0.0.0/0 -vv
 	sshuttle -r "${1?Erro: no host specified.}"  "${2:-0.0.0.0/0}" -vv --dns
@@ -221,7 +222,7 @@ skvm() {
 	local format
 	declare -a args
 	args=( "$1" )
-	for ((i=1;i<=${#}+1;i++)) shift && args+="$1"
+	for ((i=1;i<=${#}+1;i++)); do shift && args+="$1"; done
 	format="${args[1]##*.}"
 	format="${format/.cow/.qcow2}"
 	[[ -z "$args[2]" || "$args[2]" == "null" ]] && {
@@ -250,7 +251,8 @@ brkvm() {
 	local format
 	declare -a args
 	args=( "$1" )
-	for ((i=1;i<=${#}+1;i++)) shift && args+="$1"
+	#for ((i=1;i<=${#}+1;i++)) shift && args+="$1"
+	for ((i=1;i<=${#}+1;i++)); do shift && args+="$1"; done
 	format="${args[1]##*.}"
 	format="${format/cow/qcow2}"
 	[[ -z "$args[2]" || "$args[2]" == "null" ]] && {
@@ -281,7 +283,8 @@ kvm() {
 	declare -a args
 	args=( "$1" )
 	#for ((i=2;i<=${#}+2;i++)) args+="${(P)${i}}"
-	for ((i=2;i<=${#}+2;i++)) shift && args+="${1}"
+	#for ((i=2;i<=${#}+2;i++)) shift && args+="${1}"
+	for ((i=1;i<=${#}+1;i++)); do shift && args+="$1"; done
 	format="${args[1]##*.}"
 	#format="${format/cow/qcow2}"
 	format="${format/.cow/.qcow2}"
@@ -315,7 +318,8 @@ ovmf-kvm() {
 	local format
 	declare -a args
 	args=( "$1" )
-	for ((i=1;i<=${#}+1;i++)) shift && args+="$1"
+	#for ((i=1;i<=${#}+1;i++)) shift && args+="$1"
+	for ((i=1;i<=${#}+1;i++)); do shift && args+="$1"; done
 	format="${args[1]##*.}"
 	#format="${format/cow/qcow2}"
 	format="${format/.cow/.qcow2}"
