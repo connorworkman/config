@@ -1,18 +1,179 @@
 #!/bin/zsh
 
-# aliases.sh
-#
-# Set personal aliases, overriding those provided by oh-my-zsh libs,
-# plugins, and themes. Aliases can be placed here, though oh-my-zsh
-# users are encouraged to define aliases within the ZSH_CUSTOM folder.
-# For a full list of active aliases, run `alias`.
-## Example aliases
-alias zshconfig='vim ${HOME}/.zshrc '
+## aliases.sh
+##
+## Set personal aliases, overriding those provided by oh-my-zsh libs,
+## plugins, and themes. Aliases can be placed here, though oh-my-zsh
+## users are encouraged to define aliases within the ZSH_CUSTOM folder.
+## For a full list of active aliases, run `alias`.
+
+## Example alias
+
 alias ohmyzsh='pushd ${ZSH} '
 
-2>/dev/null unalias c
+# Unset previous function/alias iterations
+unset -f fc which define h wd bfg defrag >/dev/null 2>&1
+unalias history h c >/dev/null 2>&1
+
 ## Custom aliases
 
+alias zrc='vim -p ${HOME}/.zshrc '
+alias arc='vim -p ${HOME}/aliases.sh '
+
+alias usctl='systemctl --user '
+alias uscdr='systemctl --user daemon-reload '
+alias uscen='systemctl --user enable --now '
+alias uscdn='systemctl --user disable --now '
+alias uscs='systemctl --user status --full --no-pager '
+alias uscf='systemctl --user --failed '
+alias uscu='systemctl --user list-units --full '
+alias usce='systemctl --user edit --full '
+alias uscr='systemctl --user restart '
+alias sctl='sudo systemctl '
+alias scdr='sudo systemctl daemon-reload '
+alias scen='sudo systemctl enable --now '
+alias scdn='sudo systemctl disable --now '
+alias scs='sudo systemctl status --full --no-pager '
+alias scf='sudo systemctl --failed '
+alias scu='sudo systemctl list-units --full '
+alias sce='sudo systemctl edit --full '
+alias scr='sudo systemctl restart '
+
+alias ls='ls --color=auto '
+#alias la='ls -al --color=auto '
+alias la='ls -lAhqiQFs  --color=auto '
+alias lA='ls -lAhqiQFso  --color=auto '
+alias lB='ls -lAhqiQFXrso  --color=auto '
+alias lC='ls -lAhqiQFSrso  --color=auto '
+alias lD='ls -lAhqiQFtrso  --color=auto '
+alias ll='ls -CBhp --color=auto '
+alias l.='ls -dCX --color=auto .* '
+alias l..='ls -dCX --color=auto .*/ */ '
+alias ..='cd .. '
+alias ...='cd ../../ '
+alias ....='cd ../../../ '
+## Colorize the grep command output for ease of use (good for log files)
+alias grep='grep --color=auto '
+alias egrep='egrep --color=auto '
+alias fgrep='fgrep --color=auto '
+#alias bc='bc -l '
+## Generate sha1 digest
+alias sha1='openssl sha1 '
+alias mkdir='mkdir -pv '
+
+## Stop after sending count ECHO_REQUEST packets
+alias pong='ping -c 5 '
+# Do not wait interval 1 second, go fast #
+alias fastping='ping -c 100 -s1 '
+alias ports='netstat -tulanp '
+
+alias enft='sudo vim /etc/nftables.nft '
+alias rnft='sudo nft -f /etc/nftables.nft '
+alias lnft='sudo nft list ruleset -a | less -R '
+
+alias start-wmin='sudo /etc/webmin/start '
+alias stop-wmin='sudo /etc/webmin/stop '
+alias rs-wmin='sudo /etc/webmin/restart '
+alias rl-wmin='sudo /etc/webmin/reload '
+
+alias lsinitcpio='ls -lAXh --color=auto /usr/lib/initcpio '
+alias cdinitcpio='cd /usr/lib/initcpio '
+alias esp-hook='sudo gvim /usr/lib/initcpio/install/esp-update-linux '
+alias lrepos='curl "https://wiki.archlinux.org/index.php/Unofficial_user_repositories" | grep "Server = " | sed "s/\$arch/$(uname -m)/g" | cut -f 3 -d" " '
+alias rorphans='sudo pacman -Rns $(pacman -Qdtq) '
+alias nmwifi='sudo nmcli dev wifi connect '
+alias nmdwifi='sudo nmcli dev wifi disconnect '
+
+alias zs-gen='sudo zonesigner -genkeys -keydirectory /etc/bind/private -usensec3 -dsdir /etc/bind/private -krfile /etc/bind/private/alyp.tk.krf -nosave -zone alyptik.xyz /etc/bind/db.alyptik.xyz /etc/bind/db.alyptik.xyz.signed'
+alias zs-sign='sudo zonesigner -dsdir /etc/bind/private -krfile /etc/bind/private/alyp.tk.krf -nosave -zone alyptik.xyz /etc/bind/db.alyptik.xyz /etc/bind/db.alyptik.xyz.signed '
+
+alias zedit='sudo vim /etc/bind/db.alyp.tk'
+alias bedit='sudo vim /etc/named.conf'
+alias gzedit='sudo gvim /etc/bind/db.alyp.tk'
+alias gbedit='sudo gvim /etc/named.conf'
+alias arch-ssh='ssh -Y alyptik@alyp.tk -p 222 '
+alias rarch-ssh='ssh -Y root@@alyp.tk -p 2222 '
+alias surface-ssh='ssh -Y alyptik@192.168.1.98 '
+alias rsurface-ssh='ssh -Y root@192.168.1.98 '
+
+alias powns='sudo pacman -Qo '
+alias skonq='kdesudo konqueror '
+alias tdmesg='dmesg | tail '
+alias jctlxe='journalctl -xe '
+alias jftrimstatus='journalctl -u fstrim '
+alias ftrimstatus='systemctl status fstrim.timer '
+
+alias kzshrc='kate ${HOME}/.zshrc'
+alias kbashrc='kate ${HOME}/.bashrc'
+alias kprofile='kate ${HOME}/.bash_profile'
+alias vzshrc='vim ${HOME}/.zshrc'
+alias vbashrc='vim ${HOME}/.bashrc'
+alias vprofile='vim ${HOME}/.bash_profile'
+alias gzshrc='gvim ${HOME}/.zshrc'
+alias gbashrc='gvim ${HOME}/.bashrc'
+alias gprofile='gvim ${HOME}/.bash_profile'
+alias nzshrc='nano ${HOME}/.zshrc'
+alias nbashrc='nano ${HOME}/.bashrc'
+alias nprofile='nano ${HOME}/.bash_profile'
+alias sbashrc='source ${HOME}/.bashrc'
+alias sprofile='source ${HOME}/.bash_profile'
+alias szshrc='source ${HOME}/.zshrc'
+
+# SSH shortcuts
+alias nputty='putty -ssh alyptik.ddns.net -l root -pw alpha01 -fn "client:Monospace 12" '
+alias nssh='ssh netgear '
+alias tssh='ssh root@alyptik.ddns.net -p 443 -D 8080 '
+
+alias nsmb='mount.cifs //192.168.1.1/opt /tmp/mnt/smbshare -o username=$(nvram get samba_user),password=$(nvram get samba_password) '
+alias lsmb='mount.cifs //192.168.1.1/opt /tmp/mnt/smbshare -o username=$(nvram get samba_user),password=$(nvram get samba_password) '
+
+alias nrefind='sudo nano /boot/EFI/refind/refind.conf'
+alias listblackarch='sudo pacman -Sgg | grep blackarch | cut -d" " -f2 | sort -u | less'
+alias catblackarch='sudo pacman -Sg | grep blackarch'
+
+#alias newvnc="sudo x11vnc -bg -auth guess -forever -shared -display :0 -autoport -6 -rfbauth /etc/x11vnc.pass -ncache 10 -ncache_cr -ssldir /home/alyptik/certs/vnc -ssl /home/alyptik/certs/vnc/server-vencrypt.pem -vencrypt support:nox509 -anontls support:nox509 -dhparams /home/alyptik/certs/vnc/dh.pem -rmflag /var/run/x11vnc.pid && sudo sed -i '2,$ d; s/^.*$/`ps wwaux | grep x11vnc | awk ' { if ($1=="root") print $2 } ' | paste -s -d ' '`/' /var/run/x11vnc.pid "
+#alias newvnc='sudo x11vnc -bg -auth guess -forever -shared -display :0 -autoport -6 -rfbauth /etc/x11vnc.pass -ncache 10 -ncache_cr -ssldir /home/alyptik/certs/vnc -ssl /home/alyptik/certs/vnc/server-vencrypt.pem -vencrypt support:nox509 -anontls support:nox509 -dhparams /home/alyptik/certs/vnc/dh.pem -rmflag /var/run/x11vnc.pid '
+
+alias newvnc='x11vnc -env FD_SDDM=1 -auth /tmp/xauth-1000-_0 -forever -shared -display :0 -autoport -6 -rfbauth /etc/x11vnc.pass -ncache 10 -ncache_cr -ssldir /home/alyptik/certs/vnc -ssl /home/alyptik/certs/vnc/server-vencrypt.pem -vencrypt support:nox509 -anontls support:nox509 -dhparams /home/alyptik/certs/vnc/dh.pem -noxdamage -noxkb -noxfixes -rmflag /tmp/x11vnc-alyptik.pid & disown '
+alias sedvnc="sudo sed -i '2,$ d; s/^.*$/$(pgrep x11vnc | paste -s -d " " | awk '{ print $NF }')/' /var/run/x11vnc.pid "
+alias killvnc='sudo killall x11vnc'
+alias updategrub='sudo grub-mkconfig -o /boot/grub/grub.cfg'
+
+## Shortcut  for iptables and pass it via sudo
+alias ipt='sudo iptables --line-numbers -vnL'
+alias iptin='sudo iptables --line-numbers -vnL INPUT '
+alias iptout='sudo iptables --line-numbers -vnL OUTPUT '
+alias iptfw='sudo iptables --line-numbers -vnL FORWARD '
+alias iptnat='sudo iptables --line-numbers -t nat -vnL '
+alias ip6t='sudo ip6tables --line-numbers -vnL '
+alias ip6tin='sudo ip6tables --line-numbers -vnL INPUT '
+alias ip6tout='sudo ip6tables --line-numbers -vnL OUTPUT '
+alias ip6tfw='sudo ip6tables --line-numbers -vnL FORWARD '
+alias ip6tnat='sudo ip6tables -t nat --line-numbers -vnL '
+
+alias 4routes='route -A inet -e -n '
+alias 4nroutes='route -A inet -e '
+alias 4iproutes='ip -4 route show '
+alias 6routes='route -A inet6 -e -n '
+alias 6nroutes='route -A inet6 -e '
+alias 6iproutes='ip -6 route show '
+
+## pass options to free ##
+alias meminfo='free -m -l -t '
+## get top process eating memory
+alias psmem='ps auxf | sort -nr -k 4 '
+alias psmem10='ps auxf | sort -nr -k 4 | head -10 '
+## get top process eating cpu ##
+alias pscpu='ps auxf | sort -nr -k 3 '
+alias pscpu10='ps auxf | sort -nr -k 3 | head -10 '
+## Get server cpu info ##
+alias cpuinfo='lscpu '
+## older system use /proc/cpuinfo ##
+alias cpuinfo='less /proc/cpuinfo '
+## get GPU ram on desktop / laptop##
+alias gpumeminfo='grep -i --color memory /var/log/Xorg.0.log '
+
+# alias defrag='sudo find / -xdev -type d -print -exec btrfs filesystem defragment "{}" \; '
 alias c='colordiff '
 ## install colordiff package :)
 alias vcdiff='colordiff -swBW 150 '
@@ -194,7 +355,8 @@ alias ald='ld -I/lib64/ld-linux-x86-64.so.2 /usr/lib/crt1.o /usr/lib/crti.o -lc 
 
 ## shell functions
 
-echotest() { eval cat $(printf '%s' `eval "{ <<<"${@}" sed 's/\<\([a-zA-Z0-9]*\)\>/<(<<<\"\1\")/g;s@\-@/dev/stdin@g'; }"`); }
+echocat() { eval cat $(printf '%s' `eval "{ <<<"${@}" sed 's/\<\([a-zA-Z0-9]*\)\>/<(<<<\"\1\")/g;s@\-@/dev/stdin@g'; }"`); }
+
 tunssh() {
 	#sshuttle -r username@sshserver 0.0.0.0/0 -vv
 	sshuttle -r "${1?Erro: no host specified.}"  "${2:-0.0.0.0/0}" -vv --dns
@@ -1049,19 +1211,8 @@ csu() {
 	fi
 }
 
-# Unset previous iterations
-unset -f fc >/dev/null 2>&1
-unset -f h >/dev/null 2>&1
-unset -f wd >/dev/null 2>&1
-unset -f bfg >/dev/null 2>&1
-unset -f which >/dev/null 2>&1
-unset -f defrag >/dev/null 2>&1
-unset -f define >/dev/null 2>&1
-unalias h >/dev/null 2>&1
-unalias history >/dev/null 2>&1
 
 ## Fix zsh annoying history behavior
-
 # h() { if [ -z "${@}" ]; then history 10; else history | egrep "$*"; fi; }
 
 # h() { if [ -z "${@}" ]; then history 10; return 1; fi; if [[ ${#1} -le 2 ]]; then history ${1}; return 2; else history | egrep ${@}; fi; }
@@ -1099,6 +1250,7 @@ uscrs3() {
 	systemctl --user restart "$i"; systemctl --user status --full --no-pager "$i"; echo -n "\n"
     done
 }
+
 #compdef '_systemctl ' scrs
 #compdef '_systemctl ' uscrs
 #compdef '_systemctl_status ' scrs
@@ -1109,28 +1261,26 @@ uscrs3() {
 #compdef '_systemctl_status ' uscrs2
 
 # wd() { . "${ZSH}"/plugins/wd.sh; }
-## Resume a background job
 
+## Resume a background job
 bfg() {	if [ ${#1} -ne 1 ]; then echo 'attempting to resume job "%1"'; j=1; else j=${1}; fi; %${j} & }
+
 ## Alternate which`fucntionality
-# alias which='alias | /usr/bin/which --tty-only --read-alias --show-dot --show-tilde '
+ alias which='alias | /usr/bin/which --tty-only --read-alias --show-dot --show-tilde '
 
 # which() { (alias; declare -f) | /bin/which --tty-only --read-alias --read-functions --show-tilde --show-dot $@; }
-# export -f which
 
-define() { IFS='\n' read -r -d '' ${1} || true; }
 ## Custom shell functions
-## Btrfs recursive filesystem defragment
 
+## Btrfs recursive filesystem defragment
 dgbtrfs() {
 	echo "Starting system defragment..."
 	sudo btrfs filesystem defragment -r -v / &
-	#find / -xdev -type d -print -exec sudo btrfs filesystem defragment -r -v "{}" \; &
-	find / -xdev -type d -print -exec sudo btrfs filesystem defragment -r -v -clzo "{}" \; &
+	#find / -xdev -type d -print -exec sudo btrfs filesystem defragment -r -v "{}" \;
+	find / -xdev -type d -print -exec sudo btrfs filesystem defragment -r -v -clzo "{}" \;
 }
-## alias defrag='sudo find / -xdev -type d -print -exec btrfs filesystem defragment "{}" \; '
 
-odkms() { for i in /var/lib/dkms/*/[^k]*/source; do [ -e "$i" ] || echo "$i"; done; }
+# odkms() { for i in /var/lib/dkms/*/[^k]*/source; do [ -e "$i" ] || echo "$i"; done; }
 
 colortest() {
         local fgc bgc vals seq0
@@ -1177,8 +1327,8 @@ prompt_confirm() {
   REPLY=${REPLY,,}    # to lower
   [[ $REPLY =~ ^(yes|y)$ ]] && true || false
 }
-## Safety nets - originally commented out to build good habits
 
+## Safety nets - originally commented out to build good habits
 safetytoggle() {
     ## usage variable containing help/command usage
     local usagedoc="\n"'Usage: safetytoggle [option(s)]
@@ -1323,158 +1473,4 @@ sfs2() {
 	#xargs -t0 -I{} sudo umount "{}";
 	#ps aux | grep $mpid | grep -v grep
 }
-
-alias usctl='systemctl --user '
-alias uscdr='systemctl --user daemon-reload '
-alias uscen='systemctl --user enable --now '
-alias uscdn='systemctl --user disable --now '
-alias uscs='systemctl --user status --full --no-pager '
-alias uscf='systemctl --user --failed '
-alias uscu='systemctl --user list-units --full '
-alias usce='systemctl --user edit --full '
-alias uscr='systemctl --user restart '
-alias sctl='sudo systemctl '
-alias scdr='sudo systemctl daemon-reload '
-alias scen='sudo systemctl enable --now '
-alias scdn='sudo systemctl disable --now '
-alias scs='sudo systemctl status --full --no-pager '
-alias scf='sudo systemctl --failed '
-alias scu='sudo systemctl list-units --full '
-alias sce='sudo systemctl edit --full '
-alias scr='sudo systemctl restart '
-
-alias ls='ls --color=auto '
-#alias la='ls -al --color=auto '
-alias la='ls -lAhqiQFs  --color=auto '
-alias lA='ls -lAhqiQFso  --color=auto '
-alias lB='ls -lAhqiQFXrso  --color=auto '
-alias lC='ls -lAhqiQFSrso  --color=auto '
-alias lD='ls -lAhqiQFtrso  --color=auto '
-alias ll='ls -CBhp --color=auto '
-alias l.='ls -dCX --color=auto .* '
-alias l..='ls -dCX --color=auto .*/ */ '
-alias ..='cd .. '
-alias ...='cd ../../ '
-alias ....='cd ../../../ '
-## Colorize the grep command output for ease of use (good for log files)
-alias grep='grep --color=auto '
-alias egrep='egrep --color=auto '
-alias fgrep='fgrep --color=auto '
-#alias bc='bc -l '
-## Generate sha1 digest
-alias sha1='openssl sha1 '
-alias mkdir='mkdir -pv '
-
-## Stop after sending count ECHO_REQUEST packets
-alias pong='ping -c 5 '
-# Do not wait interval 1 second, go fast #
-alias fastping='ping -c 100 -s1 '
-alias ports='netstat -tulanp '
-
-alias enft='sudo vim /etc/nftables.nft '
-alias rnft='sudo nft -f /etc/nftables.nft '
-alias lnft='sudo nft list ruleset -a | less -R '
-
-alias start-wmin='sudo /etc/webmin/start '
-alias stop-wmin='sudo /etc/webmin/stop '
-alias rs-wmin='sudo /etc/webmin/restart '
-alias rl-wmin='sudo /etc/webmin/reload '
-
-alias lsinitcpio='ls -lAXh --color=auto /usr/lib/initcpio '
-alias cdinitcpio='cd /usr/lib/initcpio '
-alias esp-hook='sudo gvim /usr/lib/initcpio/install/esp-update-linux '
-alias lrepos='curl "https://wiki.archlinux.org/index.php/Unofficial_user_repositories" | grep "Server = " | sed "s/\$arch/$(uname -m)/g" | cut -f 3 -d" " '
-alias rorphans='sudo pacman -Rns $(pacman -Qdtq) '
-alias nmwifi='sudo nmcli dev wifi connect '
-alias nmdwifi='sudo nmcli dev wifi disconnect '
-
-alias zs-gen='sudo zonesigner -genkeys -keydirectory /etc/bind/private -usensec3 -dsdir /etc/bind/private -krfile /etc/bind/private/alyp.tk.krf -nosave -zone alyptik.xyz /etc/bind/db.alyptik.xyz /etc/bind/db.alyptik.xyz.signed'
-alias zs-sign='sudo zonesigner -dsdir /etc/bind/private -krfile /etc/bind/private/alyp.tk.krf -nosave -zone alyptik.xyz /etc/bind/db.alyptik.xyz /etc/bind/db.alyptik.xyz.signed '
-
-alias zedit='sudo vim /etc/bind/db.alyp.tk'
-alias bedit='sudo vim /etc/named.conf'
-alias gzedit='sudo gvim /etc/bind/db.alyp.tk'
-alias gbedit='sudo gvim /etc/named.conf'
-alias arch-ssh='ssh -Y alyptik@alyp.tk -p 222 '
-alias rarch-ssh='ssh -Y root@@alyp.tk -p 2222 '
-alias surface-ssh='ssh -Y alyptik@192.168.1.98 '
-alias rsurface-ssh='ssh -Y root@192.168.1.98 '
-
-alias powns='sudo pacman -Qo '
-alias skonq='kdesudo konqueror '
-alias tdmesg='dmesg | tail '
-alias jctlxe='journalctl -xe '
-alias jftrimstatus='journalctl -u fstrim '
-alias ftrimstatus='systemctl status fstrim.timer '
-
-alias kzshrc='kate ${HOME}/.zshrc'
-alias kbashrc='kate ${HOME}/.bashrc'
-alias kprofile='kate ${HOME}/.bash_profile'
-alias vzshrc='vim ${HOME}/.zshrc'
-alias vbashrc='vim ${HOME}/.bashrc'
-alias vprofile='vim ${HOME}/.bash_profile'
-alias gzshrc='gvim ${HOME}/.zshrc'
-alias gbashrc='gvim ${HOME}/.bashrc'
-alias gprofile='gvim ${HOME}/.bash_profile'
-alias nzshrc='nano ${HOME}/.zshrc'
-alias nbashrc='nano ${HOME}/.bashrc'
-alias nprofile='nano ${HOME}/.bash_profile'
-alias sbashrc='source ${HOME}/.bashrc'
-alias sprofile='source ${HOME}/.bash_profile'
-alias szshrc='source ${HOME}/.zshrc'
-
-# SSH shortcuts
-alias nputty='putty -ssh alyptik.ddns.net -l root -pw alpha01 -fn "client:Monospace 12" '
-alias nssh='ssh netgear '
-alias tssh='ssh root@alyptik.ddns.net -p 443 -D 8080 '
-
-alias nsmb='mount.cifs //192.168.1.1/opt /tmp/mnt/smbshare -o username=$(nvram get samba_user),password=$(nvram get samba_password) '
-alias lsmb='mount.cifs //192.168.1.1/opt /tmp/mnt/smbshare -o username=$(nvram get samba_user),password=$(nvram get samba_password) '
-
-alias nrefind='sudo nano /boot/EFI/refind/refind.conf'
-alias listblackarch='sudo pacman -Sgg | grep blackarch | cut -d" " -f2 | sort -u | less'
-alias catblackarch='sudo pacman -Sg | grep blackarch'
-
-#alias newvnc="sudo x11vnc -bg -auth guess -forever -shared -display :0 -autoport -6 -rfbauth /etc/x11vnc.pass -ncache 10 -ncache_cr -ssldir /home/alyptik/certs/vnc -ssl /home/alyptik/certs/vnc/server-vencrypt.pem -vencrypt support:nox509 -anontls support:nox509 -dhparams /home/alyptik/certs/vnc/dh.pem -rmflag /var/run/x11vnc.pid && sudo sed -i '2,$ d; s/^.*$/`ps wwaux | grep x11vnc | awk ' { if ($1=="root") print $2 } ' | paste -s -d ' '`/' /var/run/x11vnc.pid "
-#alias newvnc='sudo x11vnc -bg -auth guess -forever -shared -display :0 -autoport -6 -rfbauth /etc/x11vnc.pass -ncache 10 -ncache_cr -ssldir /home/alyptik/certs/vnc -ssl /home/alyptik/certs/vnc/server-vencrypt.pem -vencrypt support:nox509 -anontls support:nox509 -dhparams /home/alyptik/certs/vnc/dh.pem -rmflag /var/run/x11vnc.pid '
-
-#newvnc() { x11vnc -env FD_SDDM=1 -auth /tmp/xauth-1000-_0 -forever -shared -display :0 -autoport -6 -rfbauth /etc/x11vnc.pass -ncache 10 -ncache_cr -ssldir /home/alyptik/certs/vnc -ssl /home/alyptik/certs/vnc/server-vencrypt.pem -vencrypt support:nox509 -anontls support:nox509 -dhparams /home/alyptik/certs/vnc/dh.pem -noxdamage -noxkb -noxfixes -rmflag /tmp/x11vnc-alyptik.pid & }
-alias newvnc='x11vnc -env FD_SDDM=1 -auth /tmp/xauth-1000-_0 -forever -shared -display :0 -autoport -6 -rfbauth /etc/x11vnc.pass -ncache 10 -ncache_cr -ssldir /home/alyptik/certs/vnc -ssl /home/alyptik/certs/vnc/server-vencrypt.pem -vencrypt support:nox509 -anontls support:nox509 -dhparams /home/alyptik/certs/vnc/dh.pem -noxdamage -noxkb -noxfixes -rmflag /tmp/x11vnc-alyptik.pid & '
-alias sedvnc="sudo sed -i '2,$ d; s/^.*$/$(pgrep x11vnc | paste -s -d " " | awk '{ print $NF }')/' /var/run/x11vnc.pid "
-alias killvnc='sudo killall x11vnc'
-alias updategrub='sudo grub-mkconfig -o /boot/grub/grub.cfg'
-
-## Shortcut  for iptables and pass it via sudo
-alias ipt='sudo iptables --line-numbers -vnL'
-alias iptin='sudo iptables --line-numbers -vnL INPUT '
-alias iptout='sudo iptables --line-numbers -vnL OUTPUT '
-alias iptfw='sudo iptables --line-numbers -vnL FORWARD '
-alias iptnat='sudo iptables --line-numbers -t nat -vnL '
-alias ip6t='sudo ip6tables --line-numbers -vnL '
-alias ip6tin='sudo ip6tables --line-numbers -vnL INPUT '
-alias ip6tout='sudo ip6tables --line-numbers -vnL OUTPUT '
-alias ip6tfw='sudo ip6tables --line-numbers -vnL FORWARD '
-alias ip6tnat='sudo ip6tables -t nat --line-numbers -vnL '
-
-alias 4routes='route -A inet -e -n '
-alias 4nroutes='route -A inet -e '
-alias 4iproutes='ip -4 route show '
-alias 6routes='route -A inet6 -e -n '
-alias 6nroutes='route -A inet6 -e '
-alias 6iproutes='ip -6 route show '
-
-## pass options to free ##
-alias meminfo='free -m -l -t '
-## get top process eating memory
-alias psmem='ps auxf | sort -nr -k 4 '
-alias psmem10='ps auxf | sort -nr -k 4 | head -10 '
-## get top process eating cpu ##
-alias pscpu='ps auxf | sort -nr -k 3 '
-alias pscpu10='ps auxf | sort -nr -k 3 | head -10 '
-## Get server cpu info ##
-alias cpuinfo='lscpu '
-## older system use /proc/cpuinfo ##
-alias cpuinfo='less /proc/cpuinfo '
-## get GPU ram on desktop / laptop##
-alias gpumeminfo='grep -i --color memory /var/log/Xorg.0.log '
 

@@ -231,12 +231,12 @@ function! ToggleFold()
     if g:tfold
         "set mouse=a
         "let g:tmouse = 0
-	0,$foldc!
+	silent 0,$foldc!
 	let g:tfold = 0
     else
         "set mouse=r
         "let g:tmouse = 1
-	0,$foldo!
+	silent 0,$foldo!
 	let g:tfold = 1
     endif
 endfunction
@@ -288,8 +288,8 @@ if has('gui_running')
 else
   set paste
   set guioptions=aAeaigmrLT
-"  set clipboard+=unnamedplus
-  set clipboard=unnamedplus,autoselectplus
+  set clipboard+=unnamedplus
+  "set clipboard=unnamedplus,autoselectplus
   let g:solarized_termcolors=256	"default value is 16
   let g:solarized_degrade=0		"default value is 0
   let g:solarized_termtrans=1		"default value is 0
@@ -297,6 +297,7 @@ else
   let g:solarized_visibility="normal"	"default value is normal
   let g:mwDefaultHighlightingPalette = 'maximum'
 endif
+
 let g:solarized_diffmode="high"	"default value is normal
 let g:solarized_hitrail=1	"default value is 0
 let g:gruvbox_contrast_dark="high"
