@@ -274,8 +274,8 @@ nnoremap <M-F9> :call ToggleIndent()<CR>
 if has('gui_running')
   set nopaste
   set guioptions=aAeigmrLT
-"  set clipboard=unnamedplus,autoselectplus
-  set clipboard=unnamedplus
+  set clipboard+=unnamedplus
+  "set clipboard=unnamedplus,autoselectplus
   let g:solarized_termcolors=16	"default value is 16
   let g:solarized_degrade=0		"default value is 0
   let g:solarized_termtrans=0		"default value is 0
@@ -288,8 +288,8 @@ if has('gui_running')
 else
   set paste
   set guioptions=aAeaigmrLT
-  set clipboard+=unnamedplus
-  "set clipboard=unnamedplus,autoselectplus
+  set clipboard=unnamedplus,autoselectplus
+  "set clipboard+=unnamedplus
   let g:solarized_termcolors=256	"default value is 16
   let g:solarized_degrade=0		"default value is 0
   let g:solarized_termtrans=1		"default value is 0
