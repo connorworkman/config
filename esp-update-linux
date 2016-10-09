@@ -7,24 +7,20 @@ shopt -s extglob
 ESP_DIR="/boot/efi/EFI/arch"
 
 build() {
-	if [ ! -e /boot/intel-ucode.img ]; then
-		echo -en "\n"'No intel-ucode.img found!'"\n"
-	else
-		echo -en "\n"'Copying /boot/intel-ucode.img to '${ESP_DIR}'/...'"\n"
-		cp -v "/boot/intel-ucode.img" "${ESP_DIR}/";
-	fi; echo
-	find "/boot" -maxdepth 1 -name "initramfs*.img" \
+	echo
+	find "/boot" -maxdepth 1 \
+		\( \
+			-name "initramfs*.img" -or \
+			-name "vmlinuz*" -or \
+			-name "intel-ucode.img" -or \
+			-name "refind_linux.conf" \
+		\) \
 		\! -name "*fallback*" \
 		\! -name "*mainline*" \
-		-exec printf '%s\n' 'Copying '{}' to '${ESP_DIR}'/...' \; \
-		-exec cp -v "{}" "${ESP_DIR}/" \;; echo
-	find "/boot" -maxdepth 1 -name "vmlinuz*" \
-		\! -name "*.efi" \
-		\! -name "*mainline*" \
-		-exec printf '%s\n' 'Copying '{}' to '${ESP_DIR}'/...' \; \
-		-exec cp -v "{}" "${ESP_DIR}/" \;; echo
-	cp "/boot/refind_linux.conf" "$ESP_DIR/refind_linux.conf"
-	sed -i 's/\/boot\//EFI\\arch\\/g' "$ESP_DIR/refind_linux.conf"
+		-exec printf ' \033[32m %s \n\033[0m' "Copying {} to ${ESP_DIR}/..." \; \
+		-exec cp -v "{}" "${ESP_DIR}/" \; || return 1
+	echo
+	sed -i 's/\/boot\//EFI\\arch\\/g' "${ESP_DIR}/refind_linux.conf"
 }
 
 help() {
@@ -35,9 +31,27 @@ HELPEOF
 
 archive() {
 	true || {
+	cp -v "/boot/refind_linux.conf" "${ESP_DIR}/refind_linux.conf"
+	if [ ! -e /boot/intel-ucode.img ]; then
+		printf '\n \033[31m %s \n\033[0m' "No intel-ucode.img found!"
+	else
+		printf '\n \033[32m %s \n\033[0m' "Copying /boot/intel-ucode.img to ${ESP_DIR}/..."
+		cp -v "/boot/intel-ucode.img" "${ESP_DIR}/";
+	fi
+		echo -en "\n"'No intel-ucode.img found!'"\n"
+		echo -en "\n"'Copying /boot/intel-ucode.img to '${ESP_DIR}'/...'"\n"
+	find "/boot" -maxdepth 1 -name "vmlinuz*" \
+		\! -name "*.efi" \
+		\! -name "*mainline*" \
+		-exec printf ' \033[32m %s \n\033[0m' 'Copying '{}' to '${ESP_DIR}'/...' \; \
+		-exec printf '%s\n' 'Copying '{}' to '${ESP_DIR}'/...' \; \
+		-exec cp -v "{}" "${ESP_DIR}/" \; || return 1
+	echo
+		\! -name "*sp3*" \
 		\! -name "*sp3*" \
 		\! -name "*mainline*" \
 		\! -name "*rt*" \
+		\! -name "*sp3*" \
 	find "/boot" -maxdepth 1 -name "vmlinuz*" \
 		\! -name "*.efi" \
 		-print0 | \
