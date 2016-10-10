@@ -140,7 +140,8 @@ alias catblackarch='sudo pacman -Sg | grep blackarch'
 alias newvnc='x11vnc -env FD_SDDM=1 -auth /tmp/xauth-1000-_0 -forever -shared -display :0 -autoport -6 -rfbauth /etc/x11vnc.pass -ncache 10 -ncache_cr -ssldir /home/alyptik/certs/vnc -ssl /home/alyptik/certs/vnc/server-vencrypt.pem -vencrypt support:nox509 -anontls support:nox509 -dhparams /home/alyptik/certs/vnc/dh.pem -noxdamage -noxkb -noxfixes -rmflag /tmp/x11vnc-alyptik.pid & disown '
 alias sedvnc="sudo sed -i '2,$ d; s/^.*$/$(pgrep x11vnc | paste -s -d " " | awk '{ print $NF }')/' /var/run/x11vnc.pid "
 alias killvnc='sudo killall x11vnc'
-alias updategrub='sudo grub-mkconfig -o /boot/grub/grub.cfg'
+alias updategrub='sudo grub-mkconfig -o /boot/grub/grub.cfg '
+alias efiupdategrub='sudo grub-mkconfig -o /boot/efi/EFI/grub/grub.cfg '
 
 ## Shortcut  for iptables and pass it via sudo
 alias ipt='sudo iptables --line-numbers -vnL'

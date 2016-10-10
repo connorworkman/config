@@ -6723,3 +6723,413 @@
 2016-10-09 18:50:41	***	Playback Complete.
 2016-10-09 18:51:41	--	Channel created on Sat, 25 Nov 2006 20:42:40
 2016-10-09 18:57:00		[18:51]
+2016-10-10 01:20:00	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined #openvpn
+2016-10-10 01:20:00		[01:20]
+2016-10-10 01:20:00	--	Topic for #openvpn is "OpenVPN Community Support Channel || PLEASE read entire /topic || Current Release: 2.3.12 (23 Aug 2016) || First time? Use !welcome and !goal || Access-Server? /join #openvpn-as || Your problem is probably firewall. Really || TAP/bridging is almost always a bad idea || Vulninfo: !heartbleed !poodle !ovpnuke !sweet32 || Patience is a virtue"
+2016-10-10 01:20:00	--	Topic set by danhunsaker on Sun, 09 Oct 2016 21:20:15
+2016-10-10 01:20:00	--	Channel #openvpn: 222 nicks (6 ops, 2 voices, 214 normals)
+2016-10-10 01:20:00	***	Buffer Playback...
+2016-10-10 01:20:00	Cheaterman	[10:48:02] plaisthos: So far that's what I understood. What I do not is how a key is compromised? [10:48:02]
+2016-10-10 01:20:00	Cheaterman	[10:48:56] You mean like the client.key is leaked? But how should this happen if the only attack vector is the VPN itself? The machine wouldn't be reachable from outside otherwise [10:48:56]
+2016-10-10 01:20:00	Cheaterman	[10:49:17] That's why I'm asking weither it's really an issue in my case to share the certs or not [10:49:17]
+2016-10-10 01:20:00	Cheaterman	[10:49:44] Thanks for taking the time to answer my noob questions :3 [10:49:44]
+2016-10-10 01:20:00	@plaisthos	[10:52:54] Cheaterman: that is your to decide [10:52:54]
+2016-10-10 01:20:00	@plaisthos	[10:53:20] maybe the physical machine gets stolen or something like that [10:53:20]
+2016-10-10 01:20:00	Cheaterman	[10:53:26] I see [10:53:26]
+2016-10-10 01:20:00	@plaisthos	[10:53:27] or sold without cleaning the content [10:53:27]
+2016-10-10 01:20:00	@plaisthos	[10:53:37] then you have to assume its to be compromised [10:53:37]
+2016-10-10 01:20:00	Cheaterman	[10:54:01] Okay, so let's admit we do things right: all I need is to have the proper files on the client to generate new certs, and erase them after deployment? [10:54:01]
+2016-10-10 01:20:00	@plaisthos	[10:54:28] you should not generate the certs on the client [10:54:28]
+2016-10-10 01:20:00	@plaisthos	[10:54:47] because signing certs needs the ca key [10:54:47]
+2016-10-10 01:20:00	Cheaterman	[10:55:10] :-/ it would be sorta inconvenient to do otherwise in my situation. Can't I just have the ca key on the client until key is generated, then erase it? [10:55:10]
+2016-10-10 01:20:00	@plaisthos	[10:55:45] you asked for best pratices [10:55:45]
+2016-10-10 01:20:00	Cheaterman	[10:55:50] Good point [10:55:50]
+2016-10-10 01:20:00	@plaisthos	[10:56:05] if your ca key is compromised you will have to swap every certificate and the ca itself [10:56:05]
+2016-10-10 01:20:00	Cheaterman	[10:56:22] I'm just wondering how I would automate client cert creation if I don't do it on the client [10:56:22]
+2016-10-10 01:20:00	@plaisthos	[10:57:16] whatever you can come up [10:57:16]
+2016-10-10 01:20:00	@plaisthos	[10:57:27] you could also it on a server via a secured webcall [10:57:27]
+2016-10-10 01:20:00	@plaisthos	[10:57:29] or whatever [10:57:29]
+2016-10-10 01:20:00	@plaisthos	[10:57:38] or generate the certs in advance [10:57:38]
+2016-10-10 01:20:00	Cheaterman	[10:58:20] certs in advance doesn't sound very automatic, webcall is a possibility though, I could maybe have a flask service with the proper privs doing the thing, sounds complicated though [10:58:20]
+2016-10-10 01:20:00	@plaisthos	[10:58:37] Cheaterman: no idea [10:58:37]
+2016-10-10 01:20:00	@plaisthos	[10:59:02] if you generate images for your boxes with custom configs you could very well include certficates [10:59:02]
+2016-10-10 01:20:00	@plaisthos	[10:59:17] or use something like puppet to solve such deployment [10:59:17]
+2016-10-10 01:20:00	Cheaterman	[10:59:25] That's what we do :-) for SSH certs, we regenerate them at deployment time [10:59:25]
+2016-10-10 01:20:00	@plaisthos	[10:59:27] (puppet is a configuration management) [10:59:27]
+2016-10-10 01:20:00	Cheaterman	[10:59:37] Yes, puppet or ansible or something, it's just not what we do right now [10:59:37]
+2016-10-10 01:20:00	Cheaterman	[11:00:09] Right now we just make the proper partitions, filesystems, then mount em and extract a stage4 on top [11:00:09]
+2016-10-10 01:20:00	Cheaterman	[11:00:15] some configuration afterwards, and done [11:00:15]
+2016-10-10 01:20:00	@plaisthos	[11:00:41] if someone gets hold of your ca key they can do mitm attack [11:00:41]
+2016-10-10 01:20:00	Cheaterman	[11:01:31] Yeah, but I was examining the possibility that the CA key is on the stage4, just doesn't stick after deployment - I'd immediately remove it after generating client cert [11:01:31]
+2016-10-10 01:20:00	Cheaterman	[11:02:08] At the same time at which I do other basic configuration on the machine such as regenerating SSH client/host keys and setting machine hostname [11:02:08]
+2016-10-10 01:20:00	@plaisthos	[11:03:00] Cheaterman: your call I am just telling you the consequences :) [11:03:00]
+2016-10-10 01:20:00	Cheaterman	[11:03:24] Hehehe, yeah :) [11:03:24]
+2016-10-10 01:20:00	Cheaterman	[11:04:37] Now let's assume that I reeeeally want to make it as clean as possible, with a secure web service delivering the client certs for instance - I don't really see how I would go about this, as my ca.key is currently root-visible-only [11:04:37]
+2016-10-10 01:20:00	Cheaterman	[11:05:31] How should I go about setting permissions on all this for proper operation by an unprivileged service? [11:05:31]
+2016-10-10 01:20:00	@plaisthos	[11:05:37] that falls outside openvpn [11:05:37]
+2016-10-10 01:20:00	Cheaterman	[11:06:06] True, but I suppose it's a problematic that people do face around here? [11:06:06]
+2016-10-10 01:20:00	@plaisthos	[11:06:08] but you could have a secured webservices or service that is allowed to read that key and allows certificate generation [11:06:08]
+2016-10-10 01:20:00	@plaisthos	[11:06:29] Cheaterman: most people don't do on demand generation [11:06:29]
+2016-10-10 01:20:00	Cheaterman	[11:06:31] Okay, so I'd specifically give some permissions to said webservice user, thank you [11:06:31]
+2016-10-10 01:20:00	@plaisthos	[11:06:38] or have some ca framework in place [11:06:38]
+2016-10-10 01:20:00	iskorptix	[11:06:55] guys, whats the best way to force mac use dns settings pushed by openvpn server ? [11:06:55]
+2016-10-10 01:20:00	@plaisthos	[11:06:56] or use puppet and generate the certificates mnaually [11:06:56]
+2016-10-10 01:20:00	Cheaterman	[11:07:04] That also sounds like an option, let me look up how such CA framework would look like [11:07:04]
+2016-10-10 01:20:00	@plaisthos	[11:07:11] iskorptix: there is no way to force a client to do anything [11:07:11]
+2016-10-10 01:20:00	@plaisthos	[11:07:35] if you want use to use the vpn's dns server look at [11:07:35]
+2016-10-10 01:20:00	@plaisthos	[11:07:38] !tunnelblick [11:07:38]
+2016-10-10 01:20:00	@vpnHelper	[11:07:39] "tunnelblick" is http://www.tunnelblick.net - Free OpenVPN GUI Client for Mac OS X [11:07:39]
+2016-10-10 01:20:00	***	Playback Complete.
+2016-10-10 01:20:50	<--	toli (~toli@ip-62-235-196-139.dsl.scarlet.be) has quit (Ping timeout: 256 seconds)
+2016-10-10 01:21:01	--	Channel created on Sat, 25 Nov 2006 20:42:40
+2016-10-10 01:22:21	-->	kiresp (~kiresp@222.117.149.122.sta.dodo.net.au) has joined #openvpn
+2016-10-10 01:22:45	-->	quarters (quarters@gateway/shell/fnordserver.eu/x-wmhkuyfcawlfwwtt) has joined #openvpn
+2016-10-10 01:26:21	-->	toli (~toli@ip-62-235-196-101.dsl.scarlet.be) has joined #openvpn
+2016-10-10 01:27:13	-->	MikeDebian (~ML@a81-84-80-8.cpe.netcabo.pt) has joined #openvpn
+2016-10-10 01:29:51	<--	kiresp (~kiresp@222.117.149.122.sta.dodo.net.au) has quit (Ping timeout: 268 seconds)
+2016-10-10 01:33:00	iskorptix	thanks plaisthos
+2016-10-10 01:33:33	Felishia	god damn
+2016-10-10 01:33:39	Felishia	anyone knows a good openvpn server?
+2016-10-10 01:33:52	Felishia	that doesn't ban me in the moment I join.
+2016-10-10 01:34:18	Felishia	I'm only making requests to github! >:c
+2016-10-10 01:34:37	@plaisthos	Felishia: ?!
+2016-10-10 01:35:04	@plaisthos	This channel is not for discussing VPN providers
+2016-10-10 01:35:04		[01:35]
+2016-10-10 01:35:49	Felishia	plaisthos, :( meanie... T__T I need halp with dis!
+2016-10-10 01:41:00		[01:35]
+2016-10-10 01:43:18	@plaisthos	free services don't really work and we don't want advertising commercial servies and also don't want to do support for them, nothing against you
+2016-10-10 01:46:08	<--	natarej (~natarej@101.188.54.14) has quit (Read error: Connection reset by peer)
+2016-10-10 02:08:17	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined #openvpn
+2016-10-10 02:08:17		[02:08]
+2016-10-10 02:08:17	--	Topic for #openvpn is "OpenVPN Community Support Channel || PLEASE read entire /topic || Current Release: 2.3.12 (23 Aug 2016) || First time? Use !welcome and !goal || Access-Server? /join #openvpn-as || Your problem is probably firewall. Really || TAP/bridging is almost always a bad idea || Vulninfo: !heartbleed !poodle !ovpnuke !sweet32 || Patience is a virtue"
+2016-10-10 02:08:17	--	Topic set by danhunsaker on Sun, 09 Oct 2016 21:20:15
+2016-10-10 02:08:17	--	Channel #openvpn: 223 nicks (6 ops, 2 voices, 215 normals)
+2016-10-10 02:08:17	***	Buffer Playback...
+2016-10-10 02:08:17	Cheaterman	[10:58:20] certs in advance doesn't sound very automatic, webcall is a possibility though, I could maybe have a flask service with the proper privs doing the thing, sounds complicated though [10:58:20]
+2016-10-10 02:08:17	@plaisthos	[10:58:37] Cheaterman: no idea [10:58:37]
+2016-10-10 02:08:17	@plaisthos	[10:59:02] if you generate images for your boxes with custom configs you could very well include certficates [10:59:02]
+2016-10-10 02:08:17	@plaisthos	[10:59:17] or use something like puppet to solve such deployment [10:59:17]
+2016-10-10 02:08:17	Cheaterman	[10:59:25] That's what we do :-) for SSH certs, we regenerate them at deployment time [10:59:25]
+2016-10-10 02:08:17	@plaisthos	[10:59:27] (puppet is a configuration management) [10:59:27]
+2016-10-10 02:08:17	Cheaterman	[10:59:37] Yes, puppet or ansible or something, it's just not what we do right now [10:59:37]
+2016-10-10 02:08:17	Cheaterman	[11:00:09] Right now we just make the proper partitions, filesystems, then mount em and extract a stage4 on top [11:00:09]
+2016-10-10 02:08:17	Cheaterman	[11:00:15] some configuration afterwards, and done [11:00:15]
+2016-10-10 02:08:17	@plaisthos	[11:00:41] if someone gets hold of your ca key they can do mitm attack [11:00:41]
+2016-10-10 02:08:17	Cheaterman	[11:01:31] Yeah, but I was examining the possibility that the CA key is on the stage4, just doesn't stick after deployment - I'd immediately remove it after generating client cert [11:01:31]
+2016-10-10 02:08:17	Cheaterman	[11:02:08] At the same time at which I do other basic configuration on the machine such as regenerating SSH client/host keys and setting machine hostname [11:02:08]
+2016-10-10 02:08:17	@plaisthos	[11:03:00] Cheaterman: your call I am just telling you the consequences :) [11:03:00]
+2016-10-10 02:08:17	Cheaterman	[11:03:24] Hehehe, yeah :) [11:03:24]
+2016-10-10 02:08:17	Cheaterman	[11:04:37] Now let's assume that I reeeeally want to make it as clean as possible, with a secure web service delivering the client certs for instance - I don't really see how I would go about this, as my ca.key is currently root-visible-only [11:04:37]
+2016-10-10 02:08:17	Cheaterman	[11:05:31] How should I go about setting permissions on all this for proper operation by an unprivileged service? [11:05:31]
+2016-10-10 02:08:17	@plaisthos	[11:05:37] that falls outside openvpn [11:05:37]
+2016-10-10 02:08:17	Cheaterman	[11:06:06] True, but I suppose it's a problematic that people do face around here? [11:06:06]
+2016-10-10 02:08:17	@plaisthos	[11:06:08] but you could have a secured webservices or service that is allowed to read that key and allows certificate generation [11:06:08]
+2016-10-10 02:08:17	@plaisthos	[11:06:29] Cheaterman: most people don't do on demand generation [11:06:29]
+2016-10-10 02:08:17	Cheaterman	[11:06:31] Okay, so I'd specifically give some permissions to said webservice user, thank you [11:06:31]
+2016-10-10 02:08:17	@plaisthos	[11:06:38] or have some ca framework in place [11:06:38]
+2016-10-10 02:08:17	iskorptix	[11:06:55] guys, whats the best way to force mac use dns settings pushed by openvpn server ? [11:06:55]
+2016-10-10 02:08:17	@plaisthos	[11:06:56] or use puppet and generate the certificates mnaually [11:06:56]
+2016-10-10 02:08:17	Cheaterman	[11:07:04] That also sounds like an option, let me look up how such CA framework would look like [11:07:04]
+2016-10-10 02:08:17	@plaisthos	[11:07:11] iskorptix: there is no way to force a client to do anything [11:07:11]
+2016-10-10 02:08:17	@plaisthos	[11:07:35] if you want use to use the vpn's dns server look at [11:07:35]
+2016-10-10 02:08:17	@plaisthos	[11:07:38] !tunnelblick [11:07:38]
+2016-10-10 02:08:17	@vpnHelper	[11:07:39] "tunnelblick" is http://www.tunnelblick.net - Free OpenVPN GUI Client for Mac OS X [11:07:39]
+2016-10-10 02:08:17	iskorptix	[11:33:00] thanks plaisthos [11:33:00]
+2016-10-10 02:08:17	Felishia	[11:33:33] god damn [11:33:33]
+2016-10-10 02:08:17	Felishia	[11:33:39] anyone knows a good openvpn server? [11:33:39]
+2016-10-10 02:08:17	Felishia	[11:33:52] that doesn't ban me in the moment I join. [11:33:52]
+2016-10-10 02:08:17	Felishia	[11:34:18] I'm only making requests to github! >:c [11:34:18]
+2016-10-10 02:08:17	@plaisthos	[11:34:37] Felishia: ?! [11:34:37]
+2016-10-10 02:08:17	@plaisthos	[11:35:04] This channel is not for discussing VPN providers [11:35:04]
+2016-10-10 02:08:17	Felishia	[11:35:49] plaisthos, :( meanie... T__T I need halp with dis! [11:35:49]
+2016-10-10 02:08:17	@plaisthos	[11:43:18] free services don't really work and we don't want advertising commercial servies and also don't want to do support for them, nothing against you [11:43:18]
+2016-10-10 02:08:17	@dazo	[11:49:38] Felishia: this channel is for those configuring their own clients and servers [11:49:38]
+2016-10-10 02:08:17	@dazo	[11:50:55] Felishia: do your own gooling ... and you'll stumble across this ... https://thatoneprivacysite.net/vpn-comparison-chart/ [11:50:55]
+2016-10-10 02:08:17	@vpnHelper	[11:50:57] Title: That One Privacy Site | Detailed VPN Comparison Chart (at thatoneprivacysite.net) [11:50:57]
+2016-10-10 02:08:17	Felishia	[11:52:17] dazo, I'm going to check that one [11:52:17]
+2016-10-10 02:08:17	Felishia	[11:52:40] I need to do the code! :( why in the world would a guvernment ban github... I mean it's a productive place. [11:52:40]
+2016-10-10 02:08:17	 *	dazo [11:53:36] shrugs .... governments are governments, they do what they do regardless of what others think [11:53:36]
+2016-10-10 02:08:17	@plaisthos	[11:56:29] or just hourly get an ec instance and setup your own vpn server [11:56:29]
+2016-10-10 02:08:17	@plaisthos	[11:56:41] that is what I always did when I needed a VPN [11:56:41]
+2016-10-10 02:08:17	@dazo	[11:56:59] yupp [11:56:59]
+2016-10-10 02:08:17	@plaisthos	[11:57:01] nowadays I have a few free test accounts so I don't do that anymore [11:57:01]
+2016-10-10 02:08:17	@plaisthos	[11:57:21] but my way of getting these is not recommended :) [11:57:21]
+2016-10-10 02:08:17	@dazo	[11:57:59] hehe [11:57:59]
+2016-10-10 02:08:17	***	Playback Complete.
+2016-10-10 02:09:21	--	Channel created on Sat, 25 Nov 2006 20:42:40
+2016-10-10 02:15:00		[02:09]
+2016-10-10 02:15:45	-->	irco (~irco@HSI-KBW-134-3-111-4.hsi14.kabel-badenwuerttemberg.de) has joined #openvpn
+2016-10-10 02:16:25	-->	StrongJava (~tim_rohre@mobile-107-92-63-210.mycingular.net) has joined #openvpn
+2016-10-10 02:16:50	StrongJava	!welcome
+2016-10-10 02:16:52	@vpnHelper	"welcome" is (#1) Start by stating your !goal, such as 'I would like to access the internet over my vpn', or (#2) New to IRC? see the link in !ask, or (#3) We may need you to !paste your !logs and !configs and maybe !interface to help you, or (#4) See !howto for beginners, or (#5) See !route for lans behind openvpn, or (#6) !redirect for sending inet traffic through the server, or (#7) Also
+2016-10-10 02:16:53	@vpnHelper	interesting: !man !/30 !topology !iporder !sample !forum !wiki !mitm, or (#8) Don't use 192.168.1.0/24 or 192.168.0.0/24 (too much potential for conflict), or (#9) And again, if you think you need !tap, you're probably wrong
+2016-10-10 02:22:00		[02:16]
+2016-10-10 02:28:15	-->	ecrist_ (~ecrist@freebsd/contributor/openvpn.ecrist) has joined #openvpn
+2016-10-10 02:28:15	--	Mode #openvpn [+o ecrist_] by ChanServ
+2016-10-10 02:29:27	-->	hi2u (~hannes@dslb-188-099-044-218.188.099.pools.vodafone-ip.de) has joined #openvpn
+2016-10-10 02:29:49	hi2u	!welcome
+2016-10-10 02:29:50	@vpnHelper	"welcome" is (#1) Start by stating your !goal, such as 'I would like to access the internet over my vpn', or (#2) New to IRC? see the link in !ask, or (#3) We may need you to !paste your !logs and !configs and maybe !interface to help you, or (#4) See !howto for beginners, or (#5) See !route for lans behind openvpn, or (#6) !redirect for sending inet traffic through the server, or (#7) Also
+2016-10-10 02:29:51	@vpnHelper	interesting: !man !/30 !topology !iporder !sample !forum !wiki !mitm, or (#8) Don't use 192.168.1.0/24 or 192.168.0.0/24 (too much potential for conflict), or (#9) And again, if you think you need !tap, you're probably wrong
+2016-10-10 02:32:47	hi2u	tes
+2016-10-10 02:32:49	hi2u	t
+2016-10-10 02:32:59	<--	Farshidroid (Farshidroi@gateway/shell/fnordserver.eu/x-gdijcuzsrickgwdm) has quit (Quit: https://fnordserver.eu)
+2016-10-10 02:35:55	hi2u	!goal
+2016-10-10 02:35:56	@vpnHelper	"goal" is Please clearly state your goal for your vpn: example, I would like to access the lan behind the server , I would like to access the internet over my vpn , I just want a secure connection between 2 computers , etc
+2016-10-10 02:36:40	<--	hi2u (~hannes@dslb-188-099-044-218.188.099.pools.vodafone-ip.de) has quit (Remote host closed the connection)
+2016-10-10 02:37:09	-->	hi2u (~hannes@dslb-188-099-044-218.188.099.pools.vodafone-ip.de) has joined #openvpn
+2016-10-10 02:37:09		[02:37]
+2016-10-10 02:38:03	<--	quarters (quarters@gateway/shell/fnordserver.eu/x-wmhkuyfcawlfwwtt) has quit (Quit: https://fnordserver.eu)
+2016-10-10 02:39:26	hi2u	!goal TLS handshake failed, need an explanation concerning CAs
+2016-10-10 02:39:47	<--	kiresp (~kiresp@222.117.149.122.sta.dodo.net.au) has quit (Quit: Mutter: http://www.mutterirc.com)
+2016-10-10 02:40:07	-->	kiresp (~kiresp@222.117.149.122.sta.dodo.net.au) has joined #openvpn
+2016-10-10 02:43:30	<--	linuxthefish (~ltf@unaffiliated/edmundf) has quit (Max SendQ exceeded)
+2016-10-10 02:44:50	<--	irco (~irco@HSI-KBW-134-3-111-4.hsi14.kabel-badenwuerttemberg.de) has quit (Ping timeout: 250 seconds)
+2016-10-10 02:46:10	-->	linuxthefish (~ltf@unaffiliated/edmundf) has joined #openvpn
+2016-10-10 02:46:27	-->	DrCode (~DrCode@5.28.134.3) has joined #openvpn
+2016-10-10 02:46:44	hi2u	where can i get help concerning tls handshakes
+2016-10-10 02:47:33	<--	kiresp (~kiresp@222.117.149.122.sta.dodo.net.au) has quit (Ping timeout: 268 seconds)
+2016-10-10 02:48:50	Sambom	Any thoughts on this?:
+2016-10-10 02:48:50	Sambom	https://forums.openvpn.net/viewtopic.php?f=6&t=22253&start=15
+2016-10-10 02:48:51	@vpnHelper	Title: Connection problems with Windows 10 anniversary update - Page 2 - OpenVPN Support Forum (at forums.openvpn.net)
+2016-10-10 02:54:00		[02:48]
+2016-10-10 02:56:21	-->	Noldorin (~noldorin@unaffiliated/noldorin) has joined #openvpn
+2016-10-10 03:01:52	<--	StrongJava (~tim_rohre@mobile-107-92-63-210.mycingular.net) has quit (Quit: Textual IRC Client: www.textualapp.com)
+2016-10-10 03:02:23	<--	Noldorin (~noldorin@unaffiliated/noldorin) has quit (Max SendQ exceeded)
+2016-10-10 03:05:04	<--	hi2u (~hannes@dslb-188-099-044-218.188.099.pools.vodafone-ip.de) has quit (Quit: Konversation terminated!)
+2016-10-10 03:05:44	-->	Ekho (~Ekho@unaffiliated/ekho) has joined #openvpn
+2016-10-10 03:06:17	<--	nitdega (~nitdega@2602:302:d16c:d021:4438:73ab:f30d:c9f1) has quit (Quit: ZNC - 1.6.0 - http://znc.in)
+2016-10-10 03:07:52	-->	nitdega (~nitdega@2602:302:d16c:d021:4438:73ab:f30d:c9f1) has joined #openvpn
+2016-10-10 03:09:23	--	ecrist_ is now known as ecrist
+2016-10-10 03:09:23		[03:09]
+2016-10-10 03:13:59	-->	ptx0 (~cheesus_c@unaffiliated/ptx0) has joined #openvpn
+2016-10-10 03:19:13	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined #openvpn
+2016-10-10 03:19:13		[03:19]
+2016-10-10 03:19:13	--	Topic for #openvpn is "OpenVPN Community Support Channel || PLEASE read entire /topic || Current Release: 2.3.12 (23 Aug 2016) || First time? Use !welcome and !goal || Access-Server? /join #openvpn-as || Your problem is probably firewall. Really || TAP/bridging is almost always a bad idea || Vulninfo: !heartbleed !poodle !ovpnuke !sweet32 || Patience is a virtue"
+2016-10-10 03:19:13	--	Topic set by danhunsaker on Sun, 09 Oct 2016 21:20:15
+2016-10-10 03:19:13	--	Channel #openvpn: 225 nicks (7 ops, 2 voices, 216 normals)
+2016-10-10 03:19:13	***	Buffer Playback...
+2016-10-10 03:19:13	Cheaterman	[11:05:31] How should I go about setting permissions on all this for proper operation by an unprivileged service? [11:05:31]
+2016-10-10 03:19:13	@plaisthos	[11:05:37] that falls outside openvpn [11:05:37]
+2016-10-10 03:19:13	Cheaterman	[11:06:06] True, but I suppose it's a problematic that people do face around here? [11:06:06]
+2016-10-10 03:19:13	@plaisthos	[11:06:08] but you could have a secured webservices or service that is allowed to read that key and allows certificate generation [11:06:08]
+2016-10-10 03:19:13	@plaisthos	[11:06:29] Cheaterman: most people don't do on demand generation [11:06:29]
+2016-10-10 03:19:13	Cheaterman	[11:06:31] Okay, so I'd specifically give some permissions to said webservice user, thank you [11:06:31]
+2016-10-10 03:19:13	@plaisthos	[11:06:38] or have some ca framework in place [11:06:38]
+2016-10-10 03:19:13	iskorptix	[11:06:55] guys, whats the best way to force mac use dns settings pushed by openvpn server ? [11:06:55]
+2016-10-10 03:19:13	@plaisthos	[11:06:56] or use puppet and generate the certificates mnaually [11:06:56]
+2016-10-10 03:19:13	Cheaterman	[11:07:04] That also sounds like an option, let me look up how such CA framework would look like [11:07:04]
+2016-10-10 03:19:13	@plaisthos	[11:07:11] iskorptix: there is no way to force a client to do anything [11:07:11]
+2016-10-10 03:19:13	@plaisthos	[11:07:35] if you want use to use the vpn's dns server look at [11:07:35]
+2016-10-10 03:19:13	@plaisthos	[11:07:38] !tunnelblick [11:07:38]
+2016-10-10 03:19:13	@vpnHelper	[11:07:39] "tunnelblick" is http://www.tunnelblick.net - Free OpenVPN GUI Client for Mac OS X [11:07:39]
+2016-10-10 03:19:13	iskorptix	[11:33:00] thanks plaisthos [11:33:00]
+2016-10-10 03:19:13	Felishia	[11:33:33] god damn [11:33:33]
+2016-10-10 03:19:13	Felishia	[11:33:39] anyone knows a good openvpn server? [11:33:39]
+2016-10-10 03:19:13	Felishia	[11:33:52] that doesn't ban me in the moment I join. [11:33:52]
+2016-10-10 03:19:13	Felishia	[11:34:18] I'm only making requests to github! >:c [11:34:18]
+2016-10-10 03:19:13	@plaisthos	[11:34:37] Felishia: ?! [11:34:37]
+2016-10-10 03:19:13	@plaisthos	[11:35:04] This channel is not for discussing VPN providers [11:35:04]
+2016-10-10 03:19:13	Felishia	[11:35:49] plaisthos, :( meanie... T__T I need halp with dis! [11:35:49]
+2016-10-10 03:19:13	@plaisthos	[11:43:18] free services don't really work and we don't want advertising commercial servies and also don't want to do support for them, nothing against you [11:43:18]
+2016-10-10 03:19:13	@dazo	[11:49:38] Felishia: this channel is for those configuring their own clients and servers [11:49:38]
+2016-10-10 03:19:13	@dazo	[11:50:55] Felishia: do your own gooling ... and you'll stumble across this ... https://thatoneprivacysite.net/vpn-comparison-chart/ [11:50:55]
+2016-10-10 03:19:13	@vpnHelper	[11:50:57] Title: That One Privacy Site | Detailed VPN Comparison Chart (at thatoneprivacysite.net) [11:50:57]
+2016-10-10 03:19:13	Felishia	[11:52:17] dazo, I'm going to check that one [11:52:17]
+2016-10-10 03:19:13	Felishia	[11:52:40] I need to do the code! :( why in the world would a guvernment ban github... I mean it's a productive place. [11:52:40]
+2016-10-10 03:19:13	 *	dazo [11:53:36] shrugs .... governments are governments, they do what they do regardless of what others think [11:53:36]
+2016-10-10 03:19:13	@plaisthos	[11:56:29] or just hourly get an ec instance and setup your own vpn server [11:56:29]
+2016-10-10 03:19:13	@plaisthos	[11:56:41] that is what I always did when I needed a VPN [11:56:41]
+2016-10-10 03:19:13	@dazo	[11:56:59] yupp [11:56:59]
+2016-10-10 03:19:13	@plaisthos	[11:57:01] nowadays I have a few free test accounts so I don't do that anymore [11:57:01]
+2016-10-10 03:19:13	@plaisthos	[11:57:21] but my way of getting these is not recommended :) [11:57:21]
+2016-10-10 03:19:13	@dazo	[11:57:59] hehe [11:57:59]
+2016-10-10 03:19:13	StrongJava	[12:16:50] !welcome [12:16:50]
+2016-10-10 03:19:13	@vpnHelper	[12:16:52] "welcome" is (#1) Start by stating your !goal, such as 'I would like to access the internet over my vpn', or (#2) New to IRC? see the link in !ask, or (#3) We may need you to !paste your !logs and !configs and maybe !interface to help you, or (#4) See !howto for beginners, or (#5) See !route for lans behind openvpn, or (#6) !redirect for sending inet traffic through the server, or (#7) Also [12:16:52]
+2016-10-10 03:19:13	@vpnHelper	[12:16:53] interesting: !man !/30 !topology !iporder !sample !forum !wiki !mitm, or (#8) Don't use 192.168.1.0/24 or 192.168.0.0/24 (too much potential for conflict), or (#9) And again, if you think you need !tap, you're probably wrong [12:16:53]
+2016-10-10 03:19:13	hi2u	[12:29:49] !welcome [12:29:49]
+2016-10-10 03:19:13	@vpnHelper	[12:29:50] "welcome" is (#1) Start by stating your !goal, such as 'I would like to access the internet over my vpn', or (#2) New to IRC? see the link in !ask, or (#3) We may need you to !paste your !logs and !configs and maybe !interface to help you, or (#4) See !howto for beginners, or (#5) See !route for lans behind openvpn, or (#6) !redirect for sending inet traffic through the server, or (#7) Also [12:29:50]
+2016-10-10 03:19:13	@vpnHelper	[12:29:51] interesting: !man !/30 !topology !iporder !sample !forum !wiki !mitm, or (#8) Don't use 192.168.1.0/24 or 192.168.0.0/24 (too much potential for conflict), or (#9) And again, if you think you need !tap, you're probably wrong [12:29:51]
+2016-10-10 03:19:13	hi2u	[12:32:47] tes [12:32:47]
+2016-10-10 03:19:13	hi2u	[12:32:49] t [12:32:49]
+2016-10-10 03:19:13	hi2u	[12:35:55] !goal [12:35:55]
+2016-10-10 03:19:13	@vpnHelper	[12:35:56] "goal" is Please clearly state your goal for your vpn: example, I would like to access the lan behind the server , I would like to access the internet over my vpn , I just want a secure connection between 2 computers , etc [12:35:56]
+2016-10-10 03:19:13	hi2u	[12:39:26] !goal TLS handshake failed, need an explanation concerning CAs [12:39:26]
+2016-10-10 03:19:13	hi2u	[12:46:44] where can i get help concerning tls handshakes [12:46:44]
+2016-10-10 03:19:13	Sambom	[12:48:50] Any thoughts on this?: [12:48:50]
+2016-10-10 03:19:13	Sambom	[12:48:50] https://forums.openvpn.net/viewtopic.php?f=6&t=22253&start=15 [12:48:50]
+2016-10-10 03:19:13	@vpnHelper	[12:48:51] Title: Connection problems with Windows 10 anniversary update - Page 2 - OpenVPN Support Forum (at forums.openvpn.net) [12:48:51]
+2016-10-10 03:19:13	***	Playback Complete.
+2016-10-10 03:20:09	--	Channel created on Sat, 25 Nov 2006 20:42:40
+2016-10-10 03:21:31	<--	Sweet-P (~Sweet-P@st0173.nas941.n-yokohama.nttpc.ne.jp) has quit (Quit: Quit)
+2016-10-10 03:22:19	-->	hi2u (~hannes@dslb-188-099-044-218.188.099.pools.vodafone-ip.de) has joined #openvpn
+2016-10-10 03:22:41	hi2u	Can anyone help with TLS handshake and CA questions?
+2016-10-10 03:27:57	<--	Voldenet (~Voldenet@unaffiliated/voldenet) has quit (Ping timeout: 240 seconds)
+2016-10-10 03:29:20	Gaffel	hi2u, go right ahead.
+2016-10-10 03:29:20	-->	SkinnyMelon (~SkinnyMel@gw.jak.sulinet.hu) has joined #openvpn
+2016-10-10 03:29:29	Gaffel	People will answer whe they see a question they can answer.
+2016-10-10 03:29:54	Gaffel	There's no need to ask for permission to ask questions. Just ask! =)
+2016-10-10 03:30:02	<--	BtbN (btbn@unaffiliated/btbn) has quit (Quit: Bye)
+2016-10-10 03:32:24	-->	BtbN (btbn@unaffiliated/btbn) has joined #openvpn
+2016-10-10 03:34:06	-->	Voldenet (~Voldenet@unaffiliated/voldenet) has joined #openvpn
+2016-10-10 03:35:52	hi2u	my client config responds with "TLS handshake failed IGUSR1[soft,tls-error]". Server config is definately fine, using auth-user-pass. works fine on windows 10 with only specifying user, pw and server, but which CA do I need to use?
+2016-10-10 03:35:52		[03:35]
+2016-10-10 03:37:18	hi2u	im on ubuntu 16.04.1 lts
+2016-10-10 03:38:45	@plaisthos	hi2u: there are other error messages before that
+2016-10-10 03:39:29	hi2u	Mon Oct 10 15:32:11 2016 TLS Error: TLS key negotiation failed to occur within 60 seconds (check your network connectivity)
+2016-10-10 03:39:31	hi2u	Mon Oct 10 15:32:11 2016 TLS Error: TLS handshake failed
+2016-10-10 03:39:38	Gaffel	hi2u, use this: http://pastebin.centos.org/
+2016-10-10 03:39:47	Gaffel	Paste the whole log and give us the link.
+2016-10-10 03:39:47	@plaisthos	hi2u: so the server doesn't repsond
+2016-10-10 03:40:00	@plaisthos	anything in the server log?
+2016-10-10 03:41:18	<--	SkinnyMelon (~SkinnyMel@gw.jak.sulinet.hu) has quit (Ping timeout: 268 seconds)
+2016-10-10 03:45:03	hi2u	here is output and syslog, where do i get the server log from? http://pastebin.centos.org/55401/
+2016-10-10 03:45:24	Gaffel	journalctl should have the log output
+2016-10-10 03:45:42	Gaffel	You can make it filter out a specific service as long as you know the full name.
+2016-10-10 03:46:05	Gaffel	It's unable to connection.
+2016-10-10 03:46:10	Gaffel	Unable to connect.
+2016-10-10 03:47:07	Gaffel	hi2u, where is your OpenVPN server located? Is it behind a router? What OS is it running.
+2016-10-10 03:49:01	Gaffel	hi2u, also, which CA to use is up to you. You can be your own CA. By default OpenVPN server will accept all clients that have a certificate that has been signed by the CA whos certificate your've specified in the configuration file. The client acts the same, so what you need is to create your own CA and create a certificate for the server and then for each client. All systems need to have the CA certificate and their own certificate
+2016-10-10 03:49:02	Gaffel	and private key.
+2016-10-10 03:49:33	hi2u	i have no idea, since it belongs to the university. i tried the connection with windows10 and it works fine with just user, pw and serveraddress
+2016-10-10 03:49:46	@plaisthos	!both
+2016-10-10 03:49:47	@vpnHelper	"both" is If you do not control both ends of the link (server and client) then there is not much we can do to help you. Please talk to your network admin instead.
+2016-10-10 03:50:04	Gaffel	hi2u, what do you use on your Windows machine to connect?
+2016-10-10 03:51:16	hi2u	no idea, it does everything by itself when i specify vpn, username, pw and gateway
+2016-10-10 03:51:16		[03:51]
+2016-10-10 03:51:24	Gaffel	What?
+2016-10-10 03:51:26	hi2u	default app
+2016-10-10 03:51:29	Gaffel	What software are you using=
+2016-10-10 03:51:30	Gaffel	?
+2016-10-10 03:51:42	Gaffel	Windows doesn't support OpenVPN on its own.
+2016-10-10 03:51:55	Gaffel	OpenVPN uses its own solution which is based on TLS.
+2016-10-10 03:52:10	Gaffel	Other VPN techniques use their own protocols.
+2016-10-10 03:52:52	hi2u	for windows i just use network settings, add new connection, choose vpn and thats basically it
+2016-10-10 03:52:59	Gaffel	It doesn't sound like your Unversity is using OpenVPN at all. You need to ask the admin if it's possible to connect from a Linux machine.
+2016-10-10 03:53:10	Gaffel	Well, that's NOT OpenVPN what so ever.
+2016-10-10 03:53:24	Gaffel	This channel is about OpenVPN, not VPN in general.
+2016-10-10 03:55:10	Gaffel	There's software that's actually named "OpenVPN". This software doesn't support anything but its own protocol just like other software doesn't support OpenVPN's protocol. You need to ask your admin if it's possible to connect from a Linux client machine.
+2016-10-10 03:55:35	hi2u	i know someone who connected via openvpn, thats why im trying it. i guess i'll need to ask the administrator. thanks for your help though, very much appreciated!
+2016-10-10 03:55:58	@plaisthos	hi2u: you need a openvpn config from your university
+2016-10-10 03:56:03	@plaisthos	or ask that guy/gal
+2016-10-10 03:56:22	DArqueBishop	Right. This channel is very much geared to those who actually run OpenVPN as a server. If you're just a client for someone else's server, the server's admin should always be your first point of contact.
+2016-10-10 03:56:29	Gaffel	Yeah, you need the certificates or whatever they use
+2016-10-10 04:55:51	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined #openvpn
+2016-10-10 04:55:51		[04:55]
+2016-10-10 04:55:51	--	Topic for #openvpn is "OpenVPN Community Support Channel || PLEASE read entire /topic || Current Release: 2.3.12 (23 Aug 2016) || First time? Use !welcome and !goal || Access-Server? /join #openvpn-as || Your problem is probably firewall. Really || TAP/bridging is almost always a bad idea || Vulninfo: !heartbleed !poodle !ovpnuke !sweet32 || Patience is a virtue"
+2016-10-10 04:55:51	--	Topic set by danhunsaker on Sun, 09 Oct 2016 21:20:15
+2016-10-10 04:55:51	--	Channel #openvpn: 221 nicks (7 ops, 2 voices, 212 normals)
+2016-10-10 04:55:51	***	Buffer Playback...
+2016-10-10 04:55:51	Gaffel	[13:50:04] hi2u, what do you use on your Windows machine to connect? [13:50:04]
+2016-10-10 04:55:51	hi2u	[13:51:16] no idea, it does everything by itself when i specify vpn, username, pw and gateway [13:51:16]
+2016-10-10 04:55:51	Gaffel	[13:51:24] What? [13:51:24]
+2016-10-10 04:55:51	hi2u	[13:51:26] default app [13:51:26]
+2016-10-10 04:55:51	Gaffel	[13:51:29] What software are you using= [13:51:29]
+2016-10-10 04:55:51	Gaffel	[13:51:30] ? [13:51:30]
+2016-10-10 04:55:51	Gaffel	[13:51:42] Windows doesn't support OpenVPN on its own. [13:51:42]
+2016-10-10 04:55:51	Gaffel	[13:51:55] OpenVPN uses its own solution which is based on TLS. [13:51:55]
+2016-10-10 04:55:51	Gaffel	[13:52:10] Other VPN techniques use their own protocols. [13:52:10]
+2016-10-10 04:55:51	hi2u	[13:52:52] for windows i just use network settings, add new connection, choose vpn and thats basically it [13:52:52]
+2016-10-10 04:55:51	Gaffel	[13:52:59] It doesn't sound like your Unversity is using OpenVPN at all. You need to ask the admin if it's possible to connect from a Linux machine. [13:52:59]
+2016-10-10 04:55:51	Gaffel	[13:53:10] Well, that's NOT OpenVPN what so ever. [13:53:10]
+2016-10-10 04:55:51	Gaffel	[13:53:24] This channel is about OpenVPN, not VPN in general. [13:53:24]
+2016-10-10 04:55:51	Gaffel	[13:55:10] There's software that's actually named "OpenVPN". This software doesn't support anything but its own protocol just like other software doesn't support OpenVPN's protocol. You need to ask your admin if it's possible to connect from a Linux client machine. [13:55:10]
+2016-10-10 04:55:51	hi2u	[13:55:35] i know someone who connected via openvpn, thats why im trying it. i guess i'll need to ask the administrator. thanks for your help though, very much appreciated! [13:55:35]
+2016-10-10 04:55:51	@plaisthos	[13:55:57] hi2u: you need a openvpn config from your university [13:55:57]
+2016-10-10 04:55:51	@plaisthos	[13:56:03] or ask that guy/gal [13:56:03]
+2016-10-10 04:55:51	DArqueBishop	[13:56:22] Right. This channel is very much geared to those who actually run OpenVPN as a server. If you're just a client for someone else's server, the server's admin should always be your first point of contact. [13:56:22]
+2016-10-10 04:55:51	Gaffel	[13:56:29] Yeah, you need the certificates or whatever they use [13:56:29]
+2016-10-10 04:55:51	hi2u	[13:56:56] will try, thank you very much [13:56:56]
+2016-10-10 04:55:51	Gaffel	[13:57:25] Exactly, the admin should instruct you. We can't, it's nearly impossible for us to help when you only control one side of the solution. [13:57:25]
+2016-10-10 04:55:51	Cheaterman	[14:04:36] plaisthos: I think I found a good compromise for my situation: we use an USB stick as deployment media "launcher" (the actual deployment happens from network) and it handles connecting to the SMB share and other things, so it has sensitive credentials on it and is thoroughly cared for [14:04:36]
+2016-10-10 04:55:51	Cheaterman	[14:05:08] So I can simply put easy-rsa there with my server key and generate client certs as needed [14:05:08]
+2016-10-10 04:55:51	@plaisthos	[14:05:46] Cheaterman: if want to get fancy you can also create intermediate ca's for your usb sticks [14:05:46]
+2016-10-10 04:55:51	Cheaterman	[14:06:14] Whoa, sounds awesome, the idea is that if a key is compromised I can revoke the whole batch that it created? [14:06:14]
+2016-10-10 04:55:51	@plaisthos	[14:06:20] so if an usb stick gets compromised only those certificates created with that stick are compromised [14:06:20]
+2016-10-10 04:55:51	@plaisthos	[14:06:27] you would revoke that ca [14:06:27]
+2016-10-10 04:55:51	@plaisthos	[14:06:36] that intermediate ca [14:06:36]
+2016-10-10 04:55:51	Cheaterman	[14:06:41] Sounds like a very interesting option [14:06:41]
+2016-10-10 04:55:51	@plaisthos	[14:06:45] and then figure how to distribute the crl :p [14:06:45]
+2016-10-10 04:55:51	Cheaterman	[14:08:00] crl? [14:08:00]
+2016-10-10 04:55:51	@plaisthos	[14:08:10] certificate revocation list [14:08:10]
+2016-10-10 04:55:51	Cheaterman	[14:09:01] Hmm, right now only my single OpenVPN server cares, so I don't really need to distribute it right? [14:09:01]
+2016-10-10 04:55:51	Gaffel	[14:09:18] Clients cares too, don't they? [14:09:18]
+2016-10-10 04:55:51	Cheaterman	[14:09:35] I have no idea how this all works :3 [14:09:35]
+2016-10-10 04:55:51	Cheaterman	[14:09:46] I found ./build-inter with a Google search th [14:09:46]
+2016-10-10 04:55:51	Cheaterman	[14:09:47] tho [14:09:47]
+2016-10-10 04:55:51	Cheaterman	[14:10:05] Sounds like what I need [14:10:05]
+2016-10-10 04:55:51	@plaisthos	[14:10:07] Cheaterman: read a bit about how ca's and trust there works [14:10:07]
+2016-10-10 04:55:51	Gaffel	[14:10:49] Aye, you need to read about what asymmetrical encryption is, digital signing and certificate authorities. [14:10:49]
+2016-10-10 04:55:51	Gaffel	[14:11:30] Just to understand what's needed. [14:11:30]
+2016-10-10 04:55:51	Cheaterman	[14:13:46] plaisthos: I need OCSP? lol [14:13:46]
+2016-10-10 04:55:51	Cheaterman	[14:13:51] This all sounds complicated [14:13:51]
+2016-10-10 04:55:51	Cheaterman	[14:13:53] :D [14:13:53]
+2016-10-10 04:55:51	Cheaterman	[14:14:10] CRL doesn't seem like the way to go [14:14:10]
+2016-10-10 04:55:51	Gaffel	[14:14:22] CRL works too [14:14:22]
+2016-10-10 04:55:51	Cheaterman	[14:14:24] In any case, yeah, this is all too complicated I believe [14:14:24]
+2016-10-10 04:55:51	Gaffel	[14:14:48] OCSP needs to be configured from the start. [14:14:48]
+2016-10-10 04:55:51	Cheaterman	[14:14:49] (and I was about to write a webservice to do all this, when I realized the deployment media was the right tool for the job) [14:14:49]
+2016-10-10 04:55:51	@plaisthos	[14:15:52] oscp needs an extra script with openvpn though [14:15:52]
+2016-10-10 04:55:51	***	Playback Complete.
+2016-10-10 04:56:02	--	irc: disconnected from server
+2016-10-10 04:56:36	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined #openvpn
+2016-10-10 04:56:36		[04:56]
+2016-10-10 04:56:36	--	Topic for #openvpn is "OpenVPN Community Support Channel || PLEASE read entire /topic || Current Release: 2.3.12 (23 Aug 2016) || First time? Use !welcome and !goal || Access-Server? /join #openvpn-as || Your problem is probably firewall. Really || TAP/bridging is almost always a bad idea || Vulninfo: !heartbleed !poodle !ovpnuke !sweet32 || Patience is a virtue"
+2016-10-10 04:56:36	--	Topic set by danhunsaker on Sun, 09 Oct 2016 21:20:15
+2016-10-10 04:56:36	--	Channel #openvpn: 221 nicks (7 ops, 2 voices, 212 normals)
+2016-10-10 04:56:36	***	Buffer Playback...
+2016-10-10 04:56:36	Gaffel	[13:50:04] hi2u, what do you use on your Windows machine to connect? [13:50:04]
+2016-10-10 04:56:36	hi2u	[13:51:16] no idea, it does everything by itself when i specify vpn, username, pw and gateway [13:51:16]
+2016-10-10 04:56:36	Gaffel	[13:51:24] What? [13:51:24]
+2016-10-10 04:56:36	hi2u	[13:51:26] default app [13:51:26]
+2016-10-10 04:56:36	Gaffel	[13:51:29] What software are you using= [13:51:29]
+2016-10-10 04:56:36	Gaffel	[13:51:30] ? [13:51:30]
+2016-10-10 04:56:36	Gaffel	[13:51:42] Windows doesn't support OpenVPN on its own. [13:51:42]
+2016-10-10 04:56:36	Gaffel	[13:51:55] OpenVPN uses its own solution which is based on TLS. [13:51:55]
+2016-10-10 04:56:36	Gaffel	[13:52:10] Other VPN techniques use their own protocols. [13:52:10]
+2016-10-10 04:56:36	hi2u	[13:52:52] for windows i just use network settings, add new connection, choose vpn and thats basically it [13:52:52]
+2016-10-10 04:56:36	Gaffel	[13:52:59] It doesn't sound like your Unversity is using OpenVPN at all. You need to ask the admin if it's possible to connect from a Linux machine. [13:52:59]
+2016-10-10 04:56:36	Gaffel	[13:53:10] Well, that's NOT OpenVPN what so ever. [13:53:10]
+2016-10-10 04:56:36	Gaffel	[13:53:24] This channel is about OpenVPN, not VPN in general. [13:53:24]
+2016-10-10 04:56:36	Gaffel	[13:55:10] There's software that's actually named "OpenVPN". This software doesn't support anything but its own protocol just like other software doesn't support OpenVPN's protocol. You need to ask your admin if it's possible to connect from a Linux client machine. [13:55:10]
+2016-10-10 04:56:36	hi2u	[13:55:35] i know someone who connected via openvpn, thats why im trying it. i guess i'll need to ask the administrator. thanks for your help though, very much appreciated! [13:55:35]
+2016-10-10 04:56:36	@plaisthos	[13:55:57] hi2u: you need a openvpn config from your university [13:55:57]
+2016-10-10 04:56:36	@plaisthos	[13:56:03] or ask that guy/gal [13:56:03]
+2016-10-10 04:56:36	DArqueBishop	[13:56:22] Right. This channel is very much geared to those who actually run OpenVPN as a server. If you're just a client for someone else's server, the server's admin should always be your first point of contact. [13:56:22]
+2016-10-10 04:56:36	Gaffel	[13:56:29] Yeah, you need the certificates or whatever they use [13:56:29]
+2016-10-10 04:56:36	hi2u	[13:56:56] will try, thank you very much [13:56:56]
+2016-10-10 04:56:36	Gaffel	[13:57:25] Exactly, the admin should instruct you. We can't, it's nearly impossible for us to help when you only control one side of the solution. [13:57:25]
+2016-10-10 04:56:36	Cheaterman	[14:04:36] plaisthos: I think I found a good compromise for my situation: we use an USB stick as deployment media "launcher" (the actual deployment happens from network) and it handles connecting to the SMB share and other things, so it has sensitive credentials on it and is thoroughly cared for [14:04:36]
+2016-10-10 04:56:36	Cheaterman	[14:05:08] So I can simply put easy-rsa there with my server key and generate client certs as needed [14:05:08]
+2016-10-10 04:56:36	@plaisthos	[14:05:46] Cheaterman: if want to get fancy you can also create intermediate ca's for your usb sticks [14:05:46]
+2016-10-10 04:56:36	Cheaterman	[14:06:14] Whoa, sounds awesome, the idea is that if a key is compromised I can revoke the whole batch that it created? [14:06:14]
+2016-10-10 04:56:36	@plaisthos	[14:06:20] so if an usb stick gets compromised only those certificates created with that stick are compromised [14:06:20]
+2016-10-10 04:56:36	@plaisthos	[14:06:27] you would revoke that ca [14:06:27]
+2016-10-10 04:56:36	@plaisthos	[14:06:36] that intermediate ca [14:06:36]
+2016-10-10 04:56:36	Cheaterman	[14:06:41] Sounds like a very interesting option [14:06:41]
+2016-10-10 04:56:36	@plaisthos	[14:06:45] and then figure how to distribute the crl :p [14:06:45]
+2016-10-10 04:56:36	Cheaterman	[14:08:00] crl? [14:08:00]
+2016-10-10 04:56:36	@plaisthos	[14:08:10] certificate revocation list [14:08:10]
+2016-10-10 04:56:36	Cheaterman	[14:09:01] Hmm, right now only my single OpenVPN server cares, so I don't really need to distribute it right? [14:09:01]
+2016-10-10 04:56:36	Gaffel	[14:09:18] Clients cares too, don't they? [14:09:18]
+2016-10-10 04:56:36	Cheaterman	[14:09:35] I have no idea how this all works :3 [14:09:35]
+2016-10-10 04:56:36	Cheaterman	[14:09:46] I found ./build-inter with a Google search th [14:09:46]
+2016-10-10 04:56:36	Cheaterman	[14:09:47] tho [14:09:47]
+2016-10-10 04:56:36	Cheaterman	[14:10:05] Sounds like what I need [14:10:05]
+2016-10-10 04:56:36	@plaisthos	[14:10:07] Cheaterman: read a bit about how ca's and trust there works [14:10:07]
+2016-10-10 04:56:36	Gaffel	[14:10:49] Aye, you need to read about what asymmetrical encryption is, digital signing and certificate authorities. [14:10:49]
+2016-10-10 04:56:36	Gaffel	[14:11:30] Just to understand what's needed. [14:11:30]
+2016-10-10 04:56:36	Cheaterman	[14:13:46] plaisthos: I need OCSP? lol [14:13:46]
+2016-10-10 04:56:36	Cheaterman	[14:13:51] This all sounds complicated [14:13:51]
+2016-10-10 04:56:36	Cheaterman	[14:13:53] :D [14:13:53]
+2016-10-10 04:56:36	Cheaterman	[14:14:10] CRL doesn't seem like the way to go [14:14:10]
+2016-10-10 04:56:36	Gaffel	[14:14:22] CRL works too [14:14:22]
+2016-10-10 04:56:36	Cheaterman	[14:14:24] In any case, yeah, this is all too complicated I believe [14:14:24]
+2016-10-10 04:56:36	Gaffel	[14:14:48] OCSP needs to be configured from the start. [14:14:48]
+2016-10-10 04:56:36	Cheaterman	[14:14:49] (and I was about to write a webservice to do all this, when I realized the deployment media was the right tool for the job) [14:14:49]
+2016-10-10 04:56:36	@plaisthos	[14:15:52] oscp needs an extra script with openvpn though [14:15:52]
+2016-10-10 04:56:36	***	Playback Complete.
+2016-10-10 04:57:01	-->	shootbird (~quassel@beepbeep.serverpit.com) has joined #openvpn
+2016-10-10 04:57:37	--	Channel created on Sat, 25 Nov 2006 20:42:40
+2016-10-10 04:58:17	<--	CaTtleyA (~CaTtleyA@lputeaux-656-1-50-20.w82-127.abo.wanadoo.fr) has quit (Ping timeout: 268 seconds)
+2016-10-10 04:59:25	-->	NP-Hardass (~NP-Hardas@gentoo/developer/np-hardass) has joined #openvpn
+2016-10-10 05:03:56	<--	NP-Hardass (~NP-Hardas@gentoo/developer/np-hardass) has quit (Ping timeout: 250 seconds)
