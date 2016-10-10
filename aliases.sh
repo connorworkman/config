@@ -1224,8 +1224,7 @@ h() { if [ -z "$*" ]; then tail ${HISTFILE}; else egrep --color=auto "$*" "${HIS
 scrs() {
 	sudo parallel systemctl ::: restart status ::: "${@}"
 }
-_scrs() { _systemctl_restart $@; }
-#compdef _scrs scrs
+_scrs() { _systemctl_status $@; }
 
 uscrs() {
 	parallel systemctl --user ::: restart status ::: "${@}"

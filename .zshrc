@@ -731,8 +731,6 @@ fpath=(/usr/share/zsh/site-functions $fpath)
 ## from sh and its derivates (bash, zsh etc.)
 [ ! -r ${HOME}/.homesick/repos/homeshick/homeshick.sh ] || . ${HOME}/.homesick/repos/homeshick/homeshick.sh
 
-[ ! -r ${HOME}/.profile ] || . ${HOME}/.profile
-
 ## Load zsh-completions plugin
 plugins+=(zsh-completions)
 autoload -U promptinit && promptinit
@@ -745,10 +743,15 @@ autoload -U +X bashcompinit && bashcompinit
 #autoload -U compinit && compinit -u
 #autoload -U bashcompinit && bashcompinit
 
+## Source environment
+[ ! -r ${HOME}/.profile ] || . ${HOME}/.profile
+
 ## Source aliases
 [ ! -r $HOME/aliases.sh ] || . $HOME/aliases.sh
-
 safetytoggle -n
+compdef _scrs scrs
+compdef _scrs scrs2
+compdef _scrs scrs3
 
 # {{{ 'hash' some often used directories
 # #d# start
