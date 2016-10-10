@@ -167,6 +167,9 @@ export PS1 PROMPT_COMMAND
 ## Source aliases
 [ ! -f ${HOME}/aliases.sh ] || source ${HOME}/aliases.sh
 [ ! -f ${HOME}/.profile ] || source ${HOME}/.profile
+
+## Custom which for bash
+which() { (alias; declare -f) | /bin/which --tty-only --read-alias --read-functions --show-tilde --show-dot $@; }
 #[ -r ${HOME}/baliases.sh ] && source ${HOME}/baliases.sh || source ${HOME}/aliases.sh
 #true || { [ -r ${HOME}/aliases.sh ] && . ${HOME}/baliases.sh; }
 
