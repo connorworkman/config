@@ -357,6 +357,11 @@ alias ald='ld -I/lib64/ld-linux-x86-64.so.2 /usr/lib/crt1.o /usr/lib/crti.o -lc 
 
 ## shell functions
 
+sdbus() {
+	[[ ! -z "$XDG_RUNTIME_DIR" ]] || export XDG_RUNTIME_DIR="/run/user/$UID"
+	[[ !-z "$DBUS_SESSION_BUS_ADDRESS" ]] || export DBUS_SESSION_BUS_ADDRESS="unix:path=${XDG_RUNTIME_DIR}/bus"
+}
+
 echocat() { eval cat $(printf '%s' `eval "{ <<<"${@}" sed 's/\<\([a-zA-Z0-9]*\)\>/<(<<<\"\1\")/g;s@\-@/dev/stdin@g'; }"`); }
 
 tunssh() {
