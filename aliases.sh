@@ -12,13 +12,16 @@
 alias ohmyzsh='pushd ${ZSH} '
 
 # Unset previous function/alias iterations
-unset -f fc which define h wd bfg defrag >/dev/null 2>&1
-unalias history h c >/dev/null 2>&1
+unset -f fc which define h wd bfg defrag src >/dev/null 2>&1 || true
+unalias history h c >/dev/null 2>&1 || true
 
 ## Custom aliases
 
 alias zrc='vim -p ${HOME}/.zshrc '
 alias arc='vim -p ${HOME}/aliases.sh '
+alias vrc='sudo vim -p /etc/vimrc '
+alias src='vim -p ${HOME}/.screenrc '
+alias trc='vim -p ${HOME}/.tmux.conf '
 
 alias usctl='systemctl --user '
 alias uscdr='systemctl --user daemon-reload '
@@ -196,7 +199,6 @@ alias google='web_search_custom google '
 alias aw='arch-wiki '
 
 alias sefi="sed 's@/boot/@EFI/arch/@g' /boot/refind_linux.conf | sudo tee /boot/efi/EFI/arch/refind_linux.conf "
-alias vrc='sudo vim /etc/vimrc '
 alias cm='chromium '
 alias tm='tmux '
 alias tma='tmux attach '
