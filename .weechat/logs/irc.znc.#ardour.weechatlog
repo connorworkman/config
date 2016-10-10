@@ -18505,3 +18505,144 @@
 2016-10-10 06:17:00		[06:11]
 2016-10-10 06:17:39	<--	nils (nils@nat/redhat/x-jdlzrowxrpdamljx) has quit (Quit: Leaving)
 2016-10-10 06:23:00		[06:17]
+2016-10-10 06:32:08	-->	oofus_lt (~quassel@194.4.243.46) has joined #ardour
+2016-10-10 06:33:01	<--	freedom01 (~freedom@112.206.161.185) has quit (Ping timeout: 260 seconds)
+2016-10-10 06:34:36	<--	oofus_lt_ (~quassel@194.4.243.46) has quit (Ping timeout: 260 seconds)
+2016-10-10 06:35:50	-->	ssj71 (c0449e6a@gateway/web/freenode/session) has joined #ardour
+2016-10-10 06:40:19	-->	freedom01 (~freedom@112.206.161.185) has joined #ardour
+2016-10-10 06:40:19		[06:40]
+2016-10-10 06:46:56	<--	prokoudine (~prokoudin@46.148.192.216) has quit (Quit: Nettalk6 - www.ntalk.de)
+2016-10-10 06:47:46	-->	Caterpillar (~caterpill@unaffiliated/caterpillar) has joined #ardour
+2016-10-10 06:49:52	<--	oofus_lt (~quassel@194.4.243.46) has quit (Read error: Connection reset by peer)
+2016-10-10 06:51:25	-->	avoca (~avoca@178.167.133.157.threembb.ie) has joined #ardour
+2016-10-10 06:56:34	<--	electro-flinch (~colinf@axicon.plus.com) has quit (Quit: Leaving.)
+2016-10-10 06:56:34		[06:56]
+2016-10-10 06:57:21	-->	takuan (~takuan@178-118-89-163.access.telenet.be) has joined #ardour
+2016-10-10 07:00:26	nstewart_	r = ArdourCanvas::Rectangle(); r->Event.connect(.....)  I found Rectangle, but not Event::connect(). Trying to verify who owns that memory once it goes out of scope.
+2016-10-10 07:03:52	-->	dsr1204 (~dsr1204@99-111-235-130.lightspeed.cicril.sbcglobal.net) has joined #ardour
+2016-10-10 07:09:00		[07:03]
+2016-10-10 07:14:14	rgareus	nstewart_: ./libs/canvas/canvas/item.h   sigc::signal1<bool, GdkEvent*, EventAccumulator<bool> > Event
+2016-10-10 07:18:00	nstewart_	so in gtk2_ardour/color_theme_manager.cc:326 when r goes out of scope - is that really a leak? (ColorThemeManager::build_palette_canvas)
+2016-10-10 07:21:51	<--	son0p (~ff@181.134.35.135) has quit (Quit: Lost terminal)
+2016-10-10 07:23:24	<--	audiophilo (~audiophil@94.36.176.194) has quit (Remote host closed the connection)
+2016-10-10 07:23:36	<--	ssj71 (c0449e6a@gateway/web/freenode/session) has quit (Changing host)
+2016-10-10 07:23:37	-->	ssj71 (c0449e6a@gateway/web/freenode/ip.192.68.158.106) has joined #ardour
+2016-10-10 07:27:51	-->	_FrnchFrgg_ (~Icedove@2a01:e35:2e92:63f0:fa16:54ff:fef7:e1a8) has joined #ardour
+2016-10-10 07:27:51		[07:27]
+2016-10-10 07:27:58	<--	clark|w (~clark_wil@173-25-41-60.client.mchsi.com) has quit (Quit: Leaving)
+2016-10-10 07:33:00		[07:27]
+2016-10-10 07:33:39	-->	electro-flinch (~colinf@82-132-221-185.dab.02.net) has joined #ardour
+2016-10-10 07:39:00		[07:33]
+2016-10-10 07:51:32	<--	Lex_NewtoN (~quassel@5.44.169.197) has quit (Remote host closed the connection)
+2016-10-10 07:57:00		[07:51]
+2016-10-10 08:04:28	<--	avoca (~avoca@178.167.133.157.threembb.ie) has quit (Quit: WeeChat 1.5)
+2016-10-10 08:04:57	<--	_FrnchFrgg_ (~Icedove@2a01:e35:2e92:63f0:fa16:54ff:fef7:e1a8) has quit (Ping timeout: 260 seconds)
+2016-10-10 08:06:10	rgareus	nstewart_: looks like a leak
+2016-10-10 08:06:45	nstewart_	I thought so, but I couldn't see how it was actually doing anything. 
+2016-10-10 08:07:01	rgareus	nstewart_: I recall that items that are part of a group are destroyed when the group is.
+2016-10-10 08:07:20	rgareus	nstewart_: but that does not seem to be the case here
+2016-10-10 08:07:53	rgareus	it's not an effective leak (there's only one ColorThemeManager in all of ardour)
+2016-10-10 08:08:00	nstewart_	it looks like that group.clear() does the inverse of what's missing.
+2016-10-10 08:08:02	rgareus	so it'd leak only at exit
+2016-10-10 08:10:55	<--	TheSpy0 (~TheSpy0@99-7-56-81.lightspeed.davlca.sbcglobal.net) has quit (Quit: http://quassel-irc.org - Chat comfortably. Anywhere.)
+2016-10-10 08:12:38	-->	prokoudine_ (~alex@ppp83-237-113-148.pppoe.mtu-net.ru) has joined #ardour
+2016-10-10 08:12:38		[08:12]
+2016-10-10 08:15:08	-->	TheSpy0 (~TheSpy0@99-7-56-81.lightspeed.davlca.sbcglobal.net) has joined #ardour
+2016-10-10 08:21:00		[08:15]
+2016-10-10 08:22:56	-->	Pat_ (6036b9da@gateway/web/freenode/ip.96.54.185.218) has joined #ardour
+2016-10-10 08:23:19	--	Pat_ is now known as Guest35969
+2016-10-10 08:23:45	Guest35969	how to I get audio throughput from ardour, Audition ghosted out?
+2016-10-10 08:24:24	Guest35969	what?
+2016-10-10 08:24:45	Guest35969	oh
+2016-10-10 08:24:55	Guest35969	can anyone see this
+2016-10-10 08:25:50	rgareus	Guest35969: can you rephrase that question, it's not entierly clear to me what you asked
+2016-10-10 08:26:22	Guest35969	I want to use ardour for live mixing
+2016-10-10 08:26:24	rgareus	Guest35969: do you mean monitor the input?  or audition some file?
+2016-10-10 08:26:28	rgareus	aah.
+2016-10-10 08:26:40	Guest35969	need to enable audition mode
+2016-10-10 08:26:45	Guest35969	right?
+2016-10-10 08:26:53	the_CLA_2	audition has nothing to do with this.
+2016-10-10 08:27:00	Guest35969	oh
+2016-10-10 08:27:00	rgareus	Guest35969: Window > Mixer.     on a channel-strip there are  "In" and "Disk"  buttons to select  what you hear
+2016-10-10 08:27:11	rgareus	for live mixing, simply set them all expliciltly to "In"
+2016-10-10 08:27:30	Guest35969	on the mixer..hmm one sec
+2016-10-10 08:27:56	rgareus	(assuming you already have some tracks)
+2016-10-10 08:28:03	the_CLA_2	Guest35969: Do you only want to mix or also record? If only mixing you could also use buses instead of tracks.
+2016-10-10 08:28:11	Guest35969	bit low
+2016-10-10 08:28:15	Guest35969	slow
+2016-10-10 08:28:44	Guest35969	I want to use LADSPA plugins
+2016-10-10 08:28:52	-->	kyan (~kyan@cpe-74-78-187-9.maine.res.rr.com) has joined #ardour
+2016-10-10 08:29:45	Guest35969	added a buss now what?
+2016-10-10 08:30:34	Guest35969	stereo with Monitoring
+2016-10-10 08:30:39	Guest35969	is this how?
+2016-10-10 08:30:48	-->	clark|w (~clark_wil@12.22.75.10) has joined #ardour
+2016-10-10 08:31:06	Guest35969	I use a USB audio device
+2016-10-10 08:31:14	Guest35969	It works fine
+2016-10-10 08:31:21	rgareus	Guest35969: does ardour receive input from the USB soundcard?
+2016-10-10 08:31:26	Guest35969	With Gladish I do the whole live set up
+2016-10-10 08:31:29	rgareus	do the [VU] meters move
+2016-10-10 08:31:33	rgareus	?
+2016-10-10 08:31:35	Guest35969	zita-verb
+2016-10-10 08:31:42	Guest35969	Yes
+2016-10-10 08:31:50	Guest35969	it works
+2016-10-10 08:32:10	rgareus	cool.
+2016-10-10 08:32:11	Guest35969	I would rather have Ardour so i could just clikc record when I want
+2016-10-10 08:32:36	Guest35969	did a Gladish with Ardour for this reason
+2016-10-10 08:32:51	rgareus	for recording you do want a "track" in ardour (not a bus).
+2016-10-10 08:32:54	Guest35969	session does not load properly to let Adrour come up set up
+2016-10-10 08:33:08	Guest35969	Then I though hmm I should be able to do the whole thing in  Ardour
+2016-10-10 08:33:23	Guest35969	Live through the USB device?
+2016-10-10 08:33:45	rgareus	yes
+2016-10-10 08:33:47	-->	Yruama_Lairba (~UTILISATE@mut38-h04-89-80-39-202.dsl.sta.abo.bbox.fr) has joined #ardour
+2016-10-10 08:34:00	Guest35969	See I thought that is what Audition was for
+2016-10-10 08:34:13	Guest35969	it is gohsted out though any any session
+2016-10-10 08:34:14	rgareus	"Audition" = listen to some file on disk
+2016-10-10 08:34:15	Guest35969	???
+2016-10-10 08:34:22	Guest35969	oh
+2016-10-10 08:34:25	Guest35969	k
+2016-10-10 08:34:31	<--	electro-flinch (~colinf@82-132-221-185.dab.02.net) has quit (Quit: Leaving.)
+2016-10-10 08:34:36	rgareus	"monitoring" = listen to incoming signal
+2016-10-10 08:34:47	Guest35969	See the RT kernal is working great at 256
+2016-10-10 08:34:53	Guest35969	no no
+2016-10-10 08:35:10	Guest35969	I use zita-at1 and other LADSPA plugins
+2016-10-10 08:35:34	Guest35969	I patch them in with Gladish ok
+2016-10-10 08:35:56	Guest35969	Calf Multiband EQ is another
+2016-10-10 08:36:03	Guest35969	Qsynth
+2016-10-10 08:36:03		[08:36]
+2016-10-10 08:36:11	Guest35969	Kind of Karaoke
+2016-10-10 08:36:19	Guest35969	now lets record them
+2016-10-10 08:36:31	Guest35969	Creating delusions of grnadure ya know
+2016-10-10 08:36:56	Guest35969	So I want live though put from Ardour 
+2016-10-10 08:37:06	Guest35969	please excuse dislexia
+2016-10-10 08:37:27	rgareus	sorry, dinner's ready here, BBL
+2016-10-10 08:37:35	Guest35969	I am getting realtime almost
+2016-10-10 08:38:30	-->	dobey (~dobey@pool-108-39-67-87.nrflva.fios.verizon.net) has joined #ardour
+2016-10-10 08:38:40	<--	mbenson_away (~mbenson@108-87-152-117.lightspeed.nsvltn.sbcglobal.net) has quit (Ping timeout: 260 seconds)
+2016-10-10 08:38:57	Guest35969	the question is how to get live throughput from Ardour
+2016-10-10 08:39:38	<--	nilg (~user@92.247.176.162) has quit (Remote host closed the connection)
+2016-10-10 08:39:41	the_CLA_2	Guest35969: http://manual.ardour.org/recording/monitoring/
+2016-10-10 08:39:56	Guest35969	there we go
+2016-10-10 08:39:59	Guest35969	ty
+2016-10-10 08:44:14	-->	edogawa (~quassel@194-166-115-203.adsl.highway.telekom.at) has joined #ardour
+2016-10-10 08:47:23	<--	Guest35969 (6036b9da@gateway/web/freenode/ip.96.54.185.218) has quit (Quit: Page closed)
+2016-10-10 08:51:19	-->	electro-flinch (~colinf@82-132-221-185.dab.02.net) has joined #ardour
+2016-10-10 08:51:19		[08:51]
+2016-10-10 08:57:03	<--	kyan (~kyan@cpe-74-78-187-9.maine.res.rr.com) has quit (Remote host closed the connection)
+2016-10-10 09:03:00		[08:57]
+2016-10-10 09:16:53	<--	polosson (~polosson@dispo-82-250-9-190.adsl.proxad.net) has quit (Ping timeout: 248 seconds)
+2016-10-10 09:22:00		[09:16]
+2016-10-10 09:24:43	<--	yann-kaelig (~inyan@89-64-20-137.dynamic.chello.pl) has quit (Quit: Leaving)
+2016-10-10 09:30:00		[09:24]
+2016-10-10 09:31:53	<--	electro-flinch (~colinf@82-132-221-185.dab.02.net) has quit (Quit: Leaving.)
+2016-10-10 09:33:46	-->	electro-flinch (~colinf@82-132-221-185.dab.02.net) has joined #ardour
+2016-10-10 09:35:54	-->	_FrnchFrgg_ (~Icedove@2a01:e35:2e92:63f0:fa16:54ff:fef7:e1a8) has joined #ardour
+2016-10-10 09:41:00		[09:35]
+2016-10-10 09:44:42	-->	dizero__ (~dizero@120.146.29.234) has joined #ardour
+2016-10-10 09:44:48	-->	tom- (~srv@84-74-158-93.dclient.hispeed.ch) has joined #ardour
+2016-10-10 09:46:51	<--	krabador (~krabador@unaffiliated/krabador) has quit (Quit: Leaving)
+2016-10-10 09:47:29	tom-	i have this session where the master bus slips away from the top
+2016-10-10 09:47:57	<--	dsr1204 (~dsr1204@99-111-235-130.lightspeed.cicril.sbcglobal.net) has quit (Ping timeout: 240 seconds)
+2016-10-10 09:48:21	tom-	i put it as the first track but sometimes (i.e. after loading) it's second track again
+2016-10-10 09:48:25	tom-	known issue?
+2016-10-10 09:52:34	<--	nath (~nathanael@x590e47a3.dyn.telefonica.de) has left #ardour
+2016-10-10 09:53:32	rosslagerwall_	tom-: that seems to happen for most of my sessions :-/

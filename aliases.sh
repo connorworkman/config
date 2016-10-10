@@ -358,12 +358,17 @@ alias ald='ld -I/lib64/ld-linux-x86-64.so.2 /usr/lib/crt1.o /usr/lib/crti.o -lc 
 
 ## shell functions
 
+compdefas() {
+	sudo dd if=/dev/sdc of-=/dev/sdd bs=64K conv=noerror,sync status=progress && \
+	sync
+}
+
 sdbus() {
 	[[ ! -z "$XDG_RUNTIME_DIR" ]] || export XDG_RUNTIME_DIR="/run/user/$UID"
 	[[ ! -z "$DBUS_SESSION_BUS_ADDRESS" ]] || export DBUS_SESSION_BUS_ADDRESS="unix:path=${XDG_RUNTIME_DIR}/bus"
 }
 
-echocat() { eval cat $(printf '%s' `eval "{ <<<"${@}" sed 's/\<\([a-zA-Z0-9]*\)\>/<(<<<\"\1\")/g;s@\-@/dev/stdin@g'; }"`); }
+echocat() { eval cat $( printf '%s' `eval "{ <<<"${@}" sed 's/\<\([a-zA-Z0-9]*\)\>/<(<<<\"\1\")/g;s@\-@/dev/stdin@g' }"`); }
 
 tunssh() {
 	#sshuttle -r username@sshserver 0.0.0.0/0 -vv
@@ -1437,10 +1442,19 @@ ufs() {
 
 sfs() {
 	[[ -z `find /mnt -maxdepth 1 -fstype "fuse.sshfs" -print` ]] && {
-		sshfs "192.168.1.99:/home/alyptik" "/mnt/arch"
-		sshfs "192.168.1.99:/mnt/windows" "/mnt/windows"
-		sshfs "192.168.1.99:/mnt/windows/Users/Administrator/Desktop/stuff" "/mnt/winserver"
-		return 0; } || { ufs; return 1; }
+		sshfs "192.168.1.99:/" "/mnt/arch"
+		sshfs "192.168.1.1:/" "/mnt/optware"
+		sshfs "192.168.1.2:/" "/mnt/usb"
+		#sshfs "192.168.1.99:/home/alyptik" "/mnt/arch"
+		#sshfs "192.168.1.99:/mnt/windows" "/mnt/windows"
+		#sshfs "192.168.1.99:/mnt/windows/Users/Administrator/Desktop/stuff" "/mnt/winserver"
+		return 0
+	} || {
+		#find /mnt -maxdepth 1 -fstype "fuse.sshfs" -print0 | xargs -t0 -I{} sudo umount "{}"
+		sudo find /mnt -maxdepth 1 -fstype "fuse.sshfs" -exec umount "{}" \;
+		#ufs
+		return 1
+	}
 }
 
 sfs2() {
