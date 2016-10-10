@@ -17865,3 +17865,61 @@
 2016-10-09 13:42:00		[13:36]
 2016-10-09 13:42:46	<--	NoteOn (~noteon@s174004.ppp.asahi-net.or.jp) has quit (Quit: Leaving...)
 2016-10-09 13:44:44	<--	freedom01 (~freedom@112.211.91.254) has quit (Ping timeout: 260 seconds)
+2016-10-09 13:50:00		[13:44]
+2016-10-09 13:57:00	<--	aisyk (~aisyk@2a02-8429-8179-d500-3853-8ed8-2826-56fa.rev.sfr.net) has quit (Remote host closed the connection)
+2016-10-09 14:02:00		[13:57]
+2016-10-09 14:05:32	nstewart	speaking of cruft - libs/ardour/test/midi_clock_slave_test.cc doesn't look like it could run. (dereferencing a null pointer that is never allocated).  Before I go try and fix it - does it still matter?
+2016-10-09 14:06:04	nstewart	its' about 6 years old
+2016-10-09 14:07:35	--	mbenson_away is now known as mbenson
+2016-10-09 14:09:08	<--	remixvinil (~remix@95.46.18.239) has quit (Ping timeout: 268 seconds)
+2016-10-09 14:11:36	<--	vekoon (~vekoon@188-141-112-94.dynamic.upc.ie) has quit (Ping timeout: 268 seconds)
+2016-10-09 14:13:43	-->	Alby_Fox (~mint@2600:8803:a80f:f400:918f:94d8:4aa:5a10) has joined #ardour
+2016-10-09 14:19:00		[14:13]
+2016-10-09 14:22:43	-->	dsr1204 (~dsr1204@99-111-235-130.lightspeed.cicril.sbcglobal.net) has joined #ardour
+2016-10-09 14:27:49	<--	dbolton (~Thunderbi@50-83-92-171.client.mchsi.com) has quit (Ping timeout: 248 seconds)
+2016-10-09 14:33:00		[14:27]
+2016-10-09 14:38:31	-->	freedom01 (~freedom@112.202.59.31) has joined #ardour
+2016-10-09 14:44:00		[14:38]
+2016-10-09 14:46:01	rgareus	nstewart: https://nightly.ardour.org/i/A_Linux_x86_64_FREE_DBG-gcc5abi/test_log.txt#L252  looks like the test suceeds
+2016-10-09 14:46:02	LAbot	Title: Ardour - Log file: test_log.txt (at nightly.ardour.org)
+2016-10-09 14:46:22	rgareus	ARDOUR::MIDIClock_SlaveTest::testStepResponse : OK
+2016-10-09 14:49:54	rgareus	nstewart: what pointer is NULL?
+2016-10-09 14:50:31	rgareus	TestSlaveSessionProxy ?
+2016-10-09 14:50:59	nstewart	looks like a pure virtual in the header - cppcheck just needs to know to shut up about that one.
+2016-10-09 14:51:39	rgareus	if it does not check the callgraph it can't know about it.
+2016-10-09 14:53:35	rgareus	libs/ardour/midi_clock_slave.cc  constructs the ISlaveSessionProxy
+2016-10-09 14:54:24	nstewart	sorry - had another one in mind. in libs/ardour/test/midi_clock_slave_test.cc:24 parser is never allocated.
+2016-10-09 14:54:56	nstewart	parser = 0; .... start(*parser,...)
+2016-10-09 14:55:04	rgareus	MIDI::Parser* parser  = 0
+2016-10-09 14:55:08	rgareus	a pointer to a pointer
+2016-10-09 14:55:11	rgareus	it's OK for it to be 0
+2016-10-09 14:55:29	rgareus	mmh
+2016-10-09 14:55:54	rgareus	nm I read &parser  -- not *parser
+2016-10-09 14:57:55	rgareus	nstewart:   MIDIClock_Slave::start (Parser& /*parser*/, framepos_t timestamp)  
+2016-10-09 14:58:01	rgareus	it's unused anyway
+2016-10-09 14:58:08	nstewart	was single dad for a weekend. we did get to play and listen to music, but very little ardour. (internet was out most of the weekend)
+2016-10-09 14:58:08	rgareus	so passing a null reference is fine
+2016-10-09 14:58:39	rgareus	it's just like  int &nullReference = *(int*)0;
+2016-10-09 14:58:39	naptastic	rgareus, I found use-tranzport in ~/.config/ardour5/config and set it to 1 (it was 0 before)
+2016-10-09 14:59:02	naptastic	restarted ardour, and I expected it to appear as a possibility under Control Surfaces, but it's not there.
+2016-10-09 14:59:02		[14:59]
+2016-10-09 14:59:54	rgareus	naptastic: did you compile the control surface module?
+2016-10-09 15:00:09	naptastic	rgareus, I don't know. How do I make that happen?
+2016-10-09 15:00:14	rgareus	naptastic: libs/surfaces/tranzport/ is not built by default
+2016-10-09 15:00:21	naptastic	Ah! How do I enable it?
+2016-10-09 15:00:36	rgareus	naptastic:    find build/libs/surfaces/ -name "*.so"
+2016-10-09 15:01:05	rgareus	naptastic: check   libs/surfaces/wscript  
+2016-10-09 15:01:29	rgareus	naptastic: it's commented out there
+2016-10-09 15:01:42	nstewart	ah. didn't realize that was actually legal
+2016-10-09 15:03:02	rgareus	nstewart: it's a gray area, I think
+2016-10-09 15:03:29	rgareus	nstewart: but since the parameter is not used anyway. it does not matter.
+2016-10-09 15:03:53	rgareus	it's just there so that the API is consistent in this case
+2016-10-09 15:04:03	<--	nstewart (ae6d7ee9@gateway/web/freenode/ip.174.109.126.233) has quit (Quit: Page closed)
+2016-10-09 15:04:04	naptastic	rgareus, I think you're right about something needing an update. With that comment removed, ardour won't compile, complaining about a missing usb.h.
+2016-10-09 15:04:23	naptastic	hmm
+2016-10-09 15:04:30	rgareus	naptastic: yeah usb.h is some old kernel/userspace API
+2016-10-09 15:04:40	 *	naptastic does apt-get install libusb-dev
+2016-10-09 15:04:59	naptastic	hey look, it's working again :)
+2016-10-09 15:05:07	rgareus	naptastic: does it?
+2016-10-09 15:05:12	naptastic	well, it's compiling
+2016-10-09 15:05:20	naptastic	I need a snack...

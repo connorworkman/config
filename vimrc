@@ -231,12 +231,12 @@ function! ToggleFold()
     if g:tfold
         "set mouse=a
         "let g:tmouse = 0
-	silent 0,$foldc!
+	silent! 0,$foldc!
 	let g:tfold = 0
     else
         "set mouse=r
         "let g:tmouse = 1
-	silent 0,$foldo!
+	silent! 0,$foldo!
 	let g:tfold = 1
     endif
 endfunction

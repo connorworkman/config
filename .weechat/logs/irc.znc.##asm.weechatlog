@@ -21535,3 +21535,159 @@
 2016-10-09 13:35:34	Jester01	haha
 2016-10-09 13:40:17	-->	nevodka (~nevodka@71-35-129-168.tukw.qwest.net) has joined ##asm
 2016-10-09 13:46:00		[13:40]
+2016-10-09 13:49:32	makubi	Is there a reason you can't push a 32-bit register to the stack?
+2016-10-09 13:49:52	makubi	(I guess there is but I don't get, why)
+2016-10-09 13:50:28	Jester01	in 64 bit mode, you mean
+2016-10-09 13:50:32	makubi	Yep
+2016-10-09 13:50:47	Jester01	because 1) it uses the same opcode and 2) because you should keep the stack 64 bit aligned anyway
+2016-10-09 13:52:29	zid	same reason you can't push chars etc in 32bit mode
+2016-10-09 13:53:23	makubi	Jester01: So if I understand that correctly: The opcode for pop / push are equal in 32 and 64 bit mode?
+2016-10-09 13:53:28	Jester01	yes
+2016-10-09 13:53:28	makubi	zid: this confuses me
+2016-10-09 13:53:53	-->	kbw (~KeyboardW@68-204-170-7.res.bhn.net) has joined ##asm
+2016-10-09 13:54:25	makubi	Jester01: 2) Wouldn't I be able to let the stack algined if I would be able to also push 32 bit registers (and pop them later)?
+2016-10-09 13:54:43	Jester01	sure, in the end
+2016-10-09 13:54:56	zid	makubi: don't forget an interrupt may happen
+2016-10-09 13:55:00	zid	and push your regs to your stack
+2016-10-09 13:55:20	zid	if your stack is unaligned at that moment, bad news
+2016-10-09 13:56:02	makubi	Oh, didn't think about that
+2016-10-09 13:56:04	Jester01	theoretically possible, but in practice the OS does not use user stack
+2016-10-09 13:56:16	zid	on a lot of systems it WILL be true, though
+2016-10-09 13:56:29	zid	just not typically ones with operating systems
+2016-10-09 13:57:11	makubi	So an hardware interrupt always well, interrupts, my execution?
+2016-10-09 13:57:16	makubi	Or let's say is able to
+2016-10-09 13:57:28	zid	right
+2016-10-09 13:57:41	zid	you could be scheduled away, or a hardware interrupt may occur
+2016-10-09 13:58:06	-->	Ropeney_ (~Ropeney@tank.mindvision.com.au) has joined ##asm
+2016-10-09 13:58:51	Jester01	but, as I said, under mainstream OS (linux, windows, macos) that will not affect your stack at all
+2016-10-09 13:58:59	makubi	Alright :) I guess the registers are reset to zero if that happens
+2016-10-09 13:59:00	zid	user threading might
+2016-10-09 13:59:04	zid	makubi: no
+2016-10-09 13:59:06	-->	cd80 (~bf3@91.108.183.10) has joined ##asm
+2016-10-09 13:59:08	zid	that'd immediately break your program forever
+2016-10-09 13:59:12	zid	because you'd lose all your state
+2016-10-09 13:59:24	zid	eip = 0? eax = 0? your program isn't going to be very happy
+2016-10-09 13:59:28	Jester01	:)
+2016-10-09 13:59:29	makubi	So they are recovered
+2016-10-09 13:59:38	makubi	?
+2016-10-09 13:59:41	Jester01	yes, that's called "context switch" if you want to research
+2016-10-09 13:59:43	zid	they are pushed to a stack
+2016-10-09 13:59:47	Jester01	or not.
+2016-10-09 13:59:52	zid	either the OS's 'stack' for saving registers, or yours
+2016-10-09 14:00:02	Jester01	no reason for it to be a stack
+2016-10-09 14:00:08	zid	that's why I did 'stack'
+2016-10-09 14:00:18	makubi	Some kind of memory space
+2016-10-09 14:00:19	Jester01	<zid> they are pushed to a stack
+2016-10-09 14:00:21	zid	In linux at least I think it just allocates a register store for each process
+2016-10-09 14:00:22	Jester01	there you didn't :P
+2016-10-09 14:01:11	zid	I'd guess it's hung off gs somewhere given my ridumentary knowledge of how linux is implemented
+2016-10-09 14:01:11		[14:01]
+2016-10-09 14:01:38	makubi	So who decides if the context switch is necessary? I guess at least the kernel and the hardware, because I think they might be expensive?
+2016-10-09 14:01:53	Jester01	yes, indeed it is expensive
+2016-10-09 14:02:19	zid	makubi: historically you'd set up a timer interrupt, which does all the kernel housekeeping, then decides if your process has b een running 'too long', and instead of returning to your process, it returns to a different one
+2016-10-09 14:02:39	zid	or there is co-operative stuff, where you manually call something like yield() when you want to sleep and give someone else a turn
+2016-10-09 14:02:58	<--	nevodka (~nevodka@71-35-129-168.tukw.qwest.net) has quit (Remote host closed the connection)
+2016-10-09 14:02:59	makubi	Alright :)
+2016-10-09 14:03:22	zid	linux has 'tickless' configs now, not sure how that works never looked. I'd guess timeouts or something
+2016-10-09 14:03:31	zid	rather than monotonic ticks
+2016-10-09 14:03:39	-->	nevodka (~nevodka@71-35-129-168.tukw.qwest.net) has joined ##asm
+2016-10-09 14:04:00	Jester01	tickless only applies in special cases, mainly idle tickless
+2016-10-09 14:04:18	Jester01	meaning, if the cpu has nothing to do, it should not wake up periodically to check that
+2016-10-09 14:04:24	zid	Jester01: hlt with a timeout?
+2016-10-09 14:04:34	Jester01	it's multi cpu only
+2016-10-09 14:04:34	makubi	Let's say my program starts. Are the registers then cleared or set to whatever the process before left it?
+2016-10-09 14:04:38	zid	ah okay
+2016-10-09 14:04:50	Jester01	one will wake the others up
+2016-10-09 14:05:06	Jester01	but even that will run less frequent ticks in idle I think
+2016-10-09 14:05:08	<--	Judge_Dredd (~Judge_Dre@unaffiliated/judge-dredd/x-2170742) has quit (Quit: Leaving.)
+2016-10-09 14:05:21	zid	makubi: Usually fixed values, fixed to 0 is typical, barring things like eax containing argv or argc or something as per the ABI, but random is vali
+2016-10-09 14:05:54	zid	gameboy leaves them with what the bios left them as, for example, but the bios is fixed so the values in the registers are deterministic between hardware revisions (which is how you check which hardware revision you are)
+2016-10-09 14:06:07	Jester01	basically, don't rely on the values
+2016-10-09 14:06:23	zid	Unless your ABI says you can
+2016-10-09 14:06:25	Jester01	and it will not be the values from the launching process
+2016-10-09 14:06:32	Jester01	due to security reasons
+2016-10-09 14:06:39	Jester01	if nothing else ;)
+2016-10-09 14:06:47	makubi	So I guess I should not rely on "I did not use this register yet, it will be zero"
+2016-10-09 14:06:52	Jester01	right
+2016-10-09 14:07:11	Jester01	unless you are coding for a size competition :D
+2016-10-09 14:07:28	makubi	I think I am far away from that :>
+2016-10-09 14:07:48	Jester01	btw, if you are on linux, you can do fun things like cat /proc/self/status
+2016-10-09 14:07:51	Jester01	and see things such as
+2016-10-09 14:07:55	Jester01	voluntary_ctxt_switches:	1411
+2016-10-09 14:07:56	Jester01	nonvoluntary_ctxt_switches:	18
+2016-10-09 14:08:28	makubi	Sure I am, are there people coding assembly on Windows? (yeah, I saw some videos...)
+2016-10-09 14:08:39	Jester01	which shows how many times the process yielded the cpu and how many times it was taken away forcibly :)
+2016-10-09 14:09:16	makubi	0 and 1, this notebook is oversized
+2016-10-09 14:09:43	Jester01	look at some process that has been running longer, like your browser or irc client :)
+2016-10-09 14:09:50	<--	alecov (~control@unaffiliated/control) has quit (Ping timeout: 244 seconds)
+2016-10-09 14:09:52	Jester01	(replace "self" with the pid)
+2016-10-09 14:10:29	Jester01	you can also look in /proc/stat
+2016-10-09 14:10:42	Jester01	ctxt 183598907  <=== total number of context switches
+2016-10-09 14:10:42	makubi	I also read that there are some register to 'keep' between subroutine calls, which in fact means recover them after call. This is just true for public / external subroutines / calls, right?
+2016-10-09 14:10:51	Jester01	yes
+2016-10-09 14:11:07	makubi	ctxt 11840649
+2016-10-09 14:11:16	<--	wellick (~wellick@a89-155-187-171.cpe.netcabo.pt) has quit (Quit: Going offline, see ya! (www.adiirc.com))
+2016-10-09 14:11:22	makubi	ctxt 727721988
+2016-10-09 14:11:33	makubi	seems like I am not working
+2016-10-09 14:13:14	makubi	Are there any assembly x86_64 Linux (Intel syntax) books you can recommend? I rather like reading on paper (tbh never tried kindle)
+2016-10-09 14:13:30	<--	nevodka (~nevodka@71-35-129-168.tukw.qwest.net) has quit (Remote host closed the connection)
+2016-10-09 14:13:42	makubi	I guess many questions I ask here are answered in some books
+2016-10-09 14:13:44	Jester01	there is also /proc/interrupts with more fun :)
+2016-10-09 14:13:52	makubi	Let me check
+2016-10-09 14:14:14	makubi	That looks interesting
+2016-10-09 14:15:11	makubi	I need more time. I could read / do this all night :)
+2016-10-09 14:15:19	-->	hzjd (~Adium@dhcp-18-189-39-55.dyn.mit.edu) has joined ##asm
+2016-10-09 14:16:37	<--	dqi (~dqi@165-218-045-062.dynamic.caiway.nl) has quit (Ping timeout: 248 seconds)
+2016-10-09 14:16:37		[14:16]
+2016-10-09 14:17:12	Jester01	LOC:   25825172     443638     219509     189316     155253     133306     131063     121444   Local timer interrupts
+2016-10-09 14:17:32	makubi	That one CPU did all the work
+2016-10-09 14:17:38	-->	SwiftMatt (~Objective@162.242.95.71) has joined ##asm
+2016-10-09 14:17:54	Jester01	yeah
+2016-10-09 14:18:05	Jester01	where "work" in this case was handling timer stuff
+2016-10-09 14:18:11	makubi	To be precise, it was mostly interrupted
+2016-10-09 14:18:14	makubi	ok
+2016-10-09 14:18:31	Jester01	when my system wasn't loaded, the other cpus went to sleep and shut off their timers
+2016-10-09 14:18:49	Jester01	poor cpu #0 had to keep its timer running
+2016-10-09 14:19:40	makubi	:D
+2016-10-09 14:20:08	makubi	This is also true for multicore systems (I guess multi cpu means multiple physical chipsets, right)?
+2016-10-09 14:20:37	Jester01	the OS handles multi core as multi cpu (for the most part)
+2016-10-09 14:20:43	Jester01	this is a single cpu, with 8 cores
+2016-10-09 14:20:55	makubi	8 hyperthreaded I guess?
+2016-10-09 14:21:16	Jester01	it's an amd, no ht here, but modules ... and let's not go into that :D
+2016-10-09 14:21:29	Jester01	but yeah, intel ht also shows up as separate cpus
+2016-10-09 14:21:30	makubi	Does the kernel 'see' all of them?
+2016-10-09 14:21:32	-->	Secret-Fire (~secret-fi@2601:1c1:4201:458c:818c:e172:4e12:bf55) has joined ##asm
+2016-10-09 14:21:35	makubi	okay
+2016-10-09 14:21:47	zid	what are the numbers in proc stat
+2016-10-09 14:21:59	<--	Secret-Fire (~secret-fi@2601:1c1:4201:458c:818c:e172:4e12:bf55) has quit (Max SendQ exceeded)
+2016-10-09 14:22:04	zid	I have 24884 0 41952 521172416 14795 0 529 0 0 0 whatever that means
+2016-10-09 14:22:43	OxFEEDBACC	cpu     user    nice     sys    idle     iow     irq    sirq
+2016-10-09 14:22:45	OxFEEDBACC	   0:  10.15%   0.13%   5.32%  83.95%   0.25%   0.08%   0.27%
+2016-10-09 14:22:54	OxFEEDBACC	translates to something like this...
+2016-10-09 14:23:13	-->	Secret-Fire (~secret-fi@2601:1c1:4201:458c:818c:e172:4e12:bf55) has joined ##asm
+2016-10-09 14:23:27	zid	ahh
+2016-10-09 14:24:31	makubi	Alright, thanks very much again, I really have to get some sleep. have a nice day / night
+2016-10-09 14:25:10	Jester01	cya
+2016-10-09 14:30:13	<--	Secret-Fire (~secret-fi@2601:1c1:4201:458c:818c:e172:4e12:bf55) has quit (Max SendQ exceeded)
+2016-10-09 14:31:07	-->	Secret-Fire (~secret-fi@2601:1c1:4201:458c:818c:e172:4e12:bf55) has joined ##asm
+2016-10-09 14:31:47	<--	Secret-Fire (~secret-fi@2601:1c1:4201:458c:818c:e172:4e12:bf55) has quit (Max SendQ exceeded)
+2016-10-09 14:31:47		[14:31]
+2016-10-09 14:32:57	<--	hzjd (~Adium@dhcp-18-189-39-55.dyn.mit.edu) has quit (Quit: Leaving.)
+2016-10-09 14:32:57	-->	Secret-Fire (~secret-fi@2601:1c1:4201:458c:818c:e172:4e12:bf55) has joined ##asm
+2016-10-09 14:33:33	<--	Secret-Fire (~secret-fi@2601:1c1:4201:458c:818c:e172:4e12:bf55) has quit (Max SendQ exceeded)
+2016-10-09 14:34:06	-->	Secret-Fire (~secret-fi@2601:1c1:4201:458c:818c:e172:4e12:bf55) has joined ##asm
+2016-10-09 14:35:58	<--	hmmmm (~sdfgsf@pool-72-79-167-163.sctnpa.east.verizon.net) has quit (Ping timeout: 250 seconds)
+2016-10-09 14:39:41	-->	hmmmm (~sdfgsf@72.79.172.20) has joined ##asm
+2016-10-09 14:43:05	<--	shamis (~AndChat31@pool-108-18-119-171.washdc.fios.verizon.net) has quit (Read error: Connection reset by peer)
+2016-10-09 14:45:16	-->	phax (~phax@unaffiliated/phax) has joined ##asm
+2016-10-09 14:46:20	<--	phax (~phax@unaffiliated/phax) has quit (Max SendQ exceeded)
+2016-10-09 14:47:13	-->	phax (~phax@unaffiliated/phax) has joined ##asm
+2016-10-09 14:47:13		[14:47]
+2016-10-09 14:47:19	--	phax is now known as phax2
+2016-10-09 14:47:29	--	phax2 is now known as phax
+2016-10-09 14:49:57	<--	Secret-Fire (~secret-fi@2601:1c1:4201:458c:818c:e172:4e12:bf55) has quit (Ping timeout: 240 seconds)
+2016-10-09 14:53:57	<--	aleph- (~hatter@unaffiliated/church-) has quit (Ping timeout: 248 seconds)
+2016-10-09 14:59:00		[14:53]
+2016-10-09 14:59:38	-->	aleph- (~hatter@unaffiliated/church-) has joined ##asm
+2016-10-09 15:02:15	-->	bkboggy (~bkboggy@cpe-172-250-147-60.socal.res.rr.com) has joined ##asm
+2016-10-09 15:03:38	-->	Secret-Fire (~secret-fi@2601:1c1:4201:458c:818c:e172:4e12:bf55) has joined ##asm
