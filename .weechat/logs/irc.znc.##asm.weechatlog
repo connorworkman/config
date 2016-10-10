@@ -21890,3 +21890,575 @@
 2016-10-09 19:04:56	-->	MyCuriosity (~MyCuriosi@unaffiliated/mycuriosity) has joined ##asm
 2016-10-09 19:06:18	-->	ararob (~yaaic@host-95-199-15-228.mobileonline.telia.com) has joined ##asm
 2016-10-09 19:10:47	<--	Markie (~Markie@unaffiliated/markie) has left ##asm
+2016-10-10 01:19:57	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined ##asm
+2016-10-10 01:19:57		[01:19]
+2016-10-10 01:19:57	--	Topic for ##asm is "Assembly programming channel, all architectures welcome (please specify). Don't ask to ask! Use a pastebin if appropriate! Check your manuals! *** AT&T vs Intel flamers will be banned."
+2016-10-10 01:19:57	--	Topic set by Jester01 (~Jester01@62.100.244.69) on Fri, 30 Sep 2016 06:54:51
+2016-10-10 01:19:57	--	Channel ##asm: 286 nicks (0 ops, 0 voices, 286 normals)
+2016-10-10 01:19:57	***	Buffer Playback...
+2016-10-10 01:19:57	Jester01	[00:09:43] look at some process that has been running longer, like your browser or irc client :) [00:09:43]
+2016-10-10 01:19:57	Jester01	[00:09:52] (replace "self" with the pid) [00:09:52]
+2016-10-10 01:19:57	Jester01	[00:10:29] you can also look in /proc/stat [00:10:29]
+2016-10-10 01:19:57	Jester01	[00:10:42] ctxt 183598907  <=== total number of context switches [00:10:42]
+2016-10-10 01:19:57	makubi	[00:10:42] I also read that there are some register to 'keep' between subroutine calls, which in fact means recover them after call. This is just true for public / external subroutines / calls, right? [00:10:42]
+2016-10-10 01:19:57	Jester01	[00:10:50] yes [00:10:50]
+2016-10-10 01:19:57	makubi	[00:11:07] ctxt 11840649 [00:11:07]
+2016-10-10 01:19:57	makubi	[00:11:22] ctxt 727721988 [00:11:22]
+2016-10-10 01:19:57	makubi	[00:11:33] seems like I am not working [00:11:33]
+2016-10-10 01:19:57	makubi	[00:13:14] Are there any assembly x86_64 Linux (Intel syntax) books you can recommend? I rather like reading on paper (tbh never tried kindle) [00:13:14]
+2016-10-10 01:19:57	makubi	[00:13:42] I guess many questions I ask here are answered in some books [00:13:42]
+2016-10-10 01:19:57	Jester01	[00:13:44] there is also /proc/interrupts with more fun :) [00:13:44]
+2016-10-10 01:19:57	makubi	[00:13:52] Let me check [00:13:52]
+2016-10-10 01:19:57	makubi	[00:14:14] That looks interesting [00:14:14]
+2016-10-10 01:19:57	makubi	[00:15:11] I need more time. I could read / do this all night :) [00:15:11]
+2016-10-10 01:19:57	Jester01	[00:17:12] LOC:   25825172     443638     219509     189316     155253     133306     131063     121444   Local timer interrupts [00:17:12]
+2016-10-10 01:19:57	makubi	[00:17:32] That one CPU did all the work [00:17:32]
+2016-10-10 01:19:57	Jester01	[00:17:54] yeah [00:17:54]
+2016-10-10 01:19:57	Jester01	[00:18:05] where "work" in this case was handling timer stuff [00:18:05]
+2016-10-10 01:19:57	makubi	[00:18:11] To be precise, it was mostly interrupted [00:18:11]
+2016-10-10 01:19:57	makubi	[00:18:14] ok [00:18:14]
+2016-10-10 01:19:57	Jester01	[00:18:31] when my system wasn't loaded, the other cpus went to sleep and shut off their timers [00:18:31]
+2016-10-10 01:19:57	Jester01	[00:18:49] poor cpu #0 had to keep its timer running [00:18:49]
+2016-10-10 01:19:57	makubi	[00:19:40] :D [00:19:40]
+2016-10-10 01:19:57	makubi	[00:20:08] This is also true for multicore systems (I guess multi cpu means multiple physical chipsets, right)? [00:20:08]
+2016-10-10 01:19:57	Jester01	[00:20:37] the OS handles multi core as multi cpu (for the most part) [00:20:37]
+2016-10-10 01:19:57	Jester01	[00:20:43] this is a single cpu, with 8 cores [00:20:43]
+2016-10-10 01:19:57	makubi	[00:20:55] 8 hyperthreaded I guess? [00:20:55]
+2016-10-10 01:19:57	Jester01	[00:21:16] it's an amd, no ht here, but modules ... and let's not go into that :D [00:21:16]
+2016-10-10 01:19:57	Jester01	[00:21:29] but yeah, intel ht also shows up as separate cpus [00:21:29]
+2016-10-10 01:19:57	makubi	[00:21:30] Does the kernel 'see' all of them? [00:21:30]
+2016-10-10 01:19:57	makubi	[00:21:34] okay [00:21:34]
+2016-10-10 01:19:57	zid	[00:21:47] what are the numbers in proc stat [00:21:47]
+2016-10-10 01:19:57	zid	[00:22:04] I have 24884 0 41952 521172416 14795 0 529 0 0 0 whatever that means [00:22:04]
+2016-10-10 01:19:57	OxFEEDBACC	[00:22:43] cpu     user    nice     sys    idle     iow     irq    sirq [00:22:43]
+2016-10-10 01:19:57	OxFEEDBACC	[00:22:45]    0:  10.15%   0.13%   5.32%  83.95%   0.25%   0.08%   0.27% [00:22:45]
+2016-10-10 01:19:57	OxFEEDBACC	[00:22:54] translates to something like this... [00:22:54]
+2016-10-10 01:19:57	zid	[00:23:27] ahh [00:23:27]
+2016-10-10 01:19:57	makubi	[00:24:31] Alright, thanks very much again, I really have to get some sleep. have a nice day / night [00:24:31]
+2016-10-10 01:19:57	Jester01	[00:25:10] cya [00:25:10]
+2016-10-10 01:19:57	jumbo	[04:01:13] hi [04:01:13]
+2016-10-10 01:19:57	Xatenev	[10:51:10] !books [10:51:10]
+2016-10-10 01:19:57	Xatenev	[10:51:30] Hey people :) - are there any great ressources for learning ASM (x86 f.e.) [10:51:30]
+2016-10-10 01:19:57	Xatenev	[10:51:52] I'd prefer online tutorials instead of bought books. [10:51:52]
+2016-10-10 01:19:57	GeDaMo	[10:52:06] https://pacman128.github.io/pcasm/ [10:52:06]
+2016-10-10 01:19:57	Xatenev	[10:52:32] GeDaMo: thank you! :) [10:52:32]
+2016-10-10 01:19:57	Xatenev	[10:53:14] GeDaMo: Its even translated in my language - great!:) [10:53:14]
+2016-10-10 01:19:57	GeDaMo	[10:53:21] We used to have a link in the /topic but it failed and we haven't replaced it [10:53:21]
+2016-10-10 01:19:57	GeDaMo	[10:53:36] That's the only one I can remember from it [10:53:36]
+2016-10-10 01:19:57	Xatenev	[10:54:04] Thats definetly enough for me for now - Im just gathering ressources for my next year of learning. :P [10:54:04]
+2016-10-10 01:19:57	***	Playback Complete.
+2016-10-10 01:20:19	--	Channel created on Sun, 27 May 2007 05:31:12
+2016-10-10 01:21:18	Fairy	How do I divide by 10 in Assembly? I'm trying to extract the most significant number(s) from a decimal (say, 2 from 28) and print them (2 8)
+2016-10-10 01:21:55	<--	cd80 (~bf3@91.108.183.10) has quit (Quit: leaving)
+2016-10-10 01:22:11	-->	cd80 (~bf3@91.108.183.10) has joined ##asm
+2016-10-10 01:22:20	GeDaMo	Which architecture?
+2016-10-10 01:22:32	Fairy	using NASM
+2016-10-10 01:23:05	GeDaMo	That would be x86 then
+2016-10-10 01:23:16	Fairy	yes
+2016-10-10 01:23:31	GeDaMo	div or idiv
+2016-10-10 01:27:54	Fairy	:S
+2016-10-10 01:28:08	dminuoso	GeDaMo: Remember my question about that test_bit function a couple days ago?
+2016-10-10 01:28:30	dminuoso	It was such an obvious mistake, I just forgot to [dereference] the register. :-(
+2016-10-10 01:28:31	Nik05	Fairy you can find how to use it in a reference manual
+2016-10-10 01:29:19	GeDaMo	dminuoso: sorry, I don't remember, glad you got it working though :)
+2016-10-10 01:29:54	GeDaMo	Fairy: you have the Intel manuals? https://www-ssl.intel.com/content/www/us/en/processors/architectures-software-developer-manuals.html
+2016-10-10 01:30:43	dminuoso	Is there a more elegant way to test for the nth bit though? https://gist.github.com/dminuoso/98fe3121222fcfa6765a7e4e9ebf2b80
+2016-10-10 01:31:05	dminuoso	(Im using bt/sbb)
+2016-10-10 01:31:34	dminuoso	I mean there's the obvious bitshift mask + and..
+2016-10-10 01:31:45	GeDaMo	Is there some reason you're using asm rather than just doing it in C?
+2016-10-10 01:32:14	dminuoso	*C++ and no
+2016-10-10 01:32:27	dminuoso	Well yes.
+2016-10-10 01:32:33	Fairy	Well, trying to learn Assembly, using C wouldn't help in any way
+2016-10-10 01:33:11	dminuoso	GeDaMo: Aliasing rules make it silly. I mean I could write a simple template - but that seemed over the top.
+2016-10-10 01:33:12	slidercrank	coding in C with asm inlines is like sex with a condom - no the same feelings
+2016-10-10 01:33:13	GeDaMo	Except it's inline asm which, in this case, has no advantages over doing it in C
+2016-10-10 01:33:18	slidercrank	*not the same
+2016-10-10 01:35:13	dminuoso	GeDaMo: No the more I think about it, there is no sensible way to do this in C.
+2016-10-10 01:35:13		[01:35]
+2016-10-10 01:35:18	dminuoso	(Or C++ in my case)
+2016-10-10 01:36:11	Fairy	Still doesn't help me with learning Assembly. That said, I feel like I've entered a Dragon's den, and I ain't a dragon slayer - also, why is that dragon talking to me? :S Everything is confusing
+2016-10-10 01:36:23	--	Axton_ is now known as Axton
+2016-10-10 01:37:02	GeDaMo	Fairy: there are two conversations going on here
+2016-10-10 01:37:15	GeDaMo	dminuoso: why is shift and mask not suitable?
+2016-10-10 01:37:18	Fairy	sorry :S
+2016-10-10 01:38:04	GeDaMo	Fairy: have you downloaded the Intel manuals? https://www-ssl.intel.com/content/dam/www/public/us/en/documents/manuals/64-ia-32-architectures-software-developer-instruction-set-reference-manual-325383.pdf is the instruction reference
+2016-10-10 01:38:40	Nik05	Fairy what are you reading to learn it?
+2016-10-10 01:40:38	Fairy	I've got this book about assembly, with supplemental information online - I haven't found a decent site to go off by
+2016-10-10 01:41:02	Fairy	and I have the Intel manual, but I have a hard time getting anything useful from it
+2016-10-10 01:42:07	dminuoso	GeDaMo: Wait a moment. Im being amazed right now.
+2016-10-10 01:42:22	GeDaMo	By what?
+2016-10-10 01:43:13	dminuoso	GeDaMo: https://godbolt.org/g/PuRb86
+2016-10-10 01:44:40	GeDaMo	dminuoso: try (t >> nr) & 1
+2016-10-10 01:44:46	-->	Indecipherable (~Howl@41.162.59.11) has joined ##asm
+2016-10-10 01:45:05	dminuoso	GeDaMo: It's the same to GCC.
+2016-10-10 01:45:15	GeDaMo	I see different code being generated
+2016-10-10 01:45:35	dminuoso	Ahh.
+2016-10-10 01:46:17	dminuoso	It avoids that test/setne nice
+2016-10-10 02:08:14	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined ##asm
+2016-10-10 02:08:14		[02:08]
+2016-10-10 02:08:14	--	Topic for ##asm is "Assembly programming channel, all architectures welcome (please specify). Don't ask to ask! Use a pastebin if appropriate! Check your manuals! *** AT&T vs Intel flamers will be banned."
+2016-10-10 02:08:14	--	Topic set by Jester01 (~Jester01@62.100.244.69) on Fri, 30 Sep 2016 06:54:51
+2016-10-10 02:08:14	--	Channel ##asm: 290 nicks (0 ops, 0 voices, 290 normals)
+2016-10-10 02:08:14	***	Buffer Playback...
+2016-10-10 02:08:14	Xatenev	[10:54:04] Thats definetly enough for me for now - Im just gathering ressources for my next year of learning. :P [10:54:04]
+2016-10-10 02:08:14	Fairy	[11:21:18] How do I divide by 10 in Assembly? I'm trying to extract the most significant number(s) from a decimal (say, 2 from 28) and print them (2 8) [11:21:18]
+2016-10-10 02:08:14	GeDaMo	[11:22:20] Which architecture? [11:22:20]
+2016-10-10 02:08:14	Fairy	[11:22:32] using NASM [11:22:32]
+2016-10-10 02:08:14	GeDaMo	[11:23:05] That would be x86 then [11:23:05]
+2016-10-10 02:08:14	Fairy	[11:23:16] yes [11:23:16]
+2016-10-10 02:08:14	GeDaMo	[11:23:31] div or idiv [11:23:31]
+2016-10-10 02:08:14	Fairy	[11:27:54] :S [11:27:54]
+2016-10-10 02:08:14	dminuoso	[11:28:08] GeDaMo: Remember my question about that test_bit function a couple days ago? [11:28:08]
+2016-10-10 02:08:14	dminuoso	[11:28:30] It was such an obvious mistake, I just forgot to [dereference] the register. :-( [11:28:30]
+2016-10-10 02:08:14	Nik05	[11:28:31] Fairy you can find how to use it in a reference manual [11:28:31]
+2016-10-10 02:08:14	GeDaMo	[11:29:19] dminuoso: sorry, I don't remember, glad you got it working though :) [11:29:19]
+2016-10-10 02:08:14	GeDaMo	[11:29:54] Fairy: you have the Intel manuals? https://www-ssl.intel.com/content/www/us/en/processors/architectures-software-developer-manuals.html [11:29:54]
+2016-10-10 02:08:14	dminuoso	[11:30:43] Is there a more elegant way to test for the nth bit though? https://gist.github.com/dminuoso/98fe3121222fcfa6765a7e4e9ebf2b80 [11:30:43]
+2016-10-10 02:08:14	dminuoso	[11:31:05] (Im using bt/sbb) [11:31:05]
+2016-10-10 02:08:14	dminuoso	[11:31:34] I mean there's the obvious bitshift mask + and.. [11:31:34]
+2016-10-10 02:08:14	GeDaMo	[11:31:45] Is there some reason you're using asm rather than just doing it in C? [11:31:45]
+2016-10-10 02:08:14	dminuoso	[11:32:14] *C++ and no [11:32:14]
+2016-10-10 02:08:14	dminuoso	[11:32:27] Well yes. [11:32:27]
+2016-10-10 02:08:14	Fairy	[11:32:33] Well, trying to learn Assembly, using C wouldn't help in any way [11:32:33]
+2016-10-10 02:08:14	dminuoso	[11:33:11] GeDaMo: Aliasing rules make it silly. I mean I could write a simple template - but that seemed over the top. [11:33:11]
+2016-10-10 02:08:14	slidercrank	[11:33:12] coding in C with asm inlines is like sex with a condom - no the same feelings [11:33:12]
+2016-10-10 02:08:14	GeDaMo	[11:33:13] Except it's inline asm which, in this case, has no advantages over doing it in C [11:33:13]
+2016-10-10 02:08:14	slidercrank	[11:33:18] *not the same [11:33:18]
+2016-10-10 02:08:14	dminuoso	[11:35:13] GeDaMo: No the more I think about it, there is no sensible way to do this in C. [11:35:13]
+2016-10-10 02:08:14	dminuoso	[11:35:18] (Or C++ in my case) [11:35:18]
+2016-10-10 02:08:14	Fairy	[11:36:11] Still doesn't help me with learning Assembly. That said, I feel like I've entered a Dragon's den, and I ain't a dragon slayer - also, why is that dragon talking to me? :S Everything is confusing [11:36:11]
+2016-10-10 02:08:14	GeDaMo	[11:37:02] Fairy: there are two conversations going on here [11:37:02]
+2016-10-10 02:08:14	GeDaMo	[11:37:15] dminuoso: why is shift and mask not suitable? [11:37:15]
+2016-10-10 02:08:14	Fairy	[11:37:18] sorry :S [11:37:18]
+2016-10-10 02:08:14	GeDaMo	[11:38:04] Fairy: have you downloaded the Intel manuals? https://www-ssl.intel.com/content/dam/www/public/us/en/documents/manuals/64-ia-32-architectures-software-developer-instruction-set-reference-manual-325383.pdf is the instruction reference [11:38:04]
+2016-10-10 02:08:14	Nik05	[11:38:40] Fairy what are you reading to learn it? [11:38:40]
+2016-10-10 02:08:14	Fairy	[11:40:38] I've got this book about assembly, with supplemental information online - I haven't found a decent site to go off by [11:40:38]
+2016-10-10 02:08:14	Fairy	[11:41:02] and I have the Intel manual, but I have a hard time getting anything useful from it [11:41:02]
+2016-10-10 02:08:14	dminuoso	[11:42:07] GeDaMo: Wait a moment. Im being amazed right now. [11:42:07]
+2016-10-10 02:08:14	GeDaMo	[11:42:22] By what? [11:42:22]
+2016-10-10 02:08:14	dminuoso	[11:43:13] GeDaMo: https://godbolt.org/g/PuRb86 [11:43:13]
+2016-10-10 02:08:14	GeDaMo	[11:44:40] dminuoso: try (t >> nr) & 1 [11:44:40]
+2016-10-10 02:08:14	dminuoso	[11:45:05] GeDaMo: It's the same to GCC. [11:45:05]
+2016-10-10 02:08:14	GeDaMo	[11:45:15] I see different code being generated [11:45:15]
+2016-10-10 02:08:14	dminuoso	[11:45:35] Ahh. [11:45:35]
+2016-10-10 02:08:14	dminuoso	[11:46:17] It avoids that test/setne nice [11:46:17]
+2016-10-10 02:08:14	GeDaMo	[11:57:17] Fairy: have you looked up the div and idiv instructions in the reference manual? [11:57:17]
+2016-10-10 02:08:14	Fairy	[11:58:48] GeDaMo: I have, can't say I understand it [11:58:48]
+2016-10-10 02:08:14	GeDaMo	[11:59:42] What size is the number you're dividing? [11:59:42]
+2016-10-10 02:08:14	Fairy	[12:02:52] um, the number is < 20, but it's stored as a 32bit int, as far as I understand [12:02:52]
+2016-10-10 02:08:14	GeDaMo	[12:03:54] Ok: mov eax, [value]; cdq; mov ebx, 10; div ebx; now the result is in eax and the remainder in edx [12:03:54]
+2016-10-10 02:08:14	GeDaMo	[12:04:05] cdq sign extends eax into edx [12:04:05]
+2016-10-10 02:08:14	Jester01	[12:04:30] which is kind of silly if you then use unsigned division ;) [12:04:30]
+2016-10-10 02:08:14	GeDaMo	[12:06:39] It'll work in this case :P [12:06:39]
+2016-10-10 02:08:14	***	Playback Complete.
+2016-10-10 02:08:38	Jester01	yeah
+2016-10-10 02:08:39	--	Channel created on Sun, 27 May 2007 05:31:12
+2016-10-10 02:09:09	GeDaMo	But yes, it should be idiv for a signed divide
+2016-10-10 02:09:15	Jester01	of course if the number is less than 20, division is overkill
+2016-10-10 02:10:30	Jester01	also 28 (from the original example) is not less than 20 :D
+2016-10-10 02:16:00		[02:10]
+2016-10-10 02:22:43	<--	Secret-Fire (~secret-fi@2601:1c1:4201:458c:818c:e172:4e12:bf55) has quit (Read error: Connection timed out)
+2016-10-10 02:23:26	-->	Secret-Fire (~secret-fi@2601:1c1:4201:458c:818c:e172:4e12:bf55) has joined ##asm
+2016-10-10 02:29:00		[02:23]
+2016-10-10 02:36:48	<--	gdx90 (gdx90@gateway/shell/fnordserver.eu/x-teuhbnejdykyxmzv) has quit (Quit: https://fnordserver.eu)
+2016-10-10 02:41:51	-->	MindlessDrone (~MindlessD@unaffiliated/mindlessdrone) has joined ##asm
+2016-10-10 02:47:00		[02:41]
+2016-10-10 02:49:57	<--	Demon_Fox (~Demon_Fox@71.94.3.176) has quit (Ping timeout: 260 seconds)
+2016-10-10 02:52:02	Fairy	GeDaMo: <3!
+2016-10-10 02:52:20	-->	Demon_Fox (~Demon_Fox@71.94.3.176) has joined ##asm
+2016-10-10 02:58:00		[02:52]
+2016-10-10 03:06:26	-->	|DM| (~|DM|@79.101.135.1) has joined ##asm
+2016-10-10 03:07:31	<--	ptx0_ (~cheesus_c@megatron.tripleback.net) has quit (Quit: Changing server)
+2016-10-10 03:09:08	-->	ptx0 (~cheesus_c@unaffiliated/ptx0) has joined ##asm
+2016-10-10 03:09:23	latemus	hi guys
+2016-10-10 03:10:02	-->	snyp (~Snyp@150.129.132.21) has joined ##asm
+2016-10-10 03:13:10	<--	ptx0 (~cheesus_c@unaffiliated/ptx0) has quit (Client Quit)
+2016-10-10 03:13:10		[03:13]
+2016-10-10 03:13:59	-->	ptx0 (~cheesus_c@unaffiliated/ptx0) has joined ##asm
+2016-10-10 03:19:04	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined ##asm
+2016-10-10 03:19:04		[03:19]
+2016-10-10 03:19:04	--	Topic for ##asm is "Assembly programming channel, all architectures welcome (please specify). Don't ask to ask! Use a pastebin if appropriate! Check your manuals! *** AT&T vs Intel flamers will be banned."
+2016-10-10 03:19:04	--	Topic set by Jester01 (~Jester01@62.100.244.69) on Fri, 30 Sep 2016 06:54:51
+2016-10-10 03:19:04	--	Channel ##asm: 291 nicks (0 ops, 0 voices, 291 normals)
+2016-10-10 03:19:04	***	Buffer Playback...
+2016-10-10 03:19:04	GeDaMo	[11:23:31] div or idiv [11:23:31]
+2016-10-10 03:19:04	Fairy	[11:27:54] :S [11:27:54]
+2016-10-10 03:19:04	dminuoso	[11:28:08] GeDaMo: Remember my question about that test_bit function a couple days ago? [11:28:08]
+2016-10-10 03:19:04	dminuoso	[11:28:30] It was such an obvious mistake, I just forgot to [dereference] the register. :-( [11:28:30]
+2016-10-10 03:19:04	Nik05	[11:28:31] Fairy you can find how to use it in a reference manual [11:28:31]
+2016-10-10 03:19:04	GeDaMo	[11:29:19] dminuoso: sorry, I don't remember, glad you got it working though :) [11:29:19]
+2016-10-10 03:19:04	GeDaMo	[11:29:54] Fairy: you have the Intel manuals? https://www-ssl.intel.com/content/www/us/en/processors/architectures-software-developer-manuals.html [11:29:54]
+2016-10-10 03:19:04	dminuoso	[11:30:43] Is there a more elegant way to test for the nth bit though? https://gist.github.com/dminuoso/98fe3121222fcfa6765a7e4e9ebf2b80 [11:30:43]
+2016-10-10 03:19:04	dminuoso	[11:31:05] (Im using bt/sbb) [11:31:05]
+2016-10-10 03:19:04	dminuoso	[11:31:34] I mean there's the obvious bitshift mask + and.. [11:31:34]
+2016-10-10 03:19:04	GeDaMo	[11:31:45] Is there some reason you're using asm rather than just doing it in C? [11:31:45]
+2016-10-10 03:19:04	dminuoso	[11:32:14] *C++ and no [11:32:14]
+2016-10-10 03:19:04	dminuoso	[11:32:27] Well yes. [11:32:27]
+2016-10-10 03:19:04	Fairy	[11:32:33] Well, trying to learn Assembly, using C wouldn't help in any way [11:32:33]
+2016-10-10 03:19:04	dminuoso	[11:33:11] GeDaMo: Aliasing rules make it silly. I mean I could write a simple template - but that seemed over the top. [11:33:11]
+2016-10-10 03:19:04	slidercrank	[11:33:12] coding in C with asm inlines is like sex with a condom - no the same feelings [11:33:12]
+2016-10-10 03:19:04	GeDaMo	[11:33:13] Except it's inline asm which, in this case, has no advantages over doing it in C [11:33:13]
+2016-10-10 03:19:04	slidercrank	[11:33:18] *not the same [11:33:18]
+2016-10-10 03:19:04	dminuoso	[11:35:13] GeDaMo: No the more I think about it, there is no sensible way to do this in C. [11:35:13]
+2016-10-10 03:19:04	dminuoso	[11:35:18] (Or C++ in my case) [11:35:18]
+2016-10-10 03:19:04	Fairy	[11:36:11] Still doesn't help me with learning Assembly. That said, I feel like I've entered a Dragon's den, and I ain't a dragon slayer - also, why is that dragon talking to me? :S Everything is confusing [11:36:11]
+2016-10-10 03:19:04	GeDaMo	[11:37:02] Fairy: there are two conversations going on here [11:37:02]
+2016-10-10 03:19:04	GeDaMo	[11:37:15] dminuoso: why is shift and mask not suitable? [11:37:15]
+2016-10-10 03:19:04	Fairy	[11:37:18] sorry :S [11:37:18]
+2016-10-10 03:19:04	GeDaMo	[11:38:04] Fairy: have you downloaded the Intel manuals? https://www-ssl.intel.com/content/dam/www/public/us/en/documents/manuals/64-ia-32-architectures-software-developer-instruction-set-reference-manual-325383.pdf is the instruction reference [11:38:04]
+2016-10-10 03:19:04	Nik05	[11:38:40] Fairy what are you reading to learn it? [11:38:40]
+2016-10-10 03:19:04	Fairy	[11:40:38] I've got this book about assembly, with supplemental information online - I haven't found a decent site to go off by [11:40:38]
+2016-10-10 03:19:04	Fairy	[11:41:02] and I have the Intel manual, but I have a hard time getting anything useful from it [11:41:02]
+2016-10-10 03:19:04	dminuoso	[11:42:07] GeDaMo: Wait a moment. Im being amazed right now. [11:42:07]
+2016-10-10 03:19:04	GeDaMo	[11:42:22] By what? [11:42:22]
+2016-10-10 03:19:04	dminuoso	[11:43:13] GeDaMo: https://godbolt.org/g/PuRb86 [11:43:13]
+2016-10-10 03:19:04	GeDaMo	[11:44:40] dminuoso: try (t >> nr) & 1 [11:44:40]
+2016-10-10 03:19:04	dminuoso	[11:45:05] GeDaMo: It's the same to GCC. [11:45:05]
+2016-10-10 03:19:04	GeDaMo	[11:45:15] I see different code being generated [11:45:15]
+2016-10-10 03:19:04	dminuoso	[11:45:35] Ahh. [11:45:35]
+2016-10-10 03:19:04	dminuoso	[11:46:17] It avoids that test/setne nice [11:46:17]
+2016-10-10 03:19:04	GeDaMo	[11:57:17] Fairy: have you looked up the div and idiv instructions in the reference manual? [11:57:17]
+2016-10-10 03:19:04	Fairy	[11:58:48] GeDaMo: I have, can't say I understand it [11:58:48]
+2016-10-10 03:19:04	GeDaMo	[11:59:42] What size is the number you're dividing? [11:59:42]
+2016-10-10 03:19:04	Fairy	[12:02:52] um, the number is < 20, but it's stored as a 32bit int, as far as I understand [12:02:52]
+2016-10-10 03:19:04	GeDaMo	[12:03:54] Ok: mov eax, [value]; cdq; mov ebx, 10; div ebx; now the result is in eax and the remainder in edx [12:03:54]
+2016-10-10 03:19:04	GeDaMo	[12:04:05] cdq sign extends eax into edx [12:04:05]
+2016-10-10 03:19:04	Jester01	[12:04:30] which is kind of silly if you then use unsigned division ;) [12:04:30]
+2016-10-10 03:19:04	GeDaMo	[12:06:39] It'll work in this case :P [12:06:39]
+2016-10-10 03:19:04	Jester01	[12:08:38] yeah [12:08:38]
+2016-10-10 03:19:04	GeDaMo	[12:09:09] But yes, it should be idiv for a signed divide [12:09:09]
+2016-10-10 03:19:04	Jester01	[12:09:15] of course if the number is less than 20, division is overkill [12:09:15]
+2016-10-10 03:19:04	Jester01	[12:10:30] also 28 (from the original example) is not less than 20 :D [12:10:30]
+2016-10-10 03:19:04	Fairy	[12:52:02] GeDaMo: <3! [12:52:02]
+2016-10-10 03:19:04	latemus	[13:09:23] hi guys [13:09:23]
+2016-10-10 03:19:04	***	Playback Complete.
+2016-10-10 03:19:17	--	Channel created on Sun, 27 May 2007 05:31:12
+2016-10-10 03:25:00		[03:19]
+2016-10-10 03:29:50	-->	StuckAssembling (310272c2@gateway/web/freenode/ip.49.2.114.194) has joined ##asm
+2016-10-10 03:35:00		[03:29]
+2016-10-10 03:41:29	StuckAssembling	Anyone free to help a C newb understand some bomb lab phases?
+2016-10-10 03:41:32	StuckAssembling	http://pastebin.com/sRGzfs5Q
+2016-10-10 03:42:19	dminuoso	StuckAssembling: which part about it?
+2016-10-10 03:42:40	Jester01	ah,ye bombe
+2016-10-10 03:42:44	StuckAssembling	So I figured out the solution to my first phase, but I can't make sense of this one
+2016-10-10 03:43:05	StuckAssembling	And the tutor who gave it to us altered the heck out of it so online tutorials don't help as much haha
+2016-10-10 03:43:37	Jester01	yeah this indeed looks unfamiliar
+2016-10-10 03:43:45	Jester01	luckily it just does some simple math operations
+2016-10-10 03:43:53	StuckAssembling	If you look at my comments on the side, youll see what I think is happening
+2016-10-10 03:44:13	StuckAssembling	I figured it was comparing a value
+2016-10-10 03:44:30	StuckAssembling	but I couldn't figure out how to work out the value
+2016-10-10 03:44:47	Jester01	just put the comments into a formula
+2016-10-10 03:44:49	StuckAssembling	I've been going through GDB trying a few commands
+2016-10-10 03:45:32	Jester01	for starters, have you figured out how many input arguments this takes?
+2016-10-10 03:46:24	Jester01	and whether the return value is used
+2016-10-10 03:47:33	-->	rnsanchez_ (~rnsanchez@201.22.248.13.dynamic.dialup.gvt.net.br) has joined ##asm
+2016-10-10 03:48:31	StuckAssembling	As for the input args, I haven't yet
+2016-10-10 03:48:44	StuckAssembling	I'm quite inexperienced with this
+2016-10-10 03:49:05	StuckAssembling	There are 2 solutions for each phase
+2016-10-10 03:49:20	StuckAssembling	and for Phase 1, I got the simpler solution which was just 3 characters
+2016-10-10 03:49:25	<--	rnsanchez (~rnsanchez@189.58.236.247.dynamic.adsl.gvt.net.br) has quit (Ping timeout: 248 seconds)
+2016-10-10 03:49:37	StuckAssembling	but they were written sy
+2016-10-10 03:49:48	<--	dqi (~dqi@ip-145-116-178-28.wlan-int.ru.nl) has quit (Ping timeout: 260 seconds)
+2016-10-10 03:49:49	StuckAssembling	   0x00000000004012da <+4>:     cmpb   $0x5c,(%rdi)    0x00000000004012dd <+7>:     jne    0x4012eb <phase_1+21>    0x00000000004012df <+9>:     cmpb   $0x44,0x2(%rdi)    0x00000000004012e3 <+13>:    jne    0x4012eb <phase_1+21>    0x00000000004012e5 <+15>:    cmpb   $0x41,0x1(%rdi)
+2016-10-10 03:49:52	StuckAssembling	whoops
+2016-10-10 03:50:15	latemus	can you link to the tutorial you mentiond?
+2016-10-10 03:50:15		[03:50]
+2016-10-10 03:50:15	StuckAssembling	if you can see there, each cmpb compares a hex value to the register(?)
+2016-10-10 03:50:41	latemus	what are bomb phases
+2016-10-10 03:50:45	StuckAssembling	this is one guide
+2016-10-10 03:50:46	StuckAssembling	http://www.mauchle.name/bomblab.txt
+2016-10-10 03:50:50	latemus	thank you
+2016-10-10 03:50:52	StuckAssembling	That link explains it
+2016-10-10 03:51:03	latemus	nice. (sorry to interrupt you all)
+2016-10-10 03:51:19	StuckAssembling	but the TLDR is - you have to defuse a bomb. There are 6 phases which each have a password of some variety
+2016-10-10 03:51:47	StuckAssembling	you can run said bomb with a text file arg containing all the passwords
+2016-10-10 03:52:03	StuckAssembling	So for me so far, I have \AD as my first password
+2016-10-10 03:52:14	dminuoso	StuckAssembling: Ah, so the goal is to reverse engineer the bomb through disassembly, and defuse it?
+2016-10-10 03:52:20	StuckAssembling	Exactly
+2016-10-10 03:52:32	StuckAssembling	There are links all over the internet based on the original bomb labs
+2016-10-10 03:52:37	dminuoso	StuckAssembling: Neat. Does it involve an actual bomb?
+2016-10-10 03:52:47	StuckAssembling	I wish ^.^
+2016-10-10 03:53:02	StuckAssembling	It connects to a server and reports your progress
+2016-10-10 03:53:28	StuckAssembling	I'm not certain if the verification is local or server side, but I feel like it's local
+2016-10-10 03:53:35	StuckAssembling	and it just reports back to record marks
+2016-10-10 03:53:46	<--	snyp (~Snyp@150.129.132.21) has quit (Read error: Connection reset by peer)
+2016-10-10 03:56:10	-->	snyp (~Snyp@150.129.132.21) has joined ##asm
+2016-10-10 03:56:19	Jester01	you should know the calling convention,then figure the inputs then follow them through the checks
+2016-10-10 04:55:47	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined ##asm
+2016-10-10 04:55:47		[04:55]
+2016-10-10 04:55:47	--	Topic for ##asm is "Assembly programming channel, all architectures welcome (please specify). Don't ask to ask! Use a pastebin if appropriate! Check your manuals! *** AT&T vs Intel flamers will be banned."
+2016-10-10 04:55:47	--	Topic set by Jester01 (~Jester01@62.100.244.69) on Fri, 30 Sep 2016 06:54:51
+2016-10-10 04:55:47	--	Channel ##asm: 298 nicks (0 ops, 0 voices, 298 normals)
+2016-10-10 04:55:47	***	Buffer Playback...
+2016-10-10 04:55:47	latemus	[13:50:50] thank you [13:50:50]
+2016-10-10 04:55:47	StuckAssembling	[13:50:52] That link explains it [13:50:52]
+2016-10-10 04:55:47	latemus	[13:51:03] nice. (sorry to interrupt you all) [13:51:03]
+2016-10-10 04:55:47	StuckAssembling	[13:51:18] but the TLDR is - you have to defuse a bomb. There are 6 phases which each have a password of some variety [13:51:18]
+2016-10-10 04:55:47	StuckAssembling	[13:51:47] you can run said bomb with a text file arg containing all the passwords [13:51:47]
+2016-10-10 04:55:47	StuckAssembling	[13:52:03] So for me so far, I have \AD as my first password [13:52:03]
+2016-10-10 04:55:47	dminuoso	[13:52:14] StuckAssembling: Ah, so the goal is to reverse engineer the bomb through disassembly, and defuse it? [13:52:14]
+2016-10-10 04:55:47	StuckAssembling	[13:52:20] Exactly [13:52:20]
+2016-10-10 04:55:47	StuckAssembling	[13:52:32] There are links all over the internet based on the original bomb labs [13:52:32]
+2016-10-10 04:55:47	dminuoso	[13:52:37] StuckAssembling: Neat. Does it involve an actual bomb? [13:52:37]
+2016-10-10 04:55:47	StuckAssembling	[13:52:47] I wish ^.^ [13:52:47]
+2016-10-10 04:55:47	StuckAssembling	[13:53:02] It connects to a server and reports your progress [13:53:02]
+2016-10-10 04:55:47	StuckAssembling	[13:53:28] I'm not certain if the verification is local or server side, but I feel like it's local [13:53:28]
+2016-10-10 04:55:48	StuckAssembling	[13:53:34] and it just reports back to record marks [13:53:34]
+2016-10-10 04:55:48	Jester01	[13:56:19] you should know the calling convention,then figure the inputs then follow them through the checks [13:56:19]
+2016-10-10 04:55:48	Jester01	[13:56:55] you will also need to know how the caller supplies the inputs and whether it checks the returned value [13:56:55]
+2016-10-10 04:55:48	StuckAssembling	[13:57:47] So calling convention is how the program makes calls (I assume to check inputs)? [13:57:47]
+2016-10-10 04:55:48	Jester01	[13:58:08] calling convention is how the arguments and return values are passed  (among other things) [13:58:08]
+2016-10-10 04:55:48	Jester01	[13:58:15] https://en.wikipedia.org/wiki/X86_calling_conventions#System_V_AMD64_ABI [13:58:15]
+2016-10-10 04:55:48	Jester01	[13:59:01] for this phase, you need the "The first six integer or pointer arguments are passed in registers RDI, RSI, RDX, RCX, R8, and R9" part [13:59:01]
+2016-10-10 04:55:48	Jester01	[13:59:33] now if you scan through the code you can see rdi, rsi, rdx and rcx being used [13:59:33]
+2016-10-10 04:55:48	StuckAssembling	[13:59:33] Thank you for the link, so either a value or a pointer is passed using those registers to the program [13:59:33]
+2016-10-10 04:55:48	StuckAssembling	[13:59:46] I did see them, I just wasnt sure how to check the value [13:59:46]
+2016-10-10 04:55:48	Jester01	[13:59:49] so this phase takes 4 arguments [13:59:49]
+2016-10-10 04:55:48	StuckAssembling	[13:59:53] I was trying the gdb print function [13:59:53]
+2016-10-10 04:55:48	StuckAssembling	[14:00:22] to say [14:00:22]
+2016-10-10 04:55:48	Jester01	[14:00:29] what those arguments are, you need to figure out from the caller (that you didn't show) or try to deduce in gdb if you can match inputs to registers [14:00:29]
+2016-10-10 04:55:48	Jester01	[14:01:23] the calling convention also says the return value is going to be in rax [14:01:23]
+2016-10-10 04:55:48	StuckAssembling	[14:01:25] Jester01 : In the tutorial link I provided I believe that's what the author was doing [14:01:25]
+2016-10-10 04:55:48	StuckAssembling	[14:01:39] deducing in GDB* [14:01:39]
+2016-10-10 04:55:48	Jester01	[14:02:14] so now you should see that this is  "int phase_2(int a, int b, int c, int d)" [14:02:14]
+2016-10-10 04:55:48	Jester01	[14:02:52] given your comments in the code, you can follow through what happens to each of a,b,c,d and work out what their value should be so the bomb doesn't explode [14:02:52]
+2016-10-10 04:55:48	StuckAssembling	[14:03:36] How did you get 4 inputs? I was going by compare functions to be honest [14:03:36]
+2016-10-10 04:55:48	Jester01	[14:04:05] <Jester01> for this phase, you need the "The first six integer or pointer arguments are passed in registers RDI, RSI, RDX, RCX, R8, and R9" part [14:04:05]
+2016-10-10 04:55:48	Jester01	[14:04:05] <Jester01> now if you scan through the code you can see rdi, rsi, rdx and rcx being used [14:04:05]
+2016-10-10 04:55:48	StuckAssembling	[14:04:37] ahhhhh [14:04:37]
+2016-10-10 04:55:48	StuckAssembling	[14:04:50] Sorry you did just say that and I blanked [14:04:50]
+2016-10-10 04:55:48	Jester01	[14:05:08] even without knowing the calling convention, you can see those registers are used without being initialized, so they must be coming from outside [14:05:08]
+2016-10-10 04:55:48	Jester01	[14:05:33] cmp    $0x3,%rdi  <== that just checks rdi right away without doing anything to it [14:05:33]
+2016-10-10 04:55:48	Jester01	[14:05:48] now rdi is the first argument, what I called "a" [14:05:48]
+2016-10-10 04:55:48	StuckAssembling	[14:05:55] And that's comparing one of my inputs to 3 right? [14:05:55]
+2016-10-10 04:55:48	Jester01	[14:06:09] so you see that  does  if (a != 3) bomb_goes_off(); [14:06:09]
+2016-10-10 04:55:48	Jester01	[14:06:24] and voila, you already know that the first input must be 3 [14:06:24]
+2016-10-10 04:55:48	StuckAssembling	[14:07:02] So for a non compare register, I would just need to follow it through the code to work out the value? [14:07:02]
+2016-10-10 04:55:48	Jester01	[14:07:07] yes [14:07:07]
+2016-10-10 04:55:48	StuckAssembling	[14:07:26] Thank you so much mate :) [14:07:26]
+2016-10-10 04:55:48	StuckAssembling	[14:07:33] Gonna have a try now [14:07:33]
+2016-10-10 04:55:48	StuckAssembling	[14:07:38] will update shortly [14:07:38]
+2016-10-10 04:55:48	 *	vulture_ [14:07:59] cooks up a bowl of soup for Jester01 [14:07:59]
+2016-10-10 04:55:48	Jester01	[14:08:14] :D [14:08:14]
+2016-10-10 04:55:48	***	Playback Complete.
+2016-10-10 04:56:01	--	irc: disconnected from server
+2016-10-10 04:56:33	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined ##asm
+2016-10-10 04:56:33		[04:56]
+2016-10-10 04:56:33	--	Topic for ##asm is "Assembly programming channel, all architectures welcome (please specify). Don't ask to ask! Use a pastebin if appropriate! Check your manuals! *** AT&T vs Intel flamers will be banned."
+2016-10-10 04:56:33	--	Topic set by Jester01 (~Jester01@62.100.244.69) on Fri, 30 Sep 2016 06:54:51
+2016-10-10 04:56:33	--	Channel ##asm: 298 nicks (0 ops, 0 voices, 298 normals)
+2016-10-10 04:56:33	***	Buffer Playback...
+2016-10-10 04:56:33	latemus	[13:50:50] thank you [13:50:50]
+2016-10-10 04:56:33	StuckAssembling	[13:50:52] That link explains it [13:50:52]
+2016-10-10 04:56:33	latemus	[13:51:03] nice. (sorry to interrupt you all) [13:51:03]
+2016-10-10 04:56:33	StuckAssembling	[13:51:18] but the TLDR is - you have to defuse a bomb. There are 6 phases which each have a password of some variety [13:51:18]
+2016-10-10 04:56:33	StuckAssembling	[13:51:47] you can run said bomb with a text file arg containing all the passwords [13:51:47]
+2016-10-10 04:56:33	StuckAssembling	[13:52:03] So for me so far, I have \AD as my first password [13:52:03]
+2016-10-10 04:56:33	dminuoso	[13:52:14] StuckAssembling: Ah, so the goal is to reverse engineer the bomb through disassembly, and defuse it? [13:52:14]
+2016-10-10 04:56:33	StuckAssembling	[13:52:20] Exactly [13:52:20]
+2016-10-10 04:56:33	StuckAssembling	[13:52:32] There are links all over the internet based on the original bomb labs [13:52:32]
+2016-10-10 04:56:33	dminuoso	[13:52:37] StuckAssembling: Neat. Does it involve an actual bomb? [13:52:37]
+2016-10-10 04:56:33	StuckAssembling	[13:52:47] I wish ^.^ [13:52:47]
+2016-10-10 04:56:33	StuckAssembling	[13:53:02] It connects to a server and reports your progress [13:53:02]
+2016-10-10 04:56:33	StuckAssembling	[13:53:28] I'm not certain if the verification is local or server side, but I feel like it's local [13:53:28]
+2016-10-10 04:56:33	StuckAssembling	[13:53:34] and it just reports back to record marks [13:53:34]
+2016-10-10 04:56:33	Jester01	[13:56:19] you should know the calling convention,then figure the inputs then follow them through the checks [13:56:19]
+2016-10-10 04:56:33	Jester01	[13:56:55] you will also need to know how the caller supplies the inputs and whether it checks the returned value [13:56:55]
+2016-10-10 04:56:33	StuckAssembling	[13:57:47] So calling convention is how the program makes calls (I assume to check inputs)? [13:57:47]
+2016-10-10 04:56:33	Jester01	[13:58:08] calling convention is how the arguments and return values are passed  (among other things) [13:58:08]
+2016-10-10 04:56:33	Jester01	[13:58:15] https://en.wikipedia.org/wiki/X86_calling_conventions#System_V_AMD64_ABI [13:58:15]
+2016-10-10 04:56:33	Jester01	[13:59:01] for this phase, you need the "The first six integer or pointer arguments are passed in registers RDI, RSI, RDX, RCX, R8, and R9" part [13:59:01]
+2016-10-10 04:56:33	Jester01	[13:59:33] now if you scan through the code you can see rdi, rsi, rdx and rcx being used [13:59:33]
+2016-10-10 04:56:33	StuckAssembling	[13:59:33] Thank you for the link, so either a value or a pointer is passed using those registers to the program [13:59:33]
+2016-10-10 04:56:33	StuckAssembling	[13:59:46] I did see them, I just wasnt sure how to check the value [13:59:46]
+2016-10-10 04:56:33	Jester01	[13:59:49] so this phase takes 4 arguments [13:59:49]
+2016-10-10 04:56:33	StuckAssembling	[13:59:53] I was trying the gdb print function [13:59:53]
+2016-10-10 04:56:33	StuckAssembling	[14:00:22] to say [14:00:22]
+2016-10-10 04:56:33	Jester01	[14:00:29] what those arguments are, you need to figure out from the caller (that you didn't show) or try to deduce in gdb if you can match inputs to registers [14:00:29]
+2016-10-10 04:56:33	Jester01	[14:01:23] the calling convention also says the return value is going to be in rax [14:01:23]
+2016-10-10 04:56:33	StuckAssembling	[14:01:25] Jester01 : In the tutorial link I provided I believe that's what the author was doing [14:01:25]
+2016-10-10 04:56:33	StuckAssembling	[14:01:39] deducing in GDB* [14:01:39]
+2016-10-10 04:56:33	Jester01	[14:02:14] so now you should see that this is  "int phase_2(int a, int b, int c, int d)" [14:02:14]
+2016-10-10 04:56:33	Jester01	[14:02:52] given your comments in the code, you can follow through what happens to each of a,b,c,d and work out what their value should be so the bomb doesn't explode [14:02:52]
+2016-10-10 04:56:33	StuckAssembling	[14:03:36] How did you get 4 inputs? I was going by compare functions to be honest [14:03:36]
+2016-10-10 04:56:33	Jester01	[14:04:05] <Jester01> for this phase, you need the "The first six integer or pointer arguments are passed in registers RDI, RSI, RDX, RCX, R8, and R9" part [14:04:05]
+2016-10-10 04:56:33	Jester01	[14:04:05] <Jester01> now if you scan through the code you can see rdi, rsi, rdx and rcx being used [14:04:05]
+2016-10-10 04:56:33	StuckAssembling	[14:04:37] ahhhhh [14:04:37]
+2016-10-10 04:56:33	StuckAssembling	[14:04:50] Sorry you did just say that and I blanked [14:04:50]
+2016-10-10 04:56:33	Jester01	[14:05:08] even without knowing the calling convention, you can see those registers are used without being initialized, so they must be coming from outside [14:05:08]
+2016-10-10 04:56:33	Jester01	[14:05:33] cmp    $0x3,%rdi  <== that just checks rdi right away without doing anything to it [14:05:33]
+2016-10-10 04:56:33	Jester01	[14:05:48] now rdi is the first argument, what I called "a" [14:05:48]
+2016-10-10 04:56:33	StuckAssembling	[14:05:55] And that's comparing one of my inputs to 3 right? [14:05:55]
+2016-10-10 04:56:33	Jester01	[14:06:09] so you see that  does  if (a != 3) bomb_goes_off(); [14:06:09]
+2016-10-10 04:56:33	Jester01	[14:06:24] and voila, you already know that the first input must be 3 [14:06:24]
+2016-10-10 04:56:33	StuckAssembling	[14:07:02] So for a non compare register, I would just need to follow it through the code to work out the value? [14:07:02]
+2016-10-10 04:56:33	Jester01	[14:07:07] yes [14:07:07]
+2016-10-10 04:56:33	StuckAssembling	[14:07:26] Thank you so much mate :) [14:07:26]
+2016-10-10 04:56:33	StuckAssembling	[14:07:33] Gonna have a try now [14:07:33]
+2016-10-10 04:56:33	StuckAssembling	[14:07:38] will update shortly [14:07:38]
+2016-10-10 04:56:33	 *	vulture_ [14:07:59] cooks up a bowl of soup for Jester01 [14:07:59]
+2016-10-10 04:56:33	Jester01	[14:08:14] :D [14:08:14]
+2016-10-10 04:56:33	***	Playback Complete.
+2016-10-10 04:56:55	--	Channel created on Sun, 27 May 2007 05:31:12
+2016-10-10 05:02:00		[04:56]
+2016-10-10 05:02:29	<--	gfurnish (~gfurnish@c-67-171-116-251.hsd1.ut.comcast.net) has quit (Ping timeout: 248 seconds)
+2016-10-10 05:04:41	-->	lapinozz (~lapinozz@45.74.164.117) has joined ##asm
+2016-10-10 05:06:14	<--	dminuoso (~dminuoso@unaffiliated/dminuoso) has quit (Remote host closed the connection)
+2016-10-10 05:06:23	-->	hmmmm (~sdfgsf@72.79.172.20) has joined ##asm
+2016-10-10 05:09:37	--	rnsanchez_ is now known as rnsanchez
+2016-10-10 05:11:33	-->	mra90 (~Martin@host-85-202-159-241.sta.tvknaszapraca.pl) has joined ##asm
+2016-10-10 05:13:35	-->	lowin (~lowin@31.56.133.152) has joined ##asm
+2016-10-10 05:18:26	<--	The_Donald (~HagerTheH@h081217214054.dyn.cm.kabsi.at) has quit (Read error: Connection reset by peer)
+2016-10-10 05:18:26		[05:18]
+2016-10-10 05:19:37	-->	wondiws (~Jasper@5ED7DF59.cm-7-8d.dynamic.ziggo.nl) has joined ##asm
+2016-10-10 05:23:47	-->	gfurnish (~gfurnish@c-67-171-116-251.hsd1.ut.comcast.net) has joined ##asm
+2016-10-10 05:23:52	<--	redeemed (~rd@82.208.188.40) has quit (Ping timeout: 250 seconds)
+2016-10-10 05:24:42	<--	nejm (~Thunderbi@ip51cfc7e6.direct-adsl.nl) has quit (Remote host closed the connection)
+2016-10-10 05:25:00	-->	nejm (~Thunderbi@ip51cfc7e6.direct-adsl.nl) has joined ##asm
+2016-10-10 05:29:03	<--	medicijnman (~methos@5ED27E76.cm-7-3b.dynamic.ziggo.nl) has quit (Quit: Leaving.)
+2016-10-10 05:31:14	-->	Heasummn (~Heasummn@c-73-73-21-171.hsd1.il.comcast.net) has joined ##asm
+2016-10-10 05:32:01	Xatenev	Is it hard to find a job on that low level like deep C / ASM ?
+2016-10-10 05:32:25	Xatenev	I can imagine there arent as much jobs as for web devs f.e. :p
+2016-10-10 05:33:50	Jester01	vulture_ can give you a job if you are good enough :D
+2016-10-10 05:33:50		[05:33]
+2016-10-10 05:34:30	Xatenev	Jester01: Lol, im definetly too bad.
+2016-10-10 05:34:42	Xatenev	Jester01: Im a web developer but wanna get a little bit more into low level stuff
+2016-10-10 05:34:47	Xatenev	to get a deeper understanding of whats going on.
+2016-10-10 05:34:54	Xatenev	Give me some years i'll brb
+2016-10-10 05:36:31	<--	nejm (~Thunderbi@ip51cfc7e6.direct-adsl.nl) has quit (Quit: nejm)
+2016-10-10 05:39:10	GeDaMo	Xatenev: you might be interested in this http://nand2tetris.org/
+2016-10-10 05:39:49	roxfan	http://www.compilerjobs.com/
+2016-10-10 05:40:14	roxfan	oops, php error
+2016-10-10 05:40:56	<--	MyCuriosity (~MyCuriosi@unaffiliated/mycuriosity) has quit (Remote host closed the connection)
+2016-10-10 05:40:59	-->	thewormkill (~thewormki@ip31-214.kullen.rwth-aachen.de) has joined ##asm
+2016-10-10 05:42:54	-->	bcos_ (~bcos@101.103.149.174) has joined ##asm
+2016-10-10 05:43:45	vulture_	Jester01: I'm not entirely sure of our hiring situation anymore since amazon bought us out
+2016-10-10 05:44:50	Xatenev	vulture_: What is your company about?
+2016-10-10 05:44:55	Xatenev	Like.. What are you doing?
+2016-10-10 05:45:53	<--	bcos (~bcos@CPE-1-123-143-144.sml9.way.bigpond.net.au) has quit (Ping timeout: 260 seconds)
+2016-10-10 05:46:25	-->	Judge_Dredd (~Judge_Dre@unaffiliated/judge-dredd/x-2170742) has joined ##asm
+2016-10-10 05:47:49	<--	Albori (~Albori@64-15-82-48.fidnet.com) has quit (Ping timeout: 248 seconds)
+2016-10-10 05:49:14	-->	Albori (~Albori@64-15-82-48.fidnet.com) has joined ##asm
+2016-10-10 05:49:14		[05:49]
+2016-10-10 05:49:52	vulture_	Xatenev: curse
+2016-10-10 05:50:16	<--	alecov (~control@unaffiliated/control) has quit (Disconnected by services)
+2016-10-10 05:50:18	-->	alecov (~control@unaffiliated/control) has joined ##asm
+2016-10-10 05:56:00		[05:50]
+2016-10-10 06:01:10	<--	Xatenev (~Gerd@pd907f4d2.dip0.t-ipconnect.de) has quit (Read error: Connection reset by peer)
+2016-10-10 06:02:31	<--	Secret-Fire (~secret-fi@2601:1c1:4201:458c:818c:e172:4e12:bf55) has quit (Remote host closed the connection)
+2016-10-10 06:03:17	<--	Indecipherable (~Howl@41.162.59.11) has quit (Ping timeout: 248 seconds)
+2016-10-10 06:03:28	-->	ararob2 (~yaaic@c-f78472d5.043-274-73746f25.cust.bredbandsbolaget.se) has joined ##asm
+2016-10-10 06:06:39	-->	SwiftMatt (~Objective@162.242.95.199) has joined ##asm
+2016-10-10 06:09:11	-->	metachr0n (~nobody@gateway/vpn/privateinternetaccess/metachr0n) has joined ##asm
+2016-10-10 06:14:39	-->	ARM9 (~ARM9@46-236-101-61.customer.t3.se) has joined ##asm
+2016-10-10 06:14:39		[06:14]
+2016-10-10 06:16:25	<--	metachr0n (~nobody@gateway/vpn/privateinternetaccess/metachr0n) has quit (Quit: WeeChat 1.5)
+2016-10-10 06:19:22	-->	metachr0n (~nobody@gateway/vpn/privateinternetaccess/metachr0n) has joined ##asm
+2016-10-10 06:20:29	-->	damme (~damme@2001:16d8:cc75::802) has joined ##asm
+2016-10-10 06:21:37	<--	b00x (~b00x@159-118-241-27.cpe.cableone.net) has quit (Quit: Leaving)
+2016-10-10 06:22:04	-->	b00x (~b00x@159-118-241-27.cpe.cableone.net) has joined ##asm
+2016-10-10 06:23:38	-->	MulleDK19 (MulleDK19@unaffiliated/mulledk19) has joined ##asm
+2016-10-10 06:26:33	<--	fr0gRIP (~fr0gRIP@163.5.223.84) has quit (Ping timeout: 268 seconds)
+2016-10-10 06:26:46	<--	b00x (~b00x@159-118-241-27.cpe.cableone.net) has quit (Client Quit)
+2016-10-10 06:27:02	-->	b00x (~b00x@159-118-241-27.cpe.cableone.net) has joined ##asm
+2016-10-10 06:33:00		[06:27]
+2016-10-10 06:33:16	-->	slither (~jesus@2.26.134.158) has joined ##asm
+2016-10-10 06:36:46	<--	StuckAssembling (310272c2@gateway/web/freenode/ip.49.2.114.194) has quit (Ping timeout: 260 seconds)
+2016-10-10 06:37:42	-->	nevodka (~nevodka@205.175.119.230) has joined ##asm
+2016-10-10 06:38:17	<--	slidercrank (~slidercra@unaffiliated/slidercrank) has quit (Quit: Leaving)
+2016-10-10 06:40:48	-->	MoALTz (~no@78-11-247-26.static.ip.netia.com.pl) has joined ##asm
+2016-10-10 06:41:07	-->	warchild (~smurf@198.162.93.26) has joined ##asm
+2016-10-10 06:41:58	-->	Indecipherable (~Howl@41.162.59.11) has joined ##asm
+2016-10-10 06:42:32	<--	Indecipherable (~Howl@41.162.59.11) has quit (Max SendQ exceeded)
+2016-10-10 06:46:32	-->	fr0gRIP (~fr0gRIP@163.5.223.84) has joined ##asm
+2016-10-10 06:47:56	<--	nevodka (~nevodka@205.175.119.230) has quit (Remote host closed the connection)
+2016-10-10 06:48:22	<--	Albori (~Albori@64-15-82-48.fidnet.com) has quit (Ping timeout: 250 seconds)
+2016-10-10 06:48:22		[06:48]
+2016-10-10 06:48:27	<--	m8 (~m8@unaffiliated/m8) has quit (Read error: Connection reset by peer)
+2016-10-10 06:50:19	-->	Albori (~Albori@64-15-82-48.fidnet.com) has joined ##asm
+2016-10-10 06:50:53	-->	Cam0Cow (~Mutter@cpe-72-180-21-217.tx.res.rr.com) has joined ##asm
+2016-10-10 06:51:09	<--	Cam0Cow (~Mutter@cpe-72-180-21-217.tx.res.rr.com) has quit (Remote host closed the connection)
+2016-10-10 06:56:49	<--	Albori (~Albori@64-15-82-48.fidnet.com) has quit (Ping timeout: 260 seconds)
+2016-10-10 07:02:00		[06:56]
+2016-10-10 07:02:48	-->	Albori (~Albori@64-15-82-48.fidnet.com) has joined ##asm
+2016-10-10 07:03:59	<--	ararob (~yaaic@host-95-199-15-228.mobileonline.telia.com) has quit (Ping timeout: 250 seconds)
+2016-10-10 07:05:21	<--	VA3VNA (~mayday_ja@BURLON0233W-LP140-1-3096588864.dsl.bell.ca) has quit (Quit: Leaving)
+2016-10-10 07:09:06	<--	Albori (~Albori@64-15-82-48.fidnet.com) has quit (Ping timeout: 268 seconds)
+2016-10-10 07:09:13	-->	bcos (~bcos@CPE-1-123-18-147.sfl9.fli.bigpond.net.au) has joined ##asm
+2016-10-10 07:10:56	<--	bcos_ (~bcos@101.103.149.174) has quit (Ping timeout: 260 seconds)
+2016-10-10 07:12:18	-->	Albori (~Albori@64-15-82-48.fidnet.com) has joined ##asm
+2016-10-10 07:13:39	kns	https://t.co/jr02l1gG36
+2016-10-10 07:19:00		[07:13]
+2016-10-10 07:26:40	<--	metachr0n (~nobody@gateway/vpn/privateinternetaccess/metachr0n) has quit (Quit: WeeChat 1.5)
+2016-10-10 07:27:29	-->	metachr0n (~nobody@46.166.137.213) has joined ##asm
+2016-10-10 07:33:00		[07:27]
+2016-10-10 07:39:23	-->	vigole (~Thunderbi@178.252.165.108) has joined ##asm
+2016-10-10 07:39:30	<--	vigole (~Thunderbi@178.252.165.108) has left ##asm ("0xF4")
+2016-10-10 07:39:44	<--	snyp (~Snyp@150.129.132.21) has quit (Quit: WeeChat 1.6)
+2016-10-10 07:40:21	-->	vigole (~Thunderbi@178.252.165.108) has joined ##asm
+2016-10-10 07:42:40	<--	fr0gRIP (~fr0gRIP@163.5.223.84) has quit (Quit: fr0gRIP)
+2016-10-10 07:45:55	-->	praisethemoon (~praisethe@197.19.159.43) has joined ##asm
+2016-10-10 07:51:00		[07:45]
+2016-10-10 07:51:39	-->	tdec_ (~tdec__@unaffiliated/tdec--/x-7761972) has joined ##asm
+2016-10-10 07:57:00		[07:51]
+2016-10-10 07:57:46	-->	sn1c (~sn1c@ip-94-114-69-24.unity-media.net) has joined ##asm
+2016-10-10 07:58:09	<--	sn1c (~sn1c@ip-94-114-69-24.unity-media.net) has quit (Client Quit)
+2016-10-10 07:58:11	-->	Goplat (~goplat@reactos/developer/Goplat) has joined ##asm
+2016-10-10 08:04:00		[07:58]
+2016-10-10 08:04:27	<--	Antares (~Antares@ppp91-78-123-238.pppoe.mtu-net.ru) has quit (Quit: Leaving)
+2016-10-10 08:10:00		[08:04]
+2016-10-10 08:14:16	<--	Duns_Scrotus (~codpiece@prancing.homosexual.horse) has quit (Quit: WeeChat 1.4)
+2016-10-10 08:16:08	-->	slicktux (~slicktux@unaffiliated/slicktux) has joined ##asm
+2016-10-10 08:22:00		[08:16]
+2016-10-10 08:25:28	-->	xocket (~xocket@unaffiliated/xocket) has joined ##asm
+2016-10-10 08:27:18	-->	Jackneill (~Jackneill@unaffiliated/jackneill) has joined ##asm
+2016-10-10 08:27:33	<--	xocket (~xocket@unaffiliated/xocket) has quit (Max SendQ exceeded)
+2016-10-10 08:28:13	-->	xocket (~xocket@unaffiliated/xocket) has joined ##asm
+2016-10-10 08:29:17	-->	Duns_Scrotus (~codpiece@prancing.homosexual.horse) has joined ##asm
+2016-10-10 08:30:26	<--	xocket (~xocket@unaffiliated/xocket) has quit (Disconnected by services)
+2016-10-10 08:30:26	-->	xock_stream (~xocket@unaffiliated/xocket) has joined ##asm
+2016-10-10 08:31:33	<--	rendar (~I@host192-183-dynamic.49-79-r.retail.telecomitalia.it) has quit (Ping timeout: 260 seconds)
+2016-10-10 08:37:00		[08:31]
+2016-10-10 08:39:02	-->	slash^ (~unknown@2001:a61:11ff:2001:18be:df8f:7afa:dda6) has joined ##asm
+2016-10-10 08:39:51	<--	slash^ (~unknown@2001:a61:11ff:2001:18be:df8f:7afa:dda6) has quit (Client Quit)
+2016-10-10 08:40:08	-->	slash^ (~unknown@2001:a61:11ff:2001:18be:df8f:7afa:dda6) has joined ##asm
+2016-10-10 08:40:32	-->	mniip (mniip@freenode/staff/mniip) has joined ##asm
+2016-10-10 08:42:45	<--	MoALTz (~no@78-11-247-26.static.ip.netia.com.pl) has quit (Quit: Leaving)
+2016-10-10 08:42:47	-->	Fiki (~Fiki@80-109-242-183.cable.dynamic.surfer.at) has joined ##asm
+2016-10-10 08:45:16	<--	xock_stream (~xocket@unaffiliated/xocket) has quit (Ping timeout: 260 seconds)
+2016-10-10 08:46:22	-->	king_jah (~jah@S0106503955715ed3.ss.shawcable.net) has joined ##asm
+2016-10-10 08:52:00		[08:46]
+2016-10-10 08:52:13	-->	medicijnman (~methos@145.107.71.123) has joined ##asm
+2016-10-10 08:52:55	<--	Xylitol (~temari@unaffiliated/xylitol) has quit (Quit: Sharpen your sickle at sunset)
+2016-10-10 08:56:37	<--	medicijnman (~methos@145.107.71.123) has quit (Ping timeout: 248 seconds)
+2016-10-10 09:01:03	-->	rendar (~I@host192-183-dynamic.49-79-r.retail.telecomitalia.it) has joined ##asm
+2016-10-10 09:07:00		[09:01]
+2016-10-10 09:08:04	-->	Neslepaks (~Neslepaks@178.61.71.85) has joined ##asm
+2016-10-10 09:12:00	-->	ararob (~yaaic@c-f78472d5.043-274-73746f25.cust.bredbandsbolaget.se) has joined ##asm
+2016-10-10 09:17:00		[09:12]
+2016-10-10 09:18:05	-->	axis (~sergi@2.152.8.9.dyn.user.ono.com) has joined ##asm
+2016-10-10 09:18:51	<--	axis (~sergi@2.152.8.9.dyn.user.ono.com) has quit (Client Quit)
+2016-10-10 09:22:32	<--	|DM| (~|DM|@79.101.135.1) has quit (Remote host closed the connection)
+2016-10-10 09:25:37	<--	ggole (~ggole@220-253-189-10.dyn.iinet.net.au) has quit
+2016-10-10 09:25:48	<--	slicktux (~slicktux@unaffiliated/slicktux) has quit (Quit: leaving)
+2016-10-10 09:31:00		[09:25]
+2016-10-10 09:31:04	<--	navidr (uid112413@gateway/web/irccloud.com/x-ubpmzvhxbloguogy) has quit (Quit: Connection closed for inactivity)
+2016-10-10 09:31:06	-->	crankslider (~slidercra@unaffiliated/slidercrank) has joined ##asm
+2016-10-10 09:31:50	-->	Manticore (~Manticore@2001-0678-00f0-1071-ffb6-38b0-54d1-f874.pool6.ovpn.se) has joined ##asm
+2016-10-10 09:32:13	--	Manticore is now known as Guest53101
+2016-10-10 09:38:00		[09:32]
+2016-10-10 09:40:30	-->	nejm (~Thunderbi@ip51cfc7e6.direct-adsl.nl) has joined ##asm
+2016-10-10 09:43:31	-->	tehhd (~tehhhd@78-68-207-219-no225.tbcn.telia.com) has joined ##asm
+2016-10-10 09:45:11	<--	SwiftMatt (~Objective@162.242.95.199) has quit (Quit: My MacBook Pro has gone to sleep. ZZZzzz…)
+2016-10-10 09:45:12	<--	tehhd (~tehhhd@78-68-207-219-no225.tbcn.telia.com) has quit (Read error: Connection reset by peer)
+2016-10-10 09:47:16	<--	phinxy (~tehhhd@unaffiliated/phinxy) has quit (Ping timeout: 260 seconds)
+2016-10-10 09:50:31	<--	slash^ (~unknown@2001:a61:11ff:2001:18be:df8f:7afa:dda6) has quit (Read error: Connection reset by peer)
+2016-10-10 09:51:16	-->	a3f (~a3f@unaffiliated/a3f) has joined ##asm
+2016-10-10 09:52:37	<--	Judge_Dredd (~Judge_Dre@unaffiliated/judge-dredd/x-2170742) has quit (Quit: Leaving.)
+2016-10-10 09:53:15	<--	Neslepaks (~Neslepaks@178.61.71.85) has left ##asm
+2016-10-10 09:53:15		[09:53]
+2016-10-10 09:54:59	<--	ararob2 (~yaaic@c-f78472d5.043-274-73746f25.cust.bredbandsbolaget.se) has quit (Ping timeout: 268 seconds)
+2016-10-10 09:58:44	-->	aleph- (~hatter@unaffiliated/church-) has joined ##asm
+2016-10-10 10:00:53	<--	latemus (~latemus@unaffiliated/latemus) has quit (Quit: leaving)
+2016-10-10 10:01:34	-->	latemus (~latemus@unaffiliated/latemus) has joined ##asm
+2016-10-10 10:04:38	-->	dminuoso (~dminuoso@unaffiliated/dminuoso) has joined ##asm

@@ -140,7 +140,8 @@ alias catblackarch='sudo pacman -Sg | grep blackarch'
 alias newvnc='x11vnc -env FD_SDDM=1 -auth /tmp/xauth-1000-_0 -forever -shared -display :0 -autoport -6 -rfbauth /etc/x11vnc.pass -ncache 10 -ncache_cr -ssldir /home/alyptik/certs/vnc -ssl /home/alyptik/certs/vnc/server-vencrypt.pem -vencrypt support:nox509 -anontls support:nox509 -dhparams /home/alyptik/certs/vnc/dh.pem -noxdamage -noxkb -noxfixes -rmflag /tmp/x11vnc-alyptik.pid & disown '
 alias sedvnc="sudo sed -i '2,$ d; s/^.*$/$(pgrep x11vnc | paste -s -d " " | awk '{ print $NF }')/' /var/run/x11vnc.pid "
 alias killvnc='sudo killall x11vnc'
-alias updategrub='sudo grub-mkconfig -o /boot/grub/grub.cfg'
+alias updategrub='sudo grub-mkconfig -o /boot/grub/grub.cfg '
+alias efiupdategrub='sudo grub-mkconfig -o /boot/efi/EFI/grub/grub.cfg '
 
 ## Shortcut  for iptables and pass it via sudo
 alias ipt='sudo iptables --line-numbers -vnL'
@@ -357,12 +358,17 @@ alias ald='ld -I/lib64/ld-linux-x86-64.so.2 /usr/lib/crt1.o /usr/lib/crti.o -lc 
 
 ## shell functions
 
+compdefas() {
+	sudo dd if=/dev/sdc of-=/dev/sdd bs=64K conv=noerror,sync status=progress && \
+	sync
+}
+
 sdbus() {
 	[[ ! -z "$XDG_RUNTIME_DIR" ]] || export XDG_RUNTIME_DIR="/run/user/$UID"
 	[[ ! -z "$DBUS_SESSION_BUS_ADDRESS" ]] || export DBUS_SESSION_BUS_ADDRESS="unix:path=${XDG_RUNTIME_DIR}/bus"
 }
 
-echocat() { eval cat $(printf '%s' `eval "{ <<<"${@}" sed 's/\<\([a-zA-Z0-9]*\)\>/<(<<<\"\1\")/g;s@\-@/dev/stdin@g'; }"`); }
+echocat() { eval cat $( printf '%s' `eval "{ <<<"${@}" sed 's/\<\([a-zA-Z0-9]*\)\>/<(<<<\"\1\")/g;s@\-@/dev/stdin@g' }"`); }
 
 tunssh() {
 	#sshuttle -r username@sshserver 0.0.0.0/0 -vv
@@ -1436,10 +1442,19 @@ ufs() {
 
 sfs() {
 	[[ -z `find /mnt -maxdepth 1 -fstype "fuse.sshfs" -print` ]] && {
-		sshfs "192.168.1.99:/home/alyptik" "/mnt/arch"
-		sshfs "192.168.1.99:/mnt/windows" "/mnt/windows"
-		sshfs "192.168.1.99:/mnt/windows/Users/Administrator/Desktop/stuff" "/mnt/winserver"
-		return 0; } || { ufs; return 1; }
+		sshfs "192.168.1.99:/" "/mnt/arch"
+		sshfs "192.168.1.1:/" "/mnt/optware"
+		sshfs "192.168.1.2:/" "/mnt/usb"
+		#sshfs "192.168.1.99:/home/alyptik" "/mnt/arch"
+		#sshfs "192.168.1.99:/mnt/windows" "/mnt/windows"
+		#sshfs "192.168.1.99:/mnt/windows/Users/Administrator/Desktop/stuff" "/mnt/winserver"
+		return 0
+	} || {
+		#find /mnt -maxdepth 1 -fstype "fuse.sshfs" -print0 | xargs -t0 -I{} sudo umount "{}"
+		sudo find /mnt -maxdepth 1 -fstype "fuse.sshfs" -exec umount "{}" \;
+		#ufs
+		return 1
+	}
 }
 
 sfs2() {

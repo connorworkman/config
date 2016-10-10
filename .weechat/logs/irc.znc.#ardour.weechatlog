@@ -18136,3 +18136,516 @@
 2016-10-09 19:05:53	<--	dsr1204 (~dsr1204@99-111-235-130.lightspeed.cicril.sbcglobal.net) has quit (Ping timeout: 244 seconds)
 2016-10-09 19:11:00		[19:05]
 2016-10-09 19:11:08	-->	remixvinil (~remix@95.46.18.239) has joined #ardour
+2016-10-10 01:19:59	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined #ardour
+2016-10-10 01:19:59		[01:19]
+2016-10-10 01:19:59	--	Topic for #ardour is "5.4 is released | download: http://ardour.org/download |  paste to http://pastebin.com/ | OS X users please /join #ardour-osx"
+2016-10-10 01:19:59	--	Topic set by las (~paul@13.sub-174-197-18.myvzw.com) on Sat, 01 Oct 2016 05:02:53
+2016-10-10 01:19:59	--	Channel #ardour: 149 nicks (1 op, 0 voices, 148 normals)
+2016-10-10 01:19:59	***	Buffer Playback...
+2016-10-10 01:19:59	 *	naptastic [01:04:40] does apt-get install libusb-dev [01:04:40]
+2016-10-10 01:19:59	naptastic	[01:04:59] hey look, it's working again :) [01:04:59]
+2016-10-10 01:19:59	rgareus	[01:05:07] naptastic: does it? [01:05:07]
+2016-10-10 01:19:59	naptastic	[01:05:12] well, it's compiling [01:05:12]
+2016-10-10 01:19:59	naptastic	[01:05:20] I need a snack... [01:05:20]
+2016-10-10 01:19:59	naptastic	[01:08:10] ../libs/surfaces/tranzport/tranzport_control_protocol.h:202:8: error: ‘Mutex’ in namespace ‘Glib’ does not name a type [01:08:10]
+2016-10-10 01:19:59	naptastic	[01:08:31] well, rgareus, it looks like those bits are rotten. So back to the drawing board. :P [01:08:31]
+2016-10-10 01:19:59	rgareus	[01:09:50] naptastic: probably   Glib::Threads::Mutex::Lock [01:09:50]
+2016-10-10 01:19:59	rgareus	[01:10:53] actualy  Glib::Threads::Mutex  (is the type_ [01:10:53]
+2016-10-10 01:19:59	nstewart	[01:17:06] am I crazy or did "Audio System" ever have an option other than "Jack"? Some of the test reference "None - Dummy", and I suspect they need to be Jack - Dummy or similar. Did we discard the ability to run raw alsa without jack recently (rings a bell) [01:17:06]
+2016-10-10 01:19:59	rgareus	[01:17:53] nstewart:   ./waf configure ... --with-backends=jack,alsa,dummy ...  [01:17:53]
+2016-10-10 01:19:59	nstewart	[01:17:56] rgareus:  did you say all tests pass or just the one we were talking about? I have 11 failing. [01:17:56]
+2016-10-10 01:19:59	nstewart	[01:18:01] ah [01:18:01]
+2016-10-10 01:19:59	rgareus	[01:18:18] nstewart: tests pass with exception of the Push2 control surface [01:18:18]
+2016-10-10 01:19:59	rgareus	[01:18:50] that's a known issue (unit-tests are not linked against UI libs,  Push2 needs libpango for rendering on the device) [01:18:50]
+2016-10-10 01:19:59	rgareus	[01:18:59] paul is looking into that. [01:18:59]
+2016-10-10 01:19:59	nstewart	[01:51:46] can a region have  a negative location? [01:51:46]
+2016-10-10 01:19:59	nstewart	[01:52:35] 	set_loop_range (start, end, _("set loop range from region")); start = -888, blows up trying to create the loop range.  [01:52:35]
+2016-10-10 01:19:59	UncleJed	[01:56:09] anyone on here by chance have issues with jerky interface after upgrading to v4? [01:56:09]
+2016-10-10 01:19:59	UncleJed	[01:58:20] holy cow...just saw at the top that were already in v5. lmao [01:58:20]
+2016-10-10 01:19:59	UncleJed	[01:58:28] *we're [01:58:28]
+2016-10-10 01:19:59	UncleJed	[02:02:01] well anyway, i have a live image of my ubuntu studio with ardour 3 that works great. all settings are identical as far as i can tell, but playback is very jerky - not audio - just the graphics. And even when clicking on a control, it takes 1-2 seconds to even respond to the click.  [02:02:01]
+2016-10-10 01:19:59	UncleJed	[02:04:05] just need a little direction of where else to look. nividia drivers are identical...jackctrl settings are identical (same result using ALSA). sample settings are identical...what else should I check? [02:04:05]
+2016-10-10 01:19:59	rgareus	[02:04:07] UncleJed: there's an option in the preferences to disable graphics access [02:04:07]
+2016-10-10 01:19:59	rgareus	[02:04:53] UncleJed: in some cases "accelleration" is actually slower.  some Ubuntu versions have this issue with some graphics-drivers. [02:04:53]
+2016-10-10 01:19:59	UncleJed	[02:05:28] rgareus: checking on that now  [02:05:28]
+2016-10-10 01:19:59	rgareus	[02:05:43] "Possibly improve slow graphical performance"  in Preferences > GUI [02:05:43]
+2016-10-10 01:19:59	rgareus	[02:06:21] (only versions of ardour from ardour.org have this option -- they come with a patched libcairo which allows that) [02:06:21]
+2016-10-10 01:19:59	rgareus	[02:06:58] goes back to  https://community.ardour.org/node/8800 [02:06:58]
+2016-10-10 01:19:59	nstewart	[02:08:04] weird - have a session saved with apparently a bad (negative) region start.  can repro in gdb from my saved session, but not sure how I got it. I thought perhaps rhythm ferret chopping it up might have made it bad. But can't seem to repro from scratch [02:08:04]
+2016-10-10 01:19:59	UncleJed	[02:08:23] ok...i didn't see that option so was wondering...hehe. I upgraded by adding a repository and doing apt-get update...etcc [02:08:23]
+2016-10-10 01:19:59	UncleJed	[02:09:41] rgareus: ah! I hadn't found that info page yet. thanks!  [02:09:41]
+2016-10-10 01:19:59	UncleJed	[02:10:00] not that i hadn't tried....hehe [02:10:00]
+2016-10-10 01:19:59	rgareus	[02:10:01] UncleJed: you could compare with a https://nightly.ardour.org/ build [02:10:01]
+2016-10-10 01:19:59	LAbot	[02:10:02] Title: Ardour - Nightly Builds (at nightly.ardour.org) [02:10:02]
+2016-10-10 01:19:59	rgareus	[02:10:33] nstewart: negative start should not be possible. sounds like a bug [02:10:33]
+2016-10-10 01:19:59	nstewart	[02:12:04] yeah, pretty sure it is. Just not sure what the bug is.  I could upload a session, but not sure how to differentiate it from "hey, the power supply current limit doesn't work when I stuff the chassis full of steel wool.  [02:12:04]
+2016-10-10 01:19:59	UncleJed	[02:12:11] rgareus: so maybe I should just ugrade to v5 first and see if that fixes it. no sense in  fixing it now in v4 if i'll eventually upgrade later anyway. that what you're suggesting? [02:12:11]
+2016-10-10 01:19:59	nstewart	[02:12:36] I swear I used to work with testers who would think that was a valid test method. [02:12:36]
+2016-10-10 01:19:59	rgareus	[02:12:44] UncleJed: builds from *.ardour.org can be installed in parallel to distro versions. [02:12:44]
+2016-10-10 01:19:59	rgareus	[02:13:19] UncleJed: but yes, you could try v5 from <your distro repo> first. [02:13:19]
+2016-10-10 01:19:59	UncleJed	[02:14:22] rgareus: ok. I'll do that first then will try ardour.org if that doesn't work. I'm quasi-noob with linux so installing something in parallel sounds a little intimidating ATM. hehe [02:14:22]
+2016-10-10 01:19:59	UncleJed	[02:16:27] rgareus: and thank you very much for your help! [02:16:27]
+2016-10-10 01:19:59	rgareus	[02:16:34] UncleJed: you're welcome [02:16:34]
+2016-10-10 01:19:59	nstewart	[02:18:36] still not sure how it got that way, but my session is saved with one region with a negative start. If I click on the first region, and show properties, it shows the negative value. If I click int he field it figures out its whacked and resets it to zero. But drag select them all yields an illegal start location. [02:18:36]
+2016-10-10 01:19:59	nstewart	[02:34:24] http://tracker.ardour.org/view.php?id=7066 there ya go.  I can help hunt it down if you can steer me to the other end of the slots/singals rabbit trail. [02:34:24]
+2016-10-10 01:19:59	LAbot	[02:34:25] Title: 0007066: crash creating range from region with illegal start location - MantisBT (at tracker.ardour.org) [02:34:25]
+2016-10-10 01:19:59	rghvdberg	[08:35:09] just noticed how much easier it is to sidechain (volume ducking) in ardour since 5.3 .. kudos [08:35:09]
+2016-10-10 01:19:59	DamionGans	[10:38:13] Hey all, how stable is Ardour for Windows? [10:38:13]
+2016-10-10 01:19:59	DamionGans	[10:43:40] And do I need to be a subscriber for that? [10:43:40]
+2016-10-10 01:19:59	***	Playback Complete.
+2016-10-10 01:20:01	-->	henkz (~henke@c-c4c671d5.215-6-64736c10.cust.bredbandsbolaget.se) has joined #ardour
+2016-10-10 01:20:45	--	Channel created on Sat, 25 Nov 2006 20:42:44
+2016-10-10 01:21:23	-->	freedom01 (~freedom@112.206.176.70) has joined #ardour
+2016-10-10 01:22:17	<--	polosson (~polosson@dispo-82-250-9-190.adsl.proxad.net) has quit (Ping timeout: 240 seconds)
+2016-10-10 01:25:40	<--	papachef (~compsogna@cxr69-h06-212-195-56-168.dsl.sta.abo.bbox.fr) has quit (Quit: Ex-Chat)
+2016-10-10 01:28:30	<--	Stuzz (~stuzz@CPE-121-223-1-99.lnse2.cha.bigpond.net.au) has quit (Quit: WeeChat 1.5)
+2016-10-10 01:32:08	-->	GrusGrus (~Thunderbi@176.12.107.137) has joined #ardour
+2016-10-10 01:35:43	-->	kyan (~kyan@cpe-74-78-187-9.maine.res.rr.com) has joined #ardour
+2016-10-10 01:35:43		[01:35]
+2016-10-10 01:40:52	<--	GrusGrus (~Thunderbi@176.12.107.137) has quit (Remote host closed the connection)
+2016-10-10 01:45:22	-->	sdoherty (sdoherty@nat/redhat/x-gwxsmalxvfvgjdly) has joined #ardour
+2016-10-10 02:08:16	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined #ardour
+2016-10-10 02:08:16		[02:08]
+2016-10-10 02:08:16	--	Topic for #ardour is "5.4 is released | download: http://ardour.org/download |  paste to http://pastebin.com/ | OS X users please /join #ardour-osx"
+2016-10-10 02:08:16	--	Topic set by las (~paul@13.sub-174-197-18.myvzw.com) on Sat, 01 Oct 2016 05:02:53
+2016-10-10 02:08:16	--	Channel #ardour: 148 nicks (1 op, 0 voices, 147 normals)
+2016-10-10 02:08:16	***	Buffer Playback...
+2016-10-10 02:08:16	 *	naptastic [01:04:40] does apt-get install libusb-dev [01:04:40]
+2016-10-10 02:08:16	naptastic	[01:04:59] hey look, it's working again :) [01:04:59]
+2016-10-10 02:08:16	rgareus	[01:05:07] naptastic: does it? [01:05:07]
+2016-10-10 02:08:16	naptastic	[01:05:12] well, it's compiling [01:05:12]
+2016-10-10 02:08:16	naptastic	[01:05:20] I need a snack... [01:05:20]
+2016-10-10 02:08:16	naptastic	[01:08:10] ../libs/surfaces/tranzport/tranzport_control_protocol.h:202:8: error: ‘Mutex’ in namespace ‘Glib’ does not name a type [01:08:10]
+2016-10-10 02:08:16	naptastic	[01:08:31] well, rgareus, it looks like those bits are rotten. So back to the drawing board. :P [01:08:31]
+2016-10-10 02:08:16	rgareus	[01:09:50] naptastic: probably   Glib::Threads::Mutex::Lock [01:09:50]
+2016-10-10 02:08:16	rgareus	[01:10:53] actualy  Glib::Threads::Mutex  (is the type_ [01:10:53]
+2016-10-10 02:08:16	nstewart	[01:17:06] am I crazy or did "Audio System" ever have an option other than "Jack"? Some of the test reference "None - Dummy", and I suspect they need to be Jack - Dummy or similar. Did we discard the ability to run raw alsa without jack recently (rings a bell) [01:17:06]
+2016-10-10 02:08:16	rgareus	[01:17:53] nstewart:   ./waf configure ... --with-backends=jack,alsa,dummy ...  [01:17:53]
+2016-10-10 02:08:16	nstewart	[01:17:56] rgareus:  did you say all tests pass or just the one we were talking about? I have 11 failing. [01:17:56]
+2016-10-10 02:08:16	nstewart	[01:18:01] ah [01:18:01]
+2016-10-10 02:08:16	rgareus	[01:18:18] nstewart: tests pass with exception of the Push2 control surface [01:18:18]
+2016-10-10 02:08:16	rgareus	[01:18:50] that's a known issue (unit-tests are not linked against UI libs,  Push2 needs libpango for rendering on the device) [01:18:50]
+2016-10-10 02:08:16	rgareus	[01:18:59] paul is looking into that. [01:18:59]
+2016-10-10 02:08:16	nstewart	[01:51:46] can a region have  a negative location? [01:51:46]
+2016-10-10 02:08:16	nstewart	[01:52:35] 	set_loop_range (start, end, _("set loop range from region")); start = -888, blows up trying to create the loop range.  [01:52:35]
+2016-10-10 02:08:16	UncleJed	[01:56:09] anyone on here by chance have issues with jerky interface after upgrading to v4? [01:56:09]
+2016-10-10 02:08:16	UncleJed	[01:58:20] holy cow...just saw at the top that were already in v5. lmao [01:58:20]
+2016-10-10 02:08:16	UncleJed	[01:58:28] *we're [01:58:28]
+2016-10-10 02:08:16	UncleJed	[02:02:01] well anyway, i have a live image of my ubuntu studio with ardour 3 that works great. all settings are identical as far as i can tell, but playback is very jerky - not audio - just the graphics. And even when clicking on a control, it takes 1-2 seconds to even respond to the click.  [02:02:01]
+2016-10-10 02:08:16	UncleJed	[02:04:05] just need a little direction of where else to look. nividia drivers are identical...jackctrl settings are identical (same result using ALSA). sample settings are identical...what else should I check? [02:04:05]
+2016-10-10 02:08:16	rgareus	[02:04:07] UncleJed: there's an option in the preferences to disable graphics access [02:04:07]
+2016-10-10 02:08:16	rgareus	[02:04:53] UncleJed: in some cases "accelleration" is actually slower.  some Ubuntu versions have this issue with some graphics-drivers. [02:04:53]
+2016-10-10 02:08:16	UncleJed	[02:05:28] rgareus: checking on that now  [02:05:28]
+2016-10-10 02:08:16	rgareus	[02:05:43] "Possibly improve slow graphical performance"  in Preferences > GUI [02:05:43]
+2016-10-10 02:08:16	rgareus	[02:06:21] (only versions of ardour from ardour.org have this option -- they come with a patched libcairo which allows that) [02:06:21]
+2016-10-10 02:08:16	rgareus	[02:06:58] goes back to  https://community.ardour.org/node/8800 [02:06:58]
+2016-10-10 02:08:16	nstewart	[02:08:04] weird - have a session saved with apparently a bad (negative) region start.  can repro in gdb from my saved session, but not sure how I got it. I thought perhaps rhythm ferret chopping it up might have made it bad. But can't seem to repro from scratch [02:08:04]
+2016-10-10 02:08:16	UncleJed	[02:08:23] ok...i didn't see that option so was wondering...hehe. I upgraded by adding a repository and doing apt-get update...etcc [02:08:23]
+2016-10-10 02:08:16	UncleJed	[02:09:41] rgareus: ah! I hadn't found that info page yet. thanks!  [02:09:41]
+2016-10-10 02:08:16	UncleJed	[02:10:00] not that i hadn't tried....hehe [02:10:00]
+2016-10-10 02:08:16	rgareus	[02:10:01] UncleJed: you could compare with a https://nightly.ardour.org/ build [02:10:01]
+2016-10-10 02:08:16	LAbot	[02:10:02] Title: Ardour - Nightly Builds (at nightly.ardour.org) [02:10:02]
+2016-10-10 02:08:16	rgareus	[02:10:33] nstewart: negative start should not be possible. sounds like a bug [02:10:33]
+2016-10-10 02:08:16	nstewart	[02:12:04] yeah, pretty sure it is. Just not sure what the bug is.  I could upload a session, but not sure how to differentiate it from "hey, the power supply current limit doesn't work when I stuff the chassis full of steel wool.  [02:12:04]
+2016-10-10 02:08:16	UncleJed	[02:12:11] rgareus: so maybe I should just ugrade to v5 first and see if that fixes it. no sense in  fixing it now in v4 if i'll eventually upgrade later anyway. that what you're suggesting? [02:12:11]
+2016-10-10 02:08:16	nstewart	[02:12:36] I swear I used to work with testers who would think that was a valid test method. [02:12:36]
+2016-10-10 02:08:16	rgareus	[02:12:44] UncleJed: builds from *.ardour.org can be installed in parallel to distro versions. [02:12:44]
+2016-10-10 02:08:16	rgareus	[02:13:19] UncleJed: but yes, you could try v5 from <your distro repo> first. [02:13:19]
+2016-10-10 02:08:16	UncleJed	[02:14:22] rgareus: ok. I'll do that first then will try ardour.org if that doesn't work. I'm quasi-noob with linux so installing something in parallel sounds a little intimidating ATM. hehe [02:14:22]
+2016-10-10 02:08:16	UncleJed	[02:16:27] rgareus: and thank you very much for your help! [02:16:27]
+2016-10-10 02:08:16	rgareus	[02:16:34] UncleJed: you're welcome [02:16:34]
+2016-10-10 02:08:16	nstewart	[02:18:36] still not sure how it got that way, but my session is saved with one region with a negative start. If I click on the first region, and show properties, it shows the negative value. If I click int he field it figures out its whacked and resets it to zero. But drag select them all yields an illegal start location. [02:18:36]
+2016-10-10 02:08:16	nstewart	[02:34:24] http://tracker.ardour.org/view.php?id=7066 there ya go.  I can help hunt it down if you can steer me to the other end of the slots/singals rabbit trail. [02:34:24]
+2016-10-10 02:08:16	LAbot	[02:34:25] Title: 0007066: crash creating range from region with illegal start location - MantisBT (at tracker.ardour.org) [02:34:25]
+2016-10-10 02:08:16	rghvdberg	[08:35:09] just noticed how much easier it is to sidechain (volume ducking) in ardour since 5.3 .. kudos [08:35:09]
+2016-10-10 02:08:16	DamionGans	[10:38:13] Hey all, how stable is Ardour for Windows? [10:38:13]
+2016-10-10 02:08:16	DamionGans	[10:43:40] And do I need to be a subscriber for that? [10:43:40]
+2016-10-10 02:08:16	***	Playback Complete.
+2016-10-10 02:08:40	<--	edogawa (~quassel@194-166-115-203.adsl.highway.telekom.at) has quit (Remote host closed the connection)
+2016-10-10 02:09:05	--	Channel created on Sat, 25 Nov 2006 20:42:44
+2016-10-10 02:15:00		[02:09]
+2016-10-10 02:16:15	<--	kyan (~kyan@cpe-74-78-187-9.maine.res.rr.com) has quit (Remote host closed the connection)
+2016-10-10 02:20:51	-->	phoracek (phoracek@nat/redhat/x-wqcdknvrbomagzam) has joined #ardour
+2016-10-10 02:26:00		[02:20]
+2016-10-10 02:29:04	<--	son0p (~AndChat32@181.134.22.152) has quit (Ping timeout: 260 seconds)
+2016-10-10 02:34:09	-->	el34 (~pj@CPE0010c69f4edc-CM0011ae92904e.cpe.net.cable.rogers.com) has joined #ardour
+2016-10-10 02:35:36	<--	freedom010 (~freedom@112.202.59.31) has quit (Ping timeout: 260 seconds)
+2016-10-10 02:36:45	-->	dsr1204 (~dsr1204@2602:306:c5aa:94e0:bdce:6e70:9099:474c) has joined #ardour
+2016-10-10 02:38:20	-->	EL34_ (~chatzilla@CPE0010c69f4edc-CM0011ae92904e.cpe.net.cable.rogers.com) has joined #ardour
+2016-10-10 02:41:03	-->	freedom01 (~freedom@112.206.161.185) has joined #ardour
+2016-10-10 02:41:03		[02:41]
+2016-10-10 02:41:27	-->	son0p (~AndChat32@181.134.22.152) has joined #ardour
+2016-10-10 02:43:37	<--	dsr1204 (~dsr1204@2602:306:c5aa:94e0:bdce:6e70:9099:474c) has quit (Ping timeout: 240 seconds)
+2016-10-10 02:45:47	nath	http://www.ardour.org/requirements.html
+2016-10-10 02:48:57	-->	DrCode (~DrCode@5.28.134.3) has joined #ardour
+2016-10-10 02:53:30	<--	karswell` (~user@187.124.114.87.dyn.plus.net) has quit (Remote host closed the connection)
+2016-10-10 02:55:30	-->	karswell` (~user@187.124.114.87.dyn.plus.net) has joined #ardour
+2016-10-10 02:56:17	-->	dsr1204 (~dsr1204@99-111-235-130.lightspeed.cicril.sbcglobal.net) has joined #ardour
+2016-10-10 02:56:17		[02:56]
+2016-10-10 03:00:03	-->	prokoudine (~prokoudin@46.148.192.216) has joined #ardour
+2016-10-10 03:06:00		[03:00]
+2016-10-10 03:11:41	-->	kyan (~kyan@elliot.wallace.laptop.ums.maine.edu) has joined #ardour
+2016-10-10 03:19:10	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined #ardour
+2016-10-10 03:19:10		[03:19]
+2016-10-10 03:19:10	--	Topic for #ardour is "5.4 is released | download: http://ardour.org/download |  paste to http://pastebin.com/ | OS X users please /join #ardour-osx"
+2016-10-10 03:19:10	--	Topic set by las (~paul@13.sub-174-197-18.myvzw.com) on Sat, 01 Oct 2016 05:02:53
+2016-10-10 03:19:10	--	Channel #ardour: 152 nicks (1 op, 0 voices, 151 normals)
+2016-10-10 03:19:10	***	Buffer Playback...
+2016-10-10 03:19:10	naptastic	[01:04:59] hey look, it's working again :) [01:04:59]
+2016-10-10 03:19:10	rgareus	[01:05:07] naptastic: does it? [01:05:07]
+2016-10-10 03:19:10	naptastic	[01:05:12] well, it's compiling [01:05:12]
+2016-10-10 03:19:10	naptastic	[01:05:20] I need a snack... [01:05:20]
+2016-10-10 03:19:10	naptastic	[01:08:10] ../libs/surfaces/tranzport/tranzport_control_protocol.h:202:8: error: ‘Mutex’ in namespace ‘Glib’ does not name a type [01:08:10]
+2016-10-10 03:19:10	naptastic	[01:08:31] well, rgareus, it looks like those bits are rotten. So back to the drawing board. :P [01:08:31]
+2016-10-10 03:19:10	rgareus	[01:09:50] naptastic: probably   Glib::Threads::Mutex::Lock [01:09:50]
+2016-10-10 03:19:10	rgareus	[01:10:53] actualy  Glib::Threads::Mutex  (is the type_ [01:10:53]
+2016-10-10 03:19:10	nstewart	[01:17:06] am I crazy or did "Audio System" ever have an option other than "Jack"? Some of the test reference "None - Dummy", and I suspect they need to be Jack - Dummy or similar. Did we discard the ability to run raw alsa without jack recently (rings a bell) [01:17:06]
+2016-10-10 03:19:10	rgareus	[01:17:53] nstewart:   ./waf configure ... --with-backends=jack,alsa,dummy ...  [01:17:53]
+2016-10-10 03:19:10	nstewart	[01:17:56] rgareus:  did you say all tests pass or just the one we were talking about? I have 11 failing. [01:17:56]
+2016-10-10 03:19:10	nstewart	[01:18:01] ah [01:18:01]
+2016-10-10 03:19:10	rgareus	[01:18:18] nstewart: tests pass with exception of the Push2 control surface [01:18:18]
+2016-10-10 03:19:10	rgareus	[01:18:50] that's a known issue (unit-tests are not linked against UI libs,  Push2 needs libpango for rendering on the device) [01:18:50]
+2016-10-10 03:19:10	rgareus	[01:18:59] paul is looking into that. [01:18:59]
+2016-10-10 03:19:10	nstewart	[01:51:46] can a region have  a negative location? [01:51:46]
+2016-10-10 03:19:10	nstewart	[01:52:35] 	set_loop_range (start, end, _("set loop range from region")); start = -888, blows up trying to create the loop range.  [01:52:35]
+2016-10-10 03:19:10	UncleJed	[01:56:09] anyone on here by chance have issues with jerky interface after upgrading to v4? [01:56:09]
+2016-10-10 03:19:10	UncleJed	[01:58:20] holy cow...just saw at the top that were already in v5. lmao [01:58:20]
+2016-10-10 03:19:10	UncleJed	[01:58:28] *we're [01:58:28]
+2016-10-10 03:19:10	UncleJed	[02:02:01] well anyway, i have a live image of my ubuntu studio with ardour 3 that works great. all settings are identical as far as i can tell, but playback is very jerky - not audio - just the graphics. And even when clicking on a control, it takes 1-2 seconds to even respond to the click.  [02:02:01]
+2016-10-10 03:19:10	UncleJed	[02:04:05] just need a little direction of where else to look. nividia drivers are identical...jackctrl settings are identical (same result using ALSA). sample settings are identical...what else should I check? [02:04:05]
+2016-10-10 03:19:10	rgareus	[02:04:07] UncleJed: there's an option in the preferences to disable graphics access [02:04:07]
+2016-10-10 03:19:10	rgareus	[02:04:53] UncleJed: in some cases "accelleration" is actually slower.  some Ubuntu versions have this issue with some graphics-drivers. [02:04:53]
+2016-10-10 03:19:10	UncleJed	[02:05:28] rgareus: checking on that now  [02:05:28]
+2016-10-10 03:19:10	rgareus	[02:05:43] "Possibly improve slow graphical performance"  in Preferences > GUI [02:05:43]
+2016-10-10 03:19:10	rgareus	[02:06:21] (only versions of ardour from ardour.org have this option -- they come with a patched libcairo which allows that) [02:06:21]
+2016-10-10 03:19:10	rgareus	[02:06:58] goes back to  https://community.ardour.org/node/8800 [02:06:58]
+2016-10-10 03:19:10	nstewart	[02:08:04] weird - have a session saved with apparently a bad (negative) region start.  can repro in gdb from my saved session, but not sure how I got it. I thought perhaps rhythm ferret chopping it up might have made it bad. But can't seem to repro from scratch [02:08:04]
+2016-10-10 03:19:10	UncleJed	[02:08:23] ok...i didn't see that option so was wondering...hehe. I upgraded by adding a repository and doing apt-get update...etcc [02:08:23]
+2016-10-10 03:19:10	UncleJed	[02:09:41] rgareus: ah! I hadn't found that info page yet. thanks!  [02:09:41]
+2016-10-10 03:19:10	UncleJed	[02:10:00] not that i hadn't tried....hehe [02:10:00]
+2016-10-10 03:19:10	rgareus	[02:10:01] UncleJed: you could compare with a https://nightly.ardour.org/ build [02:10:01]
+2016-10-10 03:19:10	LAbot	[02:10:02] Title: Ardour - Nightly Builds (at nightly.ardour.org) [02:10:02]
+2016-10-10 03:19:10	rgareus	[02:10:33] nstewart: negative start should not be possible. sounds like a bug [02:10:33]
+2016-10-10 03:19:10	nstewart	[02:12:04] yeah, pretty sure it is. Just not sure what the bug is.  I could upload a session, but not sure how to differentiate it from "hey, the power supply current limit doesn't work when I stuff the chassis full of steel wool.  [02:12:04]
+2016-10-10 03:19:10	UncleJed	[02:12:11] rgareus: so maybe I should just ugrade to v5 first and see if that fixes it. no sense in  fixing it now in v4 if i'll eventually upgrade later anyway. that what you're suggesting? [02:12:11]
+2016-10-10 03:19:10	nstewart	[02:12:36] I swear I used to work with testers who would think that was a valid test method. [02:12:36]
+2016-10-10 03:19:10	rgareus	[02:12:44] UncleJed: builds from *.ardour.org can be installed in parallel to distro versions. [02:12:44]
+2016-10-10 03:19:10	rgareus	[02:13:19] UncleJed: but yes, you could try v5 from <your distro repo> first. [02:13:19]
+2016-10-10 03:19:10	UncleJed	[02:14:22] rgareus: ok. I'll do that first then will try ardour.org if that doesn't work. I'm quasi-noob with linux so installing something in parallel sounds a little intimidating ATM. hehe [02:14:22]
+2016-10-10 03:19:10	UncleJed	[02:16:27] rgareus: and thank you very much for your help! [02:16:27]
+2016-10-10 03:19:10	rgareus	[02:16:34] UncleJed: you're welcome [02:16:34]
+2016-10-10 03:19:10	nstewart	[02:18:36] still not sure how it got that way, but my session is saved with one region with a negative start. If I click on the first region, and show properties, it shows the negative value. If I click int he field it figures out its whacked and resets it to zero. But drag select them all yields an illegal start location. [02:18:36]
+2016-10-10 03:19:10	nstewart	[02:34:24] http://tracker.ardour.org/view.php?id=7066 there ya go.  I can help hunt it down if you can steer me to the other end of the slots/singals rabbit trail. [02:34:24]
+2016-10-10 03:19:10	LAbot	[02:34:25] Title: 0007066: crash creating range from region with illegal start location - MantisBT (at tracker.ardour.org) [02:34:25]
+2016-10-10 03:19:10	rghvdberg	[08:35:09] just noticed how much easier it is to sidechain (volume ducking) in ardour since 5.3 .. kudos [08:35:09]
+2016-10-10 03:19:10	DamionGans	[10:38:13] Hey all, how stable is Ardour for Windows? [10:38:13]
+2016-10-10 03:19:10	DamionGans	[10:43:40] And do I need to be a subscriber for that? [10:43:40]
+2016-10-10 03:19:10	nath	[12:45:47] http://www.ardour.org/requirements.html [12:45:47]
+2016-10-10 03:19:10	***	Playback Complete.
+2016-10-10 03:19:53	--	Channel created on Sat, 25 Nov 2006 20:42:44
+2016-10-10 03:23:43	-->	polosson (~polosson@dispo-82-250-9-190.adsl.proxad.net) has joined #ardour
+2016-10-10 03:26:56	<--	el34 (~pj@CPE0010c69f4edc-CM0011ae92904e.cpe.net.cable.rogers.com) has quit (Quit: leaving)
+2016-10-10 03:31:50	-->	NoteOn (~noteon@s174004.ppp.asahi-net.or.jp) has joined #ardour
+2016-10-10 03:37:00		[03:31]
+2016-10-10 03:39:43	-->	AndChat|320025 (~AndChat32@152.200.142.232) has joined #ardour
+2016-10-10 03:42:29	--	AndChat|320025 is now known as son0p_
+2016-10-10 03:42:31	<--	son0p (~AndChat32@181.134.22.152) has quit (Ping timeout: 268 seconds)
+2016-10-10 03:47:16	<--	Lex_NewtoN (~quassel@5.44.169.197) has quit (Remote host closed the connection)
+2016-10-10 03:53:00		[03:47]
+2016-10-10 03:54:22	<--	EL34_ (~chatzilla@CPE0010c69f4edc-CM0011ae92904e.cpe.net.cable.rogers.com) has quit (Remote host closed the connection)
+2016-10-10 03:55:01	-->	phoracek1 (phoracek@nat/redhat/x-jjbnnzxgpkbnoboe) has joined #ardour
+2016-10-10 03:56:17	<--	phoracek (phoracek@nat/redhat/x-wqcdknvrbomagzam) has quit (Ping timeout: 240 seconds)
+2016-10-10 04:55:49	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined #ardour
+2016-10-10 04:55:49		[04:55]
+2016-10-10 04:55:50	--	Topic for #ardour is "5.4 is released | download: http://ardour.org/download |  paste to http://pastebin.com/ | OS X users please /join #ardour-osx"
+2016-10-10 04:55:50	--	Topic set by las (~paul@13.sub-174-197-18.myvzw.com) on Sat, 01 Oct 2016 05:02:53
+2016-10-10 04:55:50	--	Channel #ardour: 152 nicks (1 op, 0 voices, 151 normals)
+2016-10-10 04:55:50	***	Buffer Playback...
+2016-10-10 04:55:50	naptastic	[01:04:59] hey look, it's working again :) [01:04:59]
+2016-10-10 04:55:50	rgareus	[01:05:07] naptastic: does it? [01:05:07]
+2016-10-10 04:55:50	naptastic	[01:05:12] well, it's compiling [01:05:12]
+2016-10-10 04:55:50	naptastic	[01:05:20] I need a snack... [01:05:20]
+2016-10-10 04:55:50	naptastic	[01:08:10] ../libs/surfaces/tranzport/tranzport_control_protocol.h:202:8: error: ‘Mutex’ in namespace ‘Glib’ does not name a type [01:08:10]
+2016-10-10 04:55:50	naptastic	[01:08:31] well, rgareus, it looks like those bits are rotten. So back to the drawing board. :P [01:08:31]
+2016-10-10 04:55:50	rgareus	[01:09:50] naptastic: probably   Glib::Threads::Mutex::Lock [01:09:50]
+2016-10-10 04:55:50	rgareus	[01:10:53] actualy  Glib::Threads::Mutex  (is the type_ [01:10:53]
+2016-10-10 04:55:50	nstewart	[01:17:06] am I crazy or did "Audio System" ever have an option other than "Jack"? Some of the test reference "None - Dummy", and I suspect they need to be Jack - Dummy or similar. Did we discard the ability to run raw alsa without jack recently (rings a bell) [01:17:06]
+2016-10-10 04:55:50	rgareus	[01:17:53] nstewart:   ./waf configure ... --with-backends=jack,alsa,dummy ...  [01:17:53]
+2016-10-10 04:55:50	nstewart	[01:17:56] rgareus:  did you say all tests pass or just the one we were talking about? I have 11 failing. [01:17:56]
+2016-10-10 04:55:50	nstewart	[01:18:01] ah [01:18:01]
+2016-10-10 04:55:50	rgareus	[01:18:18] nstewart: tests pass with exception of the Push2 control surface [01:18:18]
+2016-10-10 04:55:50	rgareus	[01:18:50] that's a known issue (unit-tests are not linked against UI libs,  Push2 needs libpango for rendering on the device) [01:18:50]
+2016-10-10 04:55:50	rgareus	[01:18:59] paul is looking into that. [01:18:59]
+2016-10-10 04:55:50	nstewart	[01:51:46] can a region have  a negative location? [01:51:46]
+2016-10-10 04:55:50	nstewart	[01:52:35] 	set_loop_range (start, end, _("set loop range from region")); start = -888, blows up trying to create the loop range.  [01:52:35]
+2016-10-10 04:55:50	UncleJed	[01:56:09] anyone on here by chance have issues with jerky interface after upgrading to v4? [01:56:09]
+2016-10-10 04:55:50	UncleJed	[01:58:20] holy cow...just saw at the top that were already in v5. lmao [01:58:20]
+2016-10-10 04:55:50	UncleJed	[01:58:28] *we're [01:58:28]
+2016-10-10 04:55:50	UncleJed	[02:02:01] well anyway, i have a live image of my ubuntu studio with ardour 3 that works great. all settings are identical as far as i can tell, but playback is very jerky - not audio - just the graphics. And even when clicking on a control, it takes 1-2 seconds to even respond to the click.  [02:02:01]
+2016-10-10 04:55:50	UncleJed	[02:04:05] just need a little direction of where else to look. nividia drivers are identical...jackctrl settings are identical (same result using ALSA). sample settings are identical...what else should I check? [02:04:05]
+2016-10-10 04:55:50	rgareus	[02:04:07] UncleJed: there's an option in the preferences to disable graphics access [02:04:07]
+2016-10-10 04:55:50	rgareus	[02:04:53] UncleJed: in some cases "accelleration" is actually slower.  some Ubuntu versions have this issue with some graphics-drivers. [02:04:53]
+2016-10-10 04:55:50	UncleJed	[02:05:28] rgareus: checking on that now  [02:05:28]
+2016-10-10 04:55:50	rgareus	[02:05:43] "Possibly improve slow graphical performance"  in Preferences > GUI [02:05:43]
+2016-10-10 04:55:50	rgareus	[02:06:21] (only versions of ardour from ardour.org have this option -- they come with a patched libcairo which allows that) [02:06:21]
+2016-10-10 04:55:50	rgareus	[02:06:58] goes back to  https://community.ardour.org/node/8800 [02:06:58]
+2016-10-10 04:55:50	nstewart	[02:08:04] weird - have a session saved with apparently a bad (negative) region start.  can repro in gdb from my saved session, but not sure how I got it. I thought perhaps rhythm ferret chopping it up might have made it bad. But can't seem to repro from scratch [02:08:04]
+2016-10-10 04:55:50	UncleJed	[02:08:23] ok...i didn't see that option so was wondering...hehe. I upgraded by adding a repository and doing apt-get update...etcc [02:08:23]
+2016-10-10 04:55:50	UncleJed	[02:09:41] rgareus: ah! I hadn't found that info page yet. thanks!  [02:09:41]
+2016-10-10 04:55:50	UncleJed	[02:10:00] not that i hadn't tried....hehe [02:10:00]
+2016-10-10 04:55:50	rgareus	[02:10:01] UncleJed: you could compare with a https://nightly.ardour.org/ build [02:10:01]
+2016-10-10 04:55:50	LAbot	[02:10:02] Title: Ardour - Nightly Builds (at nightly.ardour.org) [02:10:02]
+2016-10-10 04:55:50	rgareus	[02:10:33] nstewart: negative start should not be possible. sounds like a bug [02:10:33]
+2016-10-10 04:55:50	nstewart	[02:12:04] yeah, pretty sure it is. Just not sure what the bug is.  I could upload a session, but not sure how to differentiate it from "hey, the power supply current limit doesn't work when I stuff the chassis full of steel wool.  [02:12:04]
+2016-10-10 04:55:50	UncleJed	[02:12:11] rgareus: so maybe I should just ugrade to v5 first and see if that fixes it. no sense in  fixing it now in v4 if i'll eventually upgrade later anyway. that what you're suggesting? [02:12:11]
+2016-10-10 04:55:50	nstewart	[02:12:36] I swear I used to work with testers who would think that was a valid test method. [02:12:36]
+2016-10-10 04:55:50	rgareus	[02:12:44] UncleJed: builds from *.ardour.org can be installed in parallel to distro versions. [02:12:44]
+2016-10-10 04:55:50	rgareus	[02:13:19] UncleJed: but yes, you could try v5 from <your distro repo> first. [02:13:19]
+2016-10-10 04:55:50	UncleJed	[02:14:22] rgareus: ok. I'll do that first then will try ardour.org if that doesn't work. I'm quasi-noob with linux so installing something in parallel sounds a little intimidating ATM. hehe [02:14:22]
+2016-10-10 04:55:50	UncleJed	[02:16:27] rgareus: and thank you very much for your help! [02:16:27]
+2016-10-10 04:55:50	rgareus	[02:16:34] UncleJed: you're welcome [02:16:34]
+2016-10-10 04:55:50	nstewart	[02:18:36] still not sure how it got that way, but my session is saved with one region with a negative start. If I click on the first region, and show properties, it shows the negative value. If I click int he field it figures out its whacked and resets it to zero. But drag select them all yields an illegal start location. [02:18:36]
+2016-10-10 04:55:50	nstewart	[02:34:24] http://tracker.ardour.org/view.php?id=7066 there ya go.  I can help hunt it down if you can steer me to the other end of the slots/singals rabbit trail. [02:34:24]
+2016-10-10 04:55:50	LAbot	[02:34:25] Title: 0007066: crash creating range from region with illegal start location - MantisBT (at tracker.ardour.org) [02:34:25]
+2016-10-10 04:55:50	rghvdberg	[08:35:09] just noticed how much easier it is to sidechain (volume ducking) in ardour since 5.3 .. kudos [08:35:09]
+2016-10-10 04:55:50	DamionGans	[10:38:13] Hey all, how stable is Ardour for Windows? [10:38:13]
+2016-10-10 04:55:50	DamionGans	[10:43:40] And do I need to be a subscriber for that? [10:43:40]
+2016-10-10 04:55:50	nath	[12:45:47] http://www.ardour.org/requirements.html [12:45:47]
+2016-10-10 04:55:50	***	Playback Complete.
+2016-10-10 04:56:02	--	irc: disconnected from server
+2016-10-10 04:56:35	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined #ardour
+2016-10-10 04:56:35		[04:56]
+2016-10-10 04:56:35	--	Topic for #ardour is "5.4 is released | download: http://ardour.org/download |  paste to http://pastebin.com/ | OS X users please /join #ardour-osx"
+2016-10-10 04:56:35	--	Topic set by las (~paul@13.sub-174-197-18.myvzw.com) on Sat, 01 Oct 2016 05:02:53
+2016-10-10 04:56:35	--	Channel #ardour: 152 nicks (1 op, 0 voices, 151 normals)
+2016-10-10 04:56:35	***	Buffer Playback...
+2016-10-10 04:56:35	naptastic	[01:04:59] hey look, it's working again :) [01:04:59]
+2016-10-10 04:56:35	rgareus	[01:05:07] naptastic: does it? [01:05:07]
+2016-10-10 04:56:35	naptastic	[01:05:12] well, it's compiling [01:05:12]
+2016-10-10 04:56:35	naptastic	[01:05:20] I need a snack... [01:05:20]
+2016-10-10 04:56:35	naptastic	[01:08:10] ../libs/surfaces/tranzport/tranzport_control_protocol.h:202:8: error: ‘Mutex’ in namespace ‘Glib’ does not name a type [01:08:10]
+2016-10-10 04:56:35	naptastic	[01:08:31] well, rgareus, it looks like those bits are rotten. So back to the drawing board. :P [01:08:31]
+2016-10-10 04:56:35	rgareus	[01:09:50] naptastic: probably   Glib::Threads::Mutex::Lock [01:09:50]
+2016-10-10 04:56:35	rgareus	[01:10:53] actualy  Glib::Threads::Mutex  (is the type_ [01:10:53]
+2016-10-10 04:56:35	nstewart	[01:17:06] am I crazy or did "Audio System" ever have an option other than "Jack"? Some of the test reference "None - Dummy", and I suspect they need to be Jack - Dummy or similar. Did we discard the ability to run raw alsa without jack recently (rings a bell) [01:17:06]
+2016-10-10 04:56:35	rgareus	[01:17:53] nstewart:   ./waf configure ... --with-backends=jack,alsa,dummy ...  [01:17:53]
+2016-10-10 04:56:35	nstewart	[01:17:56] rgareus:  did you say all tests pass or just the one we were talking about? I have 11 failing. [01:17:56]
+2016-10-10 04:56:35	nstewart	[01:18:01] ah [01:18:01]
+2016-10-10 04:56:35	rgareus	[01:18:18] nstewart: tests pass with exception of the Push2 control surface [01:18:18]
+2016-10-10 04:56:35	rgareus	[01:18:50] that's a known issue (unit-tests are not linked against UI libs,  Push2 needs libpango for rendering on the device) [01:18:50]
+2016-10-10 04:56:35	rgareus	[01:18:59] paul is looking into that. [01:18:59]
+2016-10-10 04:56:35	nstewart	[01:51:46] can a region have  a negative location? [01:51:46]
+2016-10-10 04:56:35	nstewart	[01:52:35] 	set_loop_range (start, end, _("set loop range from region")); start = -888, blows up trying to create the loop range.  [01:52:35]
+2016-10-10 04:56:35	UncleJed	[01:56:09] anyone on here by chance have issues with jerky interface after upgrading to v4? [01:56:09]
+2016-10-10 04:56:35	UncleJed	[01:58:20] holy cow...just saw at the top that were already in v5. lmao [01:58:20]
+2016-10-10 04:56:35	UncleJed	[01:58:28] *we're [01:58:28]
+2016-10-10 04:56:35	UncleJed	[02:02:01] well anyway, i have a live image of my ubuntu studio with ardour 3 that works great. all settings are identical as far as i can tell, but playback is very jerky - not audio - just the graphics. And even when clicking on a control, it takes 1-2 seconds to even respond to the click.  [02:02:01]
+2016-10-10 04:56:35	UncleJed	[02:04:05] just need a little direction of where else to look. nividia drivers are identical...jackctrl settings are identical (same result using ALSA). sample settings are identical...what else should I check? [02:04:05]
+2016-10-10 04:56:35	rgareus	[02:04:07] UncleJed: there's an option in the preferences to disable graphics access [02:04:07]
+2016-10-10 04:56:35	rgareus	[02:04:53] UncleJed: in some cases "accelleration" is actually slower.  some Ubuntu versions have this issue with some graphics-drivers. [02:04:53]
+2016-10-10 04:56:35	UncleJed	[02:05:28] rgareus: checking on that now  [02:05:28]
+2016-10-10 04:56:35	rgareus	[02:05:43] "Possibly improve slow graphical performance"  in Preferences > GUI [02:05:43]
+2016-10-10 04:56:35	rgareus	[02:06:21] (only versions of ardour from ardour.org have this option -- they come with a patched libcairo which allows that) [02:06:21]
+2016-10-10 04:56:35	rgareus	[02:06:58] goes back to  https://community.ardour.org/node/8800 [02:06:58]
+2016-10-10 04:56:35	nstewart	[02:08:04] weird - have a session saved with apparently a bad (negative) region start.  can repro in gdb from my saved session, but not sure how I got it. I thought perhaps rhythm ferret chopping it up might have made it bad. But can't seem to repro from scratch [02:08:04]
+2016-10-10 04:56:35	UncleJed	[02:08:23] ok...i didn't see that option so was wondering...hehe. I upgraded by adding a repository and doing apt-get update...etcc [02:08:23]
+2016-10-10 04:56:35	UncleJed	[02:09:41] rgareus: ah! I hadn't found that info page yet. thanks!  [02:09:41]
+2016-10-10 04:56:35	UncleJed	[02:10:00] not that i hadn't tried....hehe [02:10:00]
+2016-10-10 04:56:35	rgareus	[02:10:01] UncleJed: you could compare with a https://nightly.ardour.org/ build [02:10:01]
+2016-10-10 04:56:35	LAbot	[02:10:02] Title: Ardour - Nightly Builds (at nightly.ardour.org) [02:10:02]
+2016-10-10 04:56:35	rgareus	[02:10:33] nstewart: negative start should not be possible. sounds like a bug [02:10:33]
+2016-10-10 04:56:35	nstewart	[02:12:04] yeah, pretty sure it is. Just not sure what the bug is.  I could upload a session, but not sure how to differentiate it from "hey, the power supply current limit doesn't work when I stuff the chassis full of steel wool.  [02:12:04]
+2016-10-10 04:56:35	UncleJed	[02:12:11] rgareus: so maybe I should just ugrade to v5 first and see if that fixes it. no sense in  fixing it now in v4 if i'll eventually upgrade later anyway. that what you're suggesting? [02:12:11]
+2016-10-10 04:56:35	nstewart	[02:12:36] I swear I used to work with testers who would think that was a valid test method. [02:12:36]
+2016-10-10 04:56:35	rgareus	[02:12:44] UncleJed: builds from *.ardour.org can be installed in parallel to distro versions. [02:12:44]
+2016-10-10 04:56:35	rgareus	[02:13:19] UncleJed: but yes, you could try v5 from <your distro repo> first. [02:13:19]
+2016-10-10 04:56:35	UncleJed	[02:14:22] rgareus: ok. I'll do that first then will try ardour.org if that doesn't work. I'm quasi-noob with linux so installing something in parallel sounds a little intimidating ATM. hehe [02:14:22]
+2016-10-10 04:56:35	UncleJed	[02:16:27] rgareus: and thank you very much for your help! [02:16:27]
+2016-10-10 04:56:35	rgareus	[02:16:34] UncleJed: you're welcome [02:16:34]
+2016-10-10 04:56:35	nstewart	[02:18:36] still not sure how it got that way, but my session is saved with one region with a negative start. If I click on the first region, and show properties, it shows the negative value. If I click int he field it figures out its whacked and resets it to zero. But drag select them all yields an illegal start location. [02:18:36]
+2016-10-10 04:56:35	nstewart	[02:34:24] http://tracker.ardour.org/view.php?id=7066 there ya go.  I can help hunt it down if you can steer me to the other end of the slots/singals rabbit trail. [02:34:24]
+2016-10-10 04:56:35	LAbot	[02:34:25] Title: 0007066: crash creating range from region with illegal start location - MantisBT (at tracker.ardour.org) [02:34:25]
+2016-10-10 04:56:35	rghvdberg	[08:35:09] just noticed how much easier it is to sidechain (volume ducking) in ardour since 5.3 .. kudos [08:35:09]
+2016-10-10 04:56:35	DamionGans	[10:38:13] Hey all, how stable is Ardour for Windows? [10:38:13]
+2016-10-10 04:56:35	DamionGans	[10:43:40] And do I need to be a subscriber for that? [10:43:40]
+2016-10-10 04:56:35	nath	[12:45:47] http://www.ardour.org/requirements.html [12:45:47]
+2016-10-10 04:56:35	***	Playback Complete.
+2016-10-10 04:57:21	--	Channel created on Sat, 25 Nov 2006 20:42:44
+2016-10-10 04:59:45	-->	rto (~rto@188.228.27.123) has joined #ardour
+2016-10-10 05:00:31	-->	Ricardus (~rich@2604:6000:ab42:1f00:d0be:8e1f:dc3e:6530) has joined #ardour
+2016-10-10 05:04:08	-->	oofus_lt (~quassel@194.4.243.46) has joined #ardour
+2016-10-10 05:04:21	-->	jpbouza (~Juan@191.85.186.213) has joined #ardour
+2016-10-10 05:06:52	<--	oofus_lt_ (~quassel@194.4.243.46) has quit (Ping timeout: 260 seconds)
+2016-10-10 05:07:01	-->	edogawa (~quassel@194-166-115-203.adsl.highway.telekom.at) has joined #ardour
+2016-10-10 05:08:32	<--	edogawa (~quassel@194-166-115-203.adsl.highway.telekom.at) has quit (Remote host closed the connection)
+2016-10-10 05:09:07	-->	phoracek (phoracek@nat/redhat/session) has joined #ardour
+2016-10-10 05:12:10	<--	phoracek1 (phoracek@nat/redhat/x-jjbnnzxgpkbnoboe) has quit (Ping timeout: 250 seconds)
+2016-10-10 05:12:10		[05:12]
+2016-10-10 05:13:36	<--	kyan (~kyan@elliot.wallace.laptop.ums.maine.edu) has quit (Remote host closed the connection)
+2016-10-10 05:17:58	-->	son0p (~ff@181.134.35.135) has joined #ardour
+2016-10-10 05:20:05	<--	DrCode (~DrCode@5.28.134.3) has quit (Ping timeout: 248 seconds)
+2016-10-10 05:22:51	-->	nilg (~user@92.247.176.162) has joined #ardour
+2016-10-10 05:26:25	-->	slyrus (~chatzilla@107.200.10.27) has joined #ardour
+2016-10-10 05:27:04	-->	DrCode (~DrCode@5.28.134.3) has joined #ardour
+2016-10-10 05:28:47	-->	gabrbedd (~beddingfi@li680-65.members.linode.com) has joined #ardour
+2016-10-10 05:28:47		[05:28]
+2016-10-10 05:30:01	<--	ahellquist_wrk (~aht@109-124-147-131.customer.t3.se) has quit (Ping timeout: 260 seconds)
+2016-10-10 05:32:12	<--	rto (~rto@188.228.27.123) has quit (Read error: Connection reset by peer)
+2016-10-10 05:32:17	-->	rto__ (~rto@188.228.27.123) has joined #ardour
+2016-10-10 05:34:25	<--	rto__ (~rto@188.228.27.123) has quit (Read error: Connection reset by peer)
+2016-10-10 05:34:44	-->	rto (~rto@188.228.27.123) has joined #ardour
+2016-10-10 05:38:23	<--	falktx|work (~falktx@185.19.197.52) has quit (Quit: Konversation terminated!)
+2016-10-10 05:44:00		[05:38]
+2016-10-10 06:02:18	-->	oofus_lt_ (~quassel@194.4.243.46) has joined #ardour
+2016-10-10 06:02:18		[06:02]
+2016-10-10 06:05:12	<--	oofus_lt (~quassel@194.4.243.46) has quit (Ping timeout: 260 seconds)
+2016-10-10 06:05:59	<--	UlrichH (~UlrichH@1-213-190-109.dsl.ovh.fr) has quit (Quit: Leaving)
+2016-10-10 06:07:57	<--	phoracek (phoracek@nat/redhat/session) has quit (Quit: WeeChat 1.5)
+2016-10-10 06:11:09	<--	ssj71 (c0449e6a@gateway/web/cgi-irc/kiwiirc.com/ip.192.68.158.106) has quit (Quit: http://www.kiwiirc.com/ - A hand crafted IRC client)
+2016-10-10 06:17:00		[06:11]
+2016-10-10 06:17:39	<--	nils (nils@nat/redhat/x-jdlzrowxrpdamljx) has quit (Quit: Leaving)
+2016-10-10 06:23:00		[06:17]
+2016-10-10 06:32:08	-->	oofus_lt (~quassel@194.4.243.46) has joined #ardour
+2016-10-10 06:33:01	<--	freedom01 (~freedom@112.206.161.185) has quit (Ping timeout: 260 seconds)
+2016-10-10 06:34:36	<--	oofus_lt_ (~quassel@194.4.243.46) has quit (Ping timeout: 260 seconds)
+2016-10-10 06:35:50	-->	ssj71 (c0449e6a@gateway/web/freenode/session) has joined #ardour
+2016-10-10 06:40:19	-->	freedom01 (~freedom@112.206.161.185) has joined #ardour
+2016-10-10 06:40:19		[06:40]
+2016-10-10 06:46:56	<--	prokoudine (~prokoudin@46.148.192.216) has quit (Quit: Nettalk6 - www.ntalk.de)
+2016-10-10 06:47:46	-->	Caterpillar (~caterpill@unaffiliated/caterpillar) has joined #ardour
+2016-10-10 06:49:52	<--	oofus_lt (~quassel@194.4.243.46) has quit (Read error: Connection reset by peer)
+2016-10-10 06:51:25	-->	avoca (~avoca@178.167.133.157.threembb.ie) has joined #ardour
+2016-10-10 06:56:34	<--	electro-flinch (~colinf@axicon.plus.com) has quit (Quit: Leaving.)
+2016-10-10 06:56:34		[06:56]
+2016-10-10 06:57:21	-->	takuan (~takuan@178-118-89-163.access.telenet.be) has joined #ardour
+2016-10-10 07:00:26	nstewart_	r = ArdourCanvas::Rectangle(); r->Event.connect(.....)  I found Rectangle, but not Event::connect(). Trying to verify who owns that memory once it goes out of scope.
+2016-10-10 07:03:52	-->	dsr1204 (~dsr1204@99-111-235-130.lightspeed.cicril.sbcglobal.net) has joined #ardour
+2016-10-10 07:09:00		[07:03]
+2016-10-10 07:14:14	rgareus	nstewart_: ./libs/canvas/canvas/item.h   sigc::signal1<bool, GdkEvent*, EventAccumulator<bool> > Event
+2016-10-10 07:18:00	nstewart_	so in gtk2_ardour/color_theme_manager.cc:326 when r goes out of scope - is that really a leak? (ColorThemeManager::build_palette_canvas)
+2016-10-10 07:21:51	<--	son0p (~ff@181.134.35.135) has quit (Quit: Lost terminal)
+2016-10-10 07:23:24	<--	audiophilo (~audiophil@94.36.176.194) has quit (Remote host closed the connection)
+2016-10-10 07:23:36	<--	ssj71 (c0449e6a@gateway/web/freenode/session) has quit (Changing host)
+2016-10-10 07:23:37	-->	ssj71 (c0449e6a@gateway/web/freenode/ip.192.68.158.106) has joined #ardour
+2016-10-10 07:27:51	-->	_FrnchFrgg_ (~Icedove@2a01:e35:2e92:63f0:fa16:54ff:fef7:e1a8) has joined #ardour
+2016-10-10 07:27:51		[07:27]
+2016-10-10 07:27:58	<--	clark|w (~clark_wil@173-25-41-60.client.mchsi.com) has quit (Quit: Leaving)
+2016-10-10 07:33:00		[07:27]
+2016-10-10 07:33:39	-->	electro-flinch (~colinf@82-132-221-185.dab.02.net) has joined #ardour
+2016-10-10 07:39:00		[07:33]
+2016-10-10 07:51:32	<--	Lex_NewtoN (~quassel@5.44.169.197) has quit (Remote host closed the connection)
+2016-10-10 07:57:00		[07:51]
+2016-10-10 08:04:28	<--	avoca (~avoca@178.167.133.157.threembb.ie) has quit (Quit: WeeChat 1.5)
+2016-10-10 08:04:57	<--	_FrnchFrgg_ (~Icedove@2a01:e35:2e92:63f0:fa16:54ff:fef7:e1a8) has quit (Ping timeout: 260 seconds)
+2016-10-10 08:06:10	rgareus	nstewart_: looks like a leak
+2016-10-10 08:06:45	nstewart_	I thought so, but I couldn't see how it was actually doing anything. 
+2016-10-10 08:07:01	rgareus	nstewart_: I recall that items that are part of a group are destroyed when the group is.
+2016-10-10 08:07:20	rgareus	nstewart_: but that does not seem to be the case here
+2016-10-10 08:07:53	rgareus	it's not an effective leak (there's only one ColorThemeManager in all of ardour)
+2016-10-10 08:08:00	nstewart_	it looks like that group.clear() does the inverse of what's missing.
+2016-10-10 08:08:02	rgareus	so it'd leak only at exit
+2016-10-10 08:10:55	<--	TheSpy0 (~TheSpy0@99-7-56-81.lightspeed.davlca.sbcglobal.net) has quit (Quit: http://quassel-irc.org - Chat comfortably. Anywhere.)
+2016-10-10 08:12:38	-->	prokoudine_ (~alex@ppp83-237-113-148.pppoe.mtu-net.ru) has joined #ardour
+2016-10-10 08:12:38		[08:12]
+2016-10-10 08:15:08	-->	TheSpy0 (~TheSpy0@99-7-56-81.lightspeed.davlca.sbcglobal.net) has joined #ardour
+2016-10-10 08:21:00		[08:15]
+2016-10-10 08:22:56	-->	Pat_ (6036b9da@gateway/web/freenode/ip.96.54.185.218) has joined #ardour
+2016-10-10 08:23:19	--	Pat_ is now known as Guest35969
+2016-10-10 08:23:45	Guest35969	how to I get audio throughput from ardour, Audition ghosted out?
+2016-10-10 08:24:24	Guest35969	what?
+2016-10-10 08:24:45	Guest35969	oh
+2016-10-10 08:24:55	Guest35969	can anyone see this
+2016-10-10 08:25:50	rgareus	Guest35969: can you rephrase that question, it's not entierly clear to me what you asked
+2016-10-10 08:26:22	Guest35969	I want to use ardour for live mixing
+2016-10-10 08:26:24	rgareus	Guest35969: do you mean monitor the input?  or audition some file?
+2016-10-10 08:26:28	rgareus	aah.
+2016-10-10 08:26:40	Guest35969	need to enable audition mode
+2016-10-10 08:26:45	Guest35969	right?
+2016-10-10 08:26:53	the_CLA_2	audition has nothing to do with this.
+2016-10-10 08:27:00	Guest35969	oh
+2016-10-10 08:27:00	rgareus	Guest35969: Window > Mixer.     on a channel-strip there are  "In" and "Disk"  buttons to select  what you hear
+2016-10-10 08:27:11	rgareus	for live mixing, simply set them all expliciltly to "In"
+2016-10-10 08:27:30	Guest35969	on the mixer..hmm one sec
+2016-10-10 08:27:56	rgareus	(assuming you already have some tracks)
+2016-10-10 08:28:03	the_CLA_2	Guest35969: Do you only want to mix or also record? If only mixing you could also use buses instead of tracks.
+2016-10-10 08:28:11	Guest35969	bit low
+2016-10-10 08:28:15	Guest35969	slow
+2016-10-10 08:28:44	Guest35969	I want to use LADSPA plugins
+2016-10-10 08:28:52	-->	kyan (~kyan@cpe-74-78-187-9.maine.res.rr.com) has joined #ardour
+2016-10-10 08:29:45	Guest35969	added a buss now what?
+2016-10-10 08:30:34	Guest35969	stereo with Monitoring
+2016-10-10 08:30:39	Guest35969	is this how?
+2016-10-10 08:30:48	-->	clark|w (~clark_wil@12.22.75.10) has joined #ardour
+2016-10-10 08:31:06	Guest35969	I use a USB audio device
+2016-10-10 08:31:14	Guest35969	It works fine
+2016-10-10 08:31:21	rgareus	Guest35969: does ardour receive input from the USB soundcard?
+2016-10-10 08:31:26	Guest35969	With Gladish I do the whole live set up
+2016-10-10 08:31:29	rgareus	do the [VU] meters move
+2016-10-10 08:31:33	rgareus	?
+2016-10-10 08:31:35	Guest35969	zita-verb
+2016-10-10 08:31:42	Guest35969	Yes
+2016-10-10 08:31:50	Guest35969	it works
+2016-10-10 08:32:10	rgareus	cool.
+2016-10-10 08:32:11	Guest35969	I would rather have Ardour so i could just clikc record when I want
+2016-10-10 08:32:36	Guest35969	did a Gladish with Ardour for this reason
+2016-10-10 08:32:51	rgareus	for recording you do want a "track" in ardour (not a bus).
+2016-10-10 08:32:54	Guest35969	session does not load properly to let Adrour come up set up
+2016-10-10 08:33:08	Guest35969	Then I though hmm I should be able to do the whole thing in  Ardour
+2016-10-10 08:33:23	Guest35969	Live through the USB device?
+2016-10-10 08:33:45	rgareus	yes
+2016-10-10 08:33:47	-->	Yruama_Lairba (~UTILISATE@mut38-h04-89-80-39-202.dsl.sta.abo.bbox.fr) has joined #ardour
+2016-10-10 08:34:00	Guest35969	See I thought that is what Audition was for
+2016-10-10 08:34:13	Guest35969	it is gohsted out though any any session
+2016-10-10 08:34:14	rgareus	"Audition" = listen to some file on disk
+2016-10-10 08:34:15	Guest35969	???
+2016-10-10 08:34:22	Guest35969	oh
+2016-10-10 08:34:25	Guest35969	k
+2016-10-10 08:34:31	<--	electro-flinch (~colinf@82-132-221-185.dab.02.net) has quit (Quit: Leaving.)
+2016-10-10 08:34:36	rgareus	"monitoring" = listen to incoming signal
+2016-10-10 08:34:47	Guest35969	See the RT kernal is working great at 256
+2016-10-10 08:34:53	Guest35969	no no
+2016-10-10 08:35:10	Guest35969	I use zita-at1 and other LADSPA plugins
+2016-10-10 08:35:34	Guest35969	I patch them in with Gladish ok
+2016-10-10 08:35:56	Guest35969	Calf Multiband EQ is another
+2016-10-10 08:36:03	Guest35969	Qsynth
+2016-10-10 08:36:03		[08:36]
+2016-10-10 08:36:11	Guest35969	Kind of Karaoke
+2016-10-10 08:36:19	Guest35969	now lets record them
+2016-10-10 08:36:31	Guest35969	Creating delusions of grnadure ya know
+2016-10-10 08:36:56	Guest35969	So I want live though put from Ardour 
+2016-10-10 08:37:06	Guest35969	please excuse dislexia
+2016-10-10 08:37:27	rgareus	sorry, dinner's ready here, BBL
+2016-10-10 08:37:35	Guest35969	I am getting realtime almost
+2016-10-10 08:38:30	-->	dobey (~dobey@pool-108-39-67-87.nrflva.fios.verizon.net) has joined #ardour
+2016-10-10 08:38:40	<--	mbenson_away (~mbenson@108-87-152-117.lightspeed.nsvltn.sbcglobal.net) has quit (Ping timeout: 260 seconds)
+2016-10-10 08:38:57	Guest35969	the question is how to get live throughput from Ardour
+2016-10-10 08:39:38	<--	nilg (~user@92.247.176.162) has quit (Remote host closed the connection)
+2016-10-10 08:39:41	the_CLA_2	Guest35969: http://manual.ardour.org/recording/monitoring/
+2016-10-10 08:39:56	Guest35969	there we go
+2016-10-10 08:39:59	Guest35969	ty
+2016-10-10 08:44:14	-->	edogawa (~quassel@194-166-115-203.adsl.highway.telekom.at) has joined #ardour
+2016-10-10 08:47:23	<--	Guest35969 (6036b9da@gateway/web/freenode/ip.96.54.185.218) has quit (Quit: Page closed)
+2016-10-10 08:51:19	-->	electro-flinch (~colinf@82-132-221-185.dab.02.net) has joined #ardour
+2016-10-10 08:51:19		[08:51]
+2016-10-10 08:57:03	<--	kyan (~kyan@cpe-74-78-187-9.maine.res.rr.com) has quit (Remote host closed the connection)
+2016-10-10 09:03:00		[08:57]
+2016-10-10 09:16:53	<--	polosson (~polosson@dispo-82-250-9-190.adsl.proxad.net) has quit (Ping timeout: 248 seconds)
+2016-10-10 09:22:00		[09:16]
+2016-10-10 09:24:43	<--	yann-kaelig (~inyan@89-64-20-137.dynamic.chello.pl) has quit (Quit: Leaving)
+2016-10-10 09:30:00		[09:24]
+2016-10-10 09:31:53	<--	electro-flinch (~colinf@82-132-221-185.dab.02.net) has quit (Quit: Leaving.)
+2016-10-10 09:33:46	-->	electro-flinch (~colinf@82-132-221-185.dab.02.net) has joined #ardour
+2016-10-10 09:35:54	-->	_FrnchFrgg_ (~Icedove@2a01:e35:2e92:63f0:fa16:54ff:fef7:e1a8) has joined #ardour
+2016-10-10 09:41:00		[09:35]
+2016-10-10 09:44:42	-->	dizero__ (~dizero@120.146.29.234) has joined #ardour
+2016-10-10 09:44:48	-->	tom- (~srv@84-74-158-93.dclient.hispeed.ch) has joined #ardour
+2016-10-10 09:46:51	<--	krabador (~krabador@unaffiliated/krabador) has quit (Quit: Leaving)
+2016-10-10 09:47:29	tom-	i have this session where the master bus slips away from the top
+2016-10-10 09:47:57	<--	dsr1204 (~dsr1204@99-111-235-130.lightspeed.cicril.sbcglobal.net) has quit (Ping timeout: 240 seconds)
+2016-10-10 09:48:21	tom-	i put it as the first track but sometimes (i.e. after loading) it's second track again
+2016-10-10 09:48:25	tom-	known issue?
+2016-10-10 09:52:34	<--	nath (~nathanael@x590e47a3.dyn.telefonica.de) has left #ardour
+2016-10-10 09:53:32	rosslagerwall_	tom-: that seems to happen for most of my sessions :-/
+2016-10-10 09:57:33	-->	jablo (~jablo@80-62-117-52-mobile.dk.customer.tdc.net) has joined #ardour
+2016-10-10 09:57:33		[09:57]
+2016-10-10 10:04:32	nstewart_	bought my 3yo a maple snare before I got one. Sweetwater blowing out Catalina 10" snares for $69. He needs something smaller that can hang from a stand

@@ -22,13 +22,12 @@ fi
 source /usr/share/doc/find-the-command/ftc.bash
 ## Trap function
 homepushdcheck() {
-	echo -n '[Move to home folder? (Y/n)] '; read -r
+	echo -n '[Move to home folder? (y/N)] '; read -r
 	case ${REPLY} in
-	 [Yy]*| [Yy]*|'' ) { pushd .; pushd ${HOME}; } >/dev/null; return 130;;
-	 [Nn]*| [Nn]* ) return 1;;
+	 [Nn]*| [Nn]*|'' ) return 1;;
+	 [Yy]*| [Yy]* ) { pushd .; pushd ${HOME}; } >/dev/null; return 0;;
 	 * ) { pushd .; pushd ${HOME}; } >/dev/null; return 130;;
 	esac
-	return 131
 }
 #trap ' { [[ $EUID != 0 ]] && exec bash || pushd /root >/dev/null; }' SIGQUIT
 #kill -SIGQUIT ${$};
@@ -70,6 +69,10 @@ export SSH_KEY_PATH="/home/alyptik/.ssh/identity"
 #{ eval $(keychain --eval --agents ssh,gpg identity id_rsa id_ecdsa); } 2>&1 | tee /dev/tty &>>${ZSH_ERROR}
 #{ eval $(keychain --eval --agents ssh,gpg identity id_rsa id_ecdsa); } 2>&1 | tee /dev/tty &>>${ZSH_ERROR}
 #{ eval $(keychain --eval --agents ssh,gpg identity id_rsa id_ecdsa); } &>/dev/tty
+
+
+## Start gpg/ssh agent and setup pump environment variables
+{ eval $(keychain --eval --agents ssh,gpg identity id_rsa id_ecdsa) $(pump --startup); } 2>&1
 
 #envoy -t ssh-agent -a id_4rsa2
 #source <(envoy -p)

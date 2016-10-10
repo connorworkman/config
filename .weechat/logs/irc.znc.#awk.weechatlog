@@ -12043,3 +12043,403 @@
 2016-10-09 19:01:01	<--	fford (~fnord@p2003004C6F642300CE6D2D04010A06D1.dip0.t-ipconnect.de) has quit (Quit: WeeChat 1.5)
 2016-10-09 19:03:17	<--	rods-tab3 (~rods-tab3@172.56.38.219) has quit (Ping timeout: 268 seconds)
 2016-10-09 19:09:00		[19:03]
+2016-10-10 01:19:59	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined #awk
+2016-10-10 01:19:59		[01:19]
+2016-10-10 01:19:59	--	Topic for #awk is ""Paste at: http://gist.github.com or http://sprunge.us | Wiki: http://awk.freeshell.org/ | Reference: http://xrl.us/gnuref | FAQ: http://xrl.us/4wkf4q | POSIX: http://xrl.us/awk1p | Regex: #regex | e36freak's libs: https://github.com/e36freak/awk-libs | HTML input?  Use scrapy instead - http://scrapy.org | Please ask your question and be patient, someone will get to you."
+2016-10-10 01:19:59	--	Topic set by pr3d4t0r (~zhenya01@varenka.cime.net) on Wed, 27 Apr 2016 07:56:45
+2016-10-10 01:19:59	--	Channel #awk: 143 nicks (0 ops, 0 voices, 143 normals)
+2016-10-10 01:19:59	***	Buffer Playback...
+2016-10-10 01:19:59	lgc	[00:32:39] Indeed. [00:32:39]
+2016-10-10 01:19:59	nal	[00:32:51] except, maybe, esoteric languages [00:32:51]
+2016-10-10 01:19:59	lgc	[00:33:40] Oh, well... except from file I/O and such things, AWK is very much like C. [00:33:40]
+2016-10-10 01:19:59	lgc	[00:33:59] And, of course, no declaration of variables. [00:33:59]
+2016-10-10 01:19:59	JacobsLadd3r	[00:34:05] Anyone happen to know any tricks to speed up awk on a large file? I already use (LC_ALL=C) to set the locale to ASCII instead of UTF-8 and that improves performance greatly, but wandering if there was anything else I should look at. [00:34:05]
+2016-10-10 01:19:59	nal	[00:35:17] lgc: well, local variables must be declared if you want them [00:35:17]
+2016-10-10 01:19:59	lgc	[00:35:44] You mean in AWK? [00:35:44]
+2016-10-10 01:19:59	nal	[00:35:49] yeah [00:35:49]
+2016-10-10 01:19:59	nal	[00:35:58] or else its global [00:35:58]
+2016-10-10 01:19:59	nal	[00:36:11] and global always messes things up [00:36:11]
+2016-10-10 01:19:59	nal	[00:36:31] try doing a for loop within a for loop [00:36:31]
+2016-10-10 01:19:59	lgc	[00:36:45] Oh, yes, that is something I don't like much about AWK's global-by-default values. [00:36:45]
+2016-10-10 01:19:59	nal	[00:36:57] JacobsLadd3r: use perl [00:36:57]
+2016-10-10 01:19:59	lgc	[00:36:58] It's kind of sloppy. [00:36:58]
+2016-10-10 01:19:59	nal	[00:37:23] JacobsLadd3r: or use sed, if its still too slow use C [00:37:23]
+2016-10-10 01:19:59	nal	[00:37:32] or use mawk [00:37:32]
+2016-10-10 01:19:59	nal	[00:38:21] lgc: its good for one liners but not good for... anything else [00:38:21]
+2016-10-10 01:19:59	nal	[00:39:48] JacobsLadd3r: this is of course, if you cant make the code any faster, then switch interpreter/languages [00:39:48]
+2016-10-10 01:19:59	nal	[00:40:09] hopefully someone else will answer [00:40:09]
+2016-10-10 01:19:59	lgc	[00:40:22] Not in my experience, nal. :) . It can do much more than that. [00:40:22]
+2016-10-10 01:19:59	rods-tab3	[00:40:25] !paddlin [00:40:25]
+2016-10-10 01:19:59	jamesd	[00:40:37] get a faster computer..   i haven't found awk slow at anything in the last decade... not even this century awk was slow back in the 90's when i didn't own a floating point processor... [00:40:37]
+2016-10-10 01:19:59	rods-tab3	[00:41:47] try mawk - its sometimes much fasster [00:41:47]
+2016-10-10 01:19:59	JacobsLadd3r	[00:41:53] If you attempt to awk search over a 5GB file it's going to take quite a while. Forcing ASCII instead of UTF-8 can give you an over 1000% performance increase. So I was just curious if there were any other Linux tricks that might help in general just speed up awk. [00:41:53]
+2016-10-10 01:19:59	JacobsLadd3r	[00:42:04] Ahh that's true I forgot about mawk, thanks! [00:42:04]
+2016-10-10 01:19:59	nal	[00:42:15] oh gosh, why are you even... [00:42:15]
+2016-10-10 01:19:59	rods-tab3	[00:44:59] xpt: hawkbot down ? [00:44:59]
+2016-10-10 01:19:59	nal	[00:47:28] i always see that question asked in stack overflow, by that point, isnt it better to convert the file into sql or something like that? [00:47:28]
+2016-10-10 01:19:59	JacobsLadd3r	[00:52:27] So this is what I'm trying to speed up, looking across all logs files on a web-server at once, and in many cases this totals over GBs and GBs of data. I have awk looking just for today's date, so if there would be a faster way to not read from the start of files until getting to today's date that is the next place I can think of for speed improvements, but not sure if that's doable in any way. [00:52:27]
+2016-10-10 01:19:59	JacobsLadd3r	[00:52:27] http://pastebin.com/2AHCSFVK [00:52:27]
+2016-10-10 01:19:59	nal	[00:56:37] gnu grep is faster for searching [00:56:37]
+2016-10-10 01:19:59	JacobsLadd3r	[00:58:05] Yeah, if you Google "Speed up grep" I wrote an article about that, that's where I got the LC_ALL=C trick to use with awk. I was just curious if I was missing out on any other speed boosts I could use directly with awk instead of having to grep first. [00:58:05]
+2016-10-10 01:19:59	rods-tab3	[01:06:22] which awk ? [01:06:22]
+2016-10-10 01:19:59	xpt	[06:05:19] hawkbot: !help [06:05:19]
+2016-10-10 01:19:59	xpt	[06:05:32] !help [06:05:32]
+2016-10-10 01:19:59	hawkbot	[06:05:32] Available commands: `!add word description' to add new factoid, `!foo' to trigger response to "foo" factoid. `!forget foo' to remove factoid. `!facts' to list all factoids available. [06:05:32]
+2016-10-10 01:19:59	xpt	[06:05:57] rods-tab3: working. thanls for info [06:05:57]
+2016-10-10 01:19:59	xpt	[06:06:10] s,l,k, [06:06:10]
+2016-10-10 01:19:59	Camusensei	[11:25:37] JacobsLadd3r: since it seems you are doing this daily, I would recommend you saved the index where you found yesterday's date and start from that line [11:25:37]
+2016-10-10 01:19:59	rods-tab3	[00:32:16] !facts [00:32:16]
+2016-10-10 01:19:59	hawkbot	[00:32:16] Current factoids are: fake RS m1 include gawk-book-buy xml NR wayttd TOTA next patternaction NF oneliners emergency paddlin concise upe posix TAPL awk_wiki_info email input faq botsnack update uuoc rof sh awk(1) gawkbook ops xpt csv 1 butterfly range cookie RangeOfFields ' tutorial away questions oneliner xy bwk gawk doesntwork umq awk-sources paste netiquette var help bot awkbook gawk(1) variable-names good [00:32:16]
+2016-10-10 01:19:59	chele	[09:53:43] hi there i have some trouble including my awk command into a bash alias. my cmd is ls -lrt log | tail -1 | awk '/ / {print "log/"$NF} ' | xargs less but when i include this in an alias="<cmd>" the variable $NF is out of context of awk and doesn't return what i expect. how can i configure my cmd as an bash alias? [09:53:43]
+2016-10-10 01:19:59	Riviera	[09:56:59] chele: Sounds like a issue with shell quoting, not with awk; anyway, that code seems to be quite problematic. [09:56:59]
+2016-10-10 01:19:59	chele	[09:59:08] Riviera could you reason the problematic? [09:59:08]
+2016-10-10 01:19:59	Riviera	[10:17:49] chele: Parsing ls is problematic by itself, for it is a tool printing filenames for human eyes, potentially mangling characters in filenames, [10:17:49]
+2016-10-10 01:19:59	Riviera	[10:18:03] chele: additionally filenames with newline characters would be parsed wrongly. [10:18:03]
+2016-10-10 01:19:59	Riviera	[10:18:20] chele: A very minor issue is tail -1, the portable variant is tail -n 1, [10:18:20]
+2016-10-10 01:19:59	Riviera	[10:18:50] chele: finally xargs does parsing of filenames, it will treat several characters specially. [10:18:50]
+2016-10-10 01:19:59	Riviera	[10:19:04] chele: For example quotation marks and whitespace. [10:19:04]
+2016-10-10 01:19:59	Riviera	[10:19:37] chele: Now one might argue "won't happen in my case," which might be true, but that does not really justify using broken code when better solutions would be available. [10:19:37]
+2016-10-10 01:19:59	***	Playback Complete.
+2016-10-10 01:20:47	--	Channel created on Sat, 25 Nov 2006 20:42:48
+2016-10-10 01:24:40	<--	hpt (~hpt@123.114.149.192) has quit (Ping timeout: 250 seconds)
+2016-10-10 01:25:18	<--	johnmilton (~johnmilto@192.206.23.197) has quit (Remote host closed the connection)
+2016-10-10 01:26:48	-->	hpt (~hpt@123.114.158.100) has joined #awk
+2016-10-10 01:32:00		[01:26]
+2016-10-10 01:39:43	-->	b (~coffee@unaffiliated/ridout) has joined #awk
+2016-10-10 01:45:00		[01:39]
+2016-10-10 02:08:16	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined #awk
+2016-10-10 02:08:16		[02:08]
+2016-10-10 02:08:16	--	Topic for #awk is ""Paste at: http://gist.github.com or http://sprunge.us | Wiki: http://awk.freeshell.org/ | Reference: http://xrl.us/gnuref | FAQ: http://xrl.us/4wkf4q | POSIX: http://xrl.us/awk1p | Regex: #regex | e36freak's libs: https://github.com/e36freak/awk-libs | HTML input?  Use scrapy instead - http://scrapy.org | Please ask your question and be patient, someone will get to you."
+2016-10-10 02:08:16	--	Topic set by pr3d4t0r (~zhenya01@varenka.cime.net) on Wed, 27 Apr 2016 07:56:45
+2016-10-10 02:08:16	--	Channel #awk: 147 nicks (0 ops, 0 voices, 147 normals)
+2016-10-10 02:08:16	***	Buffer Playback...
+2016-10-10 02:08:16	lgc	[00:32:39] Indeed. [00:32:39]
+2016-10-10 02:08:16	nal	[00:32:51] except, maybe, esoteric languages [00:32:51]
+2016-10-10 02:08:16	lgc	[00:33:40] Oh, well... except from file I/O and such things, AWK is very much like C. [00:33:40]
+2016-10-10 02:08:16	lgc	[00:33:59] And, of course, no declaration of variables. [00:33:59]
+2016-10-10 02:08:16	JacobsLadd3r	[00:34:05] Anyone happen to know any tricks to speed up awk on a large file? I already use (LC_ALL=C) to set the locale to ASCII instead of UTF-8 and that improves performance greatly, but wandering if there was anything else I should look at. [00:34:05]
+2016-10-10 02:08:16	nal	[00:35:17] lgc: well, local variables must be declared if you want them [00:35:17]
+2016-10-10 02:08:16	lgc	[00:35:44] You mean in AWK? [00:35:44]
+2016-10-10 02:08:16	nal	[00:35:49] yeah [00:35:49]
+2016-10-10 02:08:16	nal	[00:35:58] or else its global [00:35:58]
+2016-10-10 02:08:16	nal	[00:36:11] and global always messes things up [00:36:11]
+2016-10-10 02:08:16	nal	[00:36:31] try doing a for loop within a for loop [00:36:31]
+2016-10-10 02:08:16	lgc	[00:36:45] Oh, yes, that is something I don't like much about AWK's global-by-default values. [00:36:45]
+2016-10-10 02:08:16	nal	[00:36:57] JacobsLadd3r: use perl [00:36:57]
+2016-10-10 02:08:16	lgc	[00:36:58] It's kind of sloppy. [00:36:58]
+2016-10-10 02:08:16	nal	[00:37:23] JacobsLadd3r: or use sed, if its still too slow use C [00:37:23]
+2016-10-10 02:08:16	nal	[00:37:32] or use mawk [00:37:32]
+2016-10-10 02:08:16	nal	[00:38:21] lgc: its good for one liners but not good for... anything else [00:38:21]
+2016-10-10 02:08:16	nal	[00:39:48] JacobsLadd3r: this is of course, if you cant make the code any faster, then switch interpreter/languages [00:39:48]
+2016-10-10 02:08:16	nal	[00:40:09] hopefully someone else will answer [00:40:09]
+2016-10-10 02:08:16	lgc	[00:40:22] Not in my experience, nal. :) . It can do much more than that. [00:40:22]
+2016-10-10 02:08:16	rods-tab3	[00:40:25] !paddlin [00:40:25]
+2016-10-10 02:08:16	jamesd	[00:40:37] get a faster computer..   i haven't found awk slow at anything in the last decade... not even this century awk was slow back in the 90's when i didn't own a floating point processor... [00:40:37]
+2016-10-10 02:08:16	rods-tab3	[00:41:47] try mawk - its sometimes much fasster [00:41:47]
+2016-10-10 02:08:16	JacobsLadd3r	[00:41:53] If you attempt to awk search over a 5GB file it's going to take quite a while. Forcing ASCII instead of UTF-8 can give you an over 1000% performance increase. So I was just curious if there were any other Linux tricks that might help in general just speed up awk. [00:41:53]
+2016-10-10 02:08:16	JacobsLadd3r	[00:42:04] Ahh that's true I forgot about mawk, thanks! [00:42:04]
+2016-10-10 02:08:16	nal	[00:42:15] oh gosh, why are you even... [00:42:15]
+2016-10-10 02:08:16	rods-tab3	[00:44:59] xpt: hawkbot down ? [00:44:59]
+2016-10-10 02:08:16	nal	[00:47:28] i always see that question asked in stack overflow, by that point, isnt it better to convert the file into sql or something like that? [00:47:28]
+2016-10-10 02:08:16	JacobsLadd3r	[00:52:27] So this is what I'm trying to speed up, looking across all logs files on a web-server at once, and in many cases this totals over GBs and GBs of data. I have awk looking just for today's date, so if there would be a faster way to not read from the start of files until getting to today's date that is the next place I can think of for speed improvements, but not sure if that's doable in any way. [00:52:27]
+2016-10-10 02:08:16	JacobsLadd3r	[00:52:27] http://pastebin.com/2AHCSFVK [00:52:27]
+2016-10-10 02:08:16	nal	[00:56:37] gnu grep is faster for searching [00:56:37]
+2016-10-10 02:08:16	JacobsLadd3r	[00:58:05] Yeah, if you Google "Speed up grep" I wrote an article about that, that's where I got the LC_ALL=C trick to use with awk. I was just curious if I was missing out on any other speed boosts I could use directly with awk instead of having to grep first. [00:58:05]
+2016-10-10 02:08:16	rods-tab3	[01:06:22] which awk ? [01:06:22]
+2016-10-10 02:08:16	xpt	[06:05:19] hawkbot: !help [06:05:19]
+2016-10-10 02:08:16	xpt	[06:05:32] !help [06:05:32]
+2016-10-10 02:08:16	hawkbot	[06:05:32] Available commands: `!add word description' to add new factoid, `!foo' to trigger response to "foo" factoid. `!forget foo' to remove factoid. `!facts' to list all factoids available. [06:05:32]
+2016-10-10 02:08:16	xpt	[06:05:57] rods-tab3: working. thanls for info [06:05:57]
+2016-10-10 02:08:16	xpt	[06:06:10] s,l,k, [06:06:10]
+2016-10-10 02:08:16	Camusensei	[11:25:37] JacobsLadd3r: since it seems you are doing this daily, I would recommend you saved the index where you found yesterday's date and start from that line [11:25:37]
+2016-10-10 02:08:16	rods-tab3	[00:32:16] !facts [00:32:16]
+2016-10-10 02:08:16	hawkbot	[00:32:16] Current factoids are: fake RS m1 include gawk-book-buy xml NR wayttd TOTA next patternaction NF oneliners emergency paddlin concise upe posix TAPL awk_wiki_info email input faq botsnack update uuoc rof sh awk(1) gawkbook ops xpt csv 1 butterfly range cookie RangeOfFields ' tutorial away questions oneliner xy bwk gawk doesntwork umq awk-sources paste netiquette var help bot awkbook gawk(1) variable-names good [00:32:16]
+2016-10-10 02:08:16	chele	[09:53:43] hi there i have some trouble including my awk command into a bash alias. my cmd is ls -lrt log | tail -1 | awk '/ / {print "log/"$NF} ' | xargs less but when i include this in an alias="<cmd>" the variable $NF is out of context of awk and doesn't return what i expect. how can i configure my cmd as an bash alias? [09:53:43]
+2016-10-10 02:08:16	Riviera	[09:56:59] chele: Sounds like a issue with shell quoting, not with awk; anyway, that code seems to be quite problematic. [09:56:59]
+2016-10-10 02:08:16	chele	[09:59:08] Riviera could you reason the problematic? [09:59:08]
+2016-10-10 02:08:16	Riviera	[10:17:49] chele: Parsing ls is problematic by itself, for it is a tool printing filenames for human eyes, potentially mangling characters in filenames, [10:17:49]
+2016-10-10 02:08:16	Riviera	[10:18:03] chele: additionally filenames with newline characters would be parsed wrongly. [10:18:03]
+2016-10-10 02:08:16	Riviera	[10:18:20] chele: A very minor issue is tail -1, the portable variant is tail -n 1, [10:18:20]
+2016-10-10 02:08:16	Riviera	[10:18:50] chele: finally xargs does parsing of filenames, it will treat several characters specially. [10:18:50]
+2016-10-10 02:08:16	Riviera	[10:19:04] chele: For example quotation marks and whitespace. [10:19:04]
+2016-10-10 02:08:16	Riviera	[10:19:37] chele: Now one might argue "won't happen in my case," which might be true, but that does not really justify using broken code when better solutions would be available. [10:19:37]
+2016-10-10 02:08:16	***	Playback Complete.
+2016-10-10 02:09:07	--	Channel created on Sat, 25 Nov 2006 20:42:48
+2016-10-10 02:15:00		[02:09]
+2016-10-10 02:15:01	<--	marky1991_2 (~marky1991@c-71-56-74-125.hsd1.ga.comcast.net) has quit (Ping timeout: 248 seconds)
+2016-10-10 02:16:00	-->	irco (~irco@HSI-KBW-134-3-111-4.hsi14.kabel-badenwuerttemberg.de) has joined #awk
+2016-10-10 02:21:00		[02:16]
+2016-10-10 02:44:21	<--	hpt (~hpt@123.114.158.100) has quit (Ping timeout: 260 seconds)
+2016-10-10 02:44:21		[02:44]
+2016-10-10 02:44:50	<--	irco (~irco@HSI-KBW-134-3-111-4.hsi14.kabel-badenwuerttemberg.de) has quit (Ping timeout: 250 seconds)
+2016-10-10 02:50:00		[02:44]
+2016-10-10 02:56:59	-->	hpt (~hpt@123.114.158.100) has joined #awk
+2016-10-10 03:02:00		[02:56]
+2016-10-10 03:08:39	-->	marky1991_2 (~marky1991@38.104.182.182) has joined #awk
+2016-10-10 03:11:37	-->	mute (m@unaffiliated/mute) has joined #awk
+2016-10-10 03:19:10	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined #awk
+2016-10-10 03:19:10		[03:19]
+2016-10-10 03:19:10	--	Topic for #awk is ""Paste at: http://gist.github.com or http://sprunge.us | Wiki: http://awk.freeshell.org/ | Reference: http://xrl.us/gnuref | FAQ: http://xrl.us/4wkf4q | POSIX: http://xrl.us/awk1p | Regex: #regex | e36freak's libs: https://github.com/e36freak/awk-libs | HTML input?  Use scrapy instead - http://scrapy.org | Please ask your question and be patient, someone will get to you."
+2016-10-10 03:19:10	--	Topic set by pr3d4t0r (~zhenya01@varenka.cime.net) on Wed, 27 Apr 2016 07:56:45
+2016-10-10 03:19:10	--	Channel #awk: 147 nicks (0 ops, 0 voices, 147 normals)
+2016-10-10 03:19:10	***	Buffer Playback...
+2016-10-10 03:19:10	lgc	[00:32:39] Indeed. [00:32:39]
+2016-10-10 03:19:10	nal	[00:32:51] except, maybe, esoteric languages [00:32:51]
+2016-10-10 03:19:10	lgc	[00:33:40] Oh, well... except from file I/O and such things, AWK is very much like C. [00:33:40]
+2016-10-10 03:19:10	lgc	[00:33:59] And, of course, no declaration of variables. [00:33:59]
+2016-10-10 03:19:10	JacobsLadd3r	[00:34:05] Anyone happen to know any tricks to speed up awk on a large file? I already use (LC_ALL=C) to set the locale to ASCII instead of UTF-8 and that improves performance greatly, but wandering if there was anything else I should look at. [00:34:05]
+2016-10-10 03:19:10	nal	[00:35:17] lgc: well, local variables must be declared if you want them [00:35:17]
+2016-10-10 03:19:10	lgc	[00:35:44] You mean in AWK? [00:35:44]
+2016-10-10 03:19:10	nal	[00:35:49] yeah [00:35:49]
+2016-10-10 03:19:10	nal	[00:35:58] or else its global [00:35:58]
+2016-10-10 03:19:10	nal	[00:36:11] and global always messes things up [00:36:11]
+2016-10-10 03:19:10	nal	[00:36:31] try doing a for loop within a for loop [00:36:31]
+2016-10-10 03:19:10	lgc	[00:36:45] Oh, yes, that is something I don't like much about AWK's global-by-default values. [00:36:45]
+2016-10-10 03:19:10	nal	[00:36:57] JacobsLadd3r: use perl [00:36:57]
+2016-10-10 03:19:10	lgc	[00:36:58] It's kind of sloppy. [00:36:58]
+2016-10-10 03:19:10	nal	[00:37:23] JacobsLadd3r: or use sed, if its still too slow use C [00:37:23]
+2016-10-10 03:19:10	nal	[00:37:32] or use mawk [00:37:32]
+2016-10-10 03:19:10	nal	[00:38:21] lgc: its good for one liners but not good for... anything else [00:38:21]
+2016-10-10 03:19:10	nal	[00:39:48] JacobsLadd3r: this is of course, if you cant make the code any faster, then switch interpreter/languages [00:39:48]
+2016-10-10 03:19:10	nal	[00:40:09] hopefully someone else will answer [00:40:09]
+2016-10-10 03:19:10	lgc	[00:40:22] Not in my experience, nal. :) . It can do much more than that. [00:40:22]
+2016-10-10 03:19:10	rods-tab3	[00:40:25] !paddlin [00:40:25]
+2016-10-10 03:19:10	jamesd	[00:40:37] get a faster computer..   i haven't found awk slow at anything in the last decade... not even this century awk was slow back in the 90's when i didn't own a floating point processor... [00:40:37]
+2016-10-10 03:19:10	rods-tab3	[00:41:47] try mawk - its sometimes much fasster [00:41:47]
+2016-10-10 03:19:10	JacobsLadd3r	[00:41:53] If you attempt to awk search over a 5GB file it's going to take quite a while. Forcing ASCII instead of UTF-8 can give you an over 1000% performance increase. So I was just curious if there were any other Linux tricks that might help in general just speed up awk. [00:41:53]
+2016-10-10 03:19:10	JacobsLadd3r	[00:42:04] Ahh that's true I forgot about mawk, thanks! [00:42:04]
+2016-10-10 03:19:10	nal	[00:42:15] oh gosh, why are you even... [00:42:15]
+2016-10-10 03:19:10	rods-tab3	[00:44:59] xpt: hawkbot down ? [00:44:59]
+2016-10-10 03:19:10	nal	[00:47:28] i always see that question asked in stack overflow, by that point, isnt it better to convert the file into sql or something like that? [00:47:28]
+2016-10-10 03:19:10	JacobsLadd3r	[00:52:27] So this is what I'm trying to speed up, looking across all logs files on a web-server at once, and in many cases this totals over GBs and GBs of data. I have awk looking just for today's date, so if there would be a faster way to not read from the start of files until getting to today's date that is the next place I can think of for speed improvements, but not sure if that's doable in any way. [00:52:27]
+2016-10-10 03:19:10	JacobsLadd3r	[00:52:27] http://pastebin.com/2AHCSFVK [00:52:27]
+2016-10-10 03:19:10	nal	[00:56:37] gnu grep is faster for searching [00:56:37]
+2016-10-10 03:19:10	JacobsLadd3r	[00:58:05] Yeah, if you Google "Speed up grep" I wrote an article about that, that's where I got the LC_ALL=C trick to use with awk. I was just curious if I was missing out on any other speed boosts I could use directly with awk instead of having to grep first. [00:58:05]
+2016-10-10 03:19:10	rods-tab3	[01:06:22] which awk ? [01:06:22]
+2016-10-10 03:19:10	xpt	[06:05:19] hawkbot: !help [06:05:19]
+2016-10-10 03:19:10	xpt	[06:05:32] !help [06:05:32]
+2016-10-10 03:19:10	hawkbot	[06:05:32] Available commands: `!add word description' to add new factoid, `!foo' to trigger response to "foo" factoid. `!forget foo' to remove factoid. `!facts' to list all factoids available. [06:05:32]
+2016-10-10 03:19:10	xpt	[06:05:57] rods-tab3: working. thanls for info [06:05:57]
+2016-10-10 03:19:10	xpt	[06:06:10] s,l,k, [06:06:10]
+2016-10-10 03:19:10	Camusensei	[11:25:37] JacobsLadd3r: since it seems you are doing this daily, I would recommend you saved the index where you found yesterday's date and start from that line [11:25:37]
+2016-10-10 03:19:10	rods-tab3	[00:32:16] !facts [00:32:16]
+2016-10-10 03:19:10	hawkbot	[00:32:16] Current factoids are: fake RS m1 include gawk-book-buy xml NR wayttd TOTA next patternaction NF oneliners emergency paddlin concise upe posix TAPL awk_wiki_info email input faq botsnack update uuoc rof sh awk(1) gawkbook ops xpt csv 1 butterfly range cookie RangeOfFields ' tutorial away questions oneliner xy bwk gawk doesntwork umq awk-sources paste netiquette var help bot awkbook gawk(1) variable-names good [00:32:16]
+2016-10-10 03:19:10	chele	[09:53:43] hi there i have some trouble including my awk command into a bash alias. my cmd is ls -lrt log | tail -1 | awk '/ / {print "log/"$NF} ' | xargs less but when i include this in an alias="<cmd>" the variable $NF is out of context of awk and doesn't return what i expect. how can i configure my cmd as an bash alias? [09:53:43]
+2016-10-10 03:19:10	Riviera	[09:56:59] chele: Sounds like a issue with shell quoting, not with awk; anyway, that code seems to be quite problematic. [09:56:59]
+2016-10-10 03:19:10	chele	[09:59:08] Riviera could you reason the problematic? [09:59:08]
+2016-10-10 03:19:10	Riviera	[10:17:49] chele: Parsing ls is problematic by itself, for it is a tool printing filenames for human eyes, potentially mangling characters in filenames, [10:17:49]
+2016-10-10 03:19:10	Riviera	[10:18:03] chele: additionally filenames with newline characters would be parsed wrongly. [10:18:03]
+2016-10-10 03:19:10	Riviera	[10:18:20] chele: A very minor issue is tail -1, the portable variant is tail -n 1, [10:18:20]
+2016-10-10 03:19:10	Riviera	[10:18:50] chele: finally xargs does parsing of filenames, it will treat several characters specially. [10:18:50]
+2016-10-10 03:19:10	Riviera	[10:19:04] chele: For example quotation marks and whitespace. [10:19:04]
+2016-10-10 03:19:10	Riviera	[10:19:37] chele: Now one might argue "won't happen in my case," which might be true, but that does not really justify using broken code when better solutions would be available. [10:19:37]
+2016-10-10 03:19:10	***	Playback Complete.
+2016-10-10 03:19:55	--	Channel created on Sat, 25 Nov 2006 20:42:48
+2016-10-10 03:19:56	-->	dking_desktop1 (~danielk@vbo1.inmotionhosting.com) has joined #awk
+2016-10-10 03:20:00	<--	dking_desktop (~danielk@vbo1.inmotionhosting.com) has left #awk
+2016-10-10 03:25:00		[03:20]
+2016-10-10 03:27:50	<--	mute (m@unaffiliated/mute) has quit (Quit: WeeChat 1.5)
+2016-10-10 03:29:24	-->	mute (m@unaffiliated/mute) has joined #awk
+2016-10-10 03:35:00		[03:29]
+2016-10-10 03:35:10	<--	corsibu (~corsibu@171.20.68.68) has quit (Remote host closed the connection)
+2016-10-10 03:38:21	-->	corsibu (~corsibu@171.20.68.68) has joined #awk
+2016-10-10 03:44:00		[03:38]
+2016-10-10 03:45:33	<--	geggam (~geggam@108-218-203-177.uvs.sntcca.sbcglobal.net) has quit (Quit: Leaving)
+2016-10-10 03:47:26	-->	[diablo] (~miles@unaffiliated/miles/x-000000001) has joined #awk
+2016-10-10 03:47:36	[diablo]	good afternoon #awk
+2016-10-10 03:48:40	[diablo]	we're trying to extract and print just URL's from a file
+2016-10-10 03:48:55	[diablo]	there's only 1 url (mixed http, https)
+2016-10-10 03:49:19	geirha	html?
+2016-10-10 03:49:52	[diablo]	no it's a actually a line from yum repolist -v
+2016-10-10 03:50:34	[diablo]	we just need the entire URL
+2016-10-10 03:50:45	<--	hpt (~hpt@123.114.158.100) has quit (Quit: Lost terminal)
+2016-10-10 03:50:51	[diablo]	there's slight difference between RHEL5 and 6 and 7 output, only the URL is the common factor
+2016-10-10 03:51:04	[diablo]	so trying to work out how to extract it correctly
+2016-10-10 03:52:12	geirha	so what do they look like?
+2016-10-10 03:52:28	[diablo]	sorry gimme a min my co-worker thinks he's got it
+2016-10-10 03:53:04	-->	hpt (~hpt@123.114.158.100) has joined #awk
+2016-10-10 03:53:21	geirha	If it's something like this (first hit on google): https://gist.github.com/kpfleming/47a02728944b66bcf300c77ccdc43c67
+2016-10-10 03:53:42	geirha	I'd use:   awk -F' *: +' '$1=="Repo-baseurl"{print $2}'
+2016-10-10 03:53:52	[diablo]	yeah thats it the Repo-baseurl
+2016-10-10 03:54:05	[diablo]	we need to compile a list of all url's used by all servers in the company
+2016-10-10 04:55:50	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined #awk
+2016-10-10 04:55:50		[04:55]
+2016-10-10 04:55:50	--	Topic for #awk is ""Paste at: http://gist.github.com or http://sprunge.us | Wiki: http://awk.freeshell.org/ | Reference: http://xrl.us/gnuref | FAQ: http://xrl.us/4wkf4q | POSIX: http://xrl.us/awk1p | Regex: #regex | e36freak's libs: https://github.com/e36freak/awk-libs | HTML input?  Use scrapy instead - http://scrapy.org | Please ask your question and be patient, someone will get to you."
+2016-10-10 04:55:50	--	Topic set by pr3d4t0r (~zhenya01@varenka.cime.net) on Wed, 27 Apr 2016 07:56:45
+2016-10-10 04:55:50	--	Channel #awk: 146 nicks (0 ops, 0 voices, 146 normals)
+2016-10-10 04:55:50	***	Buffer Playback...
+2016-10-10 04:55:50	nal	[00:38:21] lgc: its good for one liners but not good for... anything else [00:38:21]
+2016-10-10 04:55:50	nal	[00:39:48] JacobsLadd3r: this is of course, if you cant make the code any faster, then switch interpreter/languages [00:39:48]
+2016-10-10 04:55:50	nal	[00:40:09] hopefully someone else will answer [00:40:09]
+2016-10-10 04:55:50	lgc	[00:40:22] Not in my experience, nal. :) . It can do much more than that. [00:40:22]
+2016-10-10 04:55:50	rods-tab3	[00:40:25] !paddlin [00:40:25]
+2016-10-10 04:55:50	jamesd	[00:40:37] get a faster computer..   i haven't found awk slow at anything in the last decade... not even this century awk was slow back in the 90's when i didn't own a floating point processor... [00:40:37]
+2016-10-10 04:55:50	rods-tab3	[00:41:47] try mawk - its sometimes much fasster [00:41:47]
+2016-10-10 04:55:50	JacobsLadd3r	[00:41:53] If you attempt to awk search over a 5GB file it's going to take quite a while. Forcing ASCII instead of UTF-8 can give you an over 1000% performance increase. So I was just curious if there were any other Linux tricks that might help in general just speed up awk. [00:41:53]
+2016-10-10 04:55:50	JacobsLadd3r	[00:42:04] Ahh that's true I forgot about mawk, thanks! [00:42:04]
+2016-10-10 04:55:50	nal	[00:42:15] oh gosh, why are you even... [00:42:15]
+2016-10-10 04:55:50	rods-tab3	[00:44:59] xpt: hawkbot down ? [00:44:59]
+2016-10-10 04:55:50	nal	[00:47:28] i always see that question asked in stack overflow, by that point, isnt it better to convert the file into sql or something like that? [00:47:28]
+2016-10-10 04:55:50	JacobsLadd3r	[00:52:27] So this is what I'm trying to speed up, looking across all logs files on a web-server at once, and in many cases this totals over GBs and GBs of data. I have awk looking just for today's date, so if there would be a faster way to not read from the start of files until getting to today's date that is the next place I can think of for speed improvements, but not sure if that's doable in any way. [00:52:27]
+2016-10-10 04:55:50	JacobsLadd3r	[00:52:27] http://pastebin.com/2AHCSFVK [00:52:27]
+2016-10-10 04:55:50	nal	[00:56:37] gnu grep is faster for searching [00:56:37]
+2016-10-10 04:55:50	JacobsLadd3r	[00:58:05] Yeah, if you Google "Speed up grep" I wrote an article about that, that's where I got the LC_ALL=C trick to use with awk. I was just curious if I was missing out on any other speed boosts I could use directly with awk instead of having to grep first. [00:58:05]
+2016-10-10 04:55:50	rods-tab3	[01:06:22] which awk ? [01:06:22]
+2016-10-10 04:55:50	xpt	[06:05:19] hawkbot: !help [06:05:19]
+2016-10-10 04:55:50	xpt	[06:05:32] !help [06:05:32]
+2016-10-10 04:55:50	hawkbot	[06:05:32] Available commands: `!add word description' to add new factoid, `!foo' to trigger response to "foo" factoid. `!forget foo' to remove factoid. `!facts' to list all factoids available. [06:05:32]
+2016-10-10 04:55:50	xpt	[06:05:57] rods-tab3: working. thanls for info [06:05:57]
+2016-10-10 04:55:50	xpt	[06:06:10] s,l,k, [06:06:10]
+2016-10-10 04:55:50	Camusensei	[11:25:37] JacobsLadd3r: since it seems you are doing this daily, I would recommend you saved the index where you found yesterday's date and start from that line [11:25:37]
+2016-10-10 04:55:50	rods-tab3	[00:32:16] !facts [00:32:16]
+2016-10-10 04:55:50	hawkbot	[00:32:16] Current factoids are: fake RS m1 include gawk-book-buy xml NR wayttd TOTA next patternaction NF oneliners emergency paddlin concise upe posix TAPL awk_wiki_info email input faq botsnack update uuoc rof sh awk(1) gawkbook ops xpt csv 1 butterfly range cookie RangeOfFields ' tutorial away questions oneliner xy bwk gawk doesntwork umq awk-sources paste netiquette var help bot awkbook gawk(1) variable-names good [00:32:16]
+2016-10-10 04:55:50	chele	[09:53:43] hi there i have some trouble including my awk command into a bash alias. my cmd is ls -lrt log | tail -1 | awk '/ / {print "log/"$NF} ' | xargs less but when i include this in an alias="<cmd>" the variable $NF is out of context of awk and doesn't return what i expect. how can i configure my cmd as an bash alias? [09:53:43]
+2016-10-10 04:55:50	Riviera	[09:56:59] chele: Sounds like a issue with shell quoting, not with awk; anyway, that code seems to be quite problematic. [09:56:59]
+2016-10-10 04:55:50	chele	[09:59:08] Riviera could you reason the problematic? [09:59:08]
+2016-10-10 04:55:50	Riviera	[10:17:49] chele: Parsing ls is problematic by itself, for it is a tool printing filenames for human eyes, potentially mangling characters in filenames, [10:17:49]
+2016-10-10 04:55:50	Riviera	[10:18:03] chele: additionally filenames with newline characters would be parsed wrongly. [10:18:03]
+2016-10-10 04:55:50	Riviera	[10:18:20] chele: A very minor issue is tail -1, the portable variant is tail -n 1, [10:18:20]
+2016-10-10 04:55:50	Riviera	[10:18:50] chele: finally xargs does parsing of filenames, it will treat several characters specially. [10:18:50]
+2016-10-10 04:55:50	Riviera	[10:19:04] chele: For example quotation marks and whitespace. [10:19:04]
+2016-10-10 04:55:50	Riviera	[10:19:37] chele: Now one might argue "won't happen in my case," which might be true, but that does not really justify using broken code when better solutions would be available. [10:19:37]
+2016-10-10 04:55:50	[diablo]	[13:47:33] good afternoon #awk [13:47:33]
+2016-10-10 04:55:50	[diablo]	[13:48:40] we're trying to extract and print just URL's from a file [13:48:40]
+2016-10-10 04:55:50	[diablo]	[13:48:55] there's only 1 url (mixed http, https) [13:48:55]
+2016-10-10 04:55:50	geirha	[13:49:18] html? [13:49:18]
+2016-10-10 04:55:50	[diablo]	[13:49:52] no it's a actually a line from yum repolist -v [13:49:52]
+2016-10-10 04:55:50	[diablo]	[13:50:27] we just need the entire URL [13:50:27]
+2016-10-10 04:55:50	[diablo]	[13:50:50] there's slight difference between RHEL5 and 6 and 7 output, only the URL is the common factor [13:50:50]
+2016-10-10 04:55:50	[diablo]	[13:51:04] so trying to work out how to extract it correctly [13:51:04]
+2016-10-10 04:55:50	geirha	[13:52:12] so what do they look like? [13:52:12]
+2016-10-10 04:55:50	[diablo]	[13:52:28] sorry gimme a min my co-worker thinks he's got it [13:52:28]
+2016-10-10 04:55:50	geirha	[13:53:21] If it's something like this (first hit on google): https://gist.github.com/kpfleming/47a02728944b66bcf300c77ccdc43c67 [13:53:21]
+2016-10-10 04:55:50	geirha	[13:53:41] I'd use:   awk -F' *: +' '$1=="Repo-baseurl"{print $2}' [13:53:41]
+2016-10-10 04:55:50	[diablo]	[13:53:52] yeah thats it the Repo-baseurl [13:53:52]
+2016-10-10 04:55:50	[diablo]	[13:54:04] we need to compile a list of all url's used by all servers in the company [13:54:04]
+2016-10-10 04:55:50	[diablo]	[13:57:45] cheers geirha [13:57:45]
+2016-10-10 04:55:50	[diablo]	[13:57:52] beats my co-workers one ;-) [13:57:52]
+2016-10-10 04:55:50	***	Playback Complete.
+2016-10-10 04:56:02	--	irc: disconnected from server
+2016-10-10 04:56:35	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined #awk
+2016-10-10 04:56:35		[04:56]
+2016-10-10 04:56:35	--	Topic for #awk is ""Paste at: http://gist.github.com or http://sprunge.us | Wiki: http://awk.freeshell.org/ | Reference: http://xrl.us/gnuref | FAQ: http://xrl.us/4wkf4q | POSIX: http://xrl.us/awk1p | Regex: #regex | e36freak's libs: https://github.com/e36freak/awk-libs | HTML input?  Use scrapy instead - http://scrapy.org | Please ask your question and be patient, someone will get to you."
+2016-10-10 04:56:35	--	Topic set by pr3d4t0r (~zhenya01@varenka.cime.net) on Wed, 27 Apr 2016 07:56:45
+2016-10-10 04:56:35	--	Channel #awk: 146 nicks (0 ops, 0 voices, 146 normals)
+2016-10-10 04:56:35	***	Buffer Playback...
+2016-10-10 04:56:35	nal	[00:38:21] lgc: its good for one liners but not good for... anything else [00:38:21]
+2016-10-10 04:56:35	nal	[00:39:48] JacobsLadd3r: this is of course, if you cant make the code any faster, then switch interpreter/languages [00:39:48]
+2016-10-10 04:56:35	nal	[00:40:09] hopefully someone else will answer [00:40:09]
+2016-10-10 04:56:35	lgc	[00:40:22] Not in my experience, nal. :) . It can do much more than that. [00:40:22]
+2016-10-10 04:56:35	rods-tab3	[00:40:25] !paddlin [00:40:25]
+2016-10-10 04:56:35	jamesd	[00:40:37] get a faster computer..   i haven't found awk slow at anything in the last decade... not even this century awk was slow back in the 90's when i didn't own a floating point processor... [00:40:37]
+2016-10-10 04:56:35	rods-tab3	[00:41:47] try mawk - its sometimes much fasster [00:41:47]
+2016-10-10 04:56:35	JacobsLadd3r	[00:41:53] If you attempt to awk search over a 5GB file it's going to take quite a while. Forcing ASCII instead of UTF-8 can give you an over 1000% performance increase. So I was just curious if there were any other Linux tricks that might help in general just speed up awk. [00:41:53]
+2016-10-10 04:56:35	JacobsLadd3r	[00:42:04] Ahh that's true I forgot about mawk, thanks! [00:42:04]
+2016-10-10 04:56:35	nal	[00:42:15] oh gosh, why are you even... [00:42:15]
+2016-10-10 04:56:35	rods-tab3	[00:44:59] xpt: hawkbot down ? [00:44:59]
+2016-10-10 04:56:35	nal	[00:47:28] i always see that question asked in stack overflow, by that point, isnt it better to convert the file into sql or something like that? [00:47:28]
+2016-10-10 04:56:35	JacobsLadd3r	[00:52:27] So this is what I'm trying to speed up, looking across all logs files on a web-server at once, and in many cases this totals over GBs and GBs of data. I have awk looking just for today's date, so if there would be a faster way to not read from the start of files until getting to today's date that is the next place I can think of for speed improvements, but not sure if that's doable in any way. [00:52:27]
+2016-10-10 04:56:35	JacobsLadd3r	[00:52:27] http://pastebin.com/2AHCSFVK [00:52:27]
+2016-10-10 04:56:35	nal	[00:56:37] gnu grep is faster for searching [00:56:37]
+2016-10-10 04:56:35	JacobsLadd3r	[00:58:05] Yeah, if you Google "Speed up grep" I wrote an article about that, that's where I got the LC_ALL=C trick to use with awk. I was just curious if I was missing out on any other speed boosts I could use directly with awk instead of having to grep first. [00:58:05]
+2016-10-10 04:56:35	rods-tab3	[01:06:22] which awk ? [01:06:22]
+2016-10-10 04:56:35	xpt	[06:05:19] hawkbot: !help [06:05:19]
+2016-10-10 04:56:35	xpt	[06:05:32] !help [06:05:32]
+2016-10-10 04:56:35	hawkbot	[06:05:32] Available commands: `!add word description' to add new factoid, `!foo' to trigger response to "foo" factoid. `!forget foo' to remove factoid. `!facts' to list all factoids available. [06:05:32]
+2016-10-10 04:56:35	xpt	[06:05:57] rods-tab3: working. thanls for info [06:05:57]
+2016-10-10 04:56:35	xpt	[06:06:10] s,l,k, [06:06:10]
+2016-10-10 04:56:35	Camusensei	[11:25:37] JacobsLadd3r: since it seems you are doing this daily, I would recommend you saved the index where you found yesterday's date and start from that line [11:25:37]
+2016-10-10 04:56:35	rods-tab3	[00:32:16] !facts [00:32:16]
+2016-10-10 04:56:35	hawkbot	[00:32:16] Current factoids are: fake RS m1 include gawk-book-buy xml NR wayttd TOTA next patternaction NF oneliners emergency paddlin concise upe posix TAPL awk_wiki_info email input faq botsnack update uuoc rof sh awk(1) gawkbook ops xpt csv 1 butterfly range cookie RangeOfFields ' tutorial away questions oneliner xy bwk gawk doesntwork umq awk-sources paste netiquette var help bot awkbook gawk(1) variable-names good [00:32:16]
+2016-10-10 04:56:35	chele	[09:53:43] hi there i have some trouble including my awk command into a bash alias. my cmd is ls -lrt log | tail -1 | awk '/ / {print "log/"$NF} ' | xargs less but when i include this in an alias="<cmd>" the variable $NF is out of context of awk and doesn't return what i expect. how can i configure my cmd as an bash alias? [09:53:43]
+2016-10-10 04:56:35	Riviera	[09:56:59] chele: Sounds like a issue with shell quoting, not with awk; anyway, that code seems to be quite problematic. [09:56:59]
+2016-10-10 04:56:35	chele	[09:59:08] Riviera could you reason the problematic? [09:59:08]
+2016-10-10 04:56:35	Riviera	[10:17:49] chele: Parsing ls is problematic by itself, for it is a tool printing filenames for human eyes, potentially mangling characters in filenames, [10:17:49]
+2016-10-10 04:56:35	Riviera	[10:18:03] chele: additionally filenames with newline characters would be parsed wrongly. [10:18:03]
+2016-10-10 04:56:35	Riviera	[10:18:20] chele: A very minor issue is tail -1, the portable variant is tail -n 1, [10:18:20]
+2016-10-10 04:56:35	Riviera	[10:18:50] chele: finally xargs does parsing of filenames, it will treat several characters specially. [10:18:50]
+2016-10-10 04:56:35	Riviera	[10:19:04] chele: For example quotation marks and whitespace. [10:19:04]
+2016-10-10 04:56:35	Riviera	[10:19:37] chele: Now one might argue "won't happen in my case," which might be true, but that does not really justify using broken code when better solutions would be available. [10:19:37]
+2016-10-10 04:56:35	[diablo]	[13:47:33] good afternoon #awk [13:47:33]
+2016-10-10 04:56:35	[diablo]	[13:48:40] we're trying to extract and print just URL's from a file [13:48:40]
+2016-10-10 04:56:35	[diablo]	[13:48:55] there's only 1 url (mixed http, https) [13:48:55]
+2016-10-10 04:56:35	geirha	[13:49:18] html? [13:49:18]
+2016-10-10 04:56:35	[diablo]	[13:49:52] no it's a actually a line from yum repolist -v [13:49:52]
+2016-10-10 04:56:35	[diablo]	[13:50:27] we just need the entire URL [13:50:27]
+2016-10-10 04:56:35	[diablo]	[13:50:50] there's slight difference between RHEL5 and 6 and 7 output, only the URL is the common factor [13:50:50]
+2016-10-10 04:56:35	[diablo]	[13:51:04] so trying to work out how to extract it correctly [13:51:04]
+2016-10-10 04:56:35	geirha	[13:52:12] so what do they look like? [13:52:12]
+2016-10-10 04:56:35	[diablo]	[13:52:28] sorry gimme a min my co-worker thinks he's got it [13:52:28]
+2016-10-10 04:56:35	geirha	[13:53:21] If it's something like this (first hit on google): https://gist.github.com/kpfleming/47a02728944b66bcf300c77ccdc43c67 [13:53:21]
+2016-10-10 04:56:35	geirha	[13:53:41] I'd use:   awk -F' *: +' '$1=="Repo-baseurl"{print $2}' [13:53:41]
+2016-10-10 04:56:35	[diablo]	[13:53:52] yeah thats it the Repo-baseurl [13:53:52]
+2016-10-10 04:56:35	[diablo]	[13:54:04] we need to compile a list of all url's used by all servers in the company [13:54:04]
+2016-10-10 04:56:35	[diablo]	[13:57:45] cheers geirha [13:57:45]
+2016-10-10 04:56:35	[diablo]	[13:57:52] beats my co-workers one ;-) [13:57:52]
+2016-10-10 04:56:35	***	Playback Complete.
+2016-10-10 04:57:23	--	Channel created on Sat, 25 Nov 2006 20:42:48
+2016-10-10 04:59:32	-->	emg (~emg@74-123-189-254.static.wiline.com) has joined #awk
+2016-10-10 05:05:00		[04:59]
+2016-10-10 05:06:09	-->	larryv (~larryv@wikipedia/larryv) has joined #awk
+2016-10-10 05:12:00		[05:06]
+2016-10-10 05:16:55	<--	b (~coffee@unaffiliated/ridout) has quit (Quit: Lost terminal)
+2016-10-10 05:20:15	<--	corsibu (~corsibu@171.20.68.68) has quit (Remote host closed the connection)
+2016-10-10 05:26:00		[05:20]
+2016-10-10 05:47:45	<--	gnomon (~gnomon@CPE1c872c7063d0-CM00fc8d8fbe70.cpe.net.cable.rogers.com) has quit (Ping timeout: 260 seconds)
+2016-10-10 05:47:45		[05:47]
+2016-10-10 05:48:11	-->	gnomon (~gnomon@CPE1c872c7063d0-CM00fc8d8fbe70.cpe.net.cable.rogers.com) has joined #awk
+2016-10-10 05:54:00		[05:48]
+2016-10-10 06:14:02	-->	corsibu (~corsibu@171.20.68.68) has joined #awk
+2016-10-10 06:14:02		[06:14]
+2016-10-10 06:29:08	-->	irco (~irco@HSI-KBW-134-3-111-4.hsi14.kabel-badenwuerttemberg.de) has joined #awk
+2016-10-10 06:29:08		[06:29]
+2016-10-10 06:32:51	-->	vuoto (~vuoto@80-71-135-9.u.parknet.dk) has joined #awk
+2016-10-10 06:37:18	<--	larryv (~larryv@wikipedia/larryv) has quit (Quit: larryv)
+2016-10-10 06:40:57	<--	flying (~flying@90.216.134.193) has quit
+2016-10-10 06:46:00		[06:40]
+2016-10-10 06:49:20	-->	mute1 (m@unaffiliated/mute) has joined #awk
+2016-10-10 06:52:00	<--	mute (m@unaffiliated/mute) has quit (Disconnected by services)
+2016-10-10 06:52:03	--	mute1 is now known as mute
+2016-10-10 06:58:00		[06:52]
+2016-10-10 07:02:26	<--	The_Schmidt (~The_Schmi@207-192-200-73.lbbkcmtk04.res.dyn.suddenlink.net) has quit (Quit: Leaving)
+2016-10-10 07:02:47	-->	The_Schmidt (~The_Schmi@207-192-200-73.lbbkcmtk04.res.dyn.suddenlink.net) has joined #awk
+2016-10-10 07:05:41	<--	mute (m@unaffiliated/mute) has quit (Ping timeout: 248 seconds)
+2016-10-10 07:06:01	-->	mute (m@unaffiliated/mute) has joined #awk
+2016-10-10 07:12:00		[07:06]
+2016-10-10 07:27:28	<--	emg (~emg@74-123-189-254.static.wiline.com) has quit (Quit: emg)
+2016-10-10 07:27:28		[07:27]
+2016-10-10 07:37:37	<--	gnomon (~gnomon@CPE1c872c7063d0-CM00fc8d8fbe70.cpe.net.cable.rogers.com) has quit (Ping timeout: 240 seconds)
+2016-10-10 07:39:18	-->	gnomon (~gnomon@CPE1c872c7063d0-CM00fc8d8fbe70.cpe.net.cable.rogers.com) has joined #awk
+2016-10-10 07:40:24	-->	emg (~emg@74-123-189-254.static.wiline.com) has joined #awk
+2016-10-10 07:46:00		[07:40]
+2016-10-10 07:46:49	-->	maikowblue (~none@177.235.114.37) has joined #awk
+2016-10-10 07:48:57	-->	tag (~tag@50-0-91-48.dsl.dynamic.fusionbroadband.com) has joined #awk
+2016-10-10 07:54:00		[07:48]
+2016-10-10 08:03:18	<--	Camusens1i (~Camusense@megaman.thican.net) has left #awk ("unbanning my nickname")
+2016-10-10 08:03:45	-->	Camusens1i (~Camusense@megaman.thican.net) has joined #awk
+2016-10-10 08:03:51	--	Camusens1i is now known as Camusensei
+2016-10-10 08:06:00	<--	tag (~tag@50-0-91-48.dsl.dynamic.fusionbroadband.com) has quit (Ping timeout: 260 seconds)
+2016-10-10 08:11:00		[08:06]
+2016-10-10 08:15:24	-->	Al3xG0 (~unix@unaffiliated/al3xg0) has joined #awk
+2016-10-10 08:17:26	-->	Kont (~Kont@unaffiliated/kont) has joined #awk
+2016-10-10 08:23:00		[08:17]
+2016-10-10 08:44:38	<--	D630 (~D630@unaffiliated/d630) has quit (Quit: quit)
+2016-10-10 08:44:38		[08:44]
+2016-10-10 08:44:47	<--	relaxed (~relaxed@unaffiliated/relaxed) has quit (Quit: ⠠⠵)
+2016-10-10 08:50:00		[08:44]
+2016-10-10 09:17:28	<--	serialoverflow (~znc@pc9.gatrobe.uni-hannover.de) has quit (Ping timeout: 260 seconds)
+2016-10-10 09:17:28		[09:17]
+2016-10-10 09:18:24	<--	johnmilton (~johnmilto@192.206.23.197) has quit (Remote host closed the connection)
+2016-10-10 09:19:49	-->	serialoverflow (~znc@pc9.gatrobe.uni-hannover.de) has joined #awk
+2016-10-10 09:25:00		[09:19]
+2016-10-10 09:27:46	--	gimmic_ is now known as gimmic
+2016-10-10 09:29:12	<--	vuoto (~vuoto@80-71-135-9.u.parknet.dk) has quit (Remote host closed the connection)
+2016-10-10 09:31:04	<--	navidr (uid112413@gateway/web/irccloud.com/x-ubpmzvhxbloguogy) has quit (Quit: Connection closed for inactivity)
+2016-10-10 09:37:00		[09:31]
+2016-10-10 09:50:40	rods-tab3	!awk_wiki_info
+2016-10-10 09:50:40	hawkbot	 awk_wiki_info:  http://awk.freeshell.org/?action=index  http://web.archive.org/web/20160323045835/http://awk.info/?Sitemap  try also:  !concise  !TAPL  !gawkbook
+2016-10-10 09:56:00		[09:50]
+2016-10-10 09:59:54	--	marky1991_2 is now known as marky1991
+2016-10-10 10:00:03	<--	marky1991 (~marky1991@38.104.182.182) has quit (Changing host)
+2016-10-10 10:00:03	-->	marky1991 (~marky1991@unaffiliated/marky1991) has joined #awk
+2016-10-10 10:03:20	-->	elastix (~elastix@cpc85186-haye23-2-0-cust65.17-4.cable.virginm.net) has joined #awk

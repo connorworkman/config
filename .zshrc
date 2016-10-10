@@ -22,13 +22,13 @@ cleanup() {
  #echo "derp" >>$ZSH_ERROR
  [[ ${-} != *i* ]] || {
   [[ ! -r "$ZSH_ERROR" || -z `cat "$ZSH_ERROR"` ]] && {
-    printf "\n \033[32m %s \033[0m\n\n" 'zshrc: no errors detected'; } || {
-    printf "\n \033[31m %s \n" 'zshrc: the following errors were detected:'
+    printf " \033[32m %s \033[0m\n" 'zshrc: no errors detected'; } || {
+    printf " \033[31m %s \n" 'zshrc: the following errors were detected:'
     #cat "${ZSH_ERROR}" 2>&1 | tee "/dev/tty" >>/store/zsh-log-${UID}.log; }
     cat "${ZSH_ERROR}" |& \
 	sed -s 's/^.*$/\t&/w /dev/tty' \
 	>>/store/zsh-log-${UID}.log
-    printf "\033[0m\n\n"; }
+    printf "\033[0m\n"; }
  }
  ## cleanup env and temp files
  [[ -r "${ZSH_ERROR}" ]] && rm -f "${ZSH_ERROR}" || return 0
@@ -211,9 +211,10 @@ source ${ZSH}/oh-my-zsh.sh
 #{ eval $(keychain --eval --agents ssh,gpg identity id_rsa id_ecdsa); } 2>&1 | tee /dev/tty &>>${ZSH_ERROR}
 #2>&1 { eval $(keychain --eval --agents ssh,gpg identity id_rsa id_ecdsa); } >/dev/stdout
 
-2>&1 9>&1 >/dev/stdout { eval $(keychain --eval --agents ssh,gpg identity id_rsa id_ecdsa); }
+## Start gpg/ssh agent and setup pump environment variables
+{ eval $(keychain --eval --agents ssh,gpg identity id_rsa id_ecdsa) $(pump --startup); } 2>&1 9>&1
 
-# precmd() { disambiguate-keeplast }
+precmd() { disambiguate-keeplast }
 
 ## Envoy commands as alternate ssh/gpg-agent manager
 #[[ ${EUID} -eq 1000 ]] && { envoy -t ssh-agent -a identity id_rsa id_ecdsa; source <(envoy -p); }
@@ -234,10 +235,10 @@ zstyle ':completion:*' rehash true
 zmodload zsh/datetime
 #HISTSIZE=10000
 #SAVEHIST=10000
-HISTSIZE=50000
-SAVEHIST=100000
+export HISTSIZE=500000
+export SAVEHIST=1000000
 # report about cpu-/system-/user-time of command if running longer than 5 seconds
-REPORTTIME=5
+export REPORTTIME=1
 
 ## Bash style
 #autoload select-word-style
@@ -250,11 +251,13 @@ setopt extended_history append_history share_history inc_append_history autocd n
 setopt extendedglob noverbose casematch
 ## Allow comments even in interactive shells
 setopt INTERACTIVE_COMMENTS interactivecomments
-## don't kill programs& if exiting the shell
-setopt nohup
+## don't kill programs & if exiting the shell
+#setopt nohup
+## kill programs & if exiting the shell
+unsetopt nohup
 ## dont warn me about bg processes when exiting
 setopt nocheckjobs
-HISTFILE=${HOME}/.zsh_history # ensure history file visibility
+export HISTFILE=${HOME}/.zsh_history # ensure history file visibility
 export HH_CONFIG=hicolor # get more colors
 # History search
 autoload -Uz up-line-or-beginning-search
@@ -590,7 +593,8 @@ news_cmd_short() {
 	}
 }
 news_cmd_long() {
-	if [ "$EUID" -eq 1000 ]; then ## Full news prompt
+	#if [ "$EUID" -eq 1000 ]; then ## Full news prompt
+	if false; then ## Full news prompt
 	  echo -e "$(echo $(curl --silent https://www.archlinux.org/feeds/news/ | sed -e '
 	  :a;N;$!ba;s/\n/ /g') | sed -e '
 		s/&amp;/\&/g
@@ -616,7 +620,8 @@ news_cmd_long() {
 	  acount="${#apost[@]}"
 	  until [ "$acount" -eq 0 ]; do printf "$apost[((--acount))]"; done
 	  printf "\n\e[00m"
-	elif [[ "$EUID" -eq 0 ]]; then ## Short (grepped) news prompt
+	#elif [[ "$EUID" -eq 0 ]]; then ## Short (grepped) news prompt
+	elif [[ "$EUID" -eq 1000 ]]; then ## Short (grepped) news prompt
 	  echo -e "$(echo $(curl --silent https://www.archlinux.org/feeds/news/ | sed -e '
           :a;N;$!ba;s/\n/ /g') | sed -e '
                 s/&amp;/\&/g
