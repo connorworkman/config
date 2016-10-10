@@ -17923,3 +17923,79 @@
 2016-10-09 15:05:07	rgareus	naptastic: does it?
 2016-10-09 15:05:12	naptastic	well, it's compiling
 2016-10-09 15:05:20	naptastic	I need a snack...
+2016-10-09 15:07:35	<--	rexbron (~quassel@2605:6400:2:fed5:22:b127:8ab2:bf93) has quit (Quit: No Ping reply in 180 seconds.)
+2016-10-09 15:08:10	naptastic	../libs/surfaces/tranzport/tranzport_control_protocol.h:202:8: error: ‘Mutex’ in namespace ‘Glib’ does not name a type
+2016-10-09 15:08:31	naptastic	well, rgareus, it looks like those bits are rotten. So back to the drawing board. :P
+2016-10-09 15:08:52	-->	rexbron (~quassel@2605:6400:2:fed5:22:b127:8ab2:bf93) has joined #ardour
+2016-10-09 15:09:17	<--	dsr1204 (~dsr1204@99-111-235-130.lightspeed.cicril.sbcglobal.net) has quit (Ping timeout: 240 seconds)
+2016-10-09 15:09:50	rgareus	naptastic: probably   Glib::Threads::Mutex::Lock
+2016-10-09 15:10:53	rgareus	actualy  Glib::Threads::Mutex  (is the type_
+2016-10-09 15:12:12	-->	nstewart (~nps@cpe-2606-A000-1120-140-40E-74D3-2D90-F1A9.dyn6.twc.com) has joined #ardour
+2016-10-09 15:13:20	<--	freedom01 (~freedom@112.202.59.31) has quit (Ping timeout: 260 seconds)
+2016-10-09 15:15:19	<--	krabador (~krabador@unaffiliated/krabador) has quit (Quit: Leaving)
+2016-10-09 15:15:19		[15:15]
+2016-10-09 15:17:06	nstewart	am I crazy or did "Audio System" ever have an option other than "Jack"? Some of the test reference "None - Dummy", and I suspect they need to be Jack - Dummy or similar. Did we discard the ability to run raw alsa without jack recently (rings a bell)
+2016-10-09 15:17:53	rgareus	nstewart:   ./waf configure ... --with-backends=jack,alsa,dummy ... 
+2016-10-09 15:17:56	nstewart	rgareus:  did you say all tests pass or just the one we were talking about? I have 11 failing.
+2016-10-09 15:18:01	nstewart	ah
+2016-10-09 15:18:18	rgareus	nstewart: tests pass with exception of the Push2 control surface
+2016-10-09 15:18:50	rgareus	that's a known issue (unit-tests are not linked against UI libs,  Push2 needs libpango for rendering on the device)
+2016-10-09 15:18:59	rgareus	paul is looking into that.
+2016-10-09 15:20:36	-->	freedom01 (~freedom@112.211.84.49) has joined #ardour
+2016-10-09 15:26:00		[15:20]
+2016-10-09 15:29:24	<--	analphabet (mnppetnrdk@unaffiliated/analphabet) has quit (Ping timeout: 244 seconds)
+2016-10-09 15:29:24	<--	thrak (~thrak@li506-236.members.linode.com) has quit (Ping timeout: 244 seconds)
+2016-10-09 15:30:01	<--	ccrhy (~ccrhy3@24.216.245.27) has quit (Ping timeout: 260 seconds)
+2016-10-09 15:30:28	-->	ccrhy (~ccrhy3@24.216.245.27) has joined #ardour
+2016-10-09 15:31:26	-->	thrak (~thrak@li506-236.members.linode.com) has joined #ardour
+2016-10-09 15:31:27	-->	analphabet (5yX6uw38pG@markab.uberspace.de) has joined #ardour
+2016-10-09 15:31:32	<--	freedom01 (~freedom@112.211.84.49) has quit (Ping timeout: 260 seconds)
+2016-10-09 15:33:24	<--	hrubi (~hrubi@cgn1.wosa.cz) has quit (Quit: ZNC - http://znc.sourceforge.net)
+2016-10-09 15:35:01	-->	hrubi (~hrubi@cgn1.wosa.cz) has joined #ardour
+2016-10-09 15:40:33	-->	freedom01 (~freedom@112.201.35.92) has joined #ardour
+2016-10-09 15:46:00		[15:40]
+2016-10-09 15:51:46	nstewart	can a region have  a negative location?
+2016-10-09 15:52:35	nstewart		set_loop_range (start, end, _("set loop range from region")); start = -888, blows up trying to create the loop range. 
+2016-10-09 15:55:13	-->	UncleJed (49b56d68@gateway/web/freenode/ip.73.181.109.104) has joined #ardour
+2016-10-09 15:56:09	UncleJed	anyone on here by chance have issues with jerky interface after upgrading to v4?
+2016-10-09 15:58:20	UncleJed	holy cow...just saw at the top that were already in v5. lmao
+2016-10-09 15:58:28	UncleJed	*we're
+2016-10-09 16:02:01	UncleJed	well anyway, i have a live image of my ubuntu studio with ardour 3 that works great. all settings are identical as far as i can tell, but playback is very jerky - not audio - just the graphics. And even when clicking on a control, it takes 1-2 seconds to even respond to the click. 
+2016-10-09 16:02:01		[16:02]
+2016-10-09 16:04:05	UncleJed	just need a little direction of where else to look. nividia drivers are identical...jackctrl settings are identical (same result using ALSA). sample settings are identical...what else should I check?
+2016-10-09 16:04:07	rgareus	UncleJed: there's an option in the preferences to disable graphics access
+2016-10-09 16:04:53	rgareus	UncleJed: in some cases "accelleration" is actually slower.  some Ubuntu versions have this issue with some graphics-drivers.
+2016-10-09 16:05:28	UncleJed	rgareus: checking on that now 
+2016-10-09 16:05:43	rgareus	"Possibly improve slow graphical performance"  in Preferences > GUI
+2016-10-09 16:06:21	rgareus	(only versions of ardour from ardour.org have this option -- they come with a patched libcairo which allows that)
+2016-10-09 16:06:58	rgareus	goes back to  https://community.ardour.org/node/8800
+2016-10-09 16:08:04	nstewart	weird - have a session saved with apparently a bad (negative) region start.  can repro in gdb from my saved session, but not sure how I got it. I thought perhaps rhythm ferret chopping it up might have made it bad. But can't seem to repro from scratch
+2016-10-09 16:08:23	UncleJed	ok...i didn't see that option so was wondering...hehe. I upgraded by adding a repository and doing apt-get update...etcc
+2016-10-09 16:09:17	<--	freedom01 (~freedom@112.201.35.92) has quit (Ping timeout: 240 seconds)
+2016-10-09 16:09:41	UncleJed	rgareus: ah! I hadn't found that info page yet. thanks! 
+2016-10-09 16:10:00	UncleJed	not that i hadn't tried....hehe
+2016-10-09 16:10:01	rgareus	UncleJed: you could compare with a https://nightly.ardour.org/ build
+2016-10-09 16:10:02	LAbot	Title: Ardour - Nightly Builds (at nightly.ardour.org)
+2016-10-09 16:10:33	rgareus	nstewart: negative start should not be possible. sounds like a bug
+2016-10-09 16:10:38	-->	the_CLA_2 (~the_CLA@p57B981FD.dip0.t-ipconnect.de) has joined #ardour
+2016-10-09 16:11:18	<--	AndChat|320025 (~AndChat32@181.134.22.152) has quit (Ping timeout: 250 seconds)
+2016-10-09 16:12:04	nstewart	yeah, pretty sure it is. Just not sure what the bug is.  I could upload a session, but not sure how to differentiate it from "hey, the power supply current limit doesn't work when I stuff the chassis full of steel wool. 
+2016-10-09 16:12:11	UncleJed	rgareus: so maybe I should just ugrade to v5 first and see if that fixes it. no sense in  fixing it now in v4 if i'll eventually upgrade later anyway. that what you're suggesting?
+2016-10-09 16:12:36	nstewart	I swear I used to work with testers who would think that was a valid test method.
+2016-10-09 16:12:44	rgareus	UncleJed: builds from *.ardour.org can be installed in parallel to distro versions.
+2016-10-09 16:13:19	rgareus	UncleJed: but yes, you could try v5 from <your distro repo> first.
+2016-10-09 16:13:54	<--	the_CLA (~the_CLA@p57B98C45.dip0.t-ipconnect.de) has quit (Ping timeout: 250 seconds)
+2016-10-09 16:14:22	UncleJed	rgareus: ok. I'll do that first then will try ardour.org if that doesn't work. I'm quasi-noob with linux so installing something in parallel sounds a little intimidating ATM. hehe
+2016-10-09 16:16:27	UncleJed	rgareus: and thank you very much for your help!
+2016-10-09 16:16:34	rgareus	UncleJed: you're welcome
+2016-10-09 16:18:28	--	mbenson is now known as mbenson_away
+2016-10-09 16:18:28		[16:18]
+2016-10-09 16:18:36	nstewart	still not sure how it got that way, but my session is saved with one region with a negative start. If I click on the first region, and show properties, it shows the negative value. If I click int he field it figures out its whacked and resets it to zero. But drag select them all yields an illegal start location.
+2016-10-09 16:20:58	-->	freedom01 (~freedom@112.206.173.66) has joined #ardour
+2016-10-09 16:26:00		[16:20]
+2016-10-09 16:34:24	nstewart	http://tracker.ardour.org/view.php?id=7066 there ya go.  I can help hunt it down if you can steer me to the other end of the slots/singals rabbit trail.
+2016-10-09 16:34:25	LAbot	Title: 0007066: crash creating range from region with illegal start location - MantisBT (at tracker.ardour.org)
+2016-10-09 16:40:00		[16:34]
+2016-10-09 16:51:46	-->	dsr1204 (~dsr1204@99-111-235-130.lightspeed.cicril.sbcglobal.net) has joined #ardour
+2016-10-09 16:57:00		[16:51]
+2016-10-09 17:09:50	<--	nstewart (~nps@cpe-2606-A000-1120-140-40E-74D3-2D90-F1A9.dyn6.twc.com) has left #ardour

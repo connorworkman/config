@@ -1224,11 +1224,12 @@ h() { if [ -z "$*" ]; then tail ${HISTFILE}; else egrep --color=auto "$*" "${HIS
 scrs() {
 	sudo parallel systemctl ::: restart status ::: "${@}"
 }
+_scrs() { _systemctl_restart $@; }
+#compdef _scrs scrs
 
 uscrs() {
 	parallel systemctl --user ::: restart status ::: "${@}"
 }
-
 
 scrs2() {
     sudo systemctl restart "${@}"; systemctl status --full --no-pager "${@}"; echo -n "\n"
@@ -1251,22 +1252,8 @@ uscrs3() {
     done
 }
 
-#compdef '_systemctl ' scrs
-#compdef '_systemctl ' uscrs
-#compdef '_systemctl_status ' scrs
-#compdef '_systemctl_status ' uscrs
-#compdef '_systemctl ' scrs2
-#compdef '_systemctl ' uscrs2
-#compdef '_systemctl_status ' scrs2
-#compdef '_systemctl_status ' uscrs2
-
-# wd() { . "${ZSH}"/plugins/wd.sh; }
-
 ## Resume a background job
 bfg() {	if [ ${#1} -ne 1 ]; then echo 'attempting to resume job "%1"'; j=1; else j=${1}; fi; %${j} & }
-
-## Alternate which`fucntionality
- alias which='alias | /usr/bin/which --tty-only --read-alias --show-dot --show-tilde '
 
 # which() { (alias; declare -f) | /bin/which --tty-only --read-alias --read-functions --show-tilde --show-dot $@; }
 

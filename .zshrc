@@ -728,21 +728,8 @@ fpath=($HOME/.homesick/repos/homeshick/completions $fpath)
 fpath=($ZSH/custom/completions $fpath)
 fpath=(/usr/share/zsh/site-functions $fpath)
 
-# Unset previous iterations
-unset -f fc >/dev/null 2>&1
-unset -f h >/dev/null 2>&1
-unset -f wd >/dev/null 2>&1
-unset -f bfg >/dev/null 2>&1
-unset -f which >/dev/null 2>&1
-unset -f defrag >/dev/null 2>&1
-unset -f define >/dev/null 2>&1
-unalias h >/dev/null 2>&1
-
 ## from sh and its derivates (bash, zsh etc.)
 [ ! -r ${HOME}/.homesick/repos/homeshick/homeshick.sh ] || . ${HOME}/.homesick/repos/homeshick/homeshick.sh
-## Source aliases
-[ ! -r $HOME/aliases.sh ] || . $HOME/aliases.sh
-safetytoggle -n
 
 [ ! -r ${HOME}/.profile ] || . ${HOME}/.profile
 
@@ -758,17 +745,10 @@ autoload -U +X bashcompinit && bashcompinit
 #autoload -U compinit && compinit -u
 #autoload -U bashcompinit && bashcompinit
 
-#compdef '_systemctl ' scrs
-#compdef '_systemctl ' uscrs
-#compdef '_systemctl_status ' scrs
-#compdef '_systemctl_status ' uscrs
-#compdef '_systemctl ' scrs2
-#compdef '_systemctl ' uscrs2
-#compdef '_systemctl_status ' scrs2
-#compdef '_systemctl_status ' uscrs2
-
 ## Source aliases
-#source "$HOME/aliases.sh" || echo 'aliases.sh  not found...'
+[ ! -r $HOME/aliases.sh ] || . $HOME/aliases.sh
+
+safetytoggle -n
 
 # {{{ 'hash' some often used directories
 # #d# start
