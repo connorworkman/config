@@ -328,7 +328,7 @@ set number
 set incsearch
 set ignorecase
 set smartcase
-set magic
+"set magic
 "set relativenumber
 
 "formal: au BufNewFile,BufRead * setf {filetype}
