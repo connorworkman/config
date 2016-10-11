@@ -20,7 +20,21 @@ build() {
 		-exec printf ' \033[32m %s \n\033[0m' "Copying {} to ${ESP_DIR}/..." \; \
 		-exec cp -v "{}" "${ESP_DIR}/" \; || return 1
 	echo
-	sed -i 's/\/boot\//EFI\\arch\\/g' "${ESP_DIR}/refind_linux.conf"
+	find "${ESP_DIR}" -maxdepth 1 \
+                \( \
+                        -name "vmlinuz*" \
+                \) \
+                \! -name "*mainline*" \
+		\! -name "*.efi" \
+                -exec printf ' \033[32m %s \n\033[0m' "Moving {} to {}.efi..." \; \
+                -exec mv -v {}{,.efi} \; || return 1
+	echo
+	sed 's/\/boot\//EFI\\arch\\/g' "/boot/refind_linux.conf" | \
+		tee "${ESP_DIR}/refind_linux.conf" | \
+		sed 's/.*initrd=\(.*\\\)\([^ ]*\).*/initrd=\/boot\/\2\t=>\t\initrd=\1\2/g' | \
+		uniq -u | \
+		grep --color=auto -e 'EFI\\arch\\' -e '/boot/'
+	echo
 }
 
 help() {
@@ -31,6 +45,11 @@ HELPEOF
 
 archive() {
 	true || {
+	sed 's/\/boot\//EFI\\arch\\/g' "/boot/refind_linux.conf" | \
+		tee "${ESP_DIR}/refind_linux.conf" | \
+		grep --max-count=4 --color=auto 'EFI\\arch'
+		grep --color=auto 'EFI\\arch' | \
+		colordiff "/boot/refind_linux.conf" "${ESP_DIR}/refind_linux.conf"
 	cp -v "/boot/refind_linux.conf" "${ESP_DIR}/refind_linux.conf"
 	if [ ! -e /boot/intel-ucode.img ]; then
 		printf '\n \033[31m %s \n\033[0m' "No intel-ucode.img found!"
@@ -59,7 +78,7 @@ archive() {
 			  echo 'Copying '"${file}"' to '"${ESP_DIR}"'/...'
 			  cp -v "${file}" "${ESP_DIR}/$(<<<"${file}" sed \
 				's_\(.*\)\(vmlinuz.*\)_\2.efi_')"
-			done; echo 
+			done; echo
 	find "${ESP_DIR}" -maxdepth 1 -name "*vmlinuz*" \
 		\! -name "*.efi" \
 		\! -name "*surfacepro3*" \
@@ -68,26 +87,26 @@ archive() {
 		#find "/boot" -maxdepth 1 -name "initramfs*.img" \! -name "*fallback*" \
 		#\! -name "*surfacepro3*" \! -name "*mainline*" \
 
-					
+
 		#find "/boot" -maxdepth 1 -name "*vmlinuz*" ! -name "*.efi" -print0 | \
 		#while IFS= read -r -d '' file; do
 		#echo 'Copying '${file}' to '${ESP_DIR}'/...'
 		#cp -v "${file}" "${ESP_DIR}/`<<<${file} sed 's_\(.*\)\(vmlinuz.*\)_\2.efi_'`"
 		#echo -en "\n"
-		#done	
-							
+		#done
+
 		#-exec mv -v $ESP_DIR}/vmlinuz*{,.efi} \; \
 		#$(echo {} | sed 's_[^[:alnum:]*]\(vmlinuz.*\)_\1.efi_')" \; \
 		## If ucode is used uncomment this line
 		#cp -v "/boot/intel-ucode.img" "${ESP_DIR}/"
-					
+
 		#find "/boot" -maxdepth 1 -name "*vmlinuz*" ! -name "*efi" -exec cp -v {} "{}.efi" \;
 		#find "/boot" -maxdepth 1 -name "*.efi" ! -name "*.efi.*" \
 		#-exec cp -v "{}" "/@efi/" \;
-					
+
 		#df -h '/@efi/'
 		#ls -lahS '/@efi/'
-					
+
 		#find "/boot" -maxdepth 1 -name "*vmlinuz*" \
 		#-exec printf '%s\n' "{}" \; \
 		#-print0 | while IFS= read -r -d '' file; do
@@ -98,15 +117,15 @@ archive() {
 		#cp -v "${file}" "${ESP_DIR}/"
 		#cp -v "${file}" "${ESP_DIR}/${efiname}"
 		#done
-					
-		
+
+
 		#find /boot -maxdepth 1 -name "*linux.img" \
 		#! -name "*linux.img" ! -name "*lqx.img" ! -name "*fallback*" \
 		#-print0 | while IFS= read -r -d '' file; do
 		#printf '%s\n' "${file}"
 		#cp -v "${file}" "${ESP_DIR}/"
 		#done
-		
+
 		#find /boot -maxdepth 1 -name "*vmlinuz*" \
 		#-exec efiname=$(printf '%s' "${file}.efi" | sed "s:\/boot\/v:v:") {} \; \
 		#-exec cp -v "${file}" "${ESP_DIR}/{,/${efiname}" {} \;
@@ -130,7 +149,7 @@ archive() {
 		#cp -v "${file}" "${ESP_DIR}/"
 		#fi
 		#done
-		
+
 		## Old commands
 		#cp -v "/boot/refind_linux.conf" "${ESP_DIR}/"
 		#for file in /boot/initramfs-linux*.* ; do
