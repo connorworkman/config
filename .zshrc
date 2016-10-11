@@ -269,7 +269,7 @@ zle -N down-line-or-beginning-search
 ## Key bindings
 ## if this is  an interactive shell, then bind hh to Ctrl-r (for Vi mode check doc)
 #[[ $- =~ ".*i.*" ]] && bindkey -s "\C-r" "\eqhh\n"
-bindkey -s "\C-r" "\eqhh\n"
+#bindkey -s "\C-r" "\eqhh\n"
 # bind UP and DOWN arrow keys
 zmodload zsh/terminfo
 # bind UP and DOWN arrow keys (compatibility fallback
