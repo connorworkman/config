@@ -586,44 +586,50 @@ vkfix() {
     done
 
     find . -maxdepth 1 -name "*.mp3" -print0 | while IFS= read -r -d '' first; do
-	printf '"%s" ' "${first}"; printf \"; printf "${first}" | sed -n 's/ [Ff][Ee][Aa][Tt][\.]* / ft\. /gp'; printf "\"\n"
+	printf '"%s" ' "${first}"; printf \"; printf "${first}" | sed -n 's/\<[Ff][Ee][Aa][Tt][\.]*\>/ft\./gp'; printf "\"\n"
     done | \
 	awk '! /\"\"/ {print}'  | while read -r final; do eval "mv --verbose ${final}"
     done
 
     find . -maxdepth 1 -name "*.mp3" -print0 | while IFS= read -r -d '' first; do
-	printf '"%s" ' "${first}"; printf \"; printf "${first}" | sed -n 's/ [Vv]S[\.]* / vs\. /gp'; printf "\"\n"
+	printf '"%s" ' "${first}"; printf \"; printf "${first}" | sed -n 's/\<[Vv]S[\.]*\>/vs\./gp'; printf "\"\n"
     done | \
 	awk '! /\"\"/ {print}'  | while read -r final; do eval "mv --verbose ${final}"
     done
 
     find . -maxdepth 1 -name "*.mp3" -print0 | while IFS= read -r -d '' first; do
-	printf '"%s" ' "${first}"; printf \"; printf "${first}" | sed -n 's/ V[Ss][\.]* / vs\. /gp'; printf "\"\n"
+	printf '"%s" ' "${first}"; printf \"; printf "${first}" | sed -n 's/\<V[Ss][\.]*\>/vs\./gp'; printf "\"\n"
     done | \
 	awk '! /\"\"/ {print}'  | while read -r final; do eval "mv --verbose ${final}"
     done
 
 
     find . -maxdepth 1 -name "*.mp3" -print0 | while IFS= read -r -d '' first; do
-	printf '"%s" ' "${first}"; printf \"; printf "${first}" | sed -n 's/ presents / pres\. /gp'; printf "\"\n"
+	printf '"%s" ' "${first}"; printf \"; printf "${first}" | sed -n 's/\<presents\>/pres\./gp'; printf "\"\n"
     done | \
 	awk '! /\"\"/ {print}'  | while read -r final; do eval "mv --verbose ${final}"
     done
 
     find . -maxdepth 1 -name "*.mp3" -print0 | while IFS= read -r -d '' first; do
-	printf '"%s" ' "${first}"; printf \"; printf "${first}" | sed -n 's/ \(ft\) / \1. /gp'; printf "\"\n"
+	printf '"%s" ' "${first}"; printf \"; printf "${first}" | sed -n 's/\<\(ft\)\>/\1./gp'; printf "\"\n"
     done | \
 	awk '! /\"\"/ {print}'  | while read -r final; do eval "mv --verbose ${final}"
     done
 
     find . -maxdepth 1 -name "*.mp3" -print0 | while IFS= read -r -d '' first; do
-	printf '"%s" ' "${first}"; printf \"; printf "${first}" | sed -n 's/ \(vs\) / \1. /gp'; printf "\"\n"
+	printf '"%s" ' "${first}"; printf \"; printf "${first}" | sed -n 's/\<\(vs\)\>/\1./gp'; printf "\"\n"
     done | \
 	awk '! /\"\"/ {print}'  | while read -r final; do eval "mv --verbose ${final}"
     done
 
     find . -maxdepth 1 -name "*.mp3" -print0 | while IFS= read -r -d '' first; do
 	printf '"%s" ' "${first}"; printf \"; printf "${first}" | sed -n 's/ \[MP3FY\.COM\]//gp'; printf "\"\n"
+    done | \
+	awk '! /\"\"/ {print}'  | while read -r final; do eval "mv --verbose ${final}"
+    done
+
+    find . -maxdepth 1 -name "*.mp3" -print0 | while IFS= read -r -d '' first; do
+	printf '"%s" ' "${first}"; printf \"; printf "${first}" | sed -n 's/  / \& /gp'; printf "\"\n"
     done | \
 	awk '! /\"\"/ {print}'  | while read -r final; do eval "mv --verbose ${final}"
     done
@@ -641,6 +647,31 @@ vkfix() {
 
     find . -maxdepth 1 -name "*.mp3" -print0 | while IFS= read -r -d '' first; do
 	printf '"%s" ' "${first}"; printf \"; printf "${first}" | sed -n 's/amp\;/\&/gp'; printf "\"\n"
+    done | \
+	awk '! /\"\"/ {print}'  | while read -r final; do eval "mv --verbose ${final}"
+    done
+
+    find . -maxdepth 1 -name "*.mp3" -print0 | while IFS= read -r -d '' first; do
+	printf '"%s" ' "${first}"; printf \"; printf "${first}" | sed -n 's/\<\(.\)/\u\1/gp'; printf "\"\n"
+    done | \
+	awk '! /\"\"/ {print}'  | while read -r final; do eval "mv --verbose ${final}"
+    done
+}
+
+vkfix2() {
+    find . -maxdepth 1 -name "*.mp3" -print0 | while IFS= read -r -d '' first; do
+	printf '"%s" ' "${first}"; printf \"; printf "${first}" | sed -n '
+		s/\<[Ff][Ee][Aa][Tt][\.]*\>/ft\./g
+		s/\<[Vv]S[\.]*\>/vs\./g
+		s/\<V[Ss][\.]*\>/vs\./g
+		s/\<presents\>/pres\./g
+		s/\<\(ft\)\>/\1./g
+		s/\<\(vs\)\>/\1./g
+		s/  / \& /g
+		s/\#039\;/'\''/g
+		s/amp\;/\&/g
+		s/\<\(.\)/\u\1/g
+		p'; printf "\"\n"
     done | \
 	awk '! /\"\"/ {print}'  | while read -r final; do eval "mv --verbose ${final}"
     done
