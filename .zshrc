@@ -2,7 +2,7 @@
 
 ## Traps; execute sanity checks on status:  INT,TERM
 cleanup() {
- la /dev/fd/9 >/dev/null 2>&1 && {
+ ls /dev/fd/9 >/dev/null 2>&1 && {
 	exec 2>&9
 	exec 9>&-
  }

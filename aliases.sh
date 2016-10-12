@@ -793,16 +793,18 @@ dbr() {
 	find /@media/microSDXC/audio -maxdepth 1 -name "*alyptik*" -type d -print | \
 		sed 's/^.*\/alyptik - \(.*\)$/\1/' | \
 		while read -r; do
-			rclone lsd "dropbox:/edm/audio/$(<<<${REPLY:l} sed 's/ (.*//')" 2>/dev/null && {
+			rclone lsd "dropbox:/edm/audio/$(<<<${REPLY:l} sed 's/ (.*//')" && {
 				printf '\n \033[31m %s \n\033[0m' \
 					"Directory dropbox:/edm/audio/$(<<<${REPLY/*- /} \
 					sed 's/./\l&/g;s/ (.*//') exists!"
-				read -rsk 1 ?"Continue? [y/n]: " cont
-				case $cont in
-					[Yy]*|'') : ;; ## Continue
-					[Nn]*) printf " \033[31m %s \n\033[0m" "Exiting..."; return 1 ;;
-					*) printf " \033[31m %s \n\033[0m" "Invalid input..."; return 1 ;;
-				esac; }
+				while read -rsk 1 ?"Continue? [y/n]: " cont; do
+				    case $cont in
+					    [Yy]*|'') : ;; ## Continue
+					    [Nn]*) printf " \033[31m %s \n\033[0m" "Exiting..."; return 1 ;;
+					    *) printf " \033[31m %s \n\033[0m" "Invalid input..."; return 1 ;;
+				    esac
+				done
+			}
 			rclone move "/@media/microSDXC/audio/alyptik - ${REPLY}" \
 				"dropbox:/edm/audio/$(<<<${REPLY/*- /} \
 				sed 's/./\l&/g;s/ (.*//')" && \
@@ -826,7 +828,8 @@ dbr() {
 					[Yy]*|'') : ;; ## Continue
 					[Nn]*) printf " \033[31m %s \n\033[0m" "Exiting..."; return 1 ;;
 					*) printf " \033[31m %s \n\033[0m" "Invalid input..."; return 1 ;;
-				esac; }
+				esac
+			}
 			rclone move "/@media/microSDXC/wanderlust/alyptik - ${REPLY}" \
 				"dropbox:/edm/wanderlust/$(<<<${REPLY/*- /} \
 				sed 's/./\l&/g;s/ (.*//')" && \
