@@ -30,7 +30,7 @@ trap "cleanup" TRAP
 
 ## Redirect errors in zshrc to "${HOME}/zsh_errors.log"
 ZSH_ERROR="/tmp/zsh-error-log-${UID}.tmp"
-[ ! -f "$ZSH_ERROR" ] || echo rm -f "${ZSH_ERROR}"
+[ -f "$ZSH_ERROR" ] || rm -f "${ZSH_ERROR}"
 ## Backup stdin/stdout/stderr
 ## don't use fd 5; sometimes used by shell
 ## point stderr ${HOME}/zsh_errors.log
