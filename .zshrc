@@ -220,7 +220,7 @@ bindkey "^Y" znt-kill-widget
 source /usr/share/zsh/scripts/antigen/antigen.zsh
 zstyle ':completion:*' rehash true
 # History stuff
-zmodload zsh/datetime
+#zmodload zsh/datetime
 #HISTSIZE=10000
 #SAVEHIST=10000
 export HISTSIZE=500000
@@ -234,9 +234,9 @@ zstyle ':history-search-multi-word' page-size 5
 #select-word-style shell
 
 ## don't alert me if something failed
-unsetopt extended_history correctall correct_all nomatch beep printexitvalue caseglob nohistverify
+unsetopt correctall correct_all nomatch beep printexitvalue caseglob nohistverify
 setopt histignorealldups hist_expire_dups_first hist_ignore_dups hist_ignore_space correct completeinword
-setopt append_history share_history inc_append_history autocd notify clobber
+setopt noextended_history append_history share_history inc_append_history autocd notify clobber
 setopt extendedglob noverbose casematch
 ## Allow comments even in interactive shells
 setopt INTERACTIVE_COMMENTS interactivecomments

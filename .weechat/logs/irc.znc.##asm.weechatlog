@@ -22906,3 +22906,271 @@
 2016-10-10 22:49:50	-->	cores (chris@2600:3c03::f03c:91ff:fe73:e436) has joined ##asm
 2016-10-10 22:49:54	<--	eroen (~eroen@faith.eroen.eu) has quit (Changing host)
 2016-10-10 22:49:54	-->	eroen (~eroen@unaffiliated/eroen) has joined ##asm
+2016-10-11 22:28:39	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined ##asm
+2016-10-11 22:28:39		[22:28]
+2016-10-11 22:28:39	--	Topic for ##asm is "Assembly programming channel, all architectures welcome (please specify). Don't ask to ask! Use a pastebin if appropriate! Check your manuals! *** AT&T vs Intel flamers will be banned."
+2016-10-11 22:28:39	--	Topic set by Jester01 (~Jester01@62.100.244.69) on Fri, 30 Sep 2016 06:54:51
+2016-10-11 22:28:39	--	Channel ##asm: 293 nicks (0 ops, 0 voices, 293 normals)
+2016-10-11 22:28:39	***	Buffer Playback...
+2016-10-11 22:28:39	viro	[19:56:47] thanks boru [19:56:47]
+2016-10-11 22:28:39	boru	[19:57:05] You're welcome. [19:57:05]
+2016-10-11 22:28:39	 *	boru [19:57:21] chuckles. [19:57:21]
+2016-10-11 22:28:39	warchild	[20:05:15] lol [20:05:15]
+2016-10-11 22:28:39	viro	[20:08:03] .... lol [20:08:03]
+2016-10-11 22:28:39	Bellator	[20:09:15] I feel like I am doing this wrong... Could somebody possibly take a look at this and re-affirm that I am doing it wrong? http://pastebin.com/KHwSjMi9 [20:09:15]
+2016-10-11 22:28:39	OxFEEDBACC	[20:09:58] yea, that's wrong... [20:09:58]
+2016-10-11 22:28:39	zid	[20:10:07] you're never changing your loop condition [20:10:07]
+2016-10-11 22:28:39	zid	[20:10:17] nevermind I a dumb [20:10:17]
+2016-10-11 22:28:39	zid	[20:10:27] I shuldn't even try to read at&t [20:10:27]
+2016-10-11 22:28:39	Bellator	[20:11:22] OxFEEDBACC, any tips? [20:11:22]
+2016-10-11 22:28:39	Bellator	[20:11:48] zid, you probably don't feel as dumb as me right now [20:11:48]
+2016-10-11 22:28:39	OxFEEDBACC	[20:11:51] what is that comment in line 8 about? [20:11:51]
+2016-10-11 22:28:39	OxFEEDBACC	[20:12:07] and 13... [20:12:07]
+2016-10-11 22:28:39	Bellator	[20:13:49] I thought eax is being assigned the current value at -4(rbp) [20:13:49]
+2016-10-11 22:28:39	OxFEEDBACC	[20:14:19] and when it is in eax, why do you increase the value in memory? [20:14:19]
+2016-10-11 22:28:39	OxFEEDBACC	[20:14:41] well, may be that part is logically correct, but i can't read that... [20:14:41]
+2016-10-11 22:28:39	GeDaMo	[20:15:12] Line 12's comment is wrong [20:15:12]
+2016-10-11 22:28:39	OxFEEDBACC	[20:15:14] keep the stuff that you are currently working with, in registers and only move them to memory when under register pressure... [20:15:14]
+2016-10-11 22:28:39	Bellator	[20:15:15] I didn't write the code - just trying to decipher it. However I thought that is so that the loop can eventually break [20:15:15]
+2016-10-11 22:28:39	OxFEEDBACC	[20:15:29] ya, that too... [20:15:29]
+2016-10-11 22:28:39	GeDaMo	[20:16:03] lines 8-10 and 13-15 are the same [20:16:03]
+2016-10-11 22:28:39	Bellator	[20:17:18] I am lost fellas... What is this thing trying to do? [20:17:18]
+2016-10-11 22:28:39	GeDaMo	[20:17:47] It's going through two arrays [20:17:47]
+2016-10-11 22:28:39	GeDaMo	[20:18:17] Multiplying their elements together and adding that to a sum [20:18:17]
+2016-10-11 22:28:39	OxFEEDBACC	[20:18:28] is it a matmul? [20:18:28]
+2016-10-11 22:28:39	OxFEEDBACC	[20:18:46] 4x4 [20:18:46]
+2016-10-11 22:28:39	GeDaMo	[20:19:19] It's roughly for (i = 0; i < n; ++i) { sum += a[i] * b[i]; } return sum; [20:19:19]
+2016-10-11 22:28:39	GeDaMo	[20:20:12] I think [20:20:12]
+2016-10-11 22:28:39	GeDaMo	[20:20:44] Except it's inefficient if that's what it's doing [20:20:44]
+2016-10-11 22:28:39	roxfan	[20:22:06] likely compiled without optimization [20:22:06]
+2016-10-11 22:28:39	OxFEEDBACC	[20:22:31] which compiler uses sal anyway? [20:22:31]
+2016-10-11 22:28:39	GeDaMo	[20:23:51] It seems to be loading the index, sign-extending it, left shifting by 2 and it does this twice every iteration [20:23:51]
+2016-10-11 22:28:39	GeDaMo	[20:25:01] And it doesn't keep anything in registers [20:25:01]
+2016-10-11 22:28:39	Bellator	[20:26:35] GeDaMo, you mentioned line 12's comment was wrong. What does it do? [20:26:35]
+2016-10-11 22:28:39	GeDaMo	[20:27:17] The comment says %edx = %rax, it should be %edx = (%rax) [20:27:17]
+2016-10-11 22:28:39	GeDaMo	[20:27:40] That's reading an array element from memory into edx [20:27:40]
+2016-10-11 22:28:39	OxFEEDBACC	[20:27:48] but as such, the comment wouldn't contribute anything... [20:27:48]
+2016-10-11 22:28:39	GeDaMo	[20:29:42] No, I just noticed it when I was reading [20:29:42]
+2016-10-11 22:28:39	OxFEEDBACC	[20:30:32] yeah, i know... ;-) didn't criticize you, but this kind of comment... [20:30:32]
+2016-10-11 22:28:39	GeDaMo	[20:31:08] Hmmm ... imull   %edx, %eax seems like it might be wrong [20:31:08]
+2016-10-11 22:28:39	GeDaMo	[20:31:49] No, I'm thinking of the one operand imul [20:31:49]
+2016-10-11 22:28:39	Bellator	[20:39:59] I think I've had enough of assembly for one night [20:39:59]
+2016-10-11 22:28:39	Bellator	[20:40:06] Thanks for all the help guys. Much appreciated [20:40:06]
+2016-10-11 22:28:39	daedlock	[21:39:32] Hello [21:39:32]
+2016-10-11 22:28:39	abcdvgttt	[22:00:03] Can someone point me to a place or a video where I can learn how solve this? http://pastebin.com/raw/4YnLAMDX [22:00:03]
+2016-10-11 22:28:39	boru	[22:02:04] Linkers and Loaders by Levine. [22:02:04]
+2016-10-11 22:28:39	boru	[22:02:43] (Specifically chapters dealing with location) [22:02:43]
+2016-10-11 22:28:39	boru	[22:04:04] The book is freely available from the author online. [22:04:04]
+2016-10-11 22:28:39	abcdvgttt	[22:26:52] Thank you, boru [22:26:52]
+2016-10-11 22:28:39	***	Playback Complete.
+2016-10-11 22:28:44	--	Channel created on Sun, 27 May 2007 05:31:12
+2016-10-11 22:30:01	<--	infinite (~infinite@8.27.210.16) has quit (Read error: Connection reset by peer)
+2016-10-11 22:32:19	<--	bkboggy (~bkboggy@cpe-172-250-147-60.socal.res.rr.com) has quit (Quit: Leaving)
+2016-10-11 22:32:32	<--	meowrobot (~katgirl@172.56.35.98) has quit (Read error: Connection reset by peer)
+2016-10-11 22:38:00		[22:32]
+2016-10-11 22:38:51	-->	damme (~damme@2001:16d8:cc75::802) has joined ##asm
+2016-10-11 22:42:46	<--	hmmmm (~sdfgsf@72.79.172.20) has quit (Remote host closed the connection)
+2016-10-11 22:42:57	<--	SwiftMatt (~Objective@216.151.183.119) has quit (Ping timeout: 240 seconds)
+2016-10-11 22:48:00		[22:42]
+2016-10-11 22:58:12	<--	hzjd (~Adium@dhcp-18-189-39-55.dyn.MIT.EDU) has quit (Quit: Leaving.)
+2016-10-11 23:19:09	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined ##asm
+2016-10-11 23:19:09		[23:19]
+2016-10-11 23:19:09	--	Topic for ##asm is "Assembly programming channel, all architectures welcome (please specify). Don't ask to ask! Use a pastebin if appropriate! Check your manuals! *** AT&T vs Intel flamers will be banned."
+2016-10-11 23:19:09	--	Topic set by Jester01 (~Jester01@62.100.244.69) on Fri, 30 Sep 2016 06:54:51
+2016-10-11 23:19:09	--	Channel ##asm: 290 nicks (0 ops, 0 voices, 290 normals)
+2016-10-11 23:19:09	***	Buffer Playback...
+2016-10-11 23:19:09	viro	[19:56:47] thanks boru [19:56:47]
+2016-10-11 23:19:09	boru	[19:57:05] You're welcome. [19:57:05]
+2016-10-11 23:19:09	 *	boru [19:57:21] chuckles. [19:57:21]
+2016-10-11 23:19:09	warchild	[20:05:15] lol [20:05:15]
+2016-10-11 23:19:09	viro	[20:08:03] .... lol [20:08:03]
+2016-10-11 23:19:09	Bellator	[20:09:15] I feel like I am doing this wrong... Could somebody possibly take a look at this and re-affirm that I am doing it wrong? http://pastebin.com/KHwSjMi9 [20:09:15]
+2016-10-11 23:19:09	OxFEEDBACC	[20:09:58] yea, that's wrong... [20:09:58]
+2016-10-11 23:19:09	zid	[20:10:07] you're never changing your loop condition [20:10:07]
+2016-10-11 23:19:09	zid	[20:10:17] nevermind I a dumb [20:10:17]
+2016-10-11 23:19:09	zid	[20:10:27] I shuldn't even try to read at&t [20:10:27]
+2016-10-11 23:19:09	Bellator	[20:11:22] OxFEEDBACC, any tips? [20:11:22]
+2016-10-11 23:19:09	Bellator	[20:11:48] zid, you probably don't feel as dumb as me right now [20:11:48]
+2016-10-11 23:19:09	OxFEEDBACC	[20:11:51] what is that comment in line 8 about? [20:11:51]
+2016-10-11 23:19:09	OxFEEDBACC	[20:12:07] and 13... [20:12:07]
+2016-10-11 23:19:09	Bellator	[20:13:49] I thought eax is being assigned the current value at -4(rbp) [20:13:49]
+2016-10-11 23:19:09	OxFEEDBACC	[20:14:19] and when it is in eax, why do you increase the value in memory? [20:14:19]
+2016-10-11 23:19:09	OxFEEDBACC	[20:14:41] well, may be that part is logically correct, but i can't read that... [20:14:41]
+2016-10-11 23:19:09	GeDaMo	[20:15:12] Line 12's comment is wrong [20:15:12]
+2016-10-11 23:19:09	OxFEEDBACC	[20:15:14] keep the stuff that you are currently working with, in registers and only move them to memory when under register pressure... [20:15:14]
+2016-10-11 23:19:09	Bellator	[20:15:15] I didn't write the code - just trying to decipher it. However I thought that is so that the loop can eventually break [20:15:15]
+2016-10-11 23:19:09	OxFEEDBACC	[20:15:29] ya, that too... [20:15:29]
+2016-10-11 23:19:09	GeDaMo	[20:16:03] lines 8-10 and 13-15 are the same [20:16:03]
+2016-10-11 23:19:09	Bellator	[20:17:18] I am lost fellas... What is this thing trying to do? [20:17:18]
+2016-10-11 23:19:09	GeDaMo	[20:17:47] It's going through two arrays [20:17:47]
+2016-10-11 23:19:09	GeDaMo	[20:18:17] Multiplying their elements together and adding that to a sum [20:18:17]
+2016-10-11 23:19:09	OxFEEDBACC	[20:18:28] is it a matmul? [20:18:28]
+2016-10-11 23:19:09	OxFEEDBACC	[20:18:46] 4x4 [20:18:46]
+2016-10-11 23:19:09	GeDaMo	[20:19:19] It's roughly for (i = 0; i < n; ++i) { sum += a[i] * b[i]; } return sum; [20:19:19]
+2016-10-11 23:19:10	GeDaMo	[20:20:12] I think [20:20:12]
+2016-10-11 23:19:10	GeDaMo	[20:20:44] Except it's inefficient if that's what it's doing [20:20:44]
+2016-10-11 23:19:10	roxfan	[20:22:06] likely compiled without optimization [20:22:06]
+2016-10-11 23:19:10	OxFEEDBACC	[20:22:31] which compiler uses sal anyway? [20:22:31]
+2016-10-11 23:19:10	GeDaMo	[20:23:51] It seems to be loading the index, sign-extending it, left shifting by 2 and it does this twice every iteration [20:23:51]
+2016-10-11 23:19:10	GeDaMo	[20:25:01] And it doesn't keep anything in registers [20:25:01]
+2016-10-11 23:19:10	Bellator	[20:26:35] GeDaMo, you mentioned line 12's comment was wrong. What does it do? [20:26:35]
+2016-10-11 23:19:10	GeDaMo	[20:27:17] The comment says %edx = %rax, it should be %edx = (%rax) [20:27:17]
+2016-10-11 23:19:10	GeDaMo	[20:27:40] That's reading an array element from memory into edx [20:27:40]
+2016-10-11 23:19:10	OxFEEDBACC	[20:27:48] but as such, the comment wouldn't contribute anything... [20:27:48]
+2016-10-11 23:19:10	GeDaMo	[20:29:42] No, I just noticed it when I was reading [20:29:42]
+2016-10-11 23:19:10	OxFEEDBACC	[20:30:32] yeah, i know... ;-) didn't criticize you, but this kind of comment... [20:30:32]
+2016-10-11 23:19:10	GeDaMo	[20:31:08] Hmmm ... imull   %edx, %eax seems like it might be wrong [20:31:08]
+2016-10-11 23:19:10	GeDaMo	[20:31:49] No, I'm thinking of the one operand imul [20:31:49]
+2016-10-11 23:19:10	Bellator	[20:39:59] I think I've had enough of assembly for one night [20:39:59]
+2016-10-11 23:19:10	Bellator	[20:40:06] Thanks for all the help guys. Much appreciated [20:40:06]
+2016-10-11 23:19:10	daedlock	[21:39:32] Hello [21:39:32]
+2016-10-11 23:19:10	abcdvgttt	[22:00:03] Can someone point me to a place or a video where I can learn how solve this? http://pastebin.com/raw/4YnLAMDX [22:00:03]
+2016-10-11 23:19:10	boru	[22:02:04] Linkers and Loaders by Levine. [22:02:04]
+2016-10-11 23:19:10	boru	[22:02:43] (Specifically chapters dealing with location) [22:02:43]
+2016-10-11 23:19:10	boru	[22:04:04] The book is freely available from the author online. [22:04:04]
+2016-10-11 23:19:10	abcdvgttt	[22:26:52] Thank you, boru [22:26:52]
+2016-10-11 23:19:10	***	Playback Complete.
+2016-10-11 23:19:39	--	Channel created on Sun, 27 May 2007 05:31:12
+2016-10-11 23:19:39	<--	FriskyKat (SomeWhere@2.221.156.62) has quit (Ping timeout: 240 seconds)
+2016-10-11 23:20:51	-->	rendar (~I@host153-176-dynamic.52-79-r.retail.telecomitalia.it) has joined ##asm
+2016-10-11 23:26:00		[23:20]
+2016-10-11 23:26:52	-->	DearVolt (~DearVolt@169-0-211-78.ip.afrihost.co.za) has joined ##asm
+2016-10-11 23:29:02	--	Frisky-Kat is now known as FriskyKat
+2016-10-11 23:32:16	-->	sametsisartenep (~sametsisa@106.pool85-53-34.dynamic.orange.es) has joined ##asm
+2016-10-11 23:38:00		[23:32]
+2016-10-11 23:38:47	Bellator	I am confused by rax in x86. Does it have a default value if it is not defined in the code? How does it accumulate?
+2016-10-11 23:39:08	slidercrank	O_O
+2016-10-11 23:39:20	Bellator	x_x
+2016-10-11 23:40:29	slidercrank	normally you should no rely on general purpose registers to have any specific value on program´s start
+2016-10-11 23:41:04	<--	navidr (uid112413@gateway/web/irccloud.com/x-lqmetafzdqfffkit) has quit (Quit: Connection closed for inactivity)
+2016-10-11 23:41:15	dminuoso_	Bellator: lose the notion of "accumulate" register.
+2016-10-11 23:41:21	dminuoso_	Bellator: Foremost its a general purpose register.
+2016-10-11 23:42:08	dminuoso_	Bellator: (It's probably best to thinkf of your registers as r1 through r15, with some of them having special meaning with some instructions.
+2016-10-11 23:44:18	dminuoso_	except rsp I guess, that one is less of a general purpose register since reusing it is seldomly useful.
+2016-10-11 23:44:41	Bellator	That sounds simple enough. However, if a simple  addition like: addl	$1, -8(%rbp) is performed, will rax change?
+2016-10-11 23:44:47	dminuoso_	Bellator: no
+2016-10-11 23:45:32	dminuoso_	Bellator: with some exceptions, generally only the operands (and often FLAGS) will be modified, but its best to always check your manual for the instruction to know what it does.
+2016-10-11 23:48:18	dminuoso_	Bellator: Oh and I meant r0 through r15 of course. :)
+2016-10-11 23:48:43	Bellator	dminuoso_, for example line 3. How is rax changing through the loop?
+2016-10-11 23:48:45	Bellator	http://pastebin.com/0jBsMnT2
+2016-10-11 23:48:54	-->	devonrevenge (~devonreve@cpc48-slam6-2-0-cust245.2-4.cable.virginm.net) has joined ##asm
+2016-10-11 23:48:54	<--	devonrevenge (~devonreve@cpc48-slam6-2-0-cust245.2-4.cable.virginm.net) has quit (Changing host)
+2016-10-11 23:48:54	-->	devonrevenge (~devonreve@unaffiliated/devonrevenge) has joined ##asm
+2016-10-11 23:53:29	dminuoso_	Bellator: line three just loads a new effective address into edx
+2016-10-11 23:53:29		[23:53]
+2016-10-11 23:54:38	dminuoso_	Bellator: cltq (or cdqe in intel syntax) is actually such an instruction that specifically operates on RAX (or AX/EAX for CBW/CWDE)
+2016-10-11 23:55:02	-->	GeDaMo (~GeDaMo@212.225.83.199) has joined ##asm
+2016-10-11 23:58:41	Bellator	Hm then I haven't been going about this the right way. I am trying to see how this snippet is performing for (i = 0; i < 16; ++i)     A[i] = i * 2; . I thought leal (rax, rax) is i * 2
+2016-10-11 23:59:00	<--	snyp (~Snyp@nas4.meghbelabroadband.in) has quit (Quit: WeeChat 1.6)
+2016-10-11 23:59:22	dminuoso_	Bellator: what's the type of A?
+2016-10-11 23:59:43	dminuoso_	Bellator: at any rate, yes.
+2016-10-12 00:00:18	DearVolt	Bellator: You could just shift left as well.
+2016-10-12 00:00:31	dminuoso_	Bellator: lea can also be "abused" for arithmetic, which compilers like to do for special reasons.
+2016-10-12 00:00:33	GeDaMo	Or add it to itself
+2016-10-12 00:02:02	Bellator	dminuoso_, A is int type
+2016-10-12 00:02:14	dminuoso_	Bellator: I doubt that.
+2016-10-12 00:02:22	Bellator	What I still don't follow is how rax has any value initially
+2016-10-12 00:02:23	dminuoso_	Bellator: I reckon it's a pointer to int, or array of int.
+2016-10-12 00:02:23	GeDaMo	int should be 32 bits
+2016-10-12 00:02:46	Bellator	comm	A,64,32
+2016-10-12 00:02:48	dminuoso_	Bellator: line 2 ?
+2016-10-12 00:02:57	dminuoso_	Bellator: it's loading eax with a value right there...
+2016-10-12 00:03:21	Bellator	Oh fuck me.
+2016-10-12 00:03:31	dminuoso_	Did someone get confused by AT&T syntax? :-)
+2016-10-12 00:03:58	dminuoso_	Bellator: You can also have your tool switch to intel syntax if you prefer that.
+2016-10-12 00:04:03	Bellator	Heck, I am confused by x86 alltogether
+2016-10-12 00:08:26	dminuoso_	Bellator: There's certainly some strange parts to it.
+2016-10-12 00:08:51	dminuoso_	A20 gate is such a reminiscence from a dark past..
+2016-10-12 00:08:51		[00:08]
+2016-10-12 00:09:24	dminuoso_	Intel has finally ditched it though.
+2016-10-12 00:09:41	dminuoso_	After over 30 years..
+2016-10-12 00:15:00		[00:09]
+2016-10-12 00:18:09	<--	vdamewood (~vdamewood@unaffiliated/vdamewood) has quit (Quit: Life beckons.)
+2016-10-12 00:19:17	<--	MulleDK20 (MulleDK19@unaffiliated/mulledk19) has quit (Ping timeout: 248 seconds)
+2016-10-12 00:19:56	Bellator	Thanks a lot for the help btw :)
+2016-10-12 00:25:00		[00:19]
+2016-10-12 00:29:57	<--	noregret (~regret@unaffiliated/noregret) has quit (Quit: leaving)
+2016-10-12 00:30:11	-->	areoh_ (~areoh@41.220.116.124) has joined ##asm
+2016-10-12 00:31:24	-->	Xylitol (~temari@unaffiliated/xylitol) has joined ##asm
+2016-10-12 00:32:10	<--	areoh (~areoh@41.220.116.124) has quit (Ping timeout: 250 seconds)
+2016-10-12 00:33:35	-->	lorenzo64 (~lorenzo__@5.144.190.80) has joined ##asm
+2016-10-12 00:34:06	<--	lorenzo64 (~lorenzo__@5.144.190.80) has quit (Remote host closed the connection)
+2016-10-12 00:34:27	-->	lorenzo64 (~lorenzo__@5.144.190.80) has joined ##asm
+2016-10-12 00:38:18	-->	geste (~chatzilla@pd95b0b70.dip0.t-ipconnect.de) has joined ##asm
+2016-10-12 00:38:26	<--	geste (~chatzilla@pd95b0b70.dip0.t-ipconnect.de) has quit (Client Quit)
+2016-10-12 00:44:00		[00:38]
+2016-10-12 00:51:48	<--	Bellator (~Bellator@D93FF597.cm-21.dynamic.ziggo.nl) has quit (Ping timeout: 260 seconds)
+2016-10-12 00:54:16	<--	osa1 (~omer@haskell/developer/osa1) has quit (Ping timeout: 250 seconds)
+2016-10-12 00:54:33	-->	osa1 (~omer@haskell/developer/osa1) has joined ##asm
+2016-10-12 00:58:49	-->	Ropeney (~Ropeney@101.103.8.51) has joined ##asm
+2016-10-12 01:02:57	<--	osa1 (~omer@haskell/developer/osa1) has quit (Ping timeout: 250 seconds)
+2016-10-12 01:02:57		[01:02]
+2016-10-12 01:03:00	-->	osa1_ (~omer@50-253-193-254-static.hfc.comcastbusiness.net) has joined ##asm
+2016-10-12 01:05:39	<--	Ropeney (~Ropeney@101.103.8.51) has quit (Read error: Connection reset by peer)
+2016-10-12 01:09:35	-->	sacredbanana (~Mutter@server.minotaurcreative.net) has joined ##asm
+2016-10-12 01:11:21	-->	Prod_ (~DaffyDuck@2.110.210.22) has joined ##asm
+2016-10-12 01:12:52	-->	sacredba2 (~sacredban@server.minotaurcreative.net) has joined ##asm
+2016-10-12 01:13:19	<--	sacredba2 (~sacredban@server.minotaurcreative.net) has quit (Client Quit)
+2016-10-12 01:19:00		[01:13]
+2016-10-12 01:21:45	-->	kXw (~inV@remote.imess.com) has joined ##asm
+2016-10-12 01:23:32	<--	kXw (~inV@remote.imess.com) has quit (Client Quit)
+2016-10-12 01:25:00	-->	zap0 (~moofy@14-201-222-143.tpgi.com.au) has joined ##asm
+2016-10-12 01:25:55	<--	lorenzo64 (~lorenzo__@5.144.190.80) has quit (Read error: Connection reset by peer)
+2016-10-12 01:27:47	<--	sacredbanana (~Mutter@server.minotaurcreative.net) has quit (Remote host closed the connection)
+2016-10-12 01:32:27	-->	fr0gRIP (~fr0gRIP@163.5.223.184) has joined ##asm
+2016-10-12 01:38:00		[01:32]
+2016-10-12 01:53:23	<--	araml (~araml@unaffiliated/araml) has quit (Quit: WeeChat 1.0.1)
+2016-10-12 01:53:23		[01:53]
+2016-10-12 01:53:49	<--	osa1_ (~omer@50-253-193-254-static.hfc.comcastbusiness.net) has quit (Ping timeout: 268 seconds)
+2016-10-12 01:55:40	<--	Coldseeker (~Frosty@adsl-au-4-105.ozonline.com.au) has quit (Quit: The one good thing about repeating your mistakes is that you know when to cringe.)
+2016-10-12 01:56:33	<--	sh4 (~sh4@unaffiliated/sh4) has quit (Ping timeout: 260 seconds)
+2016-10-12 01:58:37	-->	sh4 (~sh4@unaffiliated/sh4) has joined ##asm
+2016-10-12 02:00:13	-->	pie_ (~pie_@178-164-178-89.pool.digikabel.hu) has joined ##asm
+2016-10-12 02:00:39	<--	pie_ (~pie_@178-164-178-89.pool.digikabel.hu) has quit (Changing host)
+2016-10-12 02:00:39	-->	pie_ (~pie_@unaffiliated/pie-/x-0787662) has joined ##asm
+2016-10-12 02:05:41	<--	lecture01 (~Thunderbi@2a00:c1a0:8504:1600:224:81ff:fe12:72e5) has quit (Quit: lecture01)
+2016-10-12 02:06:27	-->	osa1_ (~omer@156-56-64-102.dhcp-bl.indiana.edu) has joined ##asm
+2016-10-12 02:12:00		[02:06]
+2016-10-12 02:21:58	<--	DearVolt (~DearVolt@169-0-211-78.ip.afrihost.co.za) has quit (Quit: Leaving)
+2016-10-12 02:27:00		[02:21]
+2016-10-12 02:30:58	<--	nikio_ (~nikio_@unaffiliated/nikio/x-5064535) has quit (Ping timeout: 265 seconds)
+2016-10-12 02:31:35	-->	nikio_ (~nikio_@unaffiliated/nikio/x-5064535) has joined ##asm
+2016-10-12 02:37:00		[02:31]
+2016-10-12 02:39:10	<--	nikio_ (~nikio_@unaffiliated/nikio/x-5064535) has quit (Ping timeout: 265 seconds)
+2016-10-12 02:40:58	-->	Frisky-Kat (SomeWhere@90.214.148.95) has joined ##asm
+2016-10-12 02:42:50	-->	metachr0n (~nobody@46.166.137.216) has joined ##asm
+2016-10-12 02:42:57	<--	FriskyKat (SomeWhere@2.126.6.232) has quit (Ping timeout: 240 seconds)
+2016-10-12 02:48:00		[02:42]
+2016-10-12 02:48:22	-->	infinite (~infinite@8.27.210.16) has joined ##asm
+2016-10-12 02:50:03	<--	Prod_ (~DaffyDuck@2.110.210.22) has quit (Read error: Connection reset by peer)
+2016-10-12 02:50:42	-->	Suchorski (regex@unaffiliated/suchorski) has joined ##asm
+2016-10-12 02:51:51	--	Frisky-Kat is now known as FriskyKat
+2016-10-12 02:53:05	-->	snyp (~Snyp@nas4.meghbelabroadband.in) has joined ##asm
+2016-10-12 02:53:29	-->	SwiftMatt (~Objective@209.197.6.139) has joined ##asm
+2016-10-12 02:53:40	<--	MindlessDrone (~MindlessD@unaffiliated/mindlessdrone) has quit (Ping timeout: 260 seconds)
+2016-10-12 02:54:47	-->	jan64 (~jan64@abbe137.neoplus.adsl.tpnet.pl) has joined ##asm
+2016-10-12 02:55:43	-->	Prod_ (~DaffyDuck@0138800884.0.fullrate.ninja) has joined ##asm
+2016-10-12 02:56:37	-->	MindlessDrone (~MindlessD@unaffiliated/mindlessdrone) has joined ##asm
+2016-10-12 02:57:20	<--	redeemed (~rd@82.208.188.40) has quit (Ping timeout: 268 seconds)
+2016-10-12 03:00:28	<--	silverf0x (silver@unaffiliated/silverf0x) has quit (Quit: a luz falsa que hipnotiza o bobo...)
+2016-10-12 03:02:01	-->	silverf0x (silver@os.brasucas.net) has joined ##asm
+2016-10-12 03:02:02	<--	silverf0x (silver@os.brasucas.net) has quit (Changing host)
+2016-10-12 03:02:02	-->	silverf0x (silver@unaffiliated/silverf0x) has joined ##asm
+2016-10-12 03:04:44	--	osa1_ is now known as osa1
+2016-10-12 03:04:44		[03:04]
+2016-10-12 03:04:49	<--	osa1 (~omer@156-56-64-102.dhcp-bl.indiana.edu) has quit (Changing host)
+2016-10-12 03:04:49	-->	osa1 (~omer@haskell/developer/osa1) has joined ##asm
+2016-10-12 03:07:58	-->	Demon_Fox (~Demon_Fox@71.94.3.176) has joined ##asm
+2016-10-12 03:09:57	<--	MindlessDrone (~MindlessD@unaffiliated/mindlessdrone) has quit (Ping timeout: 248 seconds)
+2016-10-12 03:12:37	-->	MindlessDrone (~MindlessD@unaffiliated/mindlessdrone) has joined ##asm
+2016-10-12 03:12:47	-->	lapinozz (~lapinozz@45.74.164.117) has joined ##asm
+2016-10-12 03:14:01	<--	sh4 (~sh4@unaffiliated/sh4) has quit (Ping timeout: 260 seconds)
+2016-10-12 03:20:00		[03:14]
+2016-10-12 03:24:33	-->	sacredbanana (~Mutter@server.minotaurcreative.net) has joined ##asm
+2016-10-12 03:26:28	--	_4epen is now known as deselect
+2016-10-12 03:29:20	-->	kirotawa (~kirotawa@191.135.85.134) has joined ##asm
+2016-10-12 03:34:06	<--	cYmen_ (~quassel@squint.a-oben.org) has quit (Quit: http://quassel-irc.org - Chat comfortably. Anywhere.)
+2016-10-12 03:34:48	<--	kirotawa (~kirotawa@191.135.85.134) has quit (Quit: WeeChat 0.4.2)
+2016-10-12 03:40:00		[03:34]
+2016-10-12 03:44:00	<--	sarbs (~sarbs@c-67-182-146-128.hsd1.wa.comcast.net) has quit (Ping timeout: 260 seconds)
+                                                                                                
