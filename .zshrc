@@ -2,18 +2,18 @@
 
 ## Traps; execute sanity checks on status:  INT,TERM
 cleanup() {
- [[ $(ls -lAhqiQFs1 --color=auto /proc/$$/fd | grep -q "\"9\"")$? ]] && {
+ la /dev/fd/9 >/dev/null 2>&1 && {
 	exec 2>&9
 	exec 9>&-
  }
  [[ ${-} != *i* ]] || {
   [[ ! -f "$ZSH_ERROR" || -z $(cat "$ZSH_ERROR") ]] && {
-    printf " \033[32m %s \033[0m\n" 'zshrc: no errors detected'
+    printf " \033[32m %s \n" 'zshrc: no errors detected'
   } || {
     printf " \033[31m %s \n" 'zshrc: the following errors were detected:'
     <"${ZSH_ERROR}" tee -a /store/zsh-log-${UID}.log | sed 's/^.*$/\t&/'
-    printf "\033[0m\n"
   }
+  printf " \033[0m\n"
  }
  ## cleanup env and temp files
  [ ! -f "${ZSH_ERROR}" ] || rm -f "${ZSH_ERROR}"
@@ -21,7 +21,7 @@ cleanup() {
 }
 
 # EXIT trap
-trap " { cleanup ${PWD}; trap -; }" EXIT
+trap "{ cleanup; trap -; }" EXIT
 trap "cleanup" TRAP
 #trap ' { [[ ${EUID} -ne 0 ]] && cleanup ${HOME} || cleanup ${PWD}; }' 0 5
 ## INT,HUP,ILL,SEV,PIPE,TERM traps redundant
@@ -87,11 +87,7 @@ else
 #ZSH_THEME="agnoster"
 
 ## Set theme based on whether X is running
-[[ -z "$DISPLAY" ]] && {
-export ZSH_THEME="pygmalion"
-} || {
-export ZSH_THEME="bullet-train"
-}
+[[ -z "$DISPLAY" ]] || export ZSH_THEME="bullet-train"
 
 export BULLETTRAIN_DIR_EXTENDED=2
 #export BULLETTRAIN_CUSTOM_MSG=`host 192.168.1.98 | sed -r 's/^.*pointer .*?\.(.*\..*\.)$/\1 -/'`
@@ -732,7 +728,7 @@ fpath=(/usr/share/zsh/site-functions $fpath)
 ## Load zsh-completions plugin
 plugins+=(zsh-completions)
 autoload -U promptinit && promptinit
-#. /usr/share/zsh/functions/Prompts/prompt_clint_setup
+[[ ! -z "$ZSH_THEME" ]] || prompt_clint_setup
 ## -U: Ignore any aliases when loading a function like compinit or bashcompinit
 ## +X: Just load the named function fow now and don't execute it
 #autoload -U +X compinit && compinit
