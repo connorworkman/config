@@ -11,27 +11,27 @@
 export PATH=/usr/lib/distcc/bin:/store/config/scripts:/usr/lib/colorgcc/bin:/opt/android-sdk/platform-tools:${HOME}/.gem/ruby/2.3.0/bin:${HOME}/bin:/store/scripts:/store/local/Wolfram/CDFPlayer/10.3/Executables:/store/local/bin:${HOME}/.linuxbrew/bin:/opt/openresty/bin:/opt/openresty/nginx/sbin:${HOME}/GNUstep/Tools:/bin:/sbin:/usr/local/sbin:/usr/local/bin:/usr/bin:/usr/lib/jvm/default/bin:/usr/bin/site_perl:/usr/bin/vendor_perl:/usr/bin/core_perl:${HOME}/code/go/bin
 #export PATH=/usr/lib/ccache/bin:${PATH}
 #export MANPATH="/usr/local/man:${MANPATH}"
-export MANPATH=/usr/local/man:${MANPATH}:${HOME}/.linuxbrew/share/man
-export INFOPATH=${HOME}/.linuxbrew/share/info:/usr/share/info:${HOME}/GNUstep/Library/Documentation/info
+export MANPATH=/usr/local/man:${HOME}/.linuxbrew/share/man:${MANPATH}
+export INFOPATH=${HOME}/.linuxbrew/share/info:/usr/share/info:${HOME}/GNUstep/Library/Documentation/info:${INFOPATH}
 export TERMINAL="urxvt"
 export TERM="xterm-256color"
 #export TERMINAL="konsole"
 #export BROWSER="firefox"
 export BROWSER="chromium"
 ## Gtk themes
-export GTK2_RC_FILES="${HOME}/.gtkrc-2.0"
-export QT_PLUGIN_PATH="${HOME}/.kde4/lib/kde4/plugins/:/usr/lib/kde4/plugins/"
-export QT_QPA_PLATFORMTHEME="qt5ct"
+export GTK2_RC_FILES=${HOME}/.gtkrc-2.0
+export QT_PLUGIN_PATH=${HOME}/.kde4/lib/kde4/plugins/:/usr/lib/kde4/plugins/
+export QT_QPA_PLATFORMTHEME=qt5ct
 ## Python2 compatibility
 #export PYTHON="/usr/bin/python2.7"
-export PYTHONSTARTUP="${HOME}/.pyrc"
+export PYTHONSTARTUP=${HOME}/.pyrc
 ##Compilation flags
 export ARCHFLAGS="-arch x86_64"
 export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
 ## SSH
-export SSH_KEY_PATH=".ssh/identity"
+export SSH_KEY_PATH=.ssh/identity
 ## Add vim as default editor
-export EDITOR="vim"
+export EDITOR=vim
 export FCEDIT="${EDITOR}" VISUAL="${EDITOR}" SUDO_EDITOR="${EDITOR}" SYSTEMD_EDITOR="${EDITOR}"
 ## Audio plugins
 export VST_PATH="/usr/lib/vst:/usr/local/lib/vst:${HOME}/vst:/store/audio/vst"
@@ -51,7 +51,7 @@ export CCACHE_PATH="/usr/bin"
 #export CCACHE_PREFIX="distcc"
 export GOPATH=${HOME}/code/go
 ## Less env
-export PAGER="less"
+export PAGER=less
 #export SYSTEMD_LESS='-FRXMK' journalctl
 export SYSTEMD_LESS='-RXMK' journalctl
 ## Intel VA-API and VDPAU configu
