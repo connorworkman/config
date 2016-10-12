@@ -13,7 +13,7 @@ cleanup() {
     printf " \033[31m %s \n" 'zshrc: the following errors were detected:'
     <"${ZSH_ERROR}" tee -a /store/zsh-log-${UID}.log | sed 's/^.*$/\t&/'
   }
-  printf " \033[0m\n"
+  printf "\033[0m"
  }
  ## cleanup env and temp files
  [ ! -f "${ZSH_ERROR}" ] || rm -f "${ZSH_ERROR}"
