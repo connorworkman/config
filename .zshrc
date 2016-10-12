@@ -2,36 +2,22 @@
 
 ## Traps; execute sanity checks on status:  INT,TERM
 cleanup() {
- ## simple pushd/popd-based dir history
- pushd . >/dev/null
- #[[ "${1}" =~ (\((^|\/).*?\)+|`pwd`) ]] && { pushd "${1}" >/dev/null; popd >/dev/null; }
- [[ "${1}" ]] && popd >/dev/null || true
- ## Insert other shutdown tasks
- #[[ "${TERM}" != screen* ]] && TERM='xterm-256color' || TERM='screen-256color'
- #export TERM
- #[[ ! "${TERM}" =~ ^(xterm|rxvt|screen) && export TERM=xterm-256color
- #eval "exec 8<>/store/zsh-log${UID}"
- #eval "exec 6<&- exec 7>&- exec 8>&- exec 9<&-"
- ## Reset fd redirections and close fds
- #[[ `ls -lAhqiQFs1 --color=auto /proc/$$/fd | grep -q "\"9\""`$? ]] && eval 'exec 2>&9; exec 9>&-'
- #(( `ls -lAhqiQFs1 --color=auto /proc/$$/fd | grep "\"9\""`$? )) || eval 'exec 2>&9; exec 9>&-'
- [[ `ls -lAhqiQFs1 --color=auto /proc/$$/fd | grep -q "\"9\""`$? ]] && {
-	exec 2>&9; exec 9>&-; }
- ## Error check if running interactively
- #[[ -z `cat "$ZSH_ERROR" 2>&-` [[ $- != *i* ]] && {
- #echo "derp" >>$ZSH_ERROR
+ [[ $(ls -lAhqiQFs1 --color=auto /proc/$$/fd | grep -q "\"9\"")$? ]] && {
+	exec 2>&9
+	exec 9>&-
+ }
  [[ ${-} != *i* ]] || {
-  [[ ! -r "$ZSH_ERROR" || -z `cat "$ZSH_ERROR"` ]] && {
-    printf " \033[32m %s \033[0m\n" 'zshrc: no errors detected'; } || {
+  [[ ! -f "$ZSH_ERROR" || -z $(cat "$ZSH_ERROR") ]] && {
+    printf " \033[32m %s \033[0m\n" 'zshrc: no errors detected'
+  } || {
     printf " \033[31m %s \n" 'zshrc: the following errors were detected:'
-    #cat "${ZSH_ERROR}" 2>&1 | tee "/dev/tty" >>/store/zsh-log-${UID}.log; }
-    cat "${ZSH_ERROR}" |& \
-	sed -s 's/^.*$/\t&/w /dev/tty' \
-	>>/store/zsh-log-${UID}.log
-    printf "\033[0m\n"; }
+    <"${ZSH_ERROR}" tee -a /store/zsh-log-${UID}.log | sed 's/^.*$/\t&/'
+    printf "\033[0m\n"
+  }
  }
  ## cleanup env and temp files
- [[ -r "${ZSH_ERROR}" ]] && rm -f "${ZSH_ERROR}" || return 0
+ [ ! -f "${ZSH_ERROR}" ] || rm -f "${ZSH_ERROR}"
+ return 0
 }
 
 # EXIT trap
@@ -44,6 +30,7 @@ trap "cleanup" TRAP
 
 ## Redirect errors in zshrc to "${HOME}/zsh_errors.log"
 ZSH_ERROR="/tmp/zsh-error-log-${UID}.tmp"
+[ ! -f "$ZSH_ERROR" ] || echo rm -f "${ZSH_ERROR}"
 ## Backup stdin/stdout/stderr
 ## don't use fd 5; sometimes used by shell
 ## point stderr ${HOME}/zsh_errors.log
@@ -52,7 +39,6 @@ ZSH_ERROR="/tmp/zsh-error-log-${UID}.tmp"
 ## Open and point fd 7 for seeking within $ZSH_ERROR
 #exec 9<>"${ZSH_ERROR}"
 #exec 8>$ZSH_ERROR
-/bin/rm -f "${ZSH_ERROR}"
 exec 9>&2
 exec 2>${ZSH_ERROR}
 
@@ -99,7 +85,13 @@ else
 #ZSH_THEME="pygmalion"
 #ZSH_THEME="powerline"
 #ZSH_THEME="agnoster"
-ZSH_THEME="bullet-train"
+
+## Set theme based on whether X is running
+[[ -z "$DISPLAY" ]] && {
+export ZSH_THEME="pygmalion"
+} || {
+export ZSH_THEME="bullet-train"
+}
 
 export BULLETTRAIN_DIR_EXTENDED=2
 #export BULLETTRAIN_CUSTOM_MSG=`host 192.168.1.98 | sed -r 's/^.*pointer .*?\.(.*\..*\.)$/\1 -/'`
@@ -937,19 +929,35 @@ kill -TRAP $$
 ## Archived commands
 
 true || {
-## Unset traps and execute cleanup function after configuration fully loaded to fix errors
-[[ "${EUID}" -ne 0 ]] && cleanup ${HOME} || cleanup ${PWD}
-[[ ! "${TERM}" =~ ^(xterm|rxvt|screen).*$ ]] && export TERM=xterm-256color
-## Reset fd redirections and close fds
-exec 1>&3; exec 2>&4; exec 0<&6
-exec 3>&-; exec 4>&-; exec 6<&-; exec 7<&- #or 7>&-
-## Error check
-[[ -z `cat "${ZSH_ERROR}"` || ! -r "${ZSH_ERROR}" ]] && \
-echo "\n${fg_bold[green]}zshrc: no errors detected${reset_color}" || \
-echo "\n${fg_bold[red]}zshrc: the following errors were detected:${reset_color}\n"`cat ${ZSH_ERROR}`"\n"
-## cleanup env and temp files
-[[ -r "${ZSH_ERROR}" ]] && rm -rf "${ZSH_ERROR}"
-[[ "${ZSH_ERROR}" ]] && unset "${ZSH_ERROR}"
-trap -
+    ## Unset traps and execute cleanup function after configuration fully loaded to fix errors
+    [[ "${EUID}" -ne 0 ]] && cleanup ${HOME} || cleanup ${PWD}
+    [[ ! "${TERM}" =~ ^(xterm|rxvt|screen).*$ ]] && export TERM=xterm-256color
+    ## Reset fd redirections and close fds
+    exec 1>&3; exec 2>&4; exec 0<&6
+    exec 3>&-; exec 4>&-; exec 6<&-; exec 7<&- #or 7>&-
+    ## Error check
+    [[ -z `cat "${ZSH_ERROR}"` || ! -r "${ZSH_ERROR}" ]] && \
+    echo "\n${fg_bold[green]}zshrc: no errors detected${reset_color}" || \
+    echo "\n${fg_bold[red]}zshrc: the following errors were detected:${reset_color}\n"`cat ${ZSH_ERROR}`"\n"
+    ## cleanup env and temp files
+    [[ -r "${ZSH_ERROR}" ]] && rm -rf "${ZSH_ERROR}"
+    [[ "${ZSH_ERROR}" ]] && unset "${ZSH_ERROR}"
+    trap -
+    #[[ "${1}" =~ (\((^|\/).*?\)+|`pwd`) ]] && { pushd "${1}" >/dev/null; popd >/dev/null; }
+    ## Insert other shutdown tasks
+    #[[ "${TERM}" != screen* ]] && TERM='xterm-256color' || TERM='screen-256color'
+    #export TERM
+    #[[ ! "${TERM}" =~ ^(xterm|rxvt|screen) && export TERM=xterm-256color
+    #eval "exec 8<>/store/zsh-log${UID}"
+    #eval "exec 6<&- exec 7>&- exec 8>&- exec 9<&-"
+    ## Reset fd redirections and close fds
+    #[[ `ls -lAhqiQFs1 --color=auto /proc/$$/fd | grep -q "\"9\""`$? ]] && eval 'exec 2>&9; exec 9>&-'
+    #(( `ls -lAhqiQFs1 --color=auto /proc/$$/fd | grep "\"9\""`$? )) || eval 'exec 2>&9; exec 9>&-'
+    ## Error check if running interactively
+    #[[ -z `cat "$ZSH_ERROR" 2>&-` [[ $- != *i* ]] && {
+    #echo "derp" >>$ZSH_ERROR
+    ## simple pushd/popd-based dir history
+    pushd . >/dev/null
+    [[ "${1}" ]] && popd >/dev/null || true
 }
 
