@@ -202,7 +202,7 @@ source ${ZSH}/oh-my-zsh.sh
 ## Start gpg/ssh agent and setup pump environment variables
 { eval $(keychain --eval --agents ssh,gpg identity id_rsa id_ecdsa) $(pump --startup); } 2>&1 9>&1
 
-precmd() { disambiguate-keeplast }
+# precmd() { disambiguate-keeplast }
 
 ## Envoy commands as alternate ssh/gpg-agent manager
 #[[ ${EUID} -eq 1000 ]] && { envoy -t ssh-agent -a identity id_rsa id_ecdsa; source <(envoy -p); }
@@ -234,9 +234,9 @@ zstyle ':history-search-multi-word' page-size 5
 #select-word-style shell
 
 ## don't alert me if something failed
-unsetopt correctall correct_all nomatch beep printexitvalue caseglob nohistverify
+unsetopt extended_history correctall correct_all nomatch beep printexitvalue caseglob nohistverify
 setopt histignorealldups hist_expire_dups_first hist_ignore_dups hist_ignore_space correct completeinword
-setopt extended_history append_history share_history inc_append_history autocd notify clobber
+setopt append_history share_history inc_append_history autocd notify clobber
 setopt extendedglob noverbose casematch
 ## Allow comments even in interactive shells
 setopt INTERACTIVE_COMMENTS interactivecomments
@@ -246,7 +246,7 @@ setopt INTERACTIVE_COMMENTS interactivecomments
 unsetopt nohup
 ## dont warn me about bg processes when exiting
 setopt nocheckjobs
-export HISTFILE=${HOME}/.zsh_history # ensure history file visibility
+export HISTFILE=/store/config/.zsh_history # ensure history file visibility
 export HH_CONFIG=hicolor # get more colors
 # History search
 autoload -Uz up-line-or-beginning-search
