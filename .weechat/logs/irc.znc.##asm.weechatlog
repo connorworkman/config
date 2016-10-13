@@ -23877,3 +23877,146 @@
 2016-10-12 20:42:34	PoppaVic	amen
 2016-10-12 20:42:50	dansan	*stack-based
 2016-10-12 20:44:55	dansan	One problem I'm facing with this optimization is that shrink-wrapping still appears to break it.
+2016-10-12 20:45:08	dansan	I guess I'll find out tomorrow when I re-run tests on Wine
+2016-10-12 20:46:46	<--	Goplat (~goplat@reactos/developer/Goplat) has quit (Remote host closed the connection)
+2016-10-12 20:46:52	PoppaVic	in my universe, shrink-wrap means plastic sheeting and a heat-gun/iron ;-P
+2016-10-12 20:47:00	dansan	lol!!!
+2016-10-12 20:47:28	dansan	Well I'm still a fairly green student of gcc's internals. This is my first venture into gcc and I guess I picked a difficult task
+2016-10-12 20:49:08	PoppaVic	I'd never contrib to them, so yer well past me
+2016-10-12 20:49:23	dansan	lol!
+2016-10-12 20:50:17	dansan	It's my obsession with performance that keeps driving me. :( When I see where a few processor cycles can be saved it's hard for me to let go of it.
+2016-10-12 20:51:27	-->	feep (~feep@p200300D4FBC72580E6B62BFAA755C774.dip0.t-ipconnect.de) has joined ##asm
+2016-10-12 20:51:28	feep	hi
+2016-10-12 20:51:36	feep	what's the cost of a correctly predicted branch on x86?
+2016-10-12 20:51:39	dansan	Hello
+2016-10-12 20:51:40	zid	nothing
+2016-10-12 20:51:49	PoppaVic	fitty-dolla
+2016-10-12 20:51:52	dansan	lol!
+2016-10-12 20:51:56	feep	zid: thank you
+2016-10-12 20:52:02	zid	except power, I guess
+2016-10-12 20:52:07	feep	:p
+2016-10-12 20:52:22	zid	My final answer is heat
+2016-10-12 20:52:28	feep	okay so asserts that are correctly hinted as unlikely to gcc should be essentially free?
+2016-10-12 20:52:42	zid	x86 doesn't have branch hinting
+2016-10-12 20:52:42		[20:52]
+2016-10-12 20:52:43	feep	(if they read data that needs to be cached anyways, anyways)
+2016-10-12 20:52:54	dansan	zid: oooh, so we have an x86 know-it-all here? :) So what is the cost of two consecutive push instructions then, as far as the delay caused because of the changing SP?
+2016-10-12 20:52:57	zid	other architectures might/do though
+2016-10-12 20:53:10	feep	zid: I think x86 has a default assumption for conditional branches
+2016-10-12 20:53:21	dansan	So I guess I know who to ping when I'm really stuck on something x86 :)
+2016-10-12 20:53:23	zid	feep: you can't suggest to the cpu the branch will go one way or another
+2016-10-12 20:53:30	zid	those annotations are for other architectures, and the compiler
+2016-10-12 20:53:37	zid	so that it can do cache tricks
+2016-10-12 20:53:41	zid	not for the cpu
+2016-10-12 20:53:54	feep	yes I know
+2016-10-12 20:53:58	dansan	cache tricks like putting unlikely code further from likely?
+2016-10-12 20:54:10	feep	but like, it has to assume one or the other
+2016-10-12 20:54:17	feep	even without hints
+2016-10-12 20:54:18	zid	dansan: right, putting the hot path somewhere in hot cache
+2016-10-12 20:54:29	dansan	ahh, cool. A concept I understand! :)
+2016-10-12 20:54:30	feep	I mean it doesn't *have* to but it costs it nothing to
+2016-10-12 20:54:49	zid	feep: branch prediction is a 'throw away work done' engine
+2016-10-12 20:54:50	feep	ah, google says it by default predicts conditional branches to not be taken
+2016-10-12 20:54:57	feep	so gcc does the right thing there
+2016-10-12 20:55:08	dansan	oh, interesting!
+2016-10-12 20:55:10	zid	it just executes both sides until it figures out which side will really be done
+2016-10-12 20:55:14	zid	then discards the 'wrong' side
+2016-10-12 20:55:25	PoppaVic	"My gcc needs magic" - well, of course: ask #asm - not #gcc - cuz... #asm!
+2016-10-12 20:55:53	feep	check http://www.intel.com/content/dam/www/public/us/en/documents/manuals/64-ia-32-architectures-optimization-manual.pdf 3.4.1.3
+2016-10-12 20:55:54	zid	but there's a fair amount of magic involved there
+2016-10-12 20:55:55	dansan	zid: wait, does that mean that it will touch a cache page of an otherwise "unlikely" branch to pre-execute it?
+2016-10-12 20:56:05	zid	dansan: that's part of the magic
+2016-10-12 20:56:07	feep	PoppaVic: it's fundamentally an asm issue
+2016-10-12 20:56:16	zid	it might, if it has the time spare? there'll be some heuristics
+2016-10-12 20:56:25	zid	if it believes the jump wi ll land there it will
+2016-10-12 20:56:30	zid	not sure if it will if it doesn't believe so ever
+2016-10-12 20:56:47	PoppaVic	feng: that's OK, I visit so rarely here yer welcome to ask who to vote for. I could care less
+2016-10-12 20:56:52	zid	but it can do a limited amount of processing on both sides of the branch as I understand it
+2016-10-12 20:56:53	dansan	zid: but that also means that my instruction cache gets something evicted for loading an unlikely cache line...
+2016-10-12 20:57:06	dansan	that's still cool though
+2016-10-12 20:57:12	zid	when it actually *does* do it is intel magic I believe
+2016-10-12 20:57:18	dansan	HAH!
+2016-10-12 20:57:21	feep	yeah that's terrible, I wish there was a way to hint *very* unlikely branches in a way that lets it assume that they'll *always* go one way
+2016-10-12 20:57:25	-->	rendar (~rendar@host214-177-dynamic.27-79-r.retail.telecomitalia.it) has joined ##asm
+2016-10-12 20:57:27	-->	dminuoso_ (~dminuoso@unaffiliated/dminuoso) has joined ##asm
+2016-10-12 20:57:31	zid	dansan: if your icache is empty that doesn't matter
+2016-10-12 20:57:35	feep	like, "should never be taken in normal execution" unlikely
+2016-10-12 20:57:37	dansan	True
+2016-10-12 20:57:38	zid	so it may do it in that case, or not, who knows
+2016-10-12 20:57:44	PoppaVic	dansan:  and you wondered why I try to ignore it all
+2016-10-12 20:57:47	zid	feep: yea, some architectures DO have that
+2016-10-12 20:57:55	dansan	PoppaVic: lol!
+2016-10-12 20:58:12	dansan	Well my current project is largely involved in reducing instruction cache usage
+2016-10-12 20:58:30	feep	yeah the background is, I'm optimizing an interpreter
+2016-10-12 20:58:36	 *	PoppaVic facepalms...
+2016-10-12 20:58:36	feep	and I have a bunch of internal sanity asserts
+2016-10-12 20:58:51	zid	feep: You should be optimizing for cache coherancy
+2016-10-12 20:58:56	zid	that's the bit that'll kill you
+2016-10-12 20:59:01	feep	how do I profile for that?
+2016-10-12 20:59:05	feep	vtune is too expensive :(
+2016-10-12 20:59:07	zid	watch your cache misses
+2016-10-12 20:59:14	feep	lemme grab a perf stat, sec
+2016-10-12 20:59:16	zid	literally any profiler will tell  you
+2016-10-12 20:59:40	feep	ah I wish, lol
+2016-10-12 20:59:54	zid	all the ones I ever used did, windows ones, linux ones, etc
+2016-10-12 20:59:56	feep	zid: um, what event in particular is that? I have several cache miss looking ones here
+2016-10-12 21:00:02	feep	zid: what linux ones?
+2016-10-12 21:00:10	zid	orprofile? I think that is deprecated now though?
+2016-10-12 21:00:12	zid	oprofile*
+2016-10-12 21:00:12	feep	only good practical ones I've found are zoom and perf
+2016-10-12 21:00:21	feep	valgrind is decent but too slow in practice
+2016-10-12 21:00:29	zid	perl and oprofile
+2016-10-12 21:00:29	dansan	feep: what interpreter are you working on?
+2016-10-12 21:00:34	zid	valgrind is for finding memory leaks
+2016-10-12 21:00:39	feep	dansan: bc interpreter for my own language, jerboa
+2016-10-12 21:00:43	zid	https://en.wikipedia.org/wiki/List_of_performance_analysis_tools :p
+2016-10-12 21:00:50	feep	zid: valgrind has an instruction profiler mode
+2016-10-12 21:00:55	dansan	cool!
+2016-10-12 21:00:56	PoppaVic	dansan:  this is where I bail - and maybe I have a chute, but I bail regardless.
+2016-10-12 21:01:00	<--	PoppaVic (~PoppaVic@unaffiliated/poppavic) has left ##asm ("pfft")
+2016-10-12 21:01:01	feep	cachegrind
+2016-10-12 21:01:22	zid	so anyway, the problem with an interperter is that you're running native code + your code
+2016-10-12 21:01:29	feep	zid: those are mostly commercial
+2016-10-12 21:01:30	zid	so you want your code not to hit cache that would be cold running just the native code
+2016-10-12 21:01:45	zid	so you want to keep your tracking structs wrapping the data small etc so more stuff fits in cache
+2016-10-12 21:01:58	zid	you want arrays to be array-y, not spread around, etc
+2016-10-12 21:01:59	<--	Aph3x-WL (Aph3x@2600:3c03::f03c:91ff:fe6e:5ed9) has quit (Ping timeout: 250 seconds)
+2016-10-12 21:02:05	feep	right, right
+2016-10-12 21:02:11	feep	I know all that
+2016-10-12 21:02:19	zid	You'll probably do an okay job then
+2016-10-12 21:02:24	feep	eh, yeah, I mean
+2016-10-12 21:02:32	feep	I'm p much in the same ballpark as python
+2016-10-12 21:02:35	feep	I just wanna be faster
+2016-10-12 21:02:40	dansan	zid: that's one of the terrible things about the red-black trees in the Linux kernel :(
+2016-10-12 21:02:41	zid	write a compiler instead then
+2016-10-12 21:02:46	feep	yeah but :(
+2016-10-12 21:02:59	feep	I mean, I've done that, it's eehhh? I wanna do a dynamic language ... but still faster, pls!
+2016-10-12 21:03:03	zid	feep: nobody cares about how fast your scripting language is
+2016-10-12 21:03:07	feep	I care! :(
+2016-10-12 21:03:08	dansan	lol!
+2016-10-12 21:03:17	<--	daltonx (~daltonx@r190-134-115-212.dialup.adsl.anteldata.net.uy) has quit (Ping timeout: 250 seconds)
+2016-10-12 21:03:27	zid	ruby once got a 3x speedup because nobody noticed the makefile wasn't building it with optimizations
+2016-10-12 21:03:32	feep	anyway it *would* help to see how much perf I'm using to cache misses
+2016-10-12 21:03:32	zid	that's how little peopel care
+2016-10-12 21:03:37	dansan	OMG!
+2016-10-12 21:03:38	feep	zid: yeah but ruby also has a reputation for slowness
+2016-10-12 21:04:10	feep	zid: anyway, what perf events are relevant here?
+2016-10-12 21:04:11	zid	you're never going to make it 'fast'
+2016-10-12 21:04:14	dminuoso_	feep: that depends. JRuby + Truffle is a different subject altogether.
+2016-10-12 21:04:20	zid	feep: cache misses, I dunno what your profiler shows them ass
+2016-10-12 21:04:20	feep	eh, I'd settle for "ten times slower than native"
+2016-10-12 21:04:33	dminuoso_	But then again Truffle is backed by next generation super aggressive JIT magic,
+2016-10-12 21:04:43	feep	dminuoso_: yeah I've been thinking about jit
+2016-10-12 21:04:48	feep	but I don't wanna write my own and llvm is too big
+2016-10-12 21:05:04	feep	zid: here's the profiler events that perf offers https://gist.github.com/516a928609ada24ec502101df6922770
+2016-10-12 21:05:11	zid	JIT is weird because the speed of the compiler itself matters
+2016-10-12 21:05:15	zid	so you end up with weird compromises
+2016-10-12 21:05:21	zid	like 'okay' amounts of register spilling etc
+2016-10-12 21:05:35	zid	"cache-misses" looks good..
+2016-10-12 21:05:50	dminuoso_	zid: It really depends on the program characteristics. If it's very computational heavy with few hot spots, then each successive pass gives the JIT compiler more potential to keep optimizing more and more.
+2016-10-12 21:05:58	zid	I think that's just the superset of the other misses 2 sections down
+2016-10-12 21:05:59	feep	I get, uh, 600k cache misses on 6g instructions
+2016-10-12 21:06:16	zid	great, go find a few and see where they happened
+2016-10-12 21:06:31	<--	MyCuriosity (~MyCuriosi@unaffiliated/mycuriosity) has quit (Remote host closed the connection)
+2016-10-12 21:06:32	feep	and I mean this is a sampling profiler, so that's basically negligible
+2016-10-12 21:06:59	zid	the hardware ones should just be "enable them on the cpu" *run program* "print number cpu says"
