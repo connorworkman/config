@@ -150,8 +150,9 @@ export HISTSIZE=${HISTFILESIZE}  # increase history size (default is 500)
 #PROMPT_COMMAND='echo -ne "\033]0;$PWD\007"'
 #POMPT_COMMAND='set_prompt; echo -ne "\033]0;$PWD\007"'
 #PROMPT_COMMAND='set_prompt; history -a; echo -en "\e]2; ";history 1|sed "s/^[ \t]*[0-9]\{1,\}  //g";echo -en "\e\\";'
+#PROMPT_COMMAND='history -a; echo -en "\033[m\033[38;5;2m"$(( `sed -n "s/MemFree:[\t ]\+\([0-9]\+\) kB/\1/p" /proc/meminfo`/1024))"\033[38;5;22m/"$((`sed -n "s/MemTotal:[\t ]\+\([0-9]\+\) kB/\1/Ip" /proc/meminfo`/1024 ))MB"\t\033[m\033[38;5;55m$(< /proc/loadavg)\033[m"'
 
-PROMPT_COMMAND='history -a; echo -en "\033[m\033[38;5;2m"$(( `sed -n "s/MemFree:[\t ]\+\([0-9]\+\) kB/\1/p" /proc/meminfo`/1024))"\033[38;5;22m/"$((`sed -n "s/MemTotal:[\t ]\+\([0-9]\+\) kB/\1/Ip" /proc/meminfo`/1024 ))MB"\t\033[m\033[38;5;55m$(< /proc/loadavg)\033[m"'
+PROMPT_COMMAND='history -a; echo -en "\033[m\033[38;5;2m"$(( `sed -n "s/MemFree:[\t ]\+\([0-9]\+\) kB/\1/p" /proc/meminfo`/1024))"\033[38;5;09m/"$((`sed -n "s/MemTotal:[\t ]\+\([0-9]\+\) kB/\1/Ip" /proc/meminfo`/1024 ))MB"\t\033[m\033[38;5;11m$(< /proc/loadavg)\033[m"'
 # If root, print the host in red. Otherwise, print the current user
 # and host in green.
 if [[ $EUID == 0 ]]; then

@@ -18,6 +18,7 @@ unalias history h c >/dev/null 2>&1 || true
 ## Custom aliases
 
 alias prc='vim -p ${HOME}/.profile '
+alias brc='vim -p ${HOME}/.bashrc '
 alias zrc='vim -p ${HOME}/.zshrc '
 alias arc='vim -p ${HOME}/aliases.sh '
 alias vrc='sudo vim -p /etc/vimrc '
