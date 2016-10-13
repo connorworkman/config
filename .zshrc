@@ -2,21 +2,23 @@
 
 ## Traps; execute sanity checks on status:  INT,TERM
 cleanup() {
- ls /dev/fd/9 >/dev/null 2>&1 && {
-	exec 2>&9
-	exec 9>&-
- }
  [[ ${-} != *i* ]] || {
-  [[ ! -f "$ZSH_ERROR" || -z $(cat "$ZSH_ERROR") ]] && {
+  #[[ ! -f "$ZSH_ERROR" || -z $(cat "$ZSH_ERROR") ]] && {
+  [[ -z "$({ exec </dev/stdin; cat; } <&2)" ]] && {
     printf " \033[32m %s \n" 'zshrc: no errors detected'
   } || {
     printf " \033[31m %s \n" 'zshrc: the following errors were detected:'
-    <"${ZSH_ERROR}" tee -a /store/zsh-log-${UID}.log | sed 's/^.*$/\t&/'
+    #<${ZSH_ERROR} tee -a /store/zsh-log-${UID}.log | sed 's/^.*$/\t&/'
+    { exec </dev/stdin; cat | tee -a /store/zsh-log-${UID}.log | sed 's/^.*$/\t&/'; } <&2
   }
   printf "\033[0m"
  }
  ## cleanup env and temp files
- [ ! -f "${ZSH_ERROR}" ] || rm -f "${ZSH_ERROR}"
+ #[ ! -f "${ZSH_ERROR}" ] || rm -f "${ZSH_ERROR}"
+ ls /dev/fd/9 >/dev/null 2>&1 && {
+	exec 2>&9
+	exec 9>&-
+ }
  return 0
 }
 
@@ -29,18 +31,19 @@ trap "cleanup" TRAP
 #trap " { [[ ${EUID} -ne 0 ]] && cleanup ${HOME} || cleanup ${PWD}; trap - INT; kill -INT $$; }" 2
 
 ## Redirect errors in zshrc to "${HOME}/zsh_errors.log"
-ZSH_ERROR="/tmp/zsh-error-log-${UID}.tmp"
-[ -f "$ZSH_ERROR" ] || rm -f "${ZSH_ERROR}"
+#ZSH_ERROR="/tmp/zsh-error-log-${UID}.tmp"
+## Redirect errors in zshrc to a temporary file
+#[ -f "$ZSH_ERROR" ] || rm -f "${ZSH_ERROR}"
+ZSH_ERROR=$(mktemp)
 ## Backup stdin/stdout/stderr
 ## don't use fd 5; sometimes used by shell
 ## point stderr ${HOME}/zsh_errors.log
-#eval "(exec 6<&- exec 7>&- exec 8>&- exec 9>&-)"
-#eval "(exec 0<&6 exec 1>&7 exec 2>&8)"
-## Open and point fd 7 for seeking within $ZSH_ERROR
-#exec 9<>"${ZSH_ERROR}"
-#exec 8>$ZSH_ERROR
 exec 9>&2
-exec 2>${ZSH_ERROR}
+## Open and point fd 7 for seeking within $ZSH_ERROR
+exec 2<>"${ZSH_ERROR}"
+[ -f "$ZSH_ERROR" ] || rm -f "${ZSH_ERROR}"
+#exec 2>${ZSH_ERROR}
+#exec 8>$ZSH_ERROR
 
 ## Example:
 #exec 3<> myfile.txt
@@ -82,8 +85,9 @@ else
 # Look in ~/.oh-my-zsh/themes/
 # Optionally, if you set this to "random", it'll load a random theme each
 # time that oh-my-zsh is loaded.
+
 ## Set theme based on whether X is running
-[[ -z "$DISPLAY" ]] || \
+#[[ -z "$DISPLAY" ]] || \
 	ZSH_THEME="powerline"
 	#ZSH_THEME="bullet-train"
 	#ZSH_THEME="agnoster"
@@ -105,7 +109,7 @@ BULLETTRAIN_GIT_COLORIZE_DIRTY=true
 BULLETTRAIN_IS_SSH_CLIENT=true
 BULLETTRAIN_DIR_CONTEXT_SHOW=false
 
-[[ `hostname` != "arch" ]] && BULLETTRAIN_EXEC_TIME_SHOW=true || BULLETTRAIN_EXEC_TIME_SHOW=false
+[[ "$(hostname)" != "arch" ]] && BULLETTRAIN_EXEC_TIME_SHOW=true || BULLETTRAIN_EXEC_TIME_SHOW=false
 
 ## Tmux plugin env
 ZSH_TMUX_FIXTERM=true
@@ -124,7 +128,7 @@ DISABLE_AUTO_UPDATE="true"
 #DISABLE_UPDATE_PROMPT="true"
 
 # Uncomment the following line to change how often to auto-update (in days).
-#UPDATE_ZSH_DAYS=1
+UPDATE_ZSH_DAYS=1
 
 # Uncomment the following line to disable colors in ls.
 DISABLE_LS_COLORS="true"
@@ -151,7 +155,7 @@ DISABLE_UNTRACKED_FILES_DIRTY="false"
 # stamp shown in the history command output.
 # The optional three formats: "mm/dd/yyyy"|"dd.mm.yyyy"|"yyyy-mm-dd"
 #HIST_STAMPS="mm/dd/yyyy"
-#HIST_STAMPS="yyyy-mm-dd"
+HIST_STAMPS="yyyy-mm-dd"
 
 # Would you like to use another custom folder than $ZSH/custom?
 #ZSH_CUSTOM=${HOME}/.oh-my-zsh
@@ -180,40 +184,17 @@ source ${ZSH}/oh-my-zsh.sh
 
 ## User configuration
 
-## Convert ${TERM} to "${TERM}-256color" and if null use "xterm-256color"
-#! [[ "${TERM}" =~ "^screen.*" ]] && export TERM="xterm-256color" || export TERM="screen-256color"
-#[[ ${TERM:-xterm} =~ "^screen.*" ]] && export TERM="screen-256color" || export TERM="xterm-256color"
-#export TERM=$(sed -r 's_([:alphanum:]+|rxvt-unicode)-?.*_\1-256color_'<<<${TERM})
-# ! [[ "$TERM" =~ ^(xterm|[u]?rxvt|[u]?rxvt\-unicode|screen)(|\-256color)$ ]] && \
-#	export TERM='xterm-256color'
-#	$(<<<${testvar/-256-256colorcolor*/} sed -r 's/^([^\-]*\-|[\-]?[^\-]*?|[^\-]*)(\-256color)+$/\2/ '
-#	TERM=$(<<<${TERM/-256color*/-256color} sed -r 's/^([[:alnum:]]*)(|\-256color)*$/\1-256color/' )
-#	TERM=$(sed -r 's/^([[:alnum:]]+)(|\-256color)*$/\1-256color/' <<<${TERM/1/xterm} )
-#	echo ${testvar/-256color*/}$(<<<"xterm-urxvt-unicode-256color-256color-256color-256color"  sed -r 's/([u]?rxvt)(\-unicode|)/\1/; s/^([^\-]*\-[^\-]*?|[^\-]*)(\-256color)+$/\2/ ' )
-#	sed -r 's/^([^\-]*)(\-256color)+$/\1\2/ '
-
-## Keychain: ssh-agent autostart (and redirect 2>&4 for eval)
-## note that without it eval's output redirected to to error logfile
-#eval $(keychain --eval id_4rsa2)
-## Reset stderr redirection; Keychain: ssh-agent autostart; Redo stderr redirection
-#exec 2>&4; eval $(keychain --eval --agents ssh,gpg id_4rsa2 2>&4); exec 2>${ZSH_ERROR}
-#&>/dev/null
-
-#{ eval $(keychain --eval --agents ssh,gpg identity id_rsa id_ecdsa); } 2>&1 | tee /dev/tty &>>${ZSH_ERROR}
-#{ eval $(keychain --eval --agents ssh,gpg identity id_rsa id_ecdsa); } 2>&1 | tee /dev/tty &>>${ZSH_ERROR}
-#2>&1 { eval $(keychain --eval --agents ssh,gpg identity id_rsa id_ecdsa); } >/dev/stdout
-
 ## Start gpg/ssh agent and setup pump environment variables
-{ eval $(keychain --eval --agents ssh,gpg identity id_rsa id_ecdsa) $(pump --startup); } 2>&1 9>&1
+{ eval $(keychain --eval --agents ssh,gpg identity id_rsa id_ecdsa); eval $(pump --startup); } 2>&1 9>&1
 
-# precmd() { disambiguate-keeplast }
+precmd() { disambiguate-keeplast }
 
 ## Envoy commands as alternate ssh/gpg-agent manager
 #[[ ${EUID} -eq 1000 ]] && { envoy -t ssh-agent -a identity id_rsa id_ecdsa; source <(envoy -p); }
 #[[ ${EUID} -eq 1000 ]] && { envoy -t gpg-agent; source <(envoy -p); }
 
 ## Zshmarks bookmark file
-export BOOKMARKS_FILE="/store/config/.bookmarks"
+BOOKMARKS_FILE="/store/config/.bookmarks"
 
 zstyle :omz:plugins:ssh-agent agent-forwarding on
 zstyle :omz:plugins:ssh-agent identities identity id_rsa id_ecdsa
@@ -775,14 +756,14 @@ zle -N edit-command-line
 bindkey '^Xe' edit-command-line
 
 ## Don't hash ssh hosts
-#local knownhosts
-#knownhosts=( ${${${${(f)"$(<$HOME/.ssh/known_hosts)"}:#[0-9]*}%%\ *}%%,*} )
-#zstyle ':completion:*:(ssh|scp|sftp):*' hosts $knownhosts
+local knownhosts
+knownhosts=( ${${${${(f)"$(<$HOME/.ssh/known_hosts)"}:#[0-9]*}%%\ *}%%,*} )
+zstyle ':completion:*:(ssh|scp|sftp):*' hosts $knownhosts
 
 ## {{{ completion system
 
-    # allow one error for every three characters typed in approximate completer
-    zstyle ':completion:*:approximate:'    max-errors 'reply=( $((($#PREFIX+$#SUFFIX)/3 )) numeric )'
+    # allow one error for every two characters typed in approximate completer
+    zstyle ':completion:*:approximate:'    max-errors 'reply=( $((($#PREFIX+$#SUFFIX)/2 )) numeric )'
 
     # don't complete backup files as executables
     zstyle ':completion:*:complete:-command-::commands' ignored-patterns '(aptitude-*|*\~)'
@@ -929,39 +910,3 @@ unsetopt nohup
 setopt nocheckjobs
 
 kill -TRAP $$
-
-## Archived commands
-
-true || {
-    ## Unset traps and execute cleanup function after configuration fully loaded to fix errors
-    [[ "${EUID}" -ne 0 ]] && cleanup ${HOME} || cleanup ${PWD}
-    [[ ! "${TERM}" =~ ^(xterm|rxvt|screen).*$ ]] && export TERM=xterm-256color
-    ## Reset fd redirections and close fds
-    exec 1>&3; exec 2>&4; exec 0<&6
-    exec 3>&-; exec 4>&-; exec 6<&-; exec 7<&- #or 7>&-
-    ## Error check
-    [[ -z `cat "${ZSH_ERROR}"` || ! -r "${ZSH_ERROR}" ]] && \
-    echo "\n${fg_bold[green]}zshrc: no errors detected${reset_color}" || \
-    echo "\n${fg_bold[red]}zshrc: the following errors were detected:${reset_color}\n"`cat ${ZSH_ERROR}`"\n"
-    ## cleanup env and temp files
-    [[ -r "${ZSH_ERROR}" ]] && rm -rf "${ZSH_ERROR}"
-    [[ "${ZSH_ERROR}" ]] && unset "${ZSH_ERROR}"
-    trap -
-    #[[ "${1}" =~ (\((^|\/).*?\)+|`pwd`) ]] && { pushd "${1}" >/dev/null; popd >/dev/null; }
-    ## Insert other shutdown tasks
-    #[[ "${TERM}" != screen* ]] && TERM='xterm-256color' || TERM='screen-256color'
-    #export TERM
-    #[[ ! "${TERM}" =~ ^(xterm|rxvt|screen) && export TERM=xterm-256color
-    #eval "exec 8<>/store/zsh-log${UID}"
-    #eval "exec 6<&- exec 7>&- exec 8>&- exec 9<&-"
-    ## Reset fd redirections and close fds
-    #[[ `ls -lAhqiQFs1 --color=auto /proc/$$/fd | grep -q "\"9\""`$? ]] && eval 'exec 2>&9; exec 9>&-'
-    #(( `ls -lAhqiQFs1 --color=auto /proc/$$/fd | grep "\"9\""`$? )) || eval 'exec 2>&9; exec 9>&-'
-    ## Error check if running interactively
-    #[[ -z `cat "$ZSH_ERROR" 2>&-` [[ $- != *i* ]] && {
-    #echo "derp" >>$ZSH_ERROR
-    ## simple pushd/popd-based dir history
-    pushd . >/dev/null
-    [[ "${1}" ]] && popd >/dev/null || true
-}
-
