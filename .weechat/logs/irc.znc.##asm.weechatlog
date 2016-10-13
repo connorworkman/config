@@ -24020,3 +24020,37 @@
 2016-10-12 21:06:31	<--	MyCuriosity (~MyCuriosi@unaffiliated/mycuriosity) has quit (Remote host closed the connection)
 2016-10-12 21:06:32	feep	and I mean this is a sampling profiler, so that's basically negligible
 2016-10-12 21:06:59	zid	the hardware ones should just be "enable them on the cpu" *run program* "print number cpu says"
+2016-10-12 21:07:09	feep	Ooh. Good point.
+2016-10-12 21:07:11	-->	dqi (~dqi@165-218-045-062.dynamic.caiway.nl) has joined ##asm
+2016-10-12 21:07:26	feep	okay, this profile says "go disable language level profiling, you silly bugger"
+2016-10-12 21:07:33	feep	so I'mma go do that
+2016-10-12 21:07:37	zid	I wonder if my kernel is compiled to allow oprofile to work
+2016-10-12 21:08:01	dminuoso_	zid, feep: http://jruby.org/bench9000/ - this is a great example of what a modern JIT compiler can do to Ruby - it's comparable to AOT compiled C programs after warmup, and with runtime hotspot detection it can locally even exceed.
+2016-10-12 21:08:01		[21:08]
+2016-10-12 21:08:12	feep	dminuoso_: I mean I'd love to have jit
+2016-10-12 21:08:17	feep	it's just   hard, you know :p
+2016-10-12 21:08:25	dminuoso_	feep: Especially with Graal :-)
+2016-10-12 21:08:26	zid	wat where did my Makefile go from /usr/src/linux *puzzles*
+2016-10-12 21:08:44	<--	vigole (~Thunderbi@178.252.165.108) has quit (Quit: 0xF4)
+2016-10-12 21:08:44	zid	dminuoso_: exceed compared to pgo?
+2016-10-12 21:08:54	dminuoso_	zid: Yeah.
+2016-10-12 21:09:00	dminuoso_	zid: Those are some special cases though.
+2016-10-12 21:09:04	zid	nice, magic, someone should just port it back to gcc then :P
+2016-10-12 21:09:04	-->	vigole (~Thunderbi@178.252.165.108) has joined ##asm
+2016-10-12 21:09:29	dminuoso_	zid: The real trick to super aggressive JIT optimization is "deoptimization"
+2016-10-12 21:09:51	zid	hmm?
+2016-10-12 21:10:06	<--	Keshl (~Purple@24.115.181.94.res-cmts.gld.ptd.net) has quit (Read error: Connection reset by peer)
+2016-10-12 21:10:32	dminuoso_	zid: A simple example is Ruby's nature. Every time you call a method, you cant know whether it was modified - so inlining the method code (and then using that to optimize more) could normally not easily be done.
+2016-10-12 21:10:47	-->	Keshl (~Purple@24.115.181.94.res-cmts.gld.ptd.net) has joined ##asm
+2016-10-12 21:10:47	zid	eh fuck it I'll update my kernel
+2016-10-12 21:10:57	dminuoso_	zid: So Graal simply assumes it can be inlined, but detects when the method was modified - and can easily deoptimize and run code through the interpreter again.
+2016-10-12 21:11:12	dminuoso_	Statically this would be impossible to do.
+2016-10-12 21:11:42	zid	oh, ruby shite
+2016-10-12 21:11:47	zid	I just don't write slow code to begin with
+2016-10-12 21:11:51	 *	boru chuckles.
+2016-10-12 21:11:59	dminuoso_	Well the basic concept has nothing to do with Ruby - it's just that it allows a JIT compiler to make assumptions that may not always be true.
+2016-10-12 21:12:03	feep	dminuoso_: jerboa just lets you freeze methods
+2016-10-12 21:12:11	feep	so you can actually know that a method wasn't modified
+2016-10-12 21:12:34	dminuoso_	feep: The idea is more generic than that - it gives the JIT compiler the freedom to optimize in spots where you normally couldn't.
+2016-10-12 21:12:41	zid	dminuoso_: that's an optimization that wouldn't need to be done against code I write, I was intrigued for a moment but now not
+2016-10-12 21:12:46	feep	right, my plan is to just not have any spots where you can't optimize :p
