@@ -24063,3 +24063,220 @@
 2016-10-12 21:14:42	dminuoso_	zid: Let's say you have some code behind a branch, which for now is 90% is not taken - but after runtime conditions change, that branch is later taken only 10% of the time.
 2016-10-12 21:14:44	zid	..while I jit
 2016-10-12 21:14:55	dminuoso_	zid: JIT can optimize for both cases dynamically.
+2016-10-12 21:15:02	zid	dminuoso_: oh, so dynamic pgoy stuff
+2016-10-12 21:15:03	dminuoso_	deoptimization is an aggressive approach to that
+2016-10-12 21:15:04	boru	Well, to be fair, my JITy bit isn't that JITy. I'll just pass output to a locator to do fixups to labels on the target and assemble it and then load it.
+2016-10-12 21:15:21	dminuoso_	zid: Yeah.
+2016-10-12 21:15:22	zid	the tracking sounds like more runtime than the cpu getting the branch prediction wrong though
+2016-10-12 21:15:23	feep	okay as far as I can see, I'm really _not_ cache limited
+2016-10-12 21:15:31	zid	feep: with 600k cache misses?
+2016-10-12 21:15:42	feep	I did a change that knocked out the top function in the cache miss profile, and it affected the runtime zilch
+2016-10-12 21:15:45	dminuoso_	zid: well, the idea is that if its 90% of the time true, the JIT will optimize acting as if its 100% of the time.
+2016-10-12 21:15:52	dminuoso_	zid: and for the 10% of the time it will deoptimize.
+2016-10-12 21:16:02	dminuoso_	and if the runtime condition changes, it will just reverse and do the same again
+2016-10-12 21:16:07	feep	and the cache miss profile looks completely different from the cycle profile
+2016-10-12 21:16:12	zid	right, but 'runtime conditions change' must be measured
+2016-10-12 21:16:23	dminuoso_	zid: Yeah, that's what JIT does. :)
+2016-10-12 21:16:40	dminuoso_	zid: Graal uses a very cheap trick involving page faults.
+2016-10-12 21:16:49	feep	zid: I'm gonna look up how it actually measures those
+2016-10-12 21:16:57	zid	ah yes, that's how I speed up all my programs, invoke page fault handlers :P
+2016-10-12 21:17:08	dminuoso_	zid: It inserts a read to a pre-determined page in certain spots, and permissions for that page are changed when optimizations are known to be invalidated, which stops execution and lets the JIT deoptimize.
+2016-10-12 21:17:32	dminuoso_	This has been proven to be beneficial in most cases, as the optimization potential is incredible
+2016-10-12 21:17:52	dminuoso_	(this has the neat benefit of not fucking with your pipeline all over the place)
+2016-10-12 21:18:07	zid	I'm sure it is, for code that wasn't written with perofrmance in mind in the first place (dynamic languages)
+2016-10-12 21:18:16	feep	2% of all L1 dcache hits miss
+2016-10-12 21:18:37	feep	I think those basically just get handled by L2
+2016-10-12 21:18:46	feep	ackermann does not use much memory
+2016-10-12 21:18:56	dminuoso_	zid: even then it does. AOT compilers cant solve certain situations, because if it knows a branch could be taken, it changes the CFG.
+2016-10-12 21:19:02	feep	and the bytecode for it already is a single continuous blob
+2016-10-12 21:19:06	dminuoso_	zid: JIT simply assumes the CFG is much much simplier. ;-)
+2016-10-12 21:19:08	zid	dminuoso_: I can change it though
+2016-10-12 21:19:10	-->	Antares (~Antares@ppp91-78-123-238.pppoe.mtu-net.ru) has joined ##asm
+2016-10-12 21:19:13	zid	I can implement whatever the jit implements myself
+2016-10-12 21:19:23	dminuoso_	zid: Exactly, because in reality it is not simplified.
+2016-10-12 21:19:41	zid	If the 'fast' thing to do is swap a function pointer, then that's what my fast C should do
+2016-10-12 21:19:46	zid	otherwise I wrote slow C
+2016-10-12 21:22:46	feep	jit is strong when your code is sensitive to specific runtime values
+2016-10-12 21:22:51	feep	with lots of branches in lots of different places
+2016-10-12 21:28:12	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined ##asm
+2016-10-12 21:28:12		[21:28]
+2016-10-12 21:28:12	--	Topic for ##asm is "Assembly programming channel, all architectures welcome (please specify). Don't ask to ask! Use a pastebin if appropriate! Check your manuals! *** AT&T vs Intel flamers will be banned."
+2016-10-12 21:28:12	--	Topic set by Jester01 (~Jester01@62.100.244.69) on Fri, 30 Sep 2016 06:54:51
+2016-10-12 21:28:12	--	Channel ##asm: 277 nicks (0 ops, 0 voices, 277 normals)
+2016-10-12 21:28:12	***	Buffer Playback...
+2016-10-12 21:28:12	dminuoso_	[07:14:55] zid: JIT can optimize for both cases dynamically. [07:14:55]
+2016-10-12 21:28:12	zid	[07:15:02] dminuoso_: oh, so dynamic pgoy stuff [07:15:02]
+2016-10-12 21:28:12	dminuoso_	[07:15:03] deoptimization is an aggressive approach to that [07:15:03]
+2016-10-12 21:28:12	boru	[07:15:04] Well, to be fair, my JITy bit isn't that JITy. I'll just pass output to a locator to do fixups to labels on the target and assemble it and then load it. [07:15:04]
+2016-10-12 21:28:12	dminuoso_	[07:15:21] zid: Yeah. [07:15:21]
+2016-10-12 21:28:12	zid	[07:15:22] the tracking sounds like more runtime than the cpu getting the branch prediction wrong though [07:15:22]
+2016-10-12 21:28:12	feep	[07:15:23] okay as far as I can see, I'm really _not_ cache limited [07:15:23]
+2016-10-12 21:28:12	zid	[07:15:31] feep: with 600k cache misses? [07:15:31]
+2016-10-12 21:28:12	feep	[07:15:42] I did a change that knocked out the top function in the cache miss profile, and it affected the runtime zilch [07:15:42]
+2016-10-12 21:28:12	dminuoso_	[07:15:45] zid: well, the idea is that if its 90% of the time true, the JIT will optimize acting as if its 100% of the time. [07:15:45]
+2016-10-12 21:28:12	dminuoso_	[07:15:52] zid: and for the 10% of the time it will deoptimize. [07:15:52]
+2016-10-12 21:28:12	dminuoso_	[07:16:02] and if the runtime condition changes, it will just reverse and do the same again [07:16:02]
+2016-10-12 21:28:12	feep	[07:16:07] and the cache miss profile looks completely different from the cycle profile [07:16:07]
+2016-10-12 21:28:12	zid	[07:16:12] right, but 'runtime conditions change' must be measured [07:16:12]
+2016-10-12 21:28:12	dminuoso_	[07:16:23] zid: Yeah, that's what JIT does. :) [07:16:23]
+2016-10-12 21:28:12	dminuoso_	[07:16:40] zid: Graal uses a very cheap trick involving page faults. [07:16:40]
+2016-10-12 21:28:12	feep	[07:16:49] zid: I'm gonna look up how it actually measures those [07:16:49]
+2016-10-12 21:28:12	zid	[07:16:57] ah yes, that's how I speed up all my programs, invoke page fault handlers :P [07:16:57]
+2016-10-12 21:28:12	dminuoso_	[07:17:08] zid: It inserts a read to a pre-determined page in certain spots, and permissions for that page are changed when optimizations are known to be invalidated, which stops execution and lets the JIT deoptimize. [07:17:08]
+2016-10-12 21:28:12	dminuoso_	[07:17:32] This has been proven to be beneficial in most cases, as the optimization potential is incredible [07:17:32]
+2016-10-12 21:28:12	dminuoso_	[07:17:52] (this has the neat benefit of not fucking with your pipeline all over the place) [07:17:52]
+2016-10-12 21:28:12	zid	[07:18:07] I'm sure it is, for code that wasn't written with perofrmance in mind in the first place (dynamic languages) [07:18:07]
+2016-10-12 21:28:12	feep	[07:18:16] 2% of all L1 dcache hits miss [07:18:16]
+2016-10-12 21:28:12	feep	[07:18:37] I think those basically just get handled by L2 [07:18:37]
+2016-10-12 21:28:12	feep	[07:18:46] ackermann does not use much memory [07:18:46]
+2016-10-12 21:28:12	dminuoso_	[07:18:56] zid: even then it does. AOT compilers cant solve certain situations, because if it knows a branch could be taken, it changes the CFG. [07:18:56]
+2016-10-12 21:28:12	feep	[07:19:02] and the bytecode for it already is a single continuous blob [07:19:02]
+2016-10-12 21:28:12	dminuoso_	[07:19:06] zid: JIT simply assumes the CFG is much much simplier. ;-) [07:19:06]
+2016-10-12 21:28:12	zid	[07:19:08] dminuoso_: I can change it though [07:19:08]
+2016-10-12 21:28:12	zid	[07:19:13] I can implement whatever the jit implements myself [07:19:13]
+2016-10-12 21:28:12	dminuoso_	[07:19:23] zid: Exactly, because in reality it is not simplified. [07:19:23]
+2016-10-12 21:28:12	zid	[07:19:41] If the 'fast' thing to do is swap a function pointer, then that's what my fast C should do [07:19:41]
+2016-10-12 21:28:12	zid	[07:19:46] otherwise I wrote slow C [07:19:46]
+2016-10-12 21:28:12	feep	[07:22:46] jit is strong when your code is sensitive to specific runtime values [07:22:46]
+2016-10-12 21:28:12	feep	[07:22:51] with lots of branches in lots of different places [07:22:51]
+2016-10-12 21:28:12	feep	[07:23:20] sure you could have a compiler that is super smart and specializes the code for the common cases, and sure you could do that manually, but that gets *effoooort* [07:23:20]
+2016-10-12 21:28:12	feep	[07:23:42] at least in theory [07:23:42]
+2016-10-12 21:28:12	zid	[07:24:07] til there is now a CONFIG_GOLDFISH [07:24:07]
+2016-10-12 21:28:12	feep	[07:24:21] related to the linker? [07:24:21]
+2016-10-12 21:28:12	feep	[07:24:32] or some device called that internally [07:24:32]
+2016-10-12 21:28:12	zid	[07:24:37] nohttp://cateee.net/lkddb/web-lkddb/GOLDFISH.html [07:24:37]
+2016-10-12 21:28:12	feep	[07:24:54] huh [07:24:54]
+2016-10-12 21:28:12	feep	[07:25:26] zid: anyway the funny thing is, the list of performance analysis tools you linked doesn't even contain the three ones I actually use at all [07:25:26]
+2016-10-12 21:28:12	zid	[07:25:33] I think it's for android virtualization or some shit? *shrug* [07:25:33]
+2016-10-12 21:28:12	zid	[07:25:43] well it's not like I read it [07:25:43]
+2016-10-12 21:28:12	feep	[07:25:44] oh nvm, they're in "language independent", not in "C" [07:25:44]
+2016-10-12 21:28:12	zid	[07:25:45] I just use oprofile [07:25:45]
+2016-10-12 21:28:12	feep	[07:26:34] can that do sampling profiling of like, cache events? [07:26:34]
+2016-10-12 21:28:12	feep	[07:26:44] ooh it can [07:26:44]
+2016-10-12 21:28:12	feep	[07:26:46] I may have to try that [07:26:46]
+2016-10-12 21:28:12	***	Playback Complete.
+2016-10-12 21:28:40	--	Channel created on Sun, 27 May 2007 05:31:12
+2016-10-12 21:28:55	dminuoso_	zid: At the end it's all a cost benefit thing. Sure, you can always manually write more efficient code than your compiler can produce - but at the same time it limits your productivity.
+2016-10-12 21:29:12	feep	zid: do you use a gui?
+2016-10-12 21:29:26	zid	dminuoso_: nobody cares about code being fast and also writes it in scripting languages though
+2016-10-12 21:29:46	 *	feep raise hand, wave hand
+2016-10-12 21:30:03	dminuoso_	zid: It depends. There's quite a few things where I use Ruby because other languages would not be worth the effort.
+2016-10-12 21:30:59	zid	man, building shit off a hdd is slow, I had forgotten what it was like
+2016-10-12 21:32:32	feep	zid: I can't get a good handle on how to actually use oprofile to profile caching
+2016-10-12 21:32:40	boru	Use a RAMdisk, perhaps.
+2016-10-12 21:32:41	zid	google knows
+2016-10-12 21:32:49	feep	all I can find is sites saying "you can do this with oprofile"
+2016-10-12 21:32:50	zid	nice, modpost failed
+2016-10-12 21:32:51	feep	not how
+2016-10-12 21:33:24	feep	also docs for pre 1.0
+2016-10-12 21:34:20	feep	zid: like .. google doesn't actually seem to know??
+2016-10-12 21:34:37	-->	fr0gRIP (~fr0gRIP@163.5.223.184) has joined ##asm
+2016-10-12 21:34:56	feep	all I can find is blogposts in bad english
+2016-10-12 21:35:00	feep	> I drawed the table for the analysising.
+2016-10-12 21:35:47	zid	have you considered being better at goolging
+2016-10-12 21:36:11	feep	I tried googling that
+2016-10-12 21:36:16	feep	didn't help
+2016-10-12 21:36:25	zid	http://www.pixelbeat.org/programming/profiling/ is the first result I got
+2016-10-12 21:36:39	zid	 perf top -e l1-dcache-load-misses -e l1-dcache-loads
+2016-10-12 21:36:43	feep	zid
+2016-10-12 21:36:47	feep	that's perf, not oprofile.
+2016-10-12 21:36:54	zid	so it is
+2016-10-12 21:37:09	feep	so like, that's what I'm already using
+2016-10-12 21:37:15	feep	it's _okay_, but it kinda sucks with backtraces
+2016-10-12 21:37:26	feep	and displaying multiple events at once is impossible
+2016-10-12 21:37:33	feep	I really miss vtune :(
+2016-10-12 21:37:41	feep	why no more free version intel :(
+2016-10-12 21:38:07	feep	srsly, the closest linux has to vtune is zoom profiler ... which is abandonware and the company seems to be gone
+2016-10-12 21:38:46	<--	vigole (~Thunderbi@178.252.165.108) has quit (Quit: 0xF4)
+2016-10-12 21:39:57	zid	4.5 to 4.8, nice kernel update >_<
+2016-10-12 21:40:12	feep	also it's hard with perf to see how much time is *actually spent* blocked on cache
+2016-10-12 21:40:16	feep	I mean that's hard in general
+2016-10-12 21:40:39	feep	fix plz intel :(
+2016-10-12 21:40:44	zid	oprofile should install now.. I hope..
+2016-10-12 21:41:43	feep	I could use codexl on my amd server, but it has completely different performance characteristics than this machine
+2016-10-12 21:42:37	feep	and I'm not sure I can trust cachegrind's simulation
+2016-10-12 21:42:45	zid	Your kernel's performance events subsystem does not support your processor type. Oops.
+2016-10-12 21:43:46	vulture	try windows
+2016-10-12 21:43:46		[21:43]
+2016-10-12 21:44:12	boru	Never heard of it. Is that a soft drink?
+2016-10-12 21:44:32	vulture	yeah it's liquid ecstasy
+2016-10-12 21:44:51	boru	I've heard it gives you terrible diarrhea.
+2016-10-12 21:45:18	<--	dqi (~dqi@165-218-045-062.dynamic.caiway.nl) has quit (Ping timeout: 250 seconds)
+2016-10-12 21:47:33	vulture	yeah it will cleanse your colon of all the other shit you used before
+2016-10-12 21:49:25	-->	meowrobot (~katgirl@ool-18ba0f1f.dyn.optonline.net) has joined ##asm
+2016-10-12 21:49:41	 *	boru chuckles
+2016-10-12 21:49:58	zid	I'm just going to assume it doesn't work inside vmware
+2016-10-12 21:50:50	zid	https://kb.vmware.com/selfservice/microsites/search.do?language=en_US&cmd=displayKC&externalId=2015931
+2016-10-12 21:52:09	zid	looks like the industrial crap can enable it though
+2016-10-12 21:54:43	<--	Intensity (1w74ltvooC@panix5.panix.com) has quit (Ping timeout: 258 seconds)
+2016-10-12 21:55:58	-->	Aph3x-WL (Aph3x@2600:3c03::f03c:91ff:fe6e:5ed9) has joined ##asm
+2016-10-12 21:59:34	-->	damme (~damme@h-203-16.a216.priv.bahnhof.se) has joined ##asm
+2016-10-12 21:59:34		[21:59]
+2016-10-12 22:01:03	-->	dqi (~dqi@165-218-045-062.dynamic.caiway.nl) has joined ##asm
+2016-10-12 22:01:22	<--	kbw (~KeyboardW@68-204-170-7.res.bhn.net) has quit (Quit: Textual IRC Client: www.textualapp.com)
+2016-10-12 22:02:45	-->	MoALTz (~no@78.11.235.215) has joined ##asm
+2016-10-12 22:04:03	-->	fub (~fub@aftr-37-201-171-155.unity-media.net) has joined ##asm
+2016-10-12 22:10:00		[22:04]
+2016-10-12 22:14:39	<--	damme (~damme@h-203-16.a216.priv.bahnhof.se) has quit (Ping timeout: 258 seconds)
+2016-10-12 22:15:02	-->	King_Hual (~failed@unaffiliated/king-hual/x-1207580) has joined ##asm
+2016-10-12 22:16:16	<--	SunnyD (~SunnyD@cpe-72-178-78-211.hot.res.rr.com) has quit (Quit: ChatZilla 0.9.90.1 [Firefox 30.0/20140605174243])
+2016-10-12 22:22:00		[22:16]
+2016-10-12 22:24:44	-->	crankslider (~slidercra@unaffiliated/slidercrank) has joined ##asm
+2016-10-12 22:25:49	-->	metachr0n (~nobody@109.201.154.250) has joined ##asm
+2016-10-12 22:27:44	<--	areoh_ (~areoh@41.220.116.124) has quit (Ping timeout: 260 seconds)
+2016-10-12 22:27:51	-->	areoh (~areoh@41.220.116.124) has joined ##asm
+2016-10-12 22:33:00		[22:27]
+2016-10-12 22:34:31	-->	vigole (~Thunderbi@178.252.165.108) has joined ##asm
+2016-10-12 22:34:40	-->	titankiller (~user@50-201-125-254-static.hfc.comcastbusiness.net) has joined ##asm
+2016-10-12 22:35:24	<--	vigole (~Thunderbi@178.252.165.108) has quit (Client Quit)
+2016-10-12 22:39:14	-->	Coldseeker (~Frosty@adsl-au-4-105.ozonline.com.au) has joined ##asm
+2016-10-12 22:41:06	<--	hmmmm (~sdfgsf@72.79.172.20) has quit (Remote host closed the connection)
+2016-10-12 22:45:01	<--	SwiftMatt (~Objective@162.242.95.144) has quit (Quit: My MacBook Pro has gone to sleep. ZZZzzz…)
+2016-10-12 22:49:49	<--	titankiller (~user@50-201-125-254-static.hfc.comcastbusiness.net) has quit (Remote host closed the connection)
+2016-10-12 22:49:49		[22:49]
+2016-10-12 22:54:03	--	irc: disconnected from server
+2016-10-12 22:54:37	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined ##asm
+2016-10-12 22:54:37		[22:54]
+2016-10-12 22:54:37	--	Topic for ##asm is "Assembly programming channel, all architectures welcome (please specify). Don't ask to ask! Use a pastebin if appropriate! Check your manuals! *** AT&T vs Intel flamers will be banned."
+2016-10-12 22:54:37	--	Topic set by Jester01 (~Jester01@62.100.244.69) on Fri, 30 Sep 2016 06:54:51
+2016-10-12 22:54:37	--	Channel ##asm: 280 nicks (0 ops, 0 voices, 280 normals)
+2016-10-12 22:54:37	***	Buffer Playback...
+2016-10-12 22:54:37	feep	[07:26:34] can that do sampling profiling of like, cache events? [07:26:34]
+2016-10-12 22:54:37	feep	[07:26:44] ooh it can [07:26:44]
+2016-10-12 22:54:37	feep	[07:26:46] I may have to try that [07:26:46]
+2016-10-12 22:54:37	dminuoso_	[07:28:55] zid: At the end it's all a cost benefit thing. Sure, you can always manually write more efficient code than your compiler can produce - but at the same time it limits your productivity. [07:28:55]
+2016-10-12 22:54:37	feep	[07:29:12] zid: do you use a gui? [07:29:12]
+2016-10-12 22:54:37	zid	[07:29:26] dminuoso_: nobody cares about code being fast and also writes it in scripting languages though [07:29:26]
+2016-10-12 22:54:37	 *	feep [07:29:46] raise hand, wave hand [07:29:46]
+2016-10-12 22:54:37	dminuoso_	[07:30:03] zid: It depends. There's quite a few things where I use Ruby because other languages would not be worth the effort. [07:30:03]
+2016-10-12 22:54:37	zid	[07:30:59] man, building shit off a hdd is slow, I had forgotten what it was like [07:30:59]
+2016-10-12 22:54:37	feep	[07:32:32] zid: I can't get a good handle on how to actually use oprofile to profile caching [07:32:32]
+2016-10-12 22:54:37	boru	[07:32:40] Use a RAMdisk, perhaps. [07:32:40]
+2016-10-12 22:54:37	zid	[07:32:41] google knows [07:32:41]
+2016-10-12 22:54:37	feep	[07:32:49] all I can find is sites saying "you can do this with oprofile" [07:32:49]
+2016-10-12 22:54:37	zid	[07:32:50] nice, modpost failed [07:32:50]
+2016-10-12 22:54:37	feep	[07:32:51] not how [07:32:51]
+2016-10-12 22:54:37	feep	[07:33:24] also docs for pre 1.0 [07:33:24]
+2016-10-12 22:54:37	feep	[07:34:20] zid: like .. google doesn't actually seem to know?? [07:34:20]
+2016-10-12 22:54:37	feep	[07:34:56] all I can find is blogposts in bad english [07:34:56]
+2016-10-12 22:54:37	feep	[07:35:00] > I drawed the table for the analysising. [07:35:00]
+2016-10-12 22:54:37	zid	[07:35:47] have you considered being better at goolging [07:35:47]
+2016-10-12 22:54:37	feep	[07:36:11] I tried googling that [07:36:11]
+2016-10-12 22:54:37	feep	[07:36:16] didn't help [07:36:16]
+2016-10-12 22:54:37	zid	[07:36:25] http://www.pixelbeat.org/programming/profiling/ is the first result I got [07:36:25]
+2016-10-12 22:54:37	zid	[07:36:39]  perf top -e l1-dcache-load-misses -e l1-dcache-loads [07:36:39]
+2016-10-12 22:54:37	feep	[07:36:43] zid [07:36:43]
+2016-10-12 22:54:37	feep	[07:36:47] that's perf, not oprofile. [07:36:47]
+2016-10-12 22:54:37	zid	[07:36:54] so it is [07:36:54]
+2016-10-12 22:54:37	feep	[07:37:09] so like, that's what I'm already using [07:37:09]
+2016-10-12 22:54:37	feep	[07:37:15] it's _okay_, but it kinda sucks with backtraces [07:37:15]
+2016-10-12 22:54:37	feep	[07:37:26] and displaying multiple events at once is impossible [07:37:26]
+2016-10-12 22:54:37	feep	[07:37:33] I really miss vtune :( [07:37:33]
+2016-10-12 22:54:37	feep	[07:37:41] why no more free version intel :( [07:37:41]
+2016-10-12 22:54:37	feep	[07:38:07] srsly, the closest linux has to vtune is zoom profiler ... which is abandonware and the company seems to be gone [07:38:07]
+2016-10-12 22:54:37	zid	[07:39:57] 4.5 to 4.8, nice kernel update >_< [07:39:57]
+2016-10-12 22:54:37	feep	[07:40:12] also it's hard with perf to see how much time is *actually spent* blocked on cache [07:40:12]
+2016-10-12 22:54:37	feep	[07:40:16] I mean that's hard in general [07:40:16]
+2016-10-12 22:54:37	feep	[07:40:39] fix plz intel :( [07:40:39]
+2016-10-12 22:54:37	zid	[07:40:44] oprofile should install now.. I hope.. [07:40:44]
+2016-10-12 22:

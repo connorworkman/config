@@ -87,7 +87,7 @@ else
 #ZSH_THEME="agnoster"
 
 ## Set theme based on whether X is running
-[[ -z "$DISPLAY" ]] || export ZSH_THEME="bullet-train"
+#[[ -z "$DISPLAY" ]] || ZSH_THEME="bullet-train"
 
 export BULLETTRAIN_DIR_EXTENDED=2
 #export BULLETTRAIN_CUSTOM_MSG=`host 192.168.1.98 | sed -r 's/^.*pointer .*?\.(.*\..*\.)$/\1 -/'`
