@@ -23173,4 +23173,166 @@
 2016-10-12 03:34:48	<--	kirotawa (~kirotawa@191.135.85.134) has quit (Quit: WeeChat 0.4.2)
 2016-10-12 03:40:00		[03:34]
 2016-10-12 03:44:00	<--	sarbs (~sarbs@c-67-182-146-128.hsd1.wa.comcast.net) has quit (Ping timeout: 260 seconds)
-                                                                                                
+                                                                                                2016-10-12 14:44:15	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined ##asm
+2016-10-12 14:44:15		[14:44]
+2016-10-12 14:44:15	--	Topic for ##asm is "Assembly programming channel, all architectures welcome (please specify). Don't ask to ask! Use a pastebin if appropriate! Check your manuals! *** AT&T vs Intel flamers will be banned."
+2016-10-12 14:44:15	--	Topic set by Jester01 (~Jester01@62.100.244.69) on Fri, 30 Sep 2016 06:54:51
+2016-10-12 14:44:15	--	Channel ##asm: 278 nicks (0 ops, 0 voices, 278 normals)
+2016-10-12 14:44:15	***	Buffer Playback...
+2016-10-12 14:44:15	heelpmeplz	[23:17:23] I have a BYTE that is a signed integer.  I want to call WriteInt, which looks for a signed integer value in eax and prints it to the console.  How do I properly store the value of this BYTE in eax? [23:17:23]
+2016-10-12 14:44:15	Jester01	[23:17:33] sign extend it [23:17:33]
+2016-10-12 14:44:15	Jester01	[23:17:35] movsx [23:17:35]
+2016-10-12 14:44:15	heelpmeplz	[23:18:19] I'm in a class and we haven't learned movsx yet, so I feel like maybe there is another, more complicated way? [23:18:19]
+2016-10-12 14:44:15	Jester01	[23:18:35] sure, there is always more complicated :D [23:18:35]
+2016-10-12 14:44:15	Jester01	[23:19:09] have you learned shl/sar ? [23:19:09]
+2016-10-12 14:44:15	zid	[23:19:09] 0xffffff00 | byte [23:19:09]
+2016-10-12 14:44:15	heelpmeplz	[23:19:20] no, I'm afraid not [23:19:20]
+2016-10-12 14:44:15	Jester01	[23:19:31] lol what have you learned :D [23:19:31]
+2016-10-12 14:44:15	Jester01	[23:19:39] zid's method, conditionally [23:19:39]
+2016-10-12 14:44:15	zid	[23:19:59] that's the complicated but dumb way :) [23:19:59]
+2016-10-12 14:44:15	heelpmeplz	[23:20:05] pretty much, mov, and a few functions from the Irvine32 library [23:20:05]
+2016-10-12 14:44:15	Jester01	[23:20:26] cmp? [23:20:26]
+2016-10-12 14:44:15	heelpmeplz	[23:20:34] don't know what that is [23:20:34]
+2016-10-12 14:44:15	Jester01	[23:20:36] conditional jump? [23:20:36]
+2016-10-12 14:44:15	heelpmeplz	[23:20:42] lol definitely not [23:20:42]
+2016-10-12 14:44:15	Jester01	[23:20:55] do you know that your value is negative? [23:20:55]
+2016-10-12 14:44:15	heelpmeplz	[23:21:27] yes, I verified that the array holding the value has the correct hex value for the BYTE [23:21:27]
+2016-10-12 14:44:15	Jester01	[23:21:34] but you know it's negative [23:21:34]
+2016-10-12 14:44:15	Jester01	[23:21:46] "signed" means it can be negative or positive (or zero) [23:21:46]
+2016-10-12 14:44:15	heelpmeplz	[23:21:51] it's "e7", which can be either negative or positive or neither, depending what you do with it [23:21:51]
+2016-10-12 14:44:15	Jester01	[23:22:20] if you want to print it as negative, then do:  mov eax, -1; mov al, 0xe7 [23:22:20]
+2016-10-12 14:44:15	heelpmeplz	[23:26:54] thank you, that works, let me think about it for a minute [23:26:54]
+2016-10-12 14:44:15	zid	[23:27:23] Jester01: 2smart4u [23:27:23]
+2016-10-12 14:44:15	heelpmeplz	[23:40:42] Man I wrote out the bits and verified I checked it every possible way, and I'm still not sure I totally understand it.  Is it enough to say that to store a negative BYTE integer in a 32-bit register, you just first set the register to -1, and then mov the negative integer value into the low byte?  Or am I missing some intuitive point? [23:40:42]
+2016-10-12 14:44:15	heelpmeplz	[23:41:03] I mean, I get that it produces the right answer, but I'm having trouble wrapping my head around it. [23:41:03]
+2016-10-12 14:44:15	Jester01	[23:41:35] sign extension means fill the top bits with the sign bit [23:41:35]
+2016-10-12 14:44:15	Jester01	[23:42:08] for negative numbers, set all those bits to 1 [23:42:08]
+2016-10-12 14:44:15	zid	[23:42:41] heelpmeplz: -1 as a byte is 1111 1111, -1 as a dword is 1111 1111 1111 1111 1111 ... [23:42:41]
+2016-10-12 14:44:15	heelpmeplz	[23:42:54] oh ok [23:42:54]
+2016-10-12 14:44:15	zid	[23:43:08] it's called twos complement, wikipedia it [23:43:08]
+2016-10-12 14:44:15	heelpmeplz	[23:43:28] I know two's complement, just having trouble understanding why this works [23:43:28]
+2016-10-12 14:44:16	heelpmeplz	[23:43:39] but I'm sure I'll get it if I just think about it enough [23:43:39]
+2016-10-12 14:44:16	Jester01	[23:44:16] the logic is: if you add the absolute value to your negative number it should give zero since  (-x) + (x) = 0 [23:44:16]
+2016-10-12 14:44:16	Jester01	[23:44:39] in 2's complement that will also produce a carry [23:44:39]
+2016-10-12 14:44:16	Jester01	[23:44:47] since you get the zero by wraparound [23:44:47]
+2016-10-12 14:44:16	Jester01	[23:45:25] now, if you want to extend your byte, this should still hold. since you will get a carry, if you fill all the top bits with 1, adding your carry will correctly wrap all those to zero [23:45:25]
+2016-10-12 14:44:16	zid	[23:46:11] if you had 0000 0000 0000 1111 1111 you wouldn't have -1, you'd have +255 [23:46:11]
+2016-10-12 14:44:16	Jester01	[23:48:18] 0xe7 is -0x19  and 0xe7 + 0x19 = 0x100 so on a byte that's 0x00 and a carry. the dword -0x19 is 0xffffffe7 because if you do 0xffffffe7 + 0x19 you get 0x100000000 which is 0x00000000 and a carry. [23:48:18]
+2016-10-12 14:44:16	Jester01	[23:48:57] if x + y = 0 then x must be -y :) [23:48:57]
+2016-10-12 14:44:16	heelpmeplz	[23:49:24] Thanks, that makes sense [23:49:24]
+2016-10-12 14:44:16	Jester01	[23:49:44] for nonnegative values you'd fill the top bits with zero [23:49:44]
+2016-10-12 14:44:16	Jester01	[23:50:12] the movsx instruction (move sign extended) does the right thing automatically [23:50:12]
+2016-10-12 14:44:16	heelpmeplz	[00:11:03] Is SBYTE specific to MASM? [00:11:03]
+2016-10-12 14:44:16	Jester01	[00:11:14] yes [00:11:14]
+2016-10-12 14:44:16	Jester01	[00:11:30] whatever that is :D [00:11:30]
+2016-10-12 14:44:16	zid	[00:11:45] might cause typing errors in used in unsigned contexts maybe [00:11:45]
+2016-10-12 14:44:16	Jester01	[00:11:46] syntax except for instruction mnemonics is assembler specific [00:11:46]
+2016-10-12 14:44:16	heelpmeplz	[00:11:47] hehe thx [00:11:47]
+2016-10-12 14:44:16	zid	[00:12:05] Jester01: even then.. movl, mov.. [00:12:05]
+2016-10-12 14:44:16	***	Playback Complete.
+2016-10-12 14:44:50	--	Channel created on Sun, 27 May 2007 05:31:12
+2016-10-12 14:50:00		[14:44]
+2016-10-12 14:52:16	-->	kbw (~KeyboardW@68-204-170-7.res.bhn.net) has joined ##asm
+2016-10-12 14:58:00		[14:52]
+2016-10-12 14:59:52	-->	sn1c_ (~sn1c@ip-94-114-69-24.unity-media.net) has joined ##asm
+2016-10-12 15:00:44	<--	SwiftMatt (~Objective@162.242.95.245) has quit (Quit: My MacBook Pro has gone to sleep. ZZZzzz…)
+2016-10-12 15:00:53	<--	sn1c (~sn1c@ip-94-114-69-24.unity-media.net) has quit (Ping timeout: 248 seconds)
+2016-10-12 15:01:36	-->	AverageJ0e (~fiugreihy@199-36-84-186.static-ip.telepacific.net) has joined ##asm
+2016-10-12 15:02:11	-->	Frisky-Kat (SomeWhere@90.213.103.90) has joined ##asm
+2016-10-12 15:02:32	-->	osa1_ (~omer@50-253-193-254-static.hfc.comcastbusiness.net) has joined ##asm
+2016-10-12 15:03:21	<--	FriskyKat (SomeWhere@90.213.103.90) has quit (Ping timeout: 260 seconds)
+2016-10-12 15:04:03	<--	sneakers (~sneakers@unaffiliated/sneakerhead) has quit (Ping timeout: 250 seconds)
+2016-10-12 15:06:37	<--	Frisky-Kat (SomeWhere@90.213.103.90) has quit (Ping timeout: 260 seconds)
+2016-10-12 15:10:36	<--	osa1_ (~omer@50-253-193-254-static.hfc.comcastbusiness.net) has quit (Ping timeout: 258 seconds)
+2016-10-12 15:11:03	<--	a3f (~a3f@unaffiliated/a3f) has quit (Quit: Zzzzz..)
+2016-10-12 15:12:37	-->	SunnyD (~SunnyD@cpe-72-178-78-211.hot.res.rr.com) has joined ##asm
+2016-10-12 15:13:16	-->	FriskyKat (SomeWhere@05442f14.skybroadband.com) has joined ##asm
+2016-10-12 15:13:16		[15:13]
+2016-10-12 15:17:03	<--	crankslider (~slidercra@unaffiliated/slidercrank) has quit (Ping timeout: 252 seconds)
+2016-10-12 15:20:31	OxFEEDBACC	movq is worse...
+2016-10-12 15:21:07	-->	cagmz (~cagmz@cpe-107-185-130-191.socal.res.rr.com) has joined ##asm
+2016-10-12 15:23:13	-->	Heasummn (~Heasummn@c-73-73-21-171.hsd1.il.comcast.net) has joined ##asm
+2016-10-12 15:29:00		[15:23]
+2016-10-12 15:34:34	<--	heelpmeplz (~David@2601:646:8f80:63c0:2c36:5d82:4191:75c7) has quit (Read error: Connection reset by peer)
+2016-10-12 15:34:59	-->	heelpmeplz (~David@2601:646:8f80:63c0:2c36:5d82:4191:75c7) has joined ##asm
+2016-10-12 15:35:05	AverageJ0e	instead of doing a mov eax,34, i do a rdtsc and dec eax, then a cmp eax, 34 in a loop. just to waste time.
+2016-10-12 15:35:24	AverageJ0e	brb driving to the liquor mart
+2016-10-12 15:35:44	-->	osa1_ (~omer@50-253-193-254-static.hfc.comcastbusiness.net) has joined ##asm
+2016-10-12 15:38:02	-->	arescorpio (~arescorpi@190-203-17-190.fibertel.com.ar) has joined ##asm
+2016-10-12 15:38:02	--	sn1c_ is now known as sn1c
+2016-10-12 15:42:48	<--	AverageJ0e (~fiugreihy@199-36-84-186.static-ip.telepacific.net) has quit (Ping timeout: 258 seconds)
+2016-10-12 15:44:59	-->	sarbs (~sarbs@c-67-182-146-128.hsd1.wa.comcast.net) has joined ##asm
+2016-10-12 15:44:59		[15:44]
+2016-10-12 15:45:14	-->	og_king_jah (~jah@S0106503955715ed3.ss.shawcable.net) has joined ##asm
+2016-10-12 15:45:44	-->	vdamewood (~vdamewood@unaffiliated/vdamewood) has joined ##asm
+2016-10-12 15:46:24	<--	king_jah (~jah@S0106503955715ed3.ss.shawcable.net) has quit (Ping timeout: 260 seconds)
+2016-10-12 15:46:46	-->	Nik05 (~Nik05@unaffiliated/nik05) has joined ##asm
+2016-10-12 15:47:49	<--	osa1_ (~omer@50-253-193-254-static.hfc.comcastbusiness.net) has quit (Ping timeout: 248 seconds)
+2016-10-12 16:07:10	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined ##asm
+2016-10-12 16:07:10		[16:07]
+2016-10-12 16:07:10	--	Topic for ##asm is "Assembly programming channel, all architectures welcome (please specify). Don't ask to ask! Use a pastebin if appropriate! Check your manuals! *** AT&T vs Intel flamers will be banned."
+2016-10-12 16:07:10	--	Topic set by Jester01 (~Jester01@62.100.244.69) on Fri, 30 Sep 2016 06:54:51
+2016-10-12 16:07:10	--	Channel ##asm: 281 nicks (0 ops, 0 voices, 281 normals)
+2016-10-12 16:07:10	***	Buffer Playback...
+2016-10-12 16:07:10	heelpmeplz	[23:18:19] I'm in a class and we haven't learned movsx yet, so I feel like maybe there is another, more complicated way? [23:18:19]
+2016-10-12 16:07:10	Jester01	[23:18:35] sure, there is always more complicated :D [23:18:35]
+2016-10-12 16:07:10	Jester01	[23:19:09] have you learned shl/sar ? [23:19:09]
+2016-10-12 16:07:10	zid	[23:19:09] 0xffffff00 | byte [23:19:09]
+2016-10-12 16:07:10	heelpmeplz	[23:19:20] no, I'm afraid not [23:19:20]
+2016-10-12 16:07:10	Jester01	[23:19:31] lol what have you learned :D [23:19:31]
+2016-10-12 16:07:10	Jester01	[23:19:39] zid's method, conditionally [23:19:39]
+2016-10-12 16:07:10	zid	[23:19:59] that's the complicated but dumb way :) [23:19:59]
+2016-10-12 16:07:10	heelpmeplz	[23:20:05] pretty much, mov, and a few functions from the Irvine32 library [23:20:05]
+2016-10-12 16:07:10	Jester01	[23:20:26] cmp? [23:20:26]
+2016-10-12 16:07:10	heelpmeplz	[23:20:34] don't know what that is [23:20:34]
+2016-10-12 16:07:10	Jester01	[23:20:36] conditional jump? [23:20:36]
+2016-10-12 16:07:10	heelpmeplz	[23:20:42] lol definitely not [23:20:42]
+2016-10-12 16:07:10	Jester01	[23:20:55] do you know that your value is negative? [23:20:55]
+2016-10-12 16:07:10	heelpmeplz	[23:21:27] yes, I verified that the array holding the value has the correct hex value for the BYTE [23:21:27]
+2016-10-12 16:07:10	Jester01	[23:21:34] but you know it's negative [23:21:34]
+2016-10-12 16:07:10	Jester01	[23:21:46] "signed" means it can be negative or positive (or zero) [23:21:46]
+2016-10-12 16:07:10	heelpmeplz	[23:21:51] it's "e7", which can be either negative or positive or neither, depending what you do with it [23:21:51]
+2016-10-12 16:07:10	Jester01	[23:22:20] if you want to print it as negative, then do:  mov eax, -1; mov al, 0xe7 [23:22:20]
+2016-10-12 16:07:10	heelpmeplz	[23:26:54] thank you, that works, let me think about it for a minute [23:26:54]
+2016-10-12 16:07:10	zid	[23:27:23] Jester01: 2smart4u [23:27:23]
+2016-10-12 16:07:10	heelpmeplz	[23:40:42] Man I wrote out the bits and verified I checked it every possible way, and I'm still not sure I totally understand it.  Is it enough to say that to store a negative BYTE integer in a 32-bit register, you just first set the register to -1, and then mov the negative integer value into the low byte?  Or am I missing some intuitive point? [23:40:42]
+2016-10-12 16:07:10	heelpmeplz	[23:41:03] I mean, I get that it produces the right answer, but I'm having trouble wrapping my head around it. [23:41:03]
+2016-10-12 16:07:10	Jester01	[23:41:35] sign extension means fill the top bits with the sign bit [23:41:35]
+2016-10-12 16:07:10	Jester01	[23:42:08] for negative numbers, set all those bits to 1 [23:42:08]
+2016-10-12 16:07:10	zid	[23:42:41] heelpmeplz: -1 as a byte is 1111 1111, -1 as a dword is 1111 1111 1111 1111 1111 ... [23:42:41]
+2016-10-12 16:07:10	heelpmeplz	[23:42:54] oh ok [23:42:54]
+2016-10-12 16:07:10	zid	[23:43:08] it's called twos complement, wikipedia it [23:43:08]
+2016-10-12 16:07:10	heelpmeplz	[23:43:28] I know two's complement, just having trouble understanding why this works [23:43:28]
+2016-10-12 16:07:10	heelpmeplz	[23:43:39] but I'm sure I'll get it if I just think about it enough [23:43:39]
+2016-10-12 16:07:10	Jester01	[23:44:16] the logic is: if you add the absolute value to your negative number it should give zero since  (-x) + (x) = 0 [23:44:16]
+2016-10-12 16:07:10	Jester01	[23:44:39] in 2's complement that will also produce a carry [23:44:39]
+2016-10-12 16:07:10	Jester01	[23:44:47] since you get the zero by wraparound [23:44:47]
+2016-10-12 16:07:10	Jester01	[23:45:25] now, if you want to extend your byte, this should still hold. since you will get a carry, if you fill all the top bits with 1, adding your carry will correctly wrap all those to zero [23:45:25]
+2016-10-12 16:07:10	zid	[23:46:11] if you had 0000 0000 0000 1111 1111 you wouldn't have -1, you'd have +255 [23:46:11]
+2016-10-12 16:07:10	Jester01	[23:48:18] 0xe7 is -0x19  and 0xe7 + 0x19 = 0x100 so on a byte that's 0x00 and a carry. the dword -0x19 is 0xffffffe7 because if you do 0xffffffe7 + 0x19 you get 0x100000000 which is 0x00000000 and a carry. [23:48:18]
+2016-10-12 16:07:10	Jester01	[23:48:57] if x + y = 0 then x must be -y :) [23:48:57]
+2016-10-12 16:07:10	heelpmeplz	[23:49:24] Thanks, that makes sense [23:49:24]
+2016-10-12 16:07:10	Jester01	[23:49:44] for nonnegative values you'd fill the top bits with zero [23:49:44]
+2016-10-12 16:07:10	Jester01	[23:50:12] the movsx instruction (move sign extended) does the right thing automatically [23:50:12]
+2016-10-12 16:07:10	heelpmeplz	[00:11:03] Is SBYTE specific to MASM? [00:11:03]
+2016-10-12 16:07:10	Jester01	[00:11:14] yes [00:11:14]
+2016-10-12 16:07:10	Jester01	[00:11:30] whatever that is :D [00:11:30]
+2016-10-12 16:07:10	zid	[00:11:45] might cause typing errors in used in unsigned contexts maybe [00:11:45]
+2016-10-12 16:07:10	Jester01	[00:11:46] syntax except for instruction mnemonics is assembler specific [00:11:46]
+2016-10-12 16:07:10	heelpmeplz	[00:11:47] hehe thx [00:11:47]
+2016-10-12 16:07:10	zid	[00:12:05] Jester01: even then.. movl, mov.. [00:12:05]
+2016-10-12 16:07:10	OxFEEDBACC	[01:20:31] movq is worse... [01:20:31]
+2016-10-12 16:07:10	AverageJ0e	[01:35:05] instead of doing a mov eax,34, i do a rdtsc and dec eax, then a cmp eax, 34 in a loop. just to waste time. [01:35:05]
+2016-10-12 16:07:10	AverageJ0e	[01:35:24] brb driving to the liquor mart [01:35:24]
+2016-10-12 16:07:10	***	Playback Complete.
+2016-10-12 16:07:26	-->	Cam0Cow (~Mutter@2605:6001:e795:1d00:bdd8:dd16:15a1:7667) has joined ##asm
+2016-10-12 16:07:40	--	Channel created on Sun, 27 May 2007 05:31:12
+2016-10-12 16:08:09	<--	Cam0Cow (~Mutter@2605:6001:e795:1d00:bdd8:dd16:15a1:7667) has quit (Remote host closed the connection)
+2016-10-12 16:11:32	-->	osa1 (~omer@haskell/developer/osa1) has joined ##asm
+2016-10-12 16:12:49	<--	Demon_Fox (~Demon_Fox@71.94.3.176) has quit (Quit: Leaving)
+2016-10-12 16:13:27	<--	sn1c (~sn1c@ip-94-114-69-24.unity-media.net) has quit (Quit: sn1c)
+2016-10-12 16:14:58	<--	kbw (~KeyboardW@68-204-170-7.res.bhn.net) has quit (Quit: My MacBook Air has gone to sleep. ZZZzzz…)
+2016-10-12 16:19:05	-->	dustyp90 (~Dustin@dsl-dhcp-conrtxxahre-72-26-13-37.consolidated.net) has joined ##asm
+2016-10-12 16:19:39	-->	chang (~vayne@pD9E4585F.dip0.t-ipconnect.de) has joined ##asm
+2016-10-12 16:22:21	-->	kbw (~KeyboardW@68-204-170-7.res.bhn.net) has joined ##asm
+2016-10-12 16:22:21		[16:22]
