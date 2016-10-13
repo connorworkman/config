@@ -25192,3 +25192,345 @@
 2016-10-13 04:18:27	<--	Naeil (~nzoueidi@ubuntu/member/na3il) has quit (Remote host closed the connection)
 2016-10-13 04:19:30	<--	ahmedelgabri (~ahmedelga@90-145-24-243.bbserv.nl) has quit (Ping timeout: 258 seconds)
 2016-10-13 04:21:05	-->	Naeil (~nzoueidi@ubuntu/member/na3il) has joined #zsh
+2016-10-13 04:27:00		[04:21]
+2016-10-13 04:27:00	-->	ahmedelgabri (~ahmedelga@90-145-24-243.bbserv.nl) has joined #zsh
+2016-10-13 04:31:25	<--	ahmedelgabri (~ahmedelga@90-145-24-243.bbserv.nl) has quit (Ping timeout: 250 seconds)
+2016-10-13 04:32:00	-->	vuoto (~vuoto@n9pl7d.static.netgroup.dk) has joined #zsh
+2016-10-13 04:34:32	-->	nikivi (~nikivi@dhcp-077-250-172-150.chello.nl) has joined #zsh
+2016-10-13 04:35:13	-->	meh` (~meh@151.42.82.166) has joined #zsh
+2016-10-13 04:39:33	<--	AlexRussia (~Alex@unaffiliated/alexrussia) has quit (Ping timeout: 248 seconds)
+2016-10-13 04:39:46	-->	thebope (~thebope@pdpc/supporter/student/thebope) has joined #zsh
+2016-10-13 04:43:22	<--	eworm (~eworm@archlinux/developer/eworm) has quit (Quit: Leaving.)
+2016-10-13 04:43:22		[04:43]
+2016-10-13 04:43:42	-->	AlexRussia (~Alex@unaffiliated/alexrussia) has joined #zsh
+2016-10-13 04:49:00		[04:43]
+2016-10-13 04:56:30	-->	ahmedelgabri (~ahmedelga@90-145-24-243.bbserv.nl) has joined #zsh
+2016-10-13 04:57:53	-->	boodle (~boodle@174.46.129.34) has joined #zsh
+2016-10-13 05:00:57	<--	ahmedelgabri (~ahmedelga@90-145-24-243.bbserv.nl) has quit (Ping timeout: 252 seconds)
+2016-10-13 05:01:52	<--	derk0pf (~derk0pf@55d430d6.access.ecotel.net) has quit (Quit: ZzzZZzZZZ.)
+2016-10-13 05:02:47	boodle	Hi, can someone help with getting this expansion to actually work (won't parse text as valid filenames which they are): function ptest() { ls -l ${(z)@:q} }
+2016-10-13 05:03:31	danielsh	... what are you trying to do ?
+2016-10-13 05:03:42	danielsh	can't imagine why you'd want to (z) $@
+2016-10-13 05:04:28	-->	lexinator (~Adium@2601:645:8303:24b9:7d04:4a54:47fc:4881) has joined #zsh
+2016-10-13 05:04:28		[05:04]
+2016-10-13 05:04:56	boodle	this is a test (stripped down version) for a 'pdfcat' function. Just trying to get the $@ items processed as valid filenames (e.g. ptest *.pdf) would just 'ls -l' each file
+2016-10-13 05:05:16	osse	boodle: then you want simply "$@"
+2016-10-13 05:06:10	boodle	heh ok..seems to work fine with $@[1,-2] too
+2016-10-13 05:06:16	boodle	thank you both
+2016-10-13 05:06:47	osse	boodle: *.pdf is processed to generate a list of arguments before the function is called. the function just gets the matched result(s)
+2016-10-13 05:07:33	-->	armin (~armin@base.m2m.pm) has joined #zsh
+2016-10-13 05:07:51	-->	trn (jhj@trnsz.com) has joined #zsh
+2016-10-13 05:08:00	thrig	zsh does the right thing (unless you break it with SH_WORD_SPLIT)
+2016-10-13 05:10:29	-->	jedahan (~textual@subtle/user/jedahan) has joined #zsh
+2016-10-13 05:10:30	boodle	k thanks, one related question, why doesn't the 2nd version work?:   # last=${@[-1]}
+2016-10-13 05:10:31	boodle	  # butlast=${(~z)@[1,-2]:q}
+2016-10-13 05:10:43	boodle	oops, meant to paste: http://vpaste.net/vLPwh
+2016-10-13 05:11:20	<--	DarkFox_ (~DarkFox_@unaffiliated/darkfox-/x-5669090) has quit (Ping timeout: 258 seconds)
+2016-10-13 05:11:37	<--	nl6720 (~nl6720@unaffiliated/nl6720) has quit (Remote host closed the connection)
+2016-10-13 05:11:38	llua	because you mashed multiple filenames into a scalar variable
+2016-10-13 05:11:42	-->	DarkFox_ (~DarkFox_@unaffiliated/darkfox-/x-5669090) has joined #zsh
+2016-10-13 05:11:52	llua	try using an array
+2016-10-13 05:11:53	thrig	> a=(a b c); print -l $a[1,-2]
+2016-10-13 05:11:54	machabot	thrig: a
+2016-10-13 05:11:54	machabot	thrig: b
+2016-10-13 05:13:43	boodle	oh, thought it was an array..ah.. so putting parens around var assignments does it, thank you
+2016-10-13 05:15:10	<--	jedahan (~textual@subtle/user/jedahan) has quit (Ping timeout: 258 seconds)
+2016-10-13 05:15:44	<--	lexinator (~Adium@2601:645:8303:24b9:7d04:4a54:47fc:4881) has quit (Quit: Leaving.)
+2016-10-13 05:16:22	-->	jedahan (~textual@subtle/user/jedahan) has joined #zsh
+2016-10-13 05:18:47	<--	laurensclaessen (~laurenscl@ptr-2hj4tbifbdeg03d2fq9aoar6r.ip6.access.telenet.be) has quit (Remote host closed the connection)
+2016-10-13 05:23:09	-->	untoreh (~untoreh@151.50.35.201) has joined #zsh
+2016-10-13 05:23:09		[05:23]
+2016-10-13 05:25:28	<--	Rodya_ (~Rodya_@208.101.131.30) has quit (Remote host closed the connection)
+2016-10-13 05:26:35	<--	chandan (~chandan@122.179.18.68) has quit (Ping timeout: 258 seconds)
+2016-10-13 05:28:58	<--	cdown (~cdown@199.201.66.0) has quit (Remote host closed the connection)
+2016-10-13 05:29:19	-->	laurensclaessen (~laurenscl@ptr-2hj4tbifbdeg03d2fq9aoar6r.ip6.access.telenet.be) has joined #zsh
+2016-10-13 05:29:25	<--	Balliad (~textual@80.79.35.95) has quit (Quit: My MacBook Pro has gone to sleep. ZZZzzz…)
+2016-10-13 05:30:22	-->	lexinator (~Adium@76.74.153.49) has joined #zsh
+2016-10-13 05:32:57	<--	heoyea (~heoyea@cpe-23-243-66-167.socal.res.rr.com) has quit (Read error: Connection reset by peer)
+2016-10-13 05:34:40	<--	jedahan (~textual@subtle/user/jedahan) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-10-13 05:37:20	<--	nikivi (~nikivi@dhcp-077-250-172-150.chello.nl) has quit (Quit: irc)
+2016-10-13 05:39:26	<--	trn (jhj@trnsz.com) has quit (K-Lined)
+2016-10-13 05:39:26		[05:39]
+2016-10-13 05:44:46	-->	jedahan (~textual@subtle/user/jedahan) has joined #zsh
+2016-10-13 05:49:43	-->	anaiden (~anaiden@17.234.33.14) has joined #zsh
+2016-10-13 05:51:54	<--	Qommand0r (~HENKiE@unaffiliated/schaap137) has quit (Quit: WeeChat 1.6)
+2016-10-13 05:54:07	<--	gravitron (~gravity@107.161.30.148) has quit (Changing host)
+2016-10-13 05:54:07	-->	gravitron (~gravity@unaffiliated/gravitron) has joined #zsh
+2016-10-13 05:54:33	-->	nikivi (~nikivi@dhcp-077-250-172-150.chello.nl) has joined #zsh
+2016-10-13 05:54:33		[05:54]
+2016-10-13 05:54:59	<--	lexinator (~Adium@76.74.153.49) has quit (Quit: Leaving.)
+2016-10-13 05:55:03	<--	boodle (~boodle@174.46.129.34) has quit (Quit: WeeChat 1.6)
+2016-10-13 05:55:14	-->	lexinator (~Adium@17.149.230.248) has joined #zsh
+2016-10-13 05:56:29	-->	lexinator1 (~Adium@17.149.231.20) has joined #zsh
+2016-10-13 05:56:30	<--	lexinator (~Adium@17.149.230.248) has quit (Read error: Connection reset by peer)
+2016-10-13 05:57:57	<--	kbdkode (~kbdkode@unaffiliated/kbdkode) has quit (Ping timeout: 260 seconds)
+2016-10-13 05:58:01	<--	milk (~milk@thingsandstuff.org) has quit (Quit: quit)
+2016-10-13 05:59:17	-->	ahmedelgabri (~ahmedelga@90-145-24-243.bbserv.nl) has joined #zsh
+2016-10-13 05:59:19	<--	nikivi (~nikivi@dhcp-077-250-172-150.chello.nl) has quit (Read error: Connection reset by peer)
+2016-10-13 06:02:02	<--	plonk (~plonk@unaffiliated/plonk) has quit (Read error: Connection reset by peer)
+2016-10-13 06:03:46	<--	ahmedelgabri (~ahmedelga@90-145-24-243.bbserv.nl) has quit (Ping timeout: 258 seconds)
+2016-10-13 06:04:50	-->	Qommand0r (~HENKiE@unaffiliated/schaap137) has joined #zsh
+2016-10-13 06:06:07	-->	plonk (~plonk@rosa.physik-pool.tu-berlin.de) has joined #zsh
+2016-10-13 06:06:08	<--	plonk (~plonk@rosa.physik-pool.tu-berlin.de) has quit (Changing host)
+2016-10-13 06:06:08	-->	plonk (~plonk@unaffiliated/plonk) has joined #zsh
+2016-10-13 06:07:15	<--	jedahan (~textual@subtle/user/jedahan) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-10-13 06:09:42	<--	AlexRussia (~Alex@unaffiliated/alexrussia) has quit (Ping timeout: 250 seconds)
+2016-10-13 06:09:42		[06:09]
+2016-10-13 06:14:49	<--	laurensclaessen (~laurenscl@ptr-2hj4tbifbdeg03d2fq9aoar6r.ip6.access.telenet.be) has quit (Remote host closed the connection)
+2016-10-13 06:16:25	-->	laurensclaessen (~laurenscl@ptr-2hj4tbifbdeg03d2fq9aoar6r.ip6.access.telenet.be) has joined #zsh
+2016-10-13 06:20:27	<--	plonk (~plonk@unaffiliated/plonk) has quit (Read error: Connection reset by peer)
+2016-10-13 06:20:34	-->	plonk (~plonk@rosa.physik-pool.tu-berlin.de) has joined #zsh
+2016-10-13 06:20:35	<--	plonk (~plonk@rosa.physik-pool.tu-berlin.de) has quit (Changing host)
+2016-10-13 06:20:35	-->	plonk (~plonk@unaffiliated/plonk) has joined #zsh
+2016-10-13 06:20:36	<--	plonk (~plonk@unaffiliated/plonk) has quit (Read error: Connection reset by peer)
+2016-10-13 06:20:54	-->	r3v (~r3v@unaffiliated/r3v) has joined #zsh
+2016-10-13 06:21:01	-->	jedahan (~textual@subtle/user/jedahan) has joined #zsh
+2016-10-13 06:21:42	-->	plonk (~plonk@rosa.physik-pool.tu-berlin.de) has joined #zsh
+2016-10-13 06:21:42	<--	plonk (~plonk@rosa.physik-pool.tu-berlin.de) has quit (Changing host)
+2016-10-13 06:21:42	-->	plonk (~plonk@unaffiliated/plonk) has joined #zsh
+2016-10-13 06:21:56	<--	plonk (~plonk@unaffiliated/plonk) has quit (Read error: Connection reset by peer)
+2016-10-13 06:22:16	-->	plonk (~plonk@rosa.physik-pool.tu-berlin.de) has joined #zsh
+2016-10-13 06:22:16	<--	plonk (~plonk@rosa.physik-pool.tu-berlin.de) has quit (Changing host)
+2016-10-13 06:22:16	-->	plonk (~plonk@unaffiliated/plonk) has joined #zsh
+2016-10-13 06:22:31	<--	plonk (~plonk@unaffiliated/plonk) has quit (Read error: Connection reset by peer)
+2016-10-13 06:22:48	-->	plonk (~plonk@rosa.physik-pool.tu-berlin.de) has joined #zsh
+2016-10-13 06:22:48	<--	plonk (~plonk@rosa.physik-pool.tu-berlin.de) has quit (Changing host)
+2016-10-13 06:22:48	-->	plonk (~plonk@unaffiliated/plonk) has joined #zsh
+2016-10-13 06:22:49	-->	thomasg (~thomasg@gstaedtner.net) has joined #zsh
+2016-10-13 06:23:17	<--	plonk (~plonk@unaffiliated/plonk) has quit (Read error: Connection reset by peer)
+2016-10-13 06:23:24	-->	plonk (~plonk@rosa.physik-pool.tu-berlin.de) has joined #zsh
+2016-10-13 06:23:24	<--	plonk (~plonk@rosa.physik-pool.tu-berlin.de) has quit (Changing host)
+2016-10-13 06:23:24	-->	plonk (~plonk@unaffiliated/plonk) has joined #zsh
+2016-10-13 06:24:03	<--	plonk (~plonk@unaffiliated/plonk) has quit (Read error: Connection reset by peer)
+2016-10-13 06:26:15	-->	anaiden_ (anaiden@gateway/shell/xshellz/x-zlavbuufvypnjntt) has joined #zsh
+2016-10-13 06:26:15		[06:26]
+2016-10-13 06:27:35	-->	Raging_Hog (~heikki@37-219-201-253.nat.bb.dnainternet.fi) has joined #zsh
+2016-10-13 06:29:43	<--	anaiden (~anaiden@17.234.33.14) has quit (Quit: anaiden)
+2016-10-13 06:30:00	<--	jedahan (~textual@subtle/user/jedahan) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-10-13 06:30:04	<--	kurkale6ka (~kurkale6k@win.ops.offices.venntro.com) has quit (Quit: WeeChat 1.6)
+2016-10-13 06:31:11	<--	unl0ckd (~unl0ckd@unaffiliated/unl0ckd) has quit (Quit: Bye!)
+2016-10-13 06:32:11	--	anaiden_ is now known as anaiden
+2016-10-13 06:32:29	-->	excelsior (~vijay@1.23.38.60) has joined #zsh
+2016-10-13 06:37:35	jyaworski	Hey all. I seem to be having trouble with zstyle. I'm trying to declare something in my .zshrc and then reference it in my function. Can anyone look at this? https://gist.github.com/jyaworski/94c62b0ad18c809a29658939cc076a03
+2016-10-13 06:39:04	-->	unl0ckd (~unl0ckd@unaffiliated/unl0ckd) has joined #zsh
+2016-10-13 06:39:31	-->	SeepingN (~CPngN@unaffiliated/cpngn/x-6985199) has joined #zsh
+2016-10-13 06:40:07	-->	blackmesa (~blackmesa@aftr-37-201-227-42.unity-media.net) has joined #zsh
+2016-10-13 06:40:53	thrig	what are you trying to do?
+2016-10-13 06:40:54	<--	laurensclaessen (~laurenscl@ptr-2hj4tbifbdeg03d2fq9aoar6r.ip6.access.telenet.be) has quit
+2016-10-13 06:42:48	jyaworski	thrig this is a bit of code demonstrating what I'm trying to do. The oh-my-zsh ssh-agent plugin doesn't allow us to pass arguments to ssh-add. I looked at the existing code and tried to emulate it for the new functionality. Essentially, set a zstyle in .zshrc and reference the value in this function.
+2016-10-13 06:42:48		[06:42]
+2016-10-13 06:44:09	thrig	for what purpose? note that the channel generally recommends against omz
+2016-10-13 06:44:28	<--	SCHAAP137 (~SCHAAP137@unaffiliated/schaap137) has quit (Quit: Leaving)
+2016-10-13 06:45:33	<--	blackmesa (~blackmesa@aftr-37-201-227-42.unity-media.net) has quit (Ping timeout: 260 seconds)
+2016-10-13 06:45:55	<--	Raging_Hog (~heikki@37-219-201-253.nat.bb.dnainternet.fi) has quit (Ping timeout: 256 seconds)
+2016-10-13 06:46:02	jyaworski	Essentially, flag addition. After the ssh-add call have $ssh_add_opts, which is an array built with += based on zstyle values.
+2016-10-13 06:46:19	-->	derk0pf (~derk0pf@55d430d6.access.ecotel.net) has joined #zsh
+2016-10-13 06:46:24	jyaworski	This is applied specifically to omz, but I think this is a general question.
+2016-10-13 06:46:29	<--	mika (~mika@grml/developer/mika) has quit (Ping timeout: 248 seconds)
+2016-10-13 06:46:29	<--	rudi_s (~simon@ruderich.eu) has quit (Ping timeout: 248 seconds)
+2016-10-13 06:46:29	<--	carstenh (~carstenh@bosko.stateful.de) has quit (Ping timeout: 248 seconds)
+2016-10-13 06:47:22	-->	carstenh (~carstenh@bosko.stateful.de) has joined #zsh
+2016-10-13 06:47:28	-->	mika (~mika@grml/developer/mika) has joined #zsh
+2016-10-13 06:47:28	-->	rudi_s (~simon@ruderich.eu) has joined #zsh
+2016-10-13 06:47:33	<--	sphalerite (~linus@srv.soundray.org) has quit (Ping timeout: 248 seconds)
+2016-10-13 06:47:35	-->	averell (~averell@unaffiliated/averell) has joined #zsh
+2016-10-13 06:47:57	-->	SCHAAP137 (~SCHAAP137@unaffiliated/schaap137) has joined #zsh
+2016-10-13 06:48:14	-->	sphalerite (~linus@srv.soundray.org) has joined #zsh
+2016-10-13 06:48:37	<--	DaveQB (~DaveQB@ppp255-134.static.internode.on.net) has quit (Ping timeout: 248 seconds)
+2016-10-13 06:49:31	-->	hahuang61 (~hahuang65@c-50-136-152-183.hsd1.ca.comcast.net) has joined #zsh
+2016-10-13 06:49:56	<--	CrypticSquared (~CrypticS_@unaffiliated/crypticsquared) has quit (Read error: Connection reset by peer)
+2016-10-13 06:50:13	-->	CrypticSquared (~CrypticS_@unaffiliated/crypticsquared) has joined #zsh
+2016-10-13 06:50:24	<--	ZyX-I (~ZyX-I@broadband-77-37-230-77.nationalcablenetworks.ru) has quit (Ping timeout: 252 seconds)
+2016-10-13 06:50:45	<--	earthnative (~nemo@59.167.208.146) has quit (Ping timeout: 248 seconds)
+2016-10-13 06:51:20	<--	cloudhead (~cloudhead@ip5f5af777.dynamic.kabel-deutschland.de) has quit (Ping timeout: 260 seconds)
+2016-10-13 06:51:37	-->	earthnative (~nemo@59.167.208.146) has joined #zsh
+2016-10-13 06:52:17	-->	Raging_Hog (~heikki@dgd0v2yjzwr79mffhl4jy-3.rev.dnainternet.fi) has joined #zsh
+2016-10-13 06:52:54	<--	zpe (~zpe@h-48-244.a137.corp.bahnhof.se) has quit (Remote host closed the connection)
+2016-10-13 06:53:28	<--	lexinator1 (~Adium@17.149.231.20) has quit (Quit: Leaving.)
+2016-10-13 06:55:38	-->	DaveQB (~DaveQB@ppp255-134.static.internode.on.net) has joined #zsh
+2016-10-13 06:57:08	-->	xall (~xall@2600:8800:1285:f100:b8dc:afe2:1fd4:339f) has joined #zsh
+2016-10-13 07:00:21	-->	blackmesa (~blackmesa@aftr-37-201-227-42.unity-media.net) has joined #zsh
+2016-10-13 07:00:21		[07:00]
+2016-10-13 07:03:47	-->	some0ne (59530431@gateway/web/cgi-irc/kiwiirc.com/ip.89.83.4.49) has joined #zsh
+2016-10-13 07:05:03	some0ne	is it possible to disable user name in named directory ? (i tried with: unhash -d $(hash -d | awk -F "=" '{print $1}' | tr '\n' ' ')), but it seems the hash table is filled after .zshrc is sourced
+2016-10-13 07:06:06	<--	_kud (~kud@2a02-8428-03dd-ae00-014c-fbb3-89a9-0fa9.rev.sfr.net) has quit (Quit: bye bye.)
+2016-10-13 07:07:17	<--	Naeil (~nzoueidi@ubuntu/member/na3il) has quit (Ping timeout: 248 seconds)
+2016-10-13 07:07:52	<--	beatdown (beatdown@chainsawed.and.strangled.net) has quit (Quit: ZNC 1.6.1 - http://znc.in)
+2016-10-13 07:10:54	-->	nikivi (~nikivi@dhcp-077-250-172-150.chello.nl) has joined #zsh
+2016-10-13 07:11:26	-->	AlexRussia (~Alex@unaffiliated/alexrussia) has joined #zsh
+2016-10-13 07:11:37	-->	firstdayonthejob (~firstdayo@cpc99346-croy26-2-0-cust153.19-2.cable.virginm.net) has joined #zsh
+2016-10-13 07:14:08	-->	ahmedelgabri (~ahmedelga@ip4da074e6.direct-adsl.nl) has joined #zsh
+2016-10-13 07:18:01	-->	lexinator (~Adium@17.149.231.20) has joined #zsh
+2016-10-13 07:18:01		[07:18]
+2016-10-13 07:19:40	-->	conrad_ (~conrad@115.252.119.63) has joined #zsh
+2016-10-13 07:20:02	<--	Aji-Dahaka (~notroot@orion.meridian-enviro.com) has quit (Quit: brb)
+2016-10-13 07:22:02	<--	conrad_ (~conrad@115.252.119.63) has quit (Client Quit)
+2016-10-13 07:25:46	-->	Aji-Dahaka (~notroot@orion.meridian-enviro.com) has joined #zsh
+2016-10-13 07:27:28	<--	thebope (~thebope@pdpc/supporter/student/thebope) has quit (Remote host closed the connection)
+2016-10-13 07:27:56	<--	Raging_Hog (~heikki@dgd0v2yjzwr79mffhl4jy-3.rev.dnainternet.fi) has quit (Quit: Konversation terminated!)
+2016-10-13 07:28:04	-->	thebope (~thebope@pdpc/supporter/student/thebope) has joined #zsh
+2016-10-13 07:28:15	<--	thebope (~thebope@pdpc/supporter/student/thebope) has quit (Read error: Connection reset by peer)
+2016-10-13 07:28:59	-->	thebope (~thebope@pdpc/supporter/student/thebope) has joined #zsh
+2016-10-13 07:30:26	<--	lexinator (~Adium@17.149.231.20) has quit (Quit: Leaving.)
+2016-10-13 07:36:00		[07:30]
+2016-10-13 07:36:03	-->	Kryptron (~Kryptron@unaffiliated/kryptron) has joined #zsh
+2016-10-13 07:37:52	-->	ArchNoob_ (~ArchNoob@unaffiliated/archnoob) has joined #zsh
+2016-10-13 07:37:57	-->	jedahan (~textual@subtle/user/jedahan) has joined #zsh
+2016-10-13 07:38:52	<--	Kryptron_ (~Kryptron@unaffiliated/kryptron) has quit (Ping timeout: 260 seconds)
+2016-10-13 07:42:00	--	TheMoonMaster_ is now known as TheMoonMaster
+2016-10-13 07:45:54	<--	stepnem (~stepnem@185.112.167.114) has quit (Ping timeout: 250 seconds)
+2016-10-13 07:46:02	<--	Guest49701 (~govg@202.3.77.236) has quit (Quit: leaving)
+2016-10-13 07:46:21	-->	govg (~govg@unaffiliated/govg) has joined #zsh
+2016-10-13 07:48:38	llua	i don't really understand the question
+2016-10-13 07:50:02	llua	jyaworski: how do you run script.zsh?
+2016-10-13 07:50:20	--	ArchNoob_ is now known as ArchNoob
+2016-10-13 07:50:29	jyaworski	llua it's loaded by antigen.
+2016-10-13 07:50:57	llua	that isn't helpful, is the file sourced or executed?
+2016-10-13 07:51:15	jyaworski	Sourced.
+2016-10-13 07:51:15		[07:51]
+2016-10-13 07:52:04	llua	and when you source the file manually, it is still blank?
+2016-10-13 07:52:44	-->	stepnem (~stepnem@185.112.167.114) has joined #zsh
+2016-10-13 07:53:55	jyaworski	Yes.
+2016-10-13 07:55:06	llua	and the style is still set?
+2016-10-13 07:55:18	llua	if so, part of the story is missing
+2016-10-13 07:55:22	llua	> zstyle ':omz:plugins:ssh-agent' lifetime 4h; () { local lifetime; zstyle -s ':omz:plugins:ssh-agent' lifetime lifetime; typeset -p $_ }
+2016-10-13 07:55:23	machabot	llua: typeset lifetime=4h
+2016-10-13 07:55:51	<--	jedahan (~textual@subtle/user/jedahan) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-10-13 07:56:18	<--	some0ne (59530431@gateway/web/cgi-irc/kiwiirc.com/ip.89.83.4.49) has quit (Quit: http://www.kiwiirc.com/ - A hand crafted IRC client)
+2016-10-13 07:56:38	llua	some0ne: do you mind explaining what you mean by 'disable user name in named directory'?
+2016-10-13 07:57:30	<--	stepnem (~stepnem@185.112.167.114) has quit (Ping timeout: 252 seconds)
+2016-10-13 07:57:45	jyaworski	Huh. Let me look. Thanks llua.
+2016-10-13 07:57:52	<--	nikivi (~nikivi@dhcp-077-250-172-150.chello.nl) has quit (Quit: irc)
+2016-10-13 07:59:03	-->	jedahan (~textual@subtle/user/jedahan) has joined #zsh
+2016-10-13 07:59:15	-->	nikivi (~nikivi@dhcp-077-250-172-150.chello.nl) has joined #zsh
+2016-10-13 07:59:29	<--	gagan662 (gagan662@gateway/shell/insomnia247/x-yzytpvretkcyusix) has quit (Ping timeout: 260 seconds)
+2016-10-13 07:59:33	<--	_mirko_ (~mirko@unaffiliated/-mirko-/x-2946915) has quit (Ping timeout: 248 seconds)
+2016-10-13 07:59:47	jyaworski	Ah, OK. I think I may know where the disconnect is. I was expecting lifetime to show up as $lifetime.
+2016-10-13 08:00:30	jyaworski	Which it does. Huh.
+2016-10-13 08:02:29	<--	nikivi (~nikivi@dhcp-077-250-172-150.chello.nl) has quit (Client Quit)
+2016-10-13 08:04:04	-->	lexinator (~Adium@2620:149:5:1c06:f96b:3e5a:d8b6:cfdd) has joined #zsh
+2016-10-13 08:05:23	danielsh	llua, I think some0ne was asking how to empty $nameddirs.   (I see he's left)
+2016-10-13 08:06:25	-->	gagan662 (gagan662@gateway/shell/insomnia247/x-nrfmzmhtnujcczjl) has joined #zsh
+2016-10-13 08:06:25		[08:06]
+2016-10-13 08:07:28	-->	Sasazuka (~Sasazuka@unaffiliated/sasazuka) has joined #zsh
+2016-10-13 08:09:15	llua	danielsh: yea, but it is empty by default, which confused me
+2016-10-13 08:09:36	llua	so i wondered if he didn't want usernames completed when doing foo ~<tab>
+2016-10-13 08:11:08	<--	gagan662 (gagan662@gateway/shell/insomnia247/x-nrfmzmhtnujcczjl) has quit (Ping timeout: 268 seconds)
+2016-10-13 08:13:05	-->	Bl4ck57rik3r (~Bl4ck57ri@kite.riseup.net) has joined #zsh
+2016-10-13 08:16:49	<--	ArchNoob (~ArchNoob@unaffiliated/archnoob) has quit (Read error: Connection reset by peer)
+2016-10-13 08:16:51	-->	gagan662 (gagan662@gateway/shell/insomnia247/x-fxpebttpxfcidetb) has joined #zsh
+2016-10-13 08:22:00		[08:16]
+2016-10-13 08:24:16	danielsh	*nod*
+2016-10-13 08:25:15	<--	bocaneri (~bocaneri@about/linux/staff/sauvin) has quit (Remote host closed the connection)
+2016-10-13 08:26:04	-->	Jackneill (~Jackneill@unaffiliated/jackneill) has joined #zsh
+2016-10-13 08:28:22	<--	blackmesa (~blackmesa@aftr-37-201-227-42.unity-media.net) has quit (Ping timeout: 250 seconds)
+2016-10-13 08:31:43	-->	heoyea (~heoyea@cpe-23-243-66-167.socal.res.rr.com) has joined #zsh
+2016-10-13 08:35:59	-->	ArchNoob (~ArchNoob@unaffiliated/archnoob) has joined #zsh
+2016-10-13 08:36:47	jyaworski	llua it looks like it's some scoping issue. I added it to the top of the script and it worked. :/
+2016-10-13 08:38:32	jyaworski	I'll track that down. Thanks a lot.
+2016-10-13 08:38:32		[08:38]
+2016-10-13 08:39:59	<--	dserodio (~dserodio@unaffiliated/dserodio) has left #zsh ("Textual IRC Client: www.textualapp.com")
+2016-10-13 08:42:04	--	DarkFox_ is now known as DarkFox_zzzzZZZz
+2016-10-13 08:44:40	<--	lexinator (~Adium@2620:149:5:1c06:f96b:3e5a:d8b6:cfdd) has quit (Quit: Leaving.)
+2016-10-13 08:46:15	-->	_mirko_ (~mirko@unaffiliated/-mirko-/x-2946915) has joined #zsh
+2016-10-13 08:47:33	<--	Xeago (~Xeago@unaffiliated/xeago) has quit (Ping timeout: 252 seconds)
+2016-10-13 08:50:06	-->	Xeago (~Xeago@unaffiliated/xeago) has joined #zsh
+2016-10-13 08:55:11	-->	enthu (~enthu@ptr-2hj4tbkogtr4kbq9iwsuupuuw.ip6.access.telenet.be) has joined #zsh
+2016-10-13 08:55:11		[08:55]
+2016-10-13 09:00:52	<--	govg (~govg@unaffiliated/govg) has quit (Ping timeout: 250 seconds)
+2016-10-13 09:01:12	-->	tris (tristan@72.52.96.202) has joined #zsh
+2016-10-13 09:01:30	-->	blackmesa (~blackmesa@aftr-37-201-227-42.unity-media.net) has joined #zsh
+2016-10-13 09:02:04	-->	Balliad (~textual@52D96D43.cm-11-1b.dynamic.ziggo.nl) has joined #zsh
+2016-10-13 09:02:38	--	SCHAAP137 is now known as SCHAPiE
+2016-10-13 09:06:30	-->	rrichardsr3 (~rrichards@pdpc/supporter/professional/rrichardsr3) has joined #zsh
+2016-10-13 09:09:01	-->	zpe (~zpe@c83-248-161-165.bredband.comhem.se) has joined #zsh
+2016-10-13 09:11:44	<--	japh (~scp1@unaffiliated/scp1) has quit (Read error: Connection reset by peer)
+2016-10-13 09:11:44		[09:11]
+2016-10-13 09:12:38	-->	japh (~scp1@c-fe31e555.048-19-6b73641.cust.bredbandsbolaget.se) has joined #zsh
+2016-10-13 09:13:01	--	japh is now known as Guest55599
+2016-10-13 09:14:03	<--	tris (tristan@72.52.96.202) has quit (Quit: Leaving)
+2016-10-13 09:15:21	-->	stef204 (~stef204@unaffiliated/stef-204/x-384198) has joined #zsh
+2016-10-13 09:17:30	-->	Rodya_ (~Rodya_@2601:46:4001:e0b4:b0d0:5016:2377:cdbb) has joined #zsh
+2016-10-13 09:19:21	<--	vuoto (~vuoto@n9pl7d.static.netgroup.dk) has quit (Remote host closed the connection)
+2016-10-13 09:19:56	<--	zpe (~zpe@c83-248-161-165.bredband.comhem.se) has quit (Remote host closed the connection)
+2016-10-13 09:25:00		[09:19]
+2016-10-13 09:27:45	-->	govg (~govg@unaffiliated/govg) has joined #zsh
+2016-10-13 09:28:09	<--	rrichardsr3 (~rrichards@pdpc/supporter/professional/rrichardsr3) has quit (Quit: Apparantly my attempt to stay awake has failed...)
+2016-10-13 09:33:05	<--	enthu (~enthu@ptr-2hj4tbkogtr4kbq9iwsuupuuw.ip6.access.telenet.be) has quit (Remote host closed the connection)
+2016-10-13 09:33:07	-->	tris (tristan@72.52.96.202) has joined #zsh
+2016-10-13 09:35:34	<--	stef204 (~stef204@unaffiliated/stef-204/x-384198) has quit (Quit: WeeChat 1.6)
+2016-10-13 09:35:34	<--	Balliad (~textual@52D96D43.cm-11-1b.dynamic.ziggo.nl) has quit (Quit: My MacBook Pro has gone to sleep. ZZZzzz…)
+2016-10-13 09:40:21	-->	vuoto (~vuoto@n9pl7d.static.netgroup.dk) has joined #zsh
+2016-10-13 09:40:21		[09:40]
+2016-10-13 09:40:24	-->	Balliad (~textual@52D96D43.cm-11-1b.dynamic.ziggo.nl) has joined #zsh
+2016-10-13 09:44:22	<--	Sasazuka (~Sasazuka@unaffiliated/sasazuka) has quit (Quit: My Mac has gone to sleep. ZZZzzz…)
+2016-10-13 09:45:36	-->	Sasazuka (~Sasazuka@unaffiliated/sasazuka) has joined #zsh
+2016-10-13 09:46:01	-->	stef204 (~stef204@unaffiliated/stef-204/x-384198) has joined #zsh
+2016-10-13 09:47:45	<--	blackmesa (~blackmesa@aftr-37-201-227-42.unity-media.net) has quit (Ping timeout: 260 seconds)
+2016-10-13 09:47:55	-->	lexinator (~Adium@2620:149:5:1c06:f96b:3e5a:d8b6:cfdd) has joined #zsh
+2016-10-13 09:51:00	<--	Balliad (~textual@52D96D43.cm-11-1b.dynamic.ziggo.nl) has quit (Quit: My MacBook Pro has gone to sleep. ZZZzzz…)
+2016-10-13 09:53:00	<--	Bl4ck57rik3r (~Bl4ck57ri@kite.riseup.net) has quit (Ping timeout: 258 seconds)
+2016-10-13 09:55:21	<--	thebope (~thebope@pdpc/supporter/student/thebope) has quit (Remote host closed the connection)
+2016-10-13 09:55:21		[09:55]
+2016-10-13 09:56:43	<--	armin (~armin@base.m2m.pm) has quit (Quit: relate to the matter as i drop the bomb)
+2016-10-13 09:58:53	-->	thebope (~thebope@pdpc/supporter/student/thebope) has joined #zsh
+2016-10-13 09:59:57	--	dmc is now known as Bubbles
+2016-10-13 10:02:00	-->	armin (~armin@base.m2m.pm) has joined #zsh
+2016-10-13 10:02:29	<--	cob (~cob@2804:7f5:f080:d771:34ef:d347:bc04:c38f) has quit (Ping timeout: 260 seconds)
+2016-10-13 10:05:52	<--	Sasazuka (~Sasazuka@unaffiliated/sasazuka) has quit (Ping timeout: 250 seconds)
+2016-10-13 10:08:05	-->	Sasazuka (~Sasazuka@unaffiliated/sasazuka) has joined #zsh
+2016-10-13 10:12:56	<--	xall (~xall@2600:8800:1285:f100:b8dc:afe2:1fd4:339f) has quit (Ping timeout: 258 seconds)
+2016-10-13 10:12:56		[10:12]
+2016-10-13 10:14:47	-->	blackmesa (~blackmesa@aftr-37-201-227-42.unity-media.net) has joined #zsh
+2016-10-13 10:16:15	-->	xall (~xall@2600:8800:1285:f100:b8dc:afe2:1fd4:339f) has joined #zsh
+2016-10-13 10:17:06	<--	bipul (~bipul7@2400:6180:100:d0::65:5001) has quit (Changing host)
+2016-10-13 10:17:06	-->	bipul (~bipul7@linuxpadawan/padawan/bipul) has joined #zsh
+2016-10-13 10:18:46	<--	henriquev (sid36682@gateway/web/irccloud.com/x-gwmeefdukbxiykik) has quit (Ping timeout: 258 seconds)
+2016-10-13 10:19:26	<--	xall (~xall@2600:8800:1285:f100:b8dc:afe2:1fd4:339f) has quit (Read error: Network is unreachable)
+2016-10-13 10:19:51	<--	stef204 (~stef204@unaffiliated/stef-204/x-384198) has quit (Quit: WeeChat 1.6)
+2016-10-13 10:20:29	-->	xall (~xall@ip68-230-65-100.ph.ph.cox.net) has joined #zsh
+2016-10-13 10:20:46	-->	stef204 (~stef204@unaffiliated/stef-204/x-384198) has joined #zsh
+2016-10-13 10:21:13	<--	unl0ckd (~unl0ckd@unaffiliated/unl0ckd) has quit (Remote host closed the connection)
+2016-10-13 10:21:48	-->	henriquev (sid36682@gateway/web/irccloud.com/x-pusgxxjcdvhsbudr) has joined #zsh
+2016-10-13 10:23:30	<--	Rodya_ (~Rodya_@2601:46:4001:e0b4:b0d0:5016:2377:cdbb) has quit (Remote host closed the connection)
+2016-10-13 10:23:57	<--	vuoto (~vuoto@n9pl7d.static.netgroup.dk) has quit (Remote host closed the connection)
+2016-10-13 10:24:39	-->	unl0ckd (~unl0ckd@unaffiliated/unl0ckd) has joined #zsh
+2016-10-13 10:24:57	-->	plonk (~plonk@rosa.physik-pool.tu-berlin.de) has joined #zsh
+2016-10-13 10:24:57	<--	plonk (~plonk@rosa.physik-pool.tu-berlin.de) has quit (Changing host)
+2016-10-13 10:24:57	-->	plonk (~plonk@unaffiliated/plonk) has joined #zsh
+2016-10-13 10:25:11	<--	plonk (~plonk@unaffiliated/plonk) has quit (Read error: Connection reset by peer)
+2016-10-13 10:26:06	-->	plonk_ (~plonk@rosa.physik-pool.tu-berlin.de) has joined #zsh
+2016-10-13 10:26:07	<--	plonk_ (~plonk@rosa.physik-pool.tu-berlin.de) has quit (Changing host)
+2016-10-13 10:26:07	-->	plonk_ (~plonk@unaffiliated/plonk) has joined #zsh
+2016-10-13 10:26:40	<--	plonk_ (~plonk@unaffiliated/plonk) has quit (Read error: Connection reset by peer)
+2016-10-13 10:26:58	-->	plonk_ (~plonk@rosa.physik-pool.tu-berlin.de) has joined #zsh
+2016-10-13 10:26:58	<--	plonk_ (~plonk@rosa.physik-pool.tu-berlin.de) has quit (Changing host)
+2016-10-13 10:26:58	-->	plonk_ (~plonk@unaffiliated/plonk) has joined #zsh
+2016-10-13 10:27:04	<--	plonk_ (~plonk@unaffiliated/plonk) has quit (Read error: Connection reset by peer)
+2016-10-13 10:27:56	-->	plonk_ (~plonk@rosa.physik-pool.tu-berlin.de) has joined #zsh
+2016-10-13 10:27:56		[10:27]
+2016-10-13 10:27:57	<--	plonk_ (~plonk@rosa.physik-pool.tu-berlin.de) has quit (Changing host)
+2016-10-13 10:27:57	-->	plonk_ (~plonk@unaffiliated/plonk) has joined #zsh
+2016-10-13 10:28:12	<--	plonk_ (~plonk@unaffiliated/plonk) has quit (Read error: Connection reset by peer)
+2016-10-13 10:28:26	-->	plonk (~plonk@rosa.physik-pool.tu-berlin.de) has joined #zsh
+2016-10-13 10:28:27	<--	plonk (~plonk@rosa.physik-pool.tu-berlin.de) has quit (Changing host)
+2016-10-13 10:28:27	-->	plonk (~plonk@unaffiliated/plonk) has joined #zsh
+2016-10-13 10:28:39	<--	plonk (~plonk@unaffiliated/plonk) has quit (Read error: Connection reset by peer)
+2016-10-13 10:29:34	-->	plonk_ (~plonk@rosa.physik-pool.tu-berlin.de) has joined #zsh
+2016-10-13 10:29:34	<--	plonk_ (~plonk@rosa.physik-pool.tu-berlin.de) has quit (Changing host)
+2016-10-13 10:29:34	-->	plonk_ (~plonk@unaffiliated/plonk) has joined #zsh
+2016-10-13 10:29:35	<--	plonk_ (~plonk@unaffiliated/plonk) has quit (K-Lined)
+2016-10-13 10:32:45	<--	OxFEEDBACC (~what@unaffiliated/oxfeedbacc) has quit (Quit: quit pro quo)
+2016-10-13 10:33:09	-->	OxFEEDBACC (~what@176.5.136.137) has joined #zsh
+2016-10-13 10:33:09	<--	OxFEEDBACC (~what@176.5.136.137) has quit (Changing host)
+2016-10-13 10:33:09	-->	OxFEEDBACC (~what@unaffiliated/oxfeedbacc) has joined #zsh
+2016-10-13 10:37:10	-->	m0viefreak (~asdf@unaffiliated/m0viefreak) has joined #zsh
+2016-10-13 10:37:21	<--	stef204 (~stef204@unaffiliated/stef-204/x-384198) has quit (Quit: WeeChat 1.6)
+2016-10-13 10:37:25	-->	laurensclaessen (~laurenscl@ptr-2hj4tbhbclh5fm0ktr3tsrqo9.ip6.access.telenet.be) has joined #zsh
+2016-10-13 10:43:00		[10:37]
+2016-10-13 10:46:21	<--	Sasazuka (~Sasazuka@unaffiliated/sasazuka) has quit (Ping timeout: 252 seconds)
+2016-10-13 10:48:34	-->	Balliad (~textual@52D96D43.cm-11-1b.dynamic.ziggo.nl) has joined #zsh
+2016-10-13 10:50:47	-->	Sasazuka (~Sasazuka@unaffiliated/sasazuka) has joined #zsh
+2016-10-13 10:53:19	<--	xall (~xall@ip68-230-65-100.ph.ph.cox.net) has quit (Ping timeout: 268 seconds)
+2016-10-13 10:59:00		[10:53]
+2016-10-13 11:05:50	<--	lazouz (~lazouz@isis.rezometz.org) has quit (Ping timeout: 258 seconds)

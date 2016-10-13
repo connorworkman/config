@@ -13,10 +13,15 @@ alias ohmyzsh='pushd ${ZSH} '
 
 # Unset previous function/alias iterations
 unset -f fc which define h wd bfg defrag src >/dev/null 2>&1 || true
-unalias history h c >/dev/null 2>&1 || true
+unalias history c d h j s >/dev/null 2>&1 || true
 
 ## Custom aliases
 
+alias j="jump"
+alias b="bookmark"
+alias d="deletemark"
+alias p="showmarks"
+alias xrc='vim -p ${HOME}/.Xresources '
 alias prc='vim -p ${HOME}/.profile '
 alias brc='vim -p ${HOME}/.bashrc '
 alias zrc='vim -p ${HOME}/.zshrc '
@@ -25,6 +30,7 @@ alias vrc='sudo vim -p /etc/vimrc '
 alias src='vim -p ${HOME}/.screenrc '
 alias trc='vim -p ${HOME}/.tmux.conf '
 
+alias us='systemctl --user '
 alias usctl='systemctl --user '
 alias uscdr='systemctl --user daemon-reload '
 alias uscen='systemctl --user enable --now '
@@ -34,6 +40,7 @@ alias uscf='systemctl --user --failed '
 alias uscu='systemctl --user list-units --full '
 alias usce='systemctl --user edit --full '
 alias uscr='systemctl --user restart '
+alias s='sudo systemctl '
 alias sctl='sudo systemctl '
 alias scdr='sudo systemctl daemon-reload '
 alias scen='sudo systemctl enable --now '

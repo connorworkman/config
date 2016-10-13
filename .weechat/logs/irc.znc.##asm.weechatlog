@@ -24755,3 +24755,325 @@
 2016-10-13 04:14:00	-->	alecov (~control@unaffiliated/control) has joined ##asm
 2016-10-13 04:17:20	<--	RTFM[away] (~RTFMaway]@unaffiliated/rtfmaway/x-3892344) has quit (Ping timeout: 260 seconds)
 2016-10-13 04:18:06	-->	slicktux (~slicktux@unaffiliated/slicktux) has joined ##asm
+2016-10-13 04:24:00		[04:18]
+2016-10-13 04:24:50	<--	lowin (~lowin@151.245.100.139) has quit (Ping timeout: 250 seconds)
+2016-10-13 04:25:40	<--	slicktux (~slicktux@unaffiliated/slicktux) has quit (Quit: leaving)
+2016-10-13 04:30:27	-->	Opertus (~decio@2804:14d:8080:5d4:c1e1:a235:bf7a:a2dc) has joined ##asm
+2016-10-13 04:30:32	<--	lapinozz (~lapinozz@45.74.164.117) has quit (Quit: Leaving)
+2016-10-13 04:33:45	<--	metachr0n (~nobody@46.166.137.214) has quit (Quit: WeeChat 1.5)
+2016-10-13 04:34:50	<--	dminuoso_ (~dminuoso@unaffiliated/dminuoso) has quit (Ping timeout: 258 seconds)
+2016-10-13 04:34:53	Opertus	I am trying to create an user prompt in real mode. However, despite the right capture of "a", no matter what user types different from "a" it jumps to print_bar: http://pastebin.com/A801g5Ye
+2016-10-13 04:36:36	zid	capture of a?
+2016-10-13 04:37:06	Opertus	When user types "a", it jumps right to foo_aux
+2016-10-13 04:37:23	Opertus	Any other key it jumps to print_bar
+2016-10-13 04:37:25	zid	as written.
+2016-10-13 04:37:56	-->	lowin (~lowin@31.56.133.116) has joined ##asm
+2016-10-13 04:38:00	zid	oh the 'every other' is the problem
+2016-10-13 04:38:11	Opertus	yep
+2016-10-13 04:38:36	zid	looks roughly fine, what assembler uses that weird syntax though
+2016-10-13 04:38:40	Opertus	when user types any key other than "a" or "b" i would like to jump to print_help
+2016-10-13 04:39:06	-->	nktn (~nktn___@181.46.158.157) has joined ##asm
+2016-10-13 04:39:06		[04:39]
+2016-10-13 04:39:46	-->	Lokomotiv (~ASAP@unaffiliated/lokomotiv) has joined ##asm
+2016-10-13 04:39:54	zid	From what is presented, the bug seems to be in read_op or print_help
+2016-10-13 04:40:05	zid	You should debug it
+2016-10-13 04:42:08	<--	Antares (~Antares@ppp91-78-123-238.pppoe.mtu-net.ru) has quit (Read error: Connection reset by peer)
+2016-10-13 04:43:11	Opertus	Here is print, print_help and read_op: http://pastebin.com/CEyCsFcP
+2016-10-13 04:43:21	Opertus	Any suggestion?
+2016-10-13 04:43:23	-->	Judge_Dredd (~Judge_Dre@unaffiliated/judge-dredd/x-2170742) has joined ##asm
+2016-10-13 04:43:29	zid	yea, I already gave it though, debug it
+2016-10-13 04:44:05	-->	dminuoso_ (~dminuoso@unaffiliated/dminuoso) has joined ##asm
+2016-10-13 04:49:22	Jester01	yeah debug it ... also , what's foo_aux
+2016-10-13 04:49:48	zid	he's clearly doctoring the pastes
+2016-10-13 04:50:49	Opertus	foo aux is a code for boot: ljmp $0xF000, $0xfff0
+2016-10-13 04:51:12	zid	this is actually real mode gas syntax?
+2016-10-13 04:51:22	zid	I'm not sure I've ever seen it
+2016-10-13 04:52:59	Opertus	It is an alternative I found since int 0x19 was not working in some tests
+2016-10-13 04:53:05	Jester01	never looked at the linux kernel? :)
+2016-10-13 04:53:20	zid	not the super early init crap
+2016-10-13 04:53:55	zid	grub doesn't load it into pmode? it supports it for magic binaries, though afaik it uses a special linux loader method for linux
+2016-10-13 04:54:51	Opertus	The problem is that the project does not allow the use of any bootloader
+2016-10-13 04:54:51		[04:54]
+2016-10-13 04:55:14	zid	load a gdt and jump, done :P
+2016-10-13 04:55:43	Opertus	:)
+2016-10-13 04:56:16	-->	RTFM[away] (~RTFMaway]@201.87.151.210) has joined ##asm
+2016-10-13 04:56:16	<--	RTFM[away] (~RTFMaway]@201.87.151.210) has quit (Changing host)
+2016-10-13 04:56:16	-->	RTFM[away] (~RTFMaway]@unaffiliated/rtfmaway/x-3892344) has joined ##asm
+2016-10-13 04:56:49	-->	phinxy (~tehhhd@unaffiliated/phinxy) has joined ##asm
+2016-10-13 04:59:47	-->	supay (~supay@unaffiliated/supay) has joined ##asm
+2016-10-13 05:05:00		[04:59]
+2016-10-13 05:07:52	-->	Antares (~Antares@ppp91-78-123-238.pppoe.mtu-net.ru) has joined ##asm
+2016-10-13 05:08:46	<--	dminuoso_ (~dminuoso@unaffiliated/dminuoso) has quit (Remote host closed the connection)
+2016-10-13 05:12:17	<--	Judge_Dredd (~Judge_Dre@unaffiliated/judge-dredd/x-2170742) has quit (Quit: Leaving.)
+2016-10-13 05:12:48	<--	RTFM[away] (~RTFMaway]@unaffiliated/rtfmaway/x-3892344) has quit (Ping timeout: 260 seconds)
+2016-10-13 05:13:53	<--	osa1 (~omer@haskell/developer/osa1) has quit (Quit: Konversation terminated!)
+2016-10-13 05:14:57	-->	WilburPB (~WilburPB@146.197.246.70) has joined ##asm
+2016-10-13 05:18:14	<--	lowin (~lowin@31.56.133.116) has quit (Ping timeout: 258 seconds)
+2016-10-13 05:24:00		[05:18]
+2016-10-13 05:28:11	-->	supay_ (~supay@unaffiliated/supay) has joined ##asm
+2016-10-13 05:28:20	<--	supay (~supay@unaffiliated/supay) has quit (Ping timeout: 268 seconds)
+2016-10-13 05:28:47	<--	supay_ (~supay@unaffiliated/supay) has quit (Max SendQ exceeded)
+2016-10-13 05:32:29	<--	fub (~fub@aftr-37-201-171-155.unity-media.net) has left ##asm ("quit.")
+2016-10-13 05:36:18	-->	ararob2 (~yaaic@46-227-67-170.pool.ovpn.se) has joined ##asm
+2016-10-13 05:42:00		[05:36]
+2016-10-13 05:45:20	<--	heelpmeplz (~David@2601:646:8f80:63c0:2c36:5d82:4191:75c7) has quit (Quit: Leaving)
+2016-10-13 05:50:28	-->	devonrevenge (~devonreve@158.223.166.100) has joined ##asm
+2016-10-13 05:50:28	<--	devonrevenge (~devonreve@158.223.166.100) has quit (Changing host)
+2016-10-13 05:50:28	-->	devonrevenge (~devonreve@unaffiliated/devonrevenge) has joined ##asm
+2016-10-13 05:50:52	-->	slicktux (~slicktux@unaffiliated/slicktux) has joined ##asm
+2016-10-13 05:51:32	-->	hmmmm (~sdfgsf@72.79.172.20) has joined ##asm
+2016-10-13 05:55:24	-->	viro (~viro@unaffiliated/viro) has joined ##asm
+2016-10-13 05:56:39	-->	Kostenko_ (~Kostenko@bl14-204-63.dsl.telepac.pt) has joined ##asm
+2016-10-13 05:56:59	-->	pie_ (~pie_@78-131-91-105.pool.digikabel.hu) has joined ##asm
+2016-10-13 05:57:00	-->	metachr0n (~nobody@46.166.137.217) has joined ##asm
+2016-10-13 05:57:00		[05:57]
+2016-10-13 05:57:56	<--	jan64_ (~jan64@abbf118.neoplus.adsl.tpnet.pl) has quit (Ping timeout: 268 seconds)
+2016-10-13 05:58:55	-->	Richard_Cavell (uid165693@gateway/web/irccloud.com/x-whdrpwlikqryvlvq) has joined ##asm
+2016-10-13 05:59:01	<--	Kostenko (~Kostenko@bl14-204-63.dsl.telepac.pt) has quit (Ping timeout: 248 seconds)
+2016-10-13 05:59:51	-->	vigole (~Thunderbi@178.252.165.108) has joined ##asm
+2016-10-13 06:02:38	<--	pie_ (~pie_@78-131-91-105.pool.digikabel.hu) has quit (Changing host)
+2016-10-13 06:02:38	-->	pie_ (~pie_@unaffiliated/pie-/x-0787662) has joined ##asm
+2016-10-13 06:07:15	<--	vigole (~Thunderbi@178.252.165.108) has quit (Quit: 0xF4)
+2016-10-13 06:07:37	-->	vigole (~Thunderbi@178.252.165.108) has joined ##asm
+2016-10-13 06:07:38	-->	jan64 (~jan64@abbf118.neoplus.adsl.tpnet.pl) has joined ##asm
+2016-10-13 06:09:18	-->	sn1c_ (~sn1c@ip-94-114-69-24.unity-media.net) has joined ##asm
+2016-10-13 06:10:35	<--	sn1c (~sn1c@ip-94-114-69-24.unity-media.net) has quit (Ping timeout: 250 seconds)
+2016-10-13 06:13:02	<--	sn1c_ (~sn1c@ip-94-114-69-24.unity-media.net) has quit (Client Quit)
+2016-10-13 06:13:02		[06:13]
+2016-10-13 06:13:33	-->	sn1c_ (~sn1c@ip-94-114-69-24.unity-media.net) has joined ##asm
+2016-10-13 06:14:17	-->	Kostenko (~Kostenko@bl14-204-63.dsl.telepac.pt) has joined ##asm
+2016-10-13 06:14:36	-->	freakazoid0223 (~chatzilla@pool-108-52-4-128.phlapa.fios.verizon.net) has joined ##asm
+2016-10-13 06:16:17	-->	warchild (~smurf@198.162.93.26) has joined ##asm
+2016-10-13 06:16:38	<--	Kostenko_ (~Kostenko@bl14-204-63.dsl.telepac.pt) has quit (Ping timeout: 250 seconds)
+2016-10-13 06:17:04	<--	MindlessDrone (~MindlessD@unaffiliated/mindlessdrone) has quit (Ping timeout: 250 seconds)
+2016-10-13 06:21:35	<--	devonrevenge (~devonreve@unaffiliated/devonrevenge) has quit (Quit: WeeChat 1.6)
+2016-10-13 06:22:37	-->	MindlessDrone (~MindlessD@unaffiliated/mindlessdrone) has joined ##asm
+2016-10-13 06:25:06	<--	kolobyte (~aaa@unaffiliated/kolobyte) has quit (Ping timeout: 252 seconds)
+2016-10-13 06:25:14	<--	viro (~viro@unaffiliated/viro) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-10-13 06:25:19	-->	lecture01 (~Thunderbi@2a00:c1a0:8504:1600:224:81ff:fe12:72e5) has joined ##asm
+2016-10-13 06:26:17	-->	ARM9 (~ARM9@46-236-101-75.customer.t3.se) has joined ##asm
+2016-10-13 06:27:32	<--	metachr0n (~nobody@46.166.137.217) has quit (Ping timeout: 268 seconds)
+2016-10-13 06:27:52	-->	VaticanCameos (~VaticanCa@182.68.241.201) has joined ##asm
+2016-10-13 06:28:42	-->	viro (~viro@unaffiliated/viro) has joined ##asm
+2016-10-13 06:28:42		[06:28]
+2016-10-13 06:29:25	-->	Neslepaks (~Neslepaks@178.61.71.85) has joined ##asm
+2016-10-13 06:29:44	-->	kolobyte (~aaa@23.94.98.192) has joined ##asm
+2016-10-13 06:29:44	<--	kolobyte (~aaa@23.94.98.192) has quit (Changing host)
+2016-10-13 06:29:44	-->	kolobyte (~aaa@unaffiliated/kolobyte) has joined ##asm
+2016-10-13 06:30:48	<--	lecture01 (~Thunderbi@2a00:c1a0:8504:1600:224:81ff:fe12:72e5) has quit (Quit: lecture01)
+2016-10-13 06:34:56	<--	ararob (~yaaic@host-95-199-18-3.mobileonline.telia.com) has quit (Ping timeout: 260 seconds)
+2016-10-13 06:37:56	<--	MoALTz (~no@78-10-223-145.static.ip.netia.com.pl) has quit (Read error: Connection reset by peer)
+2016-10-13 06:39:36	<--	slidercrank (~slidercra@unaffiliated/slidercrank) has quit (Quit: Leaving)
+2016-10-13 06:40:12	-->	MoALTz (~no@78-10-223-145.static.ip.netia.com.pl) has joined ##asm
+2016-10-13 06:41:32	<--	MindlessDrone (~MindlessD@unaffiliated/mindlessdrone) has quit (Ping timeout: 260 seconds)
+2016-10-13 06:44:46	-->	MindlessDrone (~MindlessD@unaffiliated/mindlessdrone) has joined ##asm
+2016-10-13 06:44:46		[06:44]
+2016-10-13 06:47:01	<--	BlackMaria (~BlackMari@dsl.198.58.159.129.ebox.ca) has quit (Ping timeout: 248 seconds)
+2016-10-13 06:47:01	<--	madmouse_ (~anon@192.241.226.159) has quit (Ping timeout: 248 seconds)
+2016-10-13 06:47:01	<--	schlafwandler3 (~schlafwan@turing.chaos.hg.tu-darmstadt.de) has quit (Ping timeout: 248 seconds)
+2016-10-13 06:47:36	-->	madmouse (~anon@192.241.226.159) has joined ##asm
+2016-10-13 06:51:48	-->	BlackMaria (~BlackMari@dsl.198.58.159.129.ebox.ca) has joined ##asm
+2016-10-13 06:51:48	-->	osa1 (~omer@156-56-64-242.dhcp-bl.indiana.edu) has joined ##asm
+2016-10-13 06:51:48	<--	osa1 (~omer@156-56-64-242.dhcp-bl.indiana.edu) has quit (Changing host)
+2016-10-13 06:51:48	-->	osa1 (~omer@haskell/developer/osa1) has joined ##asm
+2016-10-13 06:57:00		[06:51]
+2016-10-13 06:57:25	-->	xocket (~xocket@unaffiliated/xocket) has joined ##asm
+2016-10-13 06:59:30	<--	zap0 (~moofy@14-201-222-143.tpgi.com.au) has quit (Quit: zap0)
+2016-10-13 06:59:47	-->	schlafwandler3 (~schlafwan@turing.chaos.hg.tu-darmstadt.de) has joined ##asm
+2016-10-13 07:05:00		[06:59]
+2016-10-13 07:11:15	<--	_4epen (~deselect@188.123.241.122) has quit
+2016-10-13 07:16:08	-->	lapinozz (~lapinozz@198.168.97.254) has joined ##asm
+2016-10-13 07:21:04	-->	deselect (~deselect@188.123.241.122) has joined ##asm
+2016-10-13 07:21:04		[07:21]
+2016-10-13 07:24:29	-->	Spec-Chum (~Russ@90.254.191.228) has joined ##asm
+2016-10-13 07:25:16	-->	ararob (~yaaic@host-95-199-18-3.mobileonline.telia.com) has joined ##asm
+2016-10-13 07:27:12	-->	metachr0n (~nobody@gateway/vpn/privateinternetaccess/metachr0n) has joined ##asm
+2016-10-13 07:33:00		[07:27]
+2016-10-13 07:38:13	<--	lapinozz (~lapinozz@198.168.97.254) has quit (Ping timeout: 248 seconds)
+2016-10-13 07:44:00		[07:38]
+2016-10-13 07:47:43	<--	viro (~viro@unaffiliated/viro) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-10-13 07:51:09	-->	lapinozz (~lapinozz@198.168.97.254) has joined ##asm
+2016-10-13 07:53:22	-->	viro (~viro@unaffiliated/viro) has joined ##asm
+2016-10-13 07:55:18	<--	metachr0n (~nobody@gateway/vpn/privateinternetaccess/metachr0n) has quit (Quit: WeeChat 1.5)
+2016-10-13 07:55:51	-->	metachr0n (~nobody@46.166.137.210) has joined ##asm
+2016-10-13 07:56:08	-->	devonrevenge (~devonreve@unaffiliated/devonrevenge) has joined ##asm
+2016-10-13 07:56:37	<--	metachr0n (~nobody@46.166.137.210) has quit (Client Quit)
+2016-10-13 07:57:03	-->	metachr0n (~nobody@46.166.137.214) has joined ##asm
+2016-10-13 07:58:11	<--	vigole (~Thunderbi@178.252.165.108) has quit (Ping timeout: 268 seconds)
+2016-10-13 08:00:34	<--	pie_ (~pie_@unaffiliated/pie-/x-0787662) has quit (Remote host closed the connection)
+2016-10-13 08:00:34		[08:00]
+2016-10-13 08:01:15	<--	metachr0n (~nobody@46.166.137.214) has quit (Client Quit)
+2016-10-13 08:01:51	-->	palantir (~palantir@85-171-132-206.rev.numericable.fr) has joined ##asm
+2016-10-13 08:03:15	--	sn1c_ is now known as sn1c
+2016-10-13 08:04:27	-->	slither (~jesus@2.26.134.158) has joined ##asm
+2016-10-13 08:10:00		[08:04]
+2016-10-13 08:12:19	<--	palantir (~palantir@85-171-132-206.rev.numericable.fr) has quit (Read error: Connection reset by peer)
+2016-10-13 08:18:00		[08:12]
+2016-10-13 08:19:12	<--	xocket (~xocket@unaffiliated/xocket) has quit (Disconnected by services)
+2016-10-13 08:19:14	-->	xock_stream (~xocket@unaffiliated/xocket) has joined ##asm
+2016-10-13 08:22:28	<--	slicktux (~slicktux@unaffiliated/slicktux) has quit (Quit: is going to go buy pink-orange color and do some stuff.)
+2016-10-13 08:24:16	-->	wildlander (~wild@unaffiliated/wildlander) has joined ##asm
+2016-10-13 08:26:04	-->	Jackneill (~Jackneill@unaffiliated/jackneill) has joined ##asm
+2016-10-13 08:26:11	-->	MyCuriosity (~MyCuriosi@unaffiliated/mycuriosity) has joined ##asm
+2016-10-13 08:31:09	-->	slash^ (~unknown@2001:a61:2123:1701:b56d:1280:404:2d2a) has joined ##asm
+2016-10-13 08:32:00	-->	adu (~ajr@static-108-48-76-162.washdc.fios.verizon.net) has joined ##asm
+2016-10-13 08:34:11	<--	VaticanCameos (~VaticanCa@182.68.241.201) has quit (Remote host closed the connection)
+2016-10-13 08:34:11		[08:34]
+2016-10-13 08:34:20	<--	Opertus (~decio@2804:14d:8080:5d4:c1e1:a235:bf7a:a2dc) has quit (Quit: WeeChat 0.4.2)
+2016-10-13 08:40:00		[08:34]
+2016-10-13 08:40:07	<--	osa1 (~omer@haskell/developer/osa1) has quit (Ping timeout: 268 seconds)
+2016-10-13 08:46:00		[08:40]
+2016-10-13 08:47:02	-->	sneakers (~sneakers@unaffiliated/sneakerhead) has joined ##asm
+2016-10-13 08:50:39	-->	Freze (~Freze@dhcp-18-189-125-14.dyn.MIT.EDU) has joined ##asm
+2016-10-13 08:56:00		[08:50]
+2016-10-13 08:56:06	<--	Freze (~Freze@dhcp-18-189-125-14.dyn.MIT.EDU) has quit (Quit: Leaving)
+2016-10-13 08:58:40	<--	MyCuriosity (~MyCuriosi@unaffiliated/mycuriosity) has quit (Remote host closed the connection)
+2016-10-13 08:59:39	<--	lapinozz (~lapinozz@198.168.97.254) has quit (Quit: Leaving)
+2016-10-13 09:01:54	<--	adu (~ajr@static-108-48-76-162.washdc.fios.verizon.net) has quit (Quit: adu)
+2016-10-13 09:04:16	<--	dqi (~dqi@165-218-045-062.dynamic.caiway.nl) has quit (Ping timeout: 260 seconds)
+2016-10-13 09:04:24	-->	MarkX (~MarkX@38.64.147.123) has joined ##asm
+2016-10-13 09:04:42	-->	m8 (~m8@unaffiliated/m8) has joined ##asm
+2016-10-13 09:05:12	<--	ararob (~yaaic@host-95-199-18-3.mobileonline.telia.com) has quit (Ping timeout: 260 seconds)
+2016-10-13 09:06:07	<--	MarkX (~MarkX@38.64.147.123) has quit (Client Quit)
+2016-10-13 09:09:09	-->	PuzzledGorilla (~ASpaceOdy@nat-129-40.secure.wireless.unca.edu) has joined ##asm
+2016-10-13 09:10:09	<--	Xylitol (~temari@11.116.88.79.rev.sfr.net) has quit (Quit: Sharpen your sickle at sunset)
+2016-10-13 09:11:03	<--	PuzzledGorilla (~ASpaceOdy@nat-129-40.secure.wireless.unca.edu) has quit (Client Quit)
+2016-10-13 09:11:03		[09:11]
+2016-10-13 09:11:24	-->	PuzzledGorilla (~ASpaceOdy@nat-129-40.secure.wireless.unca.edu) has joined ##asm
+2016-10-13 09:11:47	<--	PuzzledGorilla (~ASpaceOdy@nat-129-40.secure.wireless.unca.edu) has quit (Remote host closed the connection)
+2016-10-13 09:12:04	-->	PuzzledGorilla (~ASpaceOdy@nat-129-40.secure.wireless.unca.edu) has joined ##asm
+2016-10-13 09:12:40	-->	lecture01 (~Thunderbi@2a00:c1a0:8504:1600:224:81ff:fe12:72e5) has joined ##asm
+2016-10-13 09:13:26	--	plonky is now known as hegemoOn
+2016-10-13 09:13:32	<--	PuzzledGorilla (~ASpaceOdy@nat-129-40.secure.wireless.unca.edu) has quit (Client Quit)
+2016-10-13 09:16:09	<--	araml_ (~araml@unaffiliated/araml) has quit (Quit: WeeChat 1.4)
+2016-10-13 09:16:44	-->	PuzzledGorilla (~ASpaceOdy@nat-129-40.secure.wireless.unca.edu) has joined ##asm
+2016-10-13 09:17:04	-->	xocket (~xocket@unaffiliated/xocket) has joined ##asm
+2016-10-13 09:17:33	<--	PuzzledGorilla (~ASpaceOdy@nat-129-40.secure.wireless.unca.edu) has left ##asm
+2016-10-13 09:20:49	<--	xock_stream (~xocket@unaffiliated/xocket) has quit (Ping timeout: 268 seconds)
+2016-10-13 09:21:05	-->	PuzzledGorilla (~ASpaceOdy@nat-129-40.secure.wireless.unca.edu) has joined ##asm
+2016-10-13 09:22:07	<--	PuzzledGorilla (~ASpaceOdy@nat-129-40.secure.wireless.unca.edu) has left ##asm
+2016-10-13 09:22:42	-->	dqi (~dqi@165-218-045-062.dynamic.caiway.nl) has joined ##asm
+2016-10-13 09:27:52	-->	MarkX (~MarkX@38.64.147.123) has joined ##asm
+2016-10-13 09:27:52		[09:27]
+2016-10-13 09:29:14	<--	Antares (~Antares@ppp91-78-123-238.pppoe.mtu-net.ru) has quit (Ping timeout: 258 seconds)
+2016-10-13 09:31:11	-->	vigole (~Thunderbi@178.252.165.108) has joined ##asm
+2016-10-13 09:33:31	<--	slash^ (~unknown@2001:a61:2123:1701:b56d:1280:404:2d2a) has quit (Read error: Connection reset by peer)
+2016-10-13 09:34:41	<--	MarkX (~MarkX@38.64.147.123) has quit (Ping timeout: 250 seconds)
+2016-10-13 09:36:20	-->	MarkX (~MarkX@38.64.147.123) has joined ##asm
+2016-10-13 09:39:38	-->	MarkX_ (~MarkX@38.117.90.90) has joined ##asm
+2016-10-13 09:39:38	<--	MarkX (~MarkX@38.64.147.123) has quit (Read error: Connection reset by peer)
+2016-10-13 09:41:46	-->	RTFM[away] (~RTFMaway]@unaffiliated/rtfmaway/x-3892344) has joined ##asm
+2016-10-13 09:42:07	<--	viro (~viro@unaffiliated/viro) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-10-13 09:43:25	<--	vigole (~Thunderbi@178.252.165.108) has quit (Quit: 0xF4)
+2016-10-13 09:43:25		[09:43]
+2016-10-13 09:44:44	-->	viro (~viro@unaffiliated/viro) has joined ##asm
+2016-10-13 09:45:43	<--	xocket (~xocket@unaffiliated/xocket) has quit (Disconnected by services)
+2016-10-13 09:45:44	-->	xock_stream (~xocket@unaffiliated/xocket) has joined ##asm
+2016-10-13 09:47:11	-->	lapinozz (~lapinozz@198.168.97.254) has joined ##asm
+2016-10-13 09:52:00	-->	titankiller (~user@103.16.70.182) has joined ##asm
+2016-10-13 09:53:33	vulture	it occured to me that samsung probably implements this instruction on their devices now  https://en.wikipedia.org/wiki/Halt_and_Catch_Fire
+2016-10-13 09:54:21	GeDaMo	I don't think they have to halt before they catch fire :P
+2016-10-13 09:55:41	<--	RoguePointer (~RoguePoin@tankjr.xyz) has quit (Changing host)
+2016-10-13 09:55:41	-->	RoguePointer (~RoguePoin@unaffiliated/roguepointer) has joined ##asm
+2016-10-13 09:57:01	OxFEEDBACC	vulture: did you go win -> mac os -> android? that's almost linux, so you're close to home :-D
+2016-10-13 10:03:00		[09:57]
+2016-10-13 10:09:58	-->	pie_ (~pie_@78-131-91-105.pool.digikabel.hu) has joined ##asm
+2016-10-13 10:11:27	-->	crankslider (~slidercra@unaffiliated/slidercrank) has joined ##asm
+2016-10-13 10:12:07	vulture	OxFEEDBACC: what? why would I use mac os or android
+2016-10-13 10:15:30	-->	MyCuriosity (~MyCuriosi@unaffiliated/mycuriosity) has joined ##asm
+2016-10-13 10:16:10	OxFEEDBACC	well, you admitted already that you used mac os... some time ago... that HCF assumption made me think you are now working on some Android stuff... where else would samsung chips be used?
+2016-10-13 10:17:42	vulture	nah, just the recent samsung fails over recent weeks/months
+2016-10-13 10:21:26	Neslepaks	Can someone please look at my work and tell my if I'm going about this right? http://pastebin.com/raw/WL0H9McX
+2016-10-13 10:21:26		[10:21]
+2016-10-13 10:21:56	OxFEEDBACC	k... whatever "the recent samsung" is...
+2016-10-13 10:22:45	<--	NeutronFluxLabs (~NtrnFlxLb@216.186.219.35) has quit
+2016-10-13 10:23:24	GeDaMo	OxFEEDBACC: Samsung Galaxy Note 7 phones have been exploding
+2016-10-13 10:24:01	OxFEEDBACC	oh... i should pay more attention to my news ticker :-/
+2016-10-13 10:24:29	<--	phinxy (~tehhhd@unaffiliated/phinxy) has quit (Read error: Connection reset by peer)
+2016-10-13 10:25:01	-->	phinxy (~tehhhd@unaffiliated/phinxy) has joined ##asm
+2016-10-13 10:25:34	OxFEEDBACC	Neslepaks: that disassembly sucks, but that just by the way... what PC relative stuff is that about? the jump targets?
+2016-10-13 10:25:38	-->	xocket (~xocket@unaffiliated/xocket) has joined ##asm
+2016-10-13 10:25:46	OxFEEDBACC	oh, now i see the strings of question marks...
+2016-10-13 10:26:36	<--	phinxy (~tehhhd@unaffiliated/phinxy) has quit (Max SendQ exceeded)
+2016-10-13 10:26:40	-->	causative (~halberd@unaffiliated/halberd) has joined ##asm
+2016-10-13 10:26:43	Neslepaks	I'm not sure of the -4
+2016-10-13 10:26:50	Neslepaks	*refptr = (unsigned) (ADDR(r.symbol) + *refptr - refaddr) = 0x80483a8 + (-4) - 0x804839b
+2016-10-13 10:26:52	Neslepaks	In this
+2016-10-13 10:27:05	-->	phinxy (~tehhhd@unaffiliated/phinxy) has joined ##asm
+2016-10-13 10:27:06	OxFEEDBACC	which one?
+2016-10-13 10:27:14	<--	causative (~halberd@unaffiliated/halberd) has left ##asm ("Leaving")
+2016-10-13 10:27:31	Neslepaks	The *refptr
+2016-10-13 10:27:39	Neslepaks	6: e8 fc ff ff ff       call 7  <main+0x7>
+2016-10-13 10:27:48	<--	slither (~jesus@2.26.134.158) has quit (Ping timeout: 260 seconds)
+2016-10-13 10:27:53	<--	xock_stream (~xocket@unaffiliated/xocket) has quit (Ping timeout: 258 seconds)
+2016-10-13 10:28:23	OxFEEDBACC	if that refers to the call instruction, that is 5 bytes long...
+2016-10-13 10:29:42	OxFEEDBACC	damn... lag...
+2016-10-13 10:30:02	-->	freakazoid0223_ (~chatzilla@pool-108-52-4-128.phlapa.fios.verizon.net) has joined ##asm
+2016-10-13 10:32:45	<--	OxFEEDBACC (~what@unaffiliated/oxfeedbacc) has quit (Quit: quit pro quo)
+2016-10-13 10:33:09	-->	OxFEEDBACC (~what@176.5.136.137) has joined ##asm
+2016-10-13 10:33:09	<--	OxFEEDBACC (~what@176.5.136.137) has quit (Changing host)
+2016-10-13 10:33:09	-->	OxFEEDBACC (~what@unaffiliated/oxfeedbacc) has joined ##asm
+2016-10-13 10:33:23	OxFEEDBACC	did i miss anything?
+2016-10-13 10:33:24	<--	freakazoid0223 (~chatzilla@pool-108-52-4-128.phlapa.fios.verizon.net) has quit (Ping timeout: 260 seconds)
+2016-10-13 10:33:49	GeDaMo	Nope
+2016-10-13 10:34:35	<--	titankiller (~user@103.16.70.182) has quit (Quit: ERC (IRC client for Emacs 26.0.50.1))
+2016-10-13 10:34:39	OxFEEDBACC	the call is at *39a, so the updated EIP is *39f, so the call offset is *3a8-*39f
+2016-10-13 10:36:20	OxFEEDBACC	so, actually your result is correct, but i have no idea what role the -4 plays...
+2016-10-13 10:36:34	Neslepaks	e8 fc ff ff ff
+2016-10-13 10:36:34		[10:36]
+2016-10-13 10:36:56	Neslepaks	I think the -4 is because of this
+2016-10-13 10:38:11	OxFEEDBACC	i looked at the incarnation of main with the question marks...
+2016-10-13 10:38:26	Neslepaks	So, when adjusted, it's ff ff ff fc
+2016-10-13 10:38:35	Neslepaks	Because of little endian
+2016-10-13 10:38:56	Neslepaks	And if you add 4 to that, it becomes 100000000
+2016-10-13 10:38:59	OxFEEDBACC	oh, well, offset 7 is marked as a relocation entry...
+2016-10-13 10:39:25	<--	MyCuriosity (~MyCuriosi@unaffiliated/mycuriosity) has quit (Remote host closed the connection)
+2016-10-13 10:39:35	Neslepaks	So I just look for the value that zeros all numbers in this manner, without understanding the logic, then choosing the negative of that
+2016-10-13 10:39:44	Neslepaks	As I've seen a similar example in the slides
+2016-10-13 10:39:50	Neslepaks	Where this was done
+2016-10-13 10:40:10	OxFEEDBACC	well, if your slides answer your questions, why do you ask here?
+2016-10-13 10:40:18	Neslepaks	They don't
+2016-10-13 10:40:23	Neslepaks	I'm trying to make sense of them
+2016-10-13 10:40:38	Neslepaks	In another example: "It then updates the reference from its current value (0xfffffffc = -4) "
+2016-10-13 10:40:46	Neslepaks	This isn't explained anywhere
+2016-10-13 10:40:50	OxFEEDBACC	well, look at the disassembly at the bottom of your paste...
+2016-10-13 10:40:59	OxFEEDBACC	you have all relevant addresses there...
+2016-10-13 10:41:27	OxFEEDBACC	the missing disassembly offsets can be reconstructed by simple addition...
+2016-10-13 10:41:32	--	freakazoid0223_ is now known as freakazoid0223
+2016-10-13 10:41:54	Neslepaks	I understand that bit, how does this relate ti the -4?
+2016-10-13 10:41:56	OxFEEDBACC	or addresses...
+2016-10-13 10:42:11	Neslepaks	I'm satisfied that I've worked on this correctly, thank you for the confirmation
+2016-10-13 10:42:28	OxFEEDBACC	to be honest, i don't really know how relocation information is maintained...
+2016-10-13 10:42:38	Neslepaks	???????: e8 ?? ?? ?? ?? call ???????? <sort>
+2016-10-13 10:42:48	Neslepaks	Turned to
+2016-10-13 10:42:49	Neslepaks	0x804839b: e8 09 00 00 00       call 0x80483a8 <sort>
+2016-10-13 10:42:51	OxFEEDBACC	it's irrelevant however, as long as you have the VMAs of the code and/or data...
+2016-10-13 10:43:01	Neslepaks	???????: b8 00 00 00 00 mov $0x0,%eax
+2016-10-13 10:43:03	Neslepaks	Is left now
+2016-10-13 10:43:19	OxFEEDBACC	*39b? are you sure?
+2016-10-13 10:43:53	-->	w33 (~w33@unaffiliated/w33) has joined ##asm
+2016-10-13 10:44:16	Neslepaks	Why? What's wrong with it?
+2016-10-13 10:44:33	Neslepaks	refaddr = ADDR(s) + r.offset = 0x8048394 + 0x7 = 0x804839b
+2016-10-13 10:44:47	OxFEEDBACC	the instruction before the call is at 0x8048397, and is 3 bytes long...
+2016-10-13 10:45:17	OxFEEDBACC	[22:42:07] <OxFEEDBACC> the missing disassembly offsets can be reconstructed by simple addition...
+2016-10-13 10:48:05	-->	metachr0n (~nobody@46.166.190.175) has joined ##asm
+2016-10-13 10:49:12	Neslepaks	You make sense
+2016-10-13 10:49:18	Neslepaks	But then I'm confused
+2016-10-13 10:49:25	Neslepaks	How is the offset 0x7?
+2016-10-13 10:49:45	OxFEEDBACC	just ignore the relocation shit for the moment... it's irrelevant...
+2016-10-13 10:50:08	<--	nktn (~nktn___@181.46.158.157) has quit (Quit: Leaving)
+2016-10-13 10:50:17	<--	viro (~viro@unaffiliated/viro) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-10-13 10:50:19	<--	sneakers (~sneakers@unaffiliated/sneakerhead) has quit (Read error: Connection reset by peer)
+2016-10-13 10:50:57	<--	metachr0n (~nobody@46.166.190.175) has quit (Client Quit)
+2016-10-13 10:52:42	-->	AverageJ0e (~fiugreihy@199-36-84-186.static-ip.telepacific.net) has joined ##asm
+2016-10-13 10:52:42		[10:52]
+2016-10-13 10:52:58	-->	king_jah (~jah@S0106503955715ed3.ss.shawcable.net) has joined ##asm
+2016-10-13 10:53:24	-->	metachr0n (~nobody@109.201.138.229) has joined ##asm
+2016-10-13 10:53:27	-->	osa1 (~omer@haskell/developer/osa1) has joined ##asm
+2016-10-13 10:56:03	-->	BeaverLeader_ (~ASpaceOdy@nat-129-40.secure.wireless.unca.edu) has joined ##asm
+2016-10-13 11:01:14	-->	viro (~viro@unaffiliated/viro) has joined ##asm
+2016-10-13 11:01:15	-->	osa1_ (~omer@50-253-193-254-static.hfc.comcastbusiness.net) has joined ##asm
+2016-10-13 11:01:28	<--	osa1 (~omer@haskell/developer/osa1) has quit (Ping timeout: 260 seconds)
+2016-10-13 11:01:56	<--	RTFM[away] (~RTFMaway]@unaffiliated/rtfmaway/x-3892344) has quit (Ping timeout: 260 seconds)
+2016-10-13 11:02:27	<--	Neslepaks (~Neslepaks@178.61.71.85) has quit (Quit: Neslepaks)
+2016-10-13 11:02:30	-->	sneakers (~sneakers@unaffiliated/sneakerhead) has joined ##asm

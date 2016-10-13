@@ -82,12 +82,12 @@ else
 # Look in ~/.oh-my-zsh/themes/
 # Optionally, if you set this to "random", it'll load a random theme each
 # time that oh-my-zsh is loaded.
-#ZSH_THEME="pygmalion"
-#ZSH_THEME="powerline"
-#ZSH_THEME="agnoster"
-
 ## Set theme based on whether X is running
-#[[ -z "$DISPLAY" ]] || ZSH_THEME="bullet-train"
+[[ -z "$DISPLAY" ]] || \
+	ZSH_THEME="powerline"
+	#ZSH_THEME="bullet-train"
+	#ZSH_THEME="agnoster"
+#ZSH_THEME="pygmalion"
 
 BULLETTRAIN_DIR_EXTENDED=2
 #export BULLETTRAIN_CUSTOM_MSG=`host 192.168.1.98 | sed -r 's/^.*pointer .*?\.(.*\..*\.)$/\1 -/'`
@@ -95,9 +95,9 @@ BULLETTRAIN_CONTEXT_SHOW=true
 BULLETTRAIN_GO_SHOW=true
 BULLETTRAIN_NVM_SHOW=true
 BULLETTRAIN_TIME_12HR=true
-#export BULLETTRAIN_PROMPT_CHAR="+"
-#export BULLETTRAIN_PROMPT_CHAR=`check_last_exit_code | sed -r 's/.*([[:digit:]]).*/\1/'`
-#export BULLETTRAIN_PROMPT_CHAR=`[[ "$EUID" != 0 ]] && printf '%s' '$' || printf '%s' '#'`
+#BULLETTRAIN_PROMPT_CHAR="+"
+#BULLETTRAIN_PROMPT_CHAR=`check_last_exit_code | sed -r 's/.*([[:digit:]]).*/\1/'`
+#BULLETTRAIN_PROMPT_CHAR=`[[ "$EUID" != 0 ]] && printf '%s' '$' || printf '%s' '#'`
 BULLETTRAIN_STATUS_EXIT_SHOW=true
 BULLETTRAIN_PROMPT_SEPARATE_LINE=false
 BULLETTRAIN_PROMPT_ADD_NEWLINE=true
@@ -131,6 +131,7 @@ DISABLE_LS_COLORS="true"
 
 # Uncomment the following line to disable auto-setting terminal title.
 DISABLE_AUTO_TITLE="false"
+#DISABLE_AUTO_TITLE="true"
 
 # Uncomment the following line to enable command auto-correction.
 ENABLE_CORRECTION="true"
@@ -143,12 +144,14 @@ COMPLETION_WAITING_DOTS="true"
 # Uncomment the following line if you want to disable marking untracked files
 # under VCS as dirty. This makes repository status check for large repositories
 # much, much faster.
-DISABLE_UNTRACKED_FILES_DIRTY="true"
+#DISABLE_UNTRACKED_FILES_DIRTY="true"
+DISABLE_UNTRACKED_FILES_DIRTY="false"
 
 # Uncomment the following line if you want to change the command execution time
 # stamp shown in the history command output.
 # The optional three formats: "mm/dd/yyyy"|"dd.mm.yyyy"|"yyyy-mm-dd"
-HIST_STAMPS="mm/dd/yyyy"
+#HIST_STAMPS="mm/dd/yyyy"
+#HIST_STAMPS="yyyy-mm-dd"
 
 # Would you like to use another custom folder than $ZSH/custom?
 #ZSH_CUSTOM=${HOME}/.oh-my-zsh
@@ -158,7 +161,8 @@ ZSH_CUSTOM=${HOME}/zsh-custom
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(tmux tmuxinator gpg-agent ssh-agent archlinux fancy-ctrl-z adb command-not-found systemd zsh_reload screen man stack nmap colorize extract battery catimage copydir copyfile compleat dircycle cp fasd mosh tmux-cssh wd url-tools zsh-navigation-tools z safe-paste singlechar themes rsync dirpersist celery dirhistory kate repo pass pip brew web-search thefuck common-aliases git github brew iwhois zsh-autosuggestions history-search-multi-word)
+plugins=(zshmarks tmux tmuxinator gpg-agent ssh-agent archlinux fancy-ctrl-z adb command-not-found systemd screen man stack nmap colorize extract battery catimage copydir copyfile compleat dircycle cp fasd mosh tmux-cssh wd url-tools zsh-navigation-tools z safe-paste singlechar themes rsync dirpersist celery dirhistory kate repo pass pip brew web-search thefuck common-aliases git github brew iwhois zsh-autosuggestions history-search-multi-word)
+#plugins=(zshmarks tmux tmuxinator gpg-agent ssh-agent archlinux fancy-ctrl-z adb command-not-found systemd zsh_reload screen man stack nmap colorize extract battery catimage copydir copyfile compleat dircycle cp fasd mosh tmux-cssh wd url-tools zsh-navigation-tools z safe-paste singlechar themes rsync dirpersist celery dirhistory kate repo pass pip brew web-search thefuck common-aliases git github brew iwhois zsh-autosuggestions history-search-multi-word)
 #plugins=(tmux tmuxinator gpg-agent ssh-agent git archlinux fancy-ctrl-z adb github command-not-found systemd zsh_reload screen man stack nmap  colorize sudo extract battery catimage copydir copyfile compleat dircycle cp fasd mosh tmux-cssh wd url-tools zsh-navigation-tools z safe-paste singlechar thefuck themes rsync dirpersist celery dirhistory kate repo pass pip history-substring-search iwhois vi-mode brew)
 #plugins=(tmux tmuxinator archlinux fancy-ctrl-z adb command-not-found systemd zsh_reload screen man stack nmap colorize extract battery catimage copydir copyfile compleat dircycle cp fasd mosh tmux-cssh wd url-tools zsh-navigation-tools z safe-paste singlechar themes rsync dirpersist celery dirhistory kate repo pass pip brew web-search thefuck common-aliases git)
 #plugins=(tmux tmuxinator gpg-agent ssh-agent git archlinux colored-man-pages fancy-ctrl-z adb github command-not-found systemd zsh_reload screen man stack nmap common-aliases sudo cp extract common-aliases)
@@ -208,6 +212,9 @@ source ${ZSH}/oh-my-zsh.sh
 #[[ ${EUID} -eq 1000 ]] && { envoy -t ssh-agent -a identity id_rsa id_ecdsa; source <(envoy -p); }
 #[[ ${EUID} -eq 1000 ]] && { envoy -t gpg-agent; source <(envoy -p); }
 
+## Zshmarks bookmark file
+export BOOKMARKS_FILE="/store/config/.bookmarks"
+
 zstyle :omz:plugins:ssh-agent agent-forwarding on
 zstyle :omz:plugins:ssh-agent identities identity id_rsa id_ecdsa
 
@@ -220,32 +227,19 @@ bindkey "^Y" znt-kill-widget
 source /usr/share/zsh/scripts/antigen/antigen.zsh
 zstyle ':completion:*' rehash true
 # History stuff
-#zmodload zsh/datetime
+zmodload zsh/datetime
 #HISTSIZE=10000
 #SAVEHIST=10000
-export HISTSIZE=500000
-export SAVEHIST=1000000
+HISTSIZE=500000
+SAVEHIST=1000000
 # report about cpu-/system-/user-time of command if running longer than 5 seconds
-export REPORTTIME=1
+REPORTTIME=5
 zstyle ':history-search-multi-word' page-size 5
 
 ## Bash style
 #autoload select-word-style
 #select-word-style shell
 
-## don't alert me if something failed
-unsetopt correctall correct_all nomatch beep printexitvalue caseglob nohistverify
-setopt histignorealldups hist_expire_dups_first hist_ignore_dups hist_ignore_space correct completeinword
-setopt noextended_history append_history share_history inc_append_history autocd notify clobber
-setopt extendedglob noverbose casematch
-## Allow comments even in interactive shells
-setopt INTERACTIVE_COMMENTS interactivecomments
-## don't kill programs & if exiting the shell
-#setopt nohup
-## kill programs & if exiting the shell
-unsetopt nohup
-## dont warn me about bg processes when exiting
-setopt nocheckjobs
 export HISTFILE=/store/config/.zsh_history # ensure history file visibility
 export HH_CONFIG=hicolor # get more colors
 # History search
@@ -750,14 +744,14 @@ compdef _scrs scrs3
 # {{{ 'hash' some often used directories
 # #d# start
 #example:
-#hash -d store=/store
-#hash -d calibre=/store/calibre
-#hash -d efi=/boot/efi/EFI/arch
-#hash -d bin=${HOME}/bin
-#hash -d school=${HOME}/school
-#hash -d aur=${HOME}/aur
-#hash -d projects=${HOME}/projects
+hash -d store=/store
+hash -d calibre=/store/calibre
+hash -d efi=/boot/efi/EFI/arch
+hash -d bin=${HOME}/bin
+hash -d aur=${HOME}/code/aur
+hash -d git=${HOME}/sgit
 #hash -d torrents=${HOME}/torrents
+#hash -d school=${HOME}/school
 #hash -d tv=$HOME/video/tv
 #hash -d screens=$HOME/bilder/Screenshots/2015
 #hash -d fanfic=$HOME/documents/fanfic
@@ -919,6 +913,20 @@ else
     YELLOW=$'%{\e[1;33m%}'
     NO_COLOUR=$'%{\e[0m%}'
 fi
+
+## don't alert me if something failed
+unsetopt histsavebycopy extendedhistory correctall correct_all nomatch beep printexitvalue caseglob histverify
+setopt histignorealldups hist_expire_dups_first hist_ignore_dups hist_ignore_space correct completeinword
+setopt append_history share_history autocd notify clobber
+setopt extendedglob noverbose casematch
+## Allow comments even in interactive shells
+setopt INTERACTIVE_COMMENTS interactivecomments
+## don't kill programs & if exiting the shell
+#setopt nohup
+## kill programs & if exiting the shell
+unsetopt nohup
+## dont warn me about bg processes when exiting
+setopt nocheckjobs
 
 kill -TRAP $$
 
