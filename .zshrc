@@ -73,7 +73,7 @@ else
   printf '%s' "$EXIT_CODE_PROMPT"
 }
 #[[ "$RPROMPT" != *'$(check_last_exit_code)'* ]] && export RPROMPT='$(check_last_exit_code)'${RPROMPT}
-#[[ "$prompt" != *'$(check_last_exit_code)'* ]] && export prompt=${prompt}'$(check_last_exit_code)'
+#[[ "$LPROMPT" != *'$(check_last_exit_code)'* ]] && export LPROMPT=${LPROMPT}'$(check_last_exit_code)'
 #export PROMPT=${PROMPT}'$(check_last_exit_code)'
 #export PS1=${PS1}'$(check_last_exit_code)'
 #export RPROMPT='$(check_last_exit_code)$(git_prompt_string)${RPROMPT}'
@@ -89,28 +89,28 @@ else
 ## Set theme based on whether X is running
 #[[ -z "$DISPLAY" ]] || ZSH_THEME="bullet-train"
 
-export BULLETTRAIN_DIR_EXTENDED=2
+BULLETTRAIN_DIR_EXTENDED=2
 #export BULLETTRAIN_CUSTOM_MSG=`host 192.168.1.98 | sed -r 's/^.*pointer .*?\.(.*\..*\.)$/\1 -/'`
-export BULLETTRAIN_CONTEXT_SHOW=true
-export BULLETTRAIN_GO_SHOW=true
-export BULLETTRAIN_NVM_SHOW=true
-export BULLETTRAIN_TIME_12HR=true
+BULLETTRAIN_CONTEXT_SHOW=true
+BULLETTRAIN_GO_SHOW=true
+BULLETTRAIN_NVM_SHOW=true
+BULLETTRAIN_TIME_12HR=true
 #export BULLETTRAIN_PROMPT_CHAR="+"
 #export BULLETTRAIN_PROMPT_CHAR=`check_last_exit_code | sed -r 's/.*([[:digit:]]).*/\1/'`
 #export BULLETTRAIN_PROMPT_CHAR=`[[ "$EUID" != 0 ]] && printf '%s' '$' || printf '%s' '#'`
-export BULLETTRAIN_STATUS_EXIT_SHOW=true
-export BULLETTRAIN_PROMPT_SEPARATE_LINE=false
-export BULLETTRAIN_PROMPT_ADD_NEWLINE=true
-export BULLETTRAIN_GIT_COLORIZE_DIRTY=true
-export BULLETTRAIN_IS_SSH_CLIENT=true
-export BULLETTRAIN_DIR_CONTEXT_SHOW=false
+BULLETTRAIN_STATUS_EXIT_SHOW=true
+BULLETTRAIN_PROMPT_SEPARATE_LINE=false
+BULLETTRAIN_PROMPT_ADD_NEWLINE=true
+BULLETTRAIN_GIT_COLORIZE_DIRTY=true
+BULLETTRAIN_IS_SSH_CLIENT=true
+BULLETTRAIN_DIR_CONTEXT_SHOW=false
 
-[[ `hostname` != "arch" ]] && export BULLETTRAIN_EXEC_TIME_SHOW=true || export BULLETTRAIN_EXEC_TIME_SHOW=false
+[[ `hostname` != "arch" ]] && BULLETTRAIN_EXEC_TIME_SHOW=true || BULLETTRAIN_EXEC_TIME_SHOW=false
 
 ## Tmux plugin env
-export ZSH_TMUX_FIXTERM=true
-export ZSH_TMUX_AUTOSTART=false
-export ZSH_TMUX_AUTOCONNECT=false
+ZSH_TMUX_FIXTERM=true
+ZSH_TMUX_AUTOSTART=false
+ZSH_TMUX_AUTOCONNECT=false
 
 # Uncomment the following line to use case-sensitive completion.
 CASE_SENSITIVE="false"
