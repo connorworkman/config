@@ -328,7 +328,7 @@ set number
 set incsearch
 set ignorecase
 set smartcase
-"set magic
+set magic
 "set relativenumber
 
 "formal: au BufNewFile,BufRead * setf {filetype}
@@ -337,6 +337,7 @@ au BufNewFile,BufRead *tmux.conf setf tmux
 au BufNewFile,BufRead *nanorc setf nanorc
 au BufNewFile,BufRead *vimpagerrc setf vim
 au BufNewFile,BufRead *.\(service\|socket\|target\|timer\)* setf sysctl
+au BufNewFile,BufRead *\(nftables.conf\|.nft\)* setf nftables
 au BufNewFile,BufRead *\(nftables.conf\|.nft\)* set filetype=nftables
 au BufNewFile,BufRead *conf setf config
 au BufNewFile,BufRead db.* setf bindzone
@@ -370,6 +371,50 @@ set viminfo=!,\'100,\"100,:100,%,n~/.viminfo
 " Plug '~/my-prototype-plugin'
 "Plug 'mhinz/vim-startify'
 "call plug#end()
+
+function! Hashbang(portable, permission, RemExt)
+let shells = {
+        \    'awk': "awk",
+        \     'sh': "bash",
+        \     'hs': "runhaskell",
+        \     'jl': "julia",
+        \    'lua': "lua",
+        \    'mak': "make",
+        \     'js': "node",
+        \      'm': "octave",
+        \     'pl': "perl",
+        \    'php': "php",
+        \     'py': "python",
+        \      'r': "Rscript",
+        \     'rb': "ruby",
+        \  'scala': "scala",
+        \    'tcl': "tclsh",
+        \     'tk': "wish"
+        \    }
+
+let extension = expand("%:e")
+if has_key(shells,extension)
+	let fileshell = shells[extension]
+
+	if a:portable
+		let line =  "#!/usr/bin/env " . fileshell
+	else
+		let line = "#!" . system("which " . fileshell)
+	endif
+
+	0put = line
+
+	if a:permission
+		:autocmd! BufWritePost * :autocmd! VimLeave * :!chmod u+x %
+	endif
+
+	if a:RemExt
+		:autocmd! BufWritePost * :autocmd! VimLeave * :!mv % "%:p:r"
+	endif
+
+endif
+endfunction
+:autocmd! BufNewFile *.* call Hashbang(1,1,0)
 
 function! ResCur()
   if line("'\"") <= line("$")
@@ -496,120 +541,5 @@ hi StartifyNumber  ctermfg=215
 hi StartifyPath    ctermfg=245
 hi StartifySlash   ctermfg=240
 hi StartifySpecial ctermfg=240
-
-function! Hashbang(portable, permission)
-let shells = {
-        \    'awk': "awk",
-        \     'sh': "bash",
-        \     'hs': "runhaskell",
-        \     'jl': "julia",
-        \    'lua': "lua",
-        \    'mak': "make",
-        \     'js': "node",
-        \      'm': "octave",
-        \     'pl': "perl",
-        \    'php': "php",
-        \     'py': "python",
-        \      'r': "Rscript",
-        \     'rb': "ruby",
-        \  'scala': "scala",
-        \    'tcl': "tclsh",
-        \    ' tk': "wish"
-        \    }
-
-let extension = expand("%:e")
-
-if has_key(shells,extension)
-	let fileshell = shells[extension]
-
-	if a:portable
-		let line =  "#! /usr/bin/env " . fileshell
-	else
-		let line = "#! " . system("which " . fileshell)
-	endif
-
-	0put = line
-
-	if a:permission
-		:autocmd BufWritePost * :autocmd VimLeave * :!chmod u+x %
-	endif
-
-endif
-
-endfunction
-
-:autocmd BufNewFile *.* :call Hashbang(1,1)
-
-" archived mappings
-"function! ToggleHex()
-"    if g:thex
-"	set display=uhex,lastline
-"	let g:thex = 1
-"    else
-"	set display=
-"	let g:thex = 0
-"    endif
-"endfunction
-"function! ToggleIndent()
-"    if g:tindent
-"	set shiftwidth=1
-"	let g:tindent = 0
-"    else
-"        set shiftwidth=8
-"	let g:tindent = 1
-"    endif
-"endfunction
-"let g:thex = 0
-"function! ToggleHex()
-"    if g:thex
-"	set display=uhex
-"	let g:thex = 0
-"    else
-"	set display=lastline
-"	let g:thex = 1
-"    endif
-"function! ToggleHex()
-"    if g:thex == 0
-"	set display=uhex
-"	let g:thex = 1
-"    elseif g:thex == 1
-"	set display=lastline
-"	let g:thex = 2
-"   else
-"	set display=
-"	let g:thex = 0
-"    endif
-"endfunction
-"nmap <C-F7> :call setreg("\"",system("xclip -o -selection clipboard"))<CR>P`]
-"vmap <M-x> :! xclip -i -sel clip<CR>p`[
-""nmap <M-F7> mz:-1r !xclip -o -sel clip<CR>`z
-"nmap <C-F7> :call setreg("\"",system("xclip -o -selection clipboard"))<CR>p
-"imap <F7> :call setreg("\"",system("xclip -o -selection clipboard"))<CR><C-O>p
-"imap <C-F7> <C-O>mz:-1r !xclip -o -sel clip<CR>
-"imap <C-F7> <C-O>mz:-1r !xclip -o -sel clip<CR><C-O>:`z
-"vmap <F6> y:call system("xclip -i -selection clipboard", getreg("\""))<CR>:call system("xclip -i", getreg("\""))<CR>
-"vmap <C-F6> "+x
-"vmap <M-F6> "+y
-"vmap <C-S-c> :! xclip -i -sel clip<CR>p`[
-"vmap <M-c> y:call system("xclip -i -selection clipboard", getreg("\""))<CR>:call system("xclip -i", getreg("\""))<CR>
-"nmap <C-S-v> :call setreg("\"",system("xclip -o -selection clipboard"))<CR>p`[
-"nmap <M-v> :call setreg("\"",system("xclip -o -selection clipboard"))<CR>p`]
-"nmap <F7> :call setreg("\"",system("xclip -o -selection clipboard"))<CR>p`[
-"nmap <C-F7> :call setreg("\"",system("xclip -o -selection clipboard"))<CR>p`]
-"vmap <M-c> y:call system("xclip -i -selection clipboard", getreg("\""))<CR>:call system("xclip -i", getreg("\""))<CR>
-"vmap <C-c> y:call system("xclip -i -selection clipboard", getreg("\""))<CR>:call system("xclip -i", getreg("\""))<CR>
-"vmap <C-v> :call setreg("\"",system("xclip -o -selection clipboard"))<CR>p
-"vmap <F6> :!xclip -f -sel clip<CR>
-"vmap <F6> :!xclip -i -sel clip<CR>
-"nmap <F6> :w !xsel -ib<CR>
-"nmap <F7> :!xclip -o -sel clip<CR>
-"nmap <F7> :r !xclip -o<CR>
-":if did_filetype()
-":  finish
-":endif
-":if getline(1) =~ '^#!.*[/\\]sh\>'
-":  setf xyz
-":endif
-
 
 
