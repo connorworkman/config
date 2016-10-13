@@ -9770,3 +9770,4 @@ tmux
 bash
 sspc chromium
 v /store/config/.zsh_history 
+v /etc/systemd/journald.conf

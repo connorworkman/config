@@ -9,7 +9,7 @@ cleanup() {
   } || {
     printf " \033[31m %s \n" 'zshrc: the following errors were detected:'
     #<${ZSH_ERROR} tee -a /store/zsh-log-${UID}.log | sed 's/^.*$/\t&/'
-    { exec </dev/stdin; cat | tee -a /store/zsh-log-${UID}.log | sed 's/^.*$/\t&/'; } <&2
+    0<&2 { exec </dev/stdin; cat | tee -a /store/zsh-log-${UID}.log | sed 's/^.*$/\t&/'; }
   }
   printf "\033[0m"
  }
@@ -56,8 +56,8 @@ exec 2<>"${ZSH_ERROR}"
 
 ## Begin .zshrc config
 # Path to your oh-my-zsh installation.
-export ZSH=/usr/share/oh-my-zsh
-#export ZSH=/home/alyptik/.oh-my-zsh
+export ZSH="/usr/share/oh-my-zsh"
+#export ZSH="/home/alyptik/.oh-my-zsh"
 
 ## Function to capture exit code of laster command.
 ## Use in either "${PROMPT}" or "${RPROMPT}"
@@ -88,10 +88,16 @@ else
 
 ## Set theme based on whether X is running
 #[[ -z "$DISPLAY" ]] || \
-	ZSH_THEME="powerline"
-	#ZSH_THEME="bullet-train"
-	#ZSH_THEME="agnoster"
+## Set theme based on wheter screen or X is running as well as EUID
+#[[ -z "$DISPLAY" || -n "$SCREEN_NO" || "$EUID" -eq 0 ]] && \
+## Set theme based on wheter screen or X is running
+[[ -z "$DISPLAY" || -n "$SCREEN_NO" ]] && \
+	    ZSH_THEME="powerline" || \
+	    ZSH_THEME="bullet-train"
+
+#ZSH_THEME="agnoster"
 #ZSH_THEME="pygmalion"
+#ZSH_THEME="powerline"
 
 BULLETTRAIN_DIR_EXTENDED=2
 #export BULLETTRAIN_CUSTOM_MSG=`host 192.168.1.98 | sed -r 's/^.*pointer .*?\.(.*\..*\.)$/\1 -/'`
@@ -104,7 +110,8 @@ BULLETTRAIN_TIME_12HR=true
 #BULLETTRAIN_PROMPT_CHAR=`[[ "$EUID" != 0 ]] && printf '%s' '$' || printf '%s' '#'`
 BULLETTRAIN_STATUS_EXIT_SHOW=true
 BULLETTRAIN_PROMPT_SEPARATE_LINE=false
-BULLETTRAIN_PROMPT_ADD_NEWLINE=true
+BULLETTRAIN_PROMPT_ADD_NEWLINE=false
+#BULLETTRAIN_PROMPT_ADD_NEWLINE=true
 BULLETTRAIN_GIT_COLORIZE_DIRTY=true
 BULLETTRAIN_IS_SSH_CLIENT=true
 BULLETTRAIN_DIR_CONTEXT_SHOW=false
@@ -221,8 +228,8 @@ zstyle ':history-search-multi-word' page-size 5
 #autoload select-word-style
 #select-word-style shell
 
-export HISTFILE=/store/config/.zsh_history # ensure history file visibility
-export HH_CONFIG=hicolor # get more colors
+HISTFILE=${HOME}/.zsh_history # ensure history file visibility
+HH_CONFIG=hicolor # get more colors
 # History search
 autoload -Uz up-line-or-beginning-search
 autoload -Uz down-line-or-beginning-search
