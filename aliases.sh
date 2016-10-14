@@ -376,12 +376,12 @@ vkfix() {
 		s/[&]*#039\;/'\''/g
 		s/[&]*amp\;/\&/g
 		s/  / \& /g
-		s/\<[Ff][Ee][Aa][Tt][\.]*\>/ft\./g
-		s/\<[Vv]S[\.]*\>/vs\./g
-		s/\<V[Ss][\.]*\>/vs\./g
-		s/\<[Pp]resents\>/pres\./g
+		s/\<[Ff][Ee][Aa][Tt][\.]*\>/ft/g
+		s/\<[Vv][Ss][\.]*\>/vs/g
+		s/\<[Pp][Rr][Ee][Ss][Ee][Nn][Tt][Ss][\.]*\>/pres/g
 		s/\<\(ft\)\>/\1./g
 		s/\<\(vs\)\>/\1./g
+		s/\<\(pres\)\>/\1./g
 		s/\.Mp3/\.mp3/g
 		p'
 	printf "\"\n"
