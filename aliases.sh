@@ -367,9 +367,58 @@ alias ald='ld -I/lib64/ld-linux-x86-64.so.2 /usr/lib/crt1.o /usr/lib/crti.o -lc 
 
 ## shell functions
 
-compdefas() {
-	sudo dd if=/dev/sdc of-=/dev/sdd bs=64K conv=noerror,sync status=progress && \
-	sync
+vkfix() {
+    find . -maxdepth 1 -name "*.mp3" -print0 | while IFS= read -r -d '' first; do
+	printf '"%s" ' "${first}"
+	printf \"
+	printf "${first}" | sed -n '
+		s/\<\(.\)/\u\1/g
+		s/[&]*#039\;/'\''/g
+		s/[&]*amp\;/\&/g
+		s/  / \& /g
+		s/\<[Ff][Ee][Aa][Tt][\.]*\>/ft\./g
+		s/\<[Vv]S[\.]*\>/vs\./g
+		s/\<V[Ss][\.]*\>/vs\./g
+		s/\<[Pp]resents\>/pres\./g
+		s/\<\(ft\)\>/\1./g
+		s/\<\(vs\)\>/\1./g
+		s/\.Mp3/\.mp3/g
+		p'
+	printf "\"\n"
+    done | \
+	awk '! /\"\"/ {print}' | \
+	    while read -r final; do eval "mv --verbose ${final}"; done
+}
+
+share() {
+	curl -F"file=@${*}" https://0x0.st
+}
+
+short() {
+	curl -F"shorten=${*}" https://0x0.st
+}
+
+dirlinks() {
+	[[ -z "$1" ]] && dlist=( "${PWD}" ) || dlist=( "${@}" )
+	for ((i=1;i<$((${#dlist[@]}+1));i++)); do
+		echo find "$dlist[$i]" -maxdepth 1 -type l -exec ls {} \;
+	done
+}
+
+rpt() {
+	local pidlist
+	pidlist=$(for i in "$@"; do
+			ps -C "$i" -o pid=
+			#ps c -u ${USER} -o pid= | uniq
+		done)
+	if [[ `<<<"$pidlist" wc -w` -eq 0 ]]; then
+		echo "No PIDs found."
+	elif [[ `<<<"$pidlist" wc -w` -eq 1 ]]; then
+		echo sudo reptyr -T "$pidlist"
+	else
+		echo `<<<"$pidlist" wc -w`" PIDs found:"
+		printf '\n%s\n' "$pidlist"
+	fi
 }
 
 sdbus() {
@@ -581,7 +630,7 @@ eurl() {
     done
 }
 
-vkfix() {
+vkfix2() {
     find . -maxdepth 1 -name "*.mp3" -print0 | while IFS= read -r -d '' first; do
 	printf '"%s" ' "${first}"; printf \"; printf "${first}" | sed  -n 's/\bem\([A-Za-z0-9\;\#]*\)em\b/\1/gp'; printf "\"\n"
     done | \
@@ -667,55 +716,6 @@ vkfix() {
     done
 }
 
-vkfix2() {
-    find . -maxdepth 1 -name "*.mp3" -print0 | while IFS= read -r -d '' first; do
-	printf '"%s" ' "${first}"; printf \"; printf "${first}" | sed -n '
-		s/\<[Ff][Ee][Aa][Tt][\.]*\>/ft\./g
-		s/\<[Vv]S[\.]*\>/vs\./g
-		s/\<V[Ss][\.]*\>/vs\./g
-		s/\<presents\>/pres\./g
-		s/\<\(ft\)\>/\1./g
-		s/\<\(vs\)\>/\1./g
-		s/  / \& /g
-		s/\#039\;/'\''/g
-		s/amp\;/\&/g
-		s/\<\(.\)/\u\1/g
-		p'; printf "\"\n"
-    done | \
-	awk '! /\"\"/ {print}'  | while read -r final; do eval "mv --verbose ${final}"
-    done
-}
-
-share() {
-	curl -F"file=@${*}" https://0x0.st
-}
-
-short() {
-	curl -F"shorten=${*}" https://0x0.st
-}
-
-dirlinks() {
-	[[ -z "$1" ]] && dlist=( "${PWD}" ) || dlist=( "${@}" )
-	for ((i=1;i<$((${#dlist[@]}+1));i++)); do
-		echo find "$dlist[$i]" -maxdepth 1 -type l -exec ls {} \;
-	done
-}
-
-rpt() {
-	local pidlist
-	pidlist=$(for i in "$@"; do
-			ps -C "$i" -o pid=
-			#ps c -u ${USER} -o pid= | uniq
-		done)
-	if [[ `<<<"$pidlist" wc -w` -eq 0 ]]; then
-		echo "No PIDs found."
-	elif [[ `<<<"$pidlist" wc -w` -eq 1 ]]; then
-		echo sudo reptyr -T "$pidlist"
-	else
-		echo `<<<"$pidlist" wc -w`" PIDs found:"
-		printf '\n%s\n' "$pidlist"
-	fi
-}
 
 ajack() {
 	#alsa_out -j DeckA_Out -d "hw:2,0" &> /dev/null &
