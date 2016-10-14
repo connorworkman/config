@@ -25940,3 +25940,44 @@
 2016-10-13 22:03:55	thecat	who is using capital letters for hostnames?
 2016-10-13 22:03:58	thecat	anyway
 2016-10-13 22:04:15	thecat	where can I disable this evil feature ?
+2016-10-13 22:10:00		[22:04]
+2016-10-13 22:10:40	-->	Naeil (~nzoueidi@ubuntu/member/na3il) has joined #zsh
+2016-10-13 22:11:02	<--	xall (~xall@ip68-230-65-100.ph.ph.cox.net) has quit (Ping timeout: 268 seconds)
+2016-10-13 22:11:47	danielsh	hostnames are case-insensitive
+2016-10-13 22:12:31	alyptik	thecat› CASE_SENSITIVE="false" and check if you have `zstyle ':completion:*'                 matcher-list 'm:{a-zA-Z}={A-Za-z}'` in zshrc
+2016-10-13 22:12:40	danielsh	I think you need 5.3 to disable it "properly"
+2016-10-13 22:13:01	danielsh	until then, you can edit $^fpath/_ssh(N) and remove the -M 'a-z' near the end
+2016-10-13 22:13:24	danielsh	alyptik, that's a wrong answer.  CASE_SENSITIVE is not a zsh thing.   And that style won't override an explicit -M, as far as I know...
+2016-10-13 22:13:58	danielsh	rather: the behaviour will occur even without that style set.
+2016-10-13 22:14:07	alyptik	oh apologies
+2016-10-13 22:14:14	-->	derk0pf (~derk0pf@55d430d6.access.ecotel.net) has joined #zsh
+2016-10-13 22:14:20	alyptik	i have been using oh my zsh for so long i forgetat times 
+2016-10-13 22:14:36	danielsh	no worries.  But on this channel you can't assume people use omz.
+2016-10-13 22:15:29	-->	ahmedelgabri (~ahmedelga@212.123.217.154) has joined #zsh
+2016-10-13 22:16:53	<--	zpe (~zpe@c83-248-161-165.bredband.comhem.se) has quit (Remote host closed the connection)
+2016-10-13 22:18:29	thecat	danielsh: thatnks, I have changed:
+2016-10-13 22:18:31	thecat	compadd -M 'm:{a-zA-Z}={A-Za-z} r:|.=* r:|=*' "$@" $config_hosts
+2016-10-13 22:18:36	thecat	to
+2016-10-13 22:18:37	thecat	compadd  "$@" $config_hosts
+2016-10-13 22:18:50	thecat	but it still behaves the same
+2016-10-13 22:19:03	danielsh	did you restart zsh ?
+2016-10-13 22:19:31	thecat	you mean log in into a new shell? yes.
+2016-10-13 22:20:11	danielsh	okay, *now* check `zstyle -L \* matcher-list` to see if you have that globally, as alyptik said :-)
+2016-10-13 22:20:40	danielsh	5.3 will have http://sprunge.us/UNGZ, which ought to allow you to disable this behaviour by setting styles (i.e. without patching).
+2016-10-13 22:20:52	thecat	zstyle ':completion:*' matcher-list ''
+2016-10-13 22:21:18	danielsh	... Not sure whether that means _ssh needs to be changed to do «"$@" -M …» rather than «-M … "$@"».
+2016-10-13 22:21:26	danielsh	that won't cause case insensitivity
+2016-10-13 22:22:02	danielsh	(by the way: you can keep the r:| things inside the string, they're what makes a.b.c complete to alice.bob.com)
+2016-10-13 22:22:21	thecat	BTW, I changed ssh in /usr/share/zsh/functions/Completion/Unix/_ssh
+2016-10-13 22:22:45	thecat	but there is also the compiled version:
+2016-10-13 22:22:45	thecat	/usr/share/zsh/functions/Completion/Unix.zwc
+2016-10-13 22:22:57	thecat	do I perhaps need to recompile it ?
+2016-10-13 22:23:17	thecat	and, I should add, I am using 4.3.17
+2016-10-13 22:25:05	danielsh	ah, that'd explain it, yes
+2016-10-13 22:25:05		[22:25]
+2016-10-13 22:25:10	<--	cdown_ (~cdown@82-132-213-206.dab.02.net) has quit (Remote host closed the connection)
+2016-10-13 22:25:25	danielsh	what you can do is    mkdir ~/.zsh/fpath,  then prepend that to $fpath before calling compinit, and put the patched function there
+2016-10-13 22:26:36	danielsh	that will solve the immediate problem.. when 5.3 comes you should be able to drop that and add a zstyle setting to zshrc instead.
+2016-10-13 22:26:50	danielsh	(modulo point about -M/"$@" order above)
+2016-10-13 22:28:31	-->	cdown_ (~cdown@82-132-213-206.dab.02.net) has joined #zsh
+2016-10-13 22:28:38	danielsh	(afk)
