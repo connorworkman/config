@@ -772,8 +772,7 @@ scg() {
 	} || {
 		printf '\n \033[31m %s \n\033[0m' "Nothing to commit..."
 	}
-	#[[ $dirvar -eq 0 ]] && popd 2>&1 >/dev/null
-	[[ $dirvar -eq 0 ]] && popd 2>&1 >/dev/null
+	[[ $dirvar -eq 0 ]] && popd 2>&1 >/dev/null || return 0
 }
 
 par() {
