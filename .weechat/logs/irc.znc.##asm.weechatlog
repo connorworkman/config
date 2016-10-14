@@ -25118,3 +25118,112 @@
 2016-10-13 12:33:36		[12:33]
 2016-10-13 12:33:54	<--	MoALTz (~no@78-10-223-145.static.ip.netia.com.pl) has quit (Quit: Leaving)
 2016-10-13 12:35:04	<--	RoguePointer (~RoguePoin@unaffiliated/roguepointer) has quit (Ping timeout: 268 seconds)
+2016-10-13 14:31:01	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined ##asm
+2016-10-13 14:31:01		[14:31]
+2016-10-13 14:31:01	--	Topic for ##asm is "Assembly programming channel, all architectures welcome (please specify). Don't ask to ask! Use a pastebin if appropriate! Check your manuals! *** AT&T vs Intel flamers will be banned."
+2016-10-13 14:31:01	--	Topic set by Jester01 (~Jester01@62.100.244.69) on Fri, 30 Sep 2016 06:54:51
+2016-10-13 14:31:01	--	Channel ##asm: 279 nicks (0 ops, 0 voices, 279 normals)
+2016-10-13 14:31:01	***	Buffer Playback...
+2016-10-13 14:31:01	OxFEEDBACC	[20:25:46] oh, now i see the strings of question marks... [20:25:46]
+2016-10-13 14:31:01	Neslepaks	[20:26:43] I'm not sure of the -4 [20:26:43]
+2016-10-13 14:31:01	Neslepaks	[20:26:50] *refptr = (unsigned) (ADDR(r.symbol) + *refptr - refaddr) = 0x80483a8 + (-4) - 0x804839b [20:26:50]
+2016-10-13 14:31:01	Neslepaks	[20:26:52] In this [20:26:52]
+2016-10-13 14:31:01	OxFEEDBACC	[20:27:06] which one? [20:27:06]
+2016-10-13 14:31:01	Neslepaks	[20:27:31] The *refptr [20:27:31]
+2016-10-13 14:31:01	Neslepaks	[20:27:39] 6: e8 fc ff ff ff       call 7  <main+0x7> [20:27:39]
+2016-10-13 14:31:01	OxFEEDBACC	[20:28:23] if that refers to the call instruction, that is 5 bytes long... [20:28:23]
+2016-10-13 14:31:01	OxFEEDBACC	[20:29:42] damn... lag... [20:29:42]
+2016-10-13 14:31:01	OxFEEDBACC	[20:33:23] did i miss anything? [20:33:23]
+2016-10-13 14:31:01	GeDaMo	[20:33:49] Nope [20:33:49]
+2016-10-13 14:31:01	OxFEEDBACC	[20:34:39] the call is at *39a, so the updated EIP is *39f, so the call offset is *3a8-*39f [20:34:39]
+2016-10-13 14:31:01	OxFEEDBACC	[20:36:20] so, actually your result is correct, but i have no idea what role the -4 plays... [20:36:20]
+2016-10-13 14:31:01	Neslepaks	[20:36:34] e8 fc ff ff ff [20:36:34]
+2016-10-13 14:31:01	Neslepaks	[20:36:56] I think the -4 is because of this [20:36:56]
+2016-10-13 14:31:01	OxFEEDBACC	[20:38:11] i looked at the incarnation of main with the question marks... [20:38:11]
+2016-10-13 14:31:01	Neslepaks	[20:38:26] So, when adjusted, it's ff ff ff fc [20:38:26]
+2016-10-13 14:31:01	Neslepaks	[20:38:35] Because of little endian [20:38:35]
+2016-10-13 14:31:01	Neslepaks	[20:38:56] And if you add 4 to that, it becomes 100000000 [20:38:56]
+2016-10-13 14:31:01	OxFEEDBACC	[20:38:59] oh, well, offset 7 is marked as a relocation entry... [20:38:59]
+2016-10-13 14:31:01	Neslepaks	[20:39:35] So I just look for the value that zeros all numbers in this manner, without understanding the logic, then choosing the negative of that [20:39:35]
+2016-10-13 14:31:01	Neslepaks	[20:39:44] As I've seen a similar example in the slides [20:39:44]
+2016-10-13 14:31:01	Neslepaks	[20:39:50] Where this was done [20:39:50]
+2016-10-13 14:31:01	OxFEEDBACC	[20:40:10] well, if your slides answer your questions, why do you ask here? [20:40:10]
+2016-10-13 14:31:01	Neslepaks	[20:40:18] They don't [20:40:18]
+2016-10-13 14:31:01	Neslepaks	[20:40:23] I'm trying to make sense of them [20:40:23]
+2016-10-13 14:31:01	Neslepaks	[20:40:38] In another example: "It then updates the reference from its current value (0xfffffffc = -4) " [20:40:38]
+2016-10-13 14:31:01	Neslepaks	[20:40:46] This isn't explained anywhere [20:40:46]
+2016-10-13 14:31:01	OxFEEDBACC	[20:40:50] well, look at the disassembly at the bottom of your paste... [20:40:50]
+2016-10-13 14:31:01	OxFEEDBACC	[20:40:59] you have all relevant addresses there... [20:40:59]
+2016-10-13 14:31:01	OxFEEDBACC	[20:41:27] the missing disassembly offsets can be reconstructed by simple addition... [20:41:27]
+2016-10-13 14:31:01	Neslepaks	[20:41:54] I understand that bit, how does this relate ti the -4? [20:41:54]
+2016-10-13 14:31:01	OxFEEDBACC	[20:41:56] or addresses... [20:41:56]
+2016-10-13 14:31:01	Neslepaks	[20:42:11] I'm satisfied that I've worked on this correctly, thank you for the confirmation [20:42:11]
+2016-10-13 14:31:01	OxFEEDBACC	[20:42:28] to be honest, i don't really know how relocation information is maintained... [20:42:28]
+2016-10-13 14:31:01	Neslepaks	[20:42:38] ???????: e8 ?? ?? ?? ?? call ???????? <sort> [20:42:38]
+2016-10-13 14:31:01	Neslepaks	[20:42:48] Turned to [20:42:48]
+2016-10-13 14:31:01	Neslepaks	[20:42:49] 0x804839b: e8 09 00 00 00       call 0x80483a8 <sort> [20:42:49]
+2016-10-13 14:31:01	OxFEEDBACC	[20:42:51] it's irrelevant however, as long as you have the VMAs of the code and/or data... [20:42:51]
+2016-10-13 14:31:01	Neslepaks	[20:43:01] ???????: b8 00 00 00 00 mov $0x0,%eax [20:43:01]
+2016-10-13 14:31:01	Neslepaks	[20:43:03] Is left now [20:43:03]
+2016-10-13 14:31:01	OxFEEDBACC	[20:43:19] *39b? are you sure? [20:43:19]
+2016-10-13 14:31:01	Neslepaks	[20:44:16] Why? What's wrong with it? [20:44:16]
+2016-10-13 14:31:01	Neslepaks	[20:44:33] refaddr = ADDR(s) + r.offset = 0x8048394 + 0x7 = 0x804839b [20:44:33]
+2016-10-13 14:31:01	OxFEEDBACC	[20:44:47] the instruction before the call is at 0x8048397, and is 3 bytes long... [20:44:47]
+2016-10-13 14:31:01	OxFEEDBACC	[20:45:17] [22:42:07] <OxFEEDBACC> the missing disassembly offsets can be reconstructed by simple addition... [20:45:17]
+2016-10-13 14:31:01	Neslepaks	[20:49:12] You make sense [20:49:12]
+2016-10-13 14:31:01	Neslepaks	[20:49:18] But then I'm confused [20:49:18]
+2016-10-13 14:31:01	Neslepaks	[20:49:25] How is the offset 0x7? [20:49:25]
+2016-10-13 14:31:01	OxFEEDBACC	[20:49:45] just ignore the relocation shit for the moment... it's irrelevant... [20:49:45]
+2016-10-13 14:31:01	***	Playback Complete.
+2016-10-13 14:31:28	--	Channel created on Sun, 27 May 2007 05:31:12
+2016-10-13 14:32:34	-->	latemus (~latemus@unaffiliated/latemus) has joined ##asm
+2016-10-13 14:35:57	-->	Antares (~Antares@ppp91-78-123-238.pppoe.mtu-net.ru) has joined ##asm
+2016-10-13 14:36:43	<--	nurupo (~nurupo.ga@unaffiliated/nurupo) has quit (Ping timeout: 250 seconds)
+2016-10-13 14:37:49	-->	Moose (~moose@unaffiliated/moose) has joined ##asm
+2016-10-13 14:37:57	<--	Church- (~hatter@unaffiliated/church-) has quit (Ping timeout: 248 seconds)
+2016-10-13 14:38:14	-->	nurupo (~nurupo.ga@unaffiliated/nurupo) has joined ##asm
+2016-10-13 14:38:37	<--	AverageJ0e (~fiugreihy@199-36-84-186.static-ip.telepacific.net) has quit (Quit: Leaving)
+2016-10-13 14:38:53	<--	Moose (~moose@unaffiliated/moose) has quit (Client Quit)
+2016-10-13 14:39:35	-->	Moose (~moose@unaffiliated/moose) has joined ##asm
+2016-10-13 14:43:01	-->	Gilfoyle (~hatter@unaffiliated/church-) has joined ##asm
+2016-10-13 14:43:16	<--	NeoGeo64 (~linux@2604:2d80:881a:0:b4a3:be16:d6fd:8559) has quit (Ping timeout: 258 seconds)
+2016-10-13 14:43:25	--	Gilfoyle is now known as Guest29593
+2016-10-13 14:44:06	-->	NeoGeo64 (~linux@2604:2d80:881a:0:b4a3:be16:d6fd:8559) has joined ##asm
+2016-10-13 14:45:29	-->	notwithstanding (elysian234@14-201-217-198.tpgi.com.au) has joined ##asm
+2016-10-13 14:51:00		[14:45]
+2016-10-13 14:51:43	<--	osa1_ (~omer@2001:18e8:2:28b6:2ab2:bdff:fedf:fa66) has quit (Ping timeout: 258 seconds)
+2016-10-13 14:54:29	-->	powerOfTwo (~powerOfTw@181.90.174.224) has joined ##asm
+2016-10-13 14:56:13	<--	WilburPB (~WilburPB@146.197.246.70) has quit (Quit: My Mac has gone to sleep. ZZZzzz…)
+2016-10-13 14:58:02	-->	BeaverLeader_ (~ASpaceOdy@nat-98-169.secure.wireless.unca.edu) has joined ##asm
+2016-10-13 14:58:17	--	Guest29593 is now known as Church-
+2016-10-13 15:04:00		[14:58]
+2016-10-13 15:20:24	<--	sneakers (~sneakers@unaffiliated/sneakerhead) has quit (Ping timeout: 260 seconds)
+2016-10-13 15:20:24		[15:20]
+2016-10-13 15:20:25	-->	RTFM[away] (~RTFMaway]@unaffiliated/rtfmaway/x-3892344) has joined ##asm
+2016-10-13 15:20:57	<--	Church- (~hatter@unaffiliated/church-) has quit (Ping timeout: 268 seconds)
+2016-10-13 15:25:13	-->	MarkX_ (~MarkX@38.117.90.254) has joined ##asm
+2016-10-13 15:28:52	--	MarkX_ is now known as MarkX
+2016-10-13 15:34:00		[15:28]
+2016-10-13 15:35:48	<--	kolobyte (~aaa@unaffiliated/kolobyte) has quit (Read error: Connection reset by peer)
+2016-10-13 15:36:21	-->	Church- (~hatter@unaffiliated/church-) has joined ##asm
+2016-10-13 15:36:39	<--	kbw (~KeyboardW@68-204-170-7.res.bhn.net) has quit (Quit: My MacBook Air has gone to sleep. ZZZzzz…)
+2016-10-13 15:36:48	<--	meowrobot (~katgirl@ool-18ba0f1f.dyn.optonline.net) has quit (Ping timeout: 260 seconds)
+2016-10-13 15:36:54	-->	kolobyte (~aaa@23.94.98.192) has joined ##asm
+2016-10-13 15:36:54	<--	kolobyte (~aaa@23.94.98.192) has quit (Changing host)
+2016-10-13 15:36:54	-->	kolobyte (~aaa@unaffiliated/kolobyte) has joined ##asm
+2016-10-13 15:42:00		[15:36]
+2016-10-13 15:42:31	-->	kbw (~KeyboardW@68-204-170-7.res.bhn.net) has joined ##asm
+2016-10-13 15:48:00		[15:42]
+2016-10-13 15:51:51	<--	sn1c (~sn1c@ip-94-114-69-24.unity-media.net) has quit (Quit: sn1c)
+2016-10-13 15:52:43	-->	osa1_ (~omer@50-253-193-254-static.hfc.comcastbusiness.net) has joined ##asm
+2016-10-13 15:57:57	<--	osa1_ (~omer@50-253-193-254-static.hfc.comcastbusiness.net) has quit (Ping timeout: 268 seconds)
+2016-10-13 16:03:00		[15:57]
+2016-10-13 16:03:07	-->	SunnyD (~SunnyD@cpe-72-178-78-211.hot.res.rr.com) has joined ##asm
+2016-10-13 16:03:15	-->	osa1 (~omer@haskell/developer/osa1) has joined ##asm
+2016-10-13 16:09:00		[16:03]
+2016-10-13 16:09:45	<--	osa1 (~omer@haskell/developer/osa1) has quit (Ping timeout: 260 seconds)
+2016-10-13 16:12:13	-->	osa1 (~omer@50-253-193-254-static.hfc.comcastbusiness.net) has joined ##asm
+2016-10-13 16:12:13	<--	osa1 (~omer@50-253-193-254-static.hfc.comcastbusiness.net) has quit (Changing host)
+2016-10-13 16:12:13	-->	osa1 (~omer@haskell/developer/osa1) has joined ##asm
+2016-10-13 16:12:51	-->	zap0 (~moofy@14-201-222-143.tpgi.com.au) has joined ##asm
+2016-10-13 16:15:46	-->	Goplat (~goplat@reactos/developer/Goplat) has joined ##asm

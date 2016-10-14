@@ -75,11 +75,11 @@ else
   fi
   printf '%s' "$EXIT_CODE_PROMPT"
 }
-#[[ "$RPROMPT" != *'$(check_last_exit_code)'* ]] && export RPROMPT='$(check_last_exit_code)'${RPROMPT}
+[[ "$RPROMPT" != *$(check_last_exit_code)* ]] && export RPROMPT='$(check_last_exit_code)'${RPROMPT}
 #[[ "$LPROMPT" != *'$(check_last_exit_code)'* ]] && export LPROMPT=${LPROMPT}'$(check_last_exit_code)'
 #export PROMPT=${PROMPT}'$(check_last_exit_code)'
 #export PS1=${PS1}'$(check_last_exit_code)'
-#export RPROMPT='$(check_last_exit_code)$(git_prompt_string)${RPROMPT}'
+export RPROMPT='$(check_last_exit_code)$(git_prompt_string)${RPROMPT}'
 
 # Set name of the theme to load.
 # Look in ~/.oh-my-zsh/themes/
@@ -93,7 +93,8 @@ else
 ## Set theme based on wheter screen or X is running
 [[ -z "$DISPLAY" || -n "$SCREEN_NO" ]] && \
 	    ZSH_THEME="powerline" || \
-	    ZSH_THEME="bullet-train"
+	    ZSH_THEME="powerline"
+	    #ZSH_THEME="bullet-train"
 
 #ZSH_THEME="agnoster"
 #ZSH_THEME="pygmalion"

@@ -25566,3 +25566,126 @@
 2016-10-13 12:25:21	-->	Rodya_ (~Rodya_@2601:46:4001:e0b4:59a3:a3e3:189e:8eca) has joined #zsh
 2016-10-13 12:29:47	<--	Rodya_ (~Rodya_@2601:46:4001:e0b4:59a3:a3e3:189e:8eca) has quit (Ping timeout: 258 seconds)
 2016-10-13 12:33:37	<--	linuxmodder (linuxmodde@fedora/linuxmodder) has quit (Ping timeout: 258 seconds)
+2016-10-13 14:31:04	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined #zsh
+2016-10-13 14:31:04		[14:31]
+2016-10-13 14:31:04	--	Topic for #zsh is "v5.2 | http://zsh.sf.net/ | http://zshwiki.org/ | http://zsh.sf.net/FAQ/ | http://zshwiki.org/home/docs/wikifaq | http://tinyurl.com/zsh-refcard-pdf | Just ask. | Nobody here or everybody clueless? try the zsh-users mailinglist: http://www.zsh.org/mla"
+2016-10-13 14:31:04	--	Topic set by Mikachu (~Mikachu@gimp/developer/Mikachu) on Wed, 02 Dec 2015 11:54:14
+2016-10-13 14:31:04	--	Channel #zsh: 410 nicks (0 ops, 0 voices, 410 normals)
+2016-10-13 14:31:04	***	Buffer Playback...
+2016-10-13 14:31:04	llua	[00:02:54] that is one of the arrays it defines [00:02:54]
+2016-10-13 14:31:04	FoH	[00:03:23] heh heh. i see, locally that $colour also exists :) [00:03:23]
+2016-10-13 14:31:04	FoH	[00:04:22] i mainly wanted to see if the paring of numbers and names swaps in the middle like mine does.  but i realise now that it's harmless [00:04:22]
+2016-10-13 14:31:04	FoH	[00:04:47] pairing [00:04:47]
+2016-10-13 14:31:04	boodle	[15:02:47] Hi, can someone help with getting this expansion to actually work (won't parse text as valid filenames which they are): function ptest() { ls -l ${(z)@:q} } [15:02:47]
+2016-10-13 14:31:04	danielsh	[15:03:31] ... what are you trying to do ? [15:03:31]
+2016-10-13 14:31:04	danielsh	[15:03:42] can't imagine why you'd want to (z) $@ [15:03:42]
+2016-10-13 14:31:04	boodle	[15:04:56] this is a test (stripped down version) for a 'pdfcat' function. Just trying to get the $@ items processed as valid filenames (e.g. ptest *.pdf) would just 'ls -l' each file [15:04:56]
+2016-10-13 14:31:04	osse	[15:05:16] boodle: then you want simply "$@" [15:05:16]
+2016-10-13 14:31:04	boodle	[15:06:10] heh ok..seems to work fine with $@[1,-2] too [15:06:10]
+2016-10-13 14:31:04	boodle	[15:06:16] thank you both [15:06:16]
+2016-10-13 14:31:04	osse	[15:06:47] boodle: *.pdf is processed to generate a list of arguments before the function is called. the function just gets the matched result(s) [15:06:47]
+2016-10-13 14:31:04	thrig	[15:08:00] zsh does the right thing (unless you break it with SH_WORD_SPLIT) [15:08:00]
+2016-10-13 14:31:04	boodle	[15:10:30] k thanks, one related question, why doesn't the 2nd version work?:   # last=${@[-1]} [15:10:30]
+2016-10-13 14:31:04	boodle	[15:10:31]   # butlast=${(~z)@[1,-2]:q} [15:10:31]
+2016-10-13 14:31:04	boodle	[15:10:43] oops, meant to paste: http://vpaste.net/vLPwh [15:10:43]
+2016-10-13 14:31:04	llua	[15:11:38] because you mashed multiple filenames into a scalar variable [15:11:38]
+2016-10-13 14:31:04	llua	[15:11:52] try using an array [15:11:52]
+2016-10-13 14:31:04	thrig	[15:11:53] > a=(a b c); print -l $a[1,-2] [15:11:53]
+2016-10-13 14:31:04	machabot	[15:11:54] thrig: a [15:11:54]
+2016-10-13 14:31:04	machabot	[15:11:54] thrig: b [15:11:54]
+2016-10-13 14:31:04	boodle	[15:13:42] oh, thought it was an array..ah.. so putting parens around var assignments does it, thank you [15:13:42]
+2016-10-13 14:31:04	jyaworski	[16:37:35] Hey all. I seem to be having trouble with zstyle. I'm trying to declare something in my .zshrc and then reference it in my function. Can anyone look at this? https://gist.github.com/jyaworski/94c62b0ad18c809a29658939cc076a03 [16:37:35]
+2016-10-13 14:31:04	thrig	[16:40:53] what are you trying to do? [16:40:53]
+2016-10-13 14:31:04	jyaworski	[16:42:48] thrig this is a bit of code demonstrating what I'm trying to do. The oh-my-zsh ssh-agent plugin doesn't allow us to pass arguments to ssh-add. I looked at the existing code and tried to emulate it for the new functionality. Essentially, set a zstyle in .zshrc and reference the value in this function. [16:42:48]
+2016-10-13 14:31:04	thrig	[16:44:09] for what purpose? note that the channel generally recommends against omz [16:44:09]
+2016-10-13 14:31:04	jyaworski	[16:46:02] Essentially, flag addition. After the ssh-add call have $ssh_add_opts, which is an array built with += based on zstyle values. [16:46:02]
+2016-10-13 14:31:04	jyaworski	[16:46:24] This is applied specifically to omz, but I think this is a general question. [16:46:24]
+2016-10-13 14:31:04	some0ne	[17:05:03] is it possible to disable user name in named directory ? (i tried with: unhash -d $(hash -d | awk -F "=" '{print $1}' | tr '\n' ' ')), but it seems the hash table is filled after .zshrc is sourced [17:05:03]
+2016-10-13 14:31:04	llua	[17:48:38] i don't really understand the question [17:48:38]
+2016-10-13 14:31:04	llua	[17:50:02] jyaworski: how do you run script.zsh? [17:50:02]
+2016-10-13 14:31:04	jyaworski	[17:50:29] llua it's loaded by antigen. [17:50:29]
+2016-10-13 14:31:04	llua	[17:50:57] that isn't helpful, is the file sourced or executed? [17:50:57]
+2016-10-13 14:31:04	jyaworski	[17:51:15] Sourced. [17:51:15]
+2016-10-13 14:31:04	llua	[17:52:04] and when you source the file manually, it is still blank? [17:52:04]
+2016-10-13 14:31:04	jyaworski	[17:53:55] Yes. [17:53:55]
+2016-10-13 14:31:04	llua	[17:55:06] and the style is still set? [17:55:06]
+2016-10-13 14:31:04	llua	[17:55:18] if so, part of the story is missing [17:55:18]
+2016-10-13 14:31:04	llua	[17:55:22] > zstyle ':omz:plugins:ssh-agent' lifetime 4h; () { local lifetime; zstyle -s ':omz:plugins:ssh-agent' lifetime lifetime; typeset -p $_ } [17:55:22]
+2016-10-13 14:31:04	machabot	[17:55:23] llua: typeset lifetime=4h [17:55:23]
+2016-10-13 14:31:04	llua	[17:56:38] some0ne: do you mind explaining what you mean by 'disable user name in named directory'? [17:56:38]
+2016-10-13 14:31:04	jyaworski	[17:57:45] Huh. Let me look. Thanks llua. [17:57:45]
+2016-10-13 14:31:04	jyaworski	[17:59:47] Ah, OK. I think I may know where the disconnect is. I was expecting lifetime to show up as $lifetime. [17:59:47]
+2016-10-13 14:31:04	jyaworski	[18:00:30] Which it does. Huh. [18:00:30]
+2016-10-13 14:31:04	danielsh	[18:05:23] llua, I think some0ne was asking how to empty $nameddirs.   (I see he's left) [18:05:23]
+2016-10-13 14:31:04	llua	[18:09:15] danielsh: yea, but it is empty by default, which confused me [18:09:15]
+2016-10-13 14:31:04	llua	[18:09:36] so i wondered if he didn't want usernames completed when doing foo ~<tab> [18:09:36]
+2016-10-13 14:31:04	danielsh	[18:24:16] *nod* [18:24:16]
+2016-10-13 14:31:04	jyaworski	[18:36:47] llua it looks like it's some scoping issue. I added it to the top of the script and it worked. :/ [18:36:47]
+2016-10-13 14:31:04	jyaworski	[18:38:32] I'll track that down. Thanks a lot. [18:38:32]
+2016-10-13 14:31:04	***	Playback Complete.
+2016-10-13 14:31:15	-->	plonk (~plonk@rosa.physik-pool.tu-berlin.de) has joined #zsh
+2016-10-13 14:31:15	<--	plonk (~plonk@rosa.physik-pool.tu-berlin.de) has quit (Changing host)
+2016-10-13 14:31:15	-->	plonk (~plonk@unaffiliated/plonk) has joined #zsh
+2016-10-13 14:31:18	<--	plonk (~plonk@unaffiliated/plonk) has quit (Read error: Connection reset by peer)
+2016-10-13 14:32:16	--	Channel created on Tue, 02 Sep 2003 05:34:53
+2016-10-13 14:32:19	-->	plonk (~plonk@rosa.physik-pool.tu-berlin.de) has joined #zsh
+2016-10-13 14:32:19	<--	plonk (~plonk@rosa.physik-pool.tu-berlin.de) has quit (Changing host)
+2016-10-13 14:32:19	-->	plonk (~plonk@unaffiliated/plonk) has joined #zsh
+2016-10-13 14:32:44	<--	plonk (~plonk@unaffiliated/plonk) has quit (Read error: Connection reset by peer)
+2016-10-13 14:33:01	-->	plonk (~plonk@rosa.physik-pool.tu-berlin.de) has joined #zsh
+2016-10-13 14:33:01	<--	plonk (~plonk@rosa.physik-pool.tu-berlin.de) has quit (Changing host)
+2016-10-13 14:33:01	-->	plonk (~plonk@unaffiliated/plonk) has joined #zsh
+2016-10-13 14:33:02	<--	plonk (~plonk@unaffiliated/plonk) has quit (Read error: Connection reset by peer)
+2016-10-13 14:33:56	-->	plonk_ (~plonk@rosa.physik-pool.tu-berlin.de) has joined #zsh
+2016-10-13 14:33:56	<--	plonk_ (~plonk@rosa.physik-pool.tu-berlin.de) has quit (Changing host)
+2016-10-13 14:33:56	-->	plonk_ (~plonk@unaffiliated/plonk) has joined #zsh
+2016-10-13 14:33:57	<--	plonk_ (~plonk@unaffiliated/plonk) has quit (Read error: Connection reset by peer)
+2016-10-13 14:34:29	-->	plonk (~plonk@rosa.physik-pool.tu-berlin.de) has joined #zsh
+2016-10-13 14:34:29	<--	plonk (~plonk@rosa.physik-pool.tu-berlin.de) has quit (Changing host)
+2016-10-13 14:34:29	-->	plonk (~plonk@unaffiliated/plonk) has joined #zsh
+2016-10-13 14:34:29	<--	plonk (~plonk@unaffiliated/plonk) has quit (K-Lined)
+2016-10-13 14:35:51	<--	zsh094 (18e83988@gateway/web/freenode/ip.24.232.57.136) has quit (Ping timeout: 260 seconds)
+2016-10-13 14:37:04	<--	Sasazuka (~Sasazuka@unaffiliated/sasazuka) has quit (Ping timeout: 260 seconds)
+2016-10-13 14:37:23	<--	majoh (~Sponge_Bo@antiklimax.se) has quit (Ping timeout: 256 seconds)
+2016-10-13 14:38:12	<--	SeepingN (~CPngN@unaffiliated/cpngn/x-6985199) has quit (Disconnected by services)
+2016-10-13 14:38:20	-->	SeepingN_ (~CPngN@unaffiliated/cpngn/x-6985199) has joined #zsh
+2016-10-13 14:40:04	-->	majoh (~Sponge_Bo@antiklimax.se) has joined #zsh
+2016-10-13 14:46:00		[14:40]
+2016-10-13 14:48:16	<--	blackmesa (~blackmesa@aftr-37-201-227-42.unity-media.net) has quit (Ping timeout: 268 seconds)
+2016-10-13 14:51:59	<--	SeepingN_ (~CPngN@unaffiliated/cpngn/x-6985199) has quit (Quit: The system is going down for reboot NOW!)
+2016-10-13 14:55:55	-->	nhooyr (nhooyrmatr@gateway/shell/matrix.org/x-gwmuudexsjdnzqcj) has joined #zsh
+2016-10-13 14:56:17	<--	nhooyr (nhooyrmatr@gateway/shell/matrix.org/x-gwmuudexsjdnzqcj) has left #zsh ("User left")
+2016-10-13 14:57:12	-->	nhooyr (nhooyrmatr@gateway/shell/matrix.org/x-gwmuudexsjdnzqcj) has joined #zsh
+2016-10-13 14:57:46	nhooyr	anyone here? I'm on matrix and it says only 3 people are here
+2016-10-13 14:58:01	llua	nah
+2016-10-13 14:59:56	-->	alexandros_c (~alexandro@unaffiliated/alexandros-c/x-1684531) has joined #zsh
+2016-10-13 15:00:53	-->	hpt (~hpt@61.149.229.55) has joined #zsh
+2016-10-13 15:02:02	-->	Rodya_ (~Rodya_@2601:46:4001:e0b4:459a:8175:5081:21e1) has joined #zsh
+2016-10-13 15:02:02		[15:02]
+2016-10-13 15:06:16	<--	Rodya_ (~Rodya_@2601:46:4001:e0b4:459a:8175:5081:21e1) has quit (Ping timeout: 258 seconds)
+2016-10-13 15:09:47	-->	palleroy0 (~palleroy0@unaffiliated/palleroy0) has joined #zsh
+2016-10-13 15:15:00		[15:09]
+2016-10-13 15:16:33	-->	ArchNoob (~ArchNoob@unaffiliated/archnoob) has joined #zsh
+2016-10-13 15:22:00		[15:16]
+2016-10-13 15:23:23	<--	hpt (~hpt@61.149.229.55) has quit (Quit: Lost terminal)
+2016-10-13 15:27:00	-->	Qommand0r (~HENKiE@unaffiliated/schaap137) has joined #zsh
+2016-10-13 15:30:46	-->	hpt (~hpt@61.149.229.55) has joined #zsh
+2016-10-13 15:36:00		[15:30]
+2016-10-13 15:44:33	-->	blackmesa (~blackmesa@aftr-37-201-227-42.unity-media.net) has joined #zsh
+2016-10-13 15:48:53	<--	blackmesa (~blackmesa@aftr-37-201-227-42.unity-media.net) has quit (Ping timeout: 248 seconds)
+2016-10-13 15:54:00		[15:48]
+2016-10-13 15:54:56	<--	alexandros_c (~alexandro@unaffiliated/alexandros-c/x-1684531) has quit (Quit: WeeChat 1.6)
+2016-10-13 15:55:41	-->	alexandros_c (~alexandro@unaffiliated/alexandros-c/x-1684531) has joined #zsh
+2016-10-13 16:01:00		[15:55]
+2016-10-13 16:02:29	-->	Rodya_ (~Rodya_@2601:46:4001:e0b4:5ce7:674:3829:6b6d) has joined #zsh
+2016-10-13 16:02:31	<--	ArchNoob (~ArchNoob@unaffiliated/archnoob) has quit (Read error: Connection reset by peer)
+2016-10-13 16:03:41	<--	SCHAPiE (~SCHAAP137@unaffiliated/schaap137) has quit (Ping timeout: 260 seconds)
+2016-10-13 16:06:50	<--	Rodya_ (~Rodya_@2601:46:4001:e0b4:5ce7:674:3829:6b6d) has quit (Ping timeout: 258 seconds)
+2016-10-13 16:07:17	-->	macabre (~ibtjw@unaffiliated/macabre) has joined #zsh
+2016-10-13 16:08:17	<--	ahmedelgabri (~ahmedelga@ip4da074e6.direct-adsl.nl) has quit (Ping timeout: 258 seconds)
+2016-10-13 16:10:44	-->	Jellyg00se (~Jellyg00s@host86-187-163-82.range86-187.btcentralplus.com) has joined #zsh
+2016-10-13 16:11:25	-->	ahmedelgabri (~ahmedelga@ip4da074e6.direct-adsl.nl) has joined #zsh
+2016-10-13 16:11:57	<--	xall (~xall@wsip-70-166-121-212.ph.ph.cox.net) has quit (Ping timeout: 252 seconds)
+2016-10-13 16:13:12	-->	higgs (~higgs@184-100-120-131.mpls.qwest.net) has joined #zsh
+2016-10-13 16:16:28	-->	SCHAPiE (~SCHAAP137@dhcp-077-249-247-124.chello.nl) has joined #zsh
+2016-10-13 16:16:28		[16:16]
