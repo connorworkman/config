@@ -59,28 +59,6 @@ exec 2<>"${ZSH_ERROR}"
 export ZSH="/usr/share/oh-my-zsh"
 #export ZSH="/home/alyptik/.oh-my-zsh"
 
-## Function to capture exit code of laster command.
-## Use in either "${PROMPT}" or "${RPROMPT}"
-check_last_exit_code() {
-  local LAST_EXIT_CODE=$?
-  local EXIT_CODE_PROMPT=' '
-  if [[ ${LAST_EXIT_CODE} -ne 0 ]]; then
-    EXIT_CODE_PROMPT+="%{$fg[red]%}-%{$reset_color%}"
-    EXIT_CODE_PROMPT+="%{$fg_bold[red]%}$LAST_EXIT_CODE%{$reset_color%}"
-    EXIT_CODE_PROMPT+="%{$fg[red]%}-%{$reset_color%}"
-else
-    EXIT_CODE_PROMPT+="%{$fg[green]%}-%{$reset_color%}"
-    EXIT_CODE_PROMPT+="%{$fg_bold[green]%}$LAST_EXIT_CODE%{$reset_color%}"
-    EXIT_CODE_PROMPT+="%{$fg[green]%}-%{$reset_color%}"
-  fi
-  printf '%s' "$EXIT_CODE_PROMPT"
-}
-[[ "$RPROMPT" != *$(check_last_exit_code)* ]] && export RPROMPT='$(check_last_exit_code)'${RPROMPT}
-#[[ "$LPROMPT" != *'$(check_last_exit_code)'* ]] && export LPROMPT=${LPROMPT}'$(check_last_exit_code)'
-#export PROMPT=${PROMPT}'$(check_last_exit_code)'
-#export PS1=${PS1}'$(check_last_exit_code)'
-export RPROMPT='$(check_last_exit_code)$(git_prompt_string)${RPROMPT}'
-
 # Set name of the theme to load.
 # Look in ~/.oh-my-zsh/themes/
 # Optionally, if you set this to "random", it'll load a random theme each
@@ -195,7 +173,7 @@ source ${ZSH}/oh-my-zsh.sh
 ## Start gpg/ssh agent and setup pump environment variables
 { eval $(keychain --eval --agents ssh,gpg identity id_rsa id_ecdsa); eval $(pump --startup); } 2>&1 9>&1
 
-precmd() { disambiguate-keeplast }
+precmd() { disambiguate-keeplast; }
 
 ## Envoy commands as alternate ssh/gpg-agent manager
 #[[ ${EUID} -eq 1000 ]] && { envoy -t ssh-agent -a identity id_rsa id_ecdsa; source <(envoy -p); }
@@ -720,6 +698,82 @@ autoload -U +X bashcompinit && bashcompinit
 #autoload -U compinit && compinit -u
 #autoload -U bashcompinit && bashcompinit
 
+## Function to capture exit code of later command.
+## Use in either "${PROMPT}" or "${RPROMPT}"
+check_last_exit_code() {
+  local LAST_EXIT_CODE=$?
+  local EXIT_CODE_PROMPT=' '
+  if [[ ${LAST_EXIT_CODE} -ne 0 ]]; then
+    EXIT_CODE_PROMPT+="%{$fg[red]%}[%{$reset_color%}"
+    EXIT_CODE_PROMPT+="%{$fg_bold[red]%}$LAST_EXIT_CODE%{$reset_color%}"
+    EXIT_CODE_PROMPT+="%{$fg[red]%}]%{$reset_color%}"
+else
+    #EXIT_CODE_PROMPT+="%{$fg[green]%}-%{$reset_color%}"
+    #EXIT_CODE_PROMPT+="%{$fg_bold[green]%}$LAST_EXIT_CODE%{$reset_color%}"
+    #EXIT_CODE_PROMPT+="%{$fg[green]%}-%{$reset_color%}"
+  fi
+  printf '%s' "$EXIT_CODE_PROMPT"
+}
+## Adapted from code found at <https://gist.github.com/1712320>.
+setopt prompt_subst
+autoload -U colors && colors # Enable colors in prompt
+# Modify the colors and symbols in these variables as desired.
+GIT_PROMPT_SYMBOL="%{$fg[blue]%}±"
+GIT_PROMPT_PREFIX="%{$fg[green]%}[%{$reset_color%}"
+GIT_PROMPT_SUFFIX="%{$fg[green]%}]%{$reset_color%}"
+GIT_PROMPT_AHEAD="%{$fg[red]%}ANUM%{$reset_color%}"
+GIT_PROMPT_BEHIND="%{$fg[cyan]%}BNUM%{$reset_color%}"
+GIT_PROMPT_MERGING="%{$fg[magenta]%}⚡︎%{$reset_color%}"
+GIT_PROMPT_UNTRACKED="%{$fg[red]%}●%{$reset_color%}"
+GIT_PROMPT_MODIFIED="%{$fg[yellow]%}●%{$reset_color%}"
+GIT_PROMPT_STAGED="%{$fg[green]%}●%{$reset_color%}"
+# Show Git branch/tag, or name-rev if on detached head
+parse_git_branch() {
+  (git symbolic-ref -q HEAD || git name-rev --name-only --no-undefined --always HEAD) 2> /dev/null
+}
+# Show different symbols as appropriate for various Git repository states
+parse_git_state() {
+  # Compose this value via multiple conditional appends.
+  local GIT_STATE=""
+  local NUM_AHEAD="$(git log --oneline @{u}.. 2> /dev/null | wc -l | tr -d ' ')"
+  if [ "$NUM_AHEAD" -gt 0 ]; then
+    GIT_STATE=$GIT_STATE${GIT_PROMPT_AHEAD//NUM/$NUM_AHEAD}
+  fi
+  local NUM_BEHIND="$(git log --oneline ..@{u} 2> /dev/null | wc -l | tr -d ' ')"
+  if [ "$NUM_BEHIND" -gt 0 ]; then
+    GIT_STATE=$GIT_STATE${GIT_PROMPT_BEHIND//NUM/$NUM_BEHIND}
+  fi
+  local GIT_DIR="$(git rev-parse --git-dir 2> /dev/null)"
+  if [ -n $GIT_DIR ] && test -r $GIT_DIR/MERGE_HEAD; then
+    GIT_STATE=$GIT_STATE$GIT_PROMPT_MERGING
+  fi
+  if [[ -n $(git ls-files --other --exclude-standard 2> /dev/null) ]]; then
+    GIT_STATE=$GIT_STATE$GIT_PROMPT_UNTRACKED
+  fi
+  if ! git diff --quiet 2> /dev/null; then
+    GIT_STATE=$GIT_STATE$GIT_PROMPT_MODIFIED
+  fi
+  if ! git diff --cached --quiet 2> /dev/null; then
+    GIT_STATE=$GIT_STATE$GIT_PROMPT_STAGED
+  fi
+  if [[ -n $GIT_STATE ]]; then
+    echo "$GIT_PROMPT_PREFIX$GIT_STATE$GIT_PROMPT_SUFFIX"
+  fi
+}
+# If inside a Git repository, print its branch and state
+git_prompt_string() {
+  local git_where="$(parse_git_branch)"
+  [ -n "$git_where" ] && echo "$GIT_PROMPT_SYMBOL$(parse_git_state)$GIT_PROMPT_PREFIX%{$fg[yellow]%}${git_where#(refs/heads/|tags/)}$GIT_PROMPT_SUFFIX"
+}
+# Set the right-hand prompt
+#export RPS1='$(git_prompt_string)'${RPS1}
+
+#export PROMPT=${PROMPT}'$(check_last_exit_code)'
+#export PS1=${PS1}'$(check_last_exit_code)'
+#export RPROMPT='$(check_last_exit_code)$(git_prompt_string)'"${RPROMPT}"
+#[[ "$LPROMPT" != *'$(check_last_exit_code)'* ]] && export LPROMPT=${LPROMPT}'$(check_last_exit_code)'
+[[ "$RPROMPT" != *'$(check_last_exit_code)'* ]] && export RPROMPT='$(check_last_exit_code)$(git_prompt_string)'"${RPROMPT}"
+
 ## Source environment
 [ ! -r ${HOME}/.profile ] || . ${HOME}/.profile
 
@@ -764,8 +818,8 @@ zle -N edit-command-line
 bindkey '^Xe' edit-command-line
 
 ## Don't hash ssh hosts
-local knownhosts
-knownhosts=( ${${${${(f)"$(<$HOME/.ssh/known_hosts)"}:#[0-9]*}%%\ *}%%,*} )
+#local knownhosts
+knownhosts=( ${${${${(f)"$(<${HOME}/.ssh/known_hosts)"}:#[0-9]*}%%\ *}%%,*} )
 zstyle ':completion:*:(ssh|scp|sftp):*' hosts $knownhosts
 
 ## {{{ completion system

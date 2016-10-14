@@ -1281,6 +1281,7 @@ scrs() {
 	sudo parallel systemctl ::: restart status ::: "${@}"
 }
 _scrs() { _systemctl_status $@; }
+# _scrs() { _systemctl_restart $@; }
 
 uscrs() {
 	parallel systemctl --user ::: restart status ::: "${@}"
