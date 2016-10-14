@@ -747,7 +747,7 @@ setup-scg() {
 	#git remote add origin git+ssh://git@github.com/alyptik/config.git
 	git remote set-url origin "git+ssh://git@github.com/alyptik/config.git"
 	#(($dirvar)) || popd &>/dev/null
-	[[ "$dirvar" -eq 0 ]] && popd 2>&1 >/dev/null
+	[[ "$dirvar" -eq 0 ]] && popd 2>&1 >/dev/null || return 0
 }
 
 
@@ -757,7 +757,7 @@ pscg() {
 		printf '\n \033[32m %s \n\033[0m' "Pull successful!" || \
 		printf '\n \033[31m %s \n\033[0m' "Error during pull..."
 	#(($dirvar)) || popd 2>&1 >/dev/null
-	[[ "$dirvar" -eq 0 ]] && popd 2>&1 >/dev/null
+	[[ "$dirvar" -eq 0 ]] && popd 2>&1 >/dev/null || return 0
 }
 
 
@@ -779,7 +779,7 @@ scg() {
 par() {
 	! pulseaudio --check || pulseaudio --kill
 	sleep 1
-	pulseaudio --start --realtime
+	[[ -z "$1" ]] && pulseaudio --start || pulseaudio --start --realtime
 }
 
 kattach() {
@@ -945,8 +945,8 @@ shcurl() {
 	sh -c "$(curl -fsSL ${url})"
 	return 0; }
 }
-## Btrfs balance with -dusage filter
 
+## Btrfs balance with -dusage filter
 bd-btrfs() {
 	[[ ${#} -ge 1 ]] && local dpercent="$1" || local dpercent=100
 	[[ ${#} -ge 2 ]] && local mpercent="$2" || local mpercent=0
@@ -968,8 +968,8 @@ certfp() {
 		sed -e 's/^.*=//;s/://g;y/ABCDEF/abcdef/'## sed is optional
 	popd &>/dev/null
 }
-## Alternate man functions
 
+## Alternate man functions
 # man() { /bin/man "$@"; return 0; }
 
 man2() {
@@ -1112,15 +1112,15 @@ chud() {
 }
 
 vbinit() {
-	sudo modprobe vboxnetadp vboxnetflt vboxpci vboxdrv ;
-	sudo vboxreload ;
-	#VBoxManage hostonlyif create ;
-	#VBoxManage natnetwork start --netname vbnat ;
+	sudo modprobe vboxnetadp vboxnetflt vboxpci vboxdrv
+	sudo vboxreload
+	#VBoxManage hostonlyif create
+	#VBoxManage natnetwork start --netname vbnat
 }
 
 szexpac() {
-	echo -n "$@" '[perform size-sorted search for:] ' ; read ans
-	expac -s "%-30n %m" | sort -hk 2 | awk '{printf "%s %.0f MiB\n", $1, $2/1024/1024}' | column -t | grep "$ans" ;
+	echo -n "$@" '[perform size-sorted search for:] '; read -r
+	expac -s "%-30n %m" | sort -hk 2 | awk '{printf "%s %.0f MiB\n", $1, $2/1024/1024}' | column -t | grep "$REPLY"
 	#case "$ans" in
          #*) return 1 ;;
          #) return 0 ;;
@@ -1128,21 +1128,21 @@ szexpac() {
 }
 
 dtexpac() {
-	echo -n "$@" '[# of recently installed entries to list:] ' ; read ans
-	expac --timefmt='%y-%m-%d %T' '%l\t%n' | sort | tail "-$ans" ;
-	#expac --timefmt=%s '%l\t%n' | sort -n | tail -20 | grep "$ans" ;
+	echo -n "$@" '[# of recently installed entries to list:] '; read -r
+	expac --timefmt='%y-%m-%d %T' '%l\t%n' | sort | tail "-$REPLY"
+	#expac --timefmt=%s '%l\t%n' | sort -n | tail -20 | grep "$ans"
 }
 
 abexpac() {
-	echo -n "$@" '[perform alphabetical search for:] ' ; read ans
-	expac -s "%-25n %v" | grep "$ans"
+	echo -n "$@" '[perform alphabetical search for:] '; read -r
+	expac -s "%-25n %v" | grep "$REPLY"
 }
 
 dsgenkey () {
-        if [[ ! "${1}" > /dev/null ]] ; then
-         printf '%s\n' 'No zone specified!' ;
+        if [[ ! "${1}" > /dev/null ]]; then
+         printf '%s\n' 'No zone specified!'
         else
-         pushd /etc/bind ;
+         pushd /etc/bind
          sudo dnssec-keygen -a NSEC3RSASHA1 -b 2048 \
 	     -K /etc/bind/private -n ZONE "$1"
          sudo dnssec-keygen -f KSK -a NSEC3RSASHA1 \
