@@ -1,30 +1,30 @@
 #!/usr/bin/zsh
 
 ## Traps; execute sanity checks on status:  INT,TERM
-cleanup() {
+function cleanup() {
  [[ ${-} != *i* ]] || {
-  #[[ ! -f "$ZSH_ERROR" || -z $(cat "$ZSH_ERROR") ]] && {
-  [[ -z "$({ exec </dev/stdin; cat; } <&2)" ]] && {
-    printf " \033[32m %s \n" 'zshrc: no errors detected'
-  } || {
-    printf " \033[31m %s \n" 'zshrc: the following errors were detected:'
-    #<${ZSH_ERROR} tee -a /store/zsh-log-${UID}.log | sed 's/^.*$/\t&/'
-    0<&2 { exec </dev/stdin; cat | tee -a /store/zsh-log-${UID}.log | sed 's/^.*$/\t&/'; }
-  }
-  printf "\033[0m"
+     #[[ ! -f "$ZSH_ERROR" || -z $(cat "$ZSH_ERROR") ]] && {
+     [[ -z "$({ exec </dev/stdin; cat; } <&2)" ]] && {
+	printf " \033[32m %s \n" 'zshrc: no errors detected'
+     } || {
+	 printf " \033[31m %s \n" 'zshrc: the following errors were detected:'
+	 { exec </dev/stdin; cat | tee -a /store/zsh-log-${UID}.log | sed 's/^.*$/\t&/'; } <&2
+     }
+	 printf "\033[0m"
  }
  ## cleanup env and temp files
  #[ ! -f "${ZSH_ERROR}" ] || rm -f "${ZSH_ERROR}"
  ls /dev/fd/9 >/dev/null 2>&1 && {
-	exec 2>&9
-	exec 9>&-
+    exec 2>&9
+    exec 9>&-
  }
  return 0
 }
 
 # EXIT trap
 trap "{ cleanup; trap -; }" EXIT
-trap "cleanup" TRAP
+trap 'cleanup' TRAP
+
 #trap ' { [[ ${EUID} -ne 0 ]] && cleanup ${HOME} || cleanup ${PWD}; }' 0 5
 ## INT,HUP,ILL,SEV,PIPE,TERM traps redundant
 #trap " { [[ ${EUID} -ne 0 ]] && cleanup ${HOME} || cleanup ${PWD}; trap - HUP; source ${HOME}/.zshrc; }" 1
@@ -310,9 +310,9 @@ zle-line-init () {
 zle -N zle-keymap-select
 zle -N zle-line-init
 # toggle-keymap() { (( $(unsetopt | egrep -q "^emacs.*$")$? )) && { setopt noemacs; bindkey -v; } || { setopt emacs; bindkey -e; }; }
-toggle-keymap() { setopt | grep -q "vi" && { setopt emacs; bindkey -e; } || { setopt vi; bindkey -v; }; }
+zle-toggle-keymap() { setopt | grep -q "vi" && { setopt emacs; bindkey -e; } || { setopt vi; bindkey -v; }; }
 # toggle-keymap() { (( `unsetopt | egrep -q "^emacs.*$"`$? )) && set -o vi || set -o emacs; }
-toggle-keymap-context() {
+zle-toggle-keymap-context() {
   #[[ "$KEYMAP" =~ ^vi(ins|cmd|$)$ ]] && {
   [[ "$KEYMAP" == *vi* ]] && {
 	local kmap='emacs'; local nokopt='-v'; local kopt='-e'; } || {
@@ -334,34 +334,34 @@ toggle-keymap-context() {
   #[[ "$KEYMAP" =~ ^vi(ins|cmd|$)$ ]] && {
    	#(( `unsetopt | egrep -q ^vi`$? )) && { setopt novi; bindkey -e; } || { setopt vi; bindkey -v; }
 }
-emacs-keymap() { setopt emacs; bindkey -e; }
-vi-keymap() { setopt vi; bindkey -v; }
-zle -N toggle-keymap
-zle -N toggle-keymap-context
-zle -N emacs-keymap
-zle -N vi-keymap
+zle-emacs-keymap() { setopt emacs; bindkey -e; }
+zle-vi-keymap() { setopt vi; bindkey -v; }
+zle -N zle-toggle-keymap
+zle -N zle-toggle-keymap-context
+zle -N zle-emacs-keymap
+zle -N zle-vi-keymap
 ## Set emacs as default
 bindkey -e
 ## Set vi as default
 #bindkey -v
 
 ## Keymaps
-bindkey -v "\ek" toggle-keymap
-bindkey -e "\ek" toggle-keymap
-bindkey -v "\ee" emacs-keymap
-bindkey -e "\ev" vi-keymap
+bindkey -v "\ek" zle-toggle-keymap
+bindkey -e "\ek" zle-toggle-keymap
+bindkey -v "\ee" zle-emacs-keymap
+bindkey -e "\ev" zle-vi-keymap
 #bindkey -v "\ee"
 #indkey -s "\ee" 'set -o emacs'
 #bindkey -s "\ev" 'set -o vi'
 
 ## Pressing meta-y or ESC-y will input "yout $(xclip -o)" into the current commandline
-yout-helper() {
+zle-yout-helper() {
   BUFFER="yout $(xclip -o | tr '\n' ' ')"
   CURSOR="${#BUFFER}"
 }
 #zle -N yout-helper
 #bindkey "^[y" yout-helper
-youtube-helper() {
+zle-youtube-helper() {
   local -a links
   links=($(xclip -o))
   # this seems hacky, is there a better way to wrap elements of an array in quotes?
@@ -370,9 +370,9 @@ youtube-helper() {
   CURSOR="$#BUFFER"
   unset links
 }
-zle -N youtube-helper
-#bindkey "^[Y" youtube-helper
-bindkey "\ey" youtube-helper
+zle -N zle-youtube-helper
+#bindkey "^[Y" zle-youtube-helper
+bindkey "\ey" zle-youtube-helper
 
 #bindkey -v
 #bindkey '^r' history-incremental-search-backward
@@ -482,7 +482,7 @@ ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets)
 #echo -e "$(echo $(curl --silent https://www.archlinux.org/feeds/news/ | sed -e '
 #	:a;N;$!ba;s/\n/ /g') | \
 #	sed -e 's/&amp;/\&/g
-news_cmd_short() {
+function news_cmd_short() {
 	  echo -e "$(echo $(curl --silent https://www.archlinux.org/feeds/news/ | sed -e '
           :a;N;$!ba;s/\n/ /g') | sed -e '
                 s/&amp;/\&/g
@@ -540,7 +540,7 @@ news_cmd_short() {
 	#else
 	}
 }
-news_cmd_long() {
+function news_cmd_long() {
 	#if [ "$EUID" -eq 1000 ]; then ## Full news prompt
 	if false; then ## Full news prompt
 	  echo -e "$(echo $(curl --silent https://www.archlinux.org/feeds/news/ | sed -e '
@@ -643,11 +643,11 @@ function zrcautoload() {
 }
 
 ## Set window title
-function set_title () {
+set_title () {
     info_print  $'\e]0;' $'\a' "$@"
 }
 
-function info_print () {
+info_print () {
     local esc_begin esc_end
     esc_begin="$1"
     esc_end="$2"
@@ -667,7 +667,6 @@ precmd() {
     esac
     #disambiguate-keeplast
 }
-
 
 ##########
 
@@ -701,7 +700,7 @@ autoload -U +X bashcompinit && bashcompinit
 
 ## Function to capture exit code of later command.
 ## Use in either "${PROMPT}" or "${RPROMPT}"
-check_last_exit_code() {
+function check_last_exit_code() {
   local LAST_EXIT_CODE=$?
   local EXIT_CODE_PROMPT=' '
   if [[ ${LAST_EXIT_CODE} -ne 0 ]]; then
@@ -729,11 +728,11 @@ GIT_PROMPT_UNTRACKED="%{$fg[red]%}●%{$reset_color%}"
 GIT_PROMPT_MODIFIED="%{$fg[yellow]%}●%{$reset_color%}"
 GIT_PROMPT_STAGED="%{$fg[green]%}●%{$reset_color%}"
 # Show Git branch/tag, or name-rev if on detached head
-parse_git_branch() {
+function parse_git_branch() {
   (git symbolic-ref -q HEAD || git name-rev --name-only --no-undefined --always HEAD) 2> /dev/null
 }
 # Show different symbols as appropriate for various Git repository states
-parse_git_state() {
+function parse_git_state() {
   # Compose this value via multiple conditional appends.
   local GIT_STATE=""
   local NUM_AHEAD="$(git log --oneline @{u}.. 2> /dev/null | wc -l | tr -d ' ')"
@@ -762,7 +761,7 @@ parse_git_state() {
   fi
 }
 # If inside a Git repository, print its branch and state
-git_prompt_string() {
+function git_prompt_string() {
   local git_where="$(parse_git_branch)"
   [ -n "$git_where" ] && echo "$GIT_PROMPT_SYMBOL$(parse_git_state)$GIT_PROMPT_PREFIX%{$fg[yellow]%}${git_where#(refs/heads/|tags/)}$GIT_PROMPT_SUFFIX"
 }
