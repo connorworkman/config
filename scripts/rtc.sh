@@ -11,10 +11,8 @@ sudo setpci -v -d *:* latency_timer=b0
 sudo setpci -v -s "$SOUND_CARD_PCI_ID" latency_timer=ff
 ## eg. SOUND_CARD_PCI_ID=03:00.0 (use `lspci | grep -i audio)
 
-printf '%s' "performance
-performance
-performance
-performance" | sudo tee /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor; echo
+printf '%b' "performance\nperformance\nperformance\nperformance" | \
+	sudo tee /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor; echo
 printf '%s' "2048" | sudo tee /sys/class/rtc/rtc0/max_user_freq; echo
 printf '%s' "2048" | sudo tee  /proc/sys/dev/hpet/max-user-freq; echo
 #dd <<<"2048" of='/sys/class/rtc/rtc0/max_user_freq'

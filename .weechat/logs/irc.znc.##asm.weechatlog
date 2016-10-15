@@ -26397,3 +26397,434 @@
 2016-10-14 14:30:48	-->	PJBoy (~PJBoy_@unaffiliated/pjboy) has joined ##asm
 2016-10-14 14:34:55	-->	areoh (~areoh@41.220.116.124) has joined ##asm
 2016-10-14 14:35:49	-->	zap0 (~moofy@14-201-222-143.tpgi.com.au) has joined ##asm
+2016-10-14 14:38:43	-->	nisstyre (~yourstrul@li611-52.members.linode.com) has joined ##asm
+2016-10-14 14:39:06	<--	nisstyre (~yourstrul@li611-52.members.linode.com) has quit (Changing host)
+2016-10-14 14:39:06	-->	nisstyre (~yourstrul@oftn/oswg-member/Nisstyre) has joined ##asm
+2016-10-14 14:39:42	<--	MulleDK19 (MulleDK19@unaffiliated/mulledk19) has quit (Ping timeout: 250 seconds)
+2016-10-14 14:40:47	<--	areoh (~areoh@41.220.116.124) has quit (Ping timeout: 268 seconds)
+2016-10-14 14:41:01	<--	xocket (~xocket@unaffiliated/xocket) has quit (Disconnected by services)
+2016-10-14 14:41:02	-->	xock_stream (~xocket@unaffiliated/xocket) has joined ##asm
+2016-10-14 14:41:46	-->	areoh (~areoh@41.220.116.124) has joined ##asm
+2016-10-14 14:44:47	<--	angelsl (sid108369@gateway/web/irccloud.com/x-rtcigibfzxkzuvgk) has quit (Changing host)
+2016-10-14 14:44:47		[14:44]
+2016-10-14 14:44:48	-->	angelsl (sid108369@pdpc/supporter/student/angelsl) has joined ##asm
+2016-10-14 14:50:00		[14:44]
+2016-10-14 14:50:04	-->	BeaverLeader_ (~ASpaceOdy@nat-100-59.secure.wireless.unca.edu) has joined ##asm
+2016-10-14 14:56:00		[14:50]
+2016-10-14 14:56:12	<--	areoh (~areoh@41.220.116.124) has quit (Ping timeout: 268 seconds)
+2016-10-14 14:56:42	-->	areoh (~areoh@41.220.116.124) has joined ##asm
+2016-10-14 14:56:57	-->	nilminus (~nilminus@athedsl-126174.home.otenet.gr) has joined ##asm
+2016-10-14 14:57:03	<--	crankslider (~slidercra@unaffiliated/slidercrank) has quit (Ping timeout: 252 seconds)
+2016-10-14 14:57:26	<--	nilminus (~nilminus@athedsl-126174.home.otenet.gr) has quit (Client Quit)
+2016-10-14 15:00:35	dansan	I've added some assembly code to libgcc's static portion for i386 64 bit but I expected that when a symbol wasn't used that the function wouldn't be linked and it does. I wonder what I'm donig wrong. I've used ".text" and for each fn, I used .global <fn>; .hidden <fn>; and if __ELF__ is defined (using cpp) then I'm also adding  .type <fn>,@function  (replacing <fn> with the function name).
+2016-10-14 15:00:51	dansan	I should just pastebin it
+2016-10-14 15:00:58	<--	kbw (~KeyboardW@68-204-170-7.res.bhn.net) has quit (Quit: My MacBook Air has gone to sleep. ZZZzzz…)
+2016-10-14 15:01:00	Jester01	you need to put them into separate object files
+2016-10-14 15:01:17	dansan	hmmm
+2016-10-14 15:01:18	Jester01	have you done that?
+2016-10-14 15:01:32	dansan	no, but that's a bit complex...
+2016-10-14 15:01:32	-->	sacredbanana (~Mutter@server.minotaurcreative.net) has joined ##asm
+2016-10-14 15:01:43	Jester01	by default linking works on that level
+2016-10-14 15:02:06	Jester01	not sure if LTO can fix that
+2016-10-14 15:02:20	<--	areoh (~areoh@41.220.116.124) has quit (Ping timeout: 260 seconds)
+2016-10-14 15:02:24	dansan	lol! I'm not even to LTO yet, still trying to get my optimizations to work w/o it
+2016-10-14 15:02:27	dansan	https://paste.lugons.org/show/R6Arm8mjj7oOrJUc2bis/
+2016-10-14 15:02:47	dansan	So if none of the symbols that I've defined in this object file are used by a program, then none of them should link in?
+2016-10-14 15:02:55	<--	xock_stream (~xocket@unaffiliated/xocket) has quit (Ping timeout: 258 seconds)
+2016-10-14 15:03:01	-->	areoh (~areoh@41.220.116.124) has joined ##asm
+2016-10-14 15:03:25	Jester01	you know that gcc supports ms abi, right? :)
+2016-10-14 15:03:30	dansan	I guess it's not *too* big of a deal since the whole thing is less than 256 bytes
+2016-10-14 15:03:36	dansan	lol, this is for msabi :)
+2016-10-14 15:03:55	Jester01	yes I see it. that's why I said it, why do you need it
+2016-10-14 15:04:22	dansan	I'm out-of-lining the gargantuan save/restores in the pro/epilogues
+2016-10-14 15:04:22	Jester01	gcc can do it all automatically
+2016-10-14 15:04:28	dansan	what part?
+2016-10-14 15:04:30	dansan	the saves?
+2016-10-14 15:04:32	Jester01	tes
+2016-10-14 15:04:33	Jester01	yes
+2016-10-14 15:04:35	<--	KingsQuest (~ident@unaffiliated/kingsquest) has quit (Quit: posts 2 Vatican museum blocked illegally https://www.facebook.com/arthur.rosene)
+2016-10-14 15:04:36	dansan	yeah, that's the problem :)
+2016-10-14 15:04:40	<--	dqi (~dqi@165-218-045-062.dynamic.caiway.nl) has quit (Ping timeout: 260 seconds)
+2016-10-14 15:04:44	Jester01	?
+2016-10-14 15:04:44	dansan	have you seen those things?
+2016-10-14 15:04:48	<--	zap0 (~moofy@14-201-222-143.tpgi.com.au) has quit (Read error: Connection reset by peer)
+2016-10-14 15:04:52	Jester01	what things?
+2016-10-14 15:05:10	dansan	the prologues & epilogues for an ms_abi function that calls a sysv abi fn
+2016-10-14 15:05:20	dansan	That is my target optimization.
+2016-10-14 15:05:42	Jester01	I have seen it, I don't remember it being particularly horrible
+2016-10-14 15:05:47	Jester01	but could be
+2016-10-14 15:05:59	dansan	This patch currently reduces the size of 64 bit Wine .text by 30%
+2016-10-14 15:06:07	dansan	lol, it just still crashes :)
+2016-10-14 15:06:18	dansan	well, it might be fixed (building it again now)
+2016-10-14 15:06:28	Jester01	I guess your reduction is due to not inlining it
+2016-10-14 15:06:34	-->	kbw (~KeyboardW@68-204-170-7.res.bhn.net) has joined ##asm
+2016-10-14 15:06:45	dansan	yeah, these are the save & restore stubs
+2016-10-14 15:07:22	dansan	I guess putting them in 3 separate object files wouldn't be a bad idea
+2016-10-14 15:09:02	dansan	I'm trying a few other tricks to help make up for the performance cost of the extra instructions needed to facilitate it. the *theory* is that the reduction in instruction cache misses alone will make up for the extra instructions, but since I'm consolidating where these saves & restores occur, I'm using movs instead of push/pops to help it parallelize a bit better
+2016-10-14 15:09:44	dansan	It costs a total of 3 extra instructions for a save and 2-4 for a restore
+2016-10-14 15:09:58	zid	build it -OS and compare the size
+2016-10-14 15:10:02	zid	-Os even
+2016-10-14 15:10:21	zid	with -fomit-frame-pointer and strip too
+2016-10-14 15:10:28	zid	and gc sections, flto, etc
+2016-10-14 15:10:37	zid	gcc can do a lot if you want it to
+2016-10-14 15:11:11	dansan	zid: good point, although I wouldn't imagine gcc can currently do too much better with -Os since it still will use inline MOVAPS for all of the SSE reg saves. Also, it's hard to get gcc to use movs to save/restore int registers, it has to really be convinced that it's worth the extra size
+2016-10-14 15:11:11		[15:11]
+2016-10-14 15:11:20	<--	areoh (~areoh@41.220.116.124) has quit (Ping timeout: 250 seconds)
+2016-10-14 15:11:43	dansan	zid: I'm going to have to address LTO once this is done, because it will most likely break it
+2016-10-14 15:11:46	<--	sacredbanana (~Mutter@server.minotaurcreative.net) has quit (Ping timeout: 250 seconds)
+2016-10-14 15:12:02	dansan	zid: what is "gc sections"?
+2016-10-14 15:12:09	-->	freakazoid0223_ (~chatzilla@pool-108-52-4-128.phlapa.fios.verizon.net) has joined ##asm
+2016-10-14 15:12:35	<--	bkboggy (~bkboggy@cpe-172-250-147-60.socal.res.rr.com) has quit (Ping timeout: 258 seconds)
+2016-10-14 15:12:41	zid	dansan: won't help with .text size but it might help with final binary size
+2016-10-14 15:13:06	dansan	zid: yeah, I don't care much about the final binary honestly. I'm concerned with the instruction cache
+2016-10-14 15:13:09	zid	the linker supports runtime organizion of code blobs for hot/cold path crap
+2016-10-14 15:13:16	dansan	oh yeah!
+2016-10-14 15:13:28	zid	it puts every function in its own section, more or less
+2016-10-14 15:13:36	<--	titankiller (~user@50-201-125-254-static.hfc.comcastbusiness.net) has quit (Remote host closed the connection)
+2016-10-14 15:13:46	dansan	And my patch ignores that too currently. That may have to be examined later because a hot path might *really* want all of that inlined
+2016-10-14 15:14:29	zid	why icache being your care btw? I have more than I could use so I don't care
+2016-10-14 15:14:42	<--	freakazoid0223 (~chatzilla@pool-108-52-4-128.phlapa.fios.verizon.net) has quit (Ping timeout: 268 seconds)
+2016-10-14 15:14:43	dansan	here, let me build something to show the epilogues/prologues
+2016-10-14 15:14:44	--	freakazoid0223_ is now known as freakazoid0223
+2016-10-14 15:15:02	-->	bkboggy (~bkboggy@cpe-172-250-147-60.socal.res.rr.com) has joined ##asm
+2016-10-14 15:15:57	dansan	Here's a pretty dumb function, it just calls a sysv abi function that takes 2 arguments: https://paste.lugons.org/show/FUcsL70p3fsgnYYpXfCw/
+2016-10-14 15:17:00	<--	PJBoy (~PJBoy_@unaffiliated/pjboy) has quit (Quit: ChatZilla 0.9.92 [Firefox 49.0.1/20160922113459])
+2016-10-14 15:17:16	zid	okay?
+2016-10-14 15:17:34	zid	the delay on some of those ops is going to be huge, should be more than enough time for icache to fill
+2016-10-14 15:17:37	dansan	zid: I expect that an extra 1-2 MB of your L1 icache will make a difference. Wine is just the layer to run other programs that are often icache intense themselves. The idea is that the less of it Wine its self is using teh better
+2016-10-14 15:17:48	-->	areoh (~areoh@41.220.116.124) has joined ##asm
+2016-10-14 15:17:51	zid	dansan: well I have 2.5MB per core, way more than most
+2016-10-14 15:17:59	dansan	I hate you
+2016-10-14 15:18:00	dansan	:)
+2016-10-14 15:18:02	zid	:D
+2016-10-14 15:18:08	zid	2011 power
+2016-10-14 15:18:15	Jester01	L1 cache? unlikely.
+2016-10-14 15:18:17	zid	not l1, cache
+2016-10-14 15:18:31	zid	I get that l3 etc doesn't work like that etc
+2016-10-14 15:18:35	zid	but cache/cores is 2.5
+2016-10-14 15:18:42	dansan	Well, there is also the theory that converting the push/pops to movs will help them to go faster too
+2016-10-14 15:18:47	zid	I was being overly shorthand I guess
+2016-10-14 15:19:10	-->	osa1 (~omer@50-253-193-254-static.hfc.comcastbusiness.net) has joined ##asm
+2016-10-14 15:19:10	<--	osa1 (~omer@50-253-193-254-static.hfc.comcastbusiness.net) has quit (Changing host)
+2016-10-14 15:19:10	-->	osa1 (~omer@haskell/developer/osa1) has joined ##asm
+2016-10-14 15:19:21	zid	DanDan: right, but measureably? do you just gain 4 latency units in the rare case that it spills a cache line otherwise etc blah blah
+2016-10-14 15:19:27	dansan	Well, I was throwing the 1-2 MB number out there anyway. I forgot what my last measurement was and I also have *not* yet done real profiling with cache grind or some such
+2016-10-14 15:19:28	zid	because those sse ops are going to be high latency regardless
+2016-10-14 15:20:07	zid	putting something a bit slower than needed before the sse crap might not matter because the sse unit is still busy from the caller, for example. real life isn't so simple.
+2016-10-14 15:20:09	dansan	Why is that? Is it just the populating of the data cache?
+2016-10-14 15:20:28	zid	so you might just be sat there with filled cache waiting for the sse unit to go idle again regardless
+2016-10-14 15:21:02	zid	context is more important than the actual code, imo
+2016-10-14 15:21:28	dansan	Could you explain more about the latency of the SSE operations? :)
+2016-10-14 15:21:47	<--	bkboggy (~bkboggy@cpe-172-250-147-60.socal.res.rr.com) has quit (Ping timeout: 258 seconds)
+2016-10-14 15:22:09	dansan	I mean, I know that it has to share that with another core (on Intel with hyperthreading), but otherwise it's just a 128 bit data move, right?
+2016-10-14 15:22:13	zid	dansan: It's just how the cpu works, it's speculate and out of order etc etc, so it can be doing some integer math from /ahead/ of the sse while it waits for the sse to finish. Same with cache lines, the fpu, etc
+2016-10-14 15:22:21	zid	speculative*
+2016-10-14 15:22:37	<--	areoh (~areoh@41.220.116.124) has quit (Ping timeout: 250 seconds)
+2016-10-14 15:22:41	Jester01	2.5M/core isn't "way more" than most :P
+2016-10-14 15:22:52	zid	Jester01: compared to most desktop cpus it's 500k more! :P
+2016-10-14 15:22:58	dansan	hehe!
+2016-10-14 15:23:06	zid	they finally caught back up recently with their old chips
+2016-10-14 15:23:39	dansan	But why are the sse ops typically slower? Is it because of potential contention for the SSE unit bewteen the two integral cores?
+2016-10-14 15:23:43	zid	flagship 6700k has 8MB of cache for 4 cores
+2016-10-14 15:23:55	zid	dansan: high latency and high throughput is a thing
+2016-10-14 15:24:08	zid	think mailing 16TB hdds in the mail
+2016-10-14 15:24:08	-->	bkboggy (~bkboggy@cpe-172-250-147-60.socal.res.rr.com) has joined ##asm
+2016-10-14 15:24:38	dansan	yeah, same latency as mailing a 4mb hdd :)
+2016-10-14 15:24:58	dansan	zid: Not trying to nit-pick, just want to better understand
+2016-10-14 15:25:05	zid	fdiv takes between 10 and 24 cycles on my cpu, but it can be doing things ahead of that fdiv in the meantime etc
+2016-10-14 15:25:13	-->	osa1_ (~omer@50-253-193-254-static.hfc.comcastbusiness.net) has joined ##asm
+2016-10-14 15:25:16	dansan	wow!
+2016-10-14 15:25:17	-->	w33 (~w33@unaffiliated/w33) has joined ##asm
+2016-10-14 15:25:24	zid	so how slow the fdiv doesn't matter unless I care about the result of that fdiv immediately
+2016-10-14 15:25:32	zid	so putting 20 cycles of crap inbetween won't matter for performance
+2016-10-14 15:25:37	dansan	which intel manual shows how many cycles each operation takes? Is that the optimization manual?
+2016-10-14 15:25:47	zid	http://www.agner.org/optimize/instruction_tables.pdf there's some data scrape of it all together in this pdf
+2016-10-14 15:25:52	dansan	kewl!
+2016-10-14 15:26:05	zid	that's JUST for the opcode, cache and stuff is also relevent
+2016-10-14 15:26:08	<--	bkboggy (~bkboggy@cpe-172-250-147-60.socal.res.rr.com) has quit (Max SendQ exceeded)
+2016-10-14 15:26:20	zid	so if you're trying to re-use the regs later on it won't be as successful being out of order
+2016-10-14 15:26:20		[15:26]
+2016-10-14 15:26:28	zid	or if you're waiting on a cache line
+2016-10-14 15:26:29	dansan	I think this is also in the static structs near the top of gcc/config/i386.c (in the gcc tree)
+2016-10-14 15:26:30	<--	osa1 (~omer@haskell/developer/osa1) has quit (Ping timeout: 250 seconds)
+2016-10-14 15:26:41	zid	mm yea presumably gcc has to know
+2016-10-14 15:26:47	zid	and -march uses different tables etc
+2016-10-14 15:27:14	dansan	right
+2016-10-14 15:27:14	zid	out of order superscalar deep cache crap is an art to optimize for more than a science
+2016-10-14 15:28:58	-->	bkboggy (~bkboggy@cpe-172-250-147-60.socal.res.rr.com) has joined ##asm
+2016-10-14 15:30:01	dansan	yeah, latency for movaps/vmovaps seems to be around 2-6 cycles
+2016-10-14 15:30:39	zid	but those 0x40(%rsp)s crossing page boundaries might add 200
+2016-10-14 15:30:45	dansan	Now as far as the data cache, I'm generally expecting that the stack will tend to be in the L1 cache
+2016-10-14 15:30:55	dansan	crap!
+2016-10-14 15:31:15	dansan	I forgot about that aspect
+2016-10-14 15:31:30	dansan	I don't consider myself an x86 expert, I'm learning
+2016-10-14 15:31:41	zid	It's a art.
+2016-10-14 15:31:43	zid	like trolling
+2016-10-14 15:31:50	dansan	lmao!
+2016-10-14 15:32:02	dansan	I used to be really good at 6502/10 assembly.... some time back
+2016-10-14 15:32:09	zid	6502 can die in a fire
+2016-10-14 15:32:15	dansan	lmao!
+2016-10-14 15:32:18	dansan	I'm sure it is
+2016-10-14 15:32:29	zid	it is die in fire?
+2016-10-14 15:32:51	dansan	I don't hear about them much anymore
+2016-10-14 15:33:01	zid	plenty of people still care about the NES, sadly
+2016-10-14 15:33:03	dansan	we have so many microcontrollers that are so superior
+2016-10-14 15:33:08	dansan	it's dead technology
+2016-10-14 15:33:50	zid	I wrote a crappy nes emulator, fuck 6502
+2016-10-14 15:33:59	dansan	lol!
+2016-10-14 15:34:11	dansan	Hey, my first computer was that little VIC-20, and we were friends!
+2016-10-14 15:34:14	zid	z80 was nicer, despite being harder, the only pain in the ass was DAA
+2016-10-14 15:34:26	dansan	That may be the case, but I didn't have one
+2016-10-14 15:34:43	-->	Judge_Dredd (~Judge_Dre@unaffiliated/judge-dredd/x-2170742) has joined ##asm
+2016-10-14 15:36:22	kbw	6502 is pretty limited from my perspective
+2016-10-14 15:36:34	<--	feep (~feep@p200300D4FBC72580E6B62BFAA755C774.dip0.t-ipconnect.de) has left ##asm ("Konversation terminated!")
+2016-10-14 15:36:35	kbw	how's z80 compare? i've never coded for it
+2016-10-14 15:36:57	kbw	zid i'm writing one right now
+2016-10-14 15:37:05	zid	z80's easy and nice
+2016-10-14 15:37:08	kbw	the cpu emulation seems pretty straightforward
+2016-10-14 15:37:23	zid	https://github.com/zid/gameboy/blob/master/cpu.c  Can you write macros and tidy that all up for me? I'm too lazy
+2016-10-14 15:37:28	dansan	cool! it's crashing better than it did last time!
+2016-10-14 15:37:33	kbw	just had some trouble writing the addressing parts
+2016-10-14 15:37:35	dansan	I can actually read the stack backtrace now :)
+2016-10-14 15:38:20	dansan	My optimization still breaks on sibling calls :(
+2016-10-14 15:40:22	<--	osa1_ (~omer@50-253-193-254-static.hfc.comcastbusiness.net) has quit (Ping timeout: 250 seconds)
+2016-10-14 15:45:08	-->	enso (~damien@hlfxns016cw-156034000026.dhcp-dynamic.FibreOP.ns.bellaliant.net) has joined ##asm
+2016-10-14 15:45:08		[15:45]
+2016-10-14 15:47:45	enso	In terms of gates (in general), how much more complex is the Arithmatic right shift compared to logical right shifts?
+2016-10-14 15:49:14	zid	same order of magnitude
+2016-10-14 15:49:21	zid	probably a few games different either way
+2016-10-14 15:49:37	zid	games? gates. and probably only even wires, not even gates.
+2016-10-14 15:51:53	-->	centrinia (~centrinia@107-208-218-105.lightspeed.tukrga.sbcglobal.net) has joined ##asm
+2016-10-14 15:54:32	enso	zid: Thanks :) is there a prefered
+2016-10-14 15:55:12	zid	prefered what
+2016-10-14 15:55:27	enso	ohh I meant to backspace that
+2016-10-14 15:55:55	enso	But at first I wanted to ask if one of them was prefered to do the same op.
+2016-10-14 15:56:15	enso	seems like it wouldn't matter really
+2016-10-14 15:56:17	zid	They don't do the same op, that's the point
+2016-10-14 15:56:26	zid	otherwise they'd be the same opcode and same implementation
+2016-10-14 15:56:47	enso	yeah I know, but I mean the same manipulation on say unsigned values
+2016-10-14 15:57:08	zid	right, they overlap in some cases
+2016-10-14 15:58:49	<--	Richard_Cavell (uid165693@gateway/web/irccloud.com/x-angnaxajfytgjvdj) has quit (Quit: Connection closed for inactivity)
+2016-10-14 16:01:08	<--	w33 (~w33@unaffiliated/w33) has quit (Quit: w33)
+2016-10-14 16:01:08		[16:01]
+2016-10-14 16:01:22	<--	Suchorski (regex@unaffiliated/suchorski) has quit
+2016-10-14 16:02:44	-->	areoh (~areoh@41.220.116.124) has joined ##asm
+2016-10-14 16:04:20	<--	enso (~damien@hlfxns016cw-156034000026.dhcp-dynamic.FibreOP.ns.bellaliant.net) has quit (Quit: leaving)
+2016-10-14 16:04:56	<--	nktn (~nktn___@181.46.158.157) has quit (Ping timeout: 260 seconds)
+2016-10-14 16:13:18	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined ##asm
+2016-10-14 16:13:18		[16:13]
+2016-10-14 16:13:18	--	Topic for ##asm is "Assembly programming channel, all architectures welcome (please specify). Don't ask to ask! Use a pastebin if appropriate! Check your manuals! *** AT&T vs Intel flamers will be banned."
+2016-10-14 16:13:18	--	Topic set by Jester01 (~Jester01@62.100.244.69) on Fri, 30 Sep 2016 06:54:51
+2016-10-14 16:13:18	--	Channel ##asm: 281 nicks (0 ops, 0 voices, 281 normals)
+2016-10-14 16:13:18	***	Buffer Playback...
+2016-10-14 16:13:18	zid	[01:26:41] mm yea presumably gcc has to know [01:26:41]
+2016-10-14 16:13:18	zid	[01:26:47] and -march uses different tables etc [01:26:47]
+2016-10-14 16:13:18	dansan	[01:27:14] right [01:27:14]
+2016-10-14 16:13:18	zid	[01:27:14] out of order superscalar deep cache crap is an art to optimize for more than a science [01:27:14]
+2016-10-14 16:13:18	dansan	[01:30:01] yeah, latency for movaps/vmovaps seems to be around 2-6 cycles [01:30:01]
+2016-10-14 16:13:18	zid	[01:30:39] but those 0x40(%rsp)s crossing page boundaries might add 200 [01:30:39]
+2016-10-14 16:13:18	dansan	[01:30:45] Now as far as the data cache, I'm generally expecting that the stack will tend to be in the L1 cache [01:30:45]
+2016-10-14 16:13:18	dansan	[01:30:55] crap! [01:30:55]
+2016-10-14 16:13:18	dansan	[01:31:15] I forgot about that aspect [01:31:15]
+2016-10-14 16:13:18	dansan	[01:31:30] I don't consider myself an x86 expert, I'm learning [01:31:30]
+2016-10-14 16:13:18	zid	[01:31:41] It's a art. [01:31:41]
+2016-10-14 16:13:18	zid	[01:31:43] like trolling [01:31:43]
+2016-10-14 16:13:18	dansan	[01:31:50] lmao! [01:31:50]
+2016-10-14 16:13:18	dansan	[01:32:02] I used to be really good at 6502/10 assembly.... some time back [01:32:02]
+2016-10-14 16:13:18	zid	[01:32:09] 6502 can die in a fire [01:32:09]
+2016-10-14 16:13:18	dansan	[01:32:14] lmao! [01:32:14]
+2016-10-14 16:13:18	dansan	[01:32:18] I'm sure it is [01:32:18]
+2016-10-14 16:13:18	zid	[01:32:29] it is die in fire? [01:32:29]
+2016-10-14 16:13:18	dansan	[01:32:51] I don't hear about them much anymore [01:32:51]
+2016-10-14 16:13:18	zid	[01:33:01] plenty of people still care about the NES, sadly [01:33:01]
+2016-10-14 16:13:18	dansan	[01:33:03] we have so many microcontrollers that are so superior [01:33:03]
+2016-10-14 16:13:18	dansan	[01:33:08] it's dead technology [01:33:08]
+2016-10-14 16:13:18	zid	[01:33:50] I wrote a crappy nes emulator, fuck 6502 [01:33:50]
+2016-10-14 16:13:18	dansan	[01:33:59] lol! [01:33:59]
+2016-10-14 16:13:18	dansan	[01:34:11] Hey, my first computer was that little VIC-20, and we were friends! [01:34:11]
+2016-10-14 16:13:18	zid	[01:34:14] z80 was nicer, despite being harder, the only pain in the ass was DAA [01:34:14]
+2016-10-14 16:13:18	dansan	[01:34:26] That may be the case, but I didn't have one [01:34:26]
+2016-10-14 16:13:18	kbw	[01:36:22] 6502 is pretty limited from my perspective [01:36:22]
+2016-10-14 16:13:18	kbw	[01:36:35] how's z80 compare? i've never coded for it [01:36:35]
+2016-10-14 16:13:18	kbw	[01:36:57] zid i'm writing one right now [01:36:57]
+2016-10-14 16:13:18	zid	[01:37:05] z80's easy and nice [01:37:05]
+2016-10-14 16:13:18	kbw	[01:37:08] the cpu emulation seems pretty straightforward [01:37:08]
+2016-10-14 16:13:18	zid	[01:37:23] https://github.com/zid/gameboy/blob/master/cpu.c  Can you write macros and tidy that all up for me? I'm too lazy [01:37:23]
+2016-10-14 16:13:18	dansan	[01:37:28] cool! it's crashing better than it did last time! [01:37:28]
+2016-10-14 16:13:18	kbw	[01:37:33] just had some trouble writing the addressing parts [01:37:33]
+2016-10-14 16:13:18	dansan	[01:37:35] I can actually read the stack backtrace now :) [01:37:35]
+2016-10-14 16:13:18	dansan	[01:38:19] My optimization still breaks on sibling calls :( [01:38:19]
+2016-10-14 16:13:18	enso	[01:47:45] In terms of gates (in general), how much more complex is the Arithmatic right shift compared to logical right shifts? [01:47:45]
+2016-10-14 16:13:18	zid	[01:49:14] same order of magnitude [01:49:14]
+2016-10-14 16:13:18	zid	[01:49:21] probably a few games different either way [01:49:21]
+2016-10-14 16:13:18	zid	[01:49:37] games? gates. and probably only even wires, not even gates. [01:49:37]
+2016-10-14 16:13:18	enso	[01:54:32] zid: Thanks :) is there a prefered [01:54:32]
+2016-10-14 16:13:18	zid	[01:55:11] prefered what [01:55:11]
+2016-10-14 16:13:18	enso	[01:55:27] ohh I meant to backspace that [01:55:27]
+2016-10-14 16:13:18	enso	[01:55:55] But at first I wanted to ask if one of them was prefered to do the same op. [01:55:55]
+2016-10-14 16:13:18	enso	[01:56:15] seems like it wouldn't matter really [01:56:15]
+2016-10-14 16:13:18	zid	[01:56:17] They don't do the same op, that's the point [01:56:17]
+2016-10-14 16:13:18	zid	[01:56:26] otherwise they'd be the same opcode and same implementation [01:56:26]
+2016-10-14 16:13:18	enso	[01:56:47] yeah I know, but I mean the same manipulation on say unsigned values [01:56:47]
+2016-10-14 16:13:18	zid	[01:57:08] right, they overlap in some cases [01:57:08]
+2016-10-14 16:13:18	***	Playback Complete.
+2016-10-14 16:13:47	--	Channel created on Sun, 27 May 2007 05:31:12
+2016-10-14 16:13:55	<--	osa1_ (~omer@50-253-193-254-static.hfc.comcastbusiness.net) has quit (Ping timeout: 258 seconds)
+2016-10-14 16:14:43	nine_milli	what yall think bout webassembly?
+2016-10-14 16:15:34	-->	areoh_ (~areoh@41.220.116.124) has joined ##asm
+2016-10-14 16:16:36	<--	areoh (~areoh@41.220.116.124) has quit (Ping timeout: 260 seconds)
+2016-10-14 16:18:27	-->	arescorpio (~arescorpi@129-29-245-190.fibertel.com.ar) has joined ##asm
+2016-10-14 16:18:36	<--	wildlander (~wild@unaffiliated/wildlander) has quit (Quit: o/)
+2016-10-14 16:19:47	dansan	OK, I'll bite. What is webassembly?
+2016-10-14 16:20:41	nine_milli	an assembly that’s hw independent and runs in web browsers
+2016-10-14 16:21:01	dansan	Interesting. Kinda like java's jvm instructions
+2016-10-14 16:21:14	dansan	I haven't studied it yet, so I have no idea
+2016-10-14 16:22:44	-->	araml (~araml@unaffiliated/araml) has joined ##asm
+2016-10-14 16:23:07	<--	areoh_ (~areoh@41.220.116.124) has quit (Ping timeout: 258 seconds)
+2016-10-14 16:23:30	-->	Goplat (~goplat@reactos/developer/Goplat) has joined ##asm
+2016-10-14 16:23:38	-->	areoh (~areoh@41.220.116.124) has joined ##asm
+2016-10-14 16:24:10	-->	dustyp90 (~Dustin@dsl-dhcp-conrtxxahre-72-26-13-37.consolidated.net) has joined ##asm
+2016-10-14 16:27:46	<--	kbw (~KeyboardW@68-204-170-7.res.bhn.net) has quit (Quit: My MacBook Air has gone to sleep. ZZZzzz…)
+2016-10-14 16:29:08	<--	areoh (~areoh@41.220.116.124) has quit (Ping timeout: 260 seconds)
+2016-10-14 16:29:08		[16:29]
+2016-10-14 16:30:16	<--	dustyp90 (~Dustin@dsl-dhcp-conrtxxahre-72-26-13-37.consolidated.net) has quit (Remote host closed the connection)
+2016-10-14 16:30:19	-->	areoh (~areoh@41.220.116.124) has joined ##asm
+2016-10-14 16:33:46	<--	Heasummn (~Heasummn@c-73-73-21-171.hsd1.il.comcast.net) has quit (Ping timeout: 258 seconds)
+2016-10-14 16:34:33	-->	kbw (~KeyboardW@68-204-170-7.res.bhn.net) has joined ##asm
+2016-10-14 16:35:46	<--	areoh (~areoh@41.220.116.124) has quit (Ping timeout: 258 seconds)
+2016-10-14 16:41:00		[16:35]
+2016-10-14 16:41:12	-->	sacredbanana (~Mutter@server.minotaurcreative.net) has joined ##asm
+2016-10-14 16:42:05	-->	areoh (~areoh@41.220.116.124) has joined ##asm
+2016-10-14 16:44:51	<--	sacredbanana (~Mutter@server.minotaurcreative.net) has quit (Remote host closed the connection)
+2016-10-14 16:47:52	<--	areoh (~areoh@41.220.116.124) has quit (Ping timeout: 260 seconds)
+2016-10-14 16:49:47	-->	areoh (~areoh@41.220.116.124) has joined ##asm
+2016-10-14 16:51:41	<--	mtt (~mtt@unaffiliated/mtt) has quit (Read error: Connection reset by peer)
+2016-10-14 16:52:38	<--	og_king_jah (~jah@S0106503955715ed3.ss.shawcable.net) has quit (Ping timeout: 258 seconds)
+2016-10-14 16:54:10	<--	areoh (~areoh@41.220.116.124) has quit (Ping timeout: 258 seconds)
+2016-10-14 16:57:39	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined ##asm
+2016-10-14 16:57:39		[16:57]
+2016-10-14 16:57:39	--	Topic for ##asm is "Assembly programming channel, all architectures welcome (please specify). Don't ask to ask! Use a pastebin if appropriate! Check your manuals! *** AT&T vs Intel flamers will be banned."
+2016-10-14 16:57:39	--	Topic set by Jester01 (~Jester01@62.100.244.69) on Fri, 30 Sep 2016 06:54:51
+2016-10-14 16:57:39	--	Channel ##asm: 279 nicks (0 ops, 0 voices, 279 normals)
+2016-10-14 16:57:39	***	Buffer Playback...
+2016-10-14 16:57:39	zid	[01:30:39] but those 0x40(%rsp)s crossing page boundaries might add 200 [01:30:39]
+2016-10-14 16:57:39	dansan	[01:30:45] Now as far as the data cache, I'm generally expecting that the stack will tend to be in the L1 cache [01:30:45]
+2016-10-14 16:57:39	dansan	[01:30:55] crap! [01:30:55]
+2016-10-14 16:57:39	dansan	[01:31:15] I forgot about that aspect [01:31:15]
+2016-10-14 16:57:39	dansan	[01:31:30] I don't consider myself an x86 expert, I'm learning [01:31:30]
+2016-10-14 16:57:39	zid	[01:31:41] It's a art. [01:31:41]
+2016-10-14 16:57:39	zid	[01:31:43] like trolling [01:31:43]
+2016-10-14 16:57:39	dansan	[01:31:50] lmao! [01:31:50]
+2016-10-14 16:57:39	dansan	[01:32:02] I used to be really good at 6502/10 assembly.... some time back [01:32:02]
+2016-10-14 16:57:39	zid	[01:32:09] 6502 can die in a fire [01:32:09]
+2016-10-14 16:57:39	dansan	[01:32:14] lmao! [01:32:14]
+2016-10-14 16:57:39	dansan	[01:32:18] I'm sure it is [01:32:18]
+2016-10-14 16:57:39	zid	[01:32:29] it is die in fire? [01:32:29]
+2016-10-14 16:57:39	dansan	[01:32:51] I don't hear about them much anymore [01:32:51]
+2016-10-14 16:57:39	zid	[01:33:01] plenty of people still care about the NES, sadly [01:33:01]
+2016-10-14 16:57:39	dansan	[01:33:03] we have so many microcontrollers that are so superior [01:33:03]
+2016-10-14 16:57:39	dansan	[01:33:08] it's dead technology [01:33:08]
+2016-10-14 16:57:39	zid	[01:33:50] I wrote a crappy nes emulator, fuck 6502 [01:33:50]
+2016-10-14 16:57:39	dansan	[01:33:59] lol! [01:33:59]
+2016-10-14 16:57:39	dansan	[01:34:11] Hey, my first computer was that little VIC-20, and we were friends! [01:34:11]
+2016-10-14 16:57:39	zid	[01:34:14] z80 was nicer, despite being harder, the only pain in the ass was DAA [01:34:14]
+2016-10-14 16:57:39	dansan	[01:34:26] That may be the case, but I didn't have one [01:34:26]
+2016-10-14 16:57:39	kbw	[01:36:22] 6502 is pretty limited from my perspective [01:36:22]
+2016-10-14 16:57:39	kbw	[01:36:35] how's z80 compare? i've never coded for it [01:36:35]
+2016-10-14 16:57:39	kbw	[01:36:57] zid i'm writing one right now [01:36:57]
+2016-10-14 16:57:39	zid	[01:37:05] z80's easy and nice [01:37:05]
+2016-10-14 16:57:39	kbw	[01:37:08] the cpu emulation seems pretty straightforward [01:37:08]
+2016-10-14 16:57:39	zid	[01:37:23] https://github.com/zid/gameboy/blob/master/cpu.c  Can you write macros and tidy that all up for me? I'm too lazy [01:37:23]
+2016-10-14 16:57:39	dansan	[01:37:28] cool! it's crashing better than it did last time! [01:37:28]
+2016-10-14 16:57:39	kbw	[01:37:33] just had some trouble writing the addressing parts [01:37:33]
+2016-10-14 16:57:39	dansan	[01:37:35] I can actually read the stack backtrace now :) [01:37:35]
+2016-10-14 16:57:39	dansan	[01:38:19] My optimization still breaks on sibling calls :( [01:38:19]
+2016-10-14 16:57:39	enso	[01:47:45] In terms of gates (in general), how much more complex is the Arithmatic right shift compared to logical right shifts? [01:47:45]
+2016-10-14 16:57:39	zid	[01:49:14] same order of magnitude [01:49:14]
+2016-10-14 16:57:39	zid	[01:49:21] probably a few games different either way [01:49:21]
+2016-10-14 16:57:39	zid	[01:49:37] games? gates. and probably only even wires, not even gates. [01:49:37]
+2016-10-14 16:57:39	enso	[01:54:32] zid: Thanks :) is there a prefered [01:54:32]
+2016-10-14 16:57:39	zid	[01:55:11] prefered what [01:55:11]
+2016-10-14 16:57:39	enso	[01:55:27] ohh I meant to backspace that [01:55:27]
+2016-10-14 16:57:39	enso	[01:55:55] But at first I wanted to ask if one of them was prefered to do the same op. [01:55:55]
+2016-10-14 16:57:39	enso	[01:56:15] seems like it wouldn't matter really [01:56:15]
+2016-10-14 16:57:39	zid	[01:56:17] They don't do the same op, that's the point [01:56:17]
+2016-10-14 16:57:39	zid	[01:56:26] otherwise they'd be the same opcode and same implementation [01:56:26]
+2016-10-14 16:57:39	enso	[01:56:47] yeah I know, but I mean the same manipulation on say unsigned values [01:56:47]
+2016-10-14 16:57:39	zid	[01:57:08] right, they overlap in some cases [01:57:08]
+2016-10-14 16:57:39	nine_milli	[02:14:43] what yall think bout webassembly? [02:14:43]
+2016-10-14 16:57:39	dansan	[02:19:47] OK, I'll bite. What is webassembly? [02:19:47]
+2016-10-14 16:57:39	nine_milli	[02:20:41] an assembly that’s hw independent and runs in web browsers [02:20:41]
+2016-10-14 16:57:39	dansan	[02:21:01] Interesting. Kinda like java's jvm instructions [02:21:01]
+2016-10-14 16:57:39	dansan	[02:21:14] I haven't studied it yet, so I have no idea [02:21:14]
+2016-10-14 16:57:39	***	Playback Complete.
+2016-10-14 16:58:09	--	Channel created on Sun, 27 May 2007 05:31:12
+2016-10-14 17:02:08	<--	areoh (~areoh@41.220.116.124) has quit (Ping timeout: 258 seconds)
+2016-10-14 17:06:11	-->	sneakerhax (~sneakers@unaffiliated/sneakerhead) has joined ##asm
+2016-10-14 17:07:37	<--	sneakerhax (~sneakers@unaffiliated/sneakerhead) has quit (Client Quit)
+2016-10-14 17:08:16	-->	areoh (~areoh@41.220.116.124) has joined ##asm
+2016-10-14 17:09:49	-->	sneakerhax (~sneakers@unaffiliated/sneakerhead) has joined ##asm
+2016-10-14 17:10:09	-->	ahrc333ff (~ahrc333ff@172.111.169.182) has joined ##asm
+2016-10-14 17:16:00		[17:10]
+2016-10-14 17:17:20	-->	zap0 (~moofy@14-201-222-143.tpgi.com.au) has joined ##asm
+2016-10-14 17:19:10	<--	areoh (~areoh@41.220.116.124) has quit (Ping timeout: 250 seconds)
+2016-10-14 17:25:51	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined ##asm
+2016-10-14 17:25:51		[17:25]
+2016-10-14 17:25:51	--	Topic for ##asm is "Assembly programming channel, all architectures welcome (please specify). Don't ask to ask! Use a pastebin if appropriate! Check your manuals! *** AT&T vs Intel flamers will be banned."
+2016-10-14 17:25:51	--	Topic set by Jester01 (~Jester01@62.100.244.69) on Fri, 30 Sep 2016 06:54:51
+2016-10-14 17:25:51	--	Channel ##asm: 280 nicks (0 ops, 0 voices, 280 normals)
+2016-10-14 17:25:51	***	Buffer Playback...
+2016-10-14 17:25:51	zid	[01:30:39] but those 0x40(%rsp)s crossing page boundaries might add 200 [01:30:39]
+2016-10-14 17:25:51	dansan	[01:30:45] Now as far as the data cache, I'm generally expecting that the stack will tend to be in the L1 cache [01:30:45]
+2016-10-14 17:25:51	dansan	[01:30:55] crap! [01:30:55]
+2016-10-14 17:25:51	dansan	[01:31:15] I forgot about that aspect [01:31:15]
+2016-10-14 17:25:51	dansan	[01:31:30] I don't consider myself an x86 expert, I'm learning [01:31:30]
+2016-10-14 17:25:51	zid	[01:31:41] It's a art. [01:31:41]
+2016-10-14 17:25:51	zid	[01:31:43] like trolling [01:31:43]
+2016-10-14 17:25:51	dansan	[01:31:50] lmao! [01:31:50]
+2016-10-14 17:25:51	dansan	[01:32:02] I used to be really good at 6502/10 assembly.... some time back [01:32:02]
+2016-10-14 17:25:51	zid	[01:32:09] 6502 can die in a fire [01:32:09]
+2016-10-14 17:25:51	dansan	[01:32:14] lmao! [01:32:14]
+2016-10-14 17:25:51	dansan	[01:32:18] I'm sure it is [01:32:18]
+2016-10-14 17:25:51	zid	[01:32:29] it is die in fire? [01:32:29]
+2016-10-14 17:25:51	dansan	[01:32:51] I don't hear about them much anymore [01:32:51]
+2016-10-14 17:25:51	zid	[01:33:01] plenty of people still care about the NES, sadly [01:33:01]
+2016-10-14 17:25:51	dansan	[01:33:03] we have so many microcontrollers that are so superior [01:33:03]
+2016-10-14 17:25:51	dansan	[01:33:08] it's dead technology [01:33:08]
+2016-10-14 17:25:51	zid	[01:33:50] I wrote a crappy nes emulator, fuck 6502 [01:33:50]
+2016-10-14 17:25:51	dansan	[01:33:59] lol! [01:33:59]
+2016-10-14 17:25:51	dansan	[01:34:11] Hey, my first computer was that little VIC-20, and we were friends! [01:34:11]
+2016-10-14 17:25:51	zid	[01:34:14] z80 was nicer, despite being harder, the only pain in the ass was DAA [01:34:14]
+2016-10-14 17:25:51	dansan	[01:34:26] That may be the case, but I didn't have one [01:34:26]
+2016-10-14 17:25:51	kbw	[01:36:22] 6502 is pretty limited from my perspective [01:36:22]
+2016-10-14 17:25:51	kbw	[01:36:35] how's z80 compare? i've never coded for it [01:36:35]
+2016-10-14 17:25:51	kbw	[01:36:57] zid i'm writing one right now [01:36:57]
+2016-10-14 17:25:51	zid	[01:37:05] z80's easy and nice [01:37:05]
+2016-10-14 17:25:51	kbw	[01:37:08] the cpu emulation seems pretty straightforward [01:37:08]
+2016-10-14 17:25:51	zid	[01:37:23] https://github.com/zid/gameboy/blob/master/cpu.c  Can you write macros and tidy that all up for me? I'm too lazy [01:37:23]
+2016-10-14 17:25:51	dansan	[01:37:28] cool! it's crashing better than it did last time! [01:37:28]
+2016-10-14 17:25:51	kbw	[01:37:33] just had some trouble writing the addressing parts [01:37:33]
+2016-10-14 17:25:51	dansan	[01:37:35] I can actually read the stack backtrace now :) [01:37:35]
+2016-10-14 17:25:51	dansan	[01:38:19] My optimization still breaks on sibling calls :( [01:38:19]
+2016-10-14 17:25:51	enso	[01:47:45] In terms of gates (in general), how much more complex is the Arithmatic right shift compared to logical right shifts? [01:47:45]
+2016-10-14 17:25:51	zid	[01:49:14] same order of magnitude [01:49:14]
+2016-10-14 17:25:51	zid	[01:49:21] probably a few games different either way [01:49:21]
+2016-10-14 17:25:51	zid	[01:49:37] games? gates. and probably only even wires, not even gates. [01:49:37]
+2016-10-14 17:25:51	enso	[01:54:32] zid: Thanks :) is there a prefered [01:54:32]
+2016-10-14 17:25:51	zid	[01:55:11] prefered what [01:55:11]
+2016-10-14 17:25:51	enso	[01:55:27] ohh I meant to backspace that [01:55:27]
+2016-10-14 17:25:51	enso	[01:55:55] But at first I wanted to ask if one of them was prefered to do the same op. [01:55:55]
+2016-10-14 17:25:51	enso	[01:56:15] seems like it wouldn't matter really [01:56:15]
+2016-10-14 17:25:51	zid	[01:56:17] They don't do the same op, that's the point [01:56:17]
+2016-10-14 17:25:51	zid	[01:56:26] otherwise they'd be the same opcode and same implementation [01:56:26]
+2016-10-14 17:25:51	enso	[01:56:47] yeah I know, but I mean the same manipulation on say unsigned values [01:56:47]
+2016-10-14 17:25:51	zid	[01:57:08] right, they overlap in some cases [01:57:08]
+2016-10-14 17:25:51	nine_milli	[02:14:43] what yall think bout webassembly? [02:14:43]
+2016-10-14 17:25:51	dansan	[02:19:47] OK, I'll bite. What is webassembly? [02:19:47]
+2016-10-14 17:25:51	nine_milli	[02:20:41] an assembly that’s hw independent and runs in web browsers [02:20:41]
+2016-10-14 17:25:51	dansan	[02:21:01] Interesting. Kinda like java's jvm instructions [02:21:01]
+2016-10-14 17:25:51	dansan	[02:21:14] I haven't studied it yet, so I have no idea [02:21:14]
+2016-10-14 17:25:51	***	Playback Complete.
+2016-10-14 17:26:08	<--	areoh (~areoh@41.220.116.124) has quit (Ping timeout: 260 seconds)
+2016-10-14 17:26:21	--	Channel created on Sun, 27 May 2007 05:31:12
+2016-10-14 17:27:33	-->	areoh (~areoh@41.220.116.124) has joined ##asm

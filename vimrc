@@ -341,6 +341,7 @@ au BufNewFile,BufRead *\(nftables.conf\|.nft\)* setf nftables
 au BufNewFile,BufRead *\(nftables.conf\|.nft\)* set filetype=nftables
 au BufNewFile,BufRead *conf setf config
 au BufNewFile,BufRead db.* setf bindzone
+au BufNewFile,BufRead *grub* setf grub
 
 " Tell vim to remember certain things when we exit
 "  '10  :  marks will be remembered for up to 10 previously edited files
