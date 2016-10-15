@@ -12135,3 +12135,355 @@
 2016-10-14 18:34:09		[18:34]
 2016-10-14 19:00:35	<--	rgrinberg (~rgrinberg@blk-212-79-74.eastlink.ca) has quit (Ping timeout: 258 seconds)
 2016-10-14 19:00:35		[19:00]
+2016-10-14 22:00:36	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined ##sed
+2016-10-14 22:00:36		[22:00]
+2016-10-14 22:00:36	--	Topic for ##sed is "The Stream EDitor | Paste at: http://sprunge.us (/msg greybot sprunge) | FAQ: http://sed.sf.net/sedfaq.html | Intro/Tutorial: http://xrl.us/sedintro#uh-0 | POSIX: http://xrl.us/sedstd | Reference: http://xrl.us/gnused | Regex: #regex | Do NOT try to parse markup (html, xml, etc) with sed! /msg greybot html | Please ask your question and be patient, someone will get to you soon"
+2016-10-14 22:00:36	--	Topic set by e36freak (~daniel.mi@auriga.kiwilight.com) on Wed, 21 Aug 2013 16:29:09
+2016-10-14 22:00:36	--	Channel ##sed: 125 nicks (0 ops, 0 voices, 125 normals)
+2016-10-14 22:00:36	***	Buffer Playback...
+2016-10-14 22:00:36	gnomon	[13:58:40] True, true [13:58:40]
+2016-10-14 22:00:36	aaran	[13:59:18] I think Solitons solution would be easier [13:59:18]
+2016-10-14 22:00:36	aaran	[13:59:36] thanks for the examples I will try and incorporate it in my script [13:59:36]
+2016-10-14 22:00:36	gnomon	[14:00:07] aaran, good luck! [14:00:07]
+2016-10-14 22:00:36	Janko	[21:08:58] Hello! Is it possible to write a sed command to turn '3' -> 'xxx'; '11' -> 'xxxxxxxxxxx' and so on, an integer to that amount of set characters? [21:08:58]
+2016-10-14 22:00:36	geirha	[21:09:31] yes [21:09:31]
+2016-10-14 22:00:36	gnomon	[21:11:36] Janko, have you looked at dc.sed? [21:11:36]
+2016-10-14 22:00:36	gnomon	[21:12:40] Oh, never mind, I thought it implemented a limited form of unary arithmetic.  It does not.  Beg your pardon. [21:12:40]
+2016-10-14 22:00:36	Janko	[21:12:55] how? It doesn't feel like it can be done by a regular expression [21:12:55]
+2016-10-14 22:00:36	geirha	[21:14:27] by regular expression alone, no [21:14:27]
+2016-10-14 22:00:36	geirha	[21:14:38] # sed -e :a -e '/0/{ x; q; }' -e 'y/987654321/876543210/;x;s/^/x/;x;ba' <<< 5 [21:14:38]
+2016-10-14 22:00:36	shbot	[21:14:40] geirha: xxxxx [21:14:40]
+2016-10-14 22:00:36	geirha	[21:14:51] That handles one digit only. Handling multiple digits is more work [21:14:51]
+2016-10-14 22:00:36	Janko	[21:18:12] ah. yeah, that would work for one digit... I think I need three-digit support at least though [21:18:12]
+2016-10-14 22:00:36	Janko	[21:18:59] i'm pretty sure this can't be expressed by a regular grammar, and I'm not sure about it being even context-free [21:18:59]
+2016-10-14 22:00:36	geirha	[21:21:02] yeah, but you didn't initially specify that it had to be done by regex [21:21:02]
+2016-10-14 22:00:36	Janko	[21:21:25] It doesn't [21:21:25]
+2016-10-14 22:00:36	Janko	[21:21:50] here's the relevant real problem: http://0x0.st/jjS.html [21:21:50]
+2016-10-14 22:00:36	Janko	[21:22:25] I need to replace number in brackets with relevant indentation [21:22:25]
+2016-10-14 22:00:36	Janko	[21:22:44] so that it forms a tree of sorts [21:22:44]
+2016-10-14 22:00:36	geirha	[21:25:33] well it's possible with sed, but it won't be short and simple. Wrong tool for the job [21:25:33]
+2016-10-14 22:00:36	gnomon	[21:25:49] Use awk! [21:25:49]
+2016-10-14 22:00:36	gnomon	[21:26:59] Or better yet, just use the tree(1) command: http://mama.indstate.edu/users/ice/tree/ [21:26:59]
+2016-10-14 22:00:36	cousin_luigi	[22:35:46] Greetings. [22:35:46]
+2016-10-14 22:00:36	cousin_luigi	[22:36:52] I need to match a pattern and replace another on the same line. Thing is the latter contains slashes and I can't escape it because it's in a macro. Can I do that with sed? [22:36:52]
+2016-10-14 22:00:36	izalove	[22:37:08] a macro of what? [22:37:08]
+2016-10-14 22:00:36	cousin_luigi	[22:38:28] izalove: rpm, it's preprocessed and I can't touch it. The result is something like '/foo/s/bar/b/a/t/' [22:38:28]
+2016-10-14 22:00:36	cousin_luigi	[22:38:39] Is there anything I can do about it? [22:38:39]
+2016-10-14 22:00:36	izalove	[22:39:43] can you use a different separator? [22:39:43]
+2016-10-14 22:00:36	izalove	[22:39:52] s|/foo/bar/baz|x/y/z| [22:39:52]
+2016-10-14 22:00:36	cousin_luigi	[22:40:07] izalove: how do I match the first pattern? [22:40:07]
+2016-10-14 22:00:36	izalove	[22:40:21] sorry what? [22:40:21]
+2016-10-14 22:00:36	cousin_luigi	[22:40:52] izalove: I need to match foo and then replace bar with b/a/t. I can't use | as separator. [22:40:52]
+2016-10-14 22:00:36	cousin_luigi	[22:41:06] At least not with the syntax I'm familiar with. [22:41:06]
+2016-10-14 22:00:36	izalove	[22:41:08] then you can't do it with sed [22:41:08]
+2016-10-14 22:00:36	cousin_luigi	[22:41:20] any other recommendation? [22:41:20]
+2016-10-14 22:00:36	izalove	[22:41:44] i don't know, try to force your tools to print something other than /foo/s/bar/b/a/t/ [22:41:44]
+2016-10-14 22:00:36	cousin_luigi	[22:46:38] ok, bye! [22:46:38]
+2016-10-14 22:00:36	gingitsune	[08:36:40] Is it possible to limit the line range you use for a look up [08:36:40]
+2016-10-14 22:00:36	gingitsune	[08:36:48] e.g. sed -e '/abc/,/efg/\!p' [file] [08:36:48]
+2016-10-14 22:00:36	gingitsune	[08:37:21] Except so that lines containing abc and efg are no further than 5 lines appart [08:37:21]
+2016-10-14 22:00:36	Soliton	[08:37:50] not easily, no. [08:37:50]
+2016-10-14 22:00:36	gingitsune	[08:39:04] Well than thats that [08:39:04]
+2016-10-14 22:00:36	gingitsune	[08:39:26] You may know of any other tools that might satisfy that criteria? [08:39:26]
+2016-10-14 22:00:36	Soliton	[08:40:18] any programming language should do. awk, perl, python.. [08:40:18]
+2016-10-14 22:00:36	nath	[19:39:12] morning all, how do I print a \ into a file with sed? [19:39:12]
+2016-10-14 22:00:36	Hello71	[19:40:02] echo '\' > file [19:40:02]
+2016-10-14 22:00:36	nath	[19:42:33] I'm truing this: sed -i '1 a \include "predefined-guitar-fretboards.ly"' *.ly [19:42:33]
+2016-10-14 22:00:36	nath	[19:42:42] but do not get the \ printed [19:42:42]
+2016-10-14 22:00:36	nath	[19:52:04] ok got it working with \\\ [19:52:04]
+2016-10-14 22:00:36	***	Playback Complete.
+2016-10-14 22:01:20	--	Channel created on Wed, 09 Sep 2009 05:53:00
+2016-10-14 22:02:17	<--	Ridout (~coffee@unaffiliated/ridout) has quit (Quit: Lost terminal)
+2016-10-14 22:06:28	<--	geirha (geirha@gina.it.ntnu.no) has quit (Ping timeout: 250 seconds)
+2016-10-14 22:08:17	-->	sze (~sze@unaffiliated/sze) has joined ##sed
+2016-10-14 22:11:34	<--	Fernando-Basso (fernandoba@gateway/shell/openshells.net/x-lpctbkvfhmazoyrf) has quit (Ping timeout: 268 seconds)
+2016-10-14 22:17:00		[22:11]
+2016-10-14 22:33:28	<--	serialoverflow (~znc@pc9.gatrobe.uni-hannover.de) has quit (*.net *.split)
+2016-10-14 22:33:28		[22:33]
+2016-10-14 22:33:31	<--	tachoknight (~tachoknig@c-73-246-129-13.hsd1.il.comcast.net) has quit (*.net *.split)
+2016-10-14 22:33:32	<--	nulquen (~ae@unaffiliated/nulquen) has quit (*.net *.split)
+2016-10-14 22:33:32	<--	gigetoo (~gigetoo@c83-250-44-242.bredband.comhem.se) has quit (*.net *.split)
+2016-10-14 22:33:33	<--	The_Schmidt (~The_Schmi@207-192-200-73.lbbkcmtk04.res.dyn.suddenlink.net) has quit (*.net *.split)
+2016-10-14 22:33:35	<--	arcsky_ (~arcsky@87.117.231.108) has quit (*.net *.split)
+2016-10-14 22:33:35	<--	dza2 (~dza@46.101.157.124) has quit (*.net *.split)
+2016-10-14 22:33:36	<--	felixjet (~felixjet@53.red-88-7-166.staticip.rima-tde.net) has quit (*.net *.split)
+2016-10-14 22:33:38	<--	zerick (~zerick@irc.quassel.zerick.me) has quit (*.net *.split)
+2016-10-14 22:33:39	<--	sph084 (~shenness@50.58.91.120) has quit (*.net *.split)
+2016-10-14 22:37:25	-->	tachoknight (~tachoknig@c-73-246-129-13.hsd1.il.comcast.net) has joined ##sed
+2016-10-14 22:37:49	-->	Fernando-Basso (fernandoba@gateway/shell/openshells.net/x-vsvmwxnajqdqlrfa) has joined ##sed
+2016-10-14 22:43:00		[22:37]
+2016-10-14 22:48:32	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined ##sed
+2016-10-14 22:48:32		[22:48]
+2016-10-14 22:48:32	--	Topic for ##sed is "The Stream EDitor | Paste at: http://sprunge.us (/msg greybot sprunge) | FAQ: http://sed.sf.net/sedfaq.html | Intro/Tutorial: http://xrl.us/sedintro#uh-0 | POSIX: http://xrl.us/sedstd | Reference: http://xrl.us/gnused | Regex: #regex | Do NOT try to parse markup (html, xml, etc) with sed! /msg greybot html | Please ask your question and be patient, someone will get to you soon"
+2016-10-14 22:48:32	--	Topic set by e36freak (~daniel.mi@auriga.kiwilight.com) on Wed, 21 Aug 2013 16:29:09
+2016-10-14 22:48:32	--	Channel ##sed: 115 nicks (0 ops, 0 voices, 115 normals)
+2016-10-14 22:48:32	***	Buffer Playback...
+2016-10-14 22:48:32	gnomon	[13:58:40] True, true [13:58:40]
+2016-10-14 22:48:32	aaran	[13:59:18] I think Solitons solution would be easier [13:59:18]
+2016-10-14 22:48:32	aaran	[13:59:36] thanks for the examples I will try and incorporate it in my script [13:59:36]
+2016-10-14 22:48:32	gnomon	[14:00:07] aaran, good luck! [14:00:07]
+2016-10-14 22:48:32	Janko	[21:08:58] Hello! Is it possible to write a sed command to turn '3' -> 'xxx'; '11' -> 'xxxxxxxxxxx' and so on, an integer to that amount of set characters? [21:08:58]
+2016-10-14 22:48:32	geirha	[21:09:31] yes [21:09:31]
+2016-10-14 22:48:32	gnomon	[21:11:36] Janko, have you looked at dc.sed? [21:11:36]
+2016-10-14 22:48:32	gnomon	[21:12:40] Oh, never mind, I thought it implemented a limited form of unary arithmetic.  It does not.  Beg your pardon. [21:12:40]
+2016-10-14 22:48:32	Janko	[21:12:55] how? It doesn't feel like it can be done by a regular expression [21:12:55]
+2016-10-14 22:48:32	geirha	[21:14:27] by regular expression alone, no [21:14:27]
+2016-10-14 22:48:33	geirha	[21:14:38] # sed -e :a -e '/0/{ x; q; }' -e 'y/987654321/876543210/;x;s/^/x/;x;ba' <<< 5 [21:14:38]
+2016-10-14 22:48:33	shbot	[21:14:40] geirha: xxxxx [21:14:40]
+2016-10-14 22:48:33	geirha	[21:14:51] That handles one digit only. Handling multiple digits is more work [21:14:51]
+2016-10-14 22:48:33	Janko	[21:18:12] ah. yeah, that would work for one digit... I think I need three-digit support at least though [21:18:12]
+2016-10-14 22:48:33	Janko	[21:18:59] i'm pretty sure this can't be expressed by a regular grammar, and I'm not sure about it being even context-free [21:18:59]
+2016-10-14 22:48:33	geirha	[21:21:02] yeah, but you didn't initially specify that it had to be done by regex [21:21:02]
+2016-10-14 22:48:33	Janko	[21:21:25] It doesn't [21:21:25]
+2016-10-14 22:48:33	Janko	[21:21:50] here's the relevant real problem: http://0x0.st/jjS.html [21:21:50]
+2016-10-14 22:48:33	Janko	[21:22:25] I need to replace number in brackets with relevant indentation [21:22:25]
+2016-10-14 22:48:33	Janko	[21:22:44] so that it forms a tree of sorts [21:22:44]
+2016-10-14 22:48:33	geirha	[21:25:33] well it's possible with sed, but it won't be short and simple. Wrong tool for the job [21:25:33]
+2016-10-14 22:48:33	gnomon	[21:25:49] Use awk! [21:25:49]
+2016-10-14 22:48:33	gnomon	[21:26:59] Or better yet, just use the tree(1) command: http://mama.indstate.edu/users/ice/tree/ [21:26:59]
+2016-10-14 22:48:33	cousin_luigi	[22:35:46] Greetings. [22:35:46]
+2016-10-14 22:48:33	cousin_luigi	[22:36:52] I need to match a pattern and replace another on the same line. Thing is the latter contains slashes and I can't escape it because it's in a macro. Can I do that with sed? [22:36:52]
+2016-10-14 22:48:33	izalove	[22:37:08] a macro of what? [22:37:08]
+2016-10-14 22:48:33	cousin_luigi	[22:38:28] izalove: rpm, it's preprocessed and I can't touch it. The result is something like '/foo/s/bar/b/a/t/' [22:38:28]
+2016-10-14 22:48:33	cousin_luigi	[22:38:39] Is there anything I can do about it? [22:38:39]
+2016-10-14 22:48:33	izalove	[22:39:43] can you use a different separator? [22:39:43]
+2016-10-14 22:48:33	izalove	[22:39:52] s|/foo/bar/baz|x/y/z| [22:39:52]
+2016-10-14 22:48:33	cousin_luigi	[22:40:07] izalove: how do I match the first pattern? [22:40:07]
+2016-10-14 22:48:33	izalove	[22:40:21] sorry what? [22:40:21]
+2016-10-14 22:48:33	cousin_luigi	[22:40:52] izalove: I need to match foo and then replace bar with b/a/t. I can't use | as separator. [22:40:52]
+2016-10-14 22:48:33	cousin_luigi	[22:41:06] At least not with the syntax I'm familiar with. [22:41:06]
+2016-10-14 22:48:33	izalove	[22:41:08] then you can't do it with sed [22:41:08]
+2016-10-14 22:48:33	cousin_luigi	[22:41:20] any other recommendation? [22:41:20]
+2016-10-14 22:48:33	izalove	[22:41:44] i don't know, try to force your tools to print something other than /foo/s/bar/b/a/t/ [22:41:44]
+2016-10-14 22:48:33	cousin_luigi	[22:46:38] ok, bye! [22:46:38]
+2016-10-14 22:48:33	gingitsune	[08:36:40] Is it possible to limit the line range you use for a look up [08:36:40]
+2016-10-14 22:48:33	gingitsune	[08:36:48] e.g. sed -e '/abc/,/efg/\!p' [file] [08:36:48]
+2016-10-14 22:48:33	gingitsune	[08:37:21] Except so that lines containing abc and efg are no further than 5 lines appart [08:37:21]
+2016-10-14 22:48:33	Soliton	[08:37:50] not easily, no. [08:37:50]
+2016-10-14 22:48:33	gingitsune	[08:39:04] Well than thats that [08:39:04]
+2016-10-14 22:48:33	gingitsune	[08:39:26] You may know of any other tools that might satisfy that criteria? [08:39:26]
+2016-10-14 22:48:33	Soliton	[08:40:18] any programming language should do. awk, perl, python.. [08:40:18]
+2016-10-14 22:48:33	nath	[19:39:12] morning all, how do I print a \ into a file with sed? [19:39:12]
+2016-10-14 22:48:33	Hello71	[19:40:02] echo '\' > file [19:40:02]
+2016-10-14 22:48:33	nath	[19:42:33] I'm truing this: sed -i '1 a \include "predefined-guitar-fretboards.ly"' *.ly [19:42:33]
+2016-10-14 22:48:33	nath	[19:42:42] but do not get the \ printed [19:42:42]
+2016-10-14 22:48:33	nath	[19:52:04] ok got it working with \\\ [19:52:04]
+2016-10-14 22:48:33	***	Playback Complete.
+2016-10-14 22:48:49	--	Channel created on Wed, 09 Sep 2009 05:53:00
+2016-10-14 22:51:08	-->	serialoverflow (~znc@pc9.gatrobe.uni-hannover.de) has joined ##sed
+2016-10-14 22:51:08	-->	gigetoo (~gigetoo@c83-250-44-242.bredband.comhem.se) has joined ##sed
+2016-10-14 22:51:08	-->	The_Schmidt (~The_Schmi@207-192-200-73.lbbkcmtk04.res.dyn.suddenlink.net) has joined ##sed
+2016-10-14 22:51:08	-->	arcsky_ (~arcsky@87.117.231.108) has joined ##sed
+2016-10-14 22:51:08	-->	felixjet (~felixjet@53.red-88-7-166.staticip.rima-tde.net) has joined ##sed
+2016-10-14 22:51:08	-->	zerick (~zerick@irc.quassel.zerick.me) has joined ##sed
+2016-10-14 22:51:08	-->	sph084 (~shenness@50.58.91.120) has joined ##sed
+2016-10-14 22:57:00		[22:51]
+2016-10-14 23:04:07	-->	tsakos (tsakos@elite.bshellz.net) has joined ##sed
+2016-10-14 23:04:24	-->	dza2 (~dza@46.101.157.124) has joined ##sed
+2016-10-14 23:05:52	tsakos	Hello everyone, I'm trying to extract the filename from a file path (the path is generated from grep -r) which is something like this: /home/user/dir/file:mached line
+2016-10-14 23:06:00	<--	aw1 (~aw1@unaffiliated/aw1) has quit (Ping timeout: 258 seconds)
+2016-10-14 23:06:43	tsakos	So, ideally I would like this to become: file:matched line
+2016-10-14 23:07:34	tsakos	hmm, well, just thought I could also use backreferences for that xD
+2016-10-14 23:09:17	Riviera	sed 's_.*/__'
+2016-10-14 23:09:47	tsakos	?
+2016-10-14 23:09:54	Riviera	sed 's_.*/__'
+2016-10-14 23:10:39	Riviera	Except you wanted sed also to correct the typo.
+2016-10-14 23:10:44	tsakos	well, I have a script which currently has a bug when matched line contains '/'
+2016-10-14 23:11:05	tsakos	that is /home/user/dir/file:matched line with /
+2016-10-14 23:11:14	tsakos	so, that's not a solution I guess
+2016-10-14 23:11:19	Riviera	Now if only you had mentioned that right away!
+2016-10-14 23:11:46	tsakos	didn't thought it
+2016-10-14 23:12:04	tsakos	but yes, I want of course to keep file:line
+2016-10-14 23:12:04		[23:12]
+2016-10-14 23:12:26	Riviera	You might want to describe the actual goal.
+2016-10-14 23:12:52	Riviera	"I have a million files in a directory tree and I want ..."
+2016-10-14 23:12:57	tsakos	Well, the regex should stop at first :
+2016-10-14 23:13:08	tsakos	and keep the filename and matched line as is
+2016-10-14 23:14:10	Riviera	So you won't have paths with : in their names?
+2016-10-14 23:14:47	tsakos	: is from grep -r output
+2016-10-14 23:14:52	tsakos	not in filenames
+2016-10-14 23:14:52	Riviera	I know.
+2016-10-14 23:15:06	Riviera	Okay.
+2016-10-14 23:15:40	Riviera	sed 's_^[^:]*/__'
+2016-10-14 23:16:48	tsakos	I don't think this works
+2016-10-14 23:16:56	tsakos	you tested it?
+2016-10-14 23:18:25	Riviera	tsakos: Fuck off.
+2016-10-14 23:18:26	Riviera	:)
+2016-10-14 23:18:30	tsakos	Thanks
+2016-10-14 23:18:53	-->	aw1 (~aw1@unaffiliated/aw1) has joined ##sed
+2016-10-14 23:20:45	tsakos	Well, works ok, didn't run it on my brain correctly.
+2016-10-14 23:25:32	tsakos	still, can't interpreter it xD anyway thanks :)
+2016-10-14 23:26:48	tsakos	Well, yeah, [^:] is just useless there
+2016-10-14 23:26:58	tsakos	works with .*/ as well
+2016-10-14 23:27:47	tsakos	hmm, or maybe not xD
+2016-10-14 23:27:47		[23:27]
+2016-10-14 23:29:02	Riviera	8-)
+2016-10-14 23:29:34	tsakos	ok, found it
+2016-10-14 23:29:48	tsakos	sed -r 's#.*/(.*):#\1\t#'
+2016-10-14 23:29:59	tsakos	but using backreferences as well
+2016-10-14 23:30:21	Riviera	neither does that use backreferences nor does that do what you want it to
+2016-10-14 23:30:31	tsakos	.*/ works but it will eat up until last '/' which is the bug I've encountered as well
+2016-10-14 23:30:43	tsakos	really?
+2016-10-14 23:31:20	Riviera	Back-references are a feature of regular expressions, that is, \1 would have to be in the regex part;
+2016-10-14 23:31:41	tsakos	ah, ok
+2016-10-14 23:31:59	Riviera	and, it does not work because you wanted the *first* colon to be a stopper, your script does not respect that constraint.
+2016-10-14 23:32:18	-->	zerick_ (~zerick@irc.quassel.zerick.me) has joined ##sed
+2016-10-14 23:32:28	tsakos	yeah, that is true
+2016-10-14 23:32:38	tsakos	but I think it will work on every case as is
+2016-10-14 23:32:40	tsakos	no?
+2016-10-14 23:33:04	Riviera	How would I know how your cases look like. :)
+2016-10-14 23:33:09	-->	gigetoo_ (~gigetoo@c83-250-44-242.bredband.comhem.se) has joined ##sed
+2016-10-14 23:33:27	Riviera	Also, why don't you just use mine, which does not have the additional downsides?
+2016-10-14 23:33:34	-->	blaisebool (~blaiseboo@octavia.celestia.licorn.eu) has joined ##sed
+2016-10-14 23:33:43	tsakos	what is the downsides?
+2016-10-14 23:33:55	blaisebool	hello , why sed -i 's/\s+<div id="cat-bar-wipe">[^>]+>//g' file , has no effect ?
+2016-10-14 23:34:45	Riviera	tsakos: that it won't work right when there are colons in the match would be the major drawback,
+2016-10-14 23:35:21	Riviera	tsakos: also it's GNU sed only
+2016-10-14 23:35:46	tsakos	yeah, I've noticed that it eats up colons as well
+2016-10-14 23:35:51	Riviera	blaisebool: probably because the regex does not match,
+2016-10-14 23:36:17	Riviera	tsakos: noticed?  I thought I told you 8)
+2016-10-14 23:36:40	tsakos	No, I've tested it after I pasted it
+2016-10-14 23:36:58	Riviera	blaisebool: you're using GNU extensions, I don't know much about GNU sed, so no clue if \s works there, but + looks like a quantifier,
+2016-10-14 23:37:07	tsakos	Well, so there is no way of doing it correctly every time, eh?
+2016-10-14 23:37:08	-->	mikar (~znc@pc9.gatrobe.uni-hannover.de) has joined ##sed
+2016-10-14 23:37:12	Riviera	blaisebool: i mean, intended to be a quantifier,
+2016-10-14 23:37:28	Riviera	blaisebool: but it will, when used like that, simply match a + symbol.
+2016-10-14 23:37:38	<--	serialoverflow (~znc@pc9.gatrobe.uni-hannover.de) has quit (*.net *.split)
+2016-10-14 23:37:39	<--	gigetoo (~gigetoo@c83-250-44-242.bredband.comhem.se) has quit (*.net *.split)
+2016-10-14 23:37:39	<--	The_Schmidt (~The_Schmi@207-192-200-73.lbbkcmtk04.res.dyn.suddenlink.net) has quit (*.net *.split)
+2016-10-14 23:37:40	<--	arcsky_ (~arcsky@87.117.231.108) has quit (*.net *.split)
+2016-10-14 23:37:40	<--	felixjet (~felixjet@53.red-88-7-166.staticip.rima-tde.net) has quit (*.net *.split)
+2016-10-14 23:37:41	<--	zerick (~zerick@irc.quassel.zerick.me) has quit (*.net *.split)
+2016-10-14 23:37:41	<--	sph084 (~shenness@50.58.91.120) has quit (*.net *.split)
+2016-10-14 23:37:43	--	gigetoo_ is now known as gigetoo
+2016-10-14 23:37:43	Riviera	blaisebool: that said, you get what you deserve for trying to process html with sed.
+2016-10-14 23:37:52	Riviera	tsakos: huh?
+2016-10-14 23:37:58	Riviera	tsakos: What is wrong with my sed script?
+2016-10-14 23:38:33	tsakos	xD
+2016-10-14 23:38:35	tsakos	looks ok
+2016-10-14 23:38:35	Riviera	tsakos: yours is broken, yeah, mine is not.
+2016-10-14 23:38:36	tsakos	haha
+2016-10-14 23:38:37	blaisebool	Riviera what is your advice to deal with html file ?
+2016-10-14 23:38:48	tsakos	ok ok Riviera you are good :D
+2016-10-14 23:39:11	tsakos	thanks a lot
+2016-10-14 23:39:36	Riviera	blaisebool: xmllint, xmlstarlet, xpath, xsltproc, Python, ..
+2016-10-14 23:39:50	blaisebool	Riviera ok thanks
+2016-10-14 23:40:23	-->	arcsky (~arcsky@87.117.231.108) has joined ##sed
+2016-10-14 23:40:24	Riviera	blaisebool: http://mywiki.wooledge.org/BashFAQ/113
+2016-10-14 23:40:59	blaisebool	I appreciate :-)
+2016-10-14 23:41:39	tsakos	Riviera: just explain me... all the "trick" on your script is the ^ at the beginning, right?
+2016-10-14 23:42:04	tsakos	stops sed from making matches recursively
+2016-10-14 23:42:12	tsakos	is that right?
+2016-10-14 23:43:14	Riviera	tsakos: i would say the trick is [^:]
+2016-10-14 23:43:14		[23:43]
+2016-10-14 23:43:22	tsakos	Well, yeah
+2016-10-14 23:43:32	tsakos	works without ^ at the beginning as well
+2016-10-14 23:43:37	tsakos	hmm
+2016-10-14 23:43:39	-->	jetchisel (~jetchisel@opensuse/member/jetchisel) has joined ##sed
+2016-10-14 23:43:45	Riviera	tsakos: /msg greybot itworks
+2016-10-14 23:43:54	tsakos	lol? ;p
+2016-10-14 23:45:00	-->	felixjet (~felixjet@53.red-88-7-166.staticip.rima-tde.net) has joined ##sed
+2016-10-14 23:45:23	-->	The_Schmidt (~The_Schmi@207-192-200-73.lbbkcmtk04.res.dyn.suddenlink.net) has joined ##sed
+2016-10-14 23:45:31	tsakos	I thought it would kick me out lol
+2016-10-14 23:46:48	tsakos	This is a pretty cool quote, hehe
+2016-10-14 23:48:43	-->	sph084 (~shenness@50.58.91.120) has joined ##sed
+2016-10-14 23:50:06	tsakos	your solution is a bit tricky to me I must say
+2016-10-14 23:50:43	tsakos	but I think I understood it finally.
+2016-10-14 23:51:38	Petter	tsakos: Try explaining it to us.
+2016-10-14 23:54:03	tsakos	Basically now I'm doing [^:]*/ (without ^ at beginning) to see if it breaks, but no, it doesn't
+2016-10-14 23:54:44	tsakos	it's really weird to me, I'm trying to reproduce the path after : and it does not remove it
+2016-10-14 23:55:34	tsakos	regex explanation: match everything except ':' till last /
+2016-10-14 23:55:49	Petter	Right.
+2016-10-14 23:56:48	Riviera	yeah the ^ in the beginning is not strictly necessary
+2016-10-14 23:58:30	Riviera	it'd be necessary when the path were empty
+2016-10-14 23:58:30		[23:58]
+2016-10-14 23:59:51	tsakos	what I've understood so far, is that: you restrict regex with one char (:), while also restricting with another char (/) which comes before first restriction
+2016-10-15 00:00:15	tsakos	I don't know if that's correct
+2016-10-15 00:00:24	tsakos	but it appears to be?
+2016-10-15 00:01:18	Riviera	tsakos: What do you have to do to get the filename?
+2016-10-15 00:01:33	tsakos	just the filename?
+2016-10-15 00:02:05	Riviera	tsakos: hm, no, let's say, the filename and the matched line
+2016-10-15 00:02:37	tsakos	write your solution haha
+2016-10-15 00:03:07	Riviera	tsakos: forgetting about the : for now
+2016-10-15 00:03:10	tsakos	ah, ok
+2016-10-15 00:03:23	tsakos	well, let me think it a bit
+2016-10-15 00:05:19	tsakos	I don't know lol
+2016-10-15 00:05:36	Riviera	you would just remove everything up to the last /
+2016-10-15 00:05:38	Riviera	no?
+2016-10-15 00:05:38	tsakos	print both of them at once?
+2016-10-15 00:05:46	tsakos	yeah
+2016-10-15 00:06:12	tsakos	but if it's not the last /?
+2016-10-15 00:06:29	tsakos	so, let's say we have this
+2016-10-15 00:06:41	Riviera	tsakos: you got a pok3r?
+2016-10-15 00:06:43	tsakos	/path/to/file:this is a file/directory
+2016-10-15 00:06:57	tsakos	Riviera: no, why?
+2016-10-15 00:07:18	Riviera	tsakos: the way you typed; sorry
+2016-10-15 00:07:30	Riviera	tsakos: well,
+2016-10-15 00:07:44	Riviera	tsakos: Let's assume you have this:
+2016-10-15 00:07:51	Riviera	tsakos: /path/to/file:lalalala
+2016-10-15 00:08:06	Riviera	tsakos: Then just removing everything up to the last / would suffice, right?
+2016-10-15 00:08:14	tsakos	yes
+2016-10-15 00:08:32	Riviera	tsakos: But how to handle
+2016-10-15 00:08:36	tsakos	so, we can't do [^/]*
+2016-10-15 00:08:36	Riviera	tsakos: /path/to/file:lalalala/lalalala
+2016-10-15 00:08:49	Riviera	tsakos: You said "There is never a : in the path!"
+2016-10-15 00:08:58	Riviera	tsakos: So instead of
+2016-10-15 00:09:11	Riviera	tsakos: s_.*/__
+2016-10-15 00:09:16	Riviera	tsakos: we can use
+2016-10-15 00:09:21	Riviera	tsakos: s_[^:]*/__
+2016-10-15 00:09:39	tsakos	true
+2016-10-15 00:09:41	Riviera	tsakos: because the first : will always be after the last / we want to remove,
+2016-10-15 00:09:45	tsakos	now I understand it better
+2016-10-15 00:10:05	Riviera	tsakos: and because / after that colon should not be considered.
+2016-10-15 00:10:07	Riviera	tsakos: col
+2016-10-15 00:10:09	Riviera	tsakos: cool
+2016-10-15 00:11:07	Petter	tsakos: Quick demo...
+2016-10-15 00:11:09	tsakos	but what happens if you have this
+2016-10-15 00:11:11	Petter	# printf '%s\n' '/path/to/file:lalalala' '/path/to/file:lalalala/lalalala' | sed 's_[^:]*/__'
+2016-10-15 00:11:12	shbot	Petter: file:lalalala
+2016-10-15 00:11:13	shbot	Petter: file:lalalala/lalalala
+2016-10-15 00:11:26	tsakos	yeah, it works
+2016-10-15 00:11:30	tsakos	but what about this
+2016-10-15 00:11:50	tsakos	hmm
+2016-10-15 00:11:54	tsakos	ok, I've got it
+2016-10-15 00:12:10	tsakos	no need for further explanations :)
+2016-10-15 00:14:22	tsakos	Riviera: any sed debuggers you used/recommend? I want to get deeper into sed sometime
+2016-10-15 00:14:22		[00:14]
+2016-10-15 00:14:29	tsakos	buffers and the like
+2016-10-15 00:14:36	tsakos	which is confusing a bit as well xD
+2016-10-15 00:15:19	tsakos	I mean something I could watch execution step by step or something
+2016-10-15 00:15:38	Riviera	tsakos: there is at least one, yes, but i have never tried it
+2016-10-15 00:15:44	tsakos	ah, ok
+2016-10-15 00:15:55	tsakos	I found two basically
+2016-10-15 00:16:01	Riviera	tsakos: just write a sed interpreter
+2016-10-15 00:16:03	tsakos	one in bash and one in python
+2016-10-15 00:16:55	tsakos	hehe, seems like it's simpler to write one than to understand it without writing one. xD
+2016-10-15 00:17:10	Riviera	that might very well be true, yes
+2016-10-15 00:17:21	tsakos	haha
+2016-10-15 00:17:24	Riviera	after all, computer programming is often about thinking like a computer
+2016-10-15 00:17:30	tsakos	true
+2016-10-15 00:17:34	Riviera	and i believe that's more true with sed than with for example python.
+2016-10-15 00:17:47	tsakos	yeah, true as well
+2016-10-15 00:17:55	tsakos	sed looks like asm code haha :p
+2016-10-15 00:18:12	tsakos	and even more harder to interpreter it maybe
+2016-10-15 00:18:19	tsakos	interprete*
+2016-10-15 00:18:36	tsakos	s/e$//
+2016-10-15 00:18:39	tsakos	:p
+2016-10-15 00:24:00		[00:18]
+2016-10-15 00:28:24	Riviera	rather like some bytecode, but yeah
+2016-10-15 00:28:27	Riviera	with jumps and all :)
+2016-10-15 00:28:38	Riviera	tsakos: so, are you going to do that today?
+2016-10-15 00:34:00		[00:28]
+2016-10-15 00:41:38	tsakos	No, I don't think so
+2016-10-15 00:41:57	tsakos	sorry about the delay I was afk
+2016-10-15 00:42:47	tsakos	The only "real" langs I know is a bit of C, a bit of awk
+2016-10-15 00:43:54	tsakos	should awk do for this job? I think yes
+2016-10-15 00:44:27	<--	jetchisel (~jetchisel@opensuse/member/jetchisel) has quit (Quit: "Unfortunately time is always against us" -- *Morpheus*)
+2016-10-15 00:44:34	tsakos	but I'm learning awk right now, maybe in some time, I'll consider doing it in awk
+2016-10-15 00:50:00		[00:44]
+2016-10-15 01:21:06	<--	navidr (uid112413@gateway/web/irccloud.com/x-cojvrhlfyevrnuwn) has quit (Quit: Connection closed for inactivity)
+2016-10-15 01:21:06		[01:21]
+2016-10-15 01:36:17	-->	zipe31 (~zipe31@min31-1-82-224-11-112.fbx.proxad.net) has joined ##sed
+2016-10-15 01:36:17		[01:36]
+2016-10-15 01:45:58	-->	b (~coffee@unaffiliated/ridout) has joined ##sed
+2016-10-15 01:51:00		[01:45]

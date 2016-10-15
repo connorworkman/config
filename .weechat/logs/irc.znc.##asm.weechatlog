@@ -26884,3 +26884,400 @@
 2016-10-14 19:09:15	-->	kbw (~KeyboardW@68-204-170-7.res.bhn.net) has joined ##asm
 2016-10-14 19:09:44	<--	RTFM[away] (~RTFMaway]@unaffiliated/rtfmaway/x-3892344) has quit (Ping timeout: 260 seconds)
 2016-10-14 19:13:32	<--	Goplat (~goplat@reactos/developer/Goplat) has quit (Remote host closed the connection)
+2016-10-14 22:00:34	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined ##asm
+2016-10-14 22:00:34		[22:00]
+2016-10-14 22:00:34	--	Topic for ##asm is "Assembly programming channel, all architectures welcome (please specify). Don't ask to ask! Use a pastebin if appropriate! Check your manuals! *** AT&T vs Intel flamers will be banned."
+2016-10-14 22:00:34	--	Topic set by Jester01 (~Jester01@62.100.244.69) on Fri, 30 Sep 2016 06:54:51
+2016-10-14 22:00:34	--	Channel ##asm: 282 nicks (0 ops, 0 voices, 282 normals)
+2016-10-14 22:00:34	***	Buffer Playback...
+2016-10-14 22:00:34	matt|home	[07:27:11] oh right [07:27:11]
+2016-10-14 22:00:34	matt|home	[07:27:15] it goes from A to F i think [07:27:15]
+2016-10-14 22:00:34	matt|home	[07:27:28] lame [07:27:28]
+2016-10-14 22:00:34	zid	[07:27:28] You could figure it out, if you wanted [07:27:28]
+2016-10-14 22:00:34	vdamewood	[07:27:30] I think the Microsoft debugger uses BAADBEEF for uninitialized pointer values. [07:27:30]
+2016-10-14 22:00:34	vulture	[07:28:03] nope [07:28:03]
+2016-10-14 22:00:34	matt|home	[07:28:10] so i did a google image search for beefcake thinking i'd see some kind of steak [07:28:10]
+2016-10-14 22:00:34	vdamewood	[07:28:13] I no longer think that. [07:28:13]
+2016-10-14 22:00:34	matt|home	[07:28:23] well , i was only mildly dissapointed.. [07:28:23]
+2016-10-14 22:00:34	zid	[07:28:30] matt confirmed mildly homosexual? [07:28:30]
+2016-10-14 22:00:34	matt|home	[07:28:59] eh i swing both ways, but legitimately wasn't thinking. anyhoo uh i was gonna ask... [07:28:59]
+2016-10-14 22:00:34	matt|home	[07:29:01] RIGHT [07:29:01]
+2016-10-14 22:00:34	matt|home	[07:29:04] you mentioned structs [07:29:04]
+2016-10-14 22:00:34	matt|home	[07:29:15] what was i gonna ask.. [07:29:15]
+2016-10-14 22:00:34	zid	[07:29:19] what a struct was? [07:29:19]
+2016-10-14 22:00:34	matt|home	[07:29:57] no.. RIGHT, uh. pointers to structs.. someone told me that elements in a struct are essentially not stored contigously, but you can create a pointer to a struct and access them as if they were?? [07:29:57]
+2016-10-14 22:00:34	zap0	[07:29:57] BEEFCA5E [07:29:57]
+2016-10-14 22:00:34	zid	[07:30:09] matt|home: they may or may not me [07:30:09]
+2016-10-14 22:00:34	vulture	[07:30:21] depends on pack mode [07:30:21]
+2016-10-14 22:00:34	zid	[07:30:23] The compiler uses the declaration consistently throughout the code so it knows where it put any padding [07:30:23]
+2016-10-14 22:00:34	matt|home	[07:30:29] is it important to know how that works generally or not really.. [07:30:29]
+2016-10-14 22:00:34	zid	[07:30:50] if it decides the sutrct {char a; int b;} has 3 bytes of padding between a and b, then it doesn't matter to you [07:30:50]
+2016-10-14 22:00:34	matt|home	[07:30:59] mkay [07:30:59]
+2016-10-14 22:00:34	zid	[07:31:05] the memory will be used that way, and the code will expect the memory to be that way [07:31:05]
+2016-10-14 22:00:34	matt|home	[07:31:07] pointer somehow ignores the padding ? [07:31:07]
+2016-10-14 22:00:34	vulture	[07:31:17] this guy's gotta be trolling [07:31:17]
+2016-10-14 22:00:34	vulture	[07:31:18] I'm outta here [07:31:18]
+2016-10-14 22:00:34	zid	[07:31:20] pointers don't have minds [07:31:20]
+2016-10-14 22:00:34	zap0	[07:31:25] 0xB00B1E5 [07:31:25]
+2016-10-14 22:00:34	matt|home	[07:31:38] ... it's alright vulture  im leaving in like a minute.. sorry for bothering you.. [07:31:38]
+2016-10-14 22:00:34	zid	[07:31:39] struct boo { char a; int b};  struct boo baz; [07:31:39]
+2016-10-14 22:00:34	zid	[07:31:49] &baz is the address of that struct [07:31:49]
+2016-10-14 22:00:34	matt|home	[07:32:30] i gotcha.. [07:32:30]
+2016-10-14 22:00:34	vdamewood	[07:32:36] The only thing you can really do with a pointer to a struct is use it as a pointer (with a cast) to the first element. [07:32:36]
+2016-10-14 22:00:34	zid	[07:32:38] sizeof(char) == 1, so with no padding, the address of baz is the address of the char (it's at the start), and the address of b is baz+1 [07:32:38]
+2016-10-14 22:00:34	zid	[07:32:53] if it knows there is 3 bytes of padding (which it does, because it put it there), then b is at baz + 4 [07:32:53]
+2016-10-14 22:00:34	zid	[07:33:34] so when you do baz.b it's internally thinking "an int located at baz plus four" [07:33:34]
+2016-10-14 22:00:34	zid	[07:33:55] and when it comes time to generate the assembly, if baz is at 0xBEEF0000 then baz.b is at 0xBEEF0004 [07:33:55]
+2016-10-14 22:00:34	matt|home	[07:34:12] ah...i gotcha.. thank you for explaining that stuff to me guys, zid/vdamewood, i really appreciate it [07:34:12]
+2016-10-14 22:00:34	zid	[07:34:25] I feel you don't, but I'm between things atm [07:34:25]
+2016-10-14 22:00:34	matt|home	[07:34:48] i think i do.. in any case i wrote down the stuff you said so i can look back at it.. but i got some work to do now [07:34:48]
+2016-10-14 22:00:34	matt|home	[07:35:00] you guys have a good day /o [07:35:00]
+2016-10-14 22:00:34	vdamewood	[07:35:10] My day just began 35 minutes ago. [07:35:10]
+2016-10-14 22:00:34	vdamewood	[07:35:14] Too late. [07:35:14]
+2016-10-14 22:00:34	zid	[07:35:23] It is currently 8:35, I woke up.. at.. midnight ish? [07:35:23]
+2016-10-14 22:00:34	zid	[07:35:31] so that makes it.. 8am + 8 = 4pm? [07:35:31]
+2016-10-14 22:00:34	zid	[07:35:40] I guess I'm almost home from the job I didn't go to [07:35:40]
+2016-10-14 22:00:34	zid	[07:36:05] My internal bodyclock appears to believe I am in japan or something [07:36:05]
+2016-10-14 22:00:34	vdamewood	[07:36:24] Mine never really kept track. [07:36:24]
+2016-10-14 22:00:34	zid	[07:36:30] I meant 'this week' [07:36:30]
+2016-10-14 22:00:34	***	Playback Complete.
+2016-10-14 22:00:50	-->	King_Hual (~failed@94.26.28.68) has joined ##asm
+2016-10-14 22:00:50	<--	King_Hual (~failed@94.26.28.68) has quit (Changing host)
+2016-10-14 22:00:50	-->	King_Hual (~failed@unaffiliated/king-hual/x-1207580) has joined ##asm
+2016-10-14 22:01:04	--	Channel created on Sun, 27 May 2007 05:31:12
+2016-10-14 22:04:16	<--	MarkX (~MarkX@38.64.146.140) has quit (Ping timeout: 260 seconds)
+2016-10-14 22:04:33	-->	Beetny (~Beetny@14-202-48-200.tpgi.com.au) has joined ##asm
+2016-10-14 22:04:57	-->	MarkX (~MarkX@38.64.147.152) has joined ##asm
+2016-10-14 22:08:47	-->	damme (~damme@2001:16d8:cc75::802) has joined ##asm
+2016-10-14 22:10:48	<--	YeZSTeR (~yez@121.54.58.245) has quit (Quit: WeeChat 1.5)
+2016-10-14 22:11:28	-->	KidBeta (~textual@202-159-146-122.dyn.iinet.net.au) has joined ##asm
+2016-10-14 22:12:53	-->	sametsisartenep (~sametsisa@106.pool85-53-34.dynamic.orange.es) has joined ##asm
+2016-10-14 22:14:43	-->	medicijnman (~methos@5ED27E76.cm-7-3b.dynamic.ziggo.nl) has joined ##asm
+2016-10-14 22:20:00		[22:14]
+2016-10-14 22:20:23	<--	damme (~damme@2001:16d8:cc75::802) has quit (Ping timeout: 258 seconds)
+2016-10-14 22:21:28	-->	damme (~damme@2001:16d8:cc75::802) has joined ##asm
+2016-10-14 22:22:02	-->	SwiftMatt (~Objective@162.242.94.124) has joined ##asm
+2016-10-14 22:22:16	<--	SwiftMatt (~Objective@162.242.94.124) has quit (Client Quit)
+2016-10-14 22:26:24	-->	CCHyper_ (~CCHyper@cnc-comm.com) has joined ##asm
+2016-10-14 22:26:39	-->	Kostenko_ (~Kostenko@bl5-166-253.dsl.telepac.pt) has joined ##asm
+2016-10-14 22:26:43	-->	SwiftMatt (~Objective@162.242.94.124) has joined ##asm
+2016-10-14 22:26:59	-->	MDead (~MDude@pa-67-234-97-58.dhcp.embarqhsd.net) has joined ##asm
+2016-10-14 22:27:29	-->	exezin_ (~exezin@unaffiliated/exezin) has joined ##asm
+2016-10-14 22:27:49	-->	dsamarin_ (~dsamarin@oftn/oswg-board/dsamarin) has joined ##asm
+2016-10-14 22:27:49	-->	seu_ (~quassel@srv071.come2club.xyz) has joined ##asm
+2016-10-14 22:28:03	<--	damme (~damme@2001:16d8:cc75::802) has quit (Ping timeout: 258 seconds)
+2016-10-14 22:28:05	-->	Z8050017 (~ASAP@pool-173-63-56-218.nwrknj.fios.verizon.net) has joined ##asm
+2016-10-14 22:28:08	-->	makubi_ (~makubi@static.180.202.46.78.clients.your-server.de) has joined ##asm
+2016-10-14 22:30:21	-->	cynicalcats_ (~cynicalca@c-50-183-28-95.hsd1.co.comcast.net) has joined ##asm
+2016-10-14 22:30:40	-->	lipvig_ (~lipvig@104.244.77.198) has joined ##asm
+2016-10-14 22:30:48	-->	nightfro` (nightfrog@65-35-35-108.res.bhn.net) has joined ##asm
+2016-10-14 22:32:17	-->	Jester02 (~Jester01@62.100.244.69) has joined ##asm
+2016-10-14 22:33:30	<--	Kostenko (~Kostenko@bl5-166-253.dsl.telepac.pt) has quit (*.net *.split)
+2016-10-14 22:33:30	<--	archshift (~archshift@archshift.com) has quit (*.net *.split)
+2016-10-14 22:33:31	<--	MDude (~MDude@pa-67-234-97-58.dhcp.embarqhsd.net) has quit (*.net *.split)
+2016-10-14 22:33:31	<--	Natch (~Natch@h-155-122.a444.priv.bahnhof.se) has quit (*.net *.split)
+2016-10-14 22:33:31	<--	Jester01 (~Jester01@62.100.244.69) has quit (*.net *.split)
+2016-10-14 22:33:31	<--	Xark (~Xark@unaffiliated/xark) has quit (*.net *.split)
+2016-10-14 22:33:32	<--	aleph- (~hatter@unaffiliated/church-) has quit (*.net *.split)
+2016-10-14 22:33:32	<--	jack_rabbit (~jack_rabb@c-50-179-163-66.hsd1.il.comcast.net) has quit (*.net *.split)
+2016-10-14 22:33:33	<--	Lokomotiv (~ASAP@unaffiliated/lokomotiv) has quit (*.net *.split)
+2016-10-14 22:33:34	<--	makubi (~makubi@static.180.202.46.78.clients.your-server.de) has quit (*.net *.split)
+2016-10-14 22:33:34	<--	seu (~quassel@srv071.come2club.xyz) has quit (*.net *.split)
+2016-10-14 22:33:35	<--	cynicalcats (~cynicalca@unaffiliated/cynicalcats) has quit (*.net *.split)
+2016-10-14 22:33:35	<--	boddah (~ralph@static.118.185.201.138.clients.your-server.de) has quit (*.net *.split)
+2016-10-14 22:33:36	<--	gluytium_ (~g@45.63.97.181) has quit (*.net *.split)
+2016-10-14 22:33:36	<--	Ewomire_ (~Ender@192.95.25.150) has quit (*.net *.split)
+2016-10-14 22:33:36	<--	MonsterAbyss (~MonsterAb@162.243.210.129) has quit (*.net *.split)
+2016-10-14 22:33:36	<--	nogagplz (~nogagplz@124-171-25-80.dyn.iinet.net.au) has quit (*.net *.split)
+2016-10-14 22:33:36	<--	Gynvael (~gynvael@80-219-209-110.dclient.hispeed.ch) has quit (*.net *.split)
+2016-10-14 22:33:37	<--	the_wench (~the_wench@host81-149-189-98.in-addr.btopenworld.com) has quit (*.net *.split)
+2016-10-14 22:33:37	<--	exezin (~exezin@unaffiliated/exezin) has quit (*.net *.split)
+2016-10-14 22:33:37	<--	numberten (~numberten@ec2-54-69-152-253.us-west-2.compute.amazonaws.com) has quit (*.net *.split)
+2016-10-14 22:33:37	<--	p53ud0nym (~p53ud0nym@178.62.54.169) has quit (*.net *.split)
+2016-10-14 22:33:38	<--	drdanick (drdanick@203-173-241-246.dsl.dyn.ihug.co.nz) has quit (*.net *.split)
+2016-10-14 22:33:38	<--	dsamarin (~dsamarin@oftn/oswg-board/dsamarin) has quit (*.net *.split)
+2016-10-14 22:33:38	<--	StM (~StM@srv1-fr.icept.nl) has quit (*.net *.split)
+2016-10-14 22:33:39	<--	CCHyper (~CCHyper@cnc-comm.com) has quit (*.net *.split)
+2016-10-14 22:33:39	<--	lipvig (~lipvig@104.244.77.198) has quit (*.net *.split)
+2016-10-14 22:33:40	<--	harrisi (~ian@104.131.146.169) has quit (*.net *.split)
+2016-10-14 22:33:40	<--	nightfrog (nightfrog@65-35-35-108.res.bhn.net) has quit (*.net *.split)
+2016-10-14 22:33:40	--	nightfro` is now known as nightfrog
+2016-10-14 22:33:41	--	MDead is now known as MDude
+2016-10-14 22:33:41	-->	archshift (~archshift@archshift.com) has joined ##asm
+2016-10-14 22:33:46	-->	numberten (~numberten@ec2-54-69-152-253.us-west-2.compute.amazonaws.com) has joined ##asm
+2016-10-14 22:33:50	<--	bkboggy (~bkboggy@cpe-172-250-147-60.socal.res.rr.com) has quit (Read error: Connection reset by peer)
+2016-10-14 22:34:26	-->	nogagplz (~nogagplz@124-171-25-80.dyn.iinet.net.au) has joined ##asm
+2016-10-14 22:40:00		[22:34]
+2016-10-14 22:41:12	-->	Jackson (~Jackson@dynamic-acs-24-154-36-168.zoominternet.net) has joined ##asm
+2016-10-14 22:41:35	--	Jackson is now known as Guest51446
+2016-10-14 22:41:49	<--	Guest51446 (~Jackson@dynamic-acs-24-154-36-168.zoominternet.net) has quit (Remote host closed the connection)
+2016-10-14 22:41:50	-->	jack_rabbit (~jack_rabb@2601:240:8200:e1c0:90c0:e65c:1a4b:721e) has joined ##asm
+2016-10-14 22:48:13	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined ##asm
+2016-10-14 22:48:13		[22:48]
+2016-10-14 22:48:13	--	Topic for ##asm is "Assembly programming channel, all architectures welcome (please specify). Don't ask to ask! Use a pastebin if appropriate! Check your manuals! *** AT&T vs Intel flamers will be banned."
+2016-10-14 22:48:13	--	Topic set by Jester01 (~Jester01@62.100.244.69) on Fri, 30 Sep 2016 06:54:51
+2016-10-14 22:48:13	--	Channel ##asm: 273 nicks (0 ops, 0 voices, 273 normals)
+2016-10-14 22:48:13	***	Buffer Playback...
+2016-10-14 22:48:13	matt|home	[07:27:11] oh right [07:27:11]
+2016-10-14 22:48:13	matt|home	[07:27:15] it goes from A to F i think [07:27:15]
+2016-10-14 22:48:13	matt|home	[07:27:28] lame [07:27:28]
+2016-10-14 22:48:13	zid	[07:27:28] You could figure it out, if you wanted [07:27:28]
+2016-10-14 22:48:13	vdamewood	[07:27:30] I think the Microsoft debugger uses BAADBEEF for uninitialized pointer values. [07:27:30]
+2016-10-14 22:48:13	vulture	[07:28:03] nope [07:28:03]
+2016-10-14 22:48:13	matt|home	[07:28:10] so i did a google image search for beefcake thinking i'd see some kind of steak [07:28:10]
+2016-10-14 22:48:13	vdamewood	[07:28:13] I no longer think that. [07:28:13]
+2016-10-14 22:48:13	matt|home	[07:28:23] well , i was only mildly dissapointed.. [07:28:23]
+2016-10-14 22:48:14	zid	[07:28:30] matt confirmed mildly homosexual? [07:28:30]
+2016-10-14 22:48:14	matt|home	[07:28:59] eh i swing both ways, but legitimately wasn't thinking. anyhoo uh i was gonna ask... [07:28:59]
+2016-10-14 22:48:14	matt|home	[07:29:01] RIGHT [07:29:01]
+2016-10-14 22:48:14	matt|home	[07:29:04] you mentioned structs [07:29:04]
+2016-10-14 22:48:14	matt|home	[07:29:15] what was i gonna ask.. [07:29:15]
+2016-10-14 22:48:14	zid	[07:29:19] what a struct was? [07:29:19]
+2016-10-14 22:48:14	matt|home	[07:29:57] no.. RIGHT, uh. pointers to structs.. someone told me that elements in a struct are essentially not stored contigously, but you can create a pointer to a struct and access them as if they were?? [07:29:57]
+2016-10-14 22:48:14	zap0	[07:29:57] BEEFCA5E [07:29:57]
+2016-10-14 22:48:14	zid	[07:30:09] matt|home: they may or may not me [07:30:09]
+2016-10-14 22:48:14	vulture	[07:30:21] depends on pack mode [07:30:21]
+2016-10-14 22:48:14	zid	[07:30:23] The compiler uses the declaration consistently throughout the code so it knows where it put any padding [07:30:23]
+2016-10-14 22:48:14	matt|home	[07:30:29] is it important to know how that works generally or not really.. [07:30:29]
+2016-10-14 22:48:14	zid	[07:30:50] if it decides the sutrct {char a; int b;} has 3 bytes of padding between a and b, then it doesn't matter to you [07:30:50]
+2016-10-14 22:48:14	matt|home	[07:30:59] mkay [07:30:59]
+2016-10-14 22:48:14	zid	[07:31:05] the memory will be used that way, and the code will expect the memory to be that way [07:31:05]
+2016-10-14 22:48:14	matt|home	[07:31:07] pointer somehow ignores the padding ? [07:31:07]
+2016-10-14 22:48:14	vulture	[07:31:17] this guy's gotta be trolling [07:31:17]
+2016-10-14 22:48:14	vulture	[07:31:18] I'm outta here [07:31:18]
+2016-10-14 22:48:14	zid	[07:31:20] pointers don't have minds [07:31:20]
+2016-10-14 22:48:14	zap0	[07:31:25] 0xB00B1E5 [07:31:25]
+2016-10-14 22:48:14	matt|home	[07:31:38] ... it's alright vulture  im leaving in like a minute.. sorry for bothering you.. [07:31:38]
+2016-10-14 22:48:14	zid	[07:31:39] struct boo { char a; int b};  struct boo baz; [07:31:39]
+2016-10-14 22:48:14	zid	[07:31:49] &baz is the address of that struct [07:31:49]
+2016-10-14 22:48:14	matt|home	[07:32:30] i gotcha.. [07:32:30]
+2016-10-14 22:48:14	vdamewood	[07:32:36] The only thing you can really do with a pointer to a struct is use it as a pointer (with a cast) to the first element. [07:32:36]
+2016-10-14 22:48:14	zid	[07:32:38] sizeof(char) == 1, so with no padding, the address of baz is the address of the char (it's at the start), and the address of b is baz+1 [07:32:38]
+2016-10-14 22:48:14	zid	[07:32:53] if it knows there is 3 bytes of padding (which it does, because it put it there), then b is at baz + 4 [07:32:53]
+2016-10-14 22:48:14	zid	[07:33:34] so when you do baz.b it's internally thinking "an int located at baz plus four" [07:33:34]
+2016-10-14 22:48:14	zid	[07:33:55] and when it comes time to generate the assembly, if baz is at 0xBEEF0000 then baz.b is at 0xBEEF0004 [07:33:55]
+2016-10-14 22:48:14	matt|home	[07:34:12] ah...i gotcha.. thank you for explaining that stuff to me guys, zid/vdamewood, i really appreciate it [07:34:12]
+2016-10-14 22:48:14	zid	[07:34:25] I feel you don't, but I'm between things atm [07:34:25]
+2016-10-14 22:48:14	matt|home	[07:34:48] i think i do.. in any case i wrote down the stuff you said so i can look back at it.. but i got some work to do now [07:34:48]
+2016-10-14 22:48:14	matt|home	[07:35:00] you guys have a good day /o [07:35:00]
+2016-10-14 22:48:14	vdamewood	[07:35:10] My day just began 35 minutes ago. [07:35:10]
+2016-10-14 22:48:14	vdamewood	[07:35:14] Too late. [07:35:14]
+2016-10-14 22:48:14	zid	[07:35:23] It is currently 8:35, I woke up.. at.. midnight ish? [07:35:23]
+2016-10-14 22:48:14	zid	[07:35:31] so that makes it.. 8am + 8 = 4pm? [07:35:31]
+2016-10-14 22:48:14	zid	[07:35:40] I guess I'm almost home from the job I didn't go to [07:35:40]
+2016-10-14 22:48:14	zid	[07:36:05] My internal bodyclock appears to believe I am in japan or something [07:36:05]
+2016-10-14 22:48:14	vdamewood	[07:36:24] Mine never really kept track. [07:36:24]
+2016-10-14 22:48:14	zid	[07:36:30] I meant 'this week' [07:36:30]
+2016-10-14 22:48:14	***	Playback Complete.
+2016-10-14 22:48:49	--	Channel created on Sun, 27 May 2007 05:31:12
+2016-10-14 22:51:09	-->	Natch (~Natch@h-155-122.a444.priv.bahnhof.se) has joined ##asm
+2016-10-14 22:51:09	-->	Xark (~Xark@unaffiliated/xark) has joined ##asm
+2016-10-14 22:51:09	-->	aleph- (~hatter@unaffiliated/church-) has joined ##asm
+2016-10-14 22:51:09	-->	boddah (~ralph@static.118.185.201.138.clients.your-server.de) has joined ##asm
+2016-10-14 22:51:09	-->	gluytium_ (~g@45.63.97.181) has joined ##asm
+2016-10-14 22:51:09	-->	Ewomire_ (~Ender@192.95.25.150) has joined ##asm
+2016-10-14 22:51:09	-->	MonsterAbyss (~MonsterAb@162.243.210.129) has joined ##asm
+2016-10-14 22:51:09	-->	Gynvael (~gynvael@80-219-209-110.dclient.hispeed.ch) has joined ##asm
+2016-10-14 22:51:09	-->	harrisi (~ian@104.131.146.169) has joined ##asm
+2016-10-14 22:51:09	-->	p53ud0nym (~p53ud0nym@178.62.54.169) has joined ##asm
+2016-10-14 22:51:09	-->	drdanick (drdanick@203-173-241-246.dsl.dyn.ihug.co.nz) has joined ##asm
+2016-10-14 22:51:09	-->	StM (~StM@srv1-fr.icept.nl) has joined ##asm
+2016-10-14 22:52:20	<--	hmmmm (~sdfgsf@72.79.172.20) has quit (Remote host closed the connection)
+2016-10-14 22:54:06	-->	Xylitol (~temari@unaffiliated/xylitol) has joined ##asm
+2016-10-14 22:57:11	<--	Antares (~Antares@ppp91-78-123-238.pppoe.mtu-net.ru) has quit (Ping timeout: 258 seconds)
+2016-10-14 23:03:00		[22:57]
+2016-10-14 23:04:16	<--	SwiftMatt (~Objective@162.242.94.124) has quit (Quit: My MacBook Pro has gone to sleep. ZZZzzz…)
+2016-10-14 23:04:44	-->	rendar (~rendar@host249-182-dynamic.252-95-r.retail.telecomitalia.it) has joined ##asm
+2016-10-14 23:10:00		[23:04]
+2016-10-14 23:12:39	-->	the_wench (~the_wench@host81-149-189-98.in-addr.btopenworld.com) has joined ##asm
+2016-10-14 23:15:10	-->	SwiftMatt (~Objective@162.242.94.124) has joined ##asm
+2016-10-14 23:20:51	<--	osa1_ (~omer@50-253-193-254-static.hfc.comcastbusiness.net) has quit (Ping timeout: 252 seconds)
+2016-10-14 23:21:23	<--	KidBeta (~textual@202-159-146-122.dyn.iinet.net.au) has quit (Quit: My MacBook Pro has gone to sleep. ZZZzzz…)
+2016-10-14 23:25:02	-->	Antares (~Antares@95.165.128.197) has joined ##asm
+2016-10-14 23:25:02		[23:25]
+2016-10-14 23:30:48	-->	StM_ (~StM@2001:41d0:a:243e::1) has joined ##asm
+2016-10-14 23:32:11	-->	Ewomire (~Ender@192.95.25.150) has joined ##asm
+2016-10-14 23:32:27	<--	booboojio (~yaaic@c-f78472d5.043-274-73746f25.cust.bredbandsbolaget.se) has quit (Ping timeout: 258 seconds)
+2016-10-14 23:32:33	-->	p53ud0ny1 (~p53ud0nym@178.62.54.169) has joined ##asm
+2016-10-14 23:32:42	-->	GynDream (~gynvael@80-219-209-110.dclient.hispeed.ch) has joined ##asm
+2016-10-14 23:33:27	-->	boddah_ (~ralph@static.118.185.201.138.clients.your-server.de) has joined ##asm
+2016-10-14 23:34:01	-->	harrisi_ (~ian@104.131.146.169) has joined ##asm
+2016-10-14 23:35:18	-->	Natch_x (~Natch@h-155-122.a444.priv.bahnhof.se) has joined ##asm
+2016-10-14 23:36:01	-->	gluytium (~g@45.63.97.181) has joined ##asm
+2016-10-14 23:36:49	-->	MonsterA- (~MonsterAb@162.243.210.129) has joined ##asm
+2016-10-14 23:37:38	<--	rendar (~rendar@host249-182-dynamic.252-95-r.retail.telecomitalia.it) has quit (*.net *.split)
+2016-10-14 23:37:39	<--	Natch (~Natch@h-155-122.a444.priv.bahnhof.se) has quit (*.net *.split)
+2016-10-14 23:37:39	<--	Xark (~Xark@unaffiliated/xark) has quit (*.net *.split)
+2016-10-14 23:37:39	<--	aleph- (~hatter@unaffiliated/church-) has quit (*.net *.split)
+2016-10-14 23:37:40	<--	boddah (~ralph@static.118.185.201.138.clients.your-server.de) has quit (*.net *.split)
+2016-10-14 23:37:40	<--	gluytium_ (~g@45.63.97.181) has quit (*.net *.split)
+2016-10-14 23:37:40	<--	Ewomire_ (~Ender@192.95.25.150) has quit (*.net *.split)
+2016-10-14 23:37:40	<--	MonsterAbyss (~MonsterAb@162.243.210.129) has quit (*.net *.split)
+2016-10-14 23:37:40	<--	Gynvael (~gynvael@80-219-209-110.dclient.hispeed.ch) has quit (*.net *.split)
+2016-10-14 23:37:41	<--	p53ud0nym (~p53ud0nym@178.62.54.169) has quit (*.net *.split)
+2016-10-14 23:37:41	<--	drdanick (drdanick@203-173-241-246.dsl.dyn.ihug.co.nz) has quit (*.net *.split)
+2016-10-14 23:37:41	<--	StM (~StM@srv1-fr.icept.nl) has quit (*.net *.split)
+2016-10-14 23:37:42	<--	harrisi (~ian@104.131.146.169) has quit (*.net *.split)
+2016-10-14 23:37:42	--	Natch_x is now known as Natch
+2016-10-14 23:38:07	-->	drdanick (drdanick@203-173-241-246.dsl.dyn.ihug.co.nz) has joined ##asm
+2016-10-14 23:38:17	-->	Xark (~Xark@unaffiliated/xark) has joined ##asm
+2016-10-14 23:40:27	<--	SwiftMatt (~Objective@162.242.94.124) has quit (Quit: My MacBook Pro has gone to sleep. ZZZzzz…)
+2016-10-14 23:40:27		[23:40]
+2016-10-14 23:44:36	-->	rendar (~rendar@host249-182-dynamic.252-95-r.retail.telecomitalia.it) has joined ##asm
+2016-10-14 23:44:53	-->	aleph- (~hatter@unaffiliated/church-) has joined ##asm
+2016-10-14 23:50:00		[23:44]
+2016-10-14 23:55:23	-->	damme (~damme@2001:16d8:cc75::802) has joined ##asm
+2016-10-14 23:59:30	-->	nilminus (~nilminus@athedsl-126174.home.otenet.gr) has joined ##asm
+2016-10-15 00:01:09	<--	nilminus (~nilminus@athedsl-126174.home.otenet.gr) has quit (Client Quit)
+2016-10-15 00:07:00		[00:01]
+2016-10-15 00:07:08	--	seu_ is now known as seu
+2016-10-15 00:08:52	<--	ararob (~yaaic@46-227-67-188.pool.ovpn.se) has quit (Remote host closed the connection)
+2016-10-15 00:10:54	-->	GeDaMo (~GeDaMo@212.225.83.199) has joined ##asm
+2016-10-15 00:14:25	-->	snyp (~Snyp@150.129.132.140) has joined ##asm
+2016-10-15 00:16:13	-->	nilminus (~nilminus@athedsl-126174.home.otenet.gr) has joined ##asm
+2016-10-15 00:17:18	-->	Richard_Cavell (uid165693@gateway/web/irccloud.com/x-gtzdxqxfwifntjpv) has joined ##asm
+2016-10-15 00:23:00		[00:17]
+2016-10-15 00:24:19	-->	tclover (~tclover@dslb-088-066-167-063.088.066.pools.vodafone-ip.de) has joined ##asm
+2016-10-15 00:27:01	<--	w33 (~w33@unaffiliated/w33) has quit (Quit: w33)
+2016-10-15 00:29:46	-->	ararob (~yaaic@c-f78472d5.043-274-73746f25.cust.bredbandsbolaget.se) has joined ##asm
+2016-10-15 00:35:00		[00:29]
+2016-10-15 00:40:36	<--	ararob (~yaaic@c-f78472d5.043-274-73746f25.cust.bredbandsbolaget.se) has quit (Ping timeout: 252 seconds)
+2016-10-15 00:41:04	--	shrood is now known as lulcat
+2016-10-15 00:42:21	-->	Cyint (~Cyint@ip91-137-212-87.adsl2.static.versatel.nl) has joined ##asm
+2016-10-15 00:44:49	-->	ararob (~yaaic@host-95-199-18-3.mobileonline.telia.com) has joined ##asm
+2016-10-15 00:50:00		[00:44]
+2016-10-15 00:52:46	-->	sacredbanana (~Mutter@server.minotaurcreative.net) has joined ##asm
+2016-10-15 00:55:43	-->	crankslider (~slidercra@unaffiliated/slidercrank) has joined ##asm
+2016-10-15 00:56:57	-->	devonrevenge (~devonreve@unaffiliated/devonrevenge) has joined ##asm
+2016-10-15 00:59:18	<--	sacredbanana (~Mutter@server.minotaurcreative.net) has quit (Ping timeout: 252 seconds)
+2016-10-15 01:01:07	-->	pie_ (~pie_@78-131-91-105.pool.digikabel.hu) has joined ##asm
+2016-10-15 01:01:53	<--	pie_ (~pie_@78-131-91-105.pool.digikabel.hu) has quit (Changing host)
+2016-10-15 01:01:53	-->	pie_ (~pie_@unaffiliated/pie-/x-0787662) has joined ##asm
+2016-10-15 01:04:09	<--	pie_ (~pie_@unaffiliated/pie-/x-0787662) has left ##asm
+2016-10-15 01:05:22	-->	Xatenev (~gstel@ip1f12f9d2.dynamic.kabel-deutschland.de) has joined ##asm
+2016-10-15 01:05:22		[01:05]
+2016-10-15 01:05:25	Xatenev	Hello
+2016-10-15 01:05:38	Xatenev	I guess this is not really suited for ##asm but I guess you people can answer my question as best
+2016-10-15 01:05:45	Xatenev	Where is the difference when people talk about "raw binary" vs "binary"?
+2016-10-15 01:06:03	OxFEEDBACC	i guess the context...
+2016-10-15 01:06:08	Xatenev	Binary is 100101010 - raw binary is " \x08\xj36\" somebody told me, but what do those \x08\xj36 means?
+2016-10-15 01:06:17	-->	StereoBucket (~StereoBuc@31.223.131.167) has joined ##asm
+2016-10-15 01:06:20	OxFEEDBACC	raw binary appears to be more used in context of files...
+2016-10-15 01:06:25	Xatenev	for example somebody asked "I wanna convert a string to a raw binary"
+2016-10-15 01:06:26	GeDaMo	Those are just different number representations
+2016-10-15 01:06:33	Xatenev	How is that representation called?
+2016-10-15 01:06:37	Xatenev	\x08\xj36
+2016-10-15 01:06:42	Xatenev	Ive never seen that before
+2016-10-15 01:06:54	GeDaMo	Escaped hex values
+2016-10-15 01:06:58	OxFEEDBACC	those strings you gave are not binary... and especially not "raw" binary...
+2016-10-15 01:07:05	zid	That is infact, hex, not binary
+2016-10-15 01:07:16	OxFEEDBACC	<3
+2016-10-15 01:07:17	roxfan	\xNN is notation used in C and Python string literals to represent unprintable characters
+2016-10-15 01:07:38	GeDaMo	I don't know what \xj36 means though
+2016-10-15 01:07:43	zid	any character*
+2016-10-15 01:07:55	OxFEEDBACC	typo?
+2016-10-15 01:07:59	Xatenev	maybe that was jut an example?
+2016-10-15 01:08:00	GeDaMo	I hope so :P
+2016-10-15 01:08:03	zid	I think he was just flailing at his keyboard
+2016-10-15 01:08:10	zid	like when I go 98349324983e783;
+2016-10-15 01:08:21	Xatenev	so its \x and then the number after is hex
+2016-10-15 01:08:22	Xatenev	yes?
+2016-10-15 01:08:41	OxFEEDBACC	two hex digits
+2016-10-15 01:08:56	Xatenev	or more I guess?
+2016-10-15 01:09:07	OxFEEDBACC	no
+2016-10-15 01:09:20	GeDaMo	In some contexts you can have 4 hex degits for wide characters
+2016-10-15 01:09:23	GeDaMo	^digits
+2016-10-15 01:09:25	roxfan	https://docs.python.org/2.0/ref/strings.html last entry in the table
+2016-10-15 01:09:26	Xatenev	Woot, but we cant show all numbers with just two hex digits
+2016-10-15 01:09:26	Xatenev	Oo
+2016-10-15 01:09:30	Xatenev	Sorry im probably dumb
+2016-10-15 01:09:36	GeDaMo	You can with multiple bytes
+2016-10-15 01:09:47	zid	Xatenev: they represent individual bytes
+2016-10-15 01:09:53	OxFEEDBACC	it's not about "showing numbers"...
+2016-10-15 01:09:54	zid	so yes, you can't put more than 1 byte in a byte
+2016-10-15 01:10:07	roxfan	more than 1 byte in a byte? o.o
+2016-10-15 01:10:14	megaTherion	*lol*
+2016-10-15 01:10:41	GeDaMo	Well not that that attitude :P
+2016-10-15 01:11:21	megaTherion	different representations doesn't change the actual value of one byte
+2016-10-15 01:11:36	GeDaMo	This is true
+2016-10-15 01:12:11	vulture	though it is true that is not binary, some people colloquially say "raw binary" to simply indicate raw bytes (rather, bytes that you type in that will be unconverted in the final target file)
+2016-10-15 01:13:03	megaTherion	what are raw bytes?
+2016-10-15 01:13:08	zid	ones you forgot to cook
+2016-10-15 01:13:17	vulture	bytes
+2016-10-15 01:13:54	megaTherion	some people got it wrong then
+2016-10-15 01:13:56	GeDaMo	"raw" usually means "unencumbered with metadata" :P
+2016-10-15 01:13:56	megaTherion	there is no difference
+2016-10-15 01:14:04	vulture	got what wrong
+2016-10-15 01:14:14	megaTherion	their meaning of "raw binary" whatever that means
+2016-10-15 01:14:38	vulture	their goal of saying raw binary is that in the target file (i.e. exe file or w/e) it will be those raw bytes
+2016-10-15 01:15:10	megaTherion	ok never heard about it, to me an bytes of an file is not different from any other bytes
+2016-10-15 01:16:10	vulture	but some bytes may have been put there intentionally by precise number, while other bytes may have been put there indirectly by e.g. a compiler
+2016-10-15 01:16:25	GeDaMo	TO me raw binary sounds like a flat binary: machine code without any linking or relocation information you might find in an executable format
+2016-10-15 01:16:28	megaTherion	oh
+2016-10-15 01:16:38	zid	that'd be A raw binary
+2016-10-15 01:16:48	zid	like 'a binary' rather than 'binary'
+2016-10-15 01:16:57	megaTherion	raw eggs have been indirectly put in the fritch
+2016-10-15 01:17:43	vulture	for example:
+2016-10-15 01:17:49	vulture	(and this should be a reasonable example)
+2016-10-15 01:19:40	vulture	let's say you want to write a specific encoding of 'mov eax,ebx' to a program
+2016-10-15 01:19:43	-->	Coldseeker (~Frosty@adsl-au-4-105.ozonline.com.au) has joined ##asm
+2016-10-15 01:19:49	vulture	so you could type mov eax,ebx and assemble that
+2016-10-15 01:20:01	vulture	and you would get some valid form of that in your program
+2016-10-15 01:20:15	vulture	but maybe you wanted a specific encoding of it rather than "some valid form"
+2016-10-15 01:20:45	vulture	so instead of writing 'mov eax,ebx', you write "raw binary", e.g., db 0x89, 0xd8
+2016-10-15 01:20:45		[01:20]
+2016-10-15 01:21:06	<--	navidr (uid112413@gateway/web/irccloud.com/x-cojvrhlfyevrnuwn) has quit (Quit: Connection closed for inactivity)
+2016-10-15 01:21:11	vulture	despite this being hex, the point of it is that you're directing the final output (your program) to have very specific bytes of data
+2016-10-15 01:21:32	vulture	so in that sense, it is "raw binary", because the compiler/assembler/whatever did not change it from your meaning
+2016-10-15 01:22:54	Coldseeker	hmm?
+2016-10-15 01:25:42	zid	db 0xCD, 0x80 is all I remember, I am a bads
+2016-10-15 01:26:10	zid	I think what we managed to establish is that it doesn't mean anything in particular and it depends on context
+2016-10-15 01:26:26	<--	Cyint (~Cyint@ip91-137-212-87.adsl2.static.versatel.nl) has quit (Ping timeout: 268 seconds)
+2016-10-15 01:27:31	<--	Xatenev (~gstel@ip1f12f9d2.dynamic.kabel-deutschland.de) has left ##asm
+2016-10-15 01:29:39	OxFEEDBACC	no worries... that's part of the service :-D
+2016-10-15 01:32:36	vulture	it means the form you see in your source code, e.g. db 0xcd, 0x80; or dw 0x80cd; or char rawbytes[] = { 0xcd, 0x80 }; is completely irrelevant because they all get compiled down to the same raw bytes
+2016-10-15 01:36:39	<--	Korsi_ (~plukkari@st-cn0001.oulu.fi) has quit (Ping timeout: 258 seconds)
+2016-10-15 01:36:39		[01:36]
+2016-10-15 01:37:54	-->	thewormkill (~thewormki@ip31-214.kullen.rwth-aachen.de) has joined ##asm
+2016-10-15 01:43:00		[01:37]
+2016-10-15 01:45:53	-->	osa1 (~omer@50-253-193-254-static.hfc.comcastbusiness.net) has joined ##asm
+2016-10-15 01:45:53	<--	osa1 (~omer@50-253-193-254-static.hfc.comcastbusiness.net) has quit (Changing host)
+2016-10-15 01:45:53	-->	osa1 (~omer@haskell/developer/osa1) has joined ##asm
+2016-10-15 01:47:58	<--	devonrevenge (~devonreve@unaffiliated/devonrevenge) has quit (Read error: No route to host)
+2016-10-15 01:51:31	<--	ararob (~yaaic@host-95-199-18-3.mobileonline.telia.com) has quit (Remote host closed the connection)
+2016-10-15 01:52:26	-->	ararob (~yaaic@host-95-199-18-3.mobileonline.telia.com) has joined ##asm
+2016-10-15 01:52:57	-->	devonrevenge (~devonreve@unaffiliated/devonrevenge) has joined ##asm
+2016-10-15 01:55:35	<--	madknight (madknight@gateway/shell/panicbnc/x-lwtrvbzdaswbzkrg) has left ##asm ("Leaving")
+2016-10-15 01:56:33	<--	ararob (~yaaic@host-95-199-18-3.mobileonline.telia.com) has quit (Changing host)
+2016-10-15 01:56:33	-->	ararob (~yaaic@unaffiliated/ararob) has joined ##asm
+2016-10-15 01:57:55	-->	xocket (~xocket@unaffiliated/xocket) has joined ##asm
+2016-10-15 02:00:08	-->	freakazoid0223_ (~chatzilla@pool-108-52-4-128.phlapa.fios.verizon.net) has joined ##asm
+2016-10-15 02:00:08		[02:00]
+2016-10-15 02:00:51	<--	ararob (~yaaic@unaffiliated/ararob) has quit (Read error: Connection reset by peer)
+2016-10-15 02:01:00	<--	Beetny (~Beetny@14-202-48-200.tpgi.com.au) has quit (Read error: Connection reset by peer)
+2016-10-15 02:01:32	-->	ararob (~yaaic@c-f78472d5.043-274-73746f25.cust.bredbandsbolaget.se) has joined ##asm
+2016-10-15 02:01:33	<--	ararob (~yaaic@c-f78472d5.043-274-73746f25.cust.bredbandsbolaget.se) has quit (Changing host)
+2016-10-15 02:01:33	-->	ararob (~yaaic@unaffiliated/ararob) has joined ##asm
+2016-10-15 02:02:19	<--	ararob (~yaaic@unaffiliated/ararob) has quit (Client Quit)
+2016-10-15 02:02:39	<--	freakazoid0223 (~chatzilla@pool-108-52-4-128.phlapa.fios.verizon.net) has quit (Ping timeout: 250 seconds)
+2016-10-15 02:07:05	-->	MarkX_ (~MarkX@38.64.147.148) has joined ##asm
+2016-10-15 02:09:08	<--	MarkX (~MarkX@38.64.147.152) has quit (Ping timeout: 250 seconds)
+2016-10-15 02:11:24	-->	ararob (~yaaic@46-227-67-188.pool.ovpn.se) has joined ##asm
+2016-10-15 02:11:25	<--	ararob (~yaaic@46-227-67-188.pool.ovpn.se) has quit (Changing host)
+2016-10-15 02:11:25	-->	ararob (~yaaic@unaffiliated/ararob) has joined ##asm
+2016-10-15 02:12:41	<--	MindlessDrone (~MindlessD@unaffiliated/mindlessdrone) has quit (Ping timeout: 268 seconds)
+2016-10-15 02:13:57	<--	devonrevenge (~devonreve@unaffiliated/devonrevenge) has quit (Quit: WeeChat 1.6)
+2016-10-15 02:14:40	-->	devonrevenge (~devonreve@cpc48-slam6-2-0-cust245.2-4.cable.virginm.net) has joined ##asm
+2016-10-15 02:14:40	<--	devonrevenge (~devonreve@cpc48-slam6-2-0-cust245.2-4.cable.virginm.net) has quit (Changing host)
+2016-10-15 02:14:40	-->	devonrevenge (~devonreve@unaffiliated/devonrevenge) has joined ##asm
+2016-10-15 02:15:02	<--	devonrevenge (~devonreve@unaffiliated/devonrevenge) has quit (Client Quit)
+2016-10-15 02:17:59	-->	MindlessDrone (~MindlessD@unaffiliated/mindlessdrone) has joined ##asm
+2016-10-15 02:17:59		[02:17]
+2016-10-15 02:20:15	-->	devonrevenge (~devonreve@cpc48-slam6-2-0-cust245.2-4.cable.virginm.net) has joined ##asm
+2016-10-15 02:20:16	<--	devonrevenge (~devonreve@cpc48-slam6-2-0-cust245.2-4.cable.virginm.net) has quit (Changing host)
+2016-10-15 02:20:16	-->	devonrevenge (~devonreve@unaffiliated/devonrevenge) has joined ##asm
+2016-10-15 02:26:00		[02:20]
+2016-10-15 02:27:53	<--	xocket (~xocket@unaffiliated/xocket) has quit (Disconnected by services)
+2016-10-15 02:27:53	-->	xock_stream (~xocket@unaffiliated/xocket) has joined ##asm
+2016-10-15 02:30:40	<--	thewormkill (~thewormki@ip31-214.kullen.rwth-aachen.de) has quit (Quit: WeeChat 1.6)
+2016-10-15 02:34:17	--	exezin_ is now known as exezin

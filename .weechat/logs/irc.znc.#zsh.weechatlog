@@ -27099,3 +27099,348 @@
 2016-10-14 19:10:04	-->	macabre (~ibtjw@unaffiliated/macabre) has joined #zsh
 2016-10-14 19:13:31	<--	sharkz (~nobody@ec2-54-208-213-251.compute-1.amazonaws.com) has quit (Remote host closed the connection)
 2016-10-14 19:13:31		[19:13]
+2016-10-14 22:00:38	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined #zsh
+2016-10-14 22:00:38		[22:00]
+2016-10-14 22:00:38	--	Topic for #zsh is "v5.2 | http://zsh.sf.net/ | http://zshwiki.org/ | http://zsh.sf.net/FAQ/ | http://zshwiki.org/home/docs/wikifaq | http://tinyurl.com/zsh-refcard-pdf | Just ask. | Nobody here or everybody clueless? try the zsh-users mailinglist: http://www.zsh.org/mla"
+2016-10-14 22:00:38	--	Topic set by Mikachu (~Mikachu@gimp/developer/Mikachu) on Wed, 02 Dec 2015 11:54:14
+2016-10-14 22:00:39	--	Channel #zsh: 412 nicks (0 ops, 0 voices, 412 normals)
+2016-10-14 22:00:39	***	Buffer Playback...
+2016-10-14 22:00:39	thecat	[21:13:15] "^(foo|bar)$" [21:13:15]
+2016-10-14 22:00:39	Mikachu	[21:15:17] > [[ foo =~ ^(foo|bar)$ ]] [21:15:17]
+2016-10-14 22:00:39	machabot	[21:15:17] Mikachu: No output, exitstatus: 0 [21:15:17]
+2016-10-14 22:00:39	Mikachu	[21:15:21] > [[ foo =~ "^(foo|bar)$" ]] [21:15:21]
+2016-10-14 22:00:39	machabot	[21:15:22] Mikachu: No output, exitstatus: 0 [21:15:22]
+2016-10-14 22:00:39	Mikachu	[21:15:37] > [[ fooo =~ "^(foo|bar)$" ]] [21:15:37]
+2016-10-14 22:00:39	machabot	[21:15:38] Mikachu: No output, exitstatus: 1 [21:15:38]
+2016-10-14 22:00:39	Mikachu	[21:15:42] seems to work [21:15:42]
+2016-10-14 22:00:39	thecat	[21:25:33] Mikachu: it works on the commadline, but not inside zshaddhistory [21:25:33]
+2016-10-14 22:00:39	Mikachu	[21:25:51] maybe $1 isn't what you think it is [21:25:51]
+2016-10-14 22:00:39	Mikachu	[21:26:01] eg [21:26:01]
+2016-10-14 22:00:39	Mikachu	[21:26:09] you remove a trailing \n when you do the print -s [21:26:09]
+2016-10-14 22:00:39	Mikachu	[21:26:15] so probably the regex has to match a newline too [21:26:15]
+2016-10-14 22:00:39	thecat	[21:36:47] this does not work either: "^(foo|bar)\n" [21:36:47]
+2016-10-14 22:00:39	danielsh	[21:37:27] that matches (backslash n) literally, two bytes [21:37:27]
+2016-10-14 22:00:39	thecat	[21:38:05] oh, how do I match newline then ? [21:38:05]
+2016-10-14 22:00:39	danielsh	[21:40:06] "^(foo|bar)"$'\n' [21:40:06]
+2016-10-14 22:00:39	Mikachu	[21:40:55] you can also put a literal newline in the regex [21:40:55]
+2016-10-14 22:00:39	danielsh	[21:41:45] (if you want your code to look like code written for sh) [21:41:45]
+2016-10-14 22:00:39	thecat	[21:42:28] that works. Thanks a lot [21:42:28]
+2016-10-14 22:00:39	Mikachu	[21:43:26] also [21:43:26]
+2016-10-14 22:00:39	Mikachu	[21:43:37] danielsh's regex is missing the $ [21:43:37]
+2016-10-14 22:00:39	zv	[00:47:13] Does anyone know the "deal" with zsh's exponentiation operator? [00:47:13]
+2016-10-14 22:00:39	llua	[00:47:42] are we playing blackjack? [00:47:42]
+2016-10-14 22:00:39	zv	[00:48:38] Sure, after 63 blackjack games with 2 players and neither player askes the dealer for a hit, zsh will tell us they've played -92983019 games [00:48:38]
+2016-10-14 22:00:39	zv	[00:48:54] Rather, cards have been dealt, not games [00:48:54]
+2016-10-14 22:00:39	Mikachu	[00:49:20] >> echo $(( 2**5 )) [00:49:20]
+2016-10-14 22:00:39	zv	[00:49:20] Strangely enough it's happened with numbers as low as 16 on some systems [00:49:20]
+2016-10-14 22:00:39	machabot	[00:49:20] Mikachu: 32 [00:49:20]
+2016-10-14 22:00:39	zv	[00:50:20] 2*62 isn't correct either [00:50:20]
+2016-10-14 22:00:39	zv	[00:50:25] err, 2**62 [00:50:25]
+2016-10-14 22:00:39	Mikachu	[00:50:39] > echo $(( 2**62 )) [00:50:39]
+2016-10-14 22:00:39	machabot	[00:50:39] Mikachu: 4611686018427387904 [00:50:39]
+2016-10-14 22:00:39	Mikachu	[00:50:45] looks about right [00:50:45]
+2016-10-14 22:00:39	zv	[00:50:47] it isn't [00:50:47]
+2016-10-14 22:00:39	Mikachu	[00:50:59] what do you think the answer should be? [00:50:59]
+2016-10-14 22:00:39	zv	[00:51:28] Sorry, 63 [00:51:28]
+2016-10-14 22:00:39	zv	[00:51:32] 62 *is* correct [00:51:32]
+2016-10-14 22:00:39	Mikachu	[00:51:34] > echo $(( 2**63 )) [00:51:34]
+2016-10-14 22:00:39	machabot	[00:51:34] Mikachu: -9223372036854775808 [00:51:34]
+2016-10-14 22:00:39	llua	[00:51:42] the flows of over [00:51:42]
+2016-10-14 22:00:39	Mikachu	[00:51:44] overflow~ [00:51:44]
+2016-10-14 22:00:39	zv	[00:51:47] Right [00:51:47]
+2016-10-14 22:00:39	Mikachu	[00:51:49] surprise zsh doesn't use libgmp [00:51:49]
+2016-10-14 22:00:39	zv	[00:52:11] Can I check for overflow with any errno or the like? [00:52:11]
+2016-10-14 22:00:39	llua	[00:52:35] 5 minutes to get the actual question, record time. [00:52:35]
+2016-10-14 22:00:39	zv	[00:53:51] You're the one who wanted this framed in blackjack terms [00:53:51]
+2016-10-14 22:00:39	Mikachu	[00:54:17] well, i don't think there's a way to find the backing size of ints used, no [00:54:17]
+2016-10-14 22:00:39	zv	[00:54:36] The wierd thing is that it's happened with numbers as low as 2^16 [00:54:36]
+2016-10-14 22:00:39	Mikachu	[00:54:38] although you can overflow 32bit and 64bit on purpose and see what you get, then handle appropriately [00:54:38]
+2016-10-14 22:00:39	***	Playback Complete.
+2016-10-14 22:01:46	-->	Rodya_ (~Rodya_@2601:46:4001:e0b4:2521:f44d:9b6a:3ef1) has joined #zsh
+2016-10-14 22:01:52	--	Channel created on Tue, 02 Sep 2003 05:34:53
+2016-10-14 22:02:17	<--	Ridout (~coffee@unaffiliated/ridout) has quit (Quit: Lost terminal)
+2016-10-14 22:07:21	<--	Rodya_ (~Rodya_@2601:46:4001:e0b4:2521:f44d:9b6a:3ef1) has quit (Ping timeout: 258 seconds)
+2016-10-14 22:07:42	-->	macabre (~ibtjw@unaffiliated/macabre) has joined #zsh
+2016-10-14 22:11:00	<--	misprint (misprint@gateway/shell/openshells.net/x-vktohojzthjwmrvj) has quit (Ping timeout: 252 seconds)
+2016-10-14 22:12:46	-->	moestevens (~moesteven@unaffiliated/moestevens) has joined #zsh
+2016-10-14 22:12:48	<--	macabre (~ibtjw@unaffiliated/macabre) has quit (Ping timeout: 268 seconds)
+2016-10-14 22:12:55	-->	derk0pf (~derk0pf@55d430d6.access.ecotel.net) has joined #zsh
+2016-10-14 22:18:00		[22:12]
+2016-10-14 22:21:28	<--	japh (~scp1@unaffiliated/scp1) has quit (Read error: Connection reset by peer)
+2016-10-14 22:21:56	-->	japh (~scp1@c-fe31e555.048-19-6b73641.cust.bredbandsbolaget.se) has joined #zsh
+2016-10-14 22:22:15	-->	yumaokao (~yumaokao@218-161-54-18.HINET-IP.hinet.net) has joined #zsh
+2016-10-14 22:22:20	--	japh is now known as Guest20284
+2016-10-14 22:23:50	-->	r3v_ (~r3v@unaffiliated/r3v) has joined #zsh
+2016-10-14 22:24:07	-->	timvishe` (~tim.vishe@pool-71-185-187-94.phlapa.fios.verizon.net) has joined #zsh
+2016-10-14 22:25:57	-->	FoH (~foh@23-117-206-221.lightspeed.brhmal.sbcglobal.net) has joined #zsh
+2016-10-14 22:26:12	-->	erg (~erg@166.78.160.216) has joined #zsh
+2016-10-14 22:26:45	-->	shabble_ (~shabble@unaffiliated/shabble) has joined #zsh
+2016-10-14 22:27:10	-->	johnLate_ (~johnlate@lexington.scnr.net) has joined #zsh
+2016-10-14 22:27:12	-->	jo_sch_ (QX04PPvhQ0@ankaa.uberspace.de) has joined #zsh
+2016-10-14 22:27:32	-->	bogner_ (~bogner@li325-42.members.linode.com) has joined #zsh
+2016-10-14 22:27:36	-->	Bercik_ (~Yotsuba@31-178-100-233.dynamic.chello.pl) has joined #zsh
+2016-10-14 22:27:47	-->	raimo_t (raimo@hilla.kapsi.fi) has joined #zsh
+2016-10-14 22:29:26	-->	skylite_ (~skylite@91EC6606.dsl.pool.telekom.hu) has joined #zsh
+2016-10-14 22:29:28	-->	conundrum_ (~conundrum@sinope.kanic.net) has joined #zsh
+2016-10-14 22:30:29	<--	scottj (~scott@unaffiliated/scottj) has quit (Quit: leaving)
+2016-10-14 22:31:46	-->	LoRe (danielt@banjo.rbfh.de) has joined #zsh
+2016-10-14 22:33:28	<--	serialoverflow (~znc@pc9.gatrobe.uni-hannover.de) has quit (*.net *.split)
+2016-10-14 22:33:28		[22:33]
+2016-10-14 22:33:29	<--	skylite (~skylite@91EC6606.dsl.pool.telekom.hu) has quit (*.net *.split)
+2016-10-14 22:33:29	<--	DarkFox_ (~DarkFox_@unaffiliated/darkfox-/x-5669090) has quit (*.net *.split)
+2016-10-14 22:33:30	<--	gvhoecke (~gvhoecke@205.192-242-81.adsl-dyn.isp.belgacom.be) has quit (*.net *.split)
+2016-10-14 22:33:30	<--	Bercik (~Yotsuba@unaffiliated/bercik) has quit (*.net *.split)
+2016-10-14 22:33:30	<--	r3v (~r3v@unaffiliated/r3v) has quit (*.net *.split)
+2016-10-14 22:33:31	<--	catsup_ (d@ps38852.dreamhost.com) has quit (*.net *.split)
+2016-10-14 22:33:31	<--	FoolOnHill (~foh@23-117-206-221.lightspeed.brhmal.sbcglobal.net) has quit (*.net *.split)
+2016-10-14 22:33:32	<--	djcb (~user@85-76-20-102-nat.elisa-mobile.fi) has quit (*.net *.split)
+2016-10-14 22:33:32	<--	gigetoo (~gigetoo@c83-250-44-242.bredband.comhem.se) has quit (*.net *.split)
+2016-10-14 22:33:32	<--	hahuang61 (~hahuang65@c-50-136-152-183.hsd1.ca.comcast.net) has quit (*.net *.split)
+2016-10-14 22:33:34	<--	timvisher (~tim.vishe@pool-71-185-187-94.phlapa.fios.verizon.net) has quit (*.net *.split)
+2016-10-14 22:33:34	<--	Lynx__ (~Lynx@fuchshai.geomar.de) has quit (*.net *.split)
+2016-10-14 22:33:35	<--	DHowett (~dustin@velocitylimitless/awesome/ultraviolet/DHowett) has quit (*.net *.split)
+2016-10-14 22:33:35	<--	dza2 (~dza@46.101.157.124) has quit (*.net *.split)
+2016-10-14 22:33:35	<--	colinbit1 (~colinbits@c-24-5-76-127.hsd1.ca.comcast.net) has quit (*.net *.split)
+2016-10-14 22:33:36	<--	monk-e (~monk-e@dropbox.dropandgo.de) has quit (*.net *.split)
+2016-10-14 22:33:36	<--	FabTG_ (~ftg@142.ip-37-59-108.eu) has quit (*.net *.split)
+2016-10-14 22:33:36	<--	conundrum (~conundrum@unaffiliated/conundrum) has quit (*.net *.split)
+2016-10-14 22:33:36	<--	stevenbenner (~stevenben@unaffiliated/stevenbenner) has quit (*.net *.split)
+2016-10-14 22:33:37	<--	apetresc (~apetresc@znc.apetre.sc) has quit (*.net *.split)
+2016-10-14 22:33:37	<--	raimo_t_ (raimo@hilla.kapsi.fi) has quit (*.net *.split)
+2016-10-14 22:33:37	<--	hplar (~ralph@unable-to-package.org) has quit (*.net *.split)
+2016-10-14 22:33:37	<--	ormaaj (ormaaj@gateway/shell/anapnea.net/x-fguxraehzgcmxnpx) has quit (*.net *.split)
+2016-10-14 22:33:37	<--	mickael9 (mickael@unaffiliated/mickael9) has quit (*.net *.split)
+2016-10-14 22:33:37	<--	shabble (~shabble@unaffiliated/shabble) has quit (*.net *.split)
+2016-10-14 22:33:37	<--	RichiH (~richih@freenode/senior-staff-emeritus/richih) has quit (*.net *.split)
+2016-10-14 22:33:38	<--	bogner (~bogner@li325-42.members.linode.com) has quit (*.net *.split)
+2016-10-14 22:33:38	<--	johnLate (~johnlate@lexington.scnr.net) has quit (*.net *.split)
+2016-10-14 22:33:38	<--	jo_sch (rbHoggFYTb@unaffiliated/jo-sch/x-4467223) has quit (*.net *.split)
+2016-10-14 22:33:38	<--	Amt (~Amt@bagers.net) has quit (*.net *.split)
+2016-10-14 22:33:39	<--	erg_ (~erg@166.78.160.216) has quit (*.net *.split)
+2016-10-14 22:33:39	<--	LoRe_ (danielt@banjo.rbfh.de) has quit (*.net *.split)
+2016-10-14 22:33:39	<--	seagoj_ (~seagoj@162.243.83.115) has quit (*.net *.split)
+2016-10-14 22:33:39	<--	phy1729 (~phy1729@zsh/wizard/phy1729) has quit (*.net *.split)
+2016-10-14 22:33:40	<--	tibbs (~tibbs@fedora/tibbs) has quit (*.net *.split)
+2016-10-14 22:33:40	<--	osse (~osse@zsh/user/osse) has quit (*.net *.split)
+2016-10-14 22:33:43	--	conundrum_ is now known as conundrum
+2016-10-14 22:33:43	<--	conundrum (~conundrum@sinope.kanic.net) has quit (Changing host)
+2016-10-14 22:33:43	-->	conundrum (~conundrum@unaffiliated/conundrum) has joined #zsh
+2016-10-14 22:34:11	<--	xall_ (~xall@2600:8800:1285:f100:3ca2:289d:73c9:cc70) has quit (Ping timeout: 258 seconds)
+2016-10-14 22:34:13	-->	ormaaj (ormaaj@gateway/shell/anapnea.net/x-voilfrukoqtgahzv) has joined #zsh
+2016-10-14 22:35:05	-->	osse (~osse@zsh/user/osse) has joined #zsh
+2016-10-14 22:37:20	-->	macabre (~ibtjw@unaffiliated/macabre) has joined #zsh
+2016-10-14 22:38:51	-->	monk-e (~monk-e@dropbox.dropandgo.de) has joined #zsh
+2016-10-14 22:39:42	-->	colinbit1 (~colinbits@c-24-5-76-127.hsd1.ca.comcast.net) has joined #zsh
+2016-10-14 22:40:53	-->	misprint (misprint@gateway/shell/openshells.net/x-aqafufnhovyhsziy) has joined #zsh
+2016-10-14 22:40:57	<--	chandan (~chandan@106.197.165.156) has quit (Read error: Connection reset by peer)
+2016-10-14 22:42:00	<--	koomi (~koomi@moshbit.net) has left #zsh ("WeeChat 1.0.1")
+2016-10-14 22:42:00	<--	macabre (~ibtjw@unaffiliated/macabre) has quit (Ping timeout: 250 seconds)
+2016-10-14 22:48:48	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined #zsh
+2016-10-14 22:48:48		[22:48]
+2016-10-14 22:48:48	--	Topic for #zsh is "v5.2 | http://zsh.sf.net/ | http://zshwiki.org/ | http://zsh.sf.net/FAQ/ | http://zshwiki.org/home/docs/wikifaq | http://tinyurl.com/zsh-refcard-pdf | Just ask. | Nobody here or everybody clueless? try the zsh-users mailinglist: http://www.zsh.org/mla"
+2016-10-14 22:48:48	--	Topic set by Mikachu (~Mikachu@gimp/developer/Mikachu) on Wed, 02 Dec 2015 11:54:14
+2016-10-14 22:48:49	--	Channel #zsh: 390 nicks (0 ops, 0 voices, 390 normals)
+2016-10-14 22:48:49	***	Buffer Playback...
+2016-10-14 22:48:49	thecat	[21:13:15] "^(foo|bar)$" [21:13:15]
+2016-10-14 22:48:49	Mikachu	[21:15:17] > [[ foo =~ ^(foo|bar)$ ]] [21:15:17]
+2016-10-14 22:48:49	machabot	[21:15:17] Mikachu: No output, exitstatus: 0 [21:15:17]
+2016-10-14 22:48:49	Mikachu	[21:15:21] > [[ foo =~ "^(foo|bar)$" ]] [21:15:21]
+2016-10-14 22:48:49	machabot	[21:15:22] Mikachu: No output, exitstatus: 0 [21:15:22]
+2016-10-14 22:48:49	Mikachu	[21:15:37] > [[ fooo =~ "^(foo|bar)$" ]] [21:15:37]
+2016-10-14 22:48:49	machabot	[21:15:38] Mikachu: No output, exitstatus: 1 [21:15:38]
+2016-10-14 22:48:49	Mikachu	[21:15:42] seems to work [21:15:42]
+2016-10-14 22:48:49	thecat	[21:25:33] Mikachu: it works on the commadline, but not inside zshaddhistory [21:25:33]
+2016-10-14 22:48:49	Mikachu	[21:25:51] maybe $1 isn't what you think it is [21:25:51]
+2016-10-14 22:48:49	Mikachu	[21:26:01] eg [21:26:01]
+2016-10-14 22:48:49	Mikachu	[21:26:09] you remove a trailing \n when you do the print -s [21:26:09]
+2016-10-14 22:48:49	Mikachu	[21:26:15] so probably the regex has to match a newline too [21:26:15]
+2016-10-14 22:48:49	thecat	[21:36:47] this does not work either: "^(foo|bar)\n" [21:36:47]
+2016-10-14 22:48:49	danielsh	[21:37:27] that matches (backslash n) literally, two bytes [21:37:27]
+2016-10-14 22:48:49	thecat	[21:38:05] oh, how do I match newline then ? [21:38:05]
+2016-10-14 22:48:49	danielsh	[21:40:06] "^(foo|bar)"$'\n' [21:40:06]
+2016-10-14 22:48:49	Mikachu	[21:40:55] you can also put a literal newline in the regex [21:40:55]
+2016-10-14 22:48:49	danielsh	[21:41:45] (if you want your code to look like code written for sh) [21:41:45]
+2016-10-14 22:48:49	thecat	[21:42:28] that works. Thanks a lot [21:42:28]
+2016-10-14 22:48:49	Mikachu	[21:43:26] also [21:43:26]
+2016-10-14 22:48:49	Mikachu	[21:43:37] danielsh's regex is missing the $ [21:43:37]
+2016-10-14 22:48:49	zv	[00:47:13] Does anyone know the "deal" with zsh's exponentiation operator? [00:47:13]
+2016-10-14 22:48:49	llua	[00:47:42] are we playing blackjack? [00:47:42]
+2016-10-14 22:48:49	zv	[00:48:38] Sure, after 63 blackjack games with 2 players and neither player askes the dealer for a hit, zsh will tell us they've played -92983019 games [00:48:38]
+2016-10-14 22:48:49	zv	[00:48:54] Rather, cards have been dealt, not games [00:48:54]
+2016-10-14 22:48:49	Mikachu	[00:49:20] >> echo $(( 2**5 )) [00:49:20]
+2016-10-14 22:48:49	zv	[00:49:20] Strangely enough it's happened with numbers as low as 16 on some systems [00:49:20]
+2016-10-14 22:48:49	machabot	[00:49:20] Mikachu: 32 [00:49:20]
+2016-10-14 22:48:49	zv	[00:50:20] 2*62 isn't correct either [00:50:20]
+2016-10-14 22:48:49	zv	[00:50:25] err, 2**62 [00:50:25]
+2016-10-14 22:48:49	Mikachu	[00:50:39] > echo $(( 2**62 )) [00:50:39]
+2016-10-14 22:48:49	machabot	[00:50:39] Mikachu: 4611686018427387904 [00:50:39]
+2016-10-14 22:48:49	Mikachu	[00:50:45] looks about right [00:50:45]
+2016-10-14 22:48:49	zv	[00:50:47] it isn't [00:50:47]
+2016-10-14 22:48:49	Mikachu	[00:50:59] what do you think the answer should be? [00:50:59]
+2016-10-14 22:48:49	zv	[00:51:28] Sorry, 63 [00:51:28]
+2016-10-14 22:48:49	zv	[00:51:32] 62 *is* correct [00:51:32]
+2016-10-14 22:48:49	Mikachu	[00:51:34] > echo $(( 2**63 )) [00:51:34]
+2016-10-14 22:48:49	machabot	[00:51:34] Mikachu: -9223372036854775808 [00:51:34]
+2016-10-14 22:48:49	llua	[00:51:42] the flows of over [00:51:42]
+2016-10-14 22:48:49	Mikachu	[00:51:44] overflow~ [00:51:44]
+2016-10-14 22:48:49	zv	[00:51:47] Right [00:51:47]
+2016-10-14 22:48:49	Mikachu	[00:51:49] surprise zsh doesn't use libgmp [00:51:49]
+2016-10-14 22:48:49	zv	[00:52:11] Can I check for overflow with any errno or the like? [00:52:11]
+2016-10-14 22:48:49	llua	[00:52:35] 5 minutes to get the actual question, record time. [00:52:35]
+2016-10-14 22:48:49	zv	[00:53:51] You're the one who wanted this framed in blackjack terms [00:53:51]
+2016-10-14 22:48:49	Mikachu	[00:54:17] well, i don't think there's a way to find the backing size of ints used, no [00:54:17]
+2016-10-14 22:48:49	zv	[00:54:36] The wierd thing is that it's happened with numbers as low as 2^16 [00:54:36]
+2016-10-14 22:48:49	Mikachu	[00:54:38] although you can overflow 32bit and 64bit on purpose and see what you get, then handle appropriately [00:54:38]
+2016-10-14 22:48:49	***	Playback Complete.
+2016-10-14 22:49:27	-->	blackmesa (~blackmesa@aftr-37-201-227-42.unity-media.net) has joined #zsh
+2016-10-14 22:49:32	--	Channel created on Tue, 02 Sep 2003 05:34:53
+2016-10-14 22:51:07	-->	FabTG (~ftg@142.ip-37-59-108.eu) has joined #zsh
+2016-10-14 22:51:07	-->	serialoverflow (~znc@pc9.gatrobe.uni-hannover.de) has joined #zsh
+2016-10-14 22:51:07	-->	DarkFox_ (~DarkFox_@unaffiliated/darkfox-/x-5669090) has joined #zsh
+2016-10-14 22:51:07	-->	gvhoecke (~gvhoecke@205.192-242-81.adsl-dyn.isp.belgacom.be) has joined #zsh
+2016-10-14 22:51:07	-->	catsup_ (d@ps38852.dreamhost.com) has joined #zsh
+2016-10-14 22:51:07	-->	djcb (~user@85-76-20-102-nat.elisa-mobile.fi) has joined #zsh
+2016-10-14 22:51:07	-->	gigetoo (~gigetoo@c83-250-44-242.bredband.comhem.se) has joined #zsh
+2016-10-14 22:51:07	-->	hahuang61 (~hahuang65@c-50-136-152-183.hsd1.ca.comcast.net) has joined #zsh
+2016-10-14 22:51:07	-->	Lynx__ (~Lynx@fuchshai.geomar.de) has joined #zsh
+2016-10-14 22:51:07	-->	DHowett (~dustin@velocitylimitless/awesome/ultraviolet/DHowett) has joined #zsh
+2016-10-14 22:51:07	-->	apetresc (~apetresc@znc.apetre.sc) has joined #zsh
+2016-10-14 22:51:07	-->	hplar (~ralph@unable-to-package.org) has joined #zsh
+2016-10-14 22:51:07	-->	mickael9 (mickael@unaffiliated/mickael9) has joined #zsh
+2016-10-14 22:51:07	-->	RichiH (~richih@freenode/senior-staff-emeritus/richih) has joined #zsh
+2016-10-14 22:51:07	-->	Amt (~Amt@bagers.net) has joined #zsh
+2016-10-14 22:51:07	-->	seagoj_ (~seagoj@162.243.83.115) has joined #zsh
+2016-10-14 22:51:07	-->	tibbs (~tibbs@fedora/tibbs) has joined #zsh
+2016-10-14 22:53:10	-->	catsup (d@ps38852.dreamhost.com) has joined #zsh
+2016-10-14 22:53:21	<--	catsup_ (d@ps38852.dreamhost.com) has quit (Max SendQ exceeded)
+2016-10-14 22:57:17	-->	chandan (~chandan@122.171.35.143) has joined #zsh
+2016-10-14 23:03:00		[22:57]
+2016-10-14 23:04:30	-->	dza2 (~dza@46.101.157.124) has joined #zsh
+2016-10-14 23:08:10	-->	lysander_ (~lysander@108.63.149.121) has joined #zsh
+2016-10-14 23:08:59	-->	phy1729 (~phy1729@zsh/wizard/phy1729) has joined #zsh
+2016-10-14 23:09:25	<--	lysanderslair (~lysander@dsl-173-206-133-71.tor.primus.ca) has quit (Ping timeout: 248 seconds)
+2016-10-14 23:09:37	<--	lysander (~lysander@173.206.133.71) has quit (Ping timeout: 260 seconds)
+2016-10-14 23:11:09	-->	lysander (~lysander@108.63.149.121) has joined #zsh
+2016-10-14 23:11:38	<--	alip (~alip@tchaikovsky.exherbo.org) has quit (Changing host)
+2016-10-14 23:11:39	-->	alip (~alip@exherbo/developer/alip) has joined #zsh
+2016-10-14 23:17:00		[23:11]
+2016-10-14 23:23:13	<--	CrypticSquared (~CrypticS_@unaffiliated/crypticsquared) has quit (Quit: Leaving...)
+2016-10-14 23:27:59	-->	hahuang65 (~hahuang65@2601:647:4000:d7:7169:b877:9ee:5da9) has joined #zsh
+2016-10-14 23:28:41	-->	DarkFox__ (~DarkFox_@unaffiliated/darkfox-/x-5669090) has joined #zsh
+2016-10-14 23:28:56	-->	_mirko_ (~mirko@62.4.55.94) has joined #zsh
+2016-10-14 23:29:13	-->	djcb` (~user@85-76-20-102-nat.elisa-mobile.fi) has joined #zsh
+2016-10-14 23:31:53	-->	backslash (~Amt@bagers.net) has joined #zsh
+2016-10-14 23:32:12	-->	RichiH_ (~richih@freenode/senior-staff-emeritus/richih) has joined #zsh
+2016-10-14 23:32:12		[23:32]
+2016-10-14 23:32:29	-->	DHowett_ (~dustin@c-76-104-158-30.hsd1.wa.comcast.net) has joined #zsh
+2016-10-14 23:32:29	<--	DHowett_ (~dustin@c-76-104-158-30.hsd1.wa.comcast.net) has quit (Changing host)
+2016-10-14 23:32:29	-->	DHowett_ (~dustin@velocitylimitless/awesome/ultraviolet/DHowett) has joined #zsh
+2016-10-14 23:33:09	-->	gigetoo_ (~gigetoo@c83-250-44-242.bredband.comhem.se) has joined #zsh
+2016-10-14 23:33:10	-->	FabTG_ (~ftg@142.ip-37-59-108.eu) has joined #zsh
+2016-10-14 23:34:40	<--	blackmesa (~blackmesa@aftr-37-201-227-42.unity-media.net) has quit (Ping timeout: 258 seconds)
+2016-10-14 23:34:47	-->	Lynx_ (~Lynx@fuchshai.geomar.de) has joined #zsh
+2016-10-14 23:36:04	-->	gvhoecke_ (~gvhoecke@205.192-242-81.adsl-dyn.isp.belgacom.be) has joined #zsh
+2016-10-14 23:36:48	-->	tibbs_ (~tibbs@fedora/tibbs) has joined #zsh
+2016-10-14 23:37:08	-->	mikar (~znc@pc9.gatrobe.uni-hannover.de) has joined #zsh
+2016-10-14 23:37:15	-->	apetresc_ (~apetresc@znc.apetre.sc) has joined #zsh
+2016-10-14 23:37:37	-->	seagoj (~seagoj@162.243.83.115) has joined #zsh
+2016-10-14 23:37:38	<--	FabTG (~ftg@142.ip-37-59-108.eu) has quit (*.net *.split)
+2016-10-14 23:37:38	<--	serialoverflow (~znc@pc9.gatrobe.uni-hannover.de) has quit (*.net *.split)
+2016-10-14 23:37:38	<--	DarkFox_ (~DarkFox_@unaffiliated/darkfox-/x-5669090) has quit (*.net *.split)
+2016-10-14 23:37:38	<--	gvhoecke (~gvhoecke@205.192-242-81.adsl-dyn.isp.belgacom.be) has quit (*.net *.split)
+2016-10-14 23:37:39	<--	djcb (~user@85-76-20-102-nat.elisa-mobile.fi) has quit (*.net *.split)
+2016-10-14 23:37:39	<--	gigetoo (~gigetoo@c83-250-44-242.bredband.comhem.se) has quit (*.net *.split)
+2016-10-14 23:37:39	<--	hahuang61 (~hahuang65@c-50-136-152-183.hsd1.ca.comcast.net) has quit (*.net *.split)
+2016-10-14 23:37:40	<--	Lynx__ (~Lynx@fuchshai.geomar.de) has quit (*.net *.split)
+2016-10-14 23:37:40	<--	DHowett (~dustin@velocitylimitless/awesome/ultraviolet/DHowett) has quit (*.net *.split)
+2016-10-14 23:37:40	<--	apetresc (~apetresc@znc.apetre.sc) has quit (*.net *.split)
+2016-10-14 23:37:41	<--	hplar (~ralph@unable-to-package.org) has quit (*.net *.split)
+2016-10-14 23:37:41	<--	mickael9 (mickael@unaffiliated/mickael9) has quit (*.net *.split)
+2016-10-14 23:37:41	<--	RichiH (~richih@freenode/senior-staff-emeritus/richih) has quit (*.net *.split)
+2016-10-14 23:37:41	<--	Amt (~Amt@bagers.net) has quit (*.net *.split)
+2016-10-14 23:37:41	<--	seagoj_ (~seagoj@162.243.83.115) has quit (*.net *.split)
+2016-10-14 23:37:42	<--	tibbs (~tibbs@fedora/tibbs) has quit (*.net *.split)
+2016-10-14 23:37:42	--	apetresc_ is now known as apetresc
+2016-10-14 23:37:43	--	gigetoo_ is now known as gigetoo
+2016-10-14 23:38:06	--	tibbs_ is now known as tibbs
+2016-10-14 23:39:33	<--	theblazehen_ (~quassel@196-215-3-99.dynamic.isadsl.co.za) has quit (Ping timeout: 252 seconds)
+2016-10-14 23:40:39	<--	vuoto (~vuoto@80-71-135-9.u.parknet.dk) has quit (Remote host closed the connection)
+2016-10-14 23:41:15	-->	theblazehen_ (~quassel@196-215-107-196.dynamic.isadsl.co.za) has joined #zsh
+2016-10-14 23:44:23	-->	mickael9 (mickael@unaffiliated/mickael9) has joined #zsh
+2016-10-14 23:45:31	-->	hplar (~ralph@unable-to-package.org) has joined #zsh
+2016-10-14 23:51:00		[23:45]
+2016-10-15 00:02:10	<--	gvhoecke_ (~gvhoecke@205.192-242-81.adsl-dyn.isp.belgacom.be) has quit (Quit: ZNC 1.6.3 - http://znc.in)
+2016-10-15 00:03:28	-->	Rodya_ (~Rodya_@2601:46:4001:e0b4:4dc7:28a7:3216:db74) has joined #zsh
+2016-10-15 00:03:48	<--	theblazehen_ (~quassel@196-215-107-196.dynamic.isadsl.co.za) has quit (Ping timeout: 268 seconds)
+2016-10-15 00:05:09	--	DarkFox__ is now known as DarkFox_zzzzZZZz
+2016-10-15 00:05:12	-->	strcat1974 (~strcat@p54920BCA.dip0.t-ipconnect.de) has joined #zsh
+2016-10-15 00:08:06	<--	Rodya_ (~Rodya_@2601:46:4001:e0b4:4dc7:28a7:3216:db74) has quit (Ping timeout: 258 seconds)
+2016-10-15 00:08:06		[00:08]
+2016-10-15 00:08:14	<--	strcat_ (~strcat@p54920C4B.dip0.t-ipconnect.de) has quit (Ping timeout: 250 seconds)
+2016-10-15 00:10:15	-->	strull (~strull@p57A39F13.dip0.t-ipconnect.de) has joined #zsh
+2016-10-15 00:10:55	-->	vuoto (~vuoto@80-71-135-9.u.parknet.dk) has joined #zsh
+2016-10-15 00:10:57	-->	gvhoecke (~gvhoecke@205.192-242-81.adsl-dyn.isp.belgacom.be) has joined #zsh
+2016-10-15 00:11:31	-->	theblazehen_ (~quassel@196-215-40-115.dynamic.isadsl.co.za) has joined #zsh
+2016-10-15 00:17:00		[00:11]
+2016-10-15 00:25:42	-->	macabre (~ibtjw@unaffiliated/macabre) has joined #zsh
+2016-10-15 00:29:57	<--	macabre (~ibtjw@unaffiliated/macabre) has quit (Ping timeout: 248 seconds)
+2016-10-15 00:31:46	-->	blackmesa (~blackmesa@aftr-37-201-227-42.unity-media.net) has joined #zsh
+2016-10-15 00:37:00		[00:31]
+2016-10-15 00:38:39	<--	derk0pf (~derk0pf@55d430d6.access.ecotel.net) has quit (Quit: ZzzZZzZZZ.)
+2016-10-15 00:43:21	-->	vuoto_ (~vuoto@80-71-135-9.u.parknet.dk) has joined #zsh
+2016-10-15 00:44:35	<--	vuoto (~vuoto@80-71-135-9.u.parknet.dk) has quit (Quit: Lost terminal)
+2016-10-15 00:45:35	-->	macabre (~ibtjw@unaffiliated/macabre) has joined #zsh
+2016-10-15 00:46:55	-->	ZyX-I (~ZyX-I@broadband-77-37-230-77.nationalcablenetworks.ru) has joined #zsh
+2016-10-15 00:50:13	<--	macabre (~ibtjw@unaffiliated/macabre) has quit (Ping timeout: 248 seconds)
+2016-10-15 00:52:11	-->	Balliad (~textual@52D96D43.cm-11-1b.dynamic.ziggo.nl) has joined #zsh
+2016-10-15 00:52:11		[00:52]
+2016-10-15 00:52:27	-->	dreamer (~henk@melange.soleus.nu) has joined #zsh
+2016-10-15 00:52:33	<--	dreamer (~henk@melange.soleus.nu) has quit (Changing host)
+2016-10-15 00:52:33	-->	dreamer (~henk@unaffiliated/dreamer) has joined #zsh
+2016-10-15 00:53:15	<--	dreamer (~henk@unaffiliated/dreamer) has left #zsh
+2016-10-15 00:53:57	<--	blackmesa (~blackmesa@aftr-37-201-227-42.unity-media.net) has quit (Ping timeout: 248 seconds)
+2016-10-15 00:56:46	<--	AlexRussia (~Alex@unaffiliated/alexrussia) has quit (Ping timeout: 250 seconds)
+2016-10-15 00:56:52	-->	derk0pf (~derk0pf@55d430d6.access.ecotel.net) has joined #zsh
+2016-10-15 00:57:30	<--	Balliad (~textual@52D96D43.cm-11-1b.dynamic.ziggo.nl) has quit (Quit: My MacBook Pro has gone to sleep. ZZZzzz…)
+2016-10-15 01:03:00		[00:57]
+2016-10-15 01:03:40	-->	Balliad (~textual@52D96D43.cm-11-1b.dynamic.ziggo.nl) has joined #zsh
+2016-10-15 01:04:08	--	DarkFox_zzzzZZZz is now known as DarkFox__
+2016-10-15 01:04:46	--	DarkFox__ is now known as DarkFox_zzzzZZZz
+2016-10-15 01:06:31	--	DarkFox_zzzzZZZz is now known as DarkFox__
+2016-10-15 01:09:47	-->	blackmesa (~blackmesa@aftr-37-201-227-42.unity-media.net) has joined #zsh
+2016-10-15 01:10:58	-->	AlexRussia (~Alex@unaffiliated/alexrussia) has joined #zsh
+2016-10-15 01:13:58	-->	whirlpool-scr (~z00k33p3r@100.8.146.58) has joined #zsh
+2016-10-15 01:13:59	--	jo_sch_ is now known as jo_sch
+2016-10-15 01:14:02	<--	jo_sch (QX04PPvhQ0@ankaa.uberspace.de) has quit (Changing host)
+2016-10-15 01:14:02	-->	jo_sch (QX04PPvhQ0@unaffiliated/jo-sch/x-4467223) has joined #zsh
+2016-10-15 01:20:00		[01:14]
+2016-10-15 01:25:20	<--	Balliad (~textual@52D96D43.cm-11-1b.dynamic.ziggo.nl) has quit (Quit: My MacBook Pro has gone to sleep. ZZZzzz…)
+2016-10-15 01:31:00		[01:25]
+2016-10-15 01:31:00	<--	gagan662 (gagan662@gateway/shell/insomnia247/x-djdrpsmjmrldpzcf) has quit (Ping timeout: 250 seconds)
+2016-10-15 01:32:03	-->	gagan662 (gagan662@gateway/shell/insomnia247/x-tdsmizsbwlssxysj) has joined #zsh
+2016-10-15 01:33:30	<--	nuckcable (~Nuck@oftn/oswg-member/Nuck) has quit (Ping timeout: 258 seconds)
+2016-10-15 01:35:29	-->	nuck (~Nuck@c-67-181-18-100.hsd1.ca.comcast.net) has joined #zsh
+2016-10-15 01:35:53	--	nuck is now known as Guest61805
+2016-10-15 01:38:00	<--	ahmedelgabri (~ahmedelga@ip4da074e6.direct-adsl.nl) has quit (Quit: WeeChat 1.5)
+2016-10-15 01:38:52	-->	ahmedelgabri (~ahmedelga@ip4da074e6.direct-adsl.nl) has joined #zsh
+2016-10-15 01:42:16	<--	chandan (~chandan@122.171.35.143) has quit (Ping timeout: 250 seconds)
+2016-10-15 01:45:58	-->	b (~coffee@unaffiliated/ridout) has joined #zsh
+2016-10-15 01:51:00		[01:45]
+2016-10-15 01:51:06	<--	blackmesa (~blackmesa@aftr-37-201-227-42.unity-media.net) has quit (Ping timeout: 268 seconds)
+2016-10-15 01:51:17	-->	nimaje1 (~benjamin@p4FC92B18.dip0.t-ipconnect.de) has joined #zsh
+2016-10-15 01:54:11	<--	nimaje (~benjamin@p4FC9257B.dip0.t-ipconnect.de) has quit (Ping timeout: 268 seconds)
+2016-10-15 01:54:38	-->	SCHAAP137 (~SCHAAP137@unaffiliated/schaap137) has joined #zsh
+2016-10-15 01:54:44	-->	m0viefreak (~asdf@unaffiliated/m0viefreak) has joined #zsh
+2016-10-15 01:55:14	<--	whirlpool-scr (~z00k33p3r@100.8.146.58) has left #zsh ("WeeChat 1.5")
+2016-10-15 01:58:44	--	nimaje1 is now known as nimaje
+2016-10-15 01:59:15	<--	_mirko_ (~mirko@62.4.55.94) has quit (Changing host)
+2016-10-15 01:59:15	-->	_mirko_ (~mirko@unaffiliated/-mirko-/x-2946915) has joined #zsh
+2016-10-15 02:02:15	<--	ZyX-I (~ZyX-I@broadband-77-37-230-77.nationalcablenetworks.ru) has quit (Ping timeout: 258 seconds)
+2016-10-15 02:04:09	-->	Rodya_ (~Rodya_@2601:46:4001:e0b4:4dc7:28a7:3216:db74) has joined #zsh
+2016-10-15 02:08:23	<--	Rodya_ (~Rodya_@2601:46:4001:e0b4:4dc7:28a7:3216:db74) has quit (Ping timeout: 245 seconds)
+2016-10-15 02:08:23		[02:08]
+2016-10-15 02:17:32	-->	Kryptron_ (~Kryptron@unaffiliated/kryptron) has joined #zsh
+2016-10-15 02:23:00		[02:17]
+2016-10-15 02:24:56	-->	blackmesa (~blackmesa@aftr-37-201-227-42.unity-media.net) has joined #zsh
+2016-10-15 02:30:00		[02:24]
+2016-10-15 02:35:18	-->	BrainDamage_ (~BrainDama@unaffiliated/braindamage) has joined #zsh
