@@ -504,41 +504,13 @@ function news_cmd_short() {
                 s/\|>\s*<//g
                 s/ *<[^>]\+> */ /g
                 s/[<>£§]//g
-          ')\n\n" | IFS="£@§" read -r -d "£§" -A apost
+          ')\n\n" | IFS="£@§" read -r -d "£@§" -A apost
           acount="${#apost[@]}"
-          spost=$(until [ "$acount" -eq 0 ]; do printf "$apost[$((--acount))]"; done | \
+          spost=$(until [ "$acount" -eq 0 ]; do printf "$apost[$((--acount))]"; done)# | \
           ## Remove the grep to show full news posts
-                grep -E "^(   :| \[)")
+          #      grep -E "^(   :| \[)")
           scount=$(echo $spost | wc -l)
-          printf "${spost}\e[00m\n"
-	true || {
-	echo -e "$(echo $(curl --silent https://www.archlinux.org/feeds/news/ | sed -e '
-	:a;N;$!ba;s/\n/ /g') | sed -e '
-		s/&amp;/\&/g
-		s/&lt;\|&#60;/</g
-		s/&gt;\|&#62;/>/g
-		s/<\/a>/£/g
-		s/href\=\"/§/g
-		s/<title>/\\n\\n\\n   :: \\e[01;31m/g; s/<\/title>/\\e[00m::\\n/g
-		s/<link>/ [ \\e[01;36m/g; s/<\/link>/\\e[00m ]/g
-		s/<description>/\\n\\n\\e[00;37m/g; s/<\/description>/\\e[00m\\n\\n/g
-		s/<p\( [^>]*\)\?>\|<br\s*\/\?>/\n/g
-		s/<b\( [^>]*\)\?>\|<strong\( [^>]*\)\?>/\\e[01;30m/g; s/<\/b>\|<\/strong>/\\e[00;37m/g
-		s/<i\( [^>]*\)\?>\|<em\( [^>]*\)\?>/\\e[41;37m/g; s/<\/i>\|<\/em>/\\e[00;37m/g
-		s/<u\( [^>]*\)\?>/\\e[4;37m/g; s/<\/u>/\\e[00;37m/g
-		s/<code\( [^>]*\)\?>/\\e[00m/g; s/<\/code>/\\e[00;37m/g
-		s/<a[^§|t]*§\([^\"]*\)\"[^>]*>\([^£]*\)[^£]*£/\\e[01;31m\2\\e[00;37m \\e[01;34m[\\e[00;37m \\e[04m\1\\e[00;37m\\e[01;34m ]\\e[00;37m/g
-		s/<li\( [^>]*\)\?>/\n \\e[01;34m*\\e[00;37m /g
-		s/<!\[CDATA\[\|\]\]>//g
-		s/\|>\s*<//g
-		s/ *<[^>]\+> */ /g
-		s/[<>£§]//g
-	')\n\n" | grep -E "^(   :| \[)" ## Remove the grep to show full news posts
-	#if [[ `whoami` =~ (root|alyptik) ]]; then
-	#  : ## do nothing
-	#  #return 0 ## To skip section
-	#else
-	}
+          printf "${spost}\e[00m\n" | grep -E '^(   :| \[)'
 }
 function news_cmd_long() {
 	#if [ "$EUID" -eq 1000 ]; then ## Full news prompt
@@ -577,8 +549,8 @@ function news_cmd_long() {
                 s/&gt;\|&#62;/>/g
                 s/<\/a>/£/g
                 s/href\=\"g/§/
-                s/<title>/£@§\\e[01;29m \\n   ::\\e[01;31m /g; s/<\/title>/ \\e[00m:: \\e[00m\\n/g
-                s/<link>/ [ \\e[01;36m/g; s/<\/link>/\\e[00m ]\\e[00/g
+                s/<title>/\\e[01;29m \\n   ::\\e[01;31m /g; s/<\/title>/ \\e[00m:: \\e[00m\\n/g
+                s/<link>/ [ \\e[01;36m/g; s/<\/link>/\\e[00m ]\\e[00m/g
                 s/<description>/\\n\\n\\e[00;37m/g; s/<\/description>/\\e[00m\\n\\n/g
                 s/<p\( [^>]*\)\?>\|<br\s*\/\?>/\n/g
                 s/<b\( [^>]*\)\?>\|<strong\( [^>]*\)\?>/\\e[01;30m/g; s/<\/b>\|<\/strong>/\\e[00;37m/g
@@ -591,20 +563,19 @@ function news_cmd_long() {
                 s/\|>\s*<//g
                 s/ *<[^>]\+> */ /g
                 s/[<>£§]//g
-          ')\n\n" | IFS="£@§" read -r -d "£§" -A apost
+          ')\n\n" #| IFS="£@§" read -r -d "£@§" -A apost
           acount="${#apost[@]}"
-          spost=$(until [ "$acount" -eq 0 ]; do printf "$apost[$((--acount))]"; done | \
+          spost=$(until [ "$acount" -eq 0 ]; do printf "$apost[$((--acount))]"; done)# | \
           ## Remove the grep to show full news posts
-                grep -E "^(   :| \[)")
+          #      grep -E "^(   :| \[)")
           scount=$(echo $spost | wc -l)
-          printf "${spost}\e[00m\n"
+          #printf "${spost}\e[00m\n"
 	fi
 	return 0
 }
 ## Arch news shell function
-#news_cmd_short
+#printf "$(news_cmd_short | sed 's/^.*/\\\e[00m&/')\e[00m\n"
 news_cmd_long
-
 ## "Is the internet on fire?" status reports
 host -t txt istheinternetonfire.com | cut -f 2 -d '"' | cowsay -f moose
 
