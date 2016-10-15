@@ -141,7 +141,8 @@ nnoremap <Leader>, <Esc>:s/ .*:[0-9][0-9]//
 nnoremap <Leader>. <Esc>:s/[0-9]*\. //
 "nnoremap <Leader>/ :%s/ by / - /
 nnoremap <Leader>/ <Esc>i<C-r>=system('')
-nnoremap <Leader>u <Esc>:silent w !sudo tee % >/dev/null<CR>
+nnoremap <Leader>u <Esc>:silent w! !sudo tee % >/dev/null<CR>
+nnoremap <Leader>s <Esc>:silent w! !sudo tee % >/dev/null<CR>
 
 nnoremap <Leader>dg <Esc>:diffget<CR>
 nnoremap <Leader>dp <Esc>:diffput<CR>
@@ -150,7 +151,7 @@ vnoremap <Leader>dp <Esc>:'<,'>diffput<CR>
 nnoremap <Leader>dw <Esc>:wincmd p<CR>
 
 " Allow saving of files as sudo when I forgot to start vim using sudo.
-cnoremap w!! w !sudo tee % > /dev/null
+cnoremap w!! silent w! !sudo tee %
 
 "nnoremap <Leader>. V"+y<Esc>:call system("xclip -i -selection clipboard", getreg("\""))
 "\<CR>:call system("xclip -i", getreg("\""))<CR>
@@ -329,6 +330,7 @@ set incsearch
 set ignorecase
 set smartcase
 set magic
+set hidden
 "set relativenumber
 
 "formal: au BufNewFile,BufRead * setf {filetype}
