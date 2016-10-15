@@ -173,8 +173,6 @@ source ${ZSH}/oh-my-zsh.sh
 ## Start gpg/ssh agent and setup pump environment variables
 { eval $(keychain --eval --agents ssh,gpg identity id_rsa id_ecdsa); eval $(pump --startup); } 2>&1 9>&1
 
-precmd() { disambiguate-keeplast; }
-
 ## Envoy commands as alternate ssh/gpg-agent manager
 #[[ ${EUID} -eq 1000 ]] && { envoy -t ssh-agent -a identity id_rsa id_ecdsa; source <(envoy -p); }
 #[[ ${EUID} -eq 1000 ]] && { envoy -t gpg-agent; source <(envoy -p); }
@@ -277,10 +275,10 @@ bindkey "\eu" insert-unicode-char
 zle-keymap-select () {
   if [ $KEYMAP = vicmd ]; then
     if [[ $TMUX = '' ]]; then
-#      echo -ne "\033]12;#586e75\007"
+    #echo -ne "\033]12;#586e75\007"
       echo -ne "\033]12;Red\007"
     else
-#      printf '\033Ptmux;\033\033]12;#586e75\007\033\\'
+    #printf '\033Ptmux;\033\033]12;#586e75\007\033\\'
       printf '\033Ptmux;\033\033]12;Red\007\033\\'
     fi
   else
@@ -606,6 +604,7 @@ news_cmd_long() {
 ## Arch news shell function
 #news_cmd_short
 news_cmd_long
+
 ## "Is the internet on fire?" status reports
 host -t txt istheinternetonfire.com | cut -f 2 -d '"' | cowsay -f moose
 
@@ -666,7 +665,9 @@ precmd() {
             set_title ${(%):-"%n@%m: %~"}
             ;;
     esac
+    #disambiguate-keeplast
 }
+
 
 ##########
 
@@ -792,7 +793,8 @@ hash -d calibre=/store/calibre
 hash -d efi=/boot/efi/EFI/arch
 hash -d bin=${HOME}/bin
 hash -d aur=${HOME}/code/aur
-hash -d git=${HOME}/sgit
+hash -d git=${HOME}/git
+hash -d sdxc=/run/media/alyptik/microSDXC
 #hash -d torrents=${HOME}/torrents
 #hash -d school=${HOME}/school
 #hash -d tv=$HOME/video/tv
@@ -818,7 +820,7 @@ zle -N edit-command-line
 bindkey '^Xe' edit-command-line
 
 ## Don't hash ssh hosts
-#local knownhosts
+local knownhosts
 knownhosts=( ${${${${(f)"$(<${HOME}/.ssh/known_hosts)"}:#[0-9]*}%%\ *}%%,*} )
 zstyle ':completion:*:(ssh|scp|sftp):*' hosts $knownhosts
 
@@ -863,7 +865,7 @@ zstyle ':completion:*:(ssh|scp|sftp):*' hosts $knownhosts
     zstyle ':completion:*:matches'         group 'yes'
     zstyle ':completion:*'                 group-name ''
 
-    # if there are more than 5 options allow selecting from a menu
+    # if there are more than 2 options allow selecting from a menu
     zstyle ':completion:*'                 menu select=2
 
     zstyle ':completion:*:messages'        format '%d'
@@ -874,7 +876,7 @@ zstyle ':completion:*:(ssh|scp|sftp):*' hosts $knownhosts
 
     # on processes completion complete all user processes
     zstyle ':completion:*:processes'       command 'ps -au$USER'
-    #zstyle ':completion:reptyr:*'	   command 'ps c -u ${USER} -o command | uniq'
+    #zstyle ':completion:reptyr:*'	   command 'ps -au$USER'
 
     # offer indexes before parameters in subscripts
     zstyle ':completion:*:*:-subscript-:*' tag-order indexes parameters
@@ -937,7 +939,7 @@ zstyle ':completion:*:(ssh|scp|sftp):*' hosts $knownhosts
 ## }}} end completion system
 
 ## set colors for use in prompts
-if zrcautoload colors && colors 2>/dev/null ; then
+if zrcautoload colors && colors 2>/dev/null; then
     BLUE="%{${fg[blue]}%}"
     RED="%{${fg_bold[red]}%}"
     GREEN="%{${fg[green]}%}"
