@@ -33,8 +33,8 @@ xmodmap "/home/alyptik/.Xmodmap" &
 #urxvtcd -kuake-hotkey "F13"
 #urxvtc -kuake-hotkey "F13"
 #stjerm -k F13 -ah false -o 90 -b thin -w 90% -h 80% -ar -tf true -fn "Inconsolata Thin 20"
-stjerm -k F13 -ah false -o 85 -b none -w 95% -h 85% -ar -tf true -tp bottom -fn "Inconsolata Thin 22" &
-urxvt -kuake-hotkey F11 &
+stjerm -k F12 -ah false -o 85 -b none -w 95% -h 85% -ar -tf true -tp bottom -fn "Inconsolata Thin 22" &
+urxvt -kuake-hotkey F10 &
 
 default_session="i3";
 
