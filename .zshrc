@@ -573,6 +573,7 @@ function news_cmd_long() {
 	fi
 	return 0
 }
+
 ## Arch news shell function
 #printf "$(news_cmd_short | sed 's/^.*/\\\e[00m&/')\e[00m\n"
 #news_cmd_long
@@ -618,11 +619,11 @@ function zrcautoload() {
 }
 
 ## Set window title
-set_title () {
+function set_title () {
     info_print  $'\e]0;' $'\a' "$@"
 }
 
-info_print () {
+function info_print () {
     local esc_begin esc_end
     esc_begin="$1"
     esc_end="$2"
@@ -634,14 +635,14 @@ info_print () {
     printf '%s' "${esc_end}"
 }
 
-precmd() {
-    case $TERM in
-        (xterm*|rxvt*)
-            set_title ${(%):-"%n@%m: %~"}
-            ;;
-    esac
+# function precmd() {
+#    case $TERM in
+#        (xterm*|rxvt*)
+#            set_title ${(%):-"%n@%m: %~"}
+#            ;;
+#    esac
     #disambiguate-keeplast
-}
+#}
 
 ##########
 
@@ -704,7 +705,7 @@ GIT_PROMPT_MODIFIED="%{$fg[yellow]%}●%{$reset_color%}"
 GIT_PROMPT_STAGED="%{$fg[green]%}●%{$reset_color%}"
 # Show Git branch/tag, or name-rev if on detached head
 function parse_git_branch() {
-  (git symbolic-ref -q HEAD || git name-rev --name-only --no-undefined --always HEAD) 2> /dev/null
+  (git symbolic-ref -q HEAD || git name-rev --name-only --no-undefined --always HEAD) 2>/dev/null
 }
 # Show different symbols as appropriate for various Git repository states
 function parse_git_state() {
@@ -762,13 +763,16 @@ compdef _scrs scrs3
 # {{{ 'hash' some often used directories
 # #d# start
 #example:
-hash -d store=/store
+#hash -d store=/store
 hash -d calibre=/store/calibre
 hash -d efi=/boot/efi/EFI/arch
-hash -d bin=${HOME}/bin
-hash -d aur=${HOME}/code/aur
+#hash -d bin=${HOME}/bin
+hash -d bin=/store/scripts
+#hash -d aur=${HOME}/code/aur
+hash -d aur=/store/code/aur
 hash -d git=${HOME}/git
-hash -d sdxc=/run/media/alyptik/microSDXC
+hash -d config=/store/config
+#hash -d sdxc=/run/media/alyptik/microSDXC
 #hash -d torrents=${HOME}/torrents
 #hash -d school=${HOME}/school
 #hash -d tv=$HOME/video/tv
@@ -793,12 +797,12 @@ autoload edit-command-line
 zle -N edit-command-line
 bindkey '^Xe' edit-command-line
 
-## Don't hash ssh hosts
-local knownhosts
-knownhosts=( ${${${${(f)"$(<${HOME}/.ssh/known_hosts)"}:#[0-9]*}%%\ *}%%,*} )
-zstyle ':completion:*:(ssh|scp|sftp):*' hosts $knownhosts
-
 ## {{{ completion system
+
+    ## Don't hash ssh hosts
+    local knownhosts
+    knownhosts=( ${${${${(f)"$(<${HOME}/.ssh/known_hosts)"}:#[0-9]*}%%\ *}%%,*} )
+    zstyle ':completion:*:(ssh|scp|sftp):*' hosts $knownhosts
 
     # allow one error for every two characters typed in approximate completer
     zstyle ':completion:*:approximate:'    max-errors 'reply=( $((($#PREFIX+$#SUFFIX)/2 )) numeric )'
