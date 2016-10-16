@@ -576,7 +576,10 @@ function news_cmd_long() {
 ## Arch news shell function
 #printf "$(news_cmd_short | sed 's/^.*/\\\e[00m&/')\e[00m\n"
 #news_cmd_long
-news_cmd_long | grep -E '^(   :| \[)' | sed 's/^.*\(:.*::\)/:\1/g'
+news_cmd_long | \
+	grep -E '^(   :| \[)' | \
+	sed 's/^.*\(:.*::\)/:\1/g' | \
+	awk '{ line[NR] = $0 } END { for (i = NR; i > 0; i -= 2) { print line[i-1]; print line[i] } }'
 ## "Is the internet on fire?" status reports
 host -t txt istheinternetonfire.com | cut -f 2 -d '"' | cowsay -f moose
 
