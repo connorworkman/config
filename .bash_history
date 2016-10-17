@@ -498,3 +498,23 @@ bash
 sspc chromium
 v /store/config/.zsh_history 
 v /etc/systemd/journald.conf
+s-config 
+v ~/.bashrc
+s-config 
+la
+v ~/.bashrc
+source /usr/lib/bash-git-prompt/gitprompt.sh
+la
+v .bashrc
+v .bashrc
+s-config 
+v .bashrc
+v .bashrc
+. .bashrc
+cd ~
+cd pi
+s-config 
+..
+v .bashrc
+cd ~
+v .bashrc

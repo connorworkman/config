@@ -10,15 +10,6 @@ bind "set menu-complete-display-prefix on"
 
 #[ ! -e "${HOME}"/aliases.sh ] || . "${HOME}"/aliases.sh
 
-if [ -f %{/usr/lib/bash-git-prompt/gitprompt.sh ]; then
-   # To only show the git prompt in or under a repository directory
-   # GIT_PROMPT_ONLY_IN_REPO=1
-   # To use upstream's default theme
-   # GIT_PROMPT_THEME=Default
-   # To use upstream's default theme, modified by arch maintainer
-   GIT_PROMPT_THEME=Default_Arch
-   source /usr/lib/bash-git-prompt/gitprompt.sh
-fi
 source /usr/share/doc/find-the-command/ftc.bash
 ## Trap function
 homepushdcheck() {
@@ -168,6 +159,16 @@ else
 fi
 
 export PS1 PROMPT_COMMAND
+
+if [ -f /usr/lib/bash-git-prompt/gitprompt.sh ]; then
+   # To only show the git prompt in or under a repository directory
+   GIT_PROMPT_ONLY_IN_REPO=1
+   # To use upstream's default theme
+   # GIT_PROMPT_THEME=Default
+   # To use upstream's default theme, modified by arch maintainer
+   GIT_PROMPT_THEME=Default_Arch
+   source /usr/lib/bash-git-prompt/gitprompt.sh
+fi
 
 ## start custom commands
 [ -r /etc/profile.d/cnf.sh ] && . /etc/profile.d/cnf.sh
