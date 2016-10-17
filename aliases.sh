@@ -538,7 +538,7 @@ kvm() {
 	for ((i=1;i<=${#}+1;i++)); do shift && args+="$1"; done
 	format="${args[1]##*.}"
 	#format="${format/cow/qcow2}"
-	format="${format/.cow/.qcow2}"
+	format="${format/cow/qcow2}"
 	[[ -z "$args[2]" || "$args[2]" == "null" ]] && {
 #,if=virtio,aio=native,cache.direct=on \
 		qemu-system-x86_64 -boot menu=on \

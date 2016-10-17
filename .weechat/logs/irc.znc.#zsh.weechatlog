@@ -28699,3 +28699,563 @@
 2016-10-16 22:25:17	-->	eworm (~eworm@archlinux/developer/eworm) has joined #zsh
 2016-10-16 22:26:31	<--	govg (~govg@unaffiliated/govg) has quit (Ping timeout: 244 seconds)
 2016-10-16 22:29:11	--	irc: disconnected from server
+2016-10-16 23:42:05	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined #zsh
+2016-10-16 23:42:05		[23:42]
+2016-10-16 23:42:05	--	Topic for #zsh is "v5.2 | http://zsh.sf.net/ | http://zshwiki.org/ | http://zsh.sf.net/FAQ/ | http://zshwiki.org/home/docs/wikifaq | http://tinyurl.com/zsh-refcard-pdf | Just ask. | Nobody here or everybody clueless? try the zsh-users mailinglist: http://www.zsh.org/mla"
+2016-10-16 23:42:05	--	Topic set by Mikachu (~Mikachu@gimp/developer/Mikachu) on Wed, 02 Dec 2015 11:54:14
+2016-10-16 23:42:05	--	Channel #zsh: 415 nicks (0 ops, 0 voices, 415 normals)
+2016-10-16 23:42:05	***	Buffer Playback...
+2016-10-16 23:42:05	bapt	[18:46:45] danielsh: https://svnweb.freebsd.org/ports?view=revision&revision=424080 [18:46:45]
+2016-10-16 23:42:05	bapt	[18:47:43] and yes I took back maintainership [18:47:43]
+2016-10-16 23:42:05	bapt	[18:51:05] haha fun [18:51:05]
+2016-10-16 23:42:05	bapt	[18:51:40] my capsicum module for zsh works zsh is then not really usable [18:51:40]
+2016-10-16 23:42:05	danielsh	[18:56:22] bapt, nice :) [18:56:22]
+2016-10-16 23:42:05	danielsh	[19:00:50] bapt, capsicum "module"?  To restrict rights *of* zsh or of other processes from zsh? [19:00:50]
+2016-10-16 23:42:05	bapt	[19:08:01] danielsh: to sandbox zsh itself [19:08:01]
+2016-10-16 23:42:05	bapt	[19:08:17] from your script you can cap_enter [19:08:17]
+2016-10-16 23:42:05	bapt	[19:10:37] the issue is once you are in the sanbox [19:10:37]
+2016-10-16 23:42:05	bapt	[19:10:45] you cannot open new descriptor by design [19:10:45]
+2016-10-16 23:42:05	bapt	[19:10:56] which makes scripting languages pretty limited :) [19:10:56]
+2016-10-16 23:42:05	danielsh	[19:15:27] which rules out 90% of the thing you might want to do in a shell script ... [19:15:27]
+2016-10-16 23:42:05	danielsh	[19:15:51] ah, you said that.  (hexchat didn't scroll) [19:15:51]
+2016-10-16 23:42:05	bapt	[19:18:14] :D [19:18:14]
+2016-10-16 23:42:05	bapt	[19:18:21] did that just for fun :) [19:18:21]
+2016-10-16 23:42:05	danielsh	[19:29:14] fun notwithstanding, the point about sandboxing apps that open() is legit... [19:29:14]
+2016-10-16 23:42:05	mozzarella	[03:06:50] guys [03:06:50]
+2016-10-16 23:42:05	machabot	[03:06:50] and bots [03:06:50]
+2016-10-16 23:42:05	mozzarella	[03:19:33] say I've got a bunch of files called sleep1.mp4 sleep2.mp4 sleep3.mp4 etc. inside a folder, how could I get the next filename automatically? [03:19:33]
+2016-10-16 23:42:05	mozzarella	[03:19:54] assuming there's a simple (oneliner) way of doing this [03:19:54]
+2016-10-16 23:42:05	osse	[06:21:03] mozzarella: assign them all to an array and keep track of the index [06:21:03]
+2016-10-16 23:42:05	osse	[06:21:47] files=(sleep*.mp4); current=5; echo "next is $files[current+1]" [06:21:47]
+2016-10-16 23:42:05	berndl	[08:11:20] Question: If I do local args=$@, $args just contains the first element of $@. If I remove 'local', it works as expected. Why is that? [08:11:20]
+2016-10-16 23:42:05	FoH	[08:15:36] berndl. because the subsequent elements become arguments to local.  try: local args ; args=$@ [08:15:36]
+2016-10-16 23:42:05	osse	[08:15:42] berndl: when there is a word in front of the assignment then the parser behaves a bit differently. not sure about the specifics [08:15:42]
+2016-10-16 23:42:05	FoH	[08:15:49] or better yet "$@" [08:15:49]
+2016-10-16 23:42:05	osse	[08:16:02] berndl: but in any case, the code is wrong. you should use args=("$@") [08:16:02]
+2016-10-16 23:42:05	FoH	[08:16:24] even better [08:16:24]
+2016-10-16 23:42:05	osse	[08:16:29] > func() { local args; args="$@"; declare -p args; }; f lots of words [08:16:29]
+2016-10-16 23:42:05	machabot	[08:16:29] osse: zsh: command not found: f [08:16:29]
+2016-10-16 23:42:05	osse	[08:16:34] > func() { local args; args="$@"; declare -p args; }; func lots of words [08:16:34]
+2016-10-16 23:42:05	machabot	[08:16:34] osse: typeset args='lots of words' [08:16:34]
+2016-10-16 23:42:05	osse	[08:16:42] it becomes squashed into a string [08:16:42]
+2016-10-16 23:42:05	berndl	[08:17:53] I see. [08:17:53]
+2016-10-16 23:42:05	berndl	[08:55:23] Is there a way to get a version of $@ without any options? [08:55:23]
+2016-10-16 23:42:05	osse	[08:56:29] no. look throug hit and find the first element not starting with -, or copy all such elements to a new array [08:56:29]
+2016-10-16 23:42:05	berndl	[08:57:16] Bummer. [08:57:16]
+2016-10-16 23:42:05	osse	[08:57:37] but doing either of those is not very hard [08:57:37]
+2016-10-16 23:42:05	berndl	[09:03:38] Well, I wanted to use zparseopts. If I'm going to check arguments starting with -, I might as well forget about zparseopts. [09:03:38]
+2016-10-16 23:42:05	osse	[09:04:04] berndl: what do you mean? [09:04:04]
+2016-10-16 23:42:05	berndl	[09:05:24] I mean that zparseopts is now useles.s [09:05:24]
+2016-10-16 23:42:05	berndl	[09:05:27] *useless [09:05:27]
+2016-10-16 23:42:05	osse	[09:05:34] why? [09:05:34]
+2016-10-16 23:42:05	berndl	[09:08:37] Well, because I can check for the options I want by looking at the elements of $@ (which I need to do anyways). [09:08:37]
+2016-10-16 23:42:05	osse	[09:09:57] zparseopts assings variables for you based on the specs you give. you'd have to do that by hand otherwise. [09:09:57]
+2016-10-16 23:42:05	osse	[09:10:32] look at the -D flag; maybe that's what you want.  after zparseopts $@ is reduced to all non-options [09:10:32]
+2016-10-16 23:42:05	osse	[09:10:54] otherwise, maybe getopt is more to your liking [09:10:54]
+2016-10-16 23:42:05	llua	[09:11:23] https://github.com/systemd/systemd/issues/4318 weeee [09:11:23]
+2016-10-16 23:42:05	llua	[09:13:43] encoding an encoded named, because why not. [09:13:43]
+2016-10-16 23:42:05	berndl	[09:18:04] osse: Didn't know about -D. Nice. [09:18:04]
+2016-10-16 23:42:05	***	Playback Complete.
+2016-10-16 23:43:18	--	Channel created on Tue, 02 Sep 2003 05:34:53
+2016-10-16 23:45:13	-->	derk0pf (~derk0pf@55d430d6.access.ecotel.net) has joined #zsh
+2016-10-16 23:45:31	-->	thecat (~Fourhundr@gama-wlan0.ethz.ch) has joined #zsh
+2016-10-16 23:49:01	<--	govg (~govg@unaffiliated/govg) has quit (Ping timeout: 252 seconds)
+2016-10-16 23:54:42	-->	b (~coffee@unaffiliated/ridout) has joined #zsh
+2016-10-16 23:55:42	-->	govg (~govg@unaffiliated/govg) has joined #zsh
+2016-10-17 00:00:32	<--	dsdeiz (~dsdeiz@drupal.org/user/447770/view) has quit (Ping timeout: 250 seconds)
+2016-10-17 00:00:32		[00:00]
+2016-10-17 00:00:35	-->	dsdeiz_ (~dsdeiz@115.85.11.98) has joined #zsh
+2016-10-17 00:05:24	-->	strcat1974 (~strcat@p54921AFE.dip0.t-ipconnect.de) has joined #zsh
+2016-10-17 00:08:37	<--	laurensclaessen (~laurenscl@ptr-2hj4tbifbdeg1qfwza56x0x96.ip6.access.telenet.be) has quit (Remote host closed the connection)
+2016-10-17 00:08:45	<--	lysander (~lysander@108.63.149.121) has quit (Ping timeout: 256 seconds)
+2016-10-17 00:08:45	<--	strcat_ (~strcat@p549200C1.dip0.t-ipconnect.de) has quit (Ping timeout: 256 seconds)
+2016-10-17 00:10:15	-->	lysander (~lysander@108.63.149.121) has joined #zsh
+2016-10-17 00:13:33	<--	DarkFox__ (~DarkFox_@unaffiliated/darkfox-/x-5669090) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-10-17 00:14:16	<--	mapc (~mapc@cupdev.net) has quit (Ping timeout: 260 seconds)
+2016-10-17 00:15:28	-->	mapc (~mapc@cupdev.net) has joined #zsh
+2016-10-17 00:15:35	-->	laurensclaessen (~laurenscl@d54c4e066.access.telenet.be) has joined #zsh
+2016-10-17 00:15:35		[00:15]
+2016-10-17 00:15:43	-->	tsuzuku (omissis@gateway/shell/yenn.ulegend.net/x-xkhtswuxvastlwnu) has joined #zsh
+2016-10-17 00:16:16	<--	laurensclaessen (~laurenscl@d54c4e066.access.telenet.be) has quit (Remote host closed the connection)
+2016-10-17 00:16:27	-->	laurensclaessen (~laurenscl@ptr-2hj4tbifbdeg1qfwza56x0x96.ip6.access.telenet.be) has joined #zsh
+2016-10-17 00:17:05	<--	_mirko_ (~mirko@unaffiliated/-mirko-/x-2946915) has quit (Ping timeout: 244 seconds)
+2016-10-17 00:23:00		[00:17]
+2016-10-17 00:25:44	<--	govg (~govg@unaffiliated/govg) has quit (Ping timeout: 256 seconds)
+2016-10-17 00:26:14	<--	thecat (~Fourhundr@gama-wlan0.ethz.ch) has quit (Quit: Leaving)
+2016-10-17 00:28:35	-->	drmt (~drmt@2804:d41:737:1600:ff5d:8200:c5d6:5f33) has joined #zsh
+2016-10-17 00:29:49	<--	laurensclaessen (~laurenscl@ptr-2hj4tbifbdeg1qfwza56x0x96.ip6.access.telenet.be) has quit (Remote host closed the connection)
+2016-10-17 00:30:19	-->	laurensclaessen (~laurenscl@ptr-2hj4tbifbdeg1qfwza56x0x96.ip6.access.telenet.be) has joined #zsh
+2016-10-17 00:36:00		[00:30]
+2016-10-17 00:37:30	-->	govg (~govg@unaffiliated/govg) has joined #zsh
+2016-10-17 00:41:15	-->	thecat (~Fourhundr@gama-wlan0.ethz.ch) has joined #zsh
+2016-10-17 00:44:12	-->	cloudhead (~cloudhead@ip5f5af305.dynamic.kabel-deutschland.de) has joined #zsh
+2016-10-17 00:44:26	-->	rob_ (~rob@r0b3r7.com) has joined #zsh
+2016-10-17 00:44:31	rob_	hi
+2016-10-17 00:45:22	rob_	can anyone tell me why i might be getting the following error: "zle-line-init:8: read-only variable: CONTEXT" from this: https://github.com/roobert/dotfiles/blob/master/.zsh/robs/prompt.zsh#L38
+2016-10-17 00:46:19	rob_	hmm
+2016-10-17 00:46:26	rob_	is CONTEXT a special word?
+2016-10-17 00:46:32	osse	yes
+2016-10-17 00:46:38	rob_	ha
+2016-10-17 00:46:40	rob_	thanks
+2016-10-17 00:46:43	rob_	that was confusing
+2016-10-17 00:46:45	osse	this is why you should not uppercase variables
+2016-10-17 00:46:46	<--	blackmesa (~blackmesa@aftr-37-201-227-42.unity-media.net) has quit (Ping timeout: 265 seconds)
+2016-10-17 00:48:37	rob_	is there a zsh style guide?
+2016-10-17 00:48:59	rob_	im sure i have loads of bad habits
+2016-10-17 00:49:09	osse	not that i know of
+2016-10-17 00:49:09	<--	dsdeiz_ (~dsdeiz@115.85.11.98) has quit (Ping timeout: 252 seconds)
+2016-10-17 00:49:27	osse	PS1 etc. should not be exported
+2016-10-17 00:49:43	osse	it likely doesn't hurt, but it's useless
+2016-10-17 00:50:09	-->	strull (~strull@pD9F4A8C9.dip0.t-ipconnect.de) has joined #zsh
+2016-10-17 00:50:35	rob_	yeah, my shell is written very lazily, i'd like to improve it
+2016-10-17 00:50:36	<--	chandan (~chandan@125.16.236.130) has quit (Ping timeout: 260 seconds)
+2016-10-17 00:50:44	llua	when you run other shells that use PS1 and you didn't set it, it does.
+2016-10-17 00:51:36	-->	grc (~user@host81-142-89-185.in-addr.btopenworld.com) has joined #zsh
+2016-10-17 00:51:36		[00:51]
+2016-10-17 00:57:18	<--	berndl (~user@212.91.235.2) has quit (Ping timeout: 250 seconds)
+2016-10-17 00:57:29	<--	hpt (~hpt@61.48.214.80) has quit (Ping timeout: 260 seconds)
+2016-10-17 01:03:00		[00:57]
+2016-10-17 01:06:16	<--	Olipro (~Olipro@uncyclopedia/pdpc.21for7.olipro) has quit (Ping timeout: 258 seconds)
+2016-10-17 01:06:44	-->	blackmesa (~blackmesa@aftr-37-201-227-42.unity-media.net) has joined #zsh
+2016-10-17 01:07:12	-->	nl6720 (~nl6720@unaffiliated/nl6720) has joined #zsh
+2016-10-17 01:09:30	-->	Olipro (~Olipro@uncyclopedia/pdpc.21for7.olipro) has joined #zsh
+2016-10-17 01:13:02	<--	laurensclaessen (~laurenscl@ptr-2hj4tbifbdeg1qfwza56x0x96.ip6.access.telenet.be) has quit (Remote host closed the connection)
+2016-10-17 01:17:01	<--	lysander (~lysander@108.63.149.121) has quit (Ping timeout: 252 seconds)
+2016-10-17 01:17:05	<--	lysander_ (~lysander@108.63.149.121) has quit (Ping timeout: 258 seconds)
+2016-10-17 01:21:25	-->	lysanderslair (~lysander@108.63.167.17) has joined #zsh
+2016-10-17 01:21:25		[01:21]
+2016-10-17 01:21:26	<--	blackmesa (~blackmesa@aftr-37-201-227-42.unity-media.net) has quit (Quit: WeeChat 1.5)
+2016-10-17 01:27:00		[01:21]
+2016-10-17 01:29:46	<--	modlin (~modlin@93.123.41.167) has quit (Quit: My laptop has gone to sleep. ZZZzzz…)
+2016-10-17 01:30:38	<--	nuck (~Nuck@oftn/oswg-member/Nuck) has quit (Read error: Connection reset by peer)
+2016-10-17 01:32:09	-->	athaller (~quassel@1.rz17.hetzner.thaller.ws) has joined #zsh
+2016-10-17 01:34:55	-->	lysander (~lysander@108.63.167.17) has joined #zsh
+2016-10-17 01:35:27	-->	nuck (~Nuck@c-67-181-18-100.hsd1.ca.comcast.net) has joined #zsh
+2016-10-17 01:35:51	--	nuck is now known as Guest91429
+2016-10-17 01:38:12	<--	ZyX-I (~ZyX-I@broadband-77-37-230-77.nationalcablenetworks.ru) has quit (Ping timeout: 260 seconds)
+2016-10-17 01:38:48	<--	govg (~govg@unaffiliated/govg) has quit (Ping timeout: 245 seconds)
+2016-10-17 01:41:33	-->	ahmed_elgabri (~ahmedelga@212.123.217.154) has joined #zsh
+2016-10-17 01:41:37	<--	MinceR (~mincer@unaffiliated/mincer) has quit (Ping timeout: 258 seconds)
+2016-10-17 01:42:07	<--	scottj (~scott@unaffiliated/scottj) has quit (Quit: leaving)
+2016-10-17 01:42:07		[01:42]
+2016-10-17 01:43:04	<--	ahmedelgabri (~ahmedelga@212.123.217.154) has quit (Ping timeout: 252 seconds)
+2016-10-17 01:43:37	-->	MinceR (~mincer@188-143-13-116.pool.digikabel.hu) has joined #zsh
+2016-10-17 01:43:46	<--	MinceR (~mincer@188-143-13-116.pool.digikabel.hu) has quit (Changing host)
+2016-10-17 01:43:47	-->	MinceR (~mincer@unaffiliated/mincer) has joined #zsh
+2016-10-17 01:44:42	-->	dsdeiz (~dsdeiz@drupal.org/user/447770/view) has joined #zsh
+2016-10-17 01:45:10	<--	Raging_Hog (~heikki@193.64.112.22) has quit (Quit: Konversation terminated!)
+2016-10-17 01:45:42	-->	govg (~govg@unaffiliated/govg) has joined #zsh
+2016-10-17 01:51:00		[01:45]
+2016-10-17 01:52:41	-->	nimaje1 (~benjamin@p5485F9B3.dip0.t-ipconnect.de) has joined #zsh
+2016-10-17 01:54:44	<--	nimaje (~benjamin@pD9FCB039.dip0.t-ipconnect.de) has quit (Ping timeout: 244 seconds)
+2016-10-17 01:54:57	-->	laurensclaessen (~laurenscl@ptr-2hj4tbifbdeg1ws9009s769fs.ip6.access.telenet.be) has joined #zsh
+2016-10-17 01:56:42	<--	twouters (~twouters@unaffiliated/twouters) has left #zsh
+2016-10-17 02:02:00		[01:56]
+2016-10-17 02:03:50	<--	b (~coffee@unaffiliated/ridout) has quit (Quit: Lost terminal)
+2016-10-17 02:09:00		[02:03]
+2016-10-17 02:15:47	<--	govg (~govg@unaffiliated/govg) has quit (Ping timeout: 256 seconds)
+2016-10-17 02:19:01	<--	Xeago (~Xeago@unaffiliated/xeago) has quit (Ping timeout: 244 seconds)
+2016-10-17 02:19:37	danielsh	Mikachu, have you by chance an opinion on m0vie's pre-redraw patch workers/39590?
+2016-10-17 02:20:54	-->	Xeago (~Xeago@unaffiliated/xeago) has joined #zsh
+2016-10-17 02:23:07	-->	grc` (~user@host81-142-89-185.in-addr.btopenworld.com) has joined #zsh
+2016-10-17 02:26:34	<--	grc (~user@host81-142-89-185.in-addr.btopenworld.com) has quit (Ping timeout: 250 seconds)
+2016-10-17 02:26:34		[02:26]
+2016-10-17 02:26:48	-->	ZyX-I (~ZyX-I@broadband-77-37-230-77.nationalcablenetworks.ru) has joined #zsh
+2016-10-17 02:27:20	-->	govg (~govg@unaffiliated/govg) has joined #zsh
+2016-10-17 02:30:14	-->	ahmedelgabri (~ahmedelga@212.123.217.154) has joined #zsh
+2016-10-17 02:31:10	<--	ahmed_elgabri (~ahmedelga@212.123.217.154) has quit (Ping timeout: 265 seconds)
+2016-10-17 02:36:22	<--	grc` (~user@host81-142-89-185.in-addr.btopenworld.com) has quit (Ping timeout: 250 seconds)
+2016-10-17 02:41:43	blooooooo	don't you mean "always uppercase variables, don't use reserved names."  I've never in my life heard what you just said, and in fact it only allows for people to have two variables that are the exact same in all but case which is very bad
+2016-10-17 02:41:43		[02:41]
+2016-10-17 02:45:24	osse	blooooooo: I mean what I said
+2016-10-17 02:45:52	llua	the problem is you have special parameters that are lowercase like path too
+2016-10-17 02:46:09	llua	its good advice for other shells tho
+2016-10-17 02:46:11	osse	blooooooo: environment and shell-internal variables are uppercase, hence avoid accidentally overwriting them
+2016-10-17 02:46:39	rob_	blooooooo: i've always used upper case for constants and lowercase for loops and stuff
+2016-10-17 02:46:46	osse	it's good advice for zsh too :p zsh just makes it even worse
+2016-10-17 02:46:47	blooooooo	oh I'm an idiot and my buffer didn't go far enough back to realize we weren't talking about envvars
+2016-10-17 02:46:58	-->	grc` (~user@host81-142-89-185.in-addr.btopenworld.com) has joined #zsh
+2016-10-17 02:47:00	blooooooo	nevermind me
+2016-10-17 02:47:07	osse	too late, amirite
+2016-10-17 02:47:12	rob_	lol
+2016-10-17 02:47:23	rob_	2rite
+2016-10-17 02:48:12	osse	maybe the zsh-specific lowercase ones shold be named zsh_magic_lol_X
+2016-10-17 02:48:28	<--	OscarSchneider (~OscarSchn@lxdv50.gsi.de) has quit (Quit: Leaving.)
+2016-10-17 02:48:35	osse	speaking of lowercase. rob_, you can do  path=($my_paths $path) to prepend your stuff to PATH
+2016-10-17 02:48:49	rob_	osse: ah, nice, thanks
+2016-10-17 02:48:54	osse	since zsh conveniently provides an array named path that is an array representation of PATH
+2016-10-17 02:49:05	rob_	thanks for the tip
+2016-10-17 02:50:08	danielsh	"conveniently"?  I assume it caused more bugs than it prevented ...
+2016-10-17 02:50:50	llua	not reading man pages has caused more tho.
+2016-10-17 02:51:36	llua	and it might be more accurate to said PATH is a string representation of path.
+2016-10-17 02:53:59	-->	zsh946 (be020b42@gateway/web/freenode/ip.190.2.11.66) has joined #zsh
+2016-10-17 02:59:00		[02:53]
+2016-10-17 03:00:00	llua	> mkdir ${v:=foo:bar}; print -lr '#!/bin/zsh' 'echo hi' > $v/baz; chmod +x $v/baz; path+=($_:h); ./$v/baz; typeset -p path
+2016-10-17 03:00:01	machabot	llua: hi
+2016-10-17 03:00:01	machabot	llua: typeset -a path
+2016-10-17 03:00:01	machabot	llua: path=( /usr/local/bin /usr/bin /bin /usr/games foo:bar )
+2016-10-17 03:00:48	<--	cloudhead (~cloudhead@ip5f5af305.dynamic.kabel-deutschland.de) has quit (Ping timeout: 250 seconds)
+2016-10-17 03:06:00		[03:00]
+2016-10-17 03:17:25	<--	zpe (~zpe@h-48-244.a137.corp.bahnhof.se) has quit (Remote host closed the connection)
+2016-10-17 03:23:00		[03:17]
+2016-10-17 03:29:49	<--	govg (~govg@unaffiliated/govg) has quit (Ping timeout: 260 seconds)
+2016-10-17 03:33:06	<--	macabre (~ibtjw@unaffiliated/macabre) has quit (Remote host closed the connection)
+2016-10-17 03:35:27	-->	hpt (~hpt@221.219.80.161) has joined #zsh
+2016-10-17 03:35:32	-->	macabre (~ibtjw@unaffiliated/macabre) has joined #zsh
+2016-10-17 03:40:46	<--	macabre (~ibtjw@unaffiliated/macabre) has quit (Ping timeout: 265 seconds)
+2016-10-17 03:40:46		[03:40]
+2016-10-17 03:40:51	Mikachu	danielsh: no, but it's probably fine if it doesn't obviously crash
+2016-10-17 03:41:26	Mikachu	and i don't think $path has caused as many problems as $FPATH
+2016-10-17 03:42:24	<--	theblazehen_ (~quassel@196.215.3.70) has quit (Ping timeout: 250 seconds)
+2016-10-17 03:44:48	<--	derk0pf (~derk0pf@55d430d6.access.ecotel.net) has quit (Quit: ZzzZZzZZZ.)
+2016-10-17 03:47:10	-->	derk0pf (~derk0pf@55d430d6.access.ecotel.net) has joined #zsh
+2016-10-17 03:47:11	<--	derk0pf (~derk0pf@55d430d6.access.ecotel.net) has quit (Client Quit)
+2016-10-17 03:47:36	<--	nl6720 (~nl6720@unaffiliated/nl6720) has quit (Remote host closed the connection)
+2016-10-17 03:47:42	-->	derk0pf (~derk0pf@55d430d6.access.ecotel.net) has joined #zsh
+2016-10-17 03:47:59	<--	derk0pf (~derk0pf@55d430d6.access.ecotel.net) has quit (Client Quit)
+2016-10-17 03:52:32	--	nimaje1 is now known as nimaje
+2016-10-17 03:53:41	-->	maro (~maro@46.125.249.46) has joined #zsh
+2016-10-17 03:59:00		[03:53]
+2016-10-17 04:00:29	-->	macabre (~ibtjw@unaffiliated/macabre) has joined #zsh
+2016-10-17 04:00:37	<--	zsh946 (be020b42@gateway/web/freenode/ip.190.2.11.66) has quit (Quit: Page closed)
+2016-10-17 04:00:56	-->	zsh291 (be020b42@gateway/web/freenode/ip.190.2.11.66) has joined #zsh
+2016-10-17 04:05:14	-->	chandan (~chandan@122.171.175.254) has joined #zsh
+2016-10-17 04:07:32	danielsh	Mikachu, thanks
+2016-10-17 04:11:46	<--	blooooooo (~blo@104.236.61.15) has quit (Remote host closed the connection)
+2016-10-17 04:16:47	-->	blooooooo (~blo@104.236.61.15) has joined #zsh
+2016-10-17 04:16:47		[04:16]
+2016-10-17 04:21:40	-->	govg (~govg@unaffiliated/govg) has joined #zsh
+2016-10-17 04:21:54	-->	benjwadams (~badams_lo@wsip-184-180-13-92.ri.ri.cox.net) has joined #zsh
+2016-10-17 04:22:20	benjwadams	What's the name for "line history completion" i.e. !#2 (i think this is the syntax)
+2016-10-17 04:22:37	danielsh	history expansion
+2016-10-17 04:22:43	danielsh	man zshexpn(1)
+2016-10-17 04:23:19	benjwadams	not quite.  I recall it referring to the same line
+2016-10-17 04:23:37	-->	derk0pf (~derk0pf@55d430d6.access.ecotel.net) has joined #zsh
+2016-10-17 04:25:31	benjwadams	ah.  there it is.  "!#     Refer to the current command line typed in so far"
+2016-10-17 04:31:00		[04:25]
+2016-10-17 04:37:35	llua	its still called history expansion, documented where history expansion is documented
+2016-10-17 04:41:31	<--	hpt (~hpt@221.219.80.161) has quit (Quit: Lost terminal)
+2016-10-17 04:43:08	<--	thecat (~Fourhundr@gama-wlan0.ethz.ch) has quit (Quit: Leaving)
+2016-10-17 04:44:10	-->	jedahan (~textual@subtle/user/jedahan) has joined #zsh
+2016-10-17 04:45:00	<--	benjwadams (~badams_lo@wsip-184-180-13-92.ri.ri.cox.net) has quit (Quit: WeeChat 1.4)
+2016-10-17 04:49:41	-->	cloudhead (~cloudhead@ip5f5af305.dynamic.kabel-deutschland.de) has joined #zsh
+2016-10-17 04:49:41		[04:49]
+2016-10-17 04:52:54	-->	Kryptron_ (~Kryptron@unaffiliated/kryptron) has joined #zsh
+2016-10-17 04:53:35	-->	jottr (~jottr@unaffiliated/jottr) has joined #zsh
+2016-10-17 04:55:18	<--	laurensclaessen (~laurenscl@ptr-2hj4tbifbdeg1ws9009s769fs.ip6.access.telenet.be) has quit (Remote host closed the connection)
+2016-10-17 04:55:59	<--	zsh291 (be020b42@gateway/web/freenode/ip.190.2.11.66) has quit (Quit: Page closed)
+2016-10-17 04:56:22	-->	zsh506 (be020b42@gateway/web/freenode/ip.190.2.11.66) has joined #zsh
+2016-10-17 04:57:30	<--	ploop (~ploop@unaffiliated/ruukasu) has quit (Remote host closed the connection)
+2016-10-17 04:57:56	-->	trn (jhj@prone.ws) has joined #zsh
+2016-10-17 04:59:47	-->	OxFEEDBACC (~what@x2f7f196.dyn.telefonica.de) has joined #zsh
+2016-10-17 04:59:47	<--	OxFEEDBACC (~what@x2f7f196.dyn.telefonica.de) has quit (Changing host)
+2016-10-17 04:59:47	-->	OxFEEDBACC (~what@unaffiliated/oxfeedbacc) has joined #zsh
+2016-10-17 05:01:59	<--	fbergmann (fbergmann@nat/novell/x-mjuglatbjsinpznb) has quit (Quit: WeeChat 1.3)
+2016-10-17 05:02:17	-->	ploop (~ploop@unaffiliated/ruukasu) has joined #zsh
+2016-10-17 05:03:47	vbernat	hey! when using ${(f)something} and $something doesn't contain a new line, we don't get an array, how to force to have an array?
+2016-10-17 05:04:19	vbernat	I would like ${${(f)something}[2,-1]} to work whatever I have one line or two
+2016-10-17 05:05:04	vbernat	>> print -l ${${(f)"$(echo hello1 ; echo hello 2)"}[2,-1]}
+2016-10-17 05:05:04		[05:05]
+2016-10-17 05:05:04	machabot	vbernat: hello 2
+2016-10-17 05:05:12	vbernat	>> print -l ${${(f)"$(echo hello1)"}[2,-1]}
+2016-10-17 05:05:12	machabot	vbernat: ello1
+2016-10-17 05:05:42	thrig	an index if 2,-1 doesn't make much sense for an array with a single element
+2016-10-17 05:06:02	vbernat	I don't know if the command will give me one line or several of them
+2016-10-17 05:06:12	vbernat	I would like to skip the first line in all cases
+2016-10-17 05:06:34	-->	laurensclaessen (~laurenscl@ptr-2hj4tbifbdeg1ws9009s769fs.ip6.access.telenet.be) has joined #zsh
+2016-10-17 05:07:05	danielsh	append a \n to the value, use an intermediate array variable, use ${foo#*$'\n'}, use «sed 1d»...
+2016-10-17 05:08:39	vbernat	>> print -l ${${(f)"$(echo hello1 ; echo)"}[2,-1]}
+2016-10-17 05:08:39	machabot	vbernat: ello1
+2016-10-17 05:09:16	vbernat	I'll take the ${foo#*$'\n'}
+2016-10-17 05:10:45	vbernat	>> print -l ${"$(echo hello 1 ; echo hello 2 ; echo hello 3)"#*$'\n'}
+2016-10-17 05:10:46	machabot	vbernat: hello 2
+2016-10-17 05:10:46	machabot	vbernat: hello 3
+2016-10-17 05:10:46	danielsh	> print -l ${${(f)${:-"(echo hello1)"$'\n'}}[2,-1]}
+2016-10-17 05:10:47	machabot	danielsh:
+2016-10-17 05:12:03	vbernat	thanks
+2016-10-17 05:12:05	danielsh	vbernat, btw, I don't know if this can be changed.  It'd make sense for (s) to always return an array, but compatibility might be a problem.
+2016-10-17 05:12:07	danielsh	cheers
+2016-10-17 05:18:00		[05:12]
+2016-10-17 05:24:02	<--	Balliad (~textual@80.79.35.95) has quit (Quit: My MacBook Pro has gone to sleep. ZZZzzz…)
+2016-10-17 05:27:07	<--	jedahan (~textual@subtle/user/jedahan) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-10-17 05:27:29	-->	Raging_Hog (~heikki@mobile-access-bcee59-69.dhcp.inet.fi) has joined #zsh
+2016-10-17 05:29:17	-->	meh` (~meh@151.42.116.175) has joined #zsh
+2016-10-17 05:32:39	<--	drmt (~drmt@2804:d41:737:1600:ff5d:8200:c5d6:5f33) has quit (Quit: Leaving)
+2016-10-17 05:33:29	vbernat	is there a way to distinguish a string from a string in an array?
+2016-10-17 05:33:29		[05:33]
+2016-10-17 05:33:35	vbernat	print -l doesn't say
+2016-10-17 05:33:53	vbernat	and I always ask myself if I got an array or a string
+2016-10-17 05:37:05	osse	vbernat: echo ${(t)var}
+2016-10-17 05:37:07	osse	vbernat: declare -p var
+2016-10-17 05:38:47	<--	kurkale6ka (~kurkale6k@win.ops.offices.venntro.com) has quit (Quit: WeeChat 1.6)
+2016-10-17 05:39:47	vbernat	osse: it only works with a variable, not an existing expansion, right?
+2016-10-17 05:40:00	vbernat	>> print ${(t)${:-hello}}
+2016-10-17 05:40:00	machabot	vbernat: hello
+2016-10-17 05:40:42	osse	ahh
+2016-10-17 05:40:55	-->	ahmed_elgabri (~ahmedelga@212.123.217.154) has joined #zsh
+2016-10-17 05:40:58	osse	yeah you just have to magically get into the manpage author's head on that one
+2016-10-17 05:41:08	vbernat	ok :)
+2016-10-17 05:43:27	<--	ahmedelgabri (~ahmedelga@212.123.217.154) has quit (Ping timeout: 252 seconds)
+2016-10-17 05:45:53	<--	ahmed_elgabri (~ahmedelga@212.123.217.154) has quit (Ping timeout: 245 seconds)
+2016-10-17 05:46:04	danielsh	you can put a breakpoint in paramsubst and check isarr
+2016-10-17 05:46:11	danielsh	or you can use an intermediate variable
+2016-10-17 05:46:21	danielsh	One of these ways is guaranteed to preserve your sanity.
+2016-10-17 05:46:41	danielsh	(the second one)
+2016-10-17 05:47:31	<--	Raging_Hog (~heikki@mobile-access-bcee59-69.dhcp.inet.fi) has quit (Quit: Konversation terminated!)
+2016-10-17 05:47:35	<--	maro (~maro@46.125.249.46) has quit (Quit: Leaving)
+2016-10-17 05:47:42	osse	danielsh: but what if the intermediate variable has the wrong type :p
+2016-10-17 05:48:00	<--	eworm (~eworm@archlinux/developer/eworm) has quit (Quit: Leaving.)
+2016-10-17 05:48:49	osse	> str1=a,b,c; str2=${(s:,:)str1}; echo ${(t)str2}
+2016-10-17 05:48:49		[05:48]
+2016-10-17 05:48:49	machabot	osse: scalar
+2016-10-17 05:50:51	<--	chandan (~chandan@122.171.175.254) has quit (Ping timeout: 244 seconds)
+2016-10-17 05:53:26	<--	kbdkode (~kbdkode@unaffiliated/kbdkode) has quit (Quit:      see ya    )
+2016-10-17 05:57:33	<--	snuffeluffegus (~snuffeluf@unaffiliated/snuffeluffegus) has quit (Remote host closed the connection)
+2016-10-17 05:58:16	<--	eycsigfy_ (~bounced@ip156.ip-167-114-23.net) has quit (Quit: Aliens ate me. I'm not good for them.)
+2016-10-17 05:58:22	-->	snuffeluffegus (~snuffeluf@unaffiliated/snuffeluffegus) has joined #zsh
+2016-10-17 05:59:46	-->	_mirko_ (~mirko@unaffiliated/-mirko-/x-2946915) has joined #zsh
+2016-10-17 06:00:06	-->	eycsigfy (~bounced@ip156.ip-167-114-23.net) has joined #zsh
+2016-10-17 06:02:56	-->	SCHAAP137 (~SCHAAP137@unaffiliated/schaap137) has joined #zsh
+2016-10-17 06:08:00		[06:02]
+2016-10-17 06:13:05	<--	grc` (~user@host81-142-89-185.in-addr.btopenworld.com) has quit (Ping timeout: 244 seconds)
+2016-10-17 06:13:09	-->	jedahan (~textual@subtle/user/jedahan) has joined #zsh
+2016-10-17 06:17:32	-->	kurkale6ka (~kurkale6k@win.ops.offices.venntro.com) has joined #zsh
+2016-10-17 06:23:00		[06:17]
+2016-10-17 06:23:09	<--	laurensclaessen (~laurenscl@ptr-2hj4tbifbdeg1ws9009s769fs.ip6.access.telenet.be) has quit
+2016-10-17 06:25:18	-->	lexinator (~Adium@17.45.117.9) has joined #zsh
+2016-10-17 06:31:00		[06:25]
+2016-10-17 06:41:14	<--	kurkale6ka (~kurkale6k@win.ops.offices.venntro.com) has quit (Quit: WeeChat 1.6)
+2016-10-17 06:41:48	<--	govg (~govg@unaffiliated/govg) has quit (Ping timeout: 250 seconds)
+2016-10-17 06:46:14	-->	modlin (~modlin@93.123.41.167) has joined #zsh
+2016-10-17 06:46:14		[06:46]
+2016-10-17 06:49:12	-->	larryv (~larryv@wikipedia/larryv) has joined #zsh
+2016-10-17 06:55:00		[06:49]
+2016-10-17 06:57:07	-->	lexinator1 (~Adium@17.45.126.128) has joined #zsh
+2016-10-17 07:00:44	<--	lexinator (~Adium@17.45.117.9) has quit (Ping timeout: 260 seconds)
+2016-10-17 07:01:54	-->	hahuang65 (~hahuang65@2601:647:4000:d7:994a:e361:5319:af18) has joined #zsh
+2016-10-17 07:07:00		[07:01]
+2016-10-17 07:07:05	<--	hahuang65 (~hahuang65@2601:647:4000:d7:994a:e361:5319:af18) has quit (Ping timeout: 260 seconds)
+2016-10-17 07:07:32	-->	firstdayonthejob (~firstdayo@cpc99346-croy26-2-0-cust153.19-2.cable.virginm.net) has joined #zsh
+2016-10-17 07:10:43	-->	vuoto (~vuoto@80-71-135-9.u.parknet.dk) has joined #zsh
+2016-10-17 07:10:46	<--	vuoto (~vuoto@80-71-135-9.u.parknet.dk) has quit (Client Quit)
+2016-10-17 07:13:35	-->	hahuang65 (~hahuang65@2601:647:4000:d7:994a:e361:5319:af18) has joined #zsh
+2016-10-17 07:17:09	-->	lexinator (~Adium@17.45.117.9) has joined #zsh
+2016-10-17 07:20:03	-->	xall (~xall@wsip-70-166-121-212.ph.ph.cox.net) has joined #zsh
+2016-10-17 07:20:48	<--	lexinator1 (~Adium@17.45.126.128) has quit (Ping timeout: 252 seconds)
+2016-10-17 07:26:00		[07:20]
+2016-10-17 07:28:09	<--	zsh506 (be020b42@gateway/web/freenode/ip.190.2.11.66) has quit (Quit: Page closed)
+2016-10-17 07:29:05	-->	zsh463 (be020b42@gateway/web/freenode/ip.190.2.11.66) has joined #zsh
+2016-10-17 07:31:21	-->	grc` (~user@88.202.151.232) has joined #zsh
+2016-10-17 07:32:00	-->	mortal1 (~bholland@c-24-125-32-57.hsd1.ga.comcast.net) has joined #zsh
+2016-10-17 07:32:42	mortal1	howdy folks, when i try to do history -i I get fc: event not found: -i
+2016-10-17 07:32:48	mortal1	same goes for -E
+2016-10-17 07:33:15	mortal1	am i not specifying my parameter correctly?
+2016-10-17 07:35:32	-->	Kryptron (~Kryptron@unaffiliated/kryptron) has joined #zsh
+2016-10-17 07:35:36	thrig	is there anything in the history?
+2016-10-17 07:35:59	mortal1	yes
+2016-10-17 07:36:55	<--	grc` (~user@88.202.151.232) has quit (Remote host closed the connection)
+2016-10-17 07:37:13	mortal1	oh it's an alias
+2016-10-17 07:37:36	mortal1	history is an alias for fc -l 1
+2016-10-17 07:37:47	mortal1	that's ... interesting
+2016-10-17 07:38:05	<--	Kryptron_ (~Kryptron@unaffiliated/kryptron) has quit (Ping timeout: 265 seconds)
+2016-10-17 07:38:27	danielsh	bash compatibility ?
+2016-10-17 07:39:22	 *	mortal1 shrugs
+2016-10-17 07:39:41	mortal1	i should note that this is on os x, oh my zsh stuff
+2016-10-17 07:39:54	mortal1	i just added an alias to my .zshrc to fix it
+2016-10-17 07:40:16	danielsh	!omz
+2016-10-17 07:40:17	machabot	"omz" is shorthand for "oh-my-zsh", an extension which the consensus of this channel recommends against using.  If you see odd behaviour using omz, please try disabling omz and see if the issue remains. For assistance with oh-my-zsh, try the channel #oh-my-zsh.
+2016-10-17 07:41:00	mortal1	:^) I figured that'd be the response
+2016-10-17 07:41:00		[07:41]
+2016-10-17 07:41:47	<--	mortal1 (~bholland@c-24-125-32-57.hsd1.ga.comcast.net) has quit (Quit: leaving)
+2016-10-17 07:43:01	danielsh	It's a recurring pattern, odd problems turn out to be omz defaults.
+2016-10-17 07:43:20	danielsh	that*
+2016-10-17 07:49:00		[07:43]
+2016-10-17 07:51:58	-->	Sasazuka (~Sasazuka@unaffiliated/sasazuka) has joined #zsh
+2016-10-17 07:57:00		[07:51]
+2016-10-17 08:01:44	--	timvishe` is now known as timvisher
+2016-10-17 08:02:54	-->	Rodya_ (~Rodya_@2601:46:4001:e0b4:79f0:94f4:1ec1:3114) has joined #zsh
+2016-10-17 08:05:02	-->	mycelium (~fungal@unaffiliated/fungal) has joined #zsh
+2016-10-17 08:07:53	-->	SeepingN (~CPngN@unaffiliated/cpngn/x-6985199) has joined #zsh
+2016-10-17 08:13:00		[08:07]
+2016-10-17 08:13:55	-->	drmt (~drmt@2804:d41:737:1600:ff5d:8200:c5d6:5f33) has joined #zsh
+2016-10-17 08:19:00		[08:13]
+2016-10-17 08:19:08	<--	excelsior (~vijay@1.23.36.191) has quit (Ping timeout: 250 seconds)
+2016-10-17 08:22:59	-->	ahmed_elgabri (~ahmedelga@ip4da074e6.direct-adsl.nl) has joined #zsh
+2016-10-17 08:28:00		[08:22]
+2016-10-17 08:35:31	-->	Raging_Hog (~heikki@mobile-access-bcee4a-246.dhcp.inet.fi) has joined #zsh
+2016-10-17 08:38:48	-->	govg (~govg@unaffiliated/govg) has joined #zsh
+2016-10-17 08:39:06	-->	pikajude (fox_mcclou@unaffiliated/otters) has joined #zsh
+2016-10-17 08:39:14	pikajude	so I display the last exit code in my prompt
+2016-10-17 08:39:28	pikajude	and when I start up a new shell, the exit code is reported as 1, so something in my startup is boned
+2016-10-17 08:39:31	pikajude	how do I figure out what it is?
+2016-10-17 08:39:38	-->	_kud (~kud@2a02-8428-03dd-ae00-d58e-8f12-4c9e-056b.rev.sfr.net) has joined #zsh
+2016-10-17 08:39:49	thrig	what's the last line in your rc files?
+2016-10-17 08:40:02	pikajude	one sec
+2016-10-17 08:40:21	pikajude	it's "alias e='$EDITOR $HOME/.zshrc'" lol
+2016-10-17 08:41:18	osse	pikajude: run 'set -x'. what's the last few lines reported ?
+2016-10-17 08:42:05	pikajude	https://gist.github.com/pikajude/9651e46761df223c0f376805e2f358b5
+2016-10-17 08:42:15	pikajude	abbrev_path is a function I wrote to abbreviate $PWD before i show it in my prompt
+2016-10-17 08:42:35	pikajude	oh snap! i totally found it
+2016-10-17 08:42:48	pikajude	it was the line BEFORE that block. sneaky rvm installed a .zlogin file that I didn't want
+2016-10-17 08:42:55	pikajude	thanks anyway everyone
+2016-10-17 08:44:48	<--	modlin (~modlin@93.123.41.167) has quit (Quit: Textual IRC Client: www.textualapp.com)
+2016-10-17 08:44:48		[08:44]
+2016-10-17 08:50:01	<--	kenden (~dsps@85.211.209.162) has quit (Quit: My computer has gone to sleep. ZZZzzz…)
+2016-10-17 08:53:29	-->	blackmesa (~blackmesa@aftr-37-201-227-42.unity-media.net) has joined #zsh
+2016-10-17 08:54:11	<--	drmt (~drmt@2804:d41:737:1600:ff5d:8200:c5d6:5f33) has quit (Quit: Leaving)
+2016-10-17 08:54:54	<--	Raging_Hog (~heikki@mobile-access-bcee4a-246.dhcp.inet.fi) has quit (Read error: Connection reset by peer)
+2016-10-17 09:00:00		[08:54]
+2016-10-17 09:01:55	-->	Raging_Hog (~heikki@mobile-access-bcee38-203.dhcp.inet.fi) has joined #zsh
+2016-10-17 09:02:56	-->	ronskisika (~heikki@dgd0v2yykg0qhp6w3dgjy-3.rev.dnainternet.fi) has joined #zsh
+2016-10-17 09:06:40	<--	Raging_Hog (~heikki@mobile-access-bcee38-203.dhcp.inet.fi) has quit (Ping timeout: 244 seconds)
+2016-10-17 09:07:59	-->	stef204 (~stef204@unaffiliated/stef-204/x-384198) has joined #zsh
+2016-10-17 09:10:57	<--	macabre (~ibtjw@unaffiliated/macabre) has quit (Read error: Network is unreachable)
+2016-10-17 09:11:34	-->	desyncr (~desyncr3@190.2.11.66) has joined #zsh
+2016-10-17 09:11:38	<--	abbe (having@badti.me) has quit (Read error: Connection reset by peer)
+2016-10-17 09:11:46	-->	macabre (~ibtjw@unaffiliated/macabre) has joined #zsh
+2016-10-17 09:11:48	<--	hahuang65 (~hahuang65@2601:647:4000:d7:994a:e361:5319:af18) has quit (Read error: Connection reset by peer)
+2016-10-17 09:11:50	-->	abbe (having@badti.me) has joined #zsh
+2016-10-17 09:12:25	-->	hahuang65 (~hahuang65@2601:647:4000:d7:994a:e361:5319:af18) has joined #zsh
+2016-10-17 09:16:35	<--	zsh463 (be020b42@gateway/web/freenode/ip.190.2.11.66) has quit (Ping timeout: 260 seconds)
+2016-10-17 09:16:35		[09:16]
+2016-10-17 09:17:29	<--	holgersson (~quassel@unaffiliated/holgersson) has quit (Remote host closed the connection)
+2016-10-17 09:21:24	-->	stef_204 (~stef204@unaffiliated/stef-204/x-384198) has joined #zsh
+2016-10-17 09:22:51	<--	lexinator (~Adium@17.45.117.9) has quit (Quit: Leaving.)
+2016-10-17 09:23:30	<--	jedahan (~textual@subtle/user/jedahan) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-10-17 09:24:22	-->	jedahan (~textual@subtle/user/jedahan) has joined #zsh
+2016-10-17 09:24:28	<--	stef204 (~stef204@unaffiliated/stef-204/x-384198) has quit (Ping timeout: 260 seconds)
+2016-10-17 09:30:00		[09:24]
+2016-10-17 09:30:15	<--	osse (~osse@zsh/user/osse) has quit (Quit: WeeChat 1.6-dev)
+2016-10-17 09:33:51	<--	larryv (~larryv@wikipedia/larryv) has quit (Quit: larryv)
+2016-10-17 09:36:29	-->	lexinator (~Adium@17.45.117.9) has joined #zsh
+2016-10-17 09:38:18	-->	larryv (~larryv@wikipedia/larryv) has joined #zsh
+2016-10-17 09:38:19	<--	lexinator (~Adium@17.45.117.9) has quit (Client Quit)
+2016-10-17 09:38:29	<--	Juri_Agarin (~ajaalto@kekkonen.niksula.hut.fi) has quit (Ping timeout: 260 seconds)
+2016-10-17 09:40:52	-->	osse (~osse@zsh/user/osse) has joined #zsh
+2016-10-17 09:42:36	<--	jedahan (~textual@subtle/user/jedahan) has quit (Read error: Connection reset by peer)
+2016-10-17 09:42:57	-->	jedahan (~textual@subtle/user/jedahan) has joined #zsh
+2016-10-17 09:43:09	<--	stef_204 (~stef204@unaffiliated/stef-204/x-384198) has quit (Quit: WeeChat 1.6)
+2016-10-17 09:44:30	-->	witquicked_ (~witquicke@50-193-55-241-static.hfc.comcastbusiness.net) has joined #zsh
+2016-10-17 09:44:43	-->	Juri_Agarin (~ajaalto@kekkonen.niksula.hut.fi) has joined #zsh
+2016-10-17 09:44:56	-->	m0viefreak (~asdf@unaffiliated/m0viefreak) has joined #zsh
+2016-10-17 09:46:03	-->	stef204 (~stef204@unaffiliated/stef-204/x-384198) has joined #zsh
+2016-10-17 09:46:03		[09:46]
+2016-10-17 09:50:00	-->	gentoo_ (~gentoo@95-29-44-73.broadband.corbina.ru) has joined #zsh
+2016-10-17 09:53:45	<--	frew (~frew@li490-218.members.linode.com) has quit (Quit: WeeChat 1.5)
+2016-10-17 09:54:52	-->	zerotech (~zerotech@BSN-182-13-63.dynamic.siol.net) has joined #zsh
+2016-10-17 09:57:55	-->	lexinator (~Adium@17.45.117.9) has joined #zsh
+2016-10-17 10:00:45	-->	frew (frew@life.is.a.gamble.panicbnc.us) has joined #zsh
+2016-10-17 10:03:27	<--	ronskisika (~heikki@dgd0v2yykg0qhp6w3dgjy-3.rev.dnainternet.fi) has quit (Quit: Konversation terminated!)
+2016-10-17 10:03:27		[10:03]
+2016-10-17 10:05:02	<--	mva (znc@gentoo/contributor/mva) has quit (Quit: ZNC - http://znc.in)
+2016-10-17 10:06:15	-->	mva (znc@gentoo/contributor/mva) has joined #zsh
+2016-10-17 10:11:38	-->	holgersson (~quassel@unaffiliated/holgersson) has joined #zsh
+2016-10-17 10:15:09	<--	xall (~xall@wsip-70-166-121-212.ph.ph.cox.net) has quit (Ping timeout: 252 seconds)
+2016-10-17 10:19:03	-->	jedahan_ (~textual@cpe-24-90-75-57.nyc.res.rr.com) has joined #zsh
+2016-10-17 10:19:03		[10:19]
+2016-10-17 10:27:28	-->	xall (~xall@2600:8800:1285:f100:a1f0:b968:eeb5:4423) has joined #zsh
+2016-10-17 10:27:32	<--	zerotech (~zerotech@BSN-182-13-63.dynamic.siol.net) has quit (Quit: WeeChat 1.6)
+2016-10-17 10:28:04	-->	zerotech (~zerotech@BSN-182-13-63.dynamic.siol.net) has joined #zsh
+2016-10-17 10:29:30	<--	jedahan (~textual@subtle/user/jedahan) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-10-17 10:35:00		[10:29]
+2016-10-17 10:37:14	<--	ploop (~ploop@unaffiliated/ruukasu) has quit (Read error: Connection reset by peer)
+2016-10-17 10:37:18	-->	drmt (~drmt@2804:d41:737:1600:ff5d:8200:c5d6:5f33) has joined #zsh
+2016-10-17 10:40:51	-->	ploop (~ploop@unaffiliated/ruukasu) has joined #zsh
+2016-10-17 10:46:00		[10:40]
+2016-10-17 10:46:35	<--	larryv (~larryv@wikipedia/larryv) has quit (Quit: larryv)
+2016-10-17 10:48:18	-->	larryv (~larryv@wikipedia/larryv) has joined #zsh
+2016-10-17 10:54:00		[10:48]
+2016-10-17 10:54:12	<--	davidosomething (~davidosom@cpe-24-102-71-35.nyc.res.rr.com) has quit (Quit: WeeChat 1.6-dev)
+2016-10-17 10:55:34	<--	holgersson (~quassel@unaffiliated/holgersson) has quit (Remote host closed the connection)
+2016-10-17 10:56:16	-->	holgersson (~quassel@unaffiliated/holgersson) has joined #zsh
+2016-10-17 10:56:57	<--	lexinator (~Adium@17.45.117.9) has quit (Quit: Leaving.)
+2016-10-17 10:57:09	<--	xall (~xall@2600:8800:1285:f100:a1f0:b968:eeb5:4423) has quit (Ping timeout: 260 seconds)
+2016-10-17 10:58:52	<--	_kud (~kud@2a02-8428-03dd-ae00-d58e-8f12-4c9e-056b.rev.sfr.net) has quit (Quit: bye bye.)
+2016-10-17 10:58:53	-->	davidosomething (~davidosom@cpe-24-102-71-35.nyc.res.rr.com) has joined #zsh
+2016-10-17 11:00:08	-->	lexinator (~Adium@17.45.126.128) has joined #zsh
+2016-10-17 11:06:00		[11:00]
+2016-10-17 11:10:27	<--	LnL (~L0CKnL0aD@78-23-24-36.access.telenet.be) has quit (Quit: exit 1)
+2016-10-17 11:15:05	-->	LnL (~L0CKnL0aD@78-23-24-36.access.telenet.be) has joined #zsh
+2016-10-17 11:21:00		[11:15]
+2016-10-17 11:23:38	-->	strull_ (~strull@p57A38BAC.dip0.t-ipconnect.de) has joined #zsh
+2016-10-17 11:26:46	<--	strull (~strull@pD9F4A8C9.dip0.t-ipconnect.de) has quit (Ping timeout: 250 seconds)
+2016-10-17 11:32:00		[11:26]
+2016-10-17 11:32:08	<--	ahmed_elgabri (~ahmedelga@ip4da074e6.direct-adsl.nl) has quit (Quit: WeeChat 1.5)
+2016-10-17 11:32:22	-->	DarkFox_ (~DarkFox_@unaffiliated/darkfox-/x-5669090) has joined #zsh
+2016-10-17 11:37:02	-->	xall (~xall@2600:8800:1285:f100:a1f0:b968:eeb5:4423) has joined #zsh
+2016-10-17 12:22:36	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined #zsh
+2016-10-17 12:22:36		[12:22]
+2016-10-17 12:22:36	--	Topic for #zsh is "v5.2 | http://zsh.sf.net/ | http://zshwiki.org/ | http://zsh.sf.net/FAQ/ | http://zshwiki.org/home/docs/wikifaq | http://tinyurl.com/zsh-refcard-pdf | Just ask. | Nobody here or everybody clueless? try the zsh-users mailinglist: http://www.zsh.org/mla"
+2016-10-17 12:22:36	--	Topic set by Mikachu (~Mikachu@gimp/developer/Mikachu) on Wed, 02 Dec 2015 11:54:14
+2016-10-17 12:22:36	--	Channel #zsh: 425 nicks (0 ops, 0 voices, 425 normals)
+2016-10-17 12:22:36	***	Buffer Playback...
+2016-10-17 12:22:36	vbernat	[15:12:03] thanks [15:12:03]
+2016-10-17 12:22:36	danielsh	[15:12:05] vbernat, btw, I don't know if this can be changed.  It'd make sense for (s) to always return an array, but compatibility might be a problem. [15:12:05]
+2016-10-17 12:22:36	danielsh	[15:12:07] cheers [15:12:07]
+2016-10-17 12:22:36	vbernat	[15:33:29] is there a way to distinguish a string from a string in an array? [15:33:29]
+2016-10-17 12:22:36	vbernat	[15:33:35] print -l doesn't say [15:33:35]
+2016-10-17 12:22:36	vbernat	[15:33:53] and I always ask myself if I got an array or a string [15:33:53]
+2016-10-17 12:22:36	osse	[15:37:05] vbernat: echo ${(t)var} [15:37:05]
+2016-10-17 12:22:36	osse	[15:37:07] vbernat: declare -p var [15:37:07]
+2016-10-17 12:22:36	vbernat	[15:39:47] osse: it only works with a variable, not an existing expansion, right? [15:39:47]
+2016-10-17 12:22:36	vbernat	[15:40:00] >> print ${(t)${:-hello}} [15:40:00]
+2016-10-17 12:22:36	machabot	[15:40:00] vbernat: hello [15:40:00]
+2016-10-17 12:22:36	osse	[15:40:42] ahh [15:40:42]
+2016-10-17 12:22:36	osse	[15:40:58] yeah you just have to magically get into the manpage author's head on that one [15:40:58]
+2016-10-17 12:22:36	vbernat	[15:41:08] ok :) [15:41:08]
+2016-10-17 12:22:36	danielsh	[15:46:04] you can put a breakpoint in paramsubst and check isarr [15:46:04]
+2016-10-17 12:22:36	danielsh	[15:46:11] or you can use an intermediate variable [15:46:11]
+2016-10-17 12:22:36	danielsh	[15:46:21] One of these ways is guaranteed to preserve your sanity. [15:46:21]
+2016-10-17 12:22:36	danielsh	[15:46:41] (the second one) [15:46:41]
+2016-10-17 12:22:36	osse	[15:47:42] danielsh: but what if the intermediate variable has the wrong type :p [15:47:42]
+2016-10-17 12:22:36	osse	[15:48:49] > str1=a,b,c; str2=${(s:,:)str1}; echo ${(t)str2} [15:48:49]
+2016-10-17 12:22:36	machabot	[15:48:49] osse: scalar [15:48:49]
+2016-10-17 12:22:36	mortal1	[17:32:42] howdy folks, when i try to do history -i I get fc: event not found: -i [17:32:42]
+2016-10-17 12:22:36	mortal1	[17:32:48] same goes for -E [17:32:48]
+2016-10-17 12:22:36	mortal1	[17:33:15] am i not specifying my parameter correctly? [17:33:15]
+2016-10-17 12:22:36	thrig	[17:35:35] is there anything in the history? [17:35:35]
+2016-10-17 12:22:36	mortal1	[17:35:59] yes [17:35:59]
+2016-10-17 12:22:36	mortal1	[17:37:13] oh it's an alias [17:37:13]
+2016-10-17 12:22:36	mortal1	[17:37:36] history is an alias for fc -l 1 [17:37:36]
+2016-10-17 12:22:36	mortal1	[17:37:47] that's ... interesting [17:37:47]
+2016-10-17 12:22:36	danielsh	[17:38:27] bash compatibility ? [17:38:27]
+2016-10-17 12:22:36	 *	mortal1 [17:39:22] shrugs [17:39:22]
+2016-10-17 12:22:36	mortal1	[17:39:41] i should note that this is on os x, oh my zsh stuff [17:39:41]
+2016-10-17 12:22:36	mortal1	[17:39:54] i just added an alias to my .zshrc to fix it [17:39:54]
+2016-10-17 12:22:36	danielsh	[17:40:16] !omz [17:40:16]
+2016-10-17 12:22:36	machabot	[17:40:17] "omz" is shorthand for "oh-my-zsh", an extension which the consensus of this channel recommends against using.  If you see odd behaviour using omz, please try disabling omz and see if the issue remains. For assistance with oh-my-zsh, try the channel #oh-my-zsh. [17:40:17]
+2016-10-17 12:22:36	mortal1	[17:41:00] :^) I figured that'd be the response [17:41:00]
+2016-10-17 12:22:36	danielsh	[17:43:01] It's a recurring pattern, odd problems turn out to be omz defaults. [17:43:01]
+2016-10-17 12:22:36	danielsh	[17:43:20] that* [17:43:20]
+2016-10-17 12:22:36	pikajude	[18:39:14] so I display the last exit code in my prompt [18:39:14]
+2016-10-17 12:22:36	pikajude	[18:39:28] and when I start up a new shell, the exit code is reported as 1, so something in my startup is boned [18:39:28]
+2016-10-17 12:22:36	pikajude	[18:39:31] how do I figure out what it is? [18:39:31]
+2016-10-17 12:22:36	thrig	[18:39:49] what's the last line in your rc files? [18:39:49]
+2016-10-17 12:22:36	pikajude	[18:40:02] one sec [18:40:02]
+2016-10-17 12:22:36	pikajude	[18:40:21] it's "alias e='$EDITOR $HOME/.zshrc'" lol [18:40:21]
+2016-10-17 12:22:36	osse	[18:41:18] pikajude: run 'set -x'. what's the last few lines reported ? [18:41:18]
+2016-10-17 12:22:36	pikajude	[18:42:05] https://gist.github.com/pikajude/9651e46761df223c0f376805e2f358b5 [18:42:05]
+2016-10-17 12:22:36	pikajude	[18:42:15] abbrev_path is a function I wrote to abbreviate $PWD before i show it in my prompt [18:42:15]
+2016-10-17 12:22:36	pikajude	[18:42:35] oh snap! i totally found it [18:42:35]
+2016-10-17 12:22:36	pikajude	[18:42:48] it was the line BEFORE that block. sneaky rvm installed a .zlogin file that I didn't want [18:42:48]
+2016-10-17 12:22:36	pikajude	[18:42:55] thanks anyway everyone [18:42:55]
+2016-10-17 12:22:36	***	Playback Complete.
+2016-10-17 12:23:49	--	Channel created on Tue, 02 Sep 2003 05:34:53
+2016-10-17 12:23:58	<--	gentoo_ (~gentoo@95-29-44-73.broadband.corbina.ru) has quit (Quit: Konversation terminated!)
+2016-10-17 12:24:24	-->	gentoo_ (~gentoo@95.29.44.73) has joined #zsh
+2016-10-17 12:24:24	<--	gentoo_ (~gentoo@95.29.44.73) has quit (Max SendQ exceeded)
+2016-10-17 12:24:49	-->	gentoo_ (~gentoo@95-29-44-73.broadband.corbina.ru) has joined #zsh
+2016-10-17 12:24:49	<--	gentoo_ (~gentoo@95-29-44-73.broadband.corbina.ru) has quit (Max SendQ exceeded)
+2016-10-17 12:25:14	-->	gentoo_ (~gentoo@95-29-44-73.broadband.corbina.ru) has joined #zsh
+2016-10-17 12:25:14	<--	gentoo_ (~gentoo@95-29-44-73.broadband.corbina.ru) has quit (Max SendQ exceeded)
+2016-10-17 12:25:21	<--	firstdayonthejob (~firstdayo@cpc99346-croy26-2-0-cust153.19-2.cable.virginm.net) has quit (Ping timeout: 260 seconds)
+2016-10-17 12:25:40	-->	gentoo_ (~gentoo@95-29-44-73.broadband.corbina.ru) has joined #zsh
+2016-10-17 12:25:41	<--	gentoo_ (~gentoo@95-29-44-73.broadband.corbina.ru) has quit (Max SendQ exceeded)
+2016-10-17 12:26:05	-->	gentoo_ (~gentoo@95-29-44-73.broadband.corbina.ru) has joined #zsh
+2016-10-17 12:26:06	<--	gentoo_ (~gentoo@95-29-44-73.broadband.corbina.ru) has quit (Max SendQ exceeded)
+2016-10-17 12:28:51	<--	blackmes1 (~blackmesa@aftr-37-201-227-42.unity-media.net) has quit (Read error: Connection reset by peer)
+2016-10-17 12:28:54	<--	Sasazuka (~Sasazuka@unaffiliated/sasazuka) has quit (Ping timeout: 250 seconds)
+2016-10-17 12:29:09	-->	blackmesa (~blackmesa@aftr-37-201-227-42.unity-media.net) has joined #zsh
+2016-10-17 12:29:15	-->	larryv (~larryv@wikipedia/larryv) has joined #zsh
+2016-10-17 12:29:16	<--	katyl (~katyl@162-239-98-134.lightspeed.dybhfl.sbcglobal.net) has quit (Ping timeout: 260 seconds)
+2016-10-17 12:29:30	-->	Sasazuka (~Sasazuka@unaffiliated/sasazuka) has joined #zsh

@@ -177,6 +177,8 @@ fi
 [ ! -f ${HOME}/aliases.sh ] || source ${HOME}/aliases.sh
 [ ! -f ${HOME}/.profile ] || source ${HOME}/.profile
 
+eval `pump --startup`
+
 ## Custom which for bash
 which() { (alias; declare -f) | /bin/which --tty-only --read-alias --read-functions --show-tilde --show-dot $@; }
 #[ -r ${HOME}/baliases.sh ] && source ${HOME}/baliases.sh || source ${HOME}/aliases.sh
