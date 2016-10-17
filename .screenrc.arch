@@ -1,0 +1,318 @@
+###### screenrc
+###### by then4116
+###### This config is aimed at powerusers, who work on a lot of machines, and need a lot of information at a glance
+###### It's intended to facilitate usage of deeply nested screen sessions, and complex layouts
+###### as such, it relies heavily on keybindings to modify other keybindings, and multi-key bindings
+###### default keybindings have been left mostly intact, but not completely
+###### IT'S RECOMMENDED TO READ THE CONFIG BEFORE USING IT
+
+##########################################################################################
+###### PLEASE DON'T FORGET change your .bashrc as specified at the end of the file! ######
+##########################################################################################
+
+### some options
+defscrollback 99999             # set scrollback buffer to 'a shitload'
+defutf8 on                      # set utf8
+vbell off                       # disable visual bell
+startup_message off             # disable startup message 'new screen ..'
+setenv DISPLAY ':0'             # eg for mplayer
+deflog off                      # enable/disable logging here
+logfile /root/screen.%n         # set log location
+nethack off                     # nethack like notifications
+defmonitor off                  # turn off monitoring (for activity)
+activity "activity in %n"       # enable activity
+multiuser on                    # enable screen -x
+shell bash                      # default shell
+autodetach on                   # automatically detach upon hangup
+defnonblock 1
+mousetrack off                  # turn on if you want to switch regions via mouse click. Will interfere with text selection via mouse in xterm though, so off by defult.
+altscreen on
+msgwait 3                       # message display duration
+termcapinfo xterm|xterms|xs|rxvt ti@:te@        # use xterm's normal screen buffer (which includes scrollback). Makes scrolling back with mouse/touchpad in X11 useful.
+termcapinfo * Z0=\E[?3h:Z1=\E[?3l
+term screen-256color
+
+
+### some keybindings
+bind 'w' sessionname
+bind '\' quit   #'
+bind 'K' kill
+#bind 'F' flow
+
+### window navigation
+# basically, if you don't want to use nested sessions, you can just enjoy being able to switch windows with F11/F12, instead of the tedious ^Ap and ^An (and the slightly less tedious ^A^A and ^A[0-9])
+# However, if you've discovered the usefulness of nested sessions, this is for you:
+# With these key bindings, you can make a nested screen session 'aware' of how deeply it's nested. This changes the bindings for switching windows, so that, even in deeply nested sessions, it still only takes a single keystroke to switch windows.
+
+
+# this is called whenever the nesting depth of a session is changed (see below how to do that). Frees up the bindings on the F-keys, before the new ones are set for the new nesting depth.
+register l "^A:bindkey -k k1^M^A:bindkey -k k3^M^A:bindkey -k k5^M^A:bindkey -k k7^M^A:bindkey -k k9^M^A:bindkey -k F1^M"
+register L "^A:bindkey -k k2^M^A:bindkey -k k4^M^A:bindkey -k k6^M^A:bindkey -k k8^M^A:bindkey -k k;^M^A:bindkey -k F2^M"
+
+# these bindings set the nesting depth, i.e. switch the keys for window navigation between F11/F12, F9/F10, F7/F8, F5/F6, F3/F4 & F1/F2 - useful for managing nested sessions
+# usage: press ^AU[0123456]. The digit is the nesting depth. Nesting depth 0 means that no bindings are set, which is useful for 'transparent' sessions.
+bindkey -t "^Au0" eval 'backtick 1 3600 3600 printf "(0)  "' 'process l' 'process L'
+bindkey -t "^AU0" eval 'backtick 1 3600 3600 printf "(0)  "' 'process l' 'process L'
+#right handed mode (=F11/F12 used for nesting depth 1, going left as nesting level increases). Comment out for left handed mode.
+bindkey -k F1 prev
+bindkey -k F2 next
+bindkey -t "^Au1" eval 'backtick 1 3600 3600 printf ""'      'process l' 'process L' 'bindkey -k F1 prev' 'bindkey -k F2 next'
+bindkey -t "^AU1" eval 'backtick 1 3600 3600 printf ""'      'process l' 'process L' 'bindkey -k F1 prev' 'bindkey -k F2 next'
+bindkey -t "^AU2" eval 'backtick 1 3600 3600 printf "(2)  "' 'process l' 'process L' 'bindkey -k k9 prev' 'bindkey -k k; next'
+bindkey -t "^AU3" eval 'backtick 1 3600 3600 printf "(3)  "' 'process l' 'process L' 'bindkey -k k7 prev' 'bindkey -k k8 next'
+bindkey -t "^AU4" eval 'backtick 1 3600 3600 printf "(4)  "' 'process l' 'process L' 'bindkey -k k5 prev' 'bindkey -k k6 next'
+bindkey -t "^AU5" eval 'backtick 1 3600 3600 printf "(5)  "' 'process l' 'process L' 'bindkey -k k3 prev' 'bindkey -k k4 next'
+bindkey -t "^AU6" eval 'backtick 1 3600 3600 printf "(6)  "' 'process l' 'process L' 'bindkey -k k1 prev' 'bindkey -k k2 next'
+#left handed mode (=F1/F2 used for nesting depth 1, going right as nesting level increases). Comment out for right handed mode.
+#bindkey -k k1 prev
+#bindkey -k k2 next
+#bindkey -t "^Au1" eval 'backtick 1 3600 3600 printf ""'      'process l' 'process L' 'bindkey -k k1 prev' 'bindkey -k k2 next'
+#bindkey -t "^AU1" eval 'backtick 1 3600 3600 printf ""'      'process l' 'process L' 'bindkey -k k1 prev' 'bindkey -k k2 next'
+#bindkey -t "^AU2" eval 'backtick 1 3600 3600 printf "(2)  "' 'process l' 'process L' 'bindkey -k k3 prev' 'bindkey -k k4 next'
+#bindkey -t "^AU3" eval 'backtick 1 3600 3600 printf "(3)  "' 'process l' 'process L' 'bindkey -k k5 prev' 'bindkey -k k6 next'
+#bindkey -t "^AU4" eval 'backtick 1 3600 3600 printf "(4)  "' 'process l' 'process L' 'bindkey -k k7 prev' 'bindkey -k k8 next'
+#bindkey -t "^AU5" eval 'backtick 1 3600 3600 printf "(5)  "' 'process l' 'process L' 'bindkey -k k9 prev' 'bindkey -k k; next'
+#bindkey -t "^AU6" eval 'backtick 1 3600 3600 printf "(6)  "' 'process l' 'process L' 'bindkey -k F1 prev' 'bindkey -k F2 next'
+
+
+# move windows left/right. These do not get set/unset dynamically depending on nesting level. If some terminal application uses SHIFT+F-keys as keybindings, you're basically screwed. But I don't know any terminal app that does.
+
+#right handed mode (=F11/F12 used for nesting depth 1, going left as nesting level increases). Comment out for left handed mode.
+bindkey "^[[24;2~" number +1
+bindkey "^[[23;2~" number -1
+bindkey "^[[21;2~" stuff "^A:number +1^M"
+bindkey "^[[20;2~" stuff "^A:number -1^M"
+bindkey "^[[19;2~" stuff "^Aa:number +1^M"
+bindkey "^[[18;2~" stuff "^Aa:number -1^M"
+bindkey "^[[17;2~" stuff "^Aaa:number +1^M"
+bindkey "^[[15;2~" stuff "^Aaa:number -1^M"
+bindkey "^[O2S"    stuff "^Aaaa:number +1^M"
+bindkey "^[O2R"    stuff "^Aaaa:number -1^M"
+bindkey "^[O2Q"    stuff "^Aaaaa:number +1^M"
+bindkey "^[O2P"    stuff "^Aaaaa:number -1^M"
+#left handed mode (=F1/F2 used for nesting depth 1, going right as nesting level increases). Comment out for right handed mode.
+#bindkey "^[[24;2~" stuff "^Aaaaa:number +1^M"
+#bindkey "^[[23;2~" stuff "^Aaaaa:number -1^M"
+#bindkey "^[[21;2~" stuff "^Aaaa:number +1^M"
+#bindkey "^[[20;2~" stuff "^Aaaa:number -1^M"
+#bindkey "^[[19;2~" stuff "^Aaa:number +1^M"
+#bindkey "^[[18;2~" stuff "^Aaa:number -1^M"
+#bindkey "^[[17;2~" stuff "^Aa:number +1^M"
+#bindkey "^[[15;2~" stuff "^Aa:number -1^M"
+#bindkey "^[O2S"    stuff "^A:number +1^M"
+#bindkey "^[O2R"    stuff "^A:number -1^M"
+#bindkey "^[O2Q"    number +1
+#bindkey "^[O2P"    number -1
+#
+
+# send the command character and set the nesting depth more easily, because typing out "^Aaaaaa" is tedious and error prone.
+bindkey -t "^Ay1" command
+bindkey -t "^Ay2" stuff "^A"
+bindkey -t "^Au2" stuff "^AU2"
+bindkey -t "^Ay3" stuff "^Aa"
+bindkey -t "^Au3" stuff "^AaU3"
+bindkey -t "^Ay4" stuff "^Aaa"
+bindkey -t "^Au4" stuff "^AaaU4"
+bindkey -t "^Ay5" stuff "^Aaaa"
+bindkey -t "^Au5" stuff "^AaaaU5"
+bindkey -t "^Ay6" stuff "^Aaaaa"
+bindkey -t "^Au6" stuff "^AaaaaU6"
+
+# since the F-keys are now potentially used up, you can send them to the shell via keybindings. Just press ^A, and then type out f5, f12 or whatever. F1 must be sent as ^Af01
+bindkey -t "^Af01" stuff "^[OP~"
+bindkey -t "^Af2"  stuff "^[OQ~"
+bindkey -t "^Af02" stuff "^[OQ~"
+bindkey -t "^Af3"  stuff "^[OR~"
+bindkey -t "^Af03" stuff "^[OR~"
+bindkey -t "^Af4"  stuff "^[OS~"
+bindkey -t "^Af04" stuff "^[OS~"
+bindkey -t "^Af5"  stuff "^[[15~"
+bindkey -t "^Af05" stuff "^[[15~"
+bindkey -t "^Af6"  stuff "^[[17~"
+bindkey -t "^Af06" stuff "^[[17~"
+bindkey -t "^Af7"  stuff "^[[18~"
+bindkey -t "^Af07" stuff "^[[18~"
+bindkey -t "^Af8"  stuff "^[[19~"
+bindkey -t "^Af08" stuff "^[[19~"
+bindkey -t "^Af9"  stuff "^[[20~"
+bindkey -t "^Af09" stuff "^[[20~"
+bindkey -t "^Af10" stuff "^[[21~"
+bindkey -t "^Af11" stuff "^[[23~"
+bindkey -t "^Af12" stuff "^[[24~"
+
+
+### some niceties for dealing with layouts & regions
+layout new # initialize with one layout instead of none
+bind o layout show # show all layouts; active layout is marked with *
+bind C eval 'layout new' 'layout show' # create a layout
+bind V eval 'layout remove' 'layout show' # remove current layout
+bind P eval 'layout prev' 'layout show' # previous layout
+bind N eval 'layout next' 'layout show' # next layout
+register t "^A:layout title "
+bind O process t # change layout title
+bind h focus left
+bind j focus down
+bind k focus up
+bind l focus right
+# this next (monstrous) command implements a 'layout mode' that allows you to rearrange your layouts in a more accessible fashion than vanilla screen, and maybe almost as nice as tmux.
+# keybindings in 'layout mode':
+# tab: focus next region
+# shift+tab: focus previous region
+# h: focus left
+# j: focus down
+# k: focus up
+# l: focus right
+# H: decrease region width
+# J: increase region height
+# K: decrease region height
+# L: increase region width
+# =: equalize region sizes
+# s: horizontal split
+# |: vertical split
+# x: remove current region
+# q: remove all regions but the current one
+# c: create new layout
+# v: remove current layout
+# p: select previous layout
+# n: select next layout
+# o: show layouts
+# i: show window info (including dimensions)
+# r: exit layout mode
+# note that, ironically, you can't change layout titles in layout mode. That's because the keybindings interfere with typing the command 'layout title', and would probably interfere with typing the new title as well.
+bind R eval 'backtick 0 3600 3600 printf " Layout mode. [r] to exit "' 'bindkey \011 focus' 'bindkey ^[[Z focus prev' 'bindkey h focus left' 'bindkey j focus down' 'bindkey k focus up' 'bindkey l focus right' 'bindkey -k ku focus up' 'bindkey -k kd focus down' 'bindkey -k kr focus right' 'bindkey -k kl focus left' 'bindkey H eval "resize -h -1" "info"' 'bindkey J eval "resize +1" "info"' 'bindkey K eval "resize -1" "info"' 'bindkey L eval "resize -h +1" "info"' 'bindkey = eval "resize =" "resize -h =" "info"' 'bindkey c eval "layout new" "layout show"' 'bindkey v eval "layout remove" "layout show"' 'bindkey o layout show' 'bindkey i info' 'bindkey p eval "layout prev" "layout show"' 'bindkey n eval "layout next" "layout show"' 'bindkey s split' 'bindkey | split -v' 'bindkey q only' 'bindkey x remove' 'bindkey r eval "bindkey \"\\011\"" "bindkey ^[[Z" "bindkey h" "bindkey j" "bindkey k" "bindkey l" "bindkey -k ku" "bindkey -k kd" "bindkey -k kr" "bindkey -k kl" "bindkey H" "bindkey J" "bindkey K" "bindkey L" "bindkey =" "bindkey c" "bindkey v" "bindkey o" "bindkey i" "bindkey p" "bindkey n" "bindkey r" "bindkey s" "bindkey |" "bindkey q" "bindkey x" "backtick 0"'
+
+# crazy shit alert: This ugly mess is the least insane (though still plenty insane) way I could think of to make a single keybinding toggle something on and off. With this, you can put a screen session into a mode where (1) you can switch between different regions with Alt+arrow keys, and (2) the active region is helpfully marked with blinking !s on either side of the caption line
+# usage: ^A!!
+bindkey "^A!:1" eval 'backtick 10' 'backtick 11 3600 3600 printf "!"' 'bindkey "^[[1;3A" focus up' 'bindkey "^[[1;3B" focus down' 'bindkey "^[[1;3C" focus right' 'bindkey "^[[1;3D" focus left' 'register ! "^A!:0"'
+bindkey "^A!:0" eval 'backtick 11' 'backtick 10 3600 3600 printf "|"' 'bindkey "^[[1;3A"'          'bindkey "^[[1;3B"'            'bindkey "^[[1;3C"'             'bindkey "^[[1;3D"'            'register ! "^A!:1"'
+register ! "^A!:1"
+bindkey "^A!!" process !
+
+
+### backticks
+
+# beautification backticks
+backtick 0 # used to display 'layout mode' in the hardstatus line.
+backtick 10 3600 3600 printf "|" # left & right border in caption & hardstatus line. Can be changed to visually indicate alt-arrow-mode
+backtick 11
+backtick 1 # empty by default. Is changed to display the nesting depth as you set it.
+
+## status display backticks
+# These can be switched off/on via key bindings, useful e.g. for nested sessions on the same machine, in order to reduce redundant execution.
+# usage: press ^A#[2-9] to turn off a specific backtick, ^A+[2-9] to turn it back on. Use ^A+0 and ^A#0 to enable/disable a configurable set of backticks.
+
+# screen session title
+bindkey -t "^A+2" eval "backtick 2 60 60 sh -c 'screen -ls | grep -o \"\$PPID[\^[:space:]]*\"'"
+bindkey -t "^A#2" backtick 2 60 60 sh -c 'printf "$PPID"' # shortens the display of the screen session name to just the numeric ID. Useful for small terminals.
+# Clock displays. 
+bindkey -t "^A+3" backtick 3 1 1 date +'%a %F  %R:%S  UTC%:::z'
+bindkey -t "^A+e" eval 'backtick 3 1 1 date +"%R:%S"' # simpler (shorter) clock display. Useful for small terminals.
+bindkey -t "^A+u" eval 'backtick 3 1 1 date +"%s"' # use unix timestamp (seconds since 1970-01-01 00:00:00 UTC) for the clock display
+bindkey -t "^A+h" eval "backtick 3 1 1 sh -c 'dc -e \"16o $(date +%s) p\"'" # unix timestamp in hexadecimal
+bindkey -t "^A+b" eval "backtick 3 1 1 sh -c 'dc -e \"2o $(date +%s) p\"'" # unix timestamp in binary
+bindkey -t "^A+g" eval "backtick 3 1 1 sh -c 'dc -e \"2o $(date +%s) p\"|sed -nr \"s/0/A/g;s/(\^|A)1/\\1B/g;s/(1|B)A/\\1C/g;s/(A|1)/0/g;s/(B|C)/1/gp\"'" # unix timestamp in Gray code (aka. reflected binary code, RBC), just because I can
+bindkey -t "^A#3" eval 'backtick 3'
+# list of all active network interfaces and their IP addresses (with subnet mask). Formerly known as 'shortip'
+bindkey -t "^A+4" backtick 4 10 10 sh -c 'ip -o a|sed -nr "1h;1!H;\${;g;s/([0-9]+: lo +[^\\n]+(\$|\\n)|[^\\n]+scope link[^\\n]+(\$|\\n))//g;s/[0-9]+: ([^ ]+) +inet6? ([0-9a-f.:]+\\/[0-9]+) [^\\n]+(\$|\\n)/\\1=\\2 /g;s/ \$//g;p;}"'
+bindkey -t "^A#4" eval 'backtick 4'
+# public IPv4 address. Formerly known as 'shortextip'. Kindly provided by freenode-user gxg. May cause lagging, therefore disabled by default.
+bindkey -t "^A+5" backtick 5 600 600 sh -c 'EXTIP=$(curl -fs --include --request GET "https://api.duckduckgo.com/?q=ip&l=1&no_redirect=1&skip_disambig=1&format=json"  | grep -E -o "(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)"); if [ "$EXTIP" != "" ]; then echo " EXT=$EXTIP"; fi'
+bindkey -t "^A#5" eval 'backtick 5'
+# CPU load averages. I know there's a screen string escape for that, but then it'd be harder to make it pretty and toggleable. Formerly known as 'shortmem'
+bindkey -t "^A+6" backtick 6 10 10 sh -c 'echo "L:$(cat /proc/loadavg |cut -d\  -f1,2,3)"'
+bindkey -t "^A#6" eval 'backtick 6'
+# RAM and swap usage. Formerly known as 'shortmem'
+bindkey -t "^A+7" backtick 7 10 10 sh -c 'awk "/^MemTotal:/{mt=\$2};/^MemFree:/{mf=\$2};/^Buffers:/{b=\$2};/^Cached:/{c=\$2};/^SwapTotal:/{st=\$2};/^SwapFree:/{sf=\$2;print\"M:\"int((mt-mf-b-c)/1024)\"/\"int(mt/1024)\" S:\"int((st-sf)/1024)\"/\"int(st/1024)}" /proc/meminfo'
+bindkey -t "^A#7" eval 'backtick 7'
+# disk space usage. List of filesystems goes here----v
+bindkey -t "^A+8" backtick 8 600 600 bash -c 'DEVS=( / /home ); echo $(for DEV in ${DEVS[@]}; do df -hl $DEV |awk "NR==2"; done) |sed -nr "1h;1!H;\${;g;s/[^ ]+ +([0-9]+[,.]?[0-9]*[KMGT]) +([0-9]+[,.]?[0-9]*[KMGT]) +[0-9]+[,.]?[0-9]*[KMGT] +[0-9]+% +(\/[^ ]*)/\3:\2\/\1/g;p;}"'
+bindkey -t "^A#8" eval 'backtick 8'
+# battery charge. Formerly known as 'shortbatt'
+bindkey -t "^A+9" backtick 9 60 60 sh -c 'SHORTBATT=$(acpi|cut -d\  -f4,5); if [ "$SHORTBATT" != "" ]; then echo "B:$SHORTBATT"; fi'
+bindkey -t "^A#9" eval 'backtick 9'
+
+# this defines the set of backticks that are disabled via ^A#0
+bindkey -t "^A#0" eval 'backtick 3' 'backtick 4' 'backtick 5' 'backtick 6' 'backtick 7' 'backtick 8' 'backtick 9'
+# this defines the set of backticks that are enabled via ^A+0
+register 0 "^A+3^A+4^A+6^A+7^A+8^A+9"
+bindkey -t "^A+0" process 0
+
+# this defines the set of backticks that are turned on by default when screen starts
+register 1 "^A+2^A+3^A+4^A+6^A+7^A+8^A+9"
+process 1
+
+### caption & hardstatus
+
+# Caption & hardstatus lines can be switched off/on with ^A[eE] and ^A[gG], respectively, or both with ^A[tT].
+# the caption is forced on if there's more than one region. This is a feature of screen, not of this config.
+bind 'e' caption splitonly
+bind "E" caption always
+bind 'g' hardstatus alwaysignore
+bind "G" hardstatus lastline
+register j "^Ae^Ag"
+register J "^AE^AG"
+bind 't' process j
+bind 'T' process J
+
+#some initialization
+caption always # turns caption line on 
+hardstatus lastline # turns hardstatus line on
+hardstatus off # emulation of the terminal’s hardstatus line. Seriously, who has hardware with an actual physical hardstatus line nowadays?
+
+# Colors
+# usage: press ^A#[roygcbmwROYGCBMW] to change the color. Capital letters produce an inverted color scheme (black foreground, colored background), for a whooping 16 variants total.
+#                                                    caption color goes here-----v                                                                                                                                                        hardstatus color goes here-----v
+bindkey -t "^A#r" eval 'caption string "%{= kw}%10`%{+B}%?%F%:%{-B}%?%11`%{-B} %{R}%1`%{=b kW}%?%PCopy mode  %?%{-}%?%E%{+r}%?%2`%{-r}:  %-Lw%{+r}%n%f %t%{-r}%+Lw %=%3` %{= kw}%{+B}%?%F%:%{-B}%?%11`%{-B}%10`"' 'hardstatus string "%{= kw}%10`%11`_%{=b kW}%0`%{-}%=%{R}$USER@%H%?%{w}|%{-}%4`%5`%?%?%{w}|%{-}%6`%?%?%{w}|%{-}%7`%?%?%{w}|%{-}%8`%?%?%{w}|%{-}%9`%?%=%{w}_%11`%10`"'
+bindkey -t "^A#o" eval 'caption string "%{= kw}%10`%{+B}%?%F%:%{-B}%?%11`%{-B} %{y}%1`%{=b kW}%?%PCopy mode  %?%{-}%?%E%{+r}%?%2`%{-r}:  %-Lw%{+r}%n%f %t%{-r}%+Lw %=%3` %{= kw}%{+B}%?%F%:%{-B}%?%11`%{-B}%10`"' 'hardstatus string "%{= kw}%10`%11`_%{=b kW}%0`%{-}%=%{y}$USER@%H%?%{w}|%{-}%4`%5`%?%?%{w}|%{-}%6`%?%?%{w}|%{-}%7`%?%?%{w}|%{-}%8`%?%?%{w}|%{-}%9`%?%=%{w}_%11`%10`"'
+bindkey -t "^A#y" eval 'caption string "%{= kw}%10`%{+B}%?%F%:%{-B}%?%11`%{-B} %{Y}%1`%{=b kW}%?%PCopy mode  %?%{-}%?%E%{+r}%?%2`%{-r}:  %-Lw%{+r}%n%f %t%{-r}%+Lw %=%3` %{= kw}%{+B}%?%F%:%{-B}%?%11`%{-B}%10`"' 'hardstatus string "%{= kw}%10`%11`_%{=b kW}%0`%{-}%=%{Y}$USER@%H%?%{w}|%{-}%4`%5`%?%?%{w}|%{-}%6`%?%?%{w}|%{-}%7`%?%?%{w}|%{-}%8`%?%?%{w}|%{-}%9`%?%=%{w}_%11`%10`"'
+bindkey -t "^A#g" eval 'caption string "%{= kw}%10`%{+B}%?%F%:%{-B}%?%11`%{-B} %{G}%1`%{=b kW}%?%PCopy mode  %?%{-}%?%E%{+r}%?%2`%{-r}:  %-Lw%{+r}%n%f %t%{-r}%+Lw %=%3` %{= kw}%{+B}%?%F%:%{-B}%?%11`%{-B}%10`"' 'hardstatus string "%{= kw}%10`%11`_%{=b kW}%0`%{-}%=%{G}$USER@%H%?%{w}|%{-}%4`%5`%?%?%{w}|%{-}%6`%?%?%{w}|%{-}%7`%?%?%{w}|%{-}%8`%?%?%{w}|%{-}%9`%?%=%{w}_%11`%10`"'
+bindkey -t "^A#c" eval 'caption string "%{= kw}%10`%{+B}%?%F%:%{-B}%?%11`%{-B} %{C}%1`%{=b kW}%?%PCopy mode  %?%{-}%?%E%{+r}%?%2`%{-r}:  %-Lw%{+r}%n%f %t%{-r}%+Lw %=%3` %{= kw}%{+B}%?%F%:%{-B}%?%11`%{-B}%10`"' 'hardstatus string "%{= kw}%10`%11`_%{=b kW}%0`%{-}%=%{C}$USER@%H%?%{w}|%{-}%4`%5`%?%?%{w}|%{-}%6`%?%?%{w}|%{-}%7`%?%?%{w}|%{-}%8`%?%?%{w}|%{-}%9`%?%=%{w}_%11`%10`"'
+bindkey -t "^A#b" eval 'caption string "%{= kw}%10`%{+B}%?%F%:%{-B}%?%11`%{-B} %{B}%1`%{=b kW}%?%PCopy mode  %?%{-}%?%E%{+r}%?%2`%{-r}:  %-Lw%{+r}%n%f %t%{-r}%+Lw %=%3` %{= kw}%{+B}%?%F%:%{-B}%?%11`%{-B}%10`"' 'hardstatus string "%{= kw}%10`%11`_%{=b kW}%0`%{-}%=%{B}$USER@%H%?%{w}|%{-}%4`%5`%?%?%{w}|%{-}%6`%?%?%{w}|%{-}%7`%?%?%{w}|%{-}%8`%?%?%{w}|%{-}%9`%?%=%{w}_%11`%10`"'
+bindkey -t "^A#m" eval 'caption string "%{= kw}%10`%{+B}%?%F%:%{-B}%?%11`%{-B} %{M}%1`%{=b kW}%?%PCopy mode  %?%{-}%?%E%{+r}%?%2`%{-r}:  %-Lw%{+r}%n%f %t%{-r}%+Lw %=%3` %{= kw}%{+B}%?%F%:%{-B}%?%11`%{-B}%10`"' 'hardstatus string "%{= kw}%10`%11`_%{=b kW}%0`%{-}%=%{M}$USER@%H%?%{w}|%{-}%4`%5`%?%?%{w}|%{-}%6`%?%?%{w}|%{-}%7`%?%?%{w}|%{-}%8`%?%?%{w}|%{-}%9`%?%=%{w}_%11`%10`"'
+bindkey -t "^A#w" eval 'caption string "%{= kw}%10`%{+B}%?%F%:%{-B}%?%11`%{-B} %{W}%1`%{=b kW}%?%PCopy mode  %?%{-}%?%E%{+r}%?%2`%{-r}:  %-Lw%{+r}%n%f %t%{-r}%+Lw %=%3` %{= kw}%{+B}%?%F%:%{-B}%?%11`%{-B}%10`"' 'hardstatus string "%{= kw}%10`%11`_%{=b kW}%0`%{-}%=%{W}$USER@%H%?%{w}|%{-}%4`%5`%?%?%{w}|%{-}%6`%?%?%{w}|%{-}%7`%?%?%{w}|%{-}%8`%?%?%{w}|%{-}%9`%?%=%{w}_%11`%10`"'
+# inverted color schemes
+bindkey -t "^A#R" eval 'caption string "%{! kr}%{-b}%10`%{+B}%?%F%:%{-B}%?%11`%{-B} %1`%{=b kW}%?%P Copy mode %?%?%E%?%{-}%2`:  %-Lw%{= I}%n%f %t%{-}%+Lw %=%3` %{+B}%?%F%:%{-B}%?%11`%{-B}%10`"' 'hardstatus string "%{!r kr}%{-b}%10`%11`_%{=b kW}%0`%{-}%=$USER@%H%?|%4`%5`%?%?|%6`%?%?|%7`%?%?|%8`%?%?|%9`%?%=_%11`%10`"'
+bindkey -t "^A#O" eval 'caption string "%{! ky}%{-b}%10`%{+B}%?%F%:%{-B}%?%11`%{-B} %1`%{=b kW}%?%P Copy mode %?%?%E%?%{-}%2`:  %-Lw%{= i}%n%f %t%{-}%+Lw %=%3` %{+B}%?%F%:%{-B}%?%11`%{-B}%10`"' 'hardstatus string "%{!r ky}%{-b}%10`%11`_%{=b kW}%0`%{-}%=$USER@%H%?|%4`%5`%?%?|%6`%?%?|%7`%?%?|%8`%?%?|%9`%?%=_%11`%10`"'
+bindkey -t "^A#Y" eval 'caption string "%{! kY}%{-b}%10`%{+B}%?%F%:%{-B}%?%11`%{-B} %1`%{=b kW}%?%P Copy mode %?%?%E%?%{-}%2`:  %-Lw%{= I}%n%f %t%{-}%+Lw %=%3` %{+B}%?%F%:%{-B}%?%11`%{-B}%10`"' 'hardstatus string "%{!r kY}%{-b}%10`%11`_%{=b kW}%0`%{-}%=$USER@%H%?|%4`%5`%?%?|%6`%?%?|%7`%?%?|%8`%?%?|%9`%?%=_%11`%10`"'
+bindkey -t "^A#G" eval 'caption string "%{! kG}%{-b}%10`%{+B}%?%F%:%{-B}%?%11`%{-B} %1`%{=b kW}%?%P Copy mode %?%?%E%?%{-}%2`:  %-Lw%{= I}%n%f %t%{-}%+Lw %=%3` %{+B}%?%F%:%{-B}%?%11`%{-B}%10`"' 'hardstatus string "%{!r kG}%{-b}%10`%11`_%{=b kW}%0`%{-}%=$USER@%H%?|%4`%5`%?%?|%6`%?%?|%7`%?%?|%8`%?%?|%9`%?%=_%11`%10`"'
+bindkey -t "^A#C" eval 'caption string "%{! kc}%{-b}%10`%{+B}%?%F%:%{-B}%?%11`%{-B} %1`%{=b kW}%?%P Copy mode %?%?%E%?%{-}%2`:  %-Lw%{= I}%n%f %t%{-}%+Lw %=%3` %{+B}%?%F%:%{-B}%?%11`%{-B}%10`"' 'hardstatus string "%{!r kc}%{-b}%10`%11`_%{=b kW}%0`%{-}%=$USER@%H%?|%4`%5`%?%?|%6`%?%?|%7`%?%?|%8`%?%?|%9`%?%=_%11`%10`"'
+bindkey -t "^A#B" eval 'caption string "%{! kB}%{-b}%10`%{+B}%?%F%:%{-B}%?%11`%{-B} %1`%{=b kW}%?%P Copy mode %?%?%E%?%{-}%2`:  %-Lw%{= I}%n%f %t%{-}%+Lw %=%3` %{+B}%?%F%:%{-B}%?%11`%{-B}%10`"' 'hardstatus string "%{!r kB}%{-b}%10`%11`_%{=b kW}%0`%{-}%=$USER@%H%?|%4`%5`%?%?|%6`%?%?|%7`%?%?|%8`%?%?|%9`%?%=_%11`%10`"'
+bindkey -t "^A#M" eval 'caption string "%{! km}%{-b}%10`%{+B}%?%F%:%{-B}%?%11`%{-B} %1`%{=b kW}%?%P Copy mode %?%?%E%?%{-}%2`:  %-Lw%{= I}%n%f %t%{-}%+Lw %=%3` %{+B}%?%F%:%{-B}%?%11`%{-B}%10`"' 'hardstatus string "%{!r km}%{-b}%10`%11`_%{=b kW}%0`%{-}%=$USER@%H%?|%4`%5`%?%?|%6`%?%?|%7`%?%?|%8`%?%?|%9`%?%=_%11`%10`"'
+bindkey -t "^A#W" eval 'caption string "%{! kW}%{-b}%10`%{+B}%?%F%:%{-B}%?%11`%{-B} %1`%{=b kW}%?%P Copy mode %?%?%E%?%{-}%2`:  %-Lw%{= I}%n%f %t%{-}%+Lw %=%3` %{+B}%?%F%:%{-B}%?%11`%{-B}%10`"' 'hardstatus string "%{!r kW}%{-b}%10`%11`_%{=b kW}%0`%{-}%=$USER@%H%?|%4`%5`%?%?|%6`%?%?|%7`%?%?|%8`%?%?|%9`%?%=_%11`%10`"'
+
+# coloring cmds, messages, the selected text in copy mode & region borders
+bindkey -t "^A!r" eval 'rendition so +r kr' 'redisplay'
+bindkey -t "^A!o" eval 'rendition so +r ky' 'redisplay'
+bindkey -t "^A!y" eval 'rendition so +r kY' 'redisplay'
+bindkey -t "^A!g" eval 'rendition so +r kG' 'redisplay'
+bindkey -t "^A!c" eval 'rendition so +r kc' 'redisplay'
+bindkey -t "^A!b" eval 'rendition so +r kB' 'redisplay'
+bindkey -t "^A!m" eval 'rendition so +r km' 'redisplay'
+bindkey -t "^A!w" eval 'rendition so +r kW' 'redisplay'
+
+#color initialization is done simply by sending the desired key bindings to screen. Define here:
+register c "^A#c^A!w"
+process c
+
+shelltitle '>|bash'                # necessary for window autorenaming magic.
+
+##############################################################################
+###### ADDITIONAL STUFF (put it where specified; remember to uncomment) ######
+##############################################################################
+
+### this goes in your .bashrc, also for window autorenaming magic
+#case $TERM in
+#        screen*)
+#                # This is the escape sequence ESC k \w ESC \
+#                #Use path as titel
+#                SCREENTITLE='\[\ek\w\e\\\]'
+#                #Use program name as titel
+#                SCREENTITLEPROGRAM='\[\ek\e\\\]'
+#                # only one of them will be filled correctly
+#                ;;
+#        *)
+#                SCREENTITLE=''
+#                SCREENTITLEPROGRAM=''
+#                ;;
+#esac
+#PS1="${SCREENTITLEPROGRAM}${SCREENTITLE}${PS1}"

@@ -151,12 +151,15 @@ ZSH_CUSTOM=${HOME}/zsh-custom
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(zshmarks tmux tmuxinator gpg-agent ssh-agent archlinux fancy-ctrl-z adb command-not-found systemd screen man nmap colorize extract catimage copydir copyfile compleat dircycle cp fasd mosh tmux-cssh wd url-tools zsh-navigation-tools z safe-paste singlechar themes rsync dirpersist celery dirhistory repo pass pip brew web-search thefuck common-aliases git github brew iwhois zsh-autosuggestions history-search-multi-word)
+plugins=(zshmarks tmux tmuxinator gpg-agent ssh-agent archlinux fancy-ctrl-z adb command-not-found systemd screen man nmap colorize extract catimage copydir copyfile compleat dircycle cp fasd mosh tmux-cssh wd url-tools zsh-navigation-tools z safe-paste themes rsync dirpersist celery dirhistory repo pass pip brew web-search thefuck common-aliases git github brew iwhois zsh-autosuggestions history-search-multi-word)
 #plugins=(zshmarks tmux tmuxinator gpg-agent ssh-agent archlinux fancy-ctrl-z adb command-not-found systemd screen man stack nmap colorize extract catimage copydir copyfile compleat dircycle cp fasd mosh tmux-cssh wd url-tools zsh-navigation-tools z safe-paste singlechar themes rsync dirpersist celery dirhistory repo pass pip brew web-search thefuck common-aliases git github brew iwhois zsh-autosuggestions history-search-multi-word)
 #plugins=(zshmarks tmux tmuxinator gpg-agent ssh-agent archlinux fancy-ctrl-z adb command-not-found systemd zsh_reload screen man stack nmap colorize extract battery catimage copydir copyfile compleat dircycle cp fasd mosh tmux-cssh wd url-tools zsh-navigation-tools z safe-paste singlechar themes rsync dirpersist celery dirhistory kate repo pass pip brew web-search thefuck common-aliases git github brew iwhois zsh-autosuggestions history-search-multi-word)
 #plugins=(tmux tmuxinator gpg-agent ssh-agent git archlinux fancy-ctrl-z adb github command-not-found systemd zsh_reload screen man stack nmap  colorize sudo extract battery catimage copydir copyfile compleat dircycle cp fasd mosh tmux-cssh wd url-tools zsh-navigation-tools z safe-paste singlechar thefuck themes rsync dirpersist celery dirhistory kate repo pass pip history-substring-search iwhois vi-mode brew)
 #plugins=(tmux tmuxinator archlinux fancy-ctrl-z adb command-not-found systemd zsh_reload screen man stack nmap colorize extract battery catimage copydir copyfile compleat dircycle cp fasd mosh tmux-cssh wd url-tools zsh-navigation-tools z safe-paste singlechar themes rsync dirpersist celery dirhistory kate repo pass pip brew web-search thefuck common-aliases git)
 #plugins=(tmux tmuxinator gpg-agent ssh-agent git archlinux colored-man-pages fancy-ctrl-z adb github command-not-found systemd zsh_reload screen man stack nmap common-aliases sudo cp extract common-aliases)
+
+[ ! -r ${ZSH}/oh-my-zsh.sh ] || \
+	. ${ZSH}/oh-my-zsh.sh
 
 ## caching
 #ZSH_CACHE_DIR=${HOME}/.oh-m-zsh-cache
@@ -167,7 +170,6 @@ fi
 [[ -d $ZSH/cache ]] && {
 	zstyle ':completion:*' use-cache yes
 	zstyle ':completion::complete:*' cache-path $ZSH/cache; }
-source ${ZSH}/oh-my-zsh.sh
 
 ## User configuration
 
@@ -431,7 +433,8 @@ AUTOPAIR_RBOUNDS[braces]=''
 	. /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 ## Array declaring active highlighters names.
 typeset -ga ZSH_HIGHLIGHT_HIGHLIGHTERS
-ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets)
+#ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets)
+ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets line pattern root)
 ## colors for zsh-syntax-highlighting
 #ZSH_HIGHLIGHT_STYLES[default]='fg=cyan,bold' #base1
 #ZSH_HIGHLIGHT_STYLES[alias]='fg=white'
@@ -461,18 +464,6 @@ ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets)
 #zle -N history-beginning-search-forward-end history-search-end
 #bindkey "\e[A" history-beginning-search-backward-end
 #bindkey "\e[B" history-beginning-search-forward-end
-#[ ! -r /usr/share/zsh/plugins/zsh-autosuggestions/autosuggestions.zsh ] || \
-#	. /usr/share/zsh/plugins/zsh-autosuggestions/autosuggestions.zsh
-## Color to use when highlighting suggestion
-## Uses format of `region_highlight`
-## More info: http://zsh.sourceforge.net/Doc/Release/Zsh-Line-Editor.html#Zle-Widgets
-#ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=8'
-## Prefix to use when saving original versions of bound widgets
-#ZSH_AUTOSUGGEST_ORIGINAL_WIDGET_PREFIX=autosuggest-orig-
-#zle-line-init() {
-#	zle autosuggest-start
-#}
-#zle -N zle-line-init
 
 ## Source command-not-found files.
 [ -r /etc/profile.d/cnf.sh ] && . /etc/profile.d/cnf.sh
@@ -755,7 +746,7 @@ function git_prompt_string() {
 [ ! -r ${HOME}/.profile ] || . ${HOME}/.profile
 
 ## Source aliases
-[ ! -r $HOME/aliases.sh ] || . $HOME/aliases.sh
+[ ! -r $HOME/aliases.sh ] || . ${HOME}/aliases.sh
 safetytoggle -n
 compdef _scrs scrs
 compdef _scrs scrs2
@@ -765,13 +756,16 @@ compdef _scrs scrs3
 # #d# start
 #example:
 #hash -d store=/store
+hash -d zsh=${ZSH}
+hash -d plugins=${ZSH}/plugins
 hash -d calibre=/store/calibre
-hash -d efi=/boot/efi/EFI/arch
+hash -d efi=/boot/efi/EFI
 #hash -d bin=${HOME}/bin
 hash -d bin=/store/scripts
 #hash -d aur=${HOME}/code/aur
-hash -d aur=/store/code/aur
 hash -d git=${HOME}/git
+hash -d code=${HOME}/code
+hash -d aur=/store/code/aur
 hash -d config=/store/config
 #hash -d sdxc=/run/media/alyptik/microSDXC
 #hash -d torrents=${HOME}/torrents

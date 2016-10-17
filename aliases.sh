@@ -387,6 +387,7 @@ vkfix() {
 		s/[&]*#039\;/'\''/g
 		s/[&]*amp\;/\&/g
 		s/  / \& /g
+		s/ [\[]*[Oo]riginal [Mm]ix[\]]* / (Original Mix) /g
 		s/\<[Ff][Ee][Aa][Tt]\>/ft/g
 		s/\<[Pp][Rr][Ee][Ss][Ee][Nn][Tt][Ss]\>/pres/g
 		s/\<[Ff][Tt]\>/ft/g
