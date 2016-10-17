@@ -151,7 +151,8 @@ ZSH_CUSTOM=${HOME}/zsh-custom
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(zshmarks tmux tmuxinator gpg-agent ssh-agent archlinux fancy-ctrl-z adb command-not-found systemd screen man stack nmap colorize extract battery catimage copydir copyfile compleat dircycle cp fasd mosh tmux-cssh wd url-tools zsh-navigation-tools z safe-paste singlechar themes rsync dirpersist celery dirhistory kate repo pass pip brew web-search thefuck common-aliases git github brew iwhois zsh-autosuggestions history-search-multi-word)
+plugins=(zshmarks tmux tmuxinator gpg-agent ssh-agent archlinux fancy-ctrl-z adb command-not-found systemd screen man nmap colorize extract catimage copydir copyfile compleat dircycle cp fasd mosh tmux-cssh wd url-tools zsh-navigation-tools z safe-paste singlechar themes rsync dirpersist celery dirhistory repo pass pip brew web-search thefuck common-aliases git github brew iwhois zsh-autosuggestions history-search-multi-word)
+#plugins=(zshmarks tmux tmuxinator gpg-agent ssh-agent archlinux fancy-ctrl-z adb command-not-found systemd screen man stack nmap colorize extract catimage copydir copyfile compleat dircycle cp fasd mosh tmux-cssh wd url-tools zsh-navigation-tools z safe-paste singlechar themes rsync dirpersist celery dirhistory repo pass pip brew web-search thefuck common-aliases git github brew iwhois zsh-autosuggestions history-search-multi-word)
 #plugins=(zshmarks tmux tmuxinator gpg-agent ssh-agent archlinux fancy-ctrl-z adb command-not-found systemd zsh_reload screen man stack nmap colorize extract battery catimage copydir copyfile compleat dircycle cp fasd mosh tmux-cssh wd url-tools zsh-navigation-tools z safe-paste singlechar themes rsync dirpersist celery dirhistory kate repo pass pip brew web-search thefuck common-aliases git github brew iwhois zsh-autosuggestions history-search-multi-word)
 #plugins=(tmux tmuxinator gpg-agent ssh-agent git archlinux fancy-ctrl-z adb github command-not-found systemd zsh_reload screen man stack nmap  colorize sudo extract battery catimage copydir copyfile compleat dircycle cp fasd mosh tmux-cssh wd url-tools zsh-navigation-tools z safe-paste singlechar thefuck themes rsync dirpersist celery dirhistory kate repo pass pip history-substring-search iwhois vi-mode brew)
 #plugins=(tmux tmuxinator archlinux fancy-ctrl-z adb command-not-found systemd zsh_reload screen man stack nmap colorize extract battery catimage copydir copyfile compleat dircycle cp fasd mosh tmux-cssh wd url-tools zsh-navigation-tools z safe-paste singlechar themes rsync dirpersist celery dirhistory kate repo pass pip brew web-search thefuck common-aliases git)
@@ -938,17 +939,13 @@ else
 fi
 
 ## don't alert me if something failed
-unsetopt histsavebycopy extendedhistory correctall correct_all nomatch beep printexitvalue caseglob histverify
-setopt histignorealldups hist_expire_dups_first hist_ignore_dups hist_ignore_space correct completeinword
-setopt append_history share_history autocd notify clobber
-setopt extendedglob noverbose casematch
-## Allow comments even in interactive shells
+unsetopt nohup histsavebycopy extendedhistory correctall correct_all nomatch beep printexitvalue caseglob histverify
+setopt extendedglob noverbose casematch autocd notify clobber correct completeinword nocheckjobs
+setopt histignorealldups hist_expire_dups_first hist_ignore_dups hist_ignore_space append_history share_history
+# Allow comments even in interactive shells
 setopt INTERACTIVE_COMMENTS interactivecomments
 ## don't kill programs & if exiting the shell
 #setopt nohup
-## kill programs & if exiting the shell
-unsetopt nohup
 ## dont warn me about bg processes when exiting
-setopt nocheckjobs
 
 kill -TRAP $$

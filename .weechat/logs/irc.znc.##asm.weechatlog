@@ -28100,3 +28100,576 @@
 2016-10-16 06:24:30	<--	|DM| (~|DM|@79.101.135.1) has quit (Remote host closed the connection)
 2016-10-16 06:30:00		[06:24]
 2016-10-16 06:34:40	-->	Judge_Dredd (~Judge_Dre@unaffiliated/judge-dredd/x-2170742) has joined ##asm
+2016-10-16 06:40:00		[06:34]
+2016-10-16 06:42:41	vulture	toothe: yes that is somewhat odd, would need to see context, but as mentioned, could just be a rando-register chosen for an indirect call
+2016-10-16 06:44:53	-->	snyp (~Snyp@nas4.meghbelabroadband.in) has joined ##asm
+2016-10-16 06:50:00		[06:44]
+2016-10-16 06:51:48	-->	xocket (~xocket@unaffiliated/xocket) has joined ##asm
+2016-10-16 06:53:06	<--	snyp (~Snyp@nas4.meghbelabroadband.in) has quit (Ping timeout: 250 seconds)
+2016-10-16 06:54:28	<--	xock_stream (~xocket@unaffiliated/xocket) has quit (Ping timeout: 260 seconds)
+2016-10-16 06:54:40	-->	Pent (~pant@S01061c1b689d60c9.cg.shawcable.net) has joined ##asm
+2016-10-16 07:00:00		[06:54]
+2016-10-16 07:00:05	-->	enso (~damien@hlfxns016cw-156034000026.dhcp-dynamic.FibreOP.ns.bellaliant.net) has joined ##asm
+2016-10-16 07:02:23	-->	cagmz (~cagmz@cpe-107-185-130-191.socal.res.rr.com) has joined ##asm
+2016-10-16 07:04:15	-->	Cam0Cow (~Mutter@2605:6001:e795:1d00:c1f5:deda:b286:ec6d) has joined ##asm
+2016-10-16 07:04:33	<--	Cam0Cow (~Mutter@2605:6001:e795:1d00:c1f5:deda:b286:ec6d) has quit (Remote host closed the connection)
+2016-10-16 07:06:08	-->	nejm (~Thunderbi@ip51cfc7e6.direct-adsl.nl) has joined ##asm
+2016-10-16 07:12:00		[07:06]
+2016-10-16 07:24:30	-->	king_jah (~jah@S0106503955715ed3.ss.shawcable.net) has joined ##asm
+2016-10-16 07:24:53	-->	palantir (~palantir@85-171-132-206.rev.numericable.fr) has joined ##asm
+2016-10-16 07:30:00		[07:24]
+2016-10-16 07:31:18	enso	My C code that checks if a number is a power of 2 compiles to this is asm http://termbin.com/jai4
+2016-10-16 07:31:46	OxFEEDBACC	heh... can we see the C code?
+2016-10-16 07:31:59	enso	(x86) I don't understand how everything after cmpl works
+2016-10-16 07:32:07	enso	OxFEEDBACC: yeah sure one sec
+2016-10-16 07:32:32	enso	btw by compiles i mean gcc -SD
+2016-10-16 07:32:38	enso	*-S
+2016-10-16 07:32:44	OxFEEDBACC	int is_pow_of_2(int n) { return ( (n&(n-1)) == 0); } ... just by the way...
+2016-10-16 07:33:24	enso	OxFEEDBACC: wow.. thanks :) hahaha
+2016-10-16 07:34:03	OxFEEDBACC	(wrong result for n=0, however)
+2016-10-16 07:35:24	enso	C code.. http://termbin.com/sgs8
+2016-10-16 07:36:00	OxFEEDBACC	ya, well, that's like an unrolled loop already...
+2016-10-16 07:36:13	OxFEEDBACC	what did you expect your compiler to make from it?
+2016-10-16 07:36:50	fizzie	Arguably a smart enough compiler would reroll loops when optimizing for size. :)
+2016-10-16 07:37:55	enso	OxFEEDBACC: Yeah, well I can't use loops, ifs, etc.. I expected the same, except that I don't understand the way it returns
+2016-10-16 07:38:03	OxFEEDBACC	that's a possibility indeed... but were there optimization flags in the command line at all?
+2016-10-16 07:38:18	enso	OxFEEDBACC: -O3
+2016-10-16 07:39:01	enso	-Os gives the same code
+2016-10-16 07:40:53	<--	MulleDK19 (~MulleDK19@unaffiliated/mulledk19) has quit (Ping timeout: 245 seconds)
+2016-10-16 07:41:13	enso	acutally no instead of comparing 1 and %eax it decreases %eax
+2016-10-16 07:41:50	OxFEEDBACC	that doesn't make much difference...
+2016-10-16 07:42:12	OxFEEDBACC	eax is changed afterwords anyway... and the flags are the same (except possible carry)
+2016-10-16 07:43:37	-->	Lucifer333 (~k@194.154.216.87) has joined ##asm
+2016-10-16 07:43:42	enso	OxFEEDBACC: how would sete work without the cmpl though? doesn't sete relly on comparissons?
+2016-10-16 07:43:57	OxFEEDBACC	it relies on flags...
+2016-10-16 07:44:21	OxFEEDBACC	on that compare, when eax==1, the zero flag is set...
+2016-10-16 07:44:41	OxFEEDBACC	sete sets the destination to 1 if the zero is set...
+2016-10-16 07:44:59	OxFEEDBACC	sete or setz, actually.... they're synonyms...
+2016-10-16 07:46:33	enso	Ohhh so when --1 the zero flag is set, I see
+2016-10-16 07:46:33		[07:46]
+2016-10-16 07:46:54	<--	VaticanCameos (~VaticanCa@182.68.241.201) has quit (Remote host closed the connection)
+2016-10-16 07:47:18	OxFEEDBACC	cmp works like sub, just doesn't store the result...
+2016-10-16 07:47:22	-->	VaticanCameos (~VaticanCa@182.68.241.201) has joined ##asm
+2016-10-16 07:47:41	OxFEEDBACC	so, when eax is 1, then 1 is subtracted, the result would be zero, thus ZF be set...
+2016-10-16 07:49:41	<--	palantir (~palantir@85-171-132-206.rev.numericable.fr) has quit (Read error: Connection reset by peer)
+2016-10-16 07:50:01	enso	but not does not set the ZF right?
+2016-10-16 07:50:23	OxFEEDBACC	i think NOT doesn't set any flags...
+2016-10-16 07:50:36	OxFEEDBACC	look at the reference if in doubt...
+2016-10-16 07:51:06	enso	Cool, that explains what happens for the return :) thanks OxFEEDBACC!
+2016-10-16 07:51:07	-->	nine_milli (~nine_mill@32.211.52.104) has joined ##asm
+2016-10-16 07:52:04	<--	xocket (~xocket@unaffiliated/xocket) has quit (Disconnected by services)
+2016-10-16 07:52:04	-->	xock_stream (~xocket@unaffiliated/xocket) has joined ##asm
+2016-10-16 07:52:13	<--	VaticanCameos (~VaticanCa@182.68.241.201) has quit (Ping timeout: 260 seconds)
+2016-10-16 07:52:41	OxFEEDBACC	wouldn't it suffice to return (count==1) ?
+2016-10-16 07:52:52	enso	OxFEEDBACC: I cannot use ==
+2016-10-16 07:53:02	OxFEEDBACC	why not?
+2016-10-16 07:53:38	enso	that's the challenge, using only bitwise operators and +,!
+2016-10-16 07:54:06	OxFEEDBACC	i see...
+2016-10-16 07:54:40	OxFEEDBACC	int is_pow_of_2(int n) { return !((n&(n-1)); } then ;-)
+2016-10-16 07:54:56	<--	Judge_Dredd (~Judge_Dre@unaffiliated/judge-dredd/x-2170742) has quit (Quit: Leaving.)
+2016-10-16 07:54:58	fizzie	That has a - in it, though.
+2016-10-16 07:55:04	enso	but didn't you say it doesn't work for 0
+2016-10-16 07:55:14	enso	fizzie: I can do 2's Complement
+2016-10-16 07:55:24	OxFEEDBACC	yes, both caveats true... :-/
+2016-10-16 07:56:02	enso	OxFEEDBACC: but -1 is ~0 so no big deal
+2016-10-16 07:56:03	OxFEEDBACC	you could alternatively +~0 ;-)
+2016-10-16 07:56:19	OxFEEDBACC	dang, too late again :-/
+2016-10-16 07:57:09	OxFEEDBACC	your function returns 0 for x=0?
+2016-10-16 07:57:45	enso	OxFEEDBACC: yeah, 0 is not a power of 2
+2016-10-16 07:57:54	OxFEEDBACC	right...
+2016-10-16 07:59:05	fizzie	That's just an additional "& !!n" though.
+2016-10-16 07:59:38	OxFEEDBACC	i was thinking, but didn't get to double not :-/
+2016-10-16 07:59:43	enso	fizzie: yeah, that's what I was thinking too
+2016-10-16 08:00:05	enso	how is ! implemented btw, say in x86
+2016-10-16 08:00:25	ARM9	what !
+2016-10-16 08:00:30	OxFEEDBACC	compiler-depedent, i'd say...
+2016-10-16 08:00:52	OxFEEDBACC	+n
+2016-10-16 08:00:59	fizzie	One of the SETcc instructions would be a likely guess though.
+2016-10-16 08:01:18	OxFEEDBACC	probably...
+2016-10-16 08:02:01	enso	that makes sense, it's what the assembly ended up looking liek
+2016-10-16 08:02:01		[08:02]
+2016-10-16 08:04:58	fizzie	If you want to be real picky, you might need one more special case for n = -2147483648 as well, since n&(n-1) is (likely) 0 for that too.
+2016-10-16 08:05:19	enso	fizzie: was just about to mention that :)
+2016-10-16 08:05:30	enso	it is, I checked
+2016-10-16 08:06:11	fizzie	Well, depends on how strict your implementation is about these things.
+2016-10-16 08:06:18	fizzie	19:04 <fizzie> ,cc int n = -2147483648; n = n & (n-1);
+2016-10-16 08:06:18	fizzie	19:04 <candide> fizzie:  runtime error: signed integer overflow: -2147483648 - 1 cannot be represented in type 'int'
+2016-10-16 08:06:34	OxFEEDBACC	actually you should use unsigned int, cause negatives are no powers of two, anyway... :-p
+2016-10-16 08:07:30	enso	fizzie: 0x800000000 is -2147483648..
+2016-10-16 08:07:44	enso	and is the smallest value a 32-bit int holds
+2016-10-16 08:07:54	OxFEEDBACC	yes, sub one, you end up with 0 and CF
+2016-10-16 08:08:22	fizzie	Or you end up with the runtime error I pasted. :)
+2016-10-16 08:09:19	OxFEEDBACC	what compiler/interpreter did candide use?
+2016-10-16 08:09:35	enso	was going to ask the same
+2016-10-16 08:09:55	enso	but yeah that make sense cause it'sUB
+2016-10-16 08:10:12	fizzie	IIRC, it's either GCC or clang, but with UBSan enabled.
+2016-10-16 08:10:21	fizzie	(Which adds some runtime checks like that.)
+2016-10-16 08:10:35	OxFEEDBACC	okay...
+2016-10-16 08:12:31	enso	fizzie: the version of GCC on this server doesn't even have ubsan haha
+2016-10-16 08:12:54	fizzie	GCC has a -ftrapv option for that as well, though it doesn't have that sort of fancy error reporting.
+2016-10-16 08:13:54	enso	fizzie: I just tried it and didn't get any runtime exceptions
+2016-10-16 08:14:04	enso	do you know what it would do?
+2016-10-16 08:14:14	OxFEEDBACC	[20:08:37] <OxFEEDBACC> yes, sub one, you end up with 0 and CF <- and that was completely wrong... sorry :-/
+2016-10-16 08:15:13	-->	xocket (~xocket@unaffiliated/xocket) has joined ##asm
+2016-10-16 08:15:16	<--	Guest68312 (~Omni@170.47.255.123.static.snap.net.nz) has quit (Ping timeout: 260 seconds)
+2016-10-16 08:17:00	<--	xock_stream (~xocket@unaffiliated/xocket) has quit (Ping timeout: 250 seconds)
+2016-10-16 08:17:43	-->	Heasummn (~Heasummn@c-73-73-21-171.hsd1.il.comcast.net) has joined ##asm
+2016-10-16 08:17:43		[08:17]
+2016-10-16 08:17:46	fizzie	enso: http://sprunge.us/VFhN -- had to fight with it a bit to make it not do the (wrapping) subtraction at compile time.
+2016-10-16 08:18:10	-->	Guest40679 (~Omni@170.47.255.123.static.snap.net.nz) has joined ##asm
+2016-10-16 08:24:00		[08:18]
+2016-10-16 08:24:30	<--	damme_ (~damme@2001:16d8:cc75::802) has quit (Remote host closed the connection)
+2016-10-16 08:24:31	enso	fizzie: it seems that my code compiles to __addvdi3, so it doesn't check it as a substaction and doesn't error...
+2016-10-16 08:24:51	enso	as opposed to __subvdi3
+2016-10-16 08:26:44	enso	which also happens with your example if I switch - 1 with +~0
+2016-10-16 08:27:06	fizzie	__addvsi3 with an argument of -1 is what I get in that pasted example, and it does fail.
+2016-10-16 08:28:16	enso	hmm..
+2016-10-16 08:29:42	-->	thewormkill (~thewormki@ip31-214.kullen.rwth-aachen.de) has joined ##asm
+2016-10-16 08:33:48	enso	fizzie: well that's wierd.. there might have been an implementation error on this version of gcc/glibc
+2016-10-16 08:34:02	<--	Jesin (~Jesin@pool-96-231-49-118.washdc.fios.verizon.net) has quit (Quit: Leaving)
+2016-10-16 08:34:07	-->	snyp (~Snyp@nas4.meghbelabroadband.in) has joined ##asm
+2016-10-16 08:35:06	<--	xocket (~xocket@unaffiliated/xocket) has quit (Disconnected by services)
+2016-10-16 08:35:07	-->	xock_stream (~xocket@unaffiliated/xocket) has joined ##asm
+2016-10-16 08:35:47	enso	actually I still can't recreate your example with my computer either. I wonder if it's because of some option when gcc or glibc was compiled
+2016-10-16 08:37:10	-->	Jesin (~Jesin@pool-96-231-49-118.washdc.fios.verizon.net) has joined ##asm
+2016-10-16 08:41:06	<--	navidr (uid112413@gateway/web/irccloud.com/x-recbzsqyojgavxyo) has quit (Quit: Connection closed for inactivity)
+2016-10-16 08:41:06		[08:41]
+2016-10-16 08:51:38	-->	xocket (~xocket@unaffiliated/xocket) has joined ##asm
+2016-10-16 08:52:08	<--	xock_stream (~xocket@unaffiliated/xocket) has quit (Ping timeout: 260 seconds)
+2016-10-16 08:58:00		[08:52]
+2016-10-16 09:03:04	-->	freakazoid0223_ (~chatzilla@pool-108-52-4-128.phlapa.fios.verizon.net) has joined ##asm
+2016-10-16 09:04:44	<--	freakazoid0223 (~chatzilla@pool-108-52-4-128.phlapa.fios.verizon.net) has quit (Ping timeout: 260 seconds)
+2016-10-16 09:04:56	--	freakazoid0223_ is now known as freakazoid0223
+2016-10-16 09:04:57	-->	nik_rabon (~nik_rabon@104.166.40.97) has joined ##asm
+2016-10-16 09:07:52	<--	xocket (~xocket@unaffiliated/xocket) has quit (Ping timeout: 250 seconds)
+2016-10-16 09:08:54	-->	brolaf (~brolaf@anon-36-198.vpn.ipredator.se) has joined ##asm
+2016-10-16 09:10:16	-->	damme (~damme@2001:16d8:cc75::802) has joined ##asm
+2016-10-16 09:12:13	<--	Smx (Elite8556@gateway/shell/elitebnc/x-ewposvjbohjwunyp) has quit (Excess Flood)
+2016-10-16 09:15:07	-->	Smx (Elite8556@gateway/shell/elitebnc/x-gauervbwfftyakmj) has joined ##asm
+2016-10-16 09:15:07		[09:15]
+2016-10-16 09:15:20	-->	palantir (~palantir@85-171-132-206.rev.numericable.fr) has joined ##asm
+2016-10-16 09:17:18	-->	BeaverLeader_ (~ASpaceOdy@24.246.162.139) has joined ##asm
+2016-10-16 09:21:58	<--	slash_ (~unknown@2001:a61:2124:fb01:88e6:348e:53c6:45a9) has quit (Read error: Connection reset by peer)
+2016-10-16 09:21:58	<--	cagmz (~cagmz@cpe-107-185-130-191.socal.res.rr.com) has quit (Quit: Leaving)
+2016-10-16 09:26:36	<--	nejm (~Thunderbi@ip51cfc7e6.direct-adsl.nl) has quit (Quit: nejm)
+2016-10-16 09:29:29	-->	salvix_ (~salvix@84.123.46.113.dyn.user.ono.com) has joined ##asm
+2016-10-16 09:30:20	-->	kaos (~kaos@h7n8-vn-a12.ias.bredband.telia.com) has joined ##asm
+2016-10-16 09:30:20		[09:30]
+2016-10-16 09:31:03	<--	Lucifer333 (~k@194.154.216.87) has quit (Quit: Leaving)
+2016-10-16 09:31:32	<--	BeaverLeader_ (~ASpaceOdy@24.246.162.139) has quit (Ping timeout: 250 seconds)
+2016-10-16 09:37:00		[09:31]
+2016-10-16 09:37:47	<--	salvix_ (~salvix@84.123.46.113.dyn.user.ono.com) has quit (Quit: Saliendo)
+2016-10-16 09:38:17	<--	palantir (~palantir@85-171-132-206.rev.numericable.fr) has quit (Read error: Connection reset by peer)
+2016-10-16 09:44:00		[09:38]
+2016-10-16 09:44:32	<--	snyp (~Snyp@nas4.meghbelabroadband.in) has quit (Quit: WeeChat 1.6)
+2016-10-16 09:46:08	<--	pie_ (~pie_@78-131-91-105.pool.digikabel.hu) has quit (Changing host)
+2016-10-16 09:46:08	-->	pie_ (~pie_@unaffiliated/pie-/x-0787662) has joined ##asm
+2016-10-16 09:48:56	-->	KingsQuest (~ident@unaffiliated/kingsquest) has joined ##asm
+2016-10-16 09:51:14	-->	xocket (~xocket@unaffiliated/xocket) has joined ##asm
+2016-10-16 09:57:00		[09:51]
+2016-10-16 09:58:13	<--	KingsQuest (~ident@unaffiliated/kingsquest) has quit (Quit: i would never have given you anything bad.  but we know that solution before the prompt.  VatCh/21 chtlgs16)
+2016-10-16 09:58:20	<--	enso (~damien@hlfxns016cw-156034000026.dhcp-dynamic.FibreOP.ns.bellaliant.net) has quit (Quit: leaving)
+2016-10-16 10:04:00		[09:58]
+2016-10-16 10:06:35	-->	horny-sama (~mr-fool@unaffiliated/horny-sama) has joined ##asm
+2016-10-16 10:07:04	<--	ararob (~yaaic@unaffiliated/ararob) has quit (Ping timeout: 250 seconds)
+2016-10-16 10:07:40	-->	KingsQuest (~ident@172-6-120-167.lightspeed.hstntx.sbcglobal.net) has joined ##asm
+2016-10-16 10:07:40	<--	KingsQuest (~ident@172-6-120-167.lightspeed.hstntx.sbcglobal.net) has quit (Changing host)
+2016-10-16 10:07:40	-->	KingsQuest (~ident@unaffiliated/kingsquest) has joined ##asm
+2016-10-16 10:07:54	-->	Freze (~Freze@c-73-167-60-180.hsd1.ma.comcast.net) has joined ##asm
+2016-10-16 10:08:24	<--	Freze (~Freze@c-73-167-60-180.hsd1.ma.comcast.net) has quit (Changing host)
+2016-10-16 10:08:25	-->	Freze (~Freze@unaffiliated/freze) has joined ##asm
+2016-10-16 10:09:44	<--	shakalaka (~shakalaka@ec2-52-52-27-0.us-west-1.compute.amazonaws.com) has quit (Quit: bye.)
+2016-10-16 10:10:26	Freze	Question, on  64bit systems  I default to 64bit ints and on 32bit systems I default to 32 bit ints
+2016-10-16 10:11:37	Freze	now I have functions that apply do floats and doubles, what I could do is follow the afformentioned default for int usage within these functions
+2016-10-16 10:11:52	Freze	or... I could default to using the same sized int as the  numeric float type
+2016-10-16 10:12:08	Freze	i.e. for doubles I use 64 bit ints and for singles I use 32 bit ints
+2016-10-16 10:12:28	Freze	Which of these two approaches is more sensible
+2016-10-16 10:12:45	-->	shakalaka (~shakalaka@ec2-52-52-27-0.us-west-1.compute.amazonaws.com) has joined ##asm
+2016-10-16 10:12:46	Freze	are there any performance implications I should be aware of
+2016-10-16 10:15:23	-->	BeaverLeader_ (~ASpaceOdy@24.246.162.139) has joined ##asm
+2016-10-16 10:15:47	Jester01	memory requirements at the very least
+2016-10-16 10:16:51	Freze	sure, but it's not like im allocating hundreds of ints, just a couple at most
+2016-10-16 10:21:43	-->	ABrownBear (~HagerTheH@h081217214054.dyn.cm.kabsi.at) has joined ##asm
+2016-10-16 10:21:43		[10:21]
+2016-10-16 10:22:54	<--	shakalaka (~shakalaka@ec2-52-52-27-0.us-west-1.compute.amazonaws.com) has quit (Quit: bye.)
+2016-10-16 10:25:00	-->	shakalaka (~shakalaka@ec2-52-52-27-0.us-west-1.compute.amazonaws.com) has joined ##asm
+2016-10-16 10:25:39	<--	mibr0 (~mibr0@90-231-160-241-no158.tbcn.telia.com) has quit (Read error: Connection reset by peer)
+2016-10-16 10:27:12	Freze	are there any performance related reason why the default to 64 bit ints on 64bit systems and similar for the 32 bit case, would be preferable
+2016-10-16 10:27:49	Jester01	size and compatibility
+2016-10-16 10:28:27	Jester01	int stays 32 bit in windows and linux
+2016-10-16 10:29:45	Freze	Alright, I will then refactor the code to follow that convention
+2016-10-16 10:30:02	Freze	i.e. default to 32 bit ints on 32bit systems and 64 bit ints on 64 bit systems
+2016-10-16 10:30:08	Jester01	lol
+2016-10-16 10:30:13	Jester01	that's NOT what I said
+2016-10-16 10:31:27	Freze	"size and compatability" was reffering to what exactly
+2016-10-16 10:31:33	<--	nine_milli (~nine_mill@32.211.52.104) has quit (Quit: nine_milli)
+2016-10-16 10:31:50	<--	shakalaka (~shakalaka@ec2-52-52-27-0.us-west-1.compute.amazonaws.com) has quit (Quit: bye.)
+2016-10-16 10:32:14	Jester01	that int stays 32 bit, so all code is compatible and size does not increase
+2016-10-16 10:33:12	<--	KingsQuest (~ident@unaffiliated/kingsquest) has quit (Ping timeout: 265 seconds)
+2016-10-16 10:34:01	-->	shakalaka (~shakalaka@ec2-52-52-27-0.us-west-1.compute.amazonaws.com) has joined ##asm
+2016-10-16 10:37:25	<--	anotherguy (2ec5b8ed@gateway/web/freenode/ip.46.197.184.237) has quit (Ping timeout: 260 seconds)
+2016-10-16 10:37:25		[10:37]
+2016-10-16 10:37:29	Freze	"default to 32 bit ints on 32bit systems and 64 bit ints on 64 bit systems" would be comptible, but size would increase
+2016-10-16 10:38:34	Jester01	it won't be compatible
+2016-10-16 10:38:56	Freze	how so?
+2016-10-16 10:39:18	<--	ABrownBear (~HagerTheH@h081217214054.dyn.cm.kabsi.at) has quit (Ping timeout: 250 seconds)
+2016-10-16 10:40:30	-->	kbw (~KeyboardW@68-204-170-7.res.bhn.net) has joined ##asm
+2016-10-16 10:40:39	GeDaMo	C's int type defaults to 32 bit on 64 bit systems
+2016-10-16 10:42:13	-->	sametsisartenep (~sametsisa@106.pool85-53-34.dynamic.orange.es) has joined ##asm
+2016-10-16 10:44:13	ARM9	does it?
+2016-10-16 10:45:08	<--	shakalaka (~shakalaka@ec2-52-52-27-0.us-west-1.compute.amazonaws.com) has quit (Quit: bye.)
+2016-10-16 10:45:39	GeDaMo	It does on x86 systems, not sure about others
+2016-10-16 10:46:30	<--	BeaverLeader_ (~ASpaceOdy@24.246.162.139) has quit (Ping timeout: 250 seconds)
+2016-10-16 10:46:58	-->	shakalaka (~shakalaka@ec2-52-52-27-0.us-west-1.compute.amazonaws.com) has joined ##asm
+2016-10-16 10:48:21	<--	Heasummn (~Heasummn@c-73-73-21-171.hsd1.il.comcast.net) has quit (Quit: Leaving)
+2016-10-16 10:51:06	GeDaMo	On Visual C, long is also 32 bits
+2016-10-16 10:51:34	<--	xocket (~xocket@unaffiliated/xocket) has quit (Disconnected by services)
+2016-10-16 10:51:36	-->	xock_stream (~xocket@unaffiliated/xocket) has joined ##asm
+2016-10-16 10:53:01	<--	xock_stream (~xocket@unaffiliated/xocket) has quit (Max SendQ exceeded)
+2016-10-16 10:53:01		[10:53]
+2016-10-16 10:53:38	-->	xocket (~xocket@unaffiliated/xocket) has joined ##asm
+2016-10-16 10:54:33	boru	ILP sizes differ across architectures.
+2016-10-16 10:54:59	boru	(Well, across implementations/compilers)
+2016-10-16 10:55:00	<--	xocket (~xocket@unaffiliated/xocket) has quit (Max SendQ exceeded)
+2016-10-16 10:55:02	GeDaMo	http://www.unix.org/version2/whatsnew/lp64_wp.html
+2016-10-16 10:55:31	-->	xocket (~xocket@unaffiliated/xocket) has joined ##asm
+2016-10-16 10:56:16	boru	What does this answer?
+2016-10-16 10:59:04	Freze	GeDaMo does this not suggest the original proposal?
+2016-10-16 10:59:12	GeDaMo	It seems that gcc uses LP64 and Visual C++ uses LLP64
+2016-10-16 10:59:34	Duns_Scrotus	long is 32 bits on msvc???
+2016-10-16 10:59:38	Duns_Scrotus	yikes
+2016-10-16 10:59:40	GeDaMo	https://msdn.microsoft.com/en-us/library/s3f49ktz.aspx
+2016-10-16 10:59:55	GeDaMo	"Data Type Ranges Visual Studio 2015"
+2016-10-16 10:59:57	boru	I've probably missed context; didn't realise it was an intel-specific discussion.
+2016-10-16 11:00:32	Freze	https://technet.microsoft.com/en-us/library/bb496995.aspx
+2016-10-16 11:00:39	Freze	In the UNIX/64 data model:
+2016-10-16 11:00:39	Freze	The size of int is 32 bits and the size of long and pointers is 64 bits.
+2016-10-16 11:00:51	Freze	In the Win64 model:
+2016-10-16 11:00:51	Freze	The size of int and long is 32 bits; the size of int64 (new type) and pointers is 64 bits.
+2016-10-16 11:01:01	<--	Keshl_ (~Purple@24.115.181.94.res-cmts.gld.ptd.net) has quit (Read error: Connection reset by peer)
+2016-10-16 11:01:13	Jester01	told you so. int stays 32 bit.
+2016-10-16 11:01:58	Freze	My point was I should default to int64 for 64bit systems regardless wheather im using float32 or float64
+2016-10-16 11:02:15	Freze	and default to int32 on 32bit systems regardless of whether im using float32 and float64
+2016-10-16 11:02:36	Jester01	no idea how you concluded that from the above, but do whatever you want
+2016-10-16 11:04:57	<--	MyCuriosity (~MyCuriosi@unaffiliated/mycuriosity) has quit (Ping timeout: 260 seconds)
+2016-10-16 11:05:02	<--	osa1 (~omer@haskell/developer/osa1) has quit (Ping timeout: 244 seconds)
+2016-10-16 11:05:26	<--	kbw (~KeyboardW@68-204-170-7.res.bhn.net) has quit (Quit: My MacBook Air has gone to sleep. ZZZzzz…)
+2016-10-16 11:05:43	Freze	theoretically it would be better to use int64 on 64bit systems and 32ints on 32bit systems
+2016-10-16 11:06:18	<--	Albori (~Albori@64-15-82-48.fidnet.com) has quit (Quit: WeeChat 1.7-dev)
+2016-10-16 11:06:33	Jester01	if you say so
+2016-10-16 11:07:41	Freze	actually 51 bit ints
+2016-10-16 11:07:43	Freze	:P
+2016-10-16 11:08:41	<--	brolaf (~brolaf@anon-36-198.vpn.ipredator.se) has quit (Ping timeout: 258 seconds)
+2016-10-16 11:08:41		[11:08]
+2016-10-16 11:15:27	<--	GeDaMo (~GeDaMo@212.225.83.199) has quit (Remote host closed the connection)
+2016-10-16 11:15:40	-->	Gilfoyle (~hatter@unaffiliated/church-) has joined ##asm
+2016-10-16 11:16:04	--	Gilfoyle is now known as Guest17772
+2016-10-16 11:16:09	--	Guest17772 is now known as aleph-
+2016-10-16 11:16:44	-->	tx_ (62a52430@gateway/web/freenode/ip.98.165.36.48) has joined ##asm
+2016-10-16 11:20:12	ARM9	no
+2016-10-16 11:21:46	<--	tx_ (62a52430@gateway/web/freenode/ip.98.165.36.48) has quit (Ping timeout: 260 seconds)
+2016-10-16 11:22:49	<--	shakalaka (~shakalaka@ec2-52-52-27-0.us-west-1.compute.amazonaws.com) has quit (Quit: bye.)
+2016-10-16 11:23:49	-->	Albori (~Albori@64-15-82-48.fidnet.com) has joined ##asm
+2016-10-16 11:23:49		[11:23]
+2016-10-16 11:24:22	-->	shakalaka (~shakalaka@ec2-52-52-27-0.us-west-1.compute.amazonaws.com) has joined ##asm
+2016-10-16 11:29:10	<--	Jackneill (~Jackneill@unaffiliated/jackneill) has quit (Remote host closed the connection)
+2016-10-16 11:29:34	<--	King_Hual (~failed@unaffiliated/king-hual/x-1207580) has quit (Read error: Connection reset by peer)
+2016-10-16 11:31:44	<--	shakalaka (~shakalaka@ec2-52-52-27-0.us-west-1.compute.amazonaws.com) has quit (Quit: bye.)
+2016-10-16 11:34:23	-->	shakalaka (~shakalaka@ec2-52-52-27-0.us-west-1.compute.amazonaws.com) has joined ##asm
+2016-10-16 11:40:00		[11:34]
+2016-10-16 11:46:43	Freze	ARM9 that last was a joke
+2016-10-16 11:48:08	roxfan	ha ha
+2016-10-16 11:48:49	Freze	so basically the thing is just use int32 unless you *really* need the extra range
+2016-10-16 11:51:23	Freze	re there any major 32-bit word size processors remaining?
+2016-10-16 11:51:53	<--	xocket (~xocket@unaffiliated/xocket) has quit (Disconnected by services)
+2016-10-16 11:51:58	-->	xocket (~xocket@unaffiliated/xocket) has joined ##asm
+2016-10-16 11:52:01	ARM9	what constitutes major
+2016-10-16 11:52:35	ARM9	phones still use armv7
+2016-10-16 11:52:35	ARM9	sharc is used in dsp
+2016-10-16 11:53:14	<--	xocket (~xocket@unaffiliated/xocket) has quit (Max SendQ exceeded)
+2016-10-16 11:53:50	-->	xocket (~xocket@unaffiliated/xocket) has joined ##asm
+2016-10-16 11:55:24	Freze	I see
+2016-10-16 11:55:24		[11:55]
+2016-10-16 11:58:14	<--	ARM9 (~ARM9@46-236-101-75.customer.t3.se) has quit (Quit: Leaving)
+2016-10-16 11:59:30	Freze	So the new rasberry pi  runs in 32-bit mode
+2016-10-16 11:59:31	Freze	eek
+2016-10-16 12:03:23	-->	vigole (~Thunderbi@178.252.165.108) has joined ##asm
+2016-10-16 12:03:44	bcos_	Erm
+2016-10-16 12:04:27	Freze	But seriously how is there any perf implications for using int64 scalars on a 64-bit word size processors,
+2016-10-16 12:04:28	bcos_	Freze: Theoretically, at least on 80x86, using 64-bit integers is very stupid because the opcode format doesn't like 64-bit immediates, etc
+2016-10-16 12:04:45	bcos_	(for 64-bit code)
+2016-10-16 12:04:49	<--	shakalaka (~shakalaka@ec2-52-52-27-0.us-west-1.compute.amazonaws.com) has quit (Quit: bye.)
+2016-10-16 12:04:57	<--	vigole (~Thunderbi@178.252.165.108) has quit (Client Quit)
+2016-10-16 12:05:54	-->	shakalaka (~shakalaka@ec2-52-52-27-0.us-west-1.compute.amazonaws.com) has joined ##asm
+2016-10-16 12:06:46	-->	freakazoid0223_ (~chatzilla@pool-108-52-4-128.phlapa.fios.verizon.net) has joined ##asm
+2016-10-16 12:09:11	Freze	bcos_ on 86-64?
+2016-10-16 12:09:42	<--	freakazoid0223 (~chatzilla@pool-108-52-4-128.phlapa.fios.verizon.net) has quit (Ping timeout: 250 seconds)
+2016-10-16 12:09:52	--	freakazoid0223_ is now known as freakazoid0223
+2016-10-16 12:11:23	-->	nine_milli (~nine_mill@32.211.52.104) has joined ##asm
+2016-10-16 12:11:23		[12:11]
+2016-10-16 12:12:05	<--	shakalaka (~shakalaka@ec2-52-52-27-0.us-west-1.compute.amazonaws.com) has quit (Quit: bye.)
+2016-10-16 12:13:09	-->	shakalaka (~shakalaka@ec2-52-52-27-0.us-west-1.compute.amazonaws.com) has joined ##asm
+2016-10-16 12:15:48	<--	shakalaka (~shakalaka@ec2-52-52-27-0.us-west-1.compute.amazonaws.com) has quit (Client Quit)
+2016-10-16 12:15:51	-->	osa1 (~omer@haskell/developer/osa1) has joined ##asm
+2016-10-16 12:16:32	Jester01	you can load 64 bit immediates into registers though, and also you have 32 bit sign-extended operands and constants in programs that need more than that are not very common
+2016-10-16 12:17:07	Jester01	what's worse is that you need rex prefix for 64 bit operations so code size increases
+2016-10-16 12:17:49	Freze	I don’t think that that makes a real performance difference... for scalar ints
+2016-10-16 12:18:02	Jester01	what doesn't
+2016-10-16 12:18:24	Jester01	code size increase?
+2016-10-16 12:18:37	Jester01	that's gotta decrease cache efficiency
+2016-10-16 12:19:11	Freze	Right if you are computing with a vector of ints, absolutely
+2016-10-16 12:19:14	Freze	I guess in my case I'm using maybe max 4 ints in each function
+2016-10-16 12:19:25	Freze	so I guess in this case it's not such a big deal
+2016-10-16 12:19:44	Jester01	I don't know what you are doing, I am just saying in general
+2016-10-16 12:20:07	Freze	Thanks
+2016-10-16 12:22:18	<--	osa1 (~omer@haskell/developer/osa1) has quit (Ping timeout: 252 seconds)
+2016-10-16 12:24:32	-->	shakalaka (~shakalaka@ec2-52-52-27-0.us-west-1.compute.amazonaws.com) has joined ##asm
+2016-10-16 12:29:46	<--	devonrevenge (~devonreve@unaffiliated/devonrevenge) has quit (Quit: WeeChat 1.6)
+2016-10-16 12:29:46		[12:29]
+2016-10-16 12:29:55	-->	osa1 (~omer@haskell/developer/osa1) has joined ##asm
+2016-10-16 12:30:29	-->	osa1_ (~omer@50-253-193-254-static.hfc.comcastbusiness.net) has joined ##asm
+2016-10-16 12:31:45	<--	rendar (~rendar@host20-173-dynamic.116-80-r.retail.telecomitalia.it) has quit (Quit: Leaving)
+2016-10-16 12:34:21	<--	osa1 (~omer@haskell/developer/osa1) has quit (Ping timeout: 252 seconds)
+2016-10-16 12:37:39	<--	freakazoid0223 (~chatzilla@pool-108-52-4-128.phlapa.fios.verizon.net) has quit (Ping timeout: 252 seconds)
+2016-10-16 12:40:17	-->	freakazoid0223 (~chatzilla@pool-108-52-4-128.phlapa.fios.verizon.net) has joined ##asm
+2016-10-16 12:42:38	<--	xocket (~xocket@unaffiliated/xocket) has quit (Ping timeout: 250 seconds)
+2016-10-16 12:44:01	-->	xocket (~xocket@unaffiliated/xocket) has joined ##asm
+2016-10-16 12:44:38	<--	damme (~damme@2001:16d8:cc75::802) has quit (Ping timeout: 245 seconds)
+2016-10-16 12:50:00		[12:44]
+2016-10-16 12:50:40	-->	Lokomotiv (~ASAP@pool-173-63-56-218.nwrknj.fios.verizon.net) has joined ##asm
+2016-10-16 12:50:41	<--	Lokomotiv (~ASAP@pool-173-63-56-218.nwrknj.fios.verizon.net) has quit (Changing host)
+2016-10-16 12:50:41	-->	Lokomotiv (~ASAP@unaffiliated/lokomotiv) has joined ##asm
+2016-10-16 12:52:25	-->	wellick (~wellick@a89-155-187-171.cpe.netcabo.pt) has joined ##asm
+2016-10-16 12:53:55	<--	xocket (~xocket@unaffiliated/xocket) has quit (Ping timeout: 250 seconds)
+2016-10-16 12:56:50	-->	Judge_Dredd (~Judge_Dre@unaffiliated/judge-dredd/x-2170742) has joined ##asm
+2016-10-16 12:57:03	-->	xocket (~xocket@unaffiliated/xocket) has joined ##asm
+2016-10-16 12:59:39	<--	osa1_ (~omer@50-253-193-254-static.hfc.comcastbusiness.net) has quit (Ping timeout: 252 seconds)
+2016-10-16 13:02:51	<--	dqi (~dqi@165-218-045-062.dynamic.caiway.nl) has quit (Ping timeout: 244 seconds)
+2016-10-16 13:03:31	<--	wellick (~wellick@a89-155-187-171.cpe.netcabo.pt) has quit (Quit: Going offline, see ya! (www.adiirc.com))
+2016-10-16 13:09:00		[13:03]
+2016-10-16 13:11:34	-->	osa1 (~omer@haskell/developer/osa1) has joined ##asm
+2016-10-16 13:12:12	Olipro	anyone know the MASM syntax for referencing a C++ decorated name type?
+2016-10-16 13:12:19	Olipro	(i.e. make it not prepend the damn underscore)
+2016-10-16 13:12:44	<--	shakalaka (~shakalaka@ec2-52-52-27-0.us-west-1.compute.amazonaws.com) has quit (Quit: bye.)
+2016-10-16 13:13:59	-->	shakalaka (~shakalaka@ec2-52-52-27-0.us-west-1.compute.amazonaws.com) has joined ##asm
+2016-10-16 13:15:53	Jester01	msdn? :)
+2016-10-16 13:17:02	<--	osa1 (~omer@haskell/developer/osa1) has quit (Ping timeout: 250 seconds)
+2016-10-16 13:17:03	-->	osa1_ (~omer@50-253-193-254-static.hfc.comcastbusiness.net) has joined ##asm
+2016-10-16 13:17:33	Olipro	the reference for EXTERN/EXTRN lists the general syntax and doesn't list what the hell you can put in
+2016-10-16 13:20:29	<--	Freze (~Freze@unaffiliated/freze) has quit (Ping timeout: 260 seconds)
+2016-10-16 13:20:53	-->	Freze (~Freze@c-73-167-60-180.hsd1.ma.comcast.net) has joined ##asm
+2016-10-16 13:23:33	<--	osa1_ (~omer@50-253-193-254-static.hfc.comcastbusiness.net) has quit (Ping timeout: 260 seconds)
+2016-10-16 13:24:50	Jester01	extern "foo" : PROC  ?
+2016-10-16 13:24:50		[13:24]
+2016-10-16 13:25:13	Jester01	without quotes.
+2016-10-16 13:25:25	Jester01	and question mark :D
+2016-10-16 13:29:38	Olipro	nope
+2016-10-16 13:29:40	Olipro	syntax errir
+2016-10-16 13:29:42	Olipro	*error
+2016-10-16 13:30:27	<--	Freze (~Freze@c-73-167-60-180.hsd1.ma.comcast.net) has quit (Changing host)
+2016-10-16 13:30:27	-->	Freze (~Freze@unaffiliated/freze) has joined ##asm
+2016-10-16 13:30:46	Jester01	really?
+2016-10-16 13:30:59	Olipro	really
+2016-10-16 13:31:43	Jester01	does your mangled name have some illegal stuff in it?
+2016-10-16 13:31:55	Jester01	you did use the mangled name, right?
+2016-10-16 13:32:46	Olipro	no, it doesn't
+2016-10-16 13:32:55	Olipro	I can use the mangled name by declaring it as if it's an external function
+2016-10-16 13:32:57	Olipro	i.e.
+2016-10-16 13:33:06	Olipro	@MANGLED_NAME@ PROTO SYSCALL
+2016-10-16 13:33:24	Olipro	but that's shit because it forces me to write an extra instruction to de-reference the damn thing
+2016-10-16 13:33:46	Olipro	because mov eax, NAME and mov eax, [NAME] generate the same thing when it's considered to be a function
+2016-10-16 13:33:50	<--	Jesin (~Jesin@pool-96-231-49-118.washdc.fios.verizon.net) has quit (Quit: Leaving)
+2016-10-16 13:34:30	Olipro	(namely, you get the address the object lives at rather than the data at the address)
+2016-10-16 13:36:15	<--	nik_rabon (~nik_rabon@104.166.40.97) has quit (Quit: nik_rabon)
+2016-10-16 13:36:33	 *	Jester01 contemplates booting up a VM
+2016-10-16 13:38:54	-->	brolaf (~brolaf@anon-37-175.vpn.ipredator.se) has joined ##asm
+2016-10-16 13:40:08	-->	Karyon (~yaaic@unaffiliated/karyon) has joined ##asm
+2016-10-16 13:40:08		[13:40]
+2016-10-16 13:40:19	<--	Spec-Chum (~Russ@90.254.167.18) has quit (Quit: Leaving)
+2016-10-16 13:46:00		[13:40]
+2016-10-16 13:47:38	Jester01	worked fine here
+2016-10-16 13:47:40	Jester01	user error.
+2016-10-16 13:47:45	Jester01	and forced me to boot a VM ...
+2016-10-16 13:48:02	Jester01	what's your symbol name
+2016-10-16 13:49:25	<--	MoALTz (~no@78-10-223-145.static.ip.netia.com.pl) has quit (Ping timeout: 248 seconds)
+2016-10-16 13:51:11	<--	Karyon (~yaaic@unaffiliated/karyon) has quit (Remote host closed the connection)
+2016-10-16 13:54:13	-->	reboot0101 (~technoknx@24-158-120-118.dhcp.kgpt.tn.charter.com) has joined ##asm
+2016-10-16 13:55:01	<--	xocket (~xocket@unaffiliated/xocket) has quit (Disconnected by services)
+2016-10-16 13:55:01	-->	xock_stream (~xocket@unaffiliated/xocket) has joined ##asm
+2016-10-16 13:57:39	Jester01	009 00000000 UNDEF  notype       External     | ?xyz@?$abc@V?$def@H@@PAX@@YAXXZ (void __cdecl abc<class def<int>,void *>::xyz(void))
+2016-10-16 13:57:45	Jester01	I used this beauty from wikipedia :D
+2016-10-16 13:58:47	Olipro	?OnGameTick@InGameHandling@Olipro@@CIXPAUlua_State@@PBD@Z
+2016-10-16 13:59:29	<--	reboot0101 (~technoknx@24-158-120-118.dhcp.kgpt.tn.charter.com) has quit (Ping timeout: 260 seconds)
+2016-10-16 13:59:52	Olipro	Jester01: ^
+2016-10-16 13:59:54	Jester01	extern ?OnGameTick@InGameHandling@Olipro@@CIXPAUlua_State@@PBD@Z : proc
+2016-10-16 13:59:54	Jester01	.code
+2016-10-16 13:59:54	Jester01	call ?OnGameTick@InGameHandling@Olipro@@CIXPAUlua_State@@PBD@Z
+2016-10-16 14:00:10	Jester01	009 00000000 UNDEF  notype       External     | ?OnGameTick@InGameHandling@Olipro@@CIXPAUlua_State@@PBD@Z (private: static void __fastcall Olipro::InGameHandling::OnGameTick(struct lua_State *,char const *))
+2016-10-16 14:00:10	Olipro	it's a function pointer though
+2016-10-16 14:00:30	Jester01	doesn't matter as far as the extern line and your alleged syntax error is concerned
+2016-10-16 14:01:07	Olipro	well, I suspect this will be no better than what I already have and using [] around the name won't result in de-referencing
+2016-10-16 14:01:07		[14:01]
+2016-10-16 14:01:08	Jester01	I can also do call [?OnGameTick@InGameHandling@Olipro@@CIXPAUlua_State@@PBD@Z]
+2016-10-16 14:01:26	Jester01	you claimed a SYNTAX ERROR
+2016-10-16 14:01:32	Jester01	no syntax error. QED.
+2016-10-16 14:02:23	Olipro	well, it is on the masm shipped with VS2015
+2016-10-16 14:02:26	Olipro	the exact line is this:
+2016-10-16 14:02:26	Olipro	EXTERN ?OnGameTick@InGameHandling@Olipro@@CIXPAUlua_State@@PBD@Z : PROC
+2016-10-16 14:02:57	Jester01	Microsoft (R) Macro Assembler Version 11.00.50727.1
+2016-10-16 14:03:00	Jester01	is what I have here
+2016-10-16 14:03:23	Jester01	I doubt they decided to break compatibility ... microsoft is kinda reluctant to do that :)
+2016-10-16 14:04:07	Jester01	you using any special options?
+2016-10-16 14:05:01	<--	brolaf (~brolaf@anon-37-175.vpn.ipredator.se) has quit (Ping timeout: 258 seconds)
+2016-10-16 14:05:35	-->	safe (~safe@unaffiliated/safe) has joined ##asm
+2016-10-16 14:09:55	vulture	what's your problem here?
+2016-10-16 14:10:11	<--	shakalaka (~shakalaka@ec2-52-52-27-0.us-west-1.compute.amazonaws.com) has quit (Quit: bye.)
+2016-10-16 14:10:22	Jester01	he claims some magical syntax error for that line
+2016-10-16 14:11:05	vulture	if you're trying to debug masm errors, best thing to do is compile c (or in this case, c++) down to asm and see what msvc did
+2016-10-16 14:11:26	vulture	it's pretty rare that a .asm generated by msvc wouldnt be assembleable by masm
+2016-10-16 14:12:12	Jester01	EXTERN ?OnGameTick@InGameHandling@Olipro@@CIXPAUlua_State@@PBD@Z : PROC
+2016-10-16 14:12:20	Jester01	is ugly but not very complicated
+2016-10-16 14:12:31	-->	shakalaka (~shakalaka@ec2-52-52-27-0.us-west-1.compute.amazonaws.com) has joined ##asm
+2016-10-16 14:12:32	Jester01	surely that works :)
+2016-10-16 14:14:04	Olipro	nope, doesn't work
+2016-10-16 14:14:10	Olipro	I have to declare it as simply:
+2016-10-16 14:14:17	Olipro	?OnGameTick@InGameHandling@Olipro@@CIXPAUlua_State@@PBD@Z PROTO SYSCALL
+2016-10-16 14:14:43	Jester01	<Jester01> you using any special options?
+2016-10-16 14:14:44	Olipro	works exactly as yours does, which is less than ideal since I have to put it in a register, de-reference it and then call the register
+2016-10-16 14:14:54	<--	Olipro (~Olipro@uncyclopedia/pdpc.21for7.olipro) has left ##asm ("Leaving")
+2016-10-16 14:14:57	Jester01	bye.
+2016-10-16 14:15:00	-->	Olipro (~Olipro@uncyclopedia/pdpc.21for7.olipro) has joined ##asm
+2016-10-16 14:15:10	Olipro	nope, just whatever the defaults are in VS2015
+2016-10-16 14:15:24	Jester01	vulture, you got a newer masm to check? :)
+2016-10-16 14:16:33	Jester01	if mictosoft broke "extern foo:proc" they are dumber than I thought
+2016-10-16 14:16:33		[14:16]
+2016-10-16 14:16:49	-->	brolaf (~brolaf@anon-62-80.vpn.ipredator.se) has joined ##asm
+2016-10-16 14:19:59	-->	BeaverLeader_ (~ASpaceOdy@nat-119-196.secure.wireless.unca.edu) has joined ##asm
+2016-10-16 14:25:00		[14:19]
+2016-10-16 14:28:01	<--	brolaf (~brolaf@anon-62-80.vpn.ipredator.se) has quit (Ping timeout: 258 seconds)
+2016-10-16 14:28:17	-->	brolaf (~brolaf@46.246.44.165) has joined ##asm
+2016-10-16 14:30:24	-->	arescorpio (~arescorpi@169-58-16-190.fibertel.com.ar) has joined ##asm
+2016-10-16 14:34:58	vulture	EXTRN   ?OnGameTick@InGameHandling@Olipro@@YIXPAUlua_State@@PBD@Z:PROC ; Olipro::InGameHandling::OnGameTick
+2016-10-16 14:35:35	Jester01	there you go
+2016-10-16 14:35:46	vulture	probably you should read your manual since masm uses extrn not extern :D
+2016-10-16 14:36:01	Jester01	both are equivalent
+2016-10-16 14:36:05	Jester01	and extern worked for me.
+2016-10-16 14:36:21	vulture	seems that way
+2016-10-16 14:36:31	vulture	I dont know what his prolem was to begin with
+2016-10-16 14:36:33	vulture	*problem
+2016-10-16 14:36:49	Jester01	he has this c++ symbol but plain "extern" prepends an underscore
+2016-10-16 14:36:53	Jester01	so he got linker error
+2016-10-16 14:37:08	Jester01	to which I googled the solution, to put " : proc" after it
+2016-10-16 14:37:14	Olipro	vulture: nope, yours doesn't work either
+2016-10-16 14:37:33	Jester01	haha
+2016-10-16 14:37:34	Olipro	again, it doesn't matter because I've declared it as a PROTO SYSCALL
+2016-10-16 14:37:36	Jester01	your masm is broken
+2016-10-16 14:37:44	vulture	are you trying to mix 32 and 64 bit
+2016-10-16 14:37:46	vulture	or something
+2016-10-16 14:37:51	Olipro	I'm not
+2016-10-16 14:37:57	Olipro	I have no idea where you pulled that notion from
+2016-10-16 14:38:13	vulture	or are you using gnu toolchain anywhere
+2016-10-16 14:38:19	vulture	I'd rather see the verbatim error
+2016-10-16 14:38:23	Olipro	are you using the masm that comes with VS2015?
+2016-10-16 14:38:24	vulture	than a secondhand account
+2016-10-16 14:38:33	vulture	I'm using like 18 different masm versions
+2016-10-16 14:38:35	vulture	they all work fine
+2016-10-16 14:38:47	Olipro	well it doesn't in the one that comes with VS2015
+2016-10-16 14:38:48	vulture	008 00000000 UNDEF  notype ()    External     | ?OnGameTick@InGameHandling@Olipro@@YIXPAUlua_State@@PBD@Z (void __fastcall Olipro::InGameHandling::OnGameTick(struct lua_State *,char const *))
+2016-10-16 14:39:12	vulture	008 00000000 UNDEF  notype ()    External     | ?OnGameTick@InGameHandling@Olipro@@YAXPEAUlua_State@@PEBD@Z (void __cdecl Olipro::InGameHandling::OnGameTick(struct lua_State *,char const *))
+2016-10-16 14:39:21	vulture	works fine in both 32 and 64 for me actually
+2016-10-16 14:39:30	vulture	you still havent pasted an actual error
+2016-10-16 14:39:34	vulture	so I'm going to assume pebkac
+2016-10-16 14:40:57	Jester01	I forgot how to shut windows down LOL
+2016-10-16 14:40:57		[14:40]
+2016-10-16 14:41:06	Jester01	from terminal services
+2016-10-16 14:41:27	vulture	shutdown ? :P
+2016-10-16 14:41:44	Jester01	I wanted to click!
+2016-10-16 14:41:57	vulture	click start -> shutdown
+2016-10-16 14:44:04	<--	Xylitol (~temari@unaffiliated/xylitol) has quit (Quit: Sharpen your sickle at sunset)
+2016-10-16 14:45:18	Jester01	worked from cmd
+2016-10-16 14:45:29	Jester01	but I could have sworn there used to be an icon to click ... oh well
+2016-10-16 14:51:00		[14:45]
+2016-10-16 14:57:24	<--	xock_stream (~xocket@unaffiliated/xocket) has quit (Ping timeout: 252 seconds)
+2016-10-16 14:59:38	-->	SunnyD (~SunnyD@cpe-72-178-78-211.hot.res.rr.com) has joined ##asm
+2016-10-16 14:59:39	-->	xocket (~xocket@unaffiliated/xocket) has joined ##asm
+2016-10-16 15:03:58	-->	wellick (~wellick@a89-155-187-171.cpe.netcabo.pt) has joined ##asm
+2016-10-16 15:04:25	<--	wellick (~wellick@a89-155-187-171.cpe.netcabo.pt) has quit (Client Quit)
+2016-10-16 15:07:46	-->	parkaboi (~parkaboi@172.98.67.92) has joined ##asm
+2016-10-16 15:07:46		[15:07]
+2016-10-16 15:08:26	-->	AverageJ0e (~joe@ip68-3-197-107.ph.ph.cox.net) has joined ##asm
+2016-10-16 15:08:42	<--	parkaboi (~parkaboi@172.98.67.92) has quit (Client Quit)
+2016-10-16 15:10:36	-->	zap0 (~moofy@14-201-222-143.tpgi.com.au) has joined ##asm
+2016-10-16 15:16:00		[15:10]
+2016-10-16 15:17:36	<--	FriskyKat (SomeWhere@0547d92c.skybroadband.com) has quit (Read error: Connection reset by peer)
+2016-10-16 15:19:14	-->	FriskyKat (SomeWhere@90.218.64.80) has joined ##asm
+2016-10-16 15:23:30	-->	blackwind_123 (~IceChat9@106.208.115.142) has joined ##asm
+2016-10-16 15:24:13	<--	shakalaka (~shakalaka@ec2-52-52-27-0.us-west-1.compute.amazonaws.com) has quit (Quit: bye.)
+2016-10-16 15:25:21	<--	freakazoid0223 (~chatzilla@pool-108-52-4-128.phlapa.fios.verizon.net) has quit (Ping timeout: 260 seconds)
+2016-10-16 15:26:00	-->	shakalaka (~shakalaka@ec2-52-52-27-0.us-west-1.compute.amazonaws.com) has joined ##asm
+2016-10-16 15:26:36	-->	freakazoid0223 (~chatzilla@pool-108-52-4-128.phlapa.fios.verizon.net) has joined ##asm
+2016-10-16 15:28:56	-->	Jesin (~Jesin@pool-96-231-49-118.washdc.fios.verizon.net) has joined ##asm
+2016-10-16 15:29:41	<--	Jesin (~Jesin@pool-96-231-49-118.washdc.fios.verizon.net) has quit (Remote host closed the connection)
+2016-10-16 15:32:15	-->	xtra (2d13383f@gateway/web/freenode/ip.45.19.56.63) has joined ##asm
+2016-10-16 15:32:15		[15:32]
+2016-10-16 15:32:20	xtra	hey guys
+2016-10-16 15:32:32	xtra	mind if i ask about number 2, i dont quite get it
+2016-10-16 15:32:33	xtra	http://puu.sh/rLoSy/008fdca11d.jpg
+2016-10-16 15:32:41	xtra	i just figured out number 1 : this is for HCS12
+2016-10-16 15:33:07	-->	kbw (~KeyboardW@68-204-170-7.res.bhn.net) has joined ##asm
+2016-10-16 15:33:46	-->	SwiftMatt (~Objective@162.242.94.228) has joined ##asm
+2016-10-16 15:34:17	OxFEEDBACC	well, number 1 didn't lead to pasting text as text?
+2016-10-16 15:35:19	xtra	oh this is already answered
+2016-10-16 15:35:25	xtra	i just dont know how they did it
+2016-10-16 15:35:54	<--	blackwind_123 (~IceChat9@106.208.115.142) has quit (Ping timeout: 256 seconds)
+2016-10-16 15:36:06	-->	reboot0101 (~technoknx@24-158-120-118.dhcp.kgpt.tn.charter.com) has joined ##asm
+2016-10-16 15:37:34	nine_milli	man android 6+ kills batteries
+2016-10-16 15:38:25	OxFEEDBACC	still no native code?
+2016-10-16 15:39:02	xtra	thats all i have
+2016-10-16 15:39:12	zap0	nine_milli, sure it's not some specicif app?    or your specific screen type?
+2016-10-16 15:39:31	nine_milli	it just started happening after an upgrade
+2016-10-16 15:39:52	-->	blackwind_123 (~IceChat9@106.208.115.142) has joined ##asm
+2016-10-16 15:40:01	-->	Jesin (~Jesin@pool-96-231-49-118.washdc.fios.verizon.net) has joined ##asm
+2016-10-16 15:41:25	zap0	maybe an app is starting to use a 6 specific feature..
+2016-10-16 15:41:34	zap0	there is a battery graph..... who is using it all?
+2016-10-16 15:47:00		[15:41]
+2016-10-16 15:51:15	-->	MulleDK19 (MulleDK19@unaffiliated/mulledk19) has joined ##asm
+2016-10-16 15:53:56	-->	HaMsTeRs (~none@138019079169.ctinets.com) has joined ##asm
+2016-10-16 15:54:01	<--	dsect (~carabia@unaffiliated/dsect) has quit (Quit: leaving)
+2016-10-16 16:00:00		[15:54]
+2016-10-16 16:03:16	<--	xocket (~xocket@unaffiliated/xocket) has quit (Ping timeout: 260 seconds)
+2016-10-16 16:05:06	-->	xocket (~xocket@unaffiliated/xocket) has joined ##asm
+2016-10-16 16:09:27	<--	slidercrank (~slidercra@unaffiliated/slidercrank) has quit (Ping timeout: 252 seconds)
+2016-10-16 16:12:54	-->	freakazoid0223_ (~chatzilla@pool-108-52-4-128.phlapa.fios.verizon.net) has joined ##asm
+2016-10-16 16:15:34	<--	freakazoid0223 (~chatzilla@pool-108-52-4-128.phlapa.fios.verizon.net) has quit (Ping timeout: 256 seconds)
+2016-10-16 16:15:34		[16:15]
+2016-10-16 16:22:32	<--	gaffa (~none@unaffiliated/gaffa) has quit (Quit: Leaving)
+2016-10-16 16:28:00		[16:22]
+2016-10-16 16:29:30	<--	freakazoid0223_ (~chatzilla@pool-108-52-4-128.phlapa.fios.verizon.net) has quit (Ping timeout: 244 seconds)
+2016-10-16 16:34:16	-->	freakazoid0223 (~chatzilla@pool-108-52-4-128.phlapa.fios.verizon.net) has joined ##asm
+2016-10-16 16:40:00		[16:34]
+2016-10-16 16:49:48	<--	reboot0101 (~technoknx@24-158-120-118.dhcp.kgpt.tn.charter.com) has quit (Ping timeout: 250 seconds)
+2016-10-16 16:51:06	<--	HaMsTeRs (~none@138019079169.ctinets.com) has quit (Ping timeout: 250 seconds)
+2016-10-16 16:51:35	-->	HaMsTeRs (~none@138019079169.ctinets.com) has joined ##asm
+2016-10-16 16:51:37	-->	bkboggy (~bkboggy@cpe-172-250-147-60.socal.res.rr.com) has joined ##asm
+2016-10-16 16:53:17	<--	kbw (~KeyboardW@68-204-170-7.res.bhn.net) has quit (Quit: Textual IRC Client: www.textualapp.com)
+2016-10-16 16:57:54	<--	shakalaka (~shakalaka@ec2-52-52-27-0.us-west-1.compute.amazonaws.com) has quit (Quit: bye.)
+2016-10-16 16:57:54		[16:57]
+2016-10-16 16:59:10	-->	shakalaka (~shakalaka@ec2-52-52-27-0.us-west-1.compute.amazonaws.com) has joined ##asm
+2016-10-16 16:59:23	-->	Love4Boobies (4f73b9f4@gateway/web/freenode/ip.79.115.185.244) has joined ##asm
+2016-10-16 17:05:00		[16:59]
+2016-10-16 17:05:18	<--	Suchorski (regex@unaffiliated/suchorski) has quit
+2016-10-16 17:05:25	<--	xocket (~xocket@unaffiliated/xocket) has quit (Disconnected by services)
+2016-10-16 17:05:26	-->	xock_stream (~xocket@unaffiliated/xocket) has joined ##asm
+2016-10-16 17:11:00		[17:05]
+2016-10-16 17:12:21	--	cynicalcats_ is now known as cynicalcats
+2016-10-16 17:12:34	<--	cynicalcats (~cynicalca@c-50-183-28-95.hsd1.co.comcast.net) has quit (Changing host)
+2016-10-16 17:12:34	-->	cynicalcats (~cynicalca@unaffiliated/cynicalcats) has joined ##asm
+2016-10-16 17:14:13	-->	ccmcdee-sfc (~OS13@unaffiliated/ccmcdee-sfc) has joined ##asm
+2016-10-16 17:14:17	<--	SunnyD (~SunnyD@cpe-72-178-78-211.hot.res.rr.com) has quit (Quit: ChatZilla 0.9.90.1 [Firefox 30.0/20140605174243])
+2016-10-16 17:19:13	<--	shakalaka (~shakalaka@ec2-52-52-27-0.us-west-1.compute.amazonaws.com) has quit (Quit: bye.)
+2016-10-16 17:21:00	-->	shakalaka (~shakalaka@ec2-52-52-27-0.us-west-1.compute.amazonaws.com) has joined ##asm
+2016-10-16 17:21:12	-->	Deesl (~bsdboy@redhat/deesl) has joined ##asm
+2016-10-16 17:24:16	<--	pie_ (~pie_@unaffiliated/pie-/x-0787662) has quit (Ping timeout: 244 seconds)
+2016-10-16 17:29:05	<--	nine_milli (~nine_mill@32.211.52.104) has quit (Quit: nine_milli)
+2016-10-16 17:29:05		[17:29]
+2016-10-16 17:34:51	-->	kbw (~KeyboardW@68-204-170-7.res.bhn.net) has joined ##asm

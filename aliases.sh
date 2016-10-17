@@ -367,6 +367,17 @@ alias ald='ld -I/lib64/ld-linux-x86-64.so.2 /usr/lib/crt1.o /usr/lib/crti.o -lc 
 
 ## shell functions
 
+zhelp() {
+	[ ! -z "$@" ] || return 1
+	for i in "${@}"; do
+	    [ -r "${ZSH:-/usr/share/oh-my-zsh}/plugins/${i}/" ] && \
+		pushd "${ZSH:-/usr/share/oh-my-zsh}/plugins/${i}/" >/dev/null 2>&1 || \
+		return 2
+	    [ -r "README.md" ] && less "README.md" || less "${i}.plugin.zsh"
+	    popd
+	done
+}
+
 vkfix() {
     find . -maxdepth 1 -name "*.mp3" -print0 | while IFS= read -r -d '' first; do
 	printf '"%s" ' "${first}"
@@ -376,13 +387,15 @@ vkfix() {
 		s/[&]*#039\;/'\''/g
 		s/[&]*amp\;/\&/g
 		s/  / \& /g
-		s/\<[Ff][Ee][Aa][Tt][\.]*\>/ft/g
-		s/\<[Vv][Ss][\.]*\>/vs/g
-		s/\<[Pp][Rr][Ee][Ss][Ee][Nn][Tt][Ss][\.]*\>/pres/g
-		s/\<\(ft\)\>/\1./g
-		s/\<\(vs\)\>/\1./g
-		s/\<\(pres\)\>/\1./g
-		s/\.Mp3/\.mp3/g
+		s/\<[Ff][Ee][Aa][Tt]\>/ft/g
+		s/\<[Pp][Rr][Ee][Ss][Ee][Nn][Tt][Ss]\>/pres/g
+		s/\<[Ff][Tt]\>/ft/g
+		s/\<[Vv][Ss]\>/vs/g
+		s/\<[Pp][Rr][Ee][Ss]\>/pres/g
+		s/ \(ft\)[\.]* / \1. /g
+		s/ \(vs\)[\.]* / \1. /g
+		s/ \(pres\)[\.]* / \1. /g
+		s/\<Mp3\>/mp3/g
 		p'
 	printf "\"\n"
     done | \
@@ -390,11 +403,11 @@ vkfix() {
 	    while read -r final; do eval "mv --verbose ${final}"; done
 }
 
-share() {
+c0x0() {
 	curl -F"file=@${*}" https://0x0.st
 }
 
-short() {
+u0x0() {
 	curl -F"shorten=${*}" https://0x0.st
 }
 

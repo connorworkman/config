@@ -341,7 +341,10 @@ au BufNewFile,BufRead *vimpagerrc setf vim
 au BufNewFile,BufRead *.\(service\|socket\|target\|timer\)* setf sysctl
 au BufNewFile,BufRead *\(nftables.conf\|.nft\)* setf nftables
 au BufNewFile,BufRead *\(nftables.conf\|.nft\)* set filetype=nftables
-au BufNewFile,BufRead *conf setf config
+au BufNewFile,BufRead *toxic.conf* set filetype=cfg
+"au BufNewFile,BufRead *conf setf config
+"au BufNewFile,BufRead *conf setf conf
+au BufNewFile,BufRead *conf setf cfg
 au BufNewFile,BufRead db.* setf bindzone
 au BufNewFile,BufRead *grub* setf grub
 
@@ -351,7 +354,7 @@ au BufNewFile,BufRead *grub* setf grub
 "  :20  :  up to 20 lines of command-line history will be remembered
 "  %    :  saves and restores the buffer list
 "  n... :  where to save the viminfo files
-set viminfo=!,\'100,\"100,:100,%,n~/.viminfo
+set viminfo=!,\'1000,\"1000,:1000,%,n~/.viminfo
 "set viminfo='100,n~/.vim/files/info/viminfo
 "set viminfo+=
 "set viminfo='10,\"100,:20,%,n/store/.viminfo
