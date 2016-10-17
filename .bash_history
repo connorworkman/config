@@ -518,3 +518,5 @@ s-config
 v .bashrc
 cd ~
 v .bashrc
+scg
+s-config 
