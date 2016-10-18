@@ -39,3 +39,86 @@
 2016-10-17 14:52:03	minimalism	everything looks alright until you actually try using something requiring a connection
 2016-10-17 14:52:06	minimalism	then it's just hanging
 2016-10-17 14:52:53	alyptik	yeah the arp handler on your router prob was freaking out
+2016-10-17 14:58:00		[14:52]
+2016-10-17 14:59:53	minimalism	beginning to worry I did something making gentoo not use my GPU
+2016-10-17 15:00:04	minimalism	it may just be a bug with screenfetch but unsure
+2016-10-17 15:00:13	alyptik	huh how come
+2016-10-17 15:00:27	minimalism	screenfetch isn't returning my GPU except in root, however
+2016-10-17 15:00:38	minimalism	a lot of commands used to return hardware information are restricted in gentoo
+2016-10-17 15:00:42	minimalism	they're unusable outside of root
+2016-10-17 15:00:56	minimalism	blkid, lspci, etc.
+2016-10-17 15:00:59	minimalism	won't tell you anything
+2016-10-17 15:01:43	alyptik	from the script:
+2016-10-17 15:01:43	alyptik	gpu_info=$($(PATH="/usr/bin:$PATH" type -p lspci | cut -f1) 2> /dev/null | grep VGA)
+2016-10-17 15:01:51	alyptik	see if that works for you without root
+2016-10-17 15:03:08	minimalism	seems awfully intricate for whatever that does
+2016-10-17 15:03:11	minimalism	with lspci
+2016-10-17 15:03:45	alyptik	prob meant to portable as possible
+2016-10-17 15:03:50	minimalism	It doesn't work though
+2016-10-17 15:04:03	alyptik	ah i guess lspci is root only
+2016-10-17 15:04:03	minimalism	lspci is just plain restricted outside of root.. mentioned something similar in gentoo about blkid the other day
+2016-10-17 15:04:09	minimalism	they claim it's not restricted, but
+2016-10-17 15:04:15	minimalism	it got into a semantic argument
+2016-10-17 15:04:38	minimalism	I know it's detecting the card as being there, however
+2016-10-17 15:04:45	minimalism	I'm trying to think of a definitive way to see it's being used
+2016-10-17 15:04:50	minimalism	right now in action on X and with any graphical program
+2016-10-17 15:05:21	alyptik	try grep -i --color memory /var/log/Xorg.0.log 
+2016-10-17 15:05:58	alyptik	or wherever your xorg log it
+2016-10-17 15:06:01	alyptik	s/it/is
+2016-10-17 15:07:42	minimalism	you know you can just set grep colors in env
+2016-10-17 15:07:59	alyptik	just pasting from my aliases file
+2016-10-17 15:08:08	alyptik	that is an old one gpumeminfo= lol
+2016-10-17 15:08:17	minimalism	you're looking for the word "memory" in those files?
+2016-10-17 15:08:19	minimalism	why
+2016-10-17 15:08:43	alyptik	i have no clue tbh
+2016-10-17 15:08:53	alyptik	i just grepped gpu in my aliases file
+2016-10-17 15:09:33	alyptik	i think that alias is from like 2 years ago; so if it doesn't work not surprsed
+2016-10-17 15:10:34	minimalism	I've looked through xorg log before and saw mentions of radeon but I'm getting suspicious since it doesn't mention my exact model
+2016-10-17 15:10:40	minimalism	and it tries to load vesa for some reason
+2016-10-17 15:11:16	alyptik	don't know enough about ati to know what vesa is
+2016-10-17 15:11:39	minimalism	vesa and mesa
+2016-10-17 15:12:06	alyptik	oh and ati doesn't use vesa?
+2016-10-17 15:12:13	minimalism	I don't think so
+2016-10-17 15:12:19	minimalism	I think it's a nvidia thing
+2016-10-17 15:14:41	minimalism	I can't wait to see how efficiently this system runs when I'm done trimming packages with USE flags, fully completing a perfect kernel config, a solid initramfs
+2016-10-17 15:14:41		[15:14]
+2016-10-17 15:14:49	minimalism	some looking over firmware loaded etc.
+2016-10-17 15:14:52	minimalism	removing a fuckton of modules
+2016-10-17 15:15:11	alyptik	kernel config is an art
+2016-10-17 15:15:20	alyptik	where rice meets useful
+2016-10-17 15:15:29	minimalism	The besy way to do it is probably remove everything then go from there
+2016-10-17 15:15:31	minimalism	best*
+2016-10-17 15:15:53	alyptik	i like to start from makelocalmod config
+2016-10-17 15:16:01	alyptik	make localmodconfig*
+2016-10-17 15:16:13	minimalism	I'm not familiar
+2016-10-17 15:16:34	alyptik	it sets every module not currently loaded to N
+2016-10-17 15:16:49	minimalism	Ahh, that's what I've been wanting
+2016-10-17 15:16:55	minimalism	I should boot arch and then run that
+2016-10-17 15:17:03	minimalism	it'll give me a better idea of what I don't need
+2016-10-17 15:17:07	minimalism	then trim some more for gentoo
+2016-10-17 15:17:09	alyptik	and afaik it does make oldconfig for the rest
+2016-10-17 15:21:17	alyptik	do you bother with cgroups?
+2016-10-17 15:21:24	alyptik	trying to decide if worth learning
+2016-10-17 15:21:49	minimalism	haven't looked into them at all
+2016-10-17 15:22:07	minimalism	Did you get tox working?
+2016-10-17 15:22:13	alyptik	yup
+2016-10-17 15:22:25	alyptik	was pretty painless
+2016-10-17 15:22:33	alyptik	looked at config but didn't touch
+2016-10-17 15:22:38	alyptik	didn't really know what does what yet
+2016-10-17 15:22:58	minimalism	I basically just changed its default or not color setting
+2016-10-17 15:23:04	minimalism	change time_format and timestamp_fornat
+2016-10-17 15:23:10	minimalism	the characters displayed for line_*
+2016-10-17 15:23:17	minimalism	changed the away_note to AFK
+2016-10-17 15:23:27	minimalism	set the input/output device numbers
+2016-10-17 15:23:37	minimalism	set my download_path for where to save transferred files
+2016-10-17 15:23:42	minimalism	set my path to my avatar image
+2016-10-17 15:24:02	minimalism	then after that it's basically just some keybinds for stuff, and able to set custom sound files
+2016-10-17 15:30:00		[15:24]
+2016-10-17 15:39:13	alyptik	what is the arch of Gentoo Linux Alpha Handbook
+2016-10-17 15:39:30	alyptik	doesn't really say
+2016-10-17 15:40:38	alyptik	it says 64-bit but i don't understand if it is x86_64 or a seperate proprietary one
+2016-10-17 15:42:34	minimalism	no idea
+2016-10-17 15:42:40	minimalism	I just read amd64 and Linux Sea
+2016-10-17 15:43:34	alyptik	oh googling finally turned up something; it is some obscure proprietary one
+2016-10-17 15:43:42	alyptik	name is misleading
+2016-10-17 15:49:00		[15:43]

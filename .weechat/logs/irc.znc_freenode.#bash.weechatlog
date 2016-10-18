@@ -356,3 +356,132 @@
 2016-10-17 14:54:34		[14:54]
 2016-10-17 14:56:13	<--	Alex-SF (~Alex-SF@200.55.216.21) has quit (Quit: Alex-SF)
 2016-10-17 14:56:15	kerframil	mrcirca: well, this is an mess. (( )) is for math expressions, not the normal test operators. ergo, you should write something like [[ "$1" == "-f" && -f "$2" && ! -f "$3" ]] instead (presumably you mean "$3" and not "3"). there are some other errors of syntax, as can be seen with shellcheck.net.
+2016-10-17 14:57:15	<--	Anja (~Anja@49.50.252.82) has quit (Ping timeout: 252 seconds)
+2016-10-17 14:57:18	<--	Noldorin (~noldorin@unaffiliated/noldorin) has quit (Quit: Textual IRC Client: www.textualapp.com)
+2016-10-17 14:57:28	mrcirca	kerfamil: so i remove the mess from all if statements?
+2016-10-17 14:57:40	kerframil	!(( > mrcirca
+2016-10-17 14:57:40	greybot	mrcirca: ((...)) is an arithmetic command, which returns an exit status of 0 if the expression is nonzero, or 1 if the expression is zero. Also used as a synonym for "let", if side effects (assignments) are needed. See <http://mywiki.wooledge.org/ArithmeticExpression>.
+2016-10-17 14:58:26	kerframil	the only place where you are legitimately using parentheses in that script is in your awk commands
+2016-10-17 14:58:37	-->	Noldorin (~noldorin@unaffiliated/noldorin) has joined #bash
+2016-10-17 14:59:15	kerframil	# (( -f nonsense ))
+2016-10-17 14:59:16	-->	fev3r101 (~fev3r101@5.134.116.205) has joined #bash
+2016-10-17 14:59:16	shbot	kerframil: bash: ((: -f nonsense : syntax error in expression (error token is "nonsense ")
+2016-10-17 14:59:23	-->	malcon (~malcon@ool-43579a94.dyn.optonline.net) has joined #bash
+2016-10-17 14:59:28	kerframil	# [[ -f nonsense ]]; echo $?
+2016-10-17 14:59:29	shbot	kerframil: 1
+2016-10-17 14:59:50	-->	Cork (~Cork@firefox/community/cork) has joined #bash
+2016-10-17 14:59:58	<--	dodobrain (~dodobrain@unaffiliated/freakabcd) has quit (Ping timeout: 250 seconds)
+2016-10-17 15:02:28	-->	fstd_ (~fstd@unaffiliated/fisted) has joined #bash
+2016-10-17 15:03:05	-->	Alex-SF (~Alex-SF@200.55.216.21) has joined #bash
+2016-10-17 15:04:54	-->	james41382 (~james4138@unaffiliated/james41382) has joined #bash
+2016-10-17 15:05:49	-->	finnx1 (~sheppards@2602:306:39e8:9050:14ce:210e:886f:8074) has joined #bash
+2016-10-17 15:06:38	<--	fstd (~fstd@unaffiliated/fisted) has quit (Ping timeout: 250 seconds)
+2016-10-17 15:06:38	--	fstd_ is now known as fstd
+2016-10-17 15:07:17	<--	fev3r101 (~fev3r101@5.134.116.205) has quit (Ping timeout: 260 seconds)
+2016-10-17 15:09:02	<--	cdown (~cdown@82-132-214-122.dab.02.net) has quit (Ping timeout: 265 seconds)
+2016-10-17 15:10:28	-->	geek_cl (~lletelier@191.112.175.139) has joined #bash
+2016-10-17 15:10:28		[15:10]
+2016-10-17 15:10:28	<--	geek_cl (~lletelier@191.112.175.139) has quit (Client Quit)
+2016-10-17 15:13:59	-->	Anja (~Anja@163-47-113-194.dynamic.unlimitedinternet.co.nz) has joined #bash
+2016-10-17 15:14:13	-->	hpt (~hpt@123.114.147.138) has joined #bash
+2016-10-17 15:15:44	<--	erdave (~erdave@186-95-242-115.genericrev.cantv.net) has quit (Quit: Konversation terminated!)
+2016-10-17 15:16:38	-->	nog3 (~tud3@arsenigladkov.plus.com) has joined #bash
+2016-10-17 15:16:55	-->	Ceber (~cerberus@dslb-188-107-249-083.188.107.pools.vodafone-ip.de) has joined #bash
+2016-10-17 15:17:03	-->	NeverDie (~NeverDie@pool-98-113-162-107.nwrknj.fios.verizon.net) has joined #bash
+2016-10-17 15:18:04	<--	nog3 (~tud3@arsenigladkov.plus.com) has quit (Client Quit)
+2016-10-17 15:18:38	Neville	How does one sort -print0 output?
+2016-10-17 15:18:41	<--	hpt (~hpt@123.114.147.138) has quit (Ping timeout: 260 seconds)
+2016-10-17 15:18:48	<--	xaa (~xaa@2a02:a03f:2f:cc00:4041:f6e9:251:f633) has quit (Ping timeout: 245 seconds)
+2016-10-17 15:18:57	Neville	example of the command...find . -type f -print0 | sort
+2016-10-17 15:19:27	-->	hpt (~hpt@123.114.147.138) has joined #bash
+2016-10-17 15:20:05	-->	norkle (~kvirc@unaffiliated/norkle) has joined #bash
+2016-10-17 15:20:30	<--	Sasazuka (~Sasazuka@unaffiliated/sasazuka) has quit (Ping timeout: 250 seconds)
+2016-10-17 15:20:37	-->	Sasazuka__ (~Sasazuka@unaffiliated/sasazuka) has joined #bash
+2016-10-17 15:20:42	yitz	sort -z
+2016-10-17 15:20:57	yitz	May require GNU sort
+2016-10-17 15:21:28	--	Sasazuka__ is now known as Sasazuka
+2016-10-17 15:21:46	Neville	let me try it
+2016-10-17 15:23:01	kbdkode	does someone know off top of head what hex value backspace sends in most terminals (think ^?)
+2016-10-17 15:23:37	<--	ismaris (ismaris@c-68-39-66-194.hsd1.in.comcast.net) has quit (Ping timeout: 260 seconds)
+2016-10-17 15:23:40	kbdkode	0x08 nvm
+2016-10-17 15:23:49	-->	awb (~awb@108-81-230-18.lightspeed.sntcca.sbcglobal.net) has joined #bash
+2016-10-17 15:24:53	-->	GesrobDR (uid121431@gateway/web/irccloud.com/x-jlwgzvvsyzaimlon) has joined #bash
+2016-10-17 15:25:31	-->	Anwarias (~quassel@xdsl-89-0-10-41.netcologne.de) has joined #bash
+2016-10-17 15:25:31		[15:25]
+2016-10-17 15:25:34	kbdkode	maybe someone can help me. I applied a patch for my console. Whenever I hit Delete in vim in insert, I get ^? byte. I found that you can run :fixdel .. but I don't like that solution. I can't figure out which character to send in order to make vim behave normally
+2016-10-17 15:26:01	kbdkode	s/console/virtual X terminal/
+2016-10-17 15:28:06	<--	Anwarias_ (~quassel@89.0.17.24) has quit (Ping timeout: 252 seconds)
+2016-10-17 15:29:01	-->	anyofyou (~anyofyou@27.0.232.139) has joined #bash
+2016-10-17 15:29:12	<--	Anja (~Anja@163-47-113-194.dynamic.unlimitedinternet.co.nz) has quit (Ping timeout: 252 seconds)
+2016-10-17 15:30:29	<--	malcon (~malcon@ool-43579a94.dyn.optonline.net) has quit (Quit: My Mac has gone to sleep. ZZZzzz…)
+2016-10-17 15:31:18	izalove	is there any readily available compression tool that will separate the headers from the actual compressed data?
+2016-10-17 15:31:33	izalove	or something that can extract them from say a gzip archive
+2016-10-17 15:32:05	<--	olinuxx (~capturixe@unaffiliated/olinuxx) has quit (Ping timeout: 252 seconds)
+2016-10-17 15:32:08	-->	capturixeur_ (~capturixe@ANancy-653-1-620-126.w92-130.abo.wanadoo.fr) has joined #bash
+2016-10-17 15:32:16	-->	xall (~xall@ip70-162-81-106.ph.ph.cox.net) has joined #bash
+2016-10-17 15:34:01	mrcirca	i want to skip lines which start with space
+2016-10-17 15:34:12	mrcirca	grep -v '^ ' ?
+2016-10-17 15:34:13	<--	anyofyou (~anyofyou@27.0.232.139) has quit (Ping timeout: 256 seconds)
+2016-10-17 15:34:17	izalove	yeah
+2016-10-17 15:34:30	yitz	izalove: https://en.wikipedia.org/wiki/Gzip -- sounds like gzip format doesn't have much in the header
+2016-10-17 15:34:47	yitz	izalove: you can use dd to pull whatever little is in there
+2016-10-17 15:35:26	izalove	thanks i had a completely wrong understanding of how it works
+2016-10-17 15:36:12	izalove	i was assuming it had to store some kind of table of the most common blocks of data + their relative frequencies
+2016-10-17 15:36:33	izalove	ah wait that's all in the DEFLATE body
+2016-10-17 15:36:54	<--	Ceber (~cerberus@dslb-188-107-249-083.188.107.pools.vodafone-ip.de) has quit (Ping timeout: 252 seconds)
+2016-10-17 15:37:16	<--	james41382 (~james4138@unaffiliated/james41382) has quit (Quit: Leaving)
+2016-10-17 15:37:16	<--	upbeta (~upbeta@112.199.110.130) has quit (Remote host closed the connection)
+2016-10-17 15:37:33	-->	upbeta (~upbeta@112.199.110.130) has joined #bash
+2016-10-17 15:37:38	<--	logan_e__ (uid164592@gateway/web/irccloud.com/x-tjhtdgzdkyitirti) has quit (Quit: Connection closed for inactivity)
+2016-10-17 15:37:39	yitz	Yeah. No clue what's in the actual compressed data but it's not in the file headers
+2016-10-17 15:38:25	yitz	http://commandlinefanatic.com/cgi-bin/showarticle.cgi?article=art001
+2016-10-17 15:38:38	<--	Noldorin (~noldorin@unaffiliated/noldorin) has quit (Quit: My MacBook Pro has gone to sleep. ZZZzzz…)
+2016-10-17 15:39:00	izalove	that looks like a very good resource
+2016-10-17 15:39:04	-->	Noldorin (~noldorin@unaffiliated/noldorin) has joined #bash
+2016-10-17 15:39:06	izalove	despite the site's domain name
+2016-10-17 15:39:46	-->	hagridaa_ (~textual@cpe-107-184-65-151.socal.res.rr.com) has joined #bash
+2016-10-17 15:40:53	<--	capturixeur_ (~capturixe@ANancy-653-1-620-126.w92-130.abo.wanadoo.fr) has quit (Ping timeout: 260 seconds)
+2016-10-17 15:40:53		[15:40]
+2016-10-17 15:41:44	-->	Anja (~Anja@49.50.252.82) has joined #bash
+2016-10-17 15:41:57	<--	Awesomecase (sid56584@gateway/web/irccloud.com/x-iagzjqgxgtyrlgbu) has quit (Ping timeout: 248 seconds)
+2016-10-17 15:42:18	<--	JC_SoCal (sid1590@gateway/web/irccloud.com/x-rnhdewamvdlikilv) has quit (Read error: Connection reset by peer)
+2016-10-17 15:42:33	<--	lxnch (sid21485@gateway/web/irccloud.com/x-skbmokrxhjknirma) has quit (Read error: Connection reset by peer)
+2016-10-17 15:42:36	<--	gregwork (sid72508@gateway/web/irccloud.com/x-nrvocnsanxhrrhtr) has quit (Read error: Connection reset by peer)
+2016-10-17 15:42:42	<--	Captain_Beezay (sid146285@funtoo/user/terabit) has quit (Read error: Connection reset by peer)
+2016-10-17 15:42:48	-->	JC_SoCal (sid1590@gateway/web/irccloud.com/x-nhtquzadeuuskzas) has joined #bash
+2016-10-17 15:43:12	-->	gregwork (sid72508@gateway/web/irccloud.com/x-rklnkmnngoqqutld) has joined #bash
+2016-10-17 15:43:13	-->	lxnch (sid21485@gateway/web/irccloud.com/x-qzdtkbgfjshcgkfi) has joined #bash
+2016-10-17 15:43:18	<--	Noldorin (~noldorin@unaffiliated/noldorin) has quit (Ping timeout: 250 seconds)
+2016-10-17 15:43:30	<--	Guest66634 (sid168260@gateway/web/irccloud.com/x-uoqqchoemzanamgw) has quit (Ping timeout: 252 seconds)
+2016-10-17 15:43:42	-->	dodobrain (~dodobrain@unaffiliated/freakabcd) has joined #bash
+2016-10-17 15:43:45	<--	xall (~xall@ip70-162-81-106.ph.ph.cox.net) has quit (Ping timeout: 250 seconds)
+2016-10-17 15:43:45	-->	Captain_Beezay (sid146285@funtoo/user/terabit) has joined #bash
+2016-10-17 15:44:56	-->	Awesomecase (sid56584@gateway/web/irccloud.com/x-icstwfkqfrnnmdqt) has joined #bash
+2016-10-17 15:45:08	-->	jlf (~user@pdpc/supporter/active/jlf) has joined #bash
+2016-10-17 15:46:29	<--	blackbird1 (~blackbird@197.3.200.195) has quit (Quit: Leaving)
+2016-10-17 15:46:49	-->	Guest66634 (sid168260@gateway/web/irccloud.com/x-uboaetlbfvhhzowq) has joined #bash
+2016-10-17 15:47:08	-->	CNpigCA (~CNpigCA@CPEd4ca6d31f57d-CM00fc8daf9f00.cpe.net.cable.rogers.com) has joined #bash
+2016-10-17 15:47:39	<--	Akaibu (uid118096@gateway/web/irccloud.com/x-rlpmtdafxuedryqw) has quit (Ping timeout: 250 seconds)
+2016-10-17 15:48:19	<--	CNpigCA (~CNpigCA@CPEd4ca6d31f57d-CM00fc8daf9f00.cpe.net.cable.rogers.com) has quit (Client Quit)
+2016-10-17 15:48:59	<--	Sasazuka (~Sasazuka@unaffiliated/sasazuka) has quit (Quit: My Mac has gone to sleep. ZZZzzz…)
+2016-10-17 15:49:17	-->	Klaus_D1eter_ (~klaus@x5ce68638.dyn.telefonica.de) has joined #bash
+2016-10-17 15:49:23	-->	Akaibu (uid118096@gateway/web/irccloud.com/x-ifdnkqorxaruyjxq) has joined #bash
+2016-10-17 15:49:49	-->	masoudd (~masoudd@5.114.158.200) has joined #bash
+2016-10-17 15:51:12	<--	Klaus_Dieter (~klaus@x4db31765.dyn.telefonica.de) has quit (Ping timeout: 252 seconds)
+2016-10-17 15:51:12	--	Klaus_D1eter_ is now known as Klaus_Dieter
+2016-10-17 15:53:05	<--	rabbitdew (~rabbitdew@unaffiliated/rabbitdew) has quit (Remote host closed the connection)
+2016-10-17 15:54:36	-->	capturixeur_ (~capturixe@ANancy-653-1-37-124.w86-197.abo.wanadoo.fr) has joined #bash
+2016-10-17 15:55:58	-->	jottr (~jottr@unaffiliated/jottr) has joined #bash
+2016-10-17 15:55:58		[15:55]
+2016-10-17 15:57:51	<--	Alex-SF (~Alex-SF@200.55.216.21) has quit (Ping timeout: 265 seconds)
+2016-10-17 15:59:16	<--	Klaus_Dieter (~klaus@x5ce68638.dyn.telefonica.de) has quit (Ping timeout: 260 seconds)
+2016-10-17 16:00:15	-->	erdave_ (~erdave@186-95-242-115.genericrev.cantv.net) has joined #bash
+2016-10-17 16:00:37	<--	webdev007 (~webdev007@45.72.216.169) has quit (Quit: Leaving)
+2016-10-17 16:00:41	<--	jottr (~jottr@unaffiliated/jottr) has quit (Ping timeout: 252 seconds)
+2016-10-17 16:01:03	--	erdave_ is now known as erdave
+2016-10-17 16:01:11	-->	Klaus_Dieter (~klaus@port-ip-88-150-70-25.reverse.mdcc-fun.de) has joined #bash
+2016-10-17 16:01:34	<--	kurdt6794 (~Kurdt@69.179.188.253) has quit (Remote host closed the connection)
+2016-10-17 16:04:11	-->	cdg (~cdg@2602:30a:2e2d:b980:c871:ace9:ec4:4091) has joined #bash
+2016-10-17 16:06:02	<--	cdg (~cdg@2602:30a:2e2d:b980:c871:ace9:ec4:4091) has quit (Read error: Connection reset by peer)
+2016-10-17 16:06:35	-->	cdg (~cdg@162-226-219-152.lightspeed.tukrga.sbcglobal.net) has joined #bash
+2016-10-17 16:08:32	<--	CEnnis91 (uid3543@gateway/web/irccloud.com/x-boeqyeyxzyfbavbq) has quit (Quit: Connection closed for inactivity)

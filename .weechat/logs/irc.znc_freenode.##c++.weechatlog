@@ -395,3 +395,168 @@
 2016-10-17 14:55:53	davidstone	And `f` has an overload that is specialized on nullptr to be deleted
 2016-10-17 14:55:58	davidstone	Or provide some other sort of error mechanism
 2016-10-17 14:56:21	davidstone	For instance, my string class should be constructible with char const *, but not nullptr
+2016-10-17 14:56:42	davidstone	Making a special type means that if the user passes a literal nullptr, I keep some of those checks
+2016-10-17 14:56:46	davidstone	Can't catch everything
+2016-10-17 14:57:00	davidstone	I guess that's actually a slightly separate issue
+2016-10-17 14:57:36	w3z	: {string S{nullptr};}
+2016-10-17 14:57:47	w3z	{string S{nullptr};}
+2016-10-17 14:57:48	geordi	terminated by logic_error: basic_string::_M_construct null not valid
+2016-10-17 14:57:52	davidstone	All standard libraries currently allow that at compile-time
+2016-10-17 14:57:55	Eelis	if you have a function that takes T* and can't handle null pointers, then trying to remedy that situation with overloads seems exceedingly stupid to me
+2016-10-17 14:58:14	davidstone	Well, consider std::string
+2016-10-17 14:58:29	davidstone	If you overloaded its constructor to static_assert or be deleted for nullptr_t, that catches some bugs
+2016-10-17 14:58:31	<--	k_sze[work] (~Kira@unaffiliated/kira) has quit (Read error: Connection reset by peer)
+2016-10-17 14:58:31	davidstone	Not sure how many, but some
+2016-10-17 14:58:48	Eelis	by that logic, we should do that for all functions that take T* and can't handle null pointers, as i just said
+2016-10-17 14:58:59	Eelis	so that logic leads to atrocities
+2016-10-17 14:59:16	davidstone	The 'real' solution is to use a better type for string literals
+2016-10-17 14:59:22	-->	k_sze[work] (~Kira@unaffiliated/kira) has joined ##c++
+2016-10-17 15:00:12	davidstone	If it weren't for all of the string literals and C-strings floating around, I'd agree that reference parameters are the real solution
+2016-10-17 15:00:37	w3z	anyway, that wouldnt catch anything but the silliest mistakes
+2016-10-17 15:00:38	davidstone	Unless you have a better wya?
+2016-10-17 15:01:09	Oxyd	A string literal will never be a null pointer literal.
+2016-10-17 15:02:28	-->	fstd_ (~fstd@unaffiliated/fisted) has joined ##c++
+2016-10-17 15:02:39	<--	ReverseBlade (~user@213.74.212.180) has quit (Ping timeout: 244 seconds)
+2016-10-17 15:03:06	<--	YungRaj (~YungRaj@nat-165-91-13-126.tamulink.tamu.edu) has quit (Quit: Textual IRC Client: www.textualapp.com)
+2016-10-17 15:03:15	Eelis	a far better way already would be for the compiler to realize when it sees a function starting with assert(p); on a pointer parameter p, it can warn on calls to that function for which its analyses suggest it will be called with a null pointer
+2016-10-17 15:03:42	Eelis	and those analyses can be all the wonderful flow analysis stuff and whatnot, and actually catch some meaningful cases
+2016-10-17 15:04:39	-->	voidah (~voidah@unaffiliated/voider) has joined ##c++
+2016-10-17 15:04:44	<--	m_ben (~m_ben@unaffiliated/m-ben/x-5917362) has quit (Ping timeout: 250 seconds)
+2016-10-17 15:06:35	Eelis	{ f(nullptr); } void f(int*p){assert(p);} // i mean, there's really no good reason why we can't have a compile-time warning for this
+2016-10-17 15:06:36	geordi	Assertion `p' fails.
+2016-10-17 15:06:38	<--	fstd (~fstd@unaffiliated/fisted) has quit (Ping timeout: 250 seconds)
+2016-10-17 15:06:38	--	fstd_ is now known as fstd
+2016-10-17 15:06:59	Eelis	it ain't the 70s no more
+2016-10-17 15:07:12	Oxyd	You just need to convince your loliboy V-ille to go implement it.
+2016-10-17 15:07:30	Eelis	i think the clang folks might be more eager
+2016-10-17 15:07:40	Eelis	they love analysis tricks
+2016-10-17 15:07:49	Eelis	and great diagnostics
+2016-10-17 15:08:37	-->	ERROH (mama@unaffiliated/almathea) has joined ##c++
+2016-10-17 15:08:58	<--	roko (d193902f@gateway/web/freenode/ip.209.147.144.47) has quit (Quit: Page closed)
+2016-10-17 15:09:02	-->	ekinmur (~ekinmur@unaffiliated/ekinmur) has joined ##c++
+2016-10-17 15:09:38	<--	swatti (~memory@194.88.49.178) has quit (Ping timeout: 245 seconds)
+2016-10-17 15:10:19	<--	chris_ (~chris@nat-tvwna-outside-visitornet2-a-184.princeton.org) has quit (Quit: Ex-Chat)
+2016-10-17 15:10:28	-->	chris_ (~chris@nat-tvwna-outside-visitornet2-a-184.princeton.org) has joined ##c++
+2016-10-17 15:11:08	<--	hualet (~hualet@118.184.15.164) has quit (Remote host closed the connection)
+2016-10-17 15:11:08		[15:11]
+2016-10-17 15:11:36	-->	hualet (~hualet@118.184.15.164) has joined ##c++
+2016-10-17 15:13:13	-->	chris__ (~chris@nat-tvwna-outside-visitornet2-a-184.princeton.org) has joined ##c++
+2016-10-17 15:13:34	<--	chris_ (~chris@nat-tvwna-outside-visitornet2-a-184.princeton.org) has quit (Read error: Connection reset by peer)
+2016-10-17 15:14:11	-->	SecondForm_Glenn (~Thunderbi@97-102-42-24.res.bhn.net) has joined ##c++
+2016-10-17 15:14:25	-->	rockstar___ (~rockstar@cpe-72-224-119-105.nycap.res.rr.com) has joined ##c++
+2016-10-17 15:14:55	-->	lh_mouse (~lh_mouse@unaffiliated/lh-mouse/x-3986007) has joined ##c++
+2016-10-17 15:16:09	<--	hualet (~hualet@118.184.15.164) has quit (Ping timeout: 260 seconds)
+2016-10-17 15:16:10	-->	Carbonflux (~Bob@75-172-112-206.tukw.qwest.net) has joined ##c++
+2016-10-17 15:16:22	-->	swatti (~memory@194.88.49.178) has joined ##c++
+2016-10-17 15:16:51	<--	moffz0r (~moffz0r@14-201-5-120.static.tpgi.com.au) has quit (Quit: Leaving)
+2016-10-17 15:18:28	-->	Brklyn (~truthbk@207-38-215-87.c3-0.nyr-ubr1.nyr.ny.cable.rcn.com) has joined ##c++
+2016-10-17 15:19:24	<--	TikityTik (~TikityTik@162.223.44.49) has quit (Read error: Connection reset by peer)
+2016-10-17 15:21:46	<--	mackal (~mike@pool-96-237-144-12.bstnma.fios.verizon.net) has quit (Quit: BE VIGILANT.)
+2016-10-17 15:22:02	-->	alienbot (~quassel@116.6.99.222) has joined ##c++
+2016-10-17 15:22:37	-->	re1 (~reiser@178.220.1.2) has joined ##c++
+2016-10-17 15:22:41	<--	re1 (~reiser@178.220.1.2) has quit (Client Quit)
+2016-10-17 15:22:58	<--	Brklyn (~truthbk@207-38-215-87.c3-0.nyr-ubr1.nyr.ny.cable.rcn.com) has quit (Ping timeout: 245 seconds)
+2016-10-17 15:23:02	-->	re1 (~reiser@178.220.1.2) has joined ##c++
+2016-10-17 15:23:09	<--	vitimiti (~vitimiti@unaffiliated/vitimiti) has quit (Ping timeout: 252 seconds)
+2016-10-17 15:23:10	<--	alienbot (~quassel@116.6.99.222) has quit (Remote host closed the connection)
+2016-10-17 15:23:31	-->	alienbot (~quassel@116.6.99.222) has joined ##c++
+2016-10-17 15:23:48	<--	ipronin (~ipronin@8.25.197.27) has quit (Ping timeout: 245 seconds)
+2016-10-17 15:23:55	-->	postsneakernet (~postsneak@c-76-111-222-223.hsd1.fl.comcast.net) has joined ##c++
+2016-10-17 15:24:33	<--	rorro (~rorro@155.4.14.18) has quit (Ping timeout: 260 seconds)
+2016-10-17 15:24:56	-->	ReverseBlade (~user@213.74.212.180) has joined ##c++
+2016-10-17 15:25:06	<--	topshell (~wew@447495.s.dedikuoti.lt) has quit (Remote host closed the connection)
+2016-10-17 15:25:28	-->	jsgrant (~jsgrant@71-11-142-172.dhcp.stls.mo.charter.com) has joined ##c++
+2016-10-17 15:28:12	-->	deeb (~dee@a85-139-8-162.cpe.netcabo.pt) has joined ##c++
+2016-10-17 15:28:12		[15:28]
+2016-10-17 15:28:23	<--	illerucis (~illerucis@2620:10d:c091:180::22c1) has quit (Ping timeout: 245 seconds)
+2016-10-17 15:28:51	<--	chris__ (~chris@nat-tvwna-outside-visitornet2-a-184.princeton.org) has quit (Ping timeout: 265 seconds)
+2016-10-17 15:30:28	<--	KaiserAres (~KaiserAre@unaffiliated/kaiserares) has quit (Ping timeout: 250 seconds)
+2016-10-17 15:32:28	w3z	theres all kinds of clang toold i wasnt aware of, ericwf directed me at http://clang.llvm.org/docs/ThreadSafetyAnalysis.html last night
+2016-10-17 15:32:33	<--	deeb (~dee@a85-139-8-162.cpe.netcabo.pt) has quit (Ping timeout: 245 seconds)
+2016-10-17 15:32:34	w3z	tools
+2016-10-17 15:36:20	<--	Henke37 (~Henrik@81-227-16-59-no133.bredband.skanova.com) has quit (Quit: ERR_SHUTDOWN)
+2016-10-17 15:36:45	<--	ReverseBlade (~user@213.74.212.180) has quit (Ping timeout: 244 seconds)
+2016-10-17 15:36:47	-->	topshell (~wew@447495.s.dedikuoti.lt) has joined ##c++
+2016-10-17 15:37:38	<--	logan_e__ (uid164592@gateway/web/irccloud.com/x-tjhtdgzdkyitirti) has quit (Quit: Connection closed for inactivity)
+2016-10-17 15:38:32	-->	hualet (~hualet@118.184.15.164) has joined ##c++
+2016-10-17 15:39:06	-->	Brklyn (~truthbk@207-38-215-87.c3-0.nyr-ubr1.nyr.ny.cable.rcn.com) has joined ##c++
+2016-10-17 15:39:17	-->	illerucis (~illerucis@ool-18bef55c.dyn.optonline.net) has joined ##c++
+2016-10-17 15:40:29	<--	alienbot (~quassel@116.6.99.222) has quit (Remote host closed the connection)
+2016-10-17 15:40:55	-->	alienbot (~quassel@116.6.99.222) has joined ##c++
+2016-10-17 15:40:56	klys	:)  it's bigger and squeakier than ever
+2016-10-17 15:41:02	<--	illerucis (~illerucis@ool-18bef55c.dyn.optonline.net) has quit (Remote host closed the connection)
+2016-10-17 15:41:57	<--	Awesomecase (sid56584@gateway/web/irccloud.com/x-iagzjqgxgtyrlgbu) has quit (Ping timeout: 248 seconds)
+2016-10-17 15:42:08	<--	AndChat335225 (~AndChat33@2600:8807:c145:3c00:1088:b2ca:e0ff:d685) has quit (Ping timeout: 245 seconds)
+2016-10-17 15:42:36	<--	mehdi___ (sid15567@gateway/web/irccloud.com/x-hakheuapeqpnulri) has quit (Read error: Connection reset by peer)
+2016-10-17 15:43:23	<--	Brklyn (~truthbk@207-38-215-87.c3-0.nyr-ubr1.nyr.ny.cable.rcn.com) has quit (Ping timeout: 245 seconds)
+2016-10-17 15:43:23		[15:43]
+2016-10-17 15:43:28	-->	mehdi___ (sid15567@gateway/web/irccloud.com/x-ngrrwbvthymqjdci) has joined ##c++
+2016-10-17 15:44:03	<--	voldyman (uid11639@gateway/web/irccloud.com/x-ahftvtegjvuhtege) has quit (Ping timeout: 252 seconds)
+2016-10-17 15:44:44	-->	Awesomecase (sid56584@gateway/web/irccloud.com/x-icstwfkqfrnnmdqt) has joined ##c++
+2016-10-17 15:44:58	-->	voldyman (uid11639@gateway/web/irccloud.com/x-rwhjlpjtmypmdfuw) has joined ##c++
+2016-10-17 15:46:23	-->	JazzBot (6217d1d8@gateway/web/freenode/ip.98.23.209.216) has joined ##c++
+2016-10-17 15:46:29	<--	blackbird1 (~blackbird@197.3.200.195) has quit (Quit: Leaving)
+2016-10-17 15:46:30	<--	Green (uid722@gateway/web/irccloud.com/x-gaoiuiutjsmkiamu) has quit (Read error: Network is unreachable)
+2016-10-17 15:46:40	<--	barq (sid103986@gateway/web/irccloud.com/x-chqttkvpdnvmkxec) has quit (Ping timeout: 260 seconds)
+2016-10-17 15:46:53	<--	Kamuela (sid111576@gateway/web/irccloud.com/x-alooxhleqxrypgzu) has quit (Ping timeout: 258 seconds)
+2016-10-17 15:47:04	-->	Green (uid722@gateway/web/irccloud.com/x-qspanqwxyadedffo) has joined ##c++
+2016-10-17 15:48:27	<--	SunnyD (~SunnyD@cpe-72-178-78-211.hot.res.rr.com) has quit (Quit: ChatZilla 0.9.90.1 [Firefox 30.0/20140605174243])
+2016-10-17 15:49:09	<--	a000a (~plusone@176.24.26.166) has quit (Ping timeout: 265 seconds)
+2016-10-17 15:49:12	-->	barq (sid103986@gateway/web/irccloud.com/x-wpbbmcfxrdakaobb) has joined ##c++
+2016-10-17 15:49:45	<--	andyhuzhill (~Thunderbi@14.23.45.178) has quit (Ping timeout: 260 seconds)
+2016-10-17 15:50:24	-->	ReverseBlade (~user@213.74.212.180) has joined ##c++
+2016-10-17 15:51:33	-->	Nilesh_ (uid116340@gateway/web/irccloud.com/x-jgwpuaemkcdciozj) has joined ##c++
+2016-10-17 15:51:40	JazzBot	Hey everyone, my professor tasked us to find the maximum spanning tree from a matrix. I think I got it figured out but failing to compile the code. I'm trying to pass in a vector of a class by reference to moddify. What I have fails to compile on line 39 because "use '&' to create a pointer to member. I'm not sure what I'm doing wrong. http://pastebin.com/bjEa1CsQ
+2016-10-17 15:52:13	-->	threebar (~threebar@unaffiliated/notten) has joined ##c++
+2016-10-17 15:52:32	<--	JoshS (~jshjsh@172.56.38.151) has quit (Ping timeout: 265 seconds)
+2016-10-17 15:53:00	-->	Immune_ (~Immune@47.145.46.247) has joined ##c++
+2016-10-17 15:54:17	-->	Alucards (~Thunderbi@eduD113.kent.ac.uk) has joined ##c++
+2016-10-17 15:54:35	JazzBot	Sorry the caller is on line 52
+2016-10-17 15:54:47	chaiomanot	JazzBot, "begin" is a method, not a member
+2016-10-17 15:55:04	<--	Immune (~Immune@47.145.46.247) has quit (Ping timeout: 245 seconds)
+2016-10-17 15:55:04	<--	swatti (~memory@194.88.49.178) has quit (Ping timeout: 256 seconds)
+2016-10-17 15:55:07	-->	mindandsky (~mindandsk@2601:283:8000:4250:d957:66a1:9e8f:78f8) has joined ##c++
+2016-10-17 15:55:09	chaiomanot	edgeList.begin is missing parens
+2016-10-17 15:55:24	<--	Aquazi (~Aquazi@host65-199-dynamic.32-79-r.retail.telecomitalia.it) has quit (Quit: Leaving)
+2016-10-17 15:55:35	-->	uuplusu (~uuplusu@218.108.29.107) has joined ##c++
+2016-10-17 15:55:50	chaiomanot	also you're using bitwise ors where you mean to use logical
+2016-10-17 15:56:01	JazzBot	yep that was it and forgot to return my sorted list on the caller method
+2016-10-17 15:56:04	JazzBot	on which line?
+2016-10-17 15:56:17	chaiomanot	66
+2016-10-17 15:56:19	chaiomanot	maybe others
+2016-10-17 15:56:34	JazzBot	Lol thanks for catching that
+2016-10-17 15:56:43	JazzBot	probably would of given me a headache
+2016-10-17 15:56:43	-->	Arlen0 (~Arlen0@38-103-219-200.alamobb.net) has joined ##c++
+2016-10-17 15:57:03	-->	ferdna (~ferdna@cpe-69-23-141-130.elp.res.rr.com) has joined ##c++
+2016-10-17 15:57:09	<--	hualet (~hualet@118.184.15.164) has quit (Remote host closed the connection)
+2016-10-17 15:57:25	chaiomanot	turn up your warnings
+2016-10-17 15:57:30	chaiomanot	the compiler should catch that
+2016-10-17 15:57:31	<--	Arlen0 (~Arlen0@38-103-219-200.alamobb.net) has quit (Client Quit)
+2016-10-17 15:57:39	-->	hualet (~hualet@118.184.15.164) has joined ##c++
+2016-10-17 15:57:48	<--	nikki93 (~nikki93@2601:645:8104:cb10:c077:3177:d295:d3d1) has quit (Remote host closed the connection)
+2016-10-17 15:57:50	-->	callousf1 (~thraxxus@2602:302:d1fb:3360:c0d4:f2ed:597:1d65) has joined ##c++
+2016-10-17 15:57:52	zap0	!wall
+2016-10-17 15:58:02	<--	Green (uid722@gateway/web/irccloud.com/x-qspanqwxyadedffo) has quit (Ping timeout: 250 seconds)
+2016-10-17 15:58:22	JazzBot	I use c# at work where there is a clear difference between properties and methods. I keep getting burned by accidentally trying to access it like a c# property.
+2016-10-17 15:58:36	<--	snover (~Adium@unaffiliated/snover) has quit (Quit: Leaving.)
+2016-10-17 15:58:36		[15:58]
+2016-10-17 15:58:47	JazzBot	Ok good to know, thanks chaiomanot
+2016-10-17 15:59:10	chaiomanot	np
+2016-10-17 15:59:13	-->	Kamuela (sid111576@gateway/web/irccloud.com/x-yhfjcssliuuawskv) has joined ##c++
+2016-10-17 15:59:30	-->	Brklyn (~truthbk@207-38-215-87.c3-0.nyr-ubr1.nyr.ny.cable.rcn.com) has joined ##c++
+2016-10-17 15:59:37	<--	edr (~edr@pdpc/supporter/professional/edr) has quit (Quit: Leaving)
+2016-10-17 16:00:51	-->	swatti (~memory@194.88.49.178) has joined ##c++
+2016-10-17 16:01:03	-->	FreeBirdLjj (~freebirdl@223.65.168.113) has joined ##c++
+2016-10-17 16:02:10	<--	hualet (~hualet@118.184.15.164) has quit (Ping timeout: 252 seconds)
+2016-10-17 16:04:10	<--	saml_ (~saml@cpe-24-102-97-97.nyc.res.rr.com) has quit (Remote host closed the connection)
+2016-10-17 16:04:14	-->	iibewegung (~iibewegun@pdpc/supporter/student/iibewegung) has joined ##c++
+2016-10-17 16:04:22	-->	UnripeSuica (~UnlikeSui@115.93.122.107) has joined ##c++
+2016-10-17 16:04:24	<--	Brklyn (~truthbk@207-38-215-87.c3-0.nyr-ubr1.nyr.ny.cable.rcn.com) has quit (Ping timeout: 252 seconds)
+2016-10-17 16:05:44	<--	FreeBirdLjj (~freebirdl@223.65.168.113) has quit (Ping timeout: 260 seconds)
+2016-10-17 16:05:49	-->	mackal (~mike@pool-96-237-144-12.bstnma.fios.verizon.net) has joined ##c++
+2016-10-17 16:05:50	-->	Betal (~Betal@unaffiliated/betal) has joined ##c++
+2016-10-17 16:06:55	-->	Green (uid722@gateway/web/irccloud.com/x-dndmuwvejwwmjlib) has joined ##c++
+2016-10-17 16:06:55	-->	a000a (~plusone@176.24.26.166) has joined ##c++
+2016-10-17 16:08:32	<--	CEnnis91 (uid3543@gateway/web/irccloud.com/x-boeqyeyxzyfbavbq) has quit (Quit: Connection closed for inactivity)
+2016-10-17 16:08:58	<--	iibewegung (~iibewegun@pdpc/supporter/student/iibewegung) has quit (Ping timeout: 265 seconds)
+2016-10-17 16:09:52	<--	BombStrike (~BombStrik@z174090.dynamic.ppp.asahi-net.or.jp) has quit (Ping timeout: 258 seconds)

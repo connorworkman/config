@@ -25,3 +25,69 @@
 2016-10-17 14:09:00		[14:03]
 2016-10-17 14:52:21	<--	Cork (~Cork@firefox/community/cork) has quit (Ping timeout: 252 seconds)
 2016-10-17 14:52:21		[14:52]
+2016-10-17 14:58:55	-->	Cork (~Cork@firefox/community/cork) has joined ##sed
+2016-10-17 15:04:00		[14:58]
+2016-10-17 15:06:10	<--	tinkersh (~TinkerSh@103.10.28.8) has quit (Read error: Connection reset by peer)
+2016-10-17 15:06:24	-->	tinkersh (~TinkerSh@103.10.28.8) has joined ##sed
+2016-10-17 15:12:00		[15:06]
+2016-10-17 15:14:13	-->	hpt (~hpt@123.114.147.138) has joined ##sed
+2016-10-17 15:14:53	Phanes	jeez sed is frustrating
+2016-10-17 15:15:22	Phanes	netstat -lntp | sed 's/:+//g' does not strip out colons
+2016-10-17 15:15:38	Phanes	that should match 'one or more colons'
+2016-10-17 15:16:25	Phanes	in fact it does nothing
+2016-10-17 15:17:06	Phanes	what am i doing wrong there?
+2016-10-17 15:17:20	nal	you dont need +
+2016-10-17 15:17:30	Phanes	echo sdfsdfsdfs:::esfdf | sed 's/:+//g' results in "sdfsdfsdfs:::esfdf"
+2016-10-17 15:17:48	nal	# echo sdfsdfsdfs:::esfdf | sed 's/://g'
+2016-10-17 15:17:49	shbot	nal: sdfsdfsdfsesfdf
+2016-10-17 15:18:00	nal	you have the global flag
+2016-10-17 15:18:18	Phanes	i will also want to only remove sets of 3 colons
+2016-10-17 15:18:22	Phanes	and :{1,3}
+2016-10-17 15:18:25	Phanes	does nothing
+2016-10-17 15:18:38	 *	Phanes is following the docs
+2016-10-17 15:18:41	<--	hpt (~hpt@123.114.147.138) has quit (Ping timeout: 260 seconds)
+2016-10-17 15:18:55	nal	# echo sdfsdfsdfs:::esfdf | sed 's/::://g'
+2016-10-17 15:18:56	shbot	nal: sdfsdfsdfsesfdf
+2016-10-17 15:19:26	Phanes	ok so i should ignore the docs saying {n,n} for repeat length params?
+2016-10-17 15:19:27	-->	hpt (~hpt@123.114.147.138) has joined ##sed
+2016-10-17 15:19:40	nal	i think so
+2016-10-17 15:19:44	Phanes	this is schizophrenic
+2016-10-17 15:19:47	nal	depends on your sed
+2016-10-17 15:20:00	Phanes	how do I get a sed that follows regex properly?
+2016-10-17 15:20:20	Phanes	so i can not be doing weird special forms of regex that dont line up with the docs
+2016-10-17 15:20:20	nal	theres no such thing as a proper regex
+2016-10-17 15:20:33	nal	theres standard, basic, extended, perl
+2016-10-17 15:20:39	nal	im probably wrong on one there
+2016-10-17 15:21:08	nal	either way, that example i gave works
+2016-10-17 15:21:28	Phanes	right that works for -that- example
+2016-10-17 15:21:33	Phanes	but lets say i wanted to do an ip address
+2016-10-17 15:21:36	Phanes	thats not good
+2016-10-17 15:22:12	Phanes	(\d{1,3}\.){1,3} or such wont be possible if sed is weird like this
+2016-10-17 15:22:22	<--	al-damiri (uid142631@gateway/web/irccloud.com/x-rhwaasxswunkqtwa) has quit (Quit: Connection closed for inactivity)
+2016-10-17 15:23:04	Phanes	am i looking for extended?
+2016-10-17 15:23:08	nal	yes
+2016-10-17 15:23:16	nal	im gonna wait for someone else to answer
+2016-10-17 15:25:13	nal	but you can do \d\d?\d?\.\d\d? etc
+2016-10-17 15:26:12	nal	which is still a terrible solution because ip's only go to 255
+2016-10-17 15:27:07	nal	and i dont think \d works even, you have to do [0-9]
+2016-10-17 15:27:07		[15:27]
+2016-10-17 15:27:17	Phanes	why doesn't \d work?
+2016-10-17 15:27:22	 *	Phanes doublechecks the regex doc
+2016-10-17 15:27:30	nal	idk, i'm confusing it with awk
+2016-10-17 15:27:31	Phanes	yep, \d is there and doesn't work
+2016-10-17 15:27:40	Phanes	wtf
+2016-10-17 15:27:45	nal	oh, i was right
+2016-10-17 15:28:01	nal	old extended regex doesnt have \d, but gnu sed should have it
+2016-10-17 15:28:18	Phanes	i dont understand why this is a thing
+2016-10-17 15:30:32	nal	standardized tools are impossible to change
+2016-10-17 15:35:02	nal	they say perl is better at everything
+2016-10-17 15:35:25	nal	and sam is definitely better than sed
+2016-10-17 15:41:00		[15:35]
+2016-10-17 15:41:12	yitz	sed got [[:digit:]] but not \d AFAIK
+2016-10-17 15:41:38	yitz	\d isn't found in many regexes
+2016-10-17 15:44:02	nal	:digit: is just hilarious to me
+2016-10-17 15:44:46	nal	oh sure, im gonna type something that takes longer than [0-9]
+2016-10-17 15:50:00		[15:44]
+2016-10-17 15:56:03	yitz	Those two are not always the same
+2016-10-17 16:02:00		[15:56]
+2016-10-17 16:08:54	-->	almostworking (~almostwor@unaffiliated/almostworking) has joined ##sed
