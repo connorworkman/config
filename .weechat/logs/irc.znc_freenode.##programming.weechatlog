@@ -640,3 +640,102 @@
 2016-10-17 16:08:33	-->	tbsf (~tbsf@c-71-205-108-77.hsd1.co.comcast.net) has joined ##programming
 2016-10-17 16:09:10	-->	j25 (a027961d@gateway/web/freenode/ip.160.39.150.29) has joined ##programming
 2016-10-17 16:10:07	j25	Hey, basic question. It seems like adding an unsigned number and a signed number together works. e.g. if I have a 3-bit unsigned number 7 (111), and a 3-bit signed number -3 (101), adding them returns 4 (100) with a carry bit. Is this true? Why is it?
+2016-10-17 16:10:43	<--	benzrf (~benzrf@benzrf.com) has left ##programming ("WeeChat 1.6")
+2016-10-17 16:10:44	j25	It seems to me that the range of the unsigned number is 0-7 whereas the signed number is -4 to 3, so I would assume it wouldn't work, but it does
+2016-10-17 16:11:44	-->	mahiru (~mahiru@93-81-55-110.broadband.corbina.ru) has joined ##programming
+2016-10-17 16:11:55	<--	Alucards (~Thunderbi@eduD113.kent.ac.uk) has quit (Quit: Alucards)
+2016-10-17 16:11:56	+PlanckWalk	j25: It partly works
+2016-10-17 16:12:02	j25	Uh oh
+2016-10-17 16:12:10	+PlanckWalk	I.e. works when there's no overflows
+2016-10-17 16:12:36	j25	Ah that's right
+2016-10-17 16:12:47	-->	polydo_s (~polydo_s@58.200.129.151) has joined ##programming
+2016-10-17 16:12:50	j25	You can't do 7+1  no matter what
+2016-10-17 16:12:59	<--	Betal (~Betal@unaffiliated/betal) has quit (Disconnected by services)
+2016-10-17 16:13:07	+PlanckWalk	Also, which results have overflows depend upon whether you interpret the result as signed or unsigned.
+2016-10-17 16:13:20	j25	Oh interesting, I hadn't thought about that
+2016-10-17 16:13:21	-->	Betal (~Betal@unaffiliated/betal) has joined ##programming
+2016-10-17 16:15:33	j25	Thanks PlanckWalk !
+2016-10-17 16:15:39	-->	nate1 (~nate@103.27.164.7) has joined ##programming
+2016-10-17 16:16:09	<--	mahiru (~mahiru@93-81-55-110.broadband.corbina.ru) has quit (Ping timeout: 256 seconds)
+2016-10-17 16:16:56	<--	mintograde (~nn@47.202.59.248) has quit (Ping timeout: 260 seconds)
+2016-10-17 16:18:37	<--	nate4 (~nate@103.27.164.7) has quit (Ping timeout: 244 seconds)
+2016-10-17 16:18:40	<--	j25 (a027961d@gateway/web/freenode/ip.160.39.150.29) has quit (Quit: Page closed)
+2016-10-17 16:18:52	<--	harai (~b@node-1w7jr9srwviojckye6d28z78d.ipv6.telus.net) has quit (Quit: WeeChat 1.5)
+2016-10-17 16:18:57	-->	nate2 (~nate@103.27.164.45) has joined ##programming
+2016-10-17 16:18:59	<--	BlackFish (~Deadfish@cpc81297-enfi21-2-0-cust183.20-2.cable.virginm.net) has quit (Ping timeout: 256 seconds)
+2016-10-17 16:20:25	-->	harai (~b@d108-180-145-61.bchsia.telus.net) has joined ##programming
+2016-10-17 16:20:58	Zuu	For all you bit twidders, I know how to do the following in 7 operations, but I'm hoping to do it in maybe three on x86. Suppose i have an integer in binary, like so: 00110011. i then want to literally pull bits out of that, according to a mask, say 000xxxx0. I then want the result to be 001xxxx1 -> 00000011
+2016-10-17 16:21:03	--	Guest68642 is now known as User_Friendly
+2016-10-17 16:21:36	<--	monq (~monq@unaffiliated/monq) has quit (Ping timeout: 260 seconds)
+2016-10-17 16:21:46	Zuu	so the bits marked as xxxx, are literally removed, and the bits to the left of any x, will move right, as if it was tetris
+2016-10-17 16:21:52	<--	nate1 (~nate@103.27.164.7) has quit (Ping timeout: 250 seconds)
+2016-10-17 16:22:11	<--	badon (~badon@pdpc/supporter/active/badon) has quit (Quit: Leaving)
+2016-10-17 16:22:35	+PlanckWalk	2 ANDs, shift, and OR?
+2016-10-17 16:23:14	+PlanckWalk	Assuming the mask bits are contiguous
+2016-10-17 16:23:26	-->	obZen (~quassel@209.95.50.93) has joined ##programming
+2016-10-17 16:23:26		[16:23]
+2016-10-17 16:23:52	-->	sonatta (sonatta@host-53.56-14-119.dynamic.totalbb.net.tw) has joined ##programming
+2016-10-17 16:24:10	Zuu	the bitmask i have, that i want to apply to 32 bit int, is 11000000110000001100000011000000, meaning that the resulting int will only have 28 of the bits, of any integer that i want to apply this "remove" operation on
+2016-10-17 16:24:20	<--	sonatta (sonatta@host-53.56-14-119.dynamic.totalbb.net.tw) has quit (Client Quit)
+2016-10-17 16:24:23	+PlanckWalk	Ah, so not contiguous then
+2016-10-17 16:24:38	-->	werdfriek (~chatzilla@2601:602:c205:ac40:a15d:5d58:5be7:3738) has joined ##programming
+2016-10-17 16:24:59	Zuu	nope, contigouous would have been done in two ops
+2016-10-17 16:25:16	okuu	Is there some standard algorithm using for escaping/unescaping string literals in most languages, or do they all differ in subtle ways?
+2016-10-17 16:25:22	<--	sssilver (~sssilver@2605:6000:ee54:b500:81c3:a3a5:c04c:2db1) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-10-17 16:25:40	+PlanckWalk	okuu: They all differ
+2016-10-17 16:26:02	okuu	Ah.
+2016-10-17 16:26:19	+PlanckWalk	Some in not at all subtle ways
+2016-10-17 16:26:21	Zuu	so the goal, is to do this 4 piece pattern, in, hopefully less than 7 ops :>
+2016-10-17 16:26:24	<--	ni8 (~ikari@ip70-185-109-150.ga.at.cox.net) has quit (Read error: Connection reset by peer)
+2016-10-17 16:26:45	Zuu	actually, i just got the idea!
+2016-10-17 16:27:02	Zuu	wooh!
+2016-10-17 16:27:33	<--	Kixxy (~kixxy@unaffiliated/kixxy) has quit (Quit: Shit.. a bluescreen)
+2016-10-17 16:28:04	-->	GOethinger (~GOethinge@dslb-088-077-177-027.088.077.pools.vodafone-ip.de) has joined ##programming
+2016-10-17 16:28:21	-->	UnfairLife (~tyler@CPE48f8b3caebff-CM0c473de79ce0.cpe.net.cable.rogers.com) has joined ##programming
+2016-10-17 16:28:29	<--	nate2 (~nate@103.27.164.45) has quit (Ping timeout: 260 seconds)
+2016-10-17 16:29:47	-->	sonatta (~sonatta@host-53.56-14-119.dynamic.totalbb.net.tw) has joined ##programming
+2016-10-17 16:30:38	-->	mahiru (~mahiru@93-81-55-110.broadband.corbina.ru) has joined ##programming
+2016-10-17 16:30:39	okuu	What do you guys think about allowing identifiers beginning with a digit?
+2016-10-17 16:31:05	okuu	When writing numeric code, I often wanted to define variables like “2h”.
+2016-10-17 16:31:38	okuu	But, no, most languages don't allow it, so I had to settle for “h2”, which could be confused (in intent) with “h_2”.
+2016-10-17 16:31:57	+PlanckWalk	_2h? :-)
+2016-10-17 16:32:10	okuu	That's horrifying.
+2016-10-17 16:32:16	+PlanckWalk	I know! ;-)
+2016-10-17 16:32:27	<--	yaftkoldo (~yaftkoldo@wnpgmb1154w-ds01-131-46.dynamic.mtsallstream.net) has quit (Quit: Leaving)
+2016-10-17 16:33:22	okuu	Anyway, the new tokenization rule would actually be simpler: lump all alphanumeric characters together. If the result can be converted to an integer, it's an integer. If not, it's an identifier.
+2016-10-17 16:33:53	okuu	Errr, correction: read all contiguous alphanumeric characters.
+2016-10-17 16:34:30	<--	JohnMcClain (~John@208.167.241.249) has quit (Quit: Leaving.)
+2016-10-17 16:35:25	<--	mahiru (~mahiru@93-81-55-110.broadband.corbina.ru) has quit (Ping timeout: 256 seconds)
+2016-10-17 16:35:50	+PlanckWalk	double a = 1e6;
+2016-10-17 16:36:44	-->	boxer (~Adam@72.173.209.206) has joined ##programming
+2016-10-17 16:37:04	okuu	Screw that. Want a double? Use 1.0e6. Or something like that.
+2016-10-17 16:37:21	okuu	Actually, I'm lying. I'm not even thinking about doubles.
+2016-10-17 16:38:01	okuu	I really need to think seriously about what characters I want in identifiers, though.
+2016-10-17 16:38:11	okuu	I like how Lisp can use identifiers-like-this.
+2016-10-17 16:38:50	Zuu	my bit twidle hack was poop, did not work
+2016-10-17 16:38:50		[16:38]
+2016-10-17 16:38:57	Zuu	bedtime :<
+2016-10-17 16:40:56	okuu	Aw. :-(
+2016-10-17 16:40:59	okuu	Better luck tomorrow.
+2016-10-17 16:41:03	okuu	And good night.
+2016-10-17 16:42:18	<--	Twipply (~Dunno@cpc1-mapp10-2-0-cust641.12-4.cable.virginm.net) has quit (Quit: Leaving)
+2016-10-17 16:42:49	Zuu	Thanks :> nitey nite o/
+2016-10-17 16:45:54	-->	JenElizabeth (~Jen@217.163.2.164) has joined ##programming
+2016-10-17 16:46:02	-->	GeneRiver (~IceChat9@softbank126093098229.bbtec.net) has joined ##programming
+2016-10-17 16:46:03	<--	GeneRiver (~IceChat9@softbank126093098229.bbtec.net) has quit (Client Quit)
+2016-10-17 16:46:28	-->	es1 (~es1@unaffiliated/es1) has joined ##programming
+2016-10-17 16:46:45	<--	Joanna2 (~Joanna345@ip68-111-72-145.oc.oc.cox.net) has quit (Ping timeout: 252 seconds)
+2016-10-17 16:48:38	-->	mahiru (~mahiru@93-81-55-110.broadband.corbina.ru) has joined ##programming
+2016-10-17 16:49:20	<--	chachasmooth (~chachasmo@unaffiliated/chachasmooth) has quit (Ping timeout: 250 seconds)
+2016-10-17 16:49:50	-->	chachasmooth (~chachasmo@unaffiliated/chachasmooth) has joined ##programming
+2016-10-17 16:50:47	-->	duncannz (~duncannz@118-93-19-96.dsl.dyn.ihug.co.nz) has joined ##programming
+2016-10-17 16:51:28	-->	NateRiver (~NateRiver@softbank126093098229.bbtec.net) has joined ##programming
+2016-10-17 16:52:58	<--	mahiru (~mahiru@93-81-55-110.broadband.corbina.ru) has quit (Ping timeout: 245 seconds)
+2016-10-17 16:54:05	<--	Zgan (~smuxi@197.15.234.158) has quit (Remote host closed the connection)
+2016-10-17 16:54:05		[16:54]
+2016-10-17 16:54:54	<--	Dohplay (~Dohplay@2601:246:4400:f10c:64b3:e224:8352:31b9) has quit (Read error: Connection reset by peer)
+2016-10-17 16:55:49	<--	aajjbb (~aajjbb@177.193.235.201) has quit (Ping timeout: 256 seconds)
+2016-10-17 16:59:38	<--	callousf1 (~thraxxus@2602:302:d1fb:3360:c0d4:f2ed:597:1d65) has quit (Ping timeout: 245 seconds)
+2016-10-17 17:00:53	<--	werdfriek (~chatzilla@2601:602:c205:ac40:a15d:5d58:5be7:3738) has quit (Ping timeout: 245 seconds)
+2016-10-17 17:02:31	<--	Ravana (~Ravana@unaffiliated/ravana) has quit (Ping timeout: 256 seconds)
+2016-10-17 17:04:04	<--	Kol (Kol@S0106bcd1656621da.vc.shawcable.net) has quit (Ping timeout: 250 seconds)
