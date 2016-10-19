@@ -151,9 +151,12 @@ vnoremap <Leader>dp <Esc>:'<,'>diffput<CR>
 nnoremap <Leader>dw <Esc>:wincmd p<CR>
 
 " Allow saving of files as sudo when I forgot to start vim using sudo.
-command sudo silent w !sudo dd of=%
 cnoremap w!! silent w !sudo dd of=%
 "cnoremap w!! silent w !sudo tee %
+"command Sudo silent w !sudo dd of=%
+
+" Open a Quickfix window for the last search.
+nnoremap <silent> ,/ :execute 'vimgrep /'.@/.'/g %'<CR>:copen<CR>
 
 "nnoremap <Leader>. V"+y<Esc>:call system("xclip -i -selection clipboard", getreg("\""))
 "\<CR>:call system("xclip -i", getreg("\""))<CR>
