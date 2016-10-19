@@ -291,7 +291,7 @@ if has('gui_running')
 "  set guifont=Terminus\ (TTF)\ Medium\ 16
 "  set guifont=Terminess\ Powerline\ 16
 else
-  set paste
+  set nopaste
   set guioptions=aAeaigmrLT
   set clipboard=unnamedplus,autoselectplus
   "set clipboard+=unnamedplus

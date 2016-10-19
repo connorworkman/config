@@ -390,8 +390,9 @@ vkfix() {
 	printf "${first}" | sed -n '
 		s/\<\(.\)/\u\1/g
 		s/[&]*#039\;/'\''/g
-		s/[&]*amp\;/\&/g
+		s/[&]*[Aa]mp\;/\&/g
 		s/  / \& /g
+		s/ [Aa]nd / \& /g
 		s/ [\[]*[Oo]riginal [Mm]ix[\]]* / (Original Mix) /g
 		s/\<[Ff][Ee][Aa][Tt]\>/ft/g
 		s/\<[Pp][Rr][Ee][Ss][Ee][Nn][Tt][Ss]\>/pres/g
@@ -407,7 +408,7 @@ vkfix() {
 	printf "\"\n"
     done | \
 	awk '! /\"\"/ {print}' | \
-	    while read -r final; do eval "mv --verbose ${final}"; done
+	    while read -r final; do eval "mv --verbose ${final}" 2>&-; done
 }
 
 f0x0() {

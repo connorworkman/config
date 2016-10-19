@@ -4816,3 +4816,239 @@
 2016-10-18 18:19:47	qqcore33	I am not used to that
 2016-10-18 18:19:57	-->	masochist (~masochist@unaffiliated/masochist) has joined ##C
 2016-10-18 18:19:59	qqcore33	I am used to Visual Studio thats why I am having hard time converting it
+2016-10-18 18:20:15	Stragus	The code is written in the C standard from 1999 and the MS compiler doesn't support that yet
+2016-10-18 18:20:15		[18:20]
+2016-10-18 18:20:34	qqcore33	well since we are 2015, 99 is pretty old huh?
+2016-10-18 18:20:35	chrisf	dho: your points on machine dependence, alignment etc are all valid-- but the compiler knows the requirements of what it targets :)
+2016-10-18 18:21:35	Stragus	qqcore33: Your compiler only supports the standard from 1989 (and I think we are in 2016)
+2016-10-18 18:21:41	<--	diogenese (diogenese@diogenese.velotech.net) has quit (Read error: Connection reset by peer)
+2016-10-18 18:21:42	-->	YungRaj (~YungRaj@50-24-71-159.bcstcmtk01.res.dyn.suddenlink.net) has joined ##C
+2016-10-18 18:22:03	dho	chrisf: yeah, but you can require aligned access on x86, just requires setting a processor flag
+2016-10-18 18:22:05	mthowe	qqcore33: You need to replace {}, {} with {0}, {0} and get rid of all the named initializers and I think it should work.
+2016-10-18 18:22:23	qqcore33	well...this is so annoying...there are other errors which doesnt make sense to me. Why anyone on earth would make a project using mingw64 and MSYS2
+2016-10-18 18:22:28	mthowe	qqcore33: MS has completely abandoned the C compiler in favor of C++
+2016-10-18 18:22:29	qqcore33	Visual Studio is so much easier
+2016-10-18 18:22:54	dho	s/require aligned/trap on misaligned/
+2016-10-18 18:23:05	dho	the compiler really can't know that
+2016-10-18 18:23:06	mthowe	But anyway, do what I said and this part should compile. But if this project is of any decent size you will probably run into a lot more c99isms you will need to fix.
+2016-10-18 18:23:18	Stragus	I could ask why on earth would someone use the MS compiler, stuck 27 years in the past
+2016-10-18 18:23:22	-->	moei (~moei@softbank221078042071.bbtec.net) has joined ##C
+2016-10-18 18:25:01	qqcore33	mthowe: how do I get rid of that named initiliazers so it can fit the requirnemnts?
+2016-10-18 18:25:37	mthowe	Assuming they are not skipping over any fields in that struct by using the named initializers (I just looked up that struct and it doesn't appear that they are), just get rid of all the ".field = x" and just leave "x".
+2016-10-18 18:26:31	mthowe	So, ".Flags = 32," becomes "32,", etc. And look up the struct, make sure the fields are in the *proper order*.
+2016-10-18 18:26:48	<--	xameada (~xameada@ip98-165-190-88.ph.ph.cox.net) has quit (Ping timeout: 260 seconds)
+2016-10-18 18:27:08	<--	MaxLeiter (~MaxLeiter@198.206.13.135) has quit (Changing host)
+2016-10-18 18:27:08	-->	MaxLeiter (~MaxLeiter@unaffiliated/maxleiter) has joined ##C
+2016-10-18 18:27:22	mthowe	Ah it looks like they did omit the first field in the struct. I was looking at the wrong one.
+2016-10-18 18:27:26	mthowe	https://msdn.microsoft.com/en-us/library/windows/hardware/ff562046(v=vs.85).aspx
+2016-10-18 18:27:28	@candide	Title of mthowe's link: RtlQueryRegistryValues routine (Windows Drivers)
+2016-10-18 18:28:34	mthowe	So you first struct would be initialized like { NULL, 32, (void *)key, (void *)cfg.ci_orig, REG_DWORD, (void *)cfg.ci_opt, 1 }
+2016-10-18 18:28:57	-->	SwiftMatt (~Objective@162.242.94.27) has joined ##C
+2016-10-18 18:29:12	qqcore33	mthowe: u mean two nulls?
+2016-10-18 18:29:33	mthowe	No, I mean your first struct using the named initializers, sorry.
+2016-10-18 18:29:43	mthowe	The first and second actual structs can just be {0}, {0}
+2016-10-18 18:30:14	mthowe	Then follow my example above for the 3rd and 4th structs.
+2016-10-18 18:31:09	-->	Haliucinas (~Haliucina@data-101-117.cgates.lt) has joined ##C
+2016-10-18 18:31:15	<--	hyphenated (~hyphenate@mail.tw.co.nz) has quit (Quit: hyphenated)
+2016-10-18 18:31:17	qqcore33	I am so confused
+2016-10-18 18:31:22	<--	xall (~xall@wsip-70-166-121-212.ph.ph.cox.net) has quit (Ping timeout: 256 seconds)
+2016-10-18 18:31:30	-->	bneo99 (~bneo99@115.133.69.54) has joined ##C
+2016-10-18 18:31:34	-->	hyphenated (~hyphenate@mail.tw.co.nz) has joined ##C
+2016-10-18 18:31:45	qqcore33	Anyway...would it be hard for any experienced guy with mingw to convert the project into Visual Studio?
+2016-10-18 18:31:51	qqcore33	its like 6 files
+2016-10-18 18:31:52	shadwick	qqcore33: Do they have any incentive?
+2016-10-18 18:32:09	shadwick	qqcore33: Plus, that might mean totally different code since you're supporting a 10-year-older standard
+2016-10-18 18:32:43	qqcore33	I've never worked with mingw and other ides and its just killing me
+2016-10-18 18:33:06	-->	nal (~nal@adsl-64-237-237-208.prtc.net) has joined ##C
+2016-10-18 18:33:18	shadwick	qqcore33: Well, unfortunately MS' C compiler is its own special little island
+2016-10-18 18:33:26	Stragus	Sounds like a good opportunity to discover a new (and pretty good) compiler
+2016-10-18 18:34:48	shadwick	qqcore33: Pure C on a POSIX-compliant system can be a bit of self-flagellation. Developing C on windows with MSVC is a step beyond...
+2016-10-18 18:34:51	qqcore33	mthowe: http://ideone.com/1ThyIM should it be like that?
+2016-10-18 18:35:28	qqcore33	shadwick: well I need this for a windows subsystem, and many example source codes on github are via VS
+2016-10-18 18:35:28		[18:35]
+2016-10-18 18:35:29	<--	hyphenated (~hyphenate@mail.tw.co.nz) has quit (Client Quit)
+2016-10-18 18:35:33	mthowe	hold on i'm editing your earlier post.
+2016-10-18 18:35:34	shadwick	qqcore33: the ".tab =" syntax is C99
+2016-10-18 18:35:40	-->	koodi (~koodi@dsl-vntbrasgw1-54fa6e-245.dhcp.inet.fi) has joined ##C
+2016-10-18 18:36:35	mthowe	http://ideone.com/xEgGbW
+2016-10-18 18:37:53	CaZe	qqcore33: MS stopped caring about C in the early-mid 90's.
+2016-10-18 18:38:45	-->	diogenese (diogenese@diogenese.velotech.net) has joined ##C
+2016-10-18 18:38:54	<--	f3r70rr35f (~fernando@186-105-73-238.baf.movistar.cl) has quit (Quit: leaving)
+2016-10-18 18:38:56	qqcore33	CaZe: why is C still viable then, and not C++
+2016-10-18 18:39:39	CaZe	qqcore33: It isn't, in many cases.
+2016-10-18 18:39:52	chrisf	that's not entirely fair. VS13 and 14 add some C99 stuff.
+2016-10-18 18:40:11	CaZe	Only the stuff that happened to already be needed for C++.
+2016-10-18 18:40:46	-->	archita (uid192338@gateway/web/irccloud.com/x-jfrfrvrckskjlaju) has joined ##C
+2016-10-18 18:41:45	CaZe	Also, it's not about fairness. Microsoft made a business decision.
+2016-10-18 18:42:05	CaZe	They decided to focus on other things besides C compilers.
+2016-10-18 18:42:09	<--	diogenese (diogenese@diogenese.velotech.net) has quit (Remote host closed the connection)
+2016-10-18 18:42:11	<--	seachris (~Chris@c-24-56-251-155.customer.broadstripe.net) has quit (Quit: seachris)
+2016-10-18 18:42:17	qqcore33	mthowe: 	(void*)key + 2, shows an error that expression must be a pointer to a complete object type
+2016-10-18 18:42:34	Stragus	That's a C gnu extension
+2016-10-18 18:42:46	shadwick	qqcore33: Yeah, you're trying to move 2 (void) elements along from `key`
+2016-10-18 18:42:55	Stragus	(char *)key + 2  would be the same, except a different type
+2016-10-18 18:43:20	shadwick	Stragus: oh wait, did I get casting precedence rules wrong?...
+2016-10-18 18:43:27	qqcore33	and educational purpose informatio, is it still because of C99 ?
+2016-10-18 18:43:37	-->	seachris (~Chris@c-24-56-251-155.customer.broadstripe.net) has joined ##C
+2016-10-18 18:43:58	Stragus	Technically, that's a GNU extension to the C language. Supported by GCC, clang, Intel compiler, etc.
+2016-10-18 18:44:24	CaZe	qqcore33: Is what still because of C99?
+2016-10-18 18:44:37	shadwick	Stragus: Sorry for sounding stupid, but are you implying the GNU extension will apply different precedences to make it (void *) (key + 2) for you>?
+2016-10-18 18:44:43	<--	YungRaj (~YungRaj@50-24-71-159.bcstcmtk01.res.dyn.suddenlink.net) has quit (Quit: Textual IRC Client: www.textualapp.com)
+2016-10-18 18:44:44	qqcore33	the conversion from void* to char*
+2016-10-18 18:44:56	-->	DoubleLeft (~user@211.82.242.62) has joined ##C
+2016-10-18 18:45:00	shadwick	Stragus: (I have been in Java and Ada for a while)
+2016-10-18 18:45:01	Stragus	shadwick: The cast occurs before the addition
+2016-10-18 18:45:03	<--	DoubleLeft (~user@211.82.242.62) has quit (Remote host closed the connection)
+2016-10-18 18:45:15	shadwick	Stragus: Ok phew, I was right originally.
+2016-10-18 18:45:31	shadwick	qqcore33: Just make it (void *) (key + 2)
+2016-10-18 18:45:38	qqcore33	btw u guys are much more friendlier then people in the c++ channel - LOL
+2016-10-18 18:45:49	shadwick	just wait until... he who cannot be named joins
+2016-10-18 18:46:05	shadwick	I haven't been in Freenode ##c in like 2 years but.. you'll know him when he joins ;)
+2016-10-18 18:46:08	dho	nope, you just got a particular set of people in a particularly good mood.
+2016-10-18 18:46:20	-->	daey_ (~Flutterba@unaffiliated/day) has joined ##C
+2016-10-18 18:46:42	CaZe	qqcore33: No, it was in C89.
+2016-10-18 18:46:46	-->	fedepad (~fedepad@p4FE13A65.dip0.t-ipconnect.de) has joined ##C
+2016-10-18 18:47:01	<--	mib (~mib@41.254.9.166) has quit (Quit: Leaving)
+2016-10-18 18:47:10	qqcore33	what can you guys code?
+2016-10-18 18:47:26	CaZe	K&R exercises.
+2016-10-18 18:47:27	Stragus	Anything?
+2016-10-18 18:47:30	shadwick	SICP
+2016-10-18 18:47:43	qqcore33	i am not even familiar with those terms
+2016-10-18 18:47:45	-->	xameada (~xameada@ip98-165-190-88.ph.ph.cox.net) has joined ##C
+2016-10-18 18:47:59	shadwick	well, two books to add to the list
+2016-10-18 18:48:09	shadwick	RIP in peace Dennis
+2016-10-18 18:48:19	qqcore33	how do you get time for reading books, to apply into practice, for work, for projects and life?
+2016-10-18 18:48:22	-->	nihilifer (~nhlfr@80.87.33.6) has joined ##C
+2016-10-18 18:48:32	-->	xall (~xall@2600:8800:1285:f100:c429:b6d1:979e:f7e3) has joined ##C
+2016-10-18 18:48:37	shadwick	qqcore33: less sleep?
+2016-10-18 18:48:41	CaZe	,ras
+2016-10-18 18:48:41	@candide	RAS Syndrome -- which stands for "Redundant Acronym Syndrome Syndrome" -- is a tongue-in-cheek name that describes the problem of unnecessary repetition hidden by an acronym. http://suite101.com/article/redundant-acronyms-a65825
+2016-10-18 18:49:01	shadwick	CaZe: don't worry, I'm not actually that dumb. But I did use an ATM Machine today
+2016-10-18 18:49:02	qqcore33	shadwick: well I haven't slept this night
+2016-10-18 18:49:33	CaZe	qqcore33: How do you have time to correct all the mistakes that you make because you haven't read a book that explains to you how to do it the correct way in the first place?
+2016-10-18 18:49:38	<--	daey (~Flutterba@unaffiliated/day) has quit (Ping timeout: 245 seconds)
+2016-10-18 18:49:45	--	daey_ is now known as daey
+2016-10-18 18:49:46	<--	karakedi (~eAC53C340@unaffiliated/orphan) has quit (Ping timeout: 250 seconds)
+2016-10-18 18:49:50	shadwick	sounds a bit backwards
+2016-10-18 18:50:01	shadwick	how do you fix a rocket you build when you didn't read a rocket science book first?
+2016-10-18 18:50:13	qqcore33	CaZe: the book is basic in my opinion. You cannot make complicated and advanced code the right way with it.
+2016-10-18 18:50:22	Stragus	shadwick, jou join #rocketscience!
+2016-10-18 18:50:26	Stragus	you*
+2016-10-18 18:50:38	CaZe	qqcore33: You cannot make complicated and advanced code without the basics.
+2016-10-18 18:50:38		[18:50]
+2016-10-18 18:50:48	shadwick	Stragus: fo sho. it's lonely there
+2016-10-18 18:50:57	dho	qqcore33: we don't.
+2016-10-18 18:51:03	shadwick	CaZe: well... you can. sometimes. unfortunately.
+2016-10-18 18:51:05	dho	qqcore33: we've just been doing it for many years
+2016-10-18 18:51:18	shadwick	CaZe: then you go back and scrap it when you realize it's awful;
+2016-10-18 18:51:31	CaZe	That was sort of what I said earlier.
+2016-10-18 18:51:52	qqcore33	alright, a couple more erros popped now
+2016-10-18 18:51:52	Stragus	It takes many years before you can look at past code and think honestly "That was good code"
+2016-10-18 18:52:27	qqcore33	((void*)buffer.tab) + 4, sizeof(buffer.tab) - 4); -> expression must be a pointer to a complete object type
+2016-10-18 18:52:48	qqcore33	should I still apply the same what u told me before shadwick ?
+2016-10-18 18:52:51	CaZe	qqcore33: See, this is something that I would consider basic.
+2016-10-18 18:52:52	Stragus	Once again, void pointer arithmetic is a GNU C extension, not supported by MSVC
+2016-10-18 18:52:58	<--	[7] (~quassel@rockbox/developer/TheSeven) has quit (Ping timeout: 245 seconds)
+2016-10-18 18:53:10	-->	The_Prospector|2 (~The_Prosp@c-73-239-179-79.hsd1.wa.comcast.net) has joined ##C
+2016-10-18 18:53:19	shadwick	Stragus: the day I start looking at old projects and thinking nothing was wrong is the day I need my head examined
+2016-10-18 18:53:34	<--	SwiftMatt (~Objective@162.242.94.27) has quit (Quit: My MacBook Pro has gone to sleep. ZZZzzz…)
+2016-10-18 18:54:24	CaZe	qqcore33: When you add 1 to a char pointer, you get a pointer to an address one byte up. When you add 1 to an int pointer, you get a pointer to an address sizeof (int) bytes up. What do you get if you add 1 to a void pointer?
+2016-10-18 18:54:39	-->	TheSeven (~quassel@rockbox/developer/TheSeven) has joined ##C
+2016-10-18 18:54:50	shadwick	CaZe: 1 *char* up ;)
+2016-10-18 18:55:02	-->	masoudd (~masoudd@5.114.158.200) has joined ##C
+2016-10-18 18:55:25	dho	shadwick: sizeof(char) == 1.
+2016-10-18 18:55:26	@candide	It had been 6 hours and 40 minutes since someone foolishly used sizeof (char) (since it is always 1, by definition).
+2016-10-18 18:55:38	-->	miodi (~koodi@dsl-vntbrasgw1-54fa6e-245.dhcp.inet.fi) has joined ##C
+2016-10-18 18:55:39	dho	yes, stupid bot, that's what i said.
+2016-10-18 18:55:51	<--	The_Prospector (~The_Prosp@unaffiliated/cornman) has quit (Ping timeout: 256 seconds)
+2016-10-18 18:56:41	<--	vikaton (uid59278@gateway/web/irccloud.com/x-mvlumsykcnpukpra) has quit (Quit: Connection closed for inactivity)
+2016-10-18 18:56:53	shadwick	dho: sorry, I was considering the historical terming of `byte`, but CaZe is right. even on a PDP-9 it is 1 byte up (just that the byte is 9 bits and not an octet
+2016-10-18 18:57:34	dho	yes. and byte size in bitness is defined by CHAR_BIT
+2016-10-18 18:57:39	shadwick	yep, my bad
+2016-10-18 18:57:55	shadwick	just that by modern interpretations people expect 1 byte = 8 bits
+2016-10-18 18:58:02	-->	QbY (~QbY@96.89.90.225) has joined ##C
+2016-10-18 18:58:04	<--	ShadowKnight (~ShadowKni@c-50-181-119-192.hsd1.md.comcast.net) has quit (Ping timeout: 260 seconds)
+2016-10-18 18:59:12	<--	koodi (~koodi@dsl-vntbrasgw1-54fa6e-245.dhcp.inet.fi) has quit (Ping timeout: 252 seconds)
+2016-10-18 19:02:24	shadwick	qqcore33's code must have finally compiled
+2016-10-18 19:02:41	Random832	you're not allowed to do pointer arithmetic on void pointers in standard C
+2016-10-18 19:02:48	Random832	I believe GNU has it as 1 as a nonstandard extensions
+2016-10-18 19:03:14	-->	P6hjakonn (~Tinker@08e6-e51a-b951-b562-2d80-8a2c-07d0-2001.dyn.estpak.ee) has joined ##C
+2016-10-18 19:03:50	qqcore33	shadwick: nah.. I dont wanna sound dumb but I still cannot solve the adding to void* prob
+2016-10-18 19:03:55	qqcore33	it shouldnt be allowed I get it
+2016-10-18 19:04:03	qqcore33	but what should I transform to char* instead?
+2016-10-18 19:04:06	<--	arescorpio (~arescorpi@152.171.92.97) has quit (Quit: Leaving.)
+2016-10-18 19:04:52	Random832	what are you actually doing?
+2016-10-18 19:05:06	qqcore33	((char*)(void*)buffer.tab)
+2016-10-18 19:05:20	Random832	what is buffer.tab and why do you want to add 4 to it
+2016-10-18 19:05:41	qqcore33	a registry value
+2016-10-18 19:05:41		[19:05]
+2016-10-18 19:05:44	-->	annoymouse (uid11754@gateway/web/irccloud.com/x-lbcgnczieywlvbfy) has joined ##C
+2016-10-18 19:06:25	<--	Judge_Dredd (~Judge_Dre@unaffiliated/judge-dredd/x-2170742) has quit (Quit: Leaving.)
+2016-10-18 19:06:47	shadwick	you really need to know what you *want* first
+2016-10-18 19:07:09	shadwick	otherwise you can just put anything there that satiates the compiler and whatever
+2016-10-18 19:07:14	CaZe	((char*)(void*)(char*)(void*)(char*)(void*)(char*)(void*)(char*)(void*)(char*)(void*)buffer.tab)
+2016-10-18 19:07:52	shadwick	it's actually good there's no GCC extension to do this here, or else this would likely be a bug uncovered much later
+2016-10-18 19:09:25	Stragus	It's a tiny GNU extension that allows arithmetics on void pointers as if there were char pointers
+2016-10-18 19:09:34	Stragus	Not a very useful extension
+2016-10-18 19:09:46	Stragus	So, cast to char * instead
+2016-10-18 19:09:46	-->	Bleakhouse (~Bleakhous@122-57-5-206.jetstream.xtra.co.nz) has joined ##C
+2016-10-18 19:10:30	qqcore33	Stragus: wouldn't that break it ?
+2016-10-18 19:10:50	-->	SwiftMatt (~Objective@162.242.94.230) has joined ##C
+2016-10-18 19:10:53	CaZe	Break what?
+2016-10-18 19:11:00	CaZe	You don't even know what it is.
+2016-10-18 19:11:23	Saparok	bam.
+2016-10-18 19:11:49	shadwick	oh boy
+2016-10-18 19:12:04	shadwick	no, it's a registry value
+2016-10-18 19:12:19	shadwick	(forgot my double quotes around that)
+2016-10-18 19:13:48	-->	_28_ria (~igoryonya@opfr028.ru) has joined ##C
+2016-10-18 19:14:07	-->	cd80 (~bf3@gateway/vpn/privateinternetaccess/emul16) has joined ##C
+2016-10-18 19:14:17	<--	fedepad (~fedepad@p4FE13A65.dip0.t-ipconnect.de) has quit (Remote host closed the connection)
+2016-10-18 19:14:28	<--	tmg (~tmg@unaffiliated/tmg) has quit (Ping timeout: 260 seconds)
+2016-10-18 19:15:41	<--	gygias (~david@unaffiliated/gygias) has quit (Ping timeout: 256 seconds)
+2016-10-18 19:16:52	<--	ss (~~@gateway/tor-sasl/ss) has quit (Remote host closed the connection)
+2016-10-18 19:17:21	-->	niekniek (~niekniek@164-205-145-85.ftth.glasoperator.nl) has joined ##C
+2016-10-18 19:17:26	-->	ss (~~@gateway/tor-sasl/ss) has joined ##C
+2016-10-18 19:19:04	<--	fluter (~fluter@fedora/fluter) has quit (Ping timeout: 250 seconds)
+2016-10-18 19:20:49	-->	novns (~novns@unaffiliated/novns) has joined ##C
+2016-10-18 19:20:49		[19:20]
+2016-10-18 19:20:49	<--	xall (~xall@2600:8800:1285:f100:c429:b6d1:979e:f7e3) has quit (Ping timeout: 260 seconds)
+2016-10-18 19:21:34	<--	seachris (~Chris@c-24-56-251-155.customer.broadstripe.net) has quit (Quit: seachris)
+2016-10-18 19:21:35	<--	korg815 (~korg815@unaffiliated/korg815) has quit (Quit: WeeChat 1.6)
+2016-10-18 19:22:51	-->	jagan (~j605@unaffiliated/j605) has joined ##C
+2016-10-18 19:23:14	-->	baxt (~Mutter@host31-54-209-144.range31-54.btcentralplus.com) has joined ##C
+2016-10-18 19:23:19	-->	seachris (~Chris@c-24-56-251-155.customer.broadstripe.net) has joined ##C
+2016-10-18 19:25:12	<--	j605 (~j605@unaffiliated/j605) has quit (Ping timeout: 256 seconds)
+2016-10-18 19:27:42	<--	jagan (~j605@unaffiliated/j605) has quit (Quit: WeeChat 1.6)
+2016-10-18 19:27:51	-->	hyphenated (~hyphenate@103.26.17.55) has joined ##C
+2016-10-18 19:28:13	-->	fluter (~fluter@fedora/fluter) has joined ##C
+2016-10-18 19:28:30	<--	SwiftMatt (~Objective@162.242.94.230) has quit (Quit: My MacBook Pro has gone to sleep. ZZZzzz…)
+2016-10-18 19:29:43	shadwick	qqcore33: did we scare you away or do you have new issues?
+2016-10-18 19:30:13	qqcore33	I can't say yet, I need more work to finally compile and see whats gonna happen. But knowing my luck, it would fail for sure :)
+2016-10-18 19:30:21	-->	Hun (~Hun@x4d071ab4.dyn.telefonica.de) has joined ##C
+2016-10-18 19:30:25	<--	baxt (~Mutter@host31-54-209-144.range31-54.btcentralplus.com) has quit (Ping timeout: 256 seconds)
+2016-10-18 19:32:11	-->	j605 (~j605@unaffiliated/j605) has joined ##C
+2016-10-18 19:34:36	-->	tsmt (~tsmt@p200300C7B3C5FF008403F2B3133905E9.dip0.t-ipconnect.de) has joined ##C
+2016-10-18 19:34:39	-->	ap0c (~ap0c@unaffiliated/ap0c) has joined ##C
+2016-10-18 19:34:57	CaZe	qqcore33: Why do you care what compiler you're using? You're not actually writing code, you're just compiling something that someone else wrote.
+2016-10-18 19:35:05	<--	danielinux (sbnc@danielinux.default.trexotech.uk0.bigv.io) has quit (Changing host)
+2016-10-18 19:35:05	-->	danielinux (sbnc@fosdem/staff/danielinux) has joined ##C
+2016-10-18 19:35:32	qqcore33	CaZe: yeah but I need that as a base for my other stuff
+2016-10-18 19:39:29	<--	tsmt (~tsmt@p200300C7B3C5FF008403F2B3133905E9.dip0.t-ipconnect.de) has quit (Ping timeout: 256 seconds)
+2016-10-18 19:39:29		[19:39]
+2016-10-18 19:41:00	<--	adolf_stalin (~adolf_sta@2600:8804:6000:283:def:ff3:29d9:da1a) has quit (Quit: Leaving...)
+2016-10-18 19:41:11	-->	xall (~xall@2600:8800:1285:f100:c429:b6d1:979e:f7e3) has joined ##C
+2016-10-18 19:42:06	<--	w41 (~w41@unaffiliated/w41) has quit (Ping timeout: 252 seconds)
+2016-10-18 19:42:16	-->	itaitb_ (~itaitb@unaffiliated/itaitb) has joined ##C
+2016-10-18 19:42:57	-->	tsmt (~tsmt@p200300C7B3C5FF0071F8C322459BD2E7.dip0.t-ipconnect.de) has joined ##C
+2016-10-18 19:43:23	-->	SwiftMatt (~Objective@162.242.94.230) has joined ##C
+2016-10-18 19:44:59	-->	raycoll (~raycoll@c-50-181-214-8.hsd1.wa.comcast.net) has joined ##C
+2016-10-18 19:46:04	-->	ShekharReddy (uid132367@gateway/web/irccloud.com/x-ygezhnilpxkxqajs) has joined ##C
+2016-10-18 19:47:25	<--	tsmt (~tsmt@p200300C7B3C5FF0071F8C322459BD2E7.dip0.t-ipconnect.de) has quit (Ping timeout: 256 seconds)
+2016-10-18 19:48:31	-->	dminuoso_ (~dminuoso@unaffiliated/dminuoso) has joined ##C
+2016-10-18 19:48:46	-->	ShadowKnight (~ShadowKni@c-50-181-119-192.hsd1.md.comcast.net) has joined ##C
+2016-10-18 19:48:48	<--	raycoll (~raycoll@c-50-181-214-8.hsd1.wa.comcast.net) has quit (Client Quit)
+2016-10-18 19:49:22	-->	w41 (~w41@213.243.91.10) has joined ##C
+2016-10-18 19:49:23	<--	w41 (~w41@213.243.91.10) has quit (Changing host)
+2016-10-18 19:49:23	-->	w41 (~w41@unaffiliated/w41) has joined ##C
+2016-10-18 19:49:35	<--	sssilver (~sssilver@2605:6000:ee54:b500:2d19:7f16:2eca:309) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-10-18 19:49:52	<--	noethics (~noethics@gateway/vpn/privateinternetaccess/ebonics) has quit (Quit: Leaving)
