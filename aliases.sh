@@ -17,7 +17,7 @@ unalias history c d h j s >/dev/null 2>&1 || true
 
 ## Custom aliases
 
-alias makepkg='eval `pump --startup` && makepkg '
+alias makepkg='eval "$(pump --startup)" && makepkg '
 alias j="jump"
 alias b="bookmark"
 alias d="deletemark"

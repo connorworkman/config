@@ -173,9 +173,8 @@ fi
 
 ## User configuration
 
-## Start gpg/ssh agent and setup pump environment variables
+## Start gpg/ssh agent (keychain)
 { eval $(keychain --eval --agents ssh,gpg identity id_rsa id_ecdsa); } 2>&1 9>&1
-#eval "$(pump --startup)"
 
 ## Envoy commands as alternate ssh/gpg-agent manager
 #[[ ${EUID} -eq 1000 ]] && { envoy -t ssh-agent -a identity id_rsa id_ecdsa; source <(envoy -p); }
