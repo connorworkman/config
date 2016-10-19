@@ -61,8 +61,8 @@ export SSH_KEY_PATH=".ssh/identity"
 #exec 2>&4; eval $(keychain --eval --agents ssh,gpg id_4rsa2 2>&4); exec 2>${ZSH_ERROR}
 #{ eval $(keychain --eval --agents ssh,gpg identity id_rsa id_ecdsa); } &>/dev/tty
 
-## Start gpg/ssh agent and setup pump environment variables
-{ eval $(keychain --eval --agents ssh,gpg identity id_rsa id_ecdsa); eval $(pump --startup); } 9>&1 2>&1
+## Start gpg/ssh agent (keychain)
+{ eval "$(keychain --eval --agents ssh,gpg identity id_rsa id_ecdsa)"; } 9>&1 2>&1
 
 #envoy -t ssh-agent -a id_4rsa2
 #source <(envoy -p)

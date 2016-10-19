@@ -409,7 +409,7 @@ vkfix() {
 	    while read -r final; do eval "mv --verbose ${final}"; done
 }
 
-0x0() {
+f0x0() {
 	curl -F"file=@${*}" https://0x0.st
 }
 

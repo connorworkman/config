@@ -4737,3 +4737,282 @@
 2016-10-18 14:54:27	-->	fatalhalt (~fatalhalt@c-73-246-193-29.hsd1.il.comcast.net) has joined ##networking
 2016-10-18 14:54:45	<--	phutchins3 (~philip@99-39-102-241.lightspeed.tukrga.sbcglobal.net) has quit (Ping timeout: 250 seconds)
 2016-10-18 14:55:10	-->	ilfantomas (~chatzilla@ool-457a3c53.dyn.optonline.net) has joined ##networking
+2016-10-18 14:57:51	-->	reticent_ (~quassel@pool-96-233-61-125.bstnma.fios.verizon.net) has joined ##networking
+2016-10-18 14:57:51		[14:57]
+2016-10-18 14:58:48	ryao	I think I see one possible explanation for the slow wifi. I am connected at a wifi link rate of 6Mb/sec.
+2016-10-18 14:59:26	<--	bugzc (~1@unaffiliated/bugzc) has quit (Ping timeout: 256 seconds)
+2016-10-18 14:59:57	ryao	I am trying to force it higher with `iw dev wlan0 set bitrates ht-mcs-5 7, but no luck. :/
+2016-10-18 15:00:33	-->	fstd_ (~fstd@unaffiliated/fisted) has joined ##networking
+2016-10-18 15:01:11	<--	BigShip (~BigShip@unaffiliated/bigship) has quit (Ping timeout: 252 seconds)
+2016-10-18 15:02:39	ryao	I wonder if everyone on the plane is stuck at 6Mbps. I guess I could try sniffing to find out...
+2016-10-18 15:03:13	<--	boB_K7IQ (~IceChat9@2603:3023:50a:4600:e90c:4e8c:e9a4:f199) has quit (Ping timeout: 260 seconds)
+2016-10-18 15:03:33	chezidek	you can look at beacons i think in wireshark... supported rates should be listed
+2016-10-18 15:04:01	<--	somis (~somis@96.9.249.36) has quit (Quit: WeeChat 1.6)
+2016-10-18 15:04:48	<--	fstd (~fstd@unaffiliated/fisted) has quit (Ping timeout: 260 seconds)
+2016-10-18 15:04:49	--	fstd_ is now known as fstd
+2016-10-18 15:05:29	ryao	chezidek:Does that mean that I don't need to use airodump-ng and I could just do tcpdump?
+2016-10-18 15:05:52	-->	InverseRhombus (~InverseRh@2a02:c7d:da57:a400:5d09:1f2e:93e2:b9a0) has joined ##networking
+2016-10-18 15:06:20	chezidek	ryao: i think it depends whether the wireless adapter supports promiscuous, but i could be totally wrong
+2016-10-18 15:06:39	chezidek	acutally iwlist might show you the available rates
+2016-10-18 15:08:02	ryao	So it does. I forgot about that. This is an 802.11a AP. :/
+2016-10-18 15:08:30	<--	Includes08 (~Wesley@unaffiliated/includes08) has quit (Ping timeout: 256 seconds)
+2016-10-18 15:08:35	chezidek	:yaoming:
+2016-10-18 15:09:05	ryao	I tried forcing it to 54Mbps earlier via iwconfig. No dice. :/
+2016-10-18 15:09:17	chezidek	whats the mac address? or OUI
+2016-10-18 15:09:26	chezidek	just curious what ancient radio theyre using
+2016-10-18 15:09:36	ryao	00:24:A8
+2016-10-18 15:09:50	ryao	chezidek: HP procurve
+2016-10-18 15:09:52	chezidek	colubris
+2016-10-18 15:09:54	chezidek	yea
+2016-10-18 15:10:11	chezidek	oh you know what
+2016-10-18 15:10:17	ryao	The database says HP procurve. How do you kno wthe name colubris?
+2016-10-18 15:10:18	ryao	What?
+2016-10-18 15:10:23	chezidek	they have those handheld things for ordering drinks
+2016-10-18 15:10:28	-->	hydrius (~hydrius@114-30-106-160.dyn.iinet.net.au) has joined ##networking
+2016-10-18 15:10:40	chezidek	with a cc machine.  they only support the shitty old rates, and maybe they dont want to waste airtime with multiple SSIDs or something
+2016-10-18 15:11:13	chezidek	idk.  wireless sucks lol.  i managed a colubris system back in the day so i always think of HP wireless as that
+2016-10-18 15:11:15	ryao	Oh. tha texplains how they were selling things on th eplane.
+2016-10-18 15:11:26	ryao	They did have htose handheld things.
+2016-10-18 15:11:33	chezidek	motorola symbol
+2016-10-18 15:12:24	ryao	chezidek: The hting is that I am getting 6Mbps rather than 54Mbps link speed. Does that type of AP advertise it, but refuse to do it?
+2016-10-18 15:12:52	-->	bluezone (uid104970@gateway/web/irccloud.com/x-xbtcmdopogjhyxpg) has joined ##networking
+2016-10-18 15:12:52		[15:12]
+2016-10-18 15:13:00	chezidek	can you pastebin the rates or iwlist output
+2016-10-18 15:13:16	-->	Sellas (~sellas@24-158-121-203.dhcp.kgpt.tn.charter.com) has joined ##networking
+2016-10-18 15:13:51	ryao	chezidek: Maybe. I am trying. Horrible latency
+2016-10-18 15:14:10	<--	allizom (~Thunderbi@95.239.167.162) has quit (Quit: allizom)
+2016-10-18 15:14:29	ryao	https://bpaste.net/show/8fbdb0b97235
+2016-10-18 15:15:55	<--	ref^ (~ref@unaffiliated/ref/x-9555909) has quit
+2016-10-18 15:16:53	chezidek	do you have it preferring 5 gig or something
+2016-10-18 15:16:53	<--	S_SubZero (~ssz@about/windows/regular/s-subzero) has quit (Quit: S_SubZero)
+2016-10-18 15:17:06	ryao	chezidek: No.
+2016-10-18 15:17:34	chezidek	guess you could have some shitty client transmitting constantly that is associated at 6mbps
+2016-10-18 15:17:41	ryao	Also,the gentoo AP is my laptop.
+2016-10-18 15:17:55	ryao	chezidek: Ugh...
+2016-10-18 15:18:08	ryao	chezidek: I didn't think tha twould force all others to 6Mbps
+2016-10-18 15:18:26	chezidek	while they're transmitting, i /think/ it will
+2016-10-18 15:18:46	chezidek	but they throttle the crap out of everyone anyway
+2016-10-18 15:18:57	ryao	chezidek: Whiskey` claimed otherwise the other day. Anyway, I'll try to switch APs.
+2016-10-18 15:19:19	-->	pickupyourbits (4c195146@gateway/web/freenode/ip.76.25.81.70) has joined ##networking
+2016-10-18 15:19:28	chezidek	to my knowledge that is why a lot of people disable the basic rates
+2016-10-18 15:19:35	chezidek	so if someone has a shitty RSSI they won't be able to connect
+2016-10-18 15:19:43	chezidek	and degrade the quality for people that are nearby
+2016-10-18 15:19:57	ryao	Assuming I figure out how to make networkmanager/wpa_supplicant do a switch manually.
+2016-10-18 15:20:16	ryao	chezidek: I thought that the basic rates meant that someone connecting at them would b ewasting airtime.
+2016-10-18 15:20:24	<--	sunrunner20 (~sunrunner@unaffiliated/sunrunner20) has quit (Read error: Connection reset by peer)
+2016-10-18 15:20:24	<--	mycelium (~fungal@unaffiliated/fungal) has quit (Ping timeout: 256 seconds)
+2016-10-18 15:21:05	chezidek	yep, thats why people disable them, so that people can't connect at those rates and waste airtime
+2016-10-18 15:22:00	ryao	I am going to change the wifi NIC's sensitivity threshold to force roaming to another AP. :)
+2016-10-18 15:22:20	ryao	If it works for the AP, it works for the client. ;)
+2016-10-18 15:23:22	chezidek	5g might be less crowded too
+2016-10-18 15:23:24	<--	clobrano (~carlo@151.56.129.226) has quit (Ping timeout: 260 seconds)
+2016-10-18 15:23:45	ryao	And changing it doesn't work on the iwlwifi driver. -_-
+2016-10-18 15:24:03	ryao	chezidek: I am already on 5GHz.
+2016-10-18 15:24:04	-->	qu9 (~qu9@unaffiliated/qu9) has joined ##networking
+2016-10-18 15:24:23	<--	hydrius (~hydrius@114-30-106-160.dyn.iinet.net.au) has quit (Quit: WeeChat 1.6)
+2016-10-18 15:25:19	-->	clobrano (~carlo@151.56.141.76) has joined ##networking
+2016-10-18 15:26:09	<--	FrostCyborg (~FrostCybo@unaffiliated/frostcyborg) has quit (Quit: Textual IRC Client: www.textualapp.com)
+2016-10-18 15:26:40	<--	knob (~knob@209.91.218.190) has quit (Quit: Leaving)
+2016-10-18 15:27:16	<--	adhocadhoc (~adhocadho@38.140.50.218) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-10-18 15:28:22	-->	alex1a (~alex1a@a81-84-38-221.cpe.netcabo.pt) has joined ##networking
+2016-10-18 15:28:22		[15:28]
+2016-10-18 15:30:59	<--	tetrah (~tetrah@unaffiliated/tetrahedron) has quit (Read error: Connection reset by peer)
+2016-10-18 15:32:25	Whiskey`	ryao: what....
+2016-10-18 15:32:46	-->	killer (~killer@138.77.99.45) has joined ##networking
+2016-10-18 15:33:03	<--	shakalaka (~shakalaka@ec2-52-52-27-0.us-west-1.compute.amazonaws.com) has quit (Quit: bye.)
+2016-10-18 15:33:34	<--	Danishman (~kvirc@62-243-156-218-static.dk.customer.tdc.net) has quit (Read error: Connection reset by peer)
+2016-10-18 15:34:16	-->	Danishman (~kvirc@62-243-156-218-static.dk.customer.tdc.net) has joined ##networking
+2016-10-18 15:34:16	-->	shakalaka (~shakalaka@ec2-52-52-27-0.us-west-1.compute.amazonaws.com) has joined ##networking
+2016-10-18 15:38:49	<--	e14 (~e14@c-24-91-74-152.hsd1.ma.comcast.net) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-10-18 15:41:05	-->	e14 (~e14@c-24-91-74-152.hsd1.ma.comcast.net) has joined ##networking
+2016-10-18 15:41:26	-->	a|3x (~a|3x@50-196-13-81-static.hfc.comcastbusiness.net) has joined ##networking
+2016-10-18 15:41:34	a|3x	hi
+2016-10-18 15:41:34	OMGDoggeh	Hello a|3x. Do you want to be DR?
+2016-10-18 15:42:15	a|3x	i have the most bizarre problem
+2016-10-18 15:42:27	<--	Ilyas (uid43013@gateway/web/irccloud.com/x-ovuxpomxllqnuhmo) has quit (Quit: Connection closed for inactivity)
+2016-10-18 15:42:39	Spice_Boy	kinky
+2016-10-18 15:42:52	whoa	hi
+2016-10-18 15:42:52	OMGDoggeh	Hello whoa. Do you want to be DR?
+2016-10-18 15:42:57	Spice_Boy	hi
+2016-10-18 15:42:59	whoa	yes
+2016-10-18 15:43:01	Spice_Boy	damn
+2016-10-18 15:43:04	Spice_Boy	no DR for me
+2016-10-18 15:43:07	whoa	ikr
+2016-10-18 15:43:09	whoa	BDF for now
+2016-10-18 15:43:14	whoa	*DR
+2016-10-18 15:44:33	a|3x	i get "Permission denied" on all connect() calls (on linux; wget/telnet/etc) out of the blue and must reboot, what could be causing it?
+2016-10-18 15:44:33		[15:44]
+2016-10-18 15:45:19	<--	Sellas (~sellas@24-158-121-203.dhcp.kgpt.tn.charter.com) has quit (Quit: Quit)
+2016-10-18 15:45:24	<--	shootbird (~quassel@beepbeep.serverpit.com) has quit (Ping timeout: 260 seconds)
+2016-10-18 15:45:41	-->	BigShip (~BigShip@unaffiliated/bigship) has joined ##networking
+2016-10-18 15:46:30	<--	chezidek (45b5bbf1@gateway/web/freenode/ip.69.181.187.241) has quit (Ping timeout: 260 seconds)
+2016-10-18 15:46:31	-->	freakyfidlers (~freakyfid@ool-435018c7.dyn.optonline.net) has joined ##networking
+2016-10-18 15:49:35	Network2501	hi
+2016-10-18 15:49:35	OMGDoggeh	Hello Network2501. Do you want to be DR?
+2016-10-18 15:49:41	Network2501	OMGDoggeh: I will be DR
+2016-10-18 15:49:53	Network2501	OMGDoggeh: DR
+2016-10-18 15:50:09	Network2501	OMGDoggeh (~OMGDoggeh@157.97.110.101): ignore command due to flood protection
+2016-10-18 15:50:21	Network2501	stop ignoring me OMGDoggeh you can't deny what we have
+2016-10-18 15:50:25	Network2501	you started this
+2016-10-18 15:50:36	Network2501	don't let it go now, we're so close to swapping DD packets
+2016-10-18 15:51:24	-->	Soda (~user@31.40.42.31) has joined ##networking
+2016-10-18 15:51:25	whoa	HELLLOOO ITS MEEEEE
+2016-10-18 15:51:29	whoa	OMGDDOGGHEEEEE
+2016-10-18 15:51:36	-->	Felipe__ (~FLP1207@190.46.34.165) has joined ##networking
+2016-10-18 15:52:10	-->	hassoon (hassoon@gateway/shell/firrre/x-anmjyqszrindiqii) has joined ##networking
+2016-10-18 15:52:10	<--	hassoon (hassoon@gateway/shell/firrre/x-anmjyqszrindiqii) has quit (Changing host)
+2016-10-18 15:52:10	-->	hassoon (hassoon@unaffiliated/hassen) has joined ##networking
+2016-10-18 15:52:10	<--	hassoon (hassoon@unaffiliated/hassen) has quit (Changing host)
+2016-10-18 15:52:10	-->	hassoon (hassoon@gateway/shell/firrre/x-anmjyqszrindiqii) has joined ##networking
+2016-10-18 15:54:23	-->	shootbird (~quassel@beepbeep.serverpit.com) has joined ##networking
+2016-10-18 15:54:29	<--	bladeboyzero1 (~kvirc@cpe-67-242-120-119.stny.res.rr.com) has quit (Quit: KVIrc 4.9.2 Aria http://www.kvirc.net/)
+2016-10-18 15:55:08	<--	niemal (~mein@unaffiliated/anoniem4l) has quit (Ping timeout: 260 seconds)
+2016-10-18 15:57:26	-->	ocb (~ocb@185.66.142.16) has joined ##networking
+2016-10-18 15:57:28	ocb	hello
+2016-10-18 15:57:28	OMGDoggeh	Hello ocb. Do you want to be DR?
+2016-10-18 15:57:33	ocb	DR?
+2016-10-18 15:58:16	whoa	http://packetlife.net/blog/2011/jun/2/ospf-designated-router-election/
+2016-10-18 15:58:54	-->	catpigger (~catpig@p54A5721A.dip0.t-ipconnect.de) has joined ##networking
+2016-10-18 15:59:50	NonSecwitter	anyone using asterisk?
+2016-10-18 15:59:50		[15:59]
+2016-10-18 16:00:50	-->	hucksy_ (~hucksy@p4FC0DB9C.dip0.t-ipconnect.de) has joined ##networking
+2016-10-18 16:01:04	-->	The_Machine (~Nunya@c-68-49-86-104.hsd1.mi.comcast.net) has joined ##networking
+2016-10-18 16:01:08	-->	aborazmeh (~aborazmeh@88.238.61.221) has joined ##networking
+2016-10-18 16:01:08	<--	aborazmeh (~aborazmeh@88.238.61.221) has quit (Changing host)
+2016-10-18 16:01:08	-->	aborazmeh (~aborazmeh@unaffiliated/aborazmeh) has joined ##networking
+2016-10-18 16:01:17	The_Machine	i have a stupid question that I don't know the answer to.
+2016-10-18 16:01:28	NonSecwitter	that's why you have a question XD
+2016-10-18 16:01:29	The_Machine	i'm using a client vpn software (purevpn) - home router, normal NAT setup, yadda
+2016-10-18 16:01:36	NonSecwitter	because you don't know the answer
+2016-10-18 16:01:38	NonSecwitter	:D
+2016-10-18 16:01:44	The_Machine	indeed.
+2016-10-18 16:02:15	The_Machine	anyway, i want to seed torrents with it, but with the VPN having its own address, the NAT doesn't know how to connect to the IP back into the connection
+2016-10-18 16:02:19	Network2501	OMGDoggeh: are you cheating on me with different neighbourships? I thought we had something special. I thought we had a point to point neighbourship!!!
+2016-10-18 16:02:32	The_Machine	because, well - the IP isn't on the actual router, it's on the client machine that's behind the NAT
+2016-10-18 16:02:32	<--	catpiggest (~catpig@p54A56B4B.dip0.t-ipconnect.de) has quit (Ping timeout: 244 seconds)
+2016-10-18 16:02:34	-->	CheckDavid (uid14990@gateway/web/irccloud.com/x-xhmacuwvocexyssl) has joined ##networking
+2016-10-18 16:03:00	The_Machine	is there any way to somehow let me router know that I want this alternative IP traffic to route inside the NAT as well?
+2016-10-18 16:03:07	 *	The_Machine doesn't know if he's explaining the situation correctly
+2016-10-18 16:03:24	Hello71	The_Machine: no
+2016-10-18 16:03:42	<--	kerframil (~kerframil@gentoo/user/kerframil) has quit (Quit: Leaving)
+2016-10-18 16:03:45	 *	The_Machine nods
+2016-10-18 16:03:46	Network2501	technically yes... if you have more than one IP
+2016-10-18 16:03:52	The_Machine	Right, which I do not.
+2016-10-18 16:04:05	Network2501	or have access to the end point of the VPN
+2016-10-18 16:04:07	The_Machine	I didn't think it was possible, and it would be up to the tracker to be able to tell it where to go
+2016-10-18 16:04:10	<--	stochastix (~stochasti@unaffiliated/stochastix) has quit (Quit: Konversation terminated!)
+2016-10-18 16:04:12	ocb	hello, I need some help just with logic of the setup. I have a 4G usb 2.0 device that I use to connect to internet. I need to create a 2 x /24 subnets for that 4G device, the 4g usb device will be mounted to a virtualbox VM pfsense that will route all traffic to a VPN. The thing I don't know, is how and is it possible to make the 2 subnets with the 4g usb in the pfsense. I have the same setup now (2 x /24 subnets and 5 vms connecting to the pfsense but through
+2016-10-18 16:04:14	The_Machine	but it doesn't do a great job
+2016-10-18 16:04:14	<--	hucksy (~hucksy@p4FC0DD0A.dip0.t-ipconnect.de) has quit (Ping timeout: 250 seconds)
+2016-10-18 16:04:16	 *	The_Machine will live with it.
+2016-10-18 16:04:19	NonSecwitter	Network2501: You want to seed from within the VPN to outside the VPN?
+2016-10-18 16:04:26	Network2501	i don't want to do anything
+2016-10-18 16:04:32	NonSecwitter	er
+2016-10-18 16:04:35	NonSecwitter	The_Machine: ^
+2016-10-18 16:04:50	Network2501	torrents can be legit but if it's not legit use newsgroups
+2016-10-18 16:04:52	Network2501	sif torrent
+2016-10-18 16:04:56	ocb	s/not/now/
+2016-10-18 16:05:16	SB^Omega	narf
+2016-10-18 16:05:20	Network2501	or better yet just don't watch tv/movies if it isn't easily accessed
+2016-10-18 16:05:23	Network2501	because fuck them
+2016-10-18 16:05:47	The_Machine	i want to be able to have incoming traffic work across the NAT
+2016-10-18 16:05:53	Network2501	you can
+2016-10-18 16:05:54	The_Machine	but it can't, i mean I logically already knew that
+2016-10-18 16:06:04	The_Machine	on the alternate VPN IP
+2016-10-18 16:06:06	The_Machine	that isn't static?
+2016-10-18 16:06:11	Network2501	you staticly port forward the outside ports to the inside ports
+2016-10-18 16:06:12	NonSecwitter	The_Machine: YOu need to work with the public IP for the network you are VPN to
+2016-10-18 16:06:25	Network2501	oh well that IP isn't routed/viewed from your router so no
+2016-10-18 16:06:30	The_Machine	I don't think there's that level of control
+2016-10-18 16:06:35	The_Machine	Right Network2501
+2016-10-18 16:06:42	The_Machine	it's just a dumb VPN client
+2016-10-18 16:06:53	NonSecwitter	i.e, if you VPN to your friends network, his router to the net needs to forward to your VPN client
+2016-10-18 16:06:56	The_Machine	ignores my actual IP and all traffic routes through that (i can split tunnel)
+2016-10-18 16:07:03	Network2501	yeah the home router has much chance of changing how things are routed as your ISPs router
+2016-10-18 16:07:23	The_Machine	unless I could announce that I have that IP to my router somehow
+2016-10-18 16:07:42	 *	The_Machine forgets about it
+2016-10-18 16:07:52	The_Machine	i'm pretty good with networking, i just thought there might be a trick I wasn't aware of
+2016-10-18 16:07:59	whoa	one wierd trick
+2016-10-18 16:08:34	Network2501	where does the vpn end point outside of your network live?
+2016-10-18 16:08:38	Network2501	some sort of purchased thing
+2016-10-18 16:09:02	Network2501	the end point just needs to accepted and forward on incoming connection requests
+2016-10-18 16:09:38	Network2501	my guess is though it's just used for anon so it won't permit inbound connection attempts
+2016-10-18 16:09:46	<--	Schaffen (~Schaffen@177.141.218.80) has quit (Ping timeout: 244 seconds)
+2016-10-18 16:09:55	<--	Felipe__ (~FLP1207@190.46.34.165) has quit (Quit: Leaving)
+2016-10-18 16:10:57	<--	SynfulAck (~SynfulAck@unaffiliated/synfulack) has quit (Ping timeout: 256 seconds)
+2016-10-18 16:11:32	<--	Danishman (~kvirc@62-243-156-218-static.dk.customer.tdc.net) has quit (Quit: KVIrc 4.9.1 Aria http://www.kvirc.net/)
+2016-10-18 16:12:33	<--	Autumndreams (~Autumndre@30992.hostserv.eu) has quit (Ping timeout: 252 seconds)
+2016-10-18 16:13:05	<--	heraclitus (~halcyon@73.95.139.101) has quit (Read error: Connection reset by peer)
+2016-10-18 16:16:05	-->	justanotheruser (~justanoth@unaffiliated/justanotheruser) has joined ##networking
+2016-10-18 16:16:05		[16:16]
+2016-10-18 16:17:27	<--	strainwrld (~strainwrl@a79-168-45-138.cpe.netcabo.pt) has quit (Quit: Leaving)
+2016-10-18 16:19:09	<--	qu9 (~qu9@unaffiliated/qu9) has quit (Quit: .)
+2016-10-18 16:19:17	<--	norkle (~kvirc@unaffiliated/norkle) has quit (Ping timeout: 260 seconds)
+2016-10-18 16:20:29	-->	chezidek (45b5bbf1@gateway/web/freenode/ip.69.181.187.241) has joined ##networking
+2016-10-18 16:22:38	chezidek	how does email DLP work
+2016-10-18 16:22:52	<--	lithiumpt (~lithium@136.0.0.90) has quit (Ping timeout: 250 seconds)
+2016-10-18 16:23:01	-->	SynfulAck (~SynfulAck@unaffiliated/synfulack) has joined ##networking
+2016-10-18 16:23:01	<--	l2esonance (~l2esonanc@c-73-223-132-245.hsd1.ca.comcast.net) has quit (Ping timeout: 260 seconds)
+2016-10-18 16:23:07	-->	l2esonance (~l2esonanc@c-73-223-132-245.hsd1.ca.comcast.net) has joined ##networking
+2016-10-18 16:23:33	-->	Felipe__ (~FLP1207@pc-165-34-46-190.cm.vtr.net) has joined ##networking
+2016-10-18 16:24:00	<--	Felipe__ (~FLP1207@pc-165-34-46-190.cm.vtr.net) has quit (Remote host closed the connection)
+2016-10-18 16:27:12	-->	stochastix (~stochasti@unaffiliated/stochastix) has joined ##networking
+2016-10-18 16:28:06	<--	InverseRhombus (~InverseRh@2a02:c7d:da57:a400:5d09:1f2e:93e2:b9a0) has quit (Quit: Leaving)
+2016-10-18 16:29:39	<--	Bert_2 (~bert@sys.bhack.net) has quit (Ping timeout: 250 seconds)
+2016-10-18 16:29:44	-->	bugzc (~1@unaffiliated/bugzc) has joined ##networking
+2016-10-18 16:29:50	Skymont	not voting for Trump is a basically a vote for the corrupt Hillary Clinton as president of the USA, since the polling is so close
+2016-10-18 16:30:44	-->	heraclitus (~halcyon@73.95.139.101) has joined ##networking
+2016-10-18 16:33:57	chezidek	they gotta have a good show
+2016-10-18 16:33:57		[16:33]
+2016-10-18 16:34:42	Mr_Roboto	Some of the revalations coming out are really interesting
+2016-10-18 16:35:00	rewt	instead of voting for your party, actually look at the candidates and realize that whichever one wins, america loses
+2016-10-18 16:35:11	chezidek	rewt: bingo
+2016-10-18 16:35:14	Mr_Roboto	rewt:more truth there than we want to admit
+2016-10-18 16:35:31	chezidek	not much different than any other election fraknly
+2016-10-18 16:35:32	Mr_Roboto	I'd rather vote for trump because if he gets full batshit the odds are better of him getting impeached IMO
+2016-10-18 16:35:35	rewt	this whole "i'm voting for x because that's my party's candidate" is just so wrong
+2016-10-18 16:35:44	-->	wonton (wonton@gateway/vpn/mullvad/x-lrcrtlsrtoujngbv) has joined ##networking
+2016-10-18 16:36:07	Hello71	and also maybe watch something other than Fox 'News'
+2016-10-18 16:36:10	rewt	sanders should've run independent
+2016-10-18 16:36:17	rewt	lol yea
+2016-10-18 16:36:35	Mr_Roboto	I don't agree with a lot of the shit he said, but sadly he was probably the candidate with the most integrity
+2016-10-18 16:36:49	<--	SwiftMatt (~Objective@130.253.27.134) has quit (Quit: My MacBook Pro has gone to sleep. ZZZzzz…)
+2016-10-18 16:36:51	chezidek	system is broken
+2016-10-18 16:37:09	chezidek	2 party and electoral college, total BS.  this "election" just proves it even more
+2016-10-18 16:37:10	Hello71	if "integrity" means "not backing down from horrible racist sexist probably-criminal shit", then sure
+2016-10-18 16:37:21	chezidek	aaaaaand ##networking-social
+2016-10-18 16:37:36	Mr_Roboto	I will say he is shilling for Hillary now so there goes that integrity
+2016-10-18 16:37:53	Mr_Roboto	That's like when Elizabeth Warren shilled for her too
+2016-10-18 16:38:00	Mr_Roboto	that shit was funny and ironic at some level
+2016-10-18 16:43:00		[16:38]
+2016-10-18 16:43:29	<--	killer (~killer@138.77.99.45) has quit (Ping timeout: 252 seconds)
+2016-10-18 16:45:41	-->	xameada (~xameada@ip98-165-190-88.ph.ph.cox.net) has joined ##networking
+2016-10-18 16:45:55	 *	BenderRodriguez hotswaps Mr_Roboto power cables
+2016-10-18 16:46:00	<--	ilfantomas (~chatzilla@ool-457a3c53.dyn.optonline.net) has quit (Ping timeout: 260 seconds)
+2016-10-18 16:46:33	<--	chachasmooth (~chachasmo@unaffiliated/chachasmooth) has quit (Ping timeout: 260 seconds)
+2016-10-18 16:47:27	Mr_Roboto	Thank goodness I have redundant PSUs
+2016-10-18 16:48:20	<--	BigShip (~BigShip@unaffiliated/bigship) has quit (Ping timeout: 260 seconds)
+2016-10-18 16:48:23	<--	kulelu88 (~kulelu88@unaffiliated/kulelu88) has quit (Quit: Leaving)
+2016-10-18 16:49:09	-->	chachasmooth (~chachasmo@unaffiliated/chachasmooth) has joined ##networking
+2016-10-18 16:49:44	-->	Pazician (~pazician@h79n3-hlb2-a11.ias.bredband.telia.com) has joined ##networking
+2016-10-18 16:49:44	<--	Pazician (~pazician@h79n3-hlb2-a11.ias.bredband.telia.com) has quit (Changing host)
+2016-10-18 16:49:44	-->	Pazician (~pazician@unaffiliated/pazician) has joined ##networking
+2016-10-18 16:50:30	<--	btborg (~btborg@c-76-119-188-48.hsd1.ma.comcast.net) has quit (Ping timeout: 256 seconds)
+2016-10-18 16:50:42	--	The_Machine is now known as BACON_BITS_OR_SC
+2016-10-18 16:51:12	<--	wonton (wonton@gateway/vpn/mullvad/x-lrcrtlsrtoujngbv) has quit
+2016-10-18 16:51:27	--	BACON_BITS_OR_SC is now known as The_Machine
+2016-10-18 16:53:53	<--	stochastix (~stochasti@unaffiliated/stochastix) has quit (Quit: Konversation terminated!)
+2016-10-18 16:54:17	-->	stochastix (~stochasti@unaffiliated/stochastix) has joined ##networking
+2016-10-18 16:54:52	<--	Pazician (~pazician@unaffiliated/pazician) has quit (Ping timeout: 260 seconds)
+2016-10-18 16:55:26	-->	lithiumpt (~lithium@136.0.0.90) has joined ##networking
+2016-10-18 16:56:51	-->	SwiftMatt (~Objective@130.253.27.134) has joined ##networking
+2016-10-18 16:59:01	-->	xall (~xall@wsip-70-166-121-212.ph.ph.cox.net) has joined ##networking
+2016-10-18 16:59:01		[16:59]
+2016-10-18 17:00:18	-->	BigShip (~BigShip@unaffiliated/bigship) has joined ##networking
+2016-10-18 17:00:44	-->	winston_obrien (~winston_o@213.152.162.114) has joined ##networking
+2016-10-18 17:01:05	<--	pickupyourbits (4c195146@gateway/web/freenode/ip.76.25.81.70) has quit (Quit: Page closed)
+2016-10-18 17:01:10	<--	winston_obrien (~winston_o@213.152.162.114) has quit (Client Quit)
+2016-10-18 17:03:39	-->	arescorpio (~arescorpi@152.171.92.97) has joined ##networking
+2016-10-18 17:03:54	-->	k4z (~k4z@c-73-215-123-152.hsd1.nj.comcast.net) has joined ##networking
+2016-10-18 17:05:03	-->	StCypher (~StCypher@63.138.242.98) has joined ##networking
+2016-10-18 17:05:35	-->	Blackphidora (~Blackphid@cpe-70-112-105-191.austin.res.rr.com) has joined ##networking

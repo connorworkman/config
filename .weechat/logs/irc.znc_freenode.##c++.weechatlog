@@ -3906,3 +3906,355 @@
 2016-10-18 14:55:36	w3z	i see, it doesnt like the fact that f and g are function references
 2016-10-18 14:55:36	<--	mentoc (~wmerfalen@c-174-52-118-55.hsd1.ut.comcast.net) has quit (Read error: Connection reset by peer)
 2016-10-18 14:56:10	w3z	making them +f, and +g allows gcc to capture by value there
+2016-10-18 14:56:51	w3z	now, just using the free functions, which obviously wont expre
+2016-10-18 14:56:59	m_ben	what syntax is that +f?
+2016-10-18 14:57:12	<--	rorro (~rorro@176.10.248.232) has quit (Ping timeout: 252 seconds)
+2016-10-18 14:57:24	pepper_chico	a positive function xD
+2016-10-18 14:57:36	w3z	we can still get the segfault
+2016-10-18 14:57:37	pepper_chico	it' just makes no sense that's allowed for me
+2016-10-18 14:58:07	w3z	+f is just forcing the function reference to be a pointer to function there instead
+2016-10-18 14:58:07		[14:58]
+2016-10-18 14:58:15	<--	iterati1 (~vangelis@79.103.254.36.dsl.dyn.forthnet.gr) has quit (Ping timeout: 265 seconds)
+2016-10-18 14:58:26	-->	dj_pi (~dj@c-73-191-212-56.hsd1.mi.comcast.net) has joined ##c++
+2016-10-18 14:58:33	-->	mentoc (~wmerfalen@c-174-52-118-55.hsd1.ut.comcast.net) has joined ##c++
+2016-10-18 14:59:08	<--	nacon (~nacon@unaffiliated/nacon) has quit (Quit: leaving)
+2016-10-18 14:59:28	w3z	auto comp1 = compose(&f,&g,&f); instead if you prefer not to be obnoxiously abusive with your syntax :)
+2016-10-18 15:00:11	w3z	anyway, thats a secondary bug ...still doesnt explain whats happening with the capture by reference, looking
+2016-10-18 15:00:33	-->	fstd_ (~fstd@unaffiliated/fisted) has joined ##c++
+2016-10-18 15:00:34	<--	mentoc (~wmerfalen@c-174-52-118-55.hsd1.ut.comcast.net) has quit (Read error: Connection reset by peer)
+2016-10-18 15:00:35	 *	pepper_chico waits
+2016-10-18 15:00:44	-->	ResidentBiscuit (~ResidentB@unaffiliated/residentbiscuit) has joined ##c++
+2016-10-18 15:00:46	<--	ResidentBiscuit (~ResidentB@unaffiliated/residentbiscuit) has quit (Max SendQ exceeded)
+2016-10-18 15:00:50	<--	very_sneaky (~very_snea@c27-253-32-81.thoms4.vic.optusnet.com.au) has quit
+2016-10-18 15:01:16	-->	ResidentBiscuit (~ResidentB@unaffiliated/residentbiscuit) has joined ##c++
+2016-10-18 15:01:17	<--	ResidentBiscuit (~ResidentB@unaffiliated/residentbiscuit) has quit (Max SendQ exceeded)
+2016-10-18 15:01:37	-->	alienbot (~quassel@116.6.99.222) has joined ##c++
+2016-10-18 15:01:44	-->	ResidentBiscuit (~ResidentB@unaffiliated/residentbiscuit) has joined ##c++
+2016-10-18 15:01:45	<--	ResidentBiscuit (~ResidentB@unaffiliated/residentbiscuit) has quit (Max SendQ exceeded)
+2016-10-18 15:02:14	-->	ResidentBiscuit (~ResidentB@unaffiliated/residentbiscuit) has joined ##c++
+2016-10-18 15:02:15	<--	ResidentBiscuit (~ResidentB@unaffiliated/residentbiscuit) has quit (Max SendQ exceeded)
+2016-10-18 15:02:29	-->	SunnyD__ (~SunnyD@cpe-72-178-78-211.hot.res.rr.com) has joined ##c++
+2016-10-18 15:02:44	-->	ResidentBiscuit (~ResidentB@unaffiliated/residentbiscuit) has joined ##c++
+2016-10-18 15:02:45	<--	ResidentBiscuit (~ResidentB@unaffiliated/residentbiscuit) has quit (Max SendQ exceeded)
+2016-10-18 15:02:57	pepper_chico	by the way, isn't it +f = function pointer conversion simplory/misleading explanation. Doesn't apply for fu, which is a function object
+2016-10-18 15:03:14	-->	ResidentBiscuit (~ResidentB@unaffiliated/residentbiscuit) has joined ##c++
+2016-10-18 15:03:15	<--	ResidentBiscuit (~ResidentB@unaffiliated/residentbiscuit) has quit (Max SendQ exceeded)
+2016-10-18 15:03:30	-->	mentoc (~wmerfalen@c-174-52-118-55.hsd1.ut.comcast.net) has joined ##c++
+2016-10-18 15:04:01	<--	hurtletad (~filtered@5CEC365.rev.sefiber.dk) has quit (Quit: Leaving)
+2016-10-18 15:04:48	<--	fstd (~fstd@unaffiliated/fisted) has quit (Ping timeout: 260 seconds)
+2016-10-18 15:04:49	--	fstd_ is now known as fstd
+2016-10-18 15:04:49	<--	mentoc (~wmerfalen@c-174-52-118-55.hsd1.ut.comcast.net) has quit (Read error: Connection reset by peer)
+2016-10-18 15:05:26	-->	Nilesh_ (uid116340@gateway/web/irccloud.com/x-zerzspouqspjxngr) has joined ##c++
+2016-10-18 15:05:28	<--	SunnyD_ (~SunnyD@cpe-72-178-78-211.hot.res.rr.com) has quit (Ping timeout: 245 seconds)
+2016-10-18 15:06:24	<--	HerzogDeXtEr (~farci@i59F6D66E.versanet.de) has quit (Read error: Connection reset by peer)
+2016-10-18 15:06:42	<--	vikaton (uid59278@gateway/web/irccloud.com/x-mekgolupazskdoxz) has quit (Quit: Connection closed for inactivity)
+2016-10-18 15:06:52	-->	mkramer (~Adium@c-76-30-207-152.hsd1.tx.comcast.net) has joined ##c++
+2016-10-18 15:07:14	<--	iceiceice (~chris@unaffiliated/iceiceice) has quit (Quit: Ex-Chat)
+2016-10-18 15:07:48	-->	lh_mouse (~lh_mouse@unaffiliated/lh-mouse/x-3986007) has joined ##c++
+2016-10-18 15:08:29	w3z	i was only appying it to f and g
+2016-10-18 15:08:32	-->	mentoc (~wmerfalen@c-174-52-118-55.hsd1.ut.comcast.net) has joined ##c++
+2016-10-18 15:08:36	<--	vitimiti (~vitimiti@unaffiliated/vitimiti) has quit (Ping timeout: 250 seconds)
+2016-10-18 15:08:37	<--	shirty (~shirty@155.170-247-81.adsl-dyn.isp.belgacom.be) has quit (Ping timeout: 256 seconds)
+2016-10-18 15:08:56	w3z	because m_ben pointed out that when capturing by value gcc was bitching
+2016-10-18 15:09:17	<--	hualet (~hualet@118.184.15.164) has quit (Remote host closed the connection)
+2016-10-18 15:09:44	-->	hualet (~hualet@118.184.15.164) has joined ##c++
+2016-10-18 15:10:19	<--	ReverseBlade (~user@213.74.212.180) has quit (Ping timeout: 256 seconds)
+2016-10-18 15:10:27	-->	nine_milli (~nine_mill@32.211.52.104) has joined ##c++
+2016-10-18 15:10:27	<--	mentoc (~wmerfalen@c-174-52-118-55.hsd1.ut.comcast.net) has quit (Read error: Connection reset by peer)
+2016-10-18 15:10:47	pepper_chico	ah ok, thought it was on the captures, my bad
+2016-10-18 15:11:03	nine_milli	hi everyone my name is Brian Leroy Brice call me @ 1-210-300-2559
+2016-10-18 15:11:10	<--	nine_milli (~nine_mill@32.211.52.104) has left ##c++
+2016-10-18 15:11:41	-->	fogbank (~foggy@88.147.42.198) has joined ##c++
+2016-10-18 15:11:45	<--	Izhido (~Mutter@190.10.59.31) has quit (Remote host closed the connection)
+2016-10-18 15:12:54	-->	bluezone (uid104970@gateway/web/irccloud.com/x-xbtcmdopogjhyxpg) has joined ##c++
+2016-10-18 15:12:55	<--	ipronin (~ipronin@8.25.197.27) has quit (Ping timeout: 252 seconds)
+2016-10-18 15:13:33	<--	thib (~Thibaut12@wikimedia/Thibaut120094) has quit (Quit: Leaving)
+2016-10-18 15:13:33		[15:13]
+2016-10-18 15:13:35	-->	mentoc (~wmerfalen@c-174-52-118-55.hsd1.ut.comcast.net) has joined ##c++
+2016-10-18 15:14:09	-->	samik_ (~smukherje@netops-100.sfo1.bitgravity.com) has joined ##c++
+2016-10-18 15:14:25	<--	hualet (~hualet@118.184.15.164) has quit (Ping timeout: 260 seconds)
+2016-10-18 15:14:48	<--	samik (~smukherje@netops-105.sfo1.bitgravity.com) has quit (Ping timeout: 252 seconds)
+2016-10-18 15:14:48	w3z	how can it be this tough to deal with the ban evading idiots on irc a hundred years later ...
+2016-10-18 15:15:08	baudejogos	:D
+2016-10-18 15:15:28	<--	fogb (~foggy@88.147.42.198) has quit (Ping timeout: 260 seconds)
+2016-10-18 15:15:36	<--	mentoc (~wmerfalen@c-174-52-118-55.hsd1.ut.comcast.net) has quit (Read error: Connection reset by peer)
+2016-10-18 15:17:23	-->	fogb (~foggy@88.147.42.198) has joined ##c++
+2016-10-18 15:18:32	-->	mentoc (~wmerfalen@c-174-52-118-55.hsd1.ut.comcast.net) has joined ##c++
+2016-10-18 15:19:15	-->	skweek (~skweek@68-200-146-225.res.bhn.net) has joined ##c++
+2016-10-18 15:19:21	sujeet	lol
+2016-10-18 15:19:50	sujeet	w3z, freenode's ircd has a lot of features to do it, but noone really uses them
+2016-10-18 15:20:06	-->	nine_milli (~nine_mill@32.211.52.104) has joined ##c++
+2016-10-18 15:20:09	nine_milli	My name is Brian Leroy Brice from San Antonio Texas, any cute guys hit me up @ 1-210-300-2559 and ask for blb
+2016-10-18 15:20:14	<--	nine_milli (~nine_mill@32.211.52.104) has left ##c++
+2016-10-18 15:21:05	<--	fogbank (~foggy@88.147.42.198) has quit (Ping timeout: 256 seconds)
+2016-10-18 15:22:03	m_ben	is it so hard to block his ip
+2016-10-18 15:22:59	<--	pdtpatrick (~Patrick@2620:10d:c090:180::1:3df0) has quit (Ping timeout: 245 seconds)
+2016-10-18 15:25:16	<--	mackal (~mike@pool-96-237-144-12.bstnma.fios.verizon.net) has quit (Quit: BE VIGILANT.)
+2016-10-18 15:25:56	<--	SecondForm_Glenn (~Thunderbi@97-102-42-24.res.bhn.net) has quit (Ping timeout: 250 seconds)
+2016-10-18 15:26:00	<--	SunnyD__ (~SunnyD@cpe-72-178-78-211.hot.res.rr.com) has quit (Quit: ChatZilla 0.9.90.1 [Firefox 30.0/20140605174243])
+2016-10-18 15:26:41	<--	mkramer (~Adium@c-76-30-207-152.hsd1.tx.comcast.net) has quit (Quit: Leaving.)
+2016-10-18 15:27:02	-->	SunnyD_ (~SunnyD@cpe-72-178-78-211.hot.res.rr.com) has joined ##c++
+2016-10-18 15:27:08	<--	andyhuzhill (~Thunderbi@14.23.45.178) has quit (Ping timeout: 245 seconds)
+2016-10-18 15:27:17	-->	theanalyst (theanalyst@gateway/shell/firrre/x-ffdsglackckfwnfq) has joined ##c++
+2016-10-18 15:28:24	kstar	Wait, is this really ##c++?
+2016-10-18 15:28:44	<--	SunnyD_ (~SunnyD@cpe-72-178-78-211.hot.res.rr.com) has left ##c++
+2016-10-18 15:28:44		[15:28]
+2016-10-18 15:28:55	w3z	why isnt your compose bitching about use of compose before deduction of auto ...
+2016-10-18 15:29:33	w3z	<<C(f,f)(2); int f(int x){return 2*x;} template<class A,class B> decltype(auto) C(A&& a, B&& b){return [&a,&b](auto&&...x){return a(b(forward<decltype(x)>(x)...));};} template<class A,class...B> decltype(auto) C(A&& a, B&&...b){return C(forward<A>(a),forward<B>(b)...);}
+2016-10-18 15:29:33	geordi	8
+2016-10-18 15:29:40	w3z	<<C(f,f,f)(2); int f(int x){return 2*x;} template<class A,class B> decltype(auto) C(A&& a, B&& b){return [&a,&b](auto&&...x){return a(b(forward<decltype(x)>(x)...));};} template<class A,class...B> decltype(auto) C(A&& a, B&&...b){return C(forward<A>(a),forward<B>(b)...);}
+2016-10-18 15:29:40	geordi	error: use of 'decltype(auto) C(A&&, B&& ...) [with A = int (&)(int); B = {int (&)(int), int (&)(int)}]' before deduction of 'auto'
+2016-10-18 15:29:53	kstar	O_o
+2016-10-18 15:30:06	pepper_chico	m_ben... thinking here, at some point, your refs start to be refs to the lambdas you create, those lambdas will die if you don't create copies won't them?
+2016-10-18 15:30:43	<--	samik_ (~smukherje@netops-100.sfo1.bitgravity.com) has quit (Ping timeout: 256 seconds)
+2016-10-18 15:31:01	-->	Fixi0n (~Jaac@a83-163-76-78.adsl.xs4all.nl) has joined ##c++
+2016-10-18 15:31:07	-->	akolar (AH3e@gateway/shell/firrre/x-lwqfkrlbgvbdojen) has joined ##c++
+2016-10-18 15:31:19	pepper_chico	the inner lambdas vanish after the assigments, and you have something with dead refs to dead lambdas
+2016-10-18 15:31:31	pepper_chico	if you do copies, that won't happen
+2016-10-18 15:31:33	w3z	pepper_chico: thats my thinking as well, in the above C > 3 case the binary C has created a temporary lambda
+2016-10-18 15:31:49	w3z	>2
+2016-10-18 15:32:32	pepper_chico	yeah, it's just ub
+2016-10-18 15:32:45	w3z	i was going to demonstrate it when geordi slapped me with the auto deduction before use error
+2016-10-18 15:33:00	-->	hualet (~hualet@118.184.15.164) has joined ##c++
+2016-10-18 15:33:03	<--	shakalaka (~shakalaka@ec2-52-52-27-0.us-west-1.compute.amazonaws.com) has quit (Quit: bye.)
+2016-10-18 15:33:12	<--	JacobJeweler (~Jaac@unaffiliated/jacobjeweler) has quit (Ping timeout: 260 seconds)
+2016-10-18 15:33:20	pepper_chico	well, I did some lunch stead here :-)
+2016-10-18 15:33:30	-->	vikaton (uid59278@gateway/web/irccloud.com/x-mvlumsykcnpukpra) has joined ##c++
+2016-10-18 15:33:31	-->	Cohedrin_ (~textual@c-73-170-239-253.hsd1.ca.comcast.net) has joined ##c++
+2016-10-18 15:33:34	pepper_chico	s/stead/instead/
+2016-10-18 15:33:34	<--	Danishman (~kvirc@62-243-156-218-static.dk.customer.tdc.net) has quit (Read error: Connection reset by peer)
+2016-10-18 15:33:34	-->	hyacinth^timeout (~yhyacinth@61.111.255.109) has joined ##c++
+2016-10-18 15:33:39	<--	kbdkode (~kbdkode@unaffiliated/kbdkode) has quit (Read error: Connection reset by peer)
+2016-10-18 15:33:50	-->	kbdkode (~kbdkode@unaffiliated/kbdkode) has joined ##c++
+2016-10-18 15:34:16	-->	Danishman (~kvirc@62-243-156-218-static.dk.customer.tdc.net) has joined ##c++
+2016-10-18 15:34:16	-->	shakalaka (~shakalaka@ec2-52-52-27-0.us-west-1.compute.amazonaws.com) has joined ##c++
+2016-10-18 15:34:28	-->	AReverser (~dev@CPE602ad0897db5-CM602ad0897db2.cpe.net.cable.rogers.com) has joined ##c++
+2016-10-18 15:34:43	<--	hyacinth (~yhyacinth@61.111.255.109) has quit (Remote host closed the connection)
+2016-10-18 15:34:59	-->	re1 (~reiser@178.220.1.2) has joined ##c++
+2016-10-18 15:35:36	<--	Cohedrin (~textual@73.93.140.194) has quit (Ping timeout: 260 seconds)
+2016-10-18 15:36:28	k_sze[work]	c++11 doesn't define a + operator for const char* + const char*??
+2016-10-18 15:37:25	pepper_chico	pointer plus pointer will point to what?
+2016-10-18 15:37:45	k_sze[work]	no idea.
+2016-10-18 15:37:51	<--	Lowl3v3l (~Lowl3v3l@dslb-088-075-000-014.088.075.pools.vodafone-ip.de) has quit (Remote host closed the connection)
+2016-10-18 15:37:51	pepper_chico	see
+2016-10-18 15:37:55	pepper_chico	that's an issue
+2016-10-18 15:38:35	<--	vinnie92_ (uid189878@gateway/web/irccloud.com/x-dpfbmmgwyycgltfj) has quit (Quit: Connection closed for inactivity)
+2016-10-18 15:38:43	k_sze[work]	There's no way to define + to concatenate two strings in const char*?
+2016-10-18 15:40:03	-->	loseyourmind (~loseyourm@180.168.61.170) has joined ##c++
+2016-10-18 15:41:35	-->	Judge_Dredd (~Judge_Dre@unaffiliated/judge-dredd/x-2170742) has joined ##c++
+2016-10-18 15:41:56	pepper_chico	std::string is a better option
+2016-10-18 15:42:30	pepper_chico	can't define operators over builtin types alone
+2016-10-18 15:43:26	<--	loseyourmind (~loseyourm@180.168.61.170) has left ##c++
+2016-10-18 15:45:33	m_ben	so and when I perfectly forward them as in [_f1=FWD(f1), ..], it will make a copy of the lambdas?
+2016-10-18 15:45:33		[15:45]
+2016-10-18 15:46:10	pepper_chico	m_ben: no perfect forward there, just copy
+2016-10-18 15:46:10	<--	mentoc (~wmerfalen@c-174-52-118-55.hsd1.ut.comcast.net) has quit (Read error: Connection reset by peer)
+2016-10-18 15:46:32	<--	w41 (~w41@unaffiliated/w41) has quit (Ping timeout: 244 seconds)
+2016-10-18 15:46:34	m_ben	or what is the right term? move them into the closures
+2016-10-18 15:46:37	pepper_chico	FWD or just f1 will endup the same
+2016-10-18 15:47:05	pepper_chico	m_ben: I mean that there just isn't any perfect forwarding there
+2016-10-18 15:47:13	-->	mentoc (~wmerfalen@c-174-52-118-55.hsd1.ut.comcast.net) has joined ##c++
+2016-10-18 15:47:27	-->	Carbonflux (~Bob@75-172-112-206.tukw.qwest.net) has joined ##c++
+2016-10-18 15:47:37	pepper_chico	in that expression in the lambda capture, even though you meant it to be
+2016-10-18 15:48:01	m_ben	I meant move it into the lambda
+2016-10-18 15:48:21	pepper_chico	with lambda captures you capture by value with _f1=, or by ref with &_f1=
+2016-10-18 15:49:08	-->	voidah (~voidah@unaffiliated/voider) has joined ##c++
+2016-10-18 15:49:38	pepper_chico	m_ben: you perfect forward when you pass it to something that can do the forwarding, like an T&& function param
+2016-10-18 15:50:05	pepper_chico	not to a lambda captura declaration
+2016-10-18 15:50:42	<--	Karyon (~yaaic@unaffiliated/karyon) has quit (Quit: sayonara)
+2016-10-18 15:50:50	pepper_chico	just like you can't perfect forwarding an int to foo(int i)
+2016-10-18 15:51:08	pepper_chico	it will just accept a value by copy
+2016-10-18 15:51:13	-->	code_zombie_ (~code_zomb@2605:a601:aa1:5c00:39d6:75bd:f88f:507d) has joined ##c++
+2016-10-18 15:51:13	<--	mentoc (~wmerfalen@c-174-52-118-55.hsd1.ut.comcast.net) has quit (Read error: Connection reset by peer)
+2016-10-18 15:51:57	-->	xaxxon (~xaxxon@c-50-132-6-118.hsd1.wa.comcast.net) has joined ##c++
+2016-10-18 15:52:19	-->	mentoc (~wmerfalen@c-174-52-118-55.hsd1.ut.comcast.net) has joined ##c++
+2016-10-18 15:52:39	pepper_chico	think of foo(FWD(x))
+2016-10-18 15:52:54	m_ben	but what do I do if I pass an object that is expensive to copy or noncopyable? shouldn't I move it into the lambda?
+2016-10-18 15:53:23	<--	code_zombie (~code_zomb@136.63.230.43) has quit (Ping timeout: 256 seconds)
+2016-10-18 15:53:40	-->	w41 (~w41@213.243.91.10) has joined ##c++
+2016-10-18 15:53:40	<--	w41 (~w41@213.243.91.10) has quit (Changing host)
+2016-10-18 15:53:40	-->	w41 (~w41@unaffiliated/w41) has joined ##c++
+2016-10-18 15:53:54	-->	jason_zhang (~jason_zha@42.120.74.200) has joined ##c++
+2016-10-18 15:54:01	-->	andyhuzhill (~Thunderbi@14.23.45.178) has joined ##c++
+2016-10-18 15:54:42	pepper_chico	std::move in named lambda captures requires that the type is moveable type, so yeah, my bad, it's not just a copy if they are moveable
+2016-10-18 15:54:58	pepper_chico	if they aren't, it's copy
+2016-10-18 15:55:19	pepper_chico	but
+2016-10-18 15:55:29	-->	ReverseBlade (~user@213.74.212.180) has joined ##c++
+2016-10-18 15:55:31	pepper_chico	nothing to do with std::forwarding
+2016-10-18 15:55:50	<--	roko (d193902e@gateway/web/freenode/ip.209.147.144.46) has quit (Ping timeout: 260 seconds)
+2016-10-18 15:56:07	pepper_chico	in named lambda captures it's common to have [foo=std::move(bar)]
+2016-10-18 15:56:13	pepper_chico	but not forward
+2016-10-18 15:56:30	-->	GinoMan (~GinoMan@2601:41:c101:487a:d4bc:2dd5:c0d8:c926) has joined ##c++
+2016-10-18 15:56:46	<--	cliluw (~cliluw@unaffiliated/cliluw) has quit (Read error: Connection reset by peer)
+2016-10-18 15:59:06	-->	cliluw (~cliluw@unaffiliated/cliluw) has joined ##c++
+2016-10-18 15:59:21	m_ben	why did it work w/o any issues, when I had [_f1=FWD(f1), _f2=FWD(f2)]? I'm still not understanding the whole picture
+2016-10-18 15:59:21	<--	mentoc (~wmerfalen@c-174-52-118-55.hsd1.ut.comcast.net) has quit (Read error: Connection reset by peer)
+2016-10-18 15:59:54	-->	mentoc (~wmerfalen@c-174-52-118-55.hsd1.ut.comcast.net) has joined ##c++
+2016-10-18 16:00:33	pepper_chico	m_ben: that what you're actually creating copies of the temporary lambdas you're returning and feeding the composition
+2016-10-18 16:00:33		[16:00]
+2016-10-18 16:00:41	pepper_chico	s/that what/that way/
+2016-10-18 16:01:14	pepper_chico	m_ben: in the end your composed lambda is built upon minor lambdas.
+2016-10-18 16:01:25	pepper_chico	m_ben: that stay alive
+2016-10-18 16:01:31	pepper_chico	because they are copies
+2016-10-18 16:01:46	pepper_chico	when you use references alone
+2016-10-18 16:01:49	m_ben	so it's the same as just [f1,f2]?
+2016-10-18 16:01:52	pepper_chico	they die
+2016-10-18 16:02:06	pepper_chico	m_ben: yeah w3z pointed that in the beginning
+2016-10-18 16:02:32	m_ben	well but then I'm also doing copies of the other callables, right?
+2016-10-18 16:02:43	pepper_chico	yes
+2016-10-18 16:02:51	-->	FreeBirdLjj (~freebirdl@223.65.168.113) has joined ##c++
+2016-10-18 16:03:02	m_ben	is there a way to avoid that? what if the other callables are expensive to copy?
+2016-10-18 16:03:35	pepper_chico	I didn't think about that problem yet
+2016-10-18 16:03:39	<--	buumi (~quassel@26.ip-51-254-211.eu) has quit (Remote host closed the connection)
+2016-10-18 16:03:54	m_ben	that's why I started with the references in the first place :)
+2016-10-18 16:03:56	pepper_chico	it's a good exercise you should try since you know what's the issue now
+2016-10-18 16:04:22	-->	yorick_ (~yorick@ip51cd0513.speed.planet.nl) has joined ##c++
+2016-10-18 16:04:22	<--	yorick_ (~yorick@ip51cd0513.speed.planet.nl) has quit (Changing host)
+2016-10-18 16:04:22	-->	yorick_ (~yorick@oftn/oswg-member/yorick) has joined ##c++
+2016-10-18 16:04:48	pepper_chico	well, you endup creating refs, that's fine, it's stopped being fined when they become refs to temporary lamdbas
+2016-10-18 16:04:48	<--	mentoc (~wmerfalen@c-174-52-118-55.hsd1.ut.comcast.net) has quit (Read error: Connection reset by peer)
+2016-10-18 16:05:11	pepper_chico	s/it's stopped being fined/it stopped being fine/
+2016-10-18 16:05:24	-->	mentoc (~wmerfalen@c-174-52-118-55.hsd1.ut.comcast.net) has joined ##c++
+2016-10-18 16:05:55	-->	drockwood942 (~drockwood@2601:245:0:de2b:18df:4127:717:ffef) has joined ##c++
+2016-10-18 16:06:56	-->	DigiByteDev (~JT2@n218250011174.netvigator.com) has joined ##c++
+2016-10-18 16:06:59	<--	yorick (~yorick@oftn/oswg-member/yorick) has quit (Ping timeout: 258 seconds)
+2016-10-18 16:07:26	<--	FreeBirdLjj (~freebirdl@223.65.168.113) has quit (Ping timeout: 256 seconds)
+2016-10-18 16:08:45	-->	f00mado_ (~Thunderbi@2600:8805:9980:164:d823:d1a4:6902:c3a5) has joined ##c++
+2016-10-18 16:09:30	<--	dj_pi (~dj@c-73-191-212-56.hsd1.mi.comcast.net) has quit (Quit: Leaving)
+2016-10-18 16:09:48	<--	pepper_chico (~pepper_ch@201-69-110-165.dial-up.telesp.net.br) has quit (Quit: WeeChat 1.6)
+2016-10-18 16:10:23	<--	ReverseBlade (~user@213.74.212.180) has quit (Ping timeout: 256 seconds)
+2016-10-18 16:10:41	w3z	--clang <<C(&f,&f,&f)(2); int f(int x){return 2*x;} template<class A,class B> decltype(auto) C(A&& a, B&& b){return [a,b](auto&&...x){return a(b(forward<decltype(x)>(x)...));};} template<class A,class...B> decltype(auto) C(A&& a, B&&...b){return C(forward<A>(a),C(forward<B>(b)...));}
+2016-10-18 16:10:47	w3z	geordi: ^
+2016-10-18 16:10:47	geordi	16
+2016-10-18 16:10:57	-->	korg815 (~korg815@unaffiliated/korg815) has joined ##c++
+2016-10-18 16:11:18	<--	hualet (~hualet@118.184.15.164) has quit (Remote host closed the connection)
+2016-10-18 16:11:30	w3z	gcc has a strange warning about the x lambda arguments, looks like a gcc bug
+2016-10-18 16:11:32	<--	Danishman (~kvirc@62-243-156-218-static.dk.customer.tdc.net) has quit (Quit: KVIrc 4.9.1 Aria http://www.kvirc.net/)
+2016-10-18 16:11:48	-->	hualet (~hualet@118.184.15.164) has joined ##c++
+2016-10-18 16:13:17	w3z	i started daydreaming about using fold for composition a while back, could only get to a recursive solution like the one above, even with an overloaded operator, but i didnt try very hard, might be fun
+2016-10-18 16:13:54	<--	korg815 (~korg815@unaffiliated/korg815) has left ##c++ ("WeeChat 1.6")
+2016-10-18 16:14:31	-->	mangolisk (~mangolisk@S0106848dc7ebaa06.vc.shawcable.net) has joined ##c++
+2016-10-18 16:14:31	<--	mentoc (~wmerfalen@c-174-52-118-55.hsd1.ut.comcast.net) has quit (Read error: Connection reset by peer)
+2016-10-18 16:14:37	<--	DigiByteDev (~JT2@n218250011174.netvigator.com) has quit (Ping timeout: 260 seconds)
+2016-10-18 16:14:53	-->	DigiByteDev (~JT2@69.167.28.1) has joined ##c++
+2016-10-18 16:14:58	<--	DigiByteDev (~JT2@69.167.28.1) has quit (Client Quit)
+2016-10-18 16:15:01	<--	Vinnie_win_j (~TheVinn@pdpc/supporter/gold/thevinn) has quit (Read error: Connection reset by peer)
+2016-10-18 16:15:22	m_ben	w3z: is there a way to capture f by reference and copy only the temporary lambdas?
+2016-10-18 16:15:35	m_ben	do you see what I mean?
+2016-10-18 16:15:35		[16:15]
+2016-10-18 16:15:47	-->	hualet_ (~hualet@118.184.15.164) has joined ##c++
+2016-10-18 16:16:05	-->	justanotheruser (~justanoth@unaffiliated/justanotheruser) has joined ##c++
+2016-10-18 16:16:37	<--	hualet (~hualet@118.184.15.164) has quit (Ping timeout: 256 seconds)
+2016-10-18 16:17:04	-->	Forgo (~U_Forgo_T@unaffiliated/forgo) has joined ##c++
+2016-10-18 16:17:06	w3z	ahh there it is
+2016-10-18 16:17:17	<--	TikityTik (~TikityTik@162.223.44.49) has quit (Read error: Connection reset by peer)
+2016-10-18 16:17:22	w3z	hold on, im folding :)
+2016-10-18 16:17:44	-->	mentoc (~wmerfalen@c-174-52-118-55.hsd1.ut.comcast.net) has joined ##c++
+2016-10-18 16:17:49	m_ben	you mean with fold expressions?
+2016-10-18 16:17:50	Forgo	hi. quick question: is there a single function to nicely end all threads and close application?
+2016-10-18 16:19:08	Forgo	ok, never mind, got a better idea
+2016-10-18 16:19:13	<--	modlin (~quassel@93.123.41.167) has quit (Ping timeout: 245 seconds)
+2016-10-18 16:19:31	-->	mkramer (~Adium@c-76-30-207-152.hsd1.tx.comcast.net) has joined ##c++
+2016-10-18 16:21:28	w3z	-w <<C(&f,&f,&f,[](auto x){return x*3;})(2); int f(int x){return 2*x;} template<class A,class B> auto operator+(A&& a, B&& b){return [a,b](auto&&...x){return a(b(forward<decltype(x)>(x)...));};}template<class A,class...B> auto C(A&& a, B&&...b){return forward<A>(a)+(forward<B>(b)+...);}  //only works for even - needs work, clang has the fold bug
+2016-10-18 16:21:34	w3z	geordi: ^
+2016-10-18 16:21:34	geordi	48
+2016-10-18 16:22:12	m_ben	geordi needs a --wandbox option :)
+2016-10-18 16:22:24	w3z	heh yes of course fold expressions, not laundry :)
+2016-10-18 16:22:48	-->	f3r70rr35f (~fernando@186-105-73-238.baf.movistar.cl) has joined ##c++
+2016-10-18 16:22:55	m_ben	lol
+2016-10-18 16:23:01	<--	l2esonance (~l2esonanc@c-73-223-132-245.hsd1.ca.comcast.net) has quit (Ping timeout: 260 seconds)
+2016-10-18 16:23:07	-->	l2esonance (~l2esonanc@c-73-223-132-245.hsd1.ca.comcast.net) has joined ##c++
+2016-10-18 16:24:13	<--	hexagoxel (~hexagoxel@p200300798F1D1700021E33FFFE2231E9.dip0.t-ipconnect.de) has quit (Ping timeout: 245 seconds)
+2016-10-18 16:24:34	<--	systemfault (~rcyr@unaffiliated/rcyr) has quit (Quit: Bye!)
+2016-10-18 16:24:42	w3z	hmm, so anything after 2 args, will generate a temporary lambda, you want to only capture the arguments by value if theyre temporaries ...
+2016-10-18 16:25:21	-->	pepper_chico (~pepper_ch@201-69-110-165.dial-up.telesp.net.br) has joined ##c++
+2016-10-18 16:25:23	m_ben	yup
+2016-10-18 16:25:31	w3z	i suppose you can provide another overload of your binary compose that takes T&s
+2016-10-18 16:27:45	w3z	youll may have to disable the universal ref version for T& though, im not clear headed enough to say 100% without trying right now
+2016-10-18 16:27:50	w3z	-ll
+2016-10-18 16:28:13	w3z	ive been sick(ish) all day
+2016-10-18 16:28:31	m_ben	so I will need const T&, T& and T?
+2016-10-18 16:28:58	w3z	just T&& and T&
+2016-10-18 16:30:10	-->	ReverseBlade (~user@213.74.212.180) has joined ##c++
+2016-10-18 16:31:06	<--	mkramer (~Adium@c-76-30-207-152.hsd1.tx.comcast.net) has quit (Quit: Leaving.)
+2016-10-18 16:31:06		[16:31]
+2016-10-18 16:31:30	-->	hexagoxel (~hexagoxel@p4FCCC605.dip0.t-ipconnect.de) has joined ##c++
+2016-10-18 16:31:45	-->	ipronin (~ipronin@96-95-197-97-static.hfc.comcastbusiness.net) has joined ##c++
+2016-10-18 16:31:48	--	lol is now known as gener1c
+2016-10-18 16:31:54	w3z	and variations for lhs and rhs
+2016-10-18 16:32:12	w3z	if youre willing to target 17, it sounds like a good chance to use if constexpr
+2016-10-18 16:32:55	<--	postsneakernet (~postsneak@c-76-111-222-223.hsd1.fl.comcast.net) has quit
+2016-10-18 16:33:05	w3z	the binary compose will usually see T&,T&& but theres also the possibility of seeing T&&,T&
+2016-10-18 16:33:51	<--	f3r70rr35f (~fernando@186-105-73-238.baf.movistar.cl) has quit (Quit: leaving)
+2016-10-18 16:35:25	-->	samik (~smukherje@netops-100.sfo1.bitgravity.com) has joined ##c++
+2016-10-18 16:36:25	-->	datahotdog (~datahotdo@118.201.77.182) has joined ##c++
+2016-10-18 16:36:45	<--	jokleinn (jokleinn@unaffiliated/jokleinn) has quit (Quit: WeeChat 1.5)
+2016-10-18 16:36:49	<--	SwiftMatt (~Objective@130.253.27.134) has quit (Quit: My MacBook Pro has gone to sleep. ZZZzzz…)
+2016-10-18 16:37:08	<--	datahotdog (~datahotdo@118.201.77.182) has quit (Read error: Connection reset by peer)
+2016-10-18 16:37:34	-->	datahotdog (~datahotdo@118.201.77.182) has joined ##c++
+2016-10-18 16:41:33	-->	jokleinn (jokleinn@unaffiliated/jokleinn) has joined ##c++
+2016-10-18 16:42:32	-->	f3r70rr35f (~fernando@186-105-73-238.baf.movistar.cl) has joined ##c++
+2016-10-18 16:43:23	<--	pepper_chico (~pepper_ch@201-69-110-165.dial-up.telesp.net.br) has quit (Quit: WeeChat 1.6)
+2016-10-18 16:45:34	-->	xameada (~xameada@ip98-165-190-88.ph.ph.cox.net) has joined ##c++
+2016-10-18 16:46:33	<--	chachasmooth (~chachasmo@unaffiliated/chachasmooth) has quit (Ping timeout: 260 seconds)
+2016-10-18 16:46:33		[16:46]
+2016-10-18 16:47:12	<--	mentoc (~wmerfalen@c-174-52-118-55.hsd1.ut.comcast.net) has quit (Read error: Connection reset by peer)
+2016-10-18 16:47:12	<--	Z3N1T (~Zenit@179.176.16.101.dynamic.adsl.gvt.net.br) has quit (Quit: Leaving)
+2016-10-18 16:47:34	-->	mentoc (~wmerfalen@c-174-52-118-55.hsd1.ut.comcast.net) has joined ##c++
+2016-10-18 16:49:09	-->	chachasmooth (~chachasmo@unaffiliated/chachasmooth) has joined ##c++
+2016-10-18 16:49:09	<--	mentoc (~wmerfalen@c-174-52-118-55.hsd1.ut.comcast.net) has quit (Read error: Connection reset by peer)
+2016-10-18 16:50:53	-->	fedepad (~fedepad@p4FE13C0D.dip0.t-ipconnect.de) has joined ##c++
+2016-10-18 16:52:52	-->	mentoc (~wmerfalen@c-174-52-118-55.hsd1.ut.comcast.net) has joined ##c++
+2016-10-18 16:54:30	w3z	(forward<A>(a)+...+forward<B>(b)) works as expected if everyone is a function object/lambda, pukes if there are function pointers though
+2016-10-18 16:54:48	w3z	anyway...
+2016-10-18 16:55:04	-->	iceiceice (~chris@pool-173-61-153-221.cmdnnj.fios.verizon.net) has joined ##c++
+2016-10-18 16:55:04	<--	iceiceice (~chris@pool-173-61-153-221.cmdnnj.fios.verizon.net) has quit (Changing host)
+2016-10-18 16:55:04	-->	iceiceice (~chris@unaffiliated/iceiceice) has joined ##c++
+2016-10-18 16:55:31	<--	beatdown (beatdown@chainsawed.and.strangled.net) has quit (Quit: ZNC 1.6.1 - http://znc.in)
+2016-10-18 16:55:34	baudejogos	what does that do?
+2016-10-18 16:55:38	<--	fedepad (~fedepad@p4FE13C0D.dip0.t-ipconnect.de) has quit (Ping timeout: 250 seconds)
+2016-10-18 16:55:43	w3z	with the right set of operator+ overloads, should be able to get it working and capture by ref when needed
+2016-10-18 16:55:48	baudejogos	I still don't get these fold expressions right
+2016-10-18 16:56:09	baudejogos	they are quite unreadable
+2016-10-18 16:56:13	m_ben	!stdref fold
+2016-10-18 16:56:14	refbot	Error: No results found
+2016-10-18 16:56:14	w3z	its a binary fold that generates an expression a+b+c+...
+2016-10-18 16:56:18	m_ben	!stdref fold_expression
+2016-10-18 16:56:19	refbot	Error: No results found
+2016-10-18 16:56:20	m_ben	!stdref fold_expressions
+2016-10-18 16:56:21	refbot	Error: No results found
+2016-10-18 16:56:32	baudejogos	...
+2016-10-18 16:56:37	w3z	http://en.cppreference.com/w/cpp/language/fold
+2016-10-18 16:56:41	-->	SwiftMatt (~Objective@130.253.27.134) has joined ##c++
+2016-10-18 16:56:48	baudejogos	but why a and b?
+2016-10-18 16:56:59	baudejogos	why not just forward<A>(a)+... ?
+2016-10-18 16:57:02	w3z	oh its in reference to the above template
+2016-10-18 16:57:06	-->	zap0 (~moofy@14-201-222-143.tpgi.com.au) has joined ##c++
+2016-10-18 16:57:11	w3z	thats a unary right fold
+2016-10-18 16:57:17	m_ben	because he's applying an initial value
+2016-10-18 16:57:30	baudejogos	is *a* the initial value?
+2016-10-18 16:57:39	baudejogos	or b?
+2016-10-18 16:57:52	baudejogos	what makes a fold right or left?
+2016-10-18 16:58:31	w3z	X op ... right fold, we fold to the right, ... op X is a left fold we fold to the left
+2016-10-18 16:58:55	baudejogos	so it depends on the context
+2016-10-18 16:59:08	-->	c0le (~c0le@59.99.251.45) has joined ##c++
+2016-10-18 16:59:11	w3z	X op ... op Y is a binary fold
+2016-10-18 16:59:23	baudejogos	oh
+2016-10-18 16:59:30	 *	baudejogos sucks
+2016-10-18 16:59:53	<--	AReverser (~dev@CPE602ad0897db5-CM602ad0897db2.cpe.net.cable.rogers.com) has quit (Ping timeout: 260 seconds)
+2016-10-18 17:00:02	 *	baudejogos still does not have enough cognitive tools to understand this fold. gotta read the cppref link and stop annoying with silly questions
+2016-10-18 17:00:03	baudejogos	thanks
+2016-10-18 17:00:04	-->	my123_ (~my123@13.85.69.239) has joined ##c++
+2016-10-18 17:00:35	<--	baudejogos (~achubergs@pool-108-54-98-223.nycmny.fios.verizon.net) has quit (Quit: shame)
+2016-10-18 17:01:00	w3z	you can play with them, its the easiest way to grok (after reading the description)
+2016-10-18 17:01:18	m_ben	he gave up too early :\
+2016-10-18 17:01:56	<--	kbdkode (~kbdkode@unaffiliated/kbdkode) has quit (Ping timeout: 260 seconds)
+2016-10-18 17:01:56		[17:01]
+2016-10-18 17:02:48	-->	ruoso_ (~ruoso@ruoso.xen.prgmr.com) has joined ##c++
+2016-10-18 17:03:08	-->	FreeBirdLjj (~freebirdl@218.94.142.72) has joined ##c++
+2016-10-18 17:03:15	-->	systemfault (~rcyr@unaffiliated/rcyr) has joined ##c++
+2016-10-18 17:03:32	-->	arescorpio (~arescorpi@152.171.92.97) has joined ##c++
+2016-10-18 17:03:49	<--	my123 (~my123@unaffiliated/kill--9-1/x-8776976) has quit (Ping timeout: 260 seconds)
+2016-10-18 17:04:49	ruoso_	Is it possible to have the template parameter be deduced from the argument, when the type of the argument is recursively templated? Something like "template <typename A> class Foo { template <typename T> bar(typename A::template foo<T> x); }"?
+2016-10-18 17:05:38	ruoso_	assuming the template argument A has a template member
+2016-10-18 17:05:51	ruoso_	named foo, which takes an argument type...

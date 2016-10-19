@@ -3989,3 +3989,288 @@
 2016-10-18 14:54:01	-->	stacks88 (~x@167.114.219.244) has joined #bash
 2016-10-18 14:54:13	<--	Gup_ (~Gup__@host86-143-24-100.range86-143.btcentralplus.com) has quit (Ping timeout: 252 seconds)
 2016-10-18 14:54:28	-->	fatalhalt (~fatalhalt@c-73-246-193-29.hsd1.il.comcast.net) has joined #bash
+2016-10-18 14:56:38	<--	dennisw (~dennis@128.42.235.76) has quit (Ping timeout: 250 seconds)
+2016-10-18 14:57:08	<--	aax (~xaa@2a02:a03f:2f:cc00:c426:c6e6:9f1f:79ac) has quit (Ping timeout: 245 seconds)
+2016-10-18 14:59:04	johncarter	izabera: thanks, I think I've found the solution... I think that the pgrep takes the value of the openvpn.sh script so the if fail
+2016-10-18 14:59:22	-->	fev3r101 (~fev3r101@5.134.116.205) has joined #bash
+2016-10-18 14:59:48	<--	anyofyou (~anyofyou@27.0.232.46) has quit (Remote host closed the connection)
+2016-10-18 15:00:33	-->	fstd_ (~fstd@unaffiliated/fisted) has joined #bash
+2016-10-18 15:00:59	<--	strull (~strull@pD9F4A693.dip0.t-ipconnect.de) has quit (Remote host closed the connection)
+2016-10-18 15:01:12	<--	Geom (~Geom@122.52.86.197) has quit (Read error: Connection reset by peer)
+2016-10-18 15:02:06	kerframil	johncarter: apart from being incorrectly implemented, the pgrep check is not a great idea. for one thing, it's racy - openvpn may not be running at that point, but could be by the time the script launches openvpn.
+2016-10-18 15:02:18	kerframil	further, it could be that that a standard user is unable to peruse root's processes in Linux (proc mounted with hidepid=[1|2], /proc restrictions in grsecurity, SELinux ... etc), in which case one might get different results depending on whether the script is run as root or not. also, the permissions of the pid file can matter.
+2016-10-18 15:03:38	<--	webdev007 (~webdev007@45.72.218.91) has quit (Quit: Leaving)
+2016-10-18 15:03:57	twkm	hamsterpower: actually it does, but it attempts to restore it when it finishes.
+2016-10-18 15:04:01	<--	somis (~somis@96.9.249.36) has quit (Quit: WeeChat 1.6)
+2016-10-18 15:04:23	<--	Juggernaut_ (~Juggernau@c-71-206-237-208.hsd1.pa.comcast.net) has quit (Quit: Juggernaut_)
+2016-10-18 15:04:43	twkm	(usually, there's an option to modify that behavior)
+2016-10-18 15:04:45	hamsterpower	twkm: what do you mean by attempts to restore? restore what?
+2016-10-18 15:04:48	<--	fstd (~fstd@unaffiliated/fisted) has quit (Ping timeout: 260 seconds)
+2016-10-18 15:04:49	--	fstd_ is now known as fstd
+2016-10-18 15:04:56	hamsterpower	the date?
+2016-10-18 15:04:57	twkm	the mtime.
+2016-10-18 15:04:58	-->	anyofyou (~anyofyou@27.0.232.139) has joined #bash
+2016-10-18 15:05:01	hamsterpower	mm
+2016-10-18 15:05:35	-->	Juggernaut_ (~Juggernau@c-71-206-237-208.hsd1.pa.comcast.net) has joined #bash
+2016-10-18 15:05:46	-->	Al3xG0 (~unix@unaffiliated/al3xg0) has joined #bash
+2016-10-18 15:05:53	twkm	it creates an all new file, whether compressing or decompressing.  but when it finishes it tries to set the mtime, subject to the option and whether the system will allow it.
+2016-10-18 15:06:18	johncarter	solved, thanks izabera and kerframil for the advices
+2016-10-18 15:06:20	<--	kurdt6794 (~Kurdt@69-179-188-253.dyn.centurytel.net) has quit (Remote host closed the connection)
+2016-10-18 15:06:57	kerframil	johncarter: it's really wrong. there's no reason that openvpn can't be launched in some other context. it shouldn't be allowed to influence the behaviour here.
+2016-10-18 15:07:25	<--	fev3r101 (~fev3r101@5.134.116.205) has quit (Ping timeout: 260 seconds)
+2016-10-18 15:07:37	-->	khronosschoty (Elite16547@gateway/shell/elitebnc/x-sczbvxznyjptbbis) has joined #bash
+2016-10-18 15:12:27	kerframil	== is wrong in sh, btw. if your /bin/sh were a compliant implementation, it would fail. besides, you can use -z instead: [ -z "$OPENVPN_PID" ] ...
+2016-10-18 15:12:27		[15:12]
+2016-10-18 15:13:33	<--	thib (~Thibaut12@wikimedia/Thibaut120094) has quit (Quit: Leaving)
+2016-10-18 15:13:36	<--	JeanCarloMachado (~jean@177.196.88.21) has quit (Ping timeout: 260 seconds)
+2016-10-18 15:13:44	twkm	if it were strictly conforming.  which so far as i know doesn't exist, though there may be some that would puke on the use of == with test.
+2016-10-18 15:13:46	-->	ArkaZeen (~ArkaZeen@rn-nat-129-97-131-0.dynamic.uwaterloo.ca) has joined #bash
+2016-10-18 15:14:02	kerframil	dash is fairly widespread and will not tolerate it
+2016-10-18 15:14:02	<--	ArkaZeen (~ArkaZeen@rn-nat-129-97-131-0.dynamic.uwaterloo.ca) has quit (Client Quit)
+2016-10-18 15:14:15	twkm	thus the final phrase.
+2016-10-18 15:14:33	twkm	dash is not strictly conforming -- it does have its own extensions.
+2016-10-18 15:15:03	-->	pokalyis (~nerium@banan.olf.sgsnet.se) has joined #bash
+2016-10-18 15:16:06	kerframil	well, yes. but I don't think people stick #!/bin/sh in their scripts while simultaneously pondering which dash extensions they want to take advantage of.
+2016-10-18 15:16:07	johncarter	thanks, in my environment sh is a symlink to bash
+2016-10-18 15:16:25	kerframil	I thought as much
+2016-10-18 15:16:38	twkm	you should be explicit johncarter, write #!/path/to/bash if you intend to use bash features.
+2016-10-18 15:17:13	<--	gniourf (~gniourf@pdm-l03.insa-lyon.fr) has quit (Ping timeout: 260 seconds)
+2016-10-18 15:17:34	<--	pokalyis (~nerium@banan.olf.sgsnet.se) has quit (Read error: Connection reset by peer)
+2016-10-18 15:17:42	johncarter	ok I'll now it
+2016-10-18 15:18:04	johncarter	do*
+2016-10-18 15:18:20	-->	pokalyis (~nerium@banan.olf.sgsnet.se) has joined #bash
+2016-10-18 15:19:15	-->	skweek (~skweek@68-200-146-225.res.bhn.net) has joined #bash
+2016-10-18 15:20:24	<--	mycelium (~fungal@unaffiliated/fungal) has quit (Ping timeout: 256 seconds)
+2016-10-18 15:20:26	-->	gniourf (~gniourf@pdm-l03.insa-lyon.fr) has joined #bash
+2016-10-18 15:21:24	<--	gniourf (~gniourf@pdm-l03.insa-lyon.fr) has quit (Max SendQ exceeded)
+2016-10-18 15:21:32	kerframil	johncarter: for your reference, http://mywiki.wooledge.org/Bashism
+2016-10-18 15:21:51	-->	rominronin-WORK (~rominroni@212.186.112.18) has joined #bash
+2016-10-18 15:22:49	johncarter	much appreciated :)
+2016-10-18 15:24:45	-->	arthar360 (~arthar360@117.228.28.15) has joined #bash
+2016-10-18 15:25:07	twkm	kerframil: actually it seems quite common o/s' that use dash as sh to liberally use dash's extensions without writing #!/path/to/dash, much as those that use bash as their sh use bashisms without a shebang that is explicit.
+2016-10-18 15:26:06	-->	gniourf (~gniourf@pdm-l03.insa-lyon.fr) has joined #bash
+2016-10-18 15:26:06	kerframil	twkm: that's due to ignorance. would it have been better had I not mentioned it?
+2016-10-18 15:26:40	<--	knob (~knob@209.91.218.190) has quit (Quit: Leaving)
+2016-10-18 15:26:59	twkm	not at all.  just being complete.
+2016-10-18 15:27:03	kerframil	ok
+2016-10-18 15:28:22	-->	alex1a (~alex1a@a81-84-38-221.cpe.netcabo.pt) has joined #bash
+2016-10-18 15:28:22		[15:28]
+2016-10-18 15:28:32	<--	afuentes (~kusanagi@201.165.35.37.dynamic.jazztel.es) has quit (Ping timeout: 260 seconds)
+2016-10-18 15:30:00	-->	thermalengineer (~Android@2600:1:c594:3e3d:407d:5b7:7578:9903) has joined #bash
+2016-10-18 15:30:43	<--	gniourf (~gniourf@pdm-l03.insa-lyon.fr) has quit (Ping timeout: 256 seconds)
+2016-10-18 15:30:59	-->	vincentor (~vincentor@218.107.55.252) has joined #bash
+2016-10-18 15:31:01	-->	Fixi0n (~Jaac@a83-163-76-78.adsl.xs4all.nl) has joined #bash
+2016-10-18 15:31:19	kerframil	that's actually my litmus test for whether a third-party script might be crap, at a glance. just look at the hashbang and see whether the test operators are idiomatic for the named shell. it's a meaningful heuristic, in my recent experience.
+2016-10-18 15:31:45	<--	upbeta (~upbeta@114.108.245.51) has quit (Remote host closed the connection)
+2016-10-18 15:31:52	-->	upbeta (~upbeta@112.199.110.130) has joined #bash
+2016-10-18 15:32:46	Hello71	dash has extensions?
+2016-10-18 15:32:51	twkm	yep.
+2016-10-18 15:33:03	<--	shakalaka (~shakalaka@ec2-52-52-27-0.us-west-1.compute.amazonaws.com) has quit (Quit: bye.)
+2016-10-18 15:33:12	<--	JacobJeweler (~Jaac@unaffiliated/jacobjeweler) has quit (Ping timeout: 260 seconds)
+2016-10-18 15:33:39	<--	kbdkode (~kbdkode@unaffiliated/kbdkode) has quit (Read error: Connection reset by peer)
+2016-10-18 15:33:50	-->	kbdkode (~kbdkode@unaffiliated/kbdkode) has joined #bash
+2016-10-18 15:34:09	Hello71	# dash -c '[ a == a ]'
+2016-10-18 15:34:09	shbot	Hello71: dash: 1: [: a: unexpected operator
+2016-10-18 15:34:16	-->	shakalaka (~shakalaka@ec2-52-52-27-0.us-west-1.compute.amazonaws.com) has joined #bash
+2016-10-18 15:34:29	Hello71	# dash -c '[ a = a ]'
+2016-10-18 15:34:30	shbot	Hello71: no output
+2016-10-18 15:34:42	Hello71	seems to work in a purely POSIX way
+2016-10-18 15:35:40	izabera	# dash -c 'f () { local x; }; f'
+2016-10-18 15:35:41	shbot	izabera: no output
+2016-10-18 15:35:46	izabera	very posix
+2016-10-18 15:38:49	<--	e14 (~e14@c-24-91-74-152.hsd1.ma.comcast.net) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-10-18 15:39:24	-->	arossdotme-planb (~zxy@host-92-26-242-115.as13285.net) has joined #bash
+2016-10-18 15:40:50	-->	e14 (~e14@c-24-91-74-152.hsd1.ma.comcast.net) has joined #bash
+2016-10-18 15:41:16	<--	arossdotme (~zxy@host-84-13-235-218.opaltelecom.net) has quit (Ping timeout: 250 seconds)
+2016-10-18 15:41:38	twkm	yep, almost entirely posix though missing a feature or six and having added a couple.  if you write a posix sh conforming script you shouldn't run into anything surprising.
+2016-10-18 15:41:53	-->	TheRinger (~TheRinger@c-73-35-211-122.hsd1.wa.comcast.net) has joined #bash
+2016-10-18 15:43:30	-->	arossdotme (~zxy@host-84-13-235-83.opaltelecom.net) has joined #bash
+2016-10-18 15:43:30		[15:43]
+2016-10-18 15:43:41	twkm	echo is perhaps the main surprise, given the folks that promote dash-as-sh say not to use any xsi shell features but dash has some (e.g., echo parses its arguments for escapes as xsi specifies but also obeys a -n option).
+2016-10-18 15:44:09	<--	eliasr (uid27497@gateway/web/irccloud.com/x-ealqpizhconbdscw) has quit (Quit: Connection closed for inactivity)
+2016-10-18 15:44:13	<--	arossdotme-planb (~zxy@host-92-26-242-115.as13285.net) has quit (Ping timeout: 245 seconds)
+2016-10-18 15:45:06	twkm	xsi specifically says that a first argument of -n must be treated as a string, not an option.
+2016-10-18 15:45:07	<--	sdothum (~sdothum@108.63.186.29) has quit (Quit: ZNC - 1.6.0 - http://znc.in)
+2016-10-18 15:45:30	twkm	this is all of course simplified by use of printf instead.
+2016-10-18 15:46:38	-->	heyimwill (heyimwill@gateway/shell/firrre/x-zgurmwfhpgefmpta) has joined #bash
+2016-10-18 15:47:00	<--	Juggernaut_ (~Juggernau@c-71-206-237-208.hsd1.pa.comcast.net) has quit (Quit: Juggernaut_)
+2016-10-18 15:47:26	hamsterpower	What are your opinions on efficient script vs more readable script?
+2016-10-18 15:47:29	<--	TheRinger (~TheRinger@c-73-35-211-122.hsd1.wa.comcast.net) has quit (Quit: Leaving)
+2016-10-18 15:48:03	izabera	that 97% of the people who write bash scripts don't know how to write either
+2016-10-18 15:48:09	twkm	heh.
+2016-10-18 15:48:59	twkm	but i'll vote clear/readable over efficient any day.  if efficiency is required i'd switch to another language.
+2016-10-18 15:49:10	hamsterpower	hahaa
+2016-10-18 15:49:18	llua	d# a() { while return 1; do :; done; }; a; echo $?
+2016-10-18 15:49:19	shbot	llua: 1
+2016-10-18 15:49:29	hamsterpower	it wasn't even like that.
+2016-10-18 15:49:46	hamsterpower	I had a function for a couple of lines that would need to get repeated more than once
+2016-10-18 15:50:00	hamsterpower	in my opinion, any thing that needs repeating more than once should be in functions
+2016-10-18 15:50:03	-->	malcon (~malcon@ool-43579a94.dyn.optonline.net) has joined #bash
+2016-10-18 15:50:06	hamsterpower	but my boss thought otherwise
+2016-10-18 15:50:25	hamsterpower	he said it is hard to read
+2016-10-18 15:50:28	hamsterpower	I don't know
+2016-10-18 15:50:43	hamsterpower	are you here
+2016-10-18 15:50:48	hamsterpower	john
+2016-10-18 15:51:03	<--	arossdotme (~zxy@host-84-13-235-83.opaltelecom.net) has quit (Ping timeout: 252 seconds)
+2016-10-18 15:51:17	llua	guess they fixed that
+2016-10-18 15:51:24	-->	Soda (~user@31.40.42.31) has joined #bash
+2016-10-18 15:51:34	twkm	people vary.  you can't really expect the opinions of some to change others.  otoh sometimes it does, e.g., maybe explain "dry" to him.
+2016-10-18 15:51:57	hamsterpower	I'm at a position where I need to suck up to him
+2016-10-18 15:51:58	hamsterpower	:P
+2016-10-18 15:52:09	hamsterpower	so i smile and say yes boss, will fix
+2016-10-18 15:52:10	-->	hassoon (hassoon@unaffiliated/hassen) has joined #bash
+2016-10-18 15:52:10	<--	hassoon (hassoon@unaffiliated/hassen) has quit (Changing host)
+2016-10-18 15:52:10	-->	hassoon (hassoon@gateway/shell/firrre/x-anmjyqszrindiqii) has joined #bash
+2016-10-18 15:53:56	hamsterpower	when in rome something something
+2016-10-18 15:54:38	hamsterpower	k going home
+2016-10-18 15:54:40	hamsterpower	see you guys
+2016-10-18 15:54:43	<--	hamsterpower (~hamsterpo@38.122.222.34) has quit
+2016-10-18 15:55:39	<--	Anwarias (~quassel@xdsl-89-0-10-41.netcologne.de) has quit (Read error: Connection reset by peer)
+2016-10-18 15:56:25	<--	rominronin-WORK (~rominroni@212.186.112.18) has quit (Ping timeout: 260 seconds)
+2016-10-18 15:56:46	<--	cliluw (~cliluw@unaffiliated/cliluw) has quit (Read error: Connection reset by peer)
+2016-10-18 15:56:48	<--	popi (~popi@50-90-123-66.res.bhn.net) has quit (Remote host closed the connection)
+2016-10-18 15:56:48	<--	Sasazuka (~Sasazuka@unaffiliated/sasazuka) has quit (Quit: My Mac has gone to sleep. ZZZzzz…)
+2016-10-18 15:57:02	Hello71	https://en.wikipedia.org/wiki/Rule_of_three_(computer_programming)
+2016-10-18 15:57:05	-->	Anwarias (~quassel@xdsl-89-0-27-136.netcologne.de) has joined #bash
+2016-10-18 15:57:25	-->	Geom (~Geom@112.201.149.63) has joined #bash
+2016-10-18 15:58:06	-->	Cerbb (~kvirc@50-24-161-39.bcstcmtk03.res.dyn.suddenlink.net) has joined #bash
+2016-10-18 15:59:07	-->	cliluw (~cliluw@unaffiliated/cliluw) has joined #bash
+2016-10-18 15:59:07		[15:59]
+2016-10-18 16:03:28	-->	Geom` (~Geom@112.201.153.229) has joined #bash
+2016-10-18 16:03:42	<--	kerframil (~kerframil@gentoo/user/kerframil) has quit (Quit: Leaving)
+2016-10-18 16:04:02	-->	arossdotme (~zxy@host-89-240-16-120.as13285.net) has joined #bash
+2016-10-18 16:04:28	<--	kyan (~kyan@cpe-74-78-187-9.maine.res.rr.com) has quit (Ping timeout: 265 seconds)
+2016-10-18 16:04:32	<--	Geom (~Geom@112.201.149.63) has quit (Ping timeout: 260 seconds)
+2016-10-18 16:05:25	-->	plos (~los@162.243.158.160) has joined #bash
+2016-10-18 16:05:55	<--	plos (~los@162.243.158.160) has quit (Client Quit)
+2016-10-18 16:10:20	-->	KodingKitty (~chatzilla@103.227.247.26) has joined #bash
+2016-10-18 16:13:53	<--	malcon (~malcon@ool-43579a94.dyn.optonline.net) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-10-18 16:14:49	<--	justsomeguy (~justsomeg@unaffiliated/--/x-3805311) has left #bash ("WeeChat 1.5")
+2016-10-18 16:14:49		[16:14]
+2016-10-18 16:16:05	-->	justanotheruser (~justanoth@unaffiliated/justanotheruser) has joined #bash
+2016-10-18 16:16:05	-->	malcon (~malcon@ool-43579a94.dyn.optonline.net) has joined #bash
+2016-10-18 16:17:17	-->	kyan (~kyan@cpe-74-78-187-9.maine.res.rr.com) has joined #bash
+2016-10-18 16:18:16	-->	mlandoceansky (~m_los_f@124.74.107.126) has joined #bash
+2016-10-18 16:18:22	<--	stacks88 (~x@167.114.219.244) has quit
+2016-10-18 16:19:13	<--	modlin (~quassel@93.123.41.167) has quit (Ping timeout: 245 seconds)
+2016-10-18 16:19:17	<--	norkle (~kvirc@unaffiliated/norkle) has quit (Ping timeout: 260 seconds)
+2016-10-18 16:20:42	<--	wonderworld (~ww@ip-176-198-123-154.hsi05.unitymediagroup.de) has quit (Remote host closed the connection)
+2016-10-18 16:21:33	<--	mlandoceansky (~m_los_f@124.74.107.126) has quit (Read error: Connection reset by peer)
+2016-10-18 16:22:16	<--	arthar360 (~arthar360@117.228.28.15) has quit (Ping timeout: 260 seconds)
+2016-10-18 16:26:05	-->	Klaus_D1eter_ (~klaus@x4e34589b.dyn.telefonica.de) has joined #bash
+2016-10-18 16:26:24	-->	arthar360 (~arthar360@117.228.113.180) has joined #bash
+2016-10-18 16:28:44	-->	cdg (~cdg@162-226-219-152.lightspeed.tukrga.sbcglobal.net) has joined #bash
+2016-10-18 16:28:56	-->	In33dt0Kn0w (~v@37.104.224.9) has joined #bash
+2016-10-18 16:28:58	<--	Klaus_Dieter (~klaus@x5ce560cc.dyn.telefonica.de) has quit (Ping timeout: 256 seconds)
+2016-10-18 16:28:59	--	Klaus_D1eter_ is now known as Klaus_Dieter
+2016-10-18 16:31:23	<--	Geom` (~Geom@112.201.153.229) has quit (Read error: Connection reset by peer)
+2016-10-18 16:31:23		[16:31]
+2016-10-18 16:35:02	<--	MangyLobster (~MangyLobs@host-174-45-201-118.chy-wy.client.bresnan.net) has quit (Remote host closed the connection)
+2016-10-18 16:35:58	<--	johncarter (~johncarte@94.177.171.37) has quit (Quit: Lost terminal)
+2016-10-18 16:36:15	-->	linux_dr (~linux_dr@76-219-209-6.lightspeed.irvnca.sbcglobal.net) has joined #bash
+2016-10-18 16:36:57	-->	tommot (2fd0ec3d@gateway/web/freenode/ip.47.208.236.61) has joined #bash
+2016-10-18 16:37:08	tommot	hey
+2016-10-18 16:37:47	tommot	im learning bash scripting and need some help with a program im trying to code
+2016-10-18 16:37:56	izabera	!guide
+2016-10-18 16:37:56	greybot	<http://mywiki.wooledge.org/BashGuide>. PDF: <http://s.ntnu.no/bashguide.pdf>. Also lhunath's newer version (work in progress): <http://guide.bash.academy>
+2016-10-18 16:38:19	-->	MangyLobster (~MangyLobs@host-174-45-201-118.chy-wy.client.bresnan.net) has joined #bash
+2016-10-18 16:38:21	tommot	well i really just need help with grep
+2016-10-18 16:38:37	Hello71	!b1
+2016-10-18 16:38:37	greybot	bashphorism 1: the questioner's first description of the problem/question will be misleading.
+2016-10-18 16:38:57	tommot	im accessing large file with mostly mumbo jumbo but i just need the first part of the first line of the file
+2016-10-18 16:39:11	tommot	what is the grep tag to do that
+2016-10-18 16:39:16	Hello71	!b2
+2016-10-18 16:39:17	greybot	bashphorism 2: The questioner will keep changing the question until it drives the helpers in the channel insane.
+2016-10-18 16:40:13	tommot	is grep even the right command?
+2016-10-18 16:40:26	Hello71	no.
+2016-10-18 16:40:29	-->	poop (~wigums@unaffiliated/wigums) has joined #bash
+2016-10-18 16:40:33	Hello71	you want head.
+2016-10-18 16:40:57	Hello71	depending on definition of "part"
+2016-10-18 16:41:04	tommot	Hello71: what should i use
+2016-10-18 16:41:20	tommot	im trying to see etc/shadow-
+2016-10-18 16:41:33	tommot	its the first hashed password part
+2016-10-18 16:41:42	tommot	and the algorithm and salt
+2016-10-18 16:41:50	-->	maroloccio (~weechat@2001:b07:6443:b979:d19f:f72b:8a7:25db) has joined #bash
+2016-10-18 16:42:28	Hello71	!b2
+2016-10-18 16:42:28	greybot	bashphorism 2: The questioner will keep changing the question until it drives the helpers in the channel insane.
+2016-10-18 16:42:29	Hello71	!xy
+2016-10-18 16:42:30	greybot	http://mywiki.wooledge.org/XyProblem -- "I want to do X, but I'm asking how to do Y..."
+2016-10-18 16:43:50	tommot	I'm trying to code a script that will show the hashed password in the etc/shadow- file
+2016-10-18 16:44:27	-->	jottr (~jottr@unaffiliated/jottr) has joined #bash
+2016-10-18 16:44:32	Hello71	dont' do that.
+2016-10-18 16:44:34	<--	mikecmpbll (~mikecmpbl@ruby/staff/mikecmpbll) has quit (Quit: inabit. zz.)
+2016-10-18 16:45:02	tommot	why not
+2016-10-18 16:45:45	-->	xameada (~xameada@ip98-165-190-88.ph.ph.cox.net) has joined #bash
+2016-10-18 16:45:58	-->	MrRoot (~nathan@pool-71-127-155-130.bltmmd.fios.verizon.net) has joined #bash
+2016-10-18 16:45:58	Hello71	there's no legitimate reason to do that
+2016-10-18 16:46:06	Hello71	hell, there's no illegitimate reason to do that either
+2016-10-18 16:46:14	-->	gshrikant (~gshrikant@122.174.63.243) has joined #bash
+2016-10-18 16:46:25	tommot	for fun is my reason
+2016-10-18 16:46:25		[16:46]
+2016-10-18 16:46:33	<--	chachasmooth (~chachasmo@unaffiliated/chachasmooth) has quit (Ping timeout: 260 seconds)
+2016-10-18 16:46:51	-->	awb (~awb@108-81-230-18.lightspeed.sntcca.sbcglobal.net) has joined #bash
+2016-10-18 16:46:59	yitz	tommot: cut -d: -f2  /etc/shadow-
+2016-10-18 16:47:24	Hello71	yitz: that doesn't give the first line
+2016-10-18 16:49:09	-->	chachasmooth (~chachasmo@unaffiliated/chachasmooth) has joined #bash
+2016-10-18 16:49:16	-->	dodobrain (~dodobrain@unaffiliated/freakabcd) has joined #bash
+2016-10-18 16:49:25	<--	jottr (~jottr@unaffiliated/jottr) has quit (Ping timeout: 265 seconds)
+2016-10-18 16:49:30	yitz	It solves "I'm trying to code a script that will show the hashed password in the etc/shadow- file"
+2016-10-18 16:49:33	twkm	i'd probably use awk rather than head or grep.
+2016-10-18 16:49:40	yitz	head -n1 for the first line
+2016-10-18 16:50:45	twkm	as in, awk -F: '{print $2;exit}'
+2016-10-18 16:50:53	-->	fedepad (~fedepad@p4FE13C0D.dip0.t-ipconnect.de) has joined #bash
+2016-10-18 16:51:34	yitz	I would:   head -n1|cut -d: -f2
+2016-10-18 16:51:41	alyptik	is `1>/dev/null { list; }` the same as `{ list; } 1>/dev/null`? 
+2016-10-18 16:52:08	<--	Frickelpit (~pit@ubuntuusers/serverteam/frickelpit) has quit (Ping timeout: 260 seconds)
+2016-10-18 16:52:24	yitz	alyptik: Yes
+2016-10-18 16:52:29	yitz	Stick to the latter
+2016-10-18 16:52:38	-->	Frickelpit (~pit@ubuntuusers/serverteam/frickelpit) has joined #bash
+2016-10-18 16:52:55	Hello71	and 1> is weird
+2016-10-18 16:53:09	-->	rominronin-WORK (~rominroni@212.186.112.18) has joined #bash
+2016-10-18 16:53:14	alyptik	was curious, thanks 
+2016-10-18 16:53:17	yitz	It's explicit, which isn't bad
+2016-10-18 16:53:19	izabera	how is the former even valid
+2016-10-18 16:53:26	alyptik	i wasn't sure if >/dev/null needed a command before it
+2016-10-18 16:53:28	-->	pingupingu (~pinguping@131-181-158-136.qut.edu.au) has joined #bash
+2016-10-18 16:53:28	<--	pingupingu (~pinguping@131-181-158-136.qut.edu.au) has quit (Changing host)
+2016-10-18 16:53:28	-->	pingupingu (~pinguping@unaffiliated/pingupingu) has joined #bash
+2016-10-18 16:53:29	twkm	there are those that like ''< file command > file'', but it isn't very common.
+2016-10-18 16:53:36	yitz	izabera: why not?
+2016-10-18 16:53:38	twkm	(different files of course)
+2016-10-18 16:53:44	izabera	# >/dev/null { list; }
+2016-10-18 16:53:45	shbot	izabera: bash: syntax error near unexpected token `}'
+2016-10-18 16:54:06	twkm	yitz: but it isn't very common either.
+2016-10-18 16:54:59	Hello71	# 1>/dev/null { true; }
+2016-10-18 16:55:00	shbot	Hello71: bash: syntax error near unexpected token `}'
+2016-10-18 16:55:04	Hello71	huh
+2016-10-18 16:55:17	Hello71	# { true; } 1>/dev/null
+2016-10-18 16:55:19	shbot	Hello71: no output
+2016-10-18 16:55:31	yitz	Huh. Works without the {}
+2016-10-18 16:55:38	<--	fedepad (~fedepad@p4FE13C0D.dip0.t-ipconnect.de) has quit (Ping timeout: 250 seconds)
+2016-10-18 16:55:44	<--	aw1 (~aw1@unaffiliated/aw1) has quit (Ping timeout: 256 seconds)
+2016-10-18 16:55:55	Hello71	actually then it is reversed
+2016-10-18 16:56:07	Hello71	# true; 1>/dev/null
+2016-10-18 16:56:08	yitz	# 1>/dev/null true
+2016-10-18 16:56:09	twkm	well, "list" suggests more than one command, though of course just 1 is certainly valid.
+2016-10-18 16:56:10	shbot	Hello71: no output
+2016-10-18 16:56:10	shbot	yitz: no output
+2016-10-18 16:56:16	Hello71	huh
+2016-10-18 16:57:16	Hello71	oh, right, that's like >file to truncate
+2016-10-18 16:57:41	alyptik	oh so to redirect a list it has to be redirected after ?
+2016-10-18 16:59:02	-->	xall (~xall@wsip-70-166-121-212.ph.ph.cox.net) has joined #bash
+2016-10-18 16:59:11	-->	beatdown (beatdown@chainsawed.and.strangled.net) has joined #bash
+2016-10-18 17:00:22	<--	Sparklyballs (~sparklyba@unaffiliated/sparklyballs) has quit (Quit: Outta here folks....)
+2016-10-18 17:01:22	<--	linux_dr (~linux_dr@76-219-209-6.lightspeed.irvnca.sbcglobal.net) has quit (Quit: Colloquy for iPhone - http://colloquy.mobi)
+2016-10-18 17:01:29	<--	tommot (2fd0ec3d@gateway/web/freenode/ip.47.208.236.61) has quit (Quit: Page closed)
+2016-10-18 17:01:29		[17:01]
+2016-10-18 17:01:36	-->	gregorydiggle (~Adium@104.156.228.190) has joined #bash
+2016-10-18 17:01:49	-->	Sparklyballs (~sparklyba@unaffiliated/sparklyballs) has joined #bash
+2016-10-18 17:01:56	<--	kbdkode (~kbdkode@unaffiliated/kbdkode) has quit (Ping timeout: 260 seconds)
+2016-10-18 17:02:05	<--	poop (~wigums@unaffiliated/wigums) has quit (Remote host closed the connection)
+2016-10-18 17:02:35	-->	poop (~wigums@unaffiliated/wigums) has joined #bash
+2016-10-18 17:03:03	-->	linux_dr (~linux_dr@76-219-209-6.lightspeed.irvnca.sbcglobal.net) has joined #bash
+2016-10-18 17:03:30	-->	arescorpio (~arescorpi@152.171.92.97) has joined #bash
+2016-10-18 17:03:34	<--	gregorydiggle (~Adium@104.156.228.190) has left #bash
+2016-10-18 17:04:36	-->	guiverc (~guiverc@ppp118-209-198-172.bras2.mel11.internode.on.net) has joined #bash
+2016-10-18 17:05:34	<--	nowhere_man (~pierre@LFbn-1-7679-18.w90-126.abo.wanadoo.fr) has quit (Ping timeout: 244 seconds)
+2016-10-18 17:06:10	<--	kyan (~kyan@cpe-74-78-187-9.maine.res.rr.com) has quit (Quit: Leaving)
