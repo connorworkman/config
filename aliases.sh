@@ -13,7 +13,7 @@ alias ohmyzsh='pushd ${ZSH} '
 
 # Unset previous function/alias iterations
 unset -f fc which define h wd bfg defrag src >/dev/null 2>&1 || true
-unalias history c d h j s >/dev/null 2>&1 || true
+unalias {1..9} history c d h j s >/dev/null 2>&1 || true
 
 ## Custom aliases
 
@@ -402,6 +402,7 @@ vkfix() {
 		s/ \(vs\)[\.]* / \1. /g
 		s/ \(pres\)[\.]* / \1. /g
 		s/\<Mp3\>/mp3/g
+		s/'\''[A-Z]/\L&/g
 		p'
 	printf "\"\n"
     done | \

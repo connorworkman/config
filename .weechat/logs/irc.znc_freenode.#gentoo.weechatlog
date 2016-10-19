@@ -3177,3 +3177,115 @@
 2016-10-18 17:05:00	-->	snowlove_l (44392201@gateway/web/cgi-irc/kiwiirc.com/ip.68.57.34.1) has joined #gentoo
 2016-10-18 17:06:08	-->	Loreley (~Lorelei@fixed-203-149-189-203-149-25.iusacell.net) has joined #gentoo
 2016-10-18 17:06:10	<--	kyan (~kyan@cpe-74-78-187-9.maine.res.rr.com) has quit (Quit: Leaving)
+2016-10-18 17:06:27	-->	eseifert_ (~erich@p5B079D2C.dip0.t-ipconnect.de) has joined #gentoo
+2016-10-18 17:07:30	<--	eseifert (~erich@p5B079406.dip0.t-ipconnect.de) has quit (Ping timeout: 250 seconds)
+2016-10-18 17:11:10	-->	generic (~user@84-115-107-89.wifi.dynamic.surfer.at) has joined #gentoo
+2016-10-18 17:11:10		[17:11]
+2016-10-18 17:14:12	<--	Loreley (~Lorelei@fixed-203-149-189-203-149-25.iusacell.net) has quit (Quit: Going offline, see ya! (www.adiirc.com))
+2016-10-18 17:15:11	<--	gabrielix (~gabrielix@179.61.91.67) has left #gentoo ("Leaving")
+2016-10-18 17:17:33	<--	Kryptron (~Kryptron@unaffiliated/kryptron) has quit (Ping timeout: 245 seconds)
+2016-10-18 17:19:23	<--	aggi (~aggi@ipbcc02c32.dynamic.kabel-deutschland.de) has quit (Ping timeout: 265 seconds)
+2016-10-18 17:19:37	-->	mkaindl_ (~mkaindl@pD9E610C8.dip0.t-ipconnect.de) has joined #gentoo
+2016-10-18 17:19:55	sheep	it looks like a missed dependency
+2016-10-18 17:20:01	-->	rej (~jer@gentoo/developer/jer) has joined #gentoo
+2016-10-18 17:20:01	--	Mode #gentoo [+o rej] by ChanServ
+2016-10-18 17:20:18	sheep	is there a reason for needing apache 2.2.x instead of 2.4.x?
+2016-10-18 17:21:04	<--	[ui] (uid21688@gateway/web/irccloud.com/x-sevoxdxfkjnqynwc) has quit (Quit: Connection closed for inactivity)
+2016-10-18 17:22:04	<--	codfection (~codfectio@unaffiliated/codfection) has quit (Remote host closed the connection)
+2016-10-18 17:23:13	<--	mkaindl (~mkaindl@p5B2981FC.dip0.t-ipconnect.de) has quit (Ping timeout: 260 seconds)
+2016-10-18 17:23:14	--	mkaindl_ is now known as mkaindl
+2016-10-18 17:24:06	generic	can i set -udev in make.conf when using systemd ?
+2016-10-18 17:24:28	username234	generic: you can, but you shouldn't.
+2016-10-18 17:24:48	<--	_ohm (~research@unaffiliated/-ohm/x-0955948) has quit (Ping timeout: 260 seconds)
+2016-10-18 17:25:02	<--	Hydrogen (~hydrogen@amarok/developer/hydrogen) has quit (Remote host closed the connection)
+2016-10-18 17:26:46	generic	username234: how can i configure agetty in systemd ?
+2016-10-18 17:26:46		[17:26]
+2016-10-18 17:27:35	username234	generic: uhh... I'm not much of a systemd user.  I would assume it's done the same was as you would with OpenRC?
+2016-10-18 17:28:19	generic	username234: there should  be vconsole.conf
+2016-10-18 17:28:52	username234	generic: The only reason I knew you shouldn't unset the udev flag is because anything that has an optional udev dependency is supposed to use the virtual to satisfy.  The virtual will let the system accept systemd, udev, or eudev as a satisfying implementation.
+2016-10-18 17:29:00	<--	jtriley (~jtriley@209-6-38-104.c3-0.smr-ubr2.sbo-smr.ma.cable.rcn.com) has quit (Ping timeout: 252 seconds)
+2016-10-18 17:30:19	generic	the man page only speaks of kblayout for vconsole.conf
+2016-10-18 17:31:01	<--	Shentino (~Shentino@gentoo/contributor/shentino) has quit (Read error: Connection reset by peer)
+2016-10-18 17:31:53	-->	codfection (~codfectio@unaffiliated/codfection) has joined #gentoo
+2016-10-18 17:33:22	-->	aggi (~aggi@ipbcc02c32.dynamic.kabel-deutschland.de) has joined #gentoo
+2016-10-18 17:35:36	username234	!meta -v systemd
+2016-10-18 17:35:36	willikins	username234: sys-apps/systemd; maintainers: systemd
+2016-10-18 17:35:37	willikins	username234: (systemd@gentoo.org) floppym, maffblaster, mgorny, pacho, rich0, tamiko, williamh, zx2c4
+2016-10-18 17:35:58	username234	generic: If no one can help you here, one of them should surely know the answer.
+2016-10-18 17:35:59	generic	username234: and I think i know why you don't use it ..
+2016-10-18 17:36:14	username234	generic: oh there are many reasons :)
+2016-10-18 17:36:32	generic	/usr/lib/systemd/ is all binarys
+2016-10-18 17:36:57	generic	do I have to use hexedit to configure my system now ?
+2016-10-18 17:37:19	-->	_ohm (~research@unaffiliated/-ohm/x-0955948) has joined #gentoo
+2016-10-18 17:37:20	+tamiko	generic: Yes.
+2016-10-18 17:37:22	<--	codfection (~codfectio@unaffiliated/codfection) has quit (Remote host closed the connection)
+2016-10-18 17:38:42	+tamiko	generic: You're looking for NAutoVTs= and ReserveVT= in the binary file /etc/systemd/logind.conf.
+2016-10-18 17:38:42	generic	is it a big mess to get back to openrc ?
+2016-10-18 17:39:23	generic	tamiko: that might help :)
+2016-10-18 17:39:41	+tamiko	generic: Yes, you can. Easily. Simply change the init that should be used for boot.
+2016-10-18 17:39:54	-->	jtriley (~jtriley@209-6-38-104.c3-0.smr-ubr2.sbo-smr.ma.cable.rcn.com) has joined #gentoo
+2016-10-18 17:40:31	<--	larzen-home (~gregf@node-1w7jr9y87lsmcnqlzghp00yxz.ipv6.telus.net) has quit (Quit: Leaving.)
+2016-10-18 17:40:53	<--	fekepp (~Thunderbi@106.171.64.128) has quit (Ping timeout: 245 seconds)
+2016-10-18 17:40:57	-->	fekepp1 (~Thunderbi@106.171.64.128) has joined #gentoo
+2016-10-18 17:40:59	--	daktak_ is now known as daktak
+2016-10-18 17:41:29	-->	mguillech (~mguillech@181.95.48.249) has joined #gentoo
+2016-10-18 17:41:49	<--	LiMp^ (~LiMp^@d24-141-241-49.home.cgocable.net) has quit (Remote host closed the connection)
+2016-10-18 17:41:49		[17:41]
+2016-10-18 17:42:23	-->	EvilPenguin (~EvilPengu@2605:e000:6189:9600:1c85:6c7b:8524:a9f7) has joined #gentoo
+2016-10-18 17:43:19	--	fekepp1 is now known as fekepp
+2016-10-18 17:44:16	generic	tamiko how do I set options for one terminal ? These services are instantiated from the template unit
+2016-10-18 17:44:16	generic	           autovt@.service for the respective VT TTY name, for example,
+2016-10-18 17:44:16	generic	           autovt@tty4.service. By default, autovt@.service is linked to
+2016-10-18 17:44:16	generic	           getty@.service
+2016-10-18 17:44:55	username234	generic: careful.  zoidberg kicks people who flood the channel.
+2016-10-18 17:45:06	generic	irc's fault ..
+2016-10-18 17:45:31	username234	generic: zoidberg, being of fairly limited intelligence, doesn't care unfortunately...
+2016-10-18 17:45:32	generic	will delete the newline's next time
+2016-10-18 17:45:56	generic	'
+2016-10-18 17:46:06	username234	it's that right, zoidberg?  Don't say anything if you agree!
+2016-10-18 17:46:43	<--	mguillech (~mguillech@181.95.48.249) has quit (Ping timeout: 256 seconds)
+2016-10-18 17:47:04	generic	username234: isn't that discriminating cartoon characters ?
+2016-10-18 17:47:44	username234	generic: if I meant it that way, sure.  However, zoidberg is a bot in this channel.
+2016-10-18 17:48:03	username234	so like willikins, it only responds to certain things.
+2016-10-18 17:48:28	generic	tamiko: do you know how i can set options for one terminal ? These services are instantiated from the template unit autovt@.service for the respective VT TTY name, for example, autovt@tty4.service. By default, autovt@.service is linked to getty@.service
+2016-10-18 17:49:11	username234	oh that seems vaguely familiar.  I think I have read about that before...
+2016-10-18 17:49:28	-->	LiMp^ (~LiMp^@d24-141-241-49.home.cgocable.net) has joined #gentoo
+2016-10-18 17:49:31	<--	tagezi (~qarussel@unaffiliated/tagezi) has quit (Remote host closed the connection)
+2016-10-18 17:50:16	generic	except for smelly colon of curse
+2016-10-18 17:50:42	<--	LiMp^ (~LiMp^@d24-141-241-49.home.cgocable.net) has quit (Remote host closed the connection)
+2016-10-18 17:53:41	<--	DigitalReaper (~DigitalRe@2a00:23c4:583:da00:c94c:3a9f:a4dd:f6b8) has quit (Read error: Connection reset by peer)
+2016-10-18 17:54:05	generic	tamiko: I found the link in /etc/systemd but i still have no idea howto make different settings for different terms
+2016-10-18 17:54:34	+tamiko	generic: You can $ systemctl edi autovt@tty4.service
+2016-10-18 17:55:15	+tamiko	generic: This will open an editor with an appropriate drop-in. After that simply override the ExecStart= statement with the following three lines:
+2016-10-18 17:55:30	<--	liuhuanjie_ (~jenenliu@183.6.157.58) has quit (Read error: Connection reset by peer)
+2016-10-18 17:55:57	+tamiko	generic: https://gist.github.com/anonymous/93c74f09a672cbe387b8cb6fa05da28a
+2016-10-18 17:56:00	-->	liuhuanjie_ (~jenenliu@183.6.157.58) has joined #gentoo
+2016-10-18 17:56:12	generic	tamiko: unknown operation edi
+2016-10-18 17:56:24	+tamiko	generic: s/edi/edit/
+2016-10-18 17:56:56	-->	codfection (~codfectio@unaffiliated/codfection) has joined #gentoo
+2016-10-18 17:56:56		[17:56]
+2016-10-18 17:57:16	+tamiko	generic: More precisely, this creates a "drop-in" in the folder "/etc/systemd/system/autovt@tty4.service.d/*".
+2016-10-18 17:58:05	<--	eeeprom (~lem0n@unaffiliated/lem0n) has quit (Remote host closed the connection)
+2016-10-18 17:58:33	+tamiko	generic: (You can view the full declarative service with $ systemctl cat autovt@tty4.service)
+2016-10-18 17:59:05	dead	8/wc
+2016-10-18 17:59:06	<--	dead (~dead@unaffiliated/dead) has left #gentoo
+2016-10-18 17:59:07	generic	tamiko: so no hexedit after all :(
+2016-10-18 17:59:25	<--	codfection (~codfectio@unaffiliated/codfection) has quit (Remote host closed the connection)
+2016-10-18 17:59:44	+tamiko	generic: I am sorry to dissapoint you.
+2016-10-18 18:00:10	<--	hotaronohanako (~user@unaffiliated/hotaronohanako) has quit (Remote host closed the connection)
+2016-10-18 18:02:41	-->	hyggs (~higgs@71-220-35-136.mpls.qwest.net) has joined #gentoo
+2016-10-18 18:02:42	<--	hyggs (~higgs@71-220-35-136.mpls.qwest.net) has quit (Max SendQ exceeded)
+2016-10-18 18:02:57	<--	fekepp (~Thunderbi@106.171.64.128) has quit (Remote host closed the connection)
+2016-10-18 18:03:12	-->	hyggs (~higgs@71-220-35-136.mpls.qwest.net) has joined #gentoo
+2016-10-18 18:06:11	-->	rOss^64 (hayama@mode7.org) has joined #gentoo
+2016-10-18 18:06:24	<--	KindOne (kindone@freenude/topless/kindone) has quit (Quit: https://tools.ietf.org/html/rfc1459#section-4.1.6)
+2016-10-18 18:06:42	-->	KindOne (kindone@freenude/topless/kindone) has joined #gentoo
+2016-10-18 18:07:45	<--	XuR (~quassel@ip98-165-85-128.ph.ph.cox.net) has quit (Ping timeout: 260 seconds)
+2016-10-18 18:08:35	-->	fekepp (~Thunderbi@106.171.64.128) has joined #gentoo
+2016-10-18 18:09:17	<--	_ohm (~research@unaffiliated/-ohm/x-0955948) has quit (Ping timeout: 252 seconds)
+2016-10-18 18:10:03	<--	cilly (~cilly@unaffiliated/cilly) has quit (Ping timeout: 245 seconds)
+2016-10-18 18:10:36	<--	generic (~user@84-115-107-89.wifi.dynamic.surfer.at) has quit (Ping timeout: 250 seconds)
+2016-10-18 18:12:07	-->	cilly (pluto@unaffiliated/cilly) has joined #gentoo
+2016-10-18 18:12:07		[18:12]
+2016-10-18 18:12:14	<--	hyggs (~higgs@71-220-35-136.mpls.qwest.net) has quit (Remote host closed the connection)
+2016-10-18 18:13:57	<--	liuhuanjie_ (~jenenliu@183.6.157.58) has quit (Quit: Leaving)
