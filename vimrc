@@ -177,7 +177,8 @@ nnoremap <C-F2> ^
 nnoremap <M-F2> 0dw
 nnoremap <F3> <Esc>:tabn<CR>
 nnoremap <C-F3> $
-nnoremap <M-F3> gi
+" <M-F3> is pastetoggle
+"nnoremap <M-F3> gi
 nnoremap <F4> <C-u>
 nnoremap <C-F4> <Esc>:tabp<CR>
 nnoremap <M-F4> <Esc>:set scrollbind<CR>
@@ -325,7 +326,7 @@ set verbose=0
 set display=lastline
 set showcmd
 set timeout timeoutlen=2500 ttimeoutlen=100
-set pastetoggle=<F10>
+set pastetoggle=<M-F3>
 set number
 set incsearch
 set ignorecase
