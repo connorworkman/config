@@ -163,3 +163,768 @@
 2016-10-17 16:55:28	las_	nstewart, what did you try?
 2016-10-17 16:57:41	-->	nilg (~user@77.70.2.229) has joined #ardour
 2016-10-17 17:03:00		[16:57]
+2016-10-17 17:10:51	-->	GrusGrus (~Thunderbi@2001:999:40:938f:28d2:ee35:d47a:c582) has joined #ardour
+2016-10-17 17:16:00		[17:10]
+2016-10-17 17:24:57	<--	vekoon (~vekoon@188-141-112-94.dynamic.upc.ie) has quit (Ping timeout: 260 seconds)
+2016-10-17 17:26:48	<--	kyan (~kyan@cpe-74-78-187-9.maine.res.rr.com) has quit (Ping timeout: 244 seconds)
+2016-10-17 17:27:42	<--	nilg (~user@77.70.2.229) has quit (Read error: Connection reset by peer)
+2016-10-17 17:30:09	-->	nilg (~user@77.70.2.229) has joined #ardour
+2016-10-17 17:36:00		[17:30]
+2016-10-17 17:36:48	--	mbenson_away is now known as mbenson_
+2016-10-17 17:37:23	<--	karswell` (~user@83.208.208.46.dyn.plus.net) has quit (Remote host closed the connection)
+2016-10-17 17:39:26	-->	karswell` (~user@83.208.208.46.dyn.plus.net) has joined #ardour
+2016-10-17 17:42:35	-->	kyan (~kyan@cpe-74-78-187-9.maine.res.rr.com) has joined #ardour
+2016-10-17 17:45:59	<--	nilg (~user@77.70.2.229) has quit (Read error: Connection reset by peer)
+2016-10-17 17:46:47	-->	nilg (~user@77.70.2.229) has joined #ardour
+2016-10-17 17:49:59	<--	nilg (~user@77.70.2.229) has quit (Read error: Connection reset by peer)
+2016-10-17 17:51:52	-->	nilg (~user@77.70.2.229) has joined #ardour
+2016-10-17 17:51:52		[17:51]
+2016-10-17 17:55:45	nstewart	one thing I tried was creating markers at the ends of the audio region, then try to create a region in the midi track, but without content, I can't seem to do region operations
+2016-10-17 17:57:30	nstewart	paas44 (I think it was) and myself scratched our heads a bit and came up with some ideas which I don't recall but were unsuccessful
+2016-10-17 18:02:50	las_	nstewart, creating a region always requires having a source
+2016-10-17 18:03:04	las_	nstewart, so you'd need an SMFSource to get started
+2016-10-17 18:06:32	nstewart	I don't see that it knows about anything higher than a midi region. 
+2016-10-17 18:12:00		[18:06]
+2016-10-17 18:12:11	las_	nstewart, reviewing the lua bindings, what you need isn't there
+2016-10-17 18:12:27	nstewart	so the track already IS an SMF  on disk?
+2016-10-17 18:12:49	las_	nstewart, don't get the levels confused
+2016-10-17 18:13:17	las_	nstewart, the only thing that knows about files on disk are diskstreams (hidden component in a Track) and regions
+2016-10-17 18:13:33	las_	nstewart, for playback purposes, a track is just a playlist; no sources
+2016-10-17 18:13:47	las_	nstewart, for recording purposes, a track is a diskstream, and it has 1 or more sources to write to
+2016-10-17 18:13:56	nstewart	if I can figure out what is needed I'll take a stab at it. But I have to drop. 
+2016-10-17 18:14:12	las_	nstewart, regions are the main thing that reference sources because they are the objects that actually read data from them
+2016-10-17 18:14:28	las_	rgareus, there's no constructor for a MIDI region
+2016-10-17 18:15:13	las_	nstewart, ^^^^^^^^^^^^^^^^^^
+2016-10-17 18:15:17	las_	rgareus, sorry, not for you
+2016-10-17 18:21:00		[18:15]
+2016-10-17 18:21:02	nstewart	is there a Region constructor for that matter? Didn't see it. I thought I recalled something in one of the docs or examples that there was a reason - like you shouldn't create them directly. but I'm foggy 
+2016-10-17 18:21:03	<--	dsr1204 (~dsr1204@99-111-235-130.lightspeed.cicril.sbcglobal.net) has quit (Ping timeout: 244 seconds)
+2016-10-17 18:25:15	<--	nstewart (~nps@cpe-2606-A000-1120-140-8C7D-FD06-BC1C-211F.dyn6.twc.com) has left #ardour
+2016-10-17 18:31:00		[18:25]
+2016-10-17 18:32:36	<--	kyan (~kyan@cpe-74-78-187-9.maine.res.rr.com) has quit (Quit: Leaving)
+2016-10-17 18:38:00		[18:32]
+2016-10-17 18:44:44	<--	LAbot (~supybot@2001:468:c80:2133:1618:77ff:fe46:fa3c) has quit (Ping timeout: 258 seconds)
+2016-10-17 18:46:15	-->	LAbot (~supybot@2001:468:c80:2133:1618:77ff:fe46:fa3c) has joined #ardour
+2016-10-17 18:52:00		[18:46]
+2016-10-17 18:56:43	<--	GrusGrus (~Thunderbi@2001:999:40:938f:28d2:ee35:d47a:c582) has quit (Ping timeout: 245 seconds)
+2016-10-17 19:02:00		[18:56]
+2016-10-17 19:11:49	<--	freedom01 (~freedom@112.206.174.211) has quit (Ping timeout: 260 seconds)
+2016-10-17 19:17:00		[19:11]
+2016-10-17 19:18:39	<--	vok` (~pi@pool-108-16-8-197.phlapa.fios.verizon.net) has quit (Ping timeout: 268 seconds)
+2016-10-17 19:19:44	--	mbenson_ is now known as mbenson_away
+2016-10-17 19:22:09	-->	GrusGrus (~Thunderbi@194.100.8.254) has joined #ardour
+2016-10-17 19:24:16	-->	remixvinil (~remix@95.46.18.239) has joined #ardour
+2016-10-17 19:26:17	-->	freedom01 (~freedom@112.206.174.211) has joined #ardour
+2016-10-17 19:32:00		[19:26]
+2016-10-17 19:48:13	<--	remixvinil (~remix@95.46.18.239) has quit (Ping timeout: 260 seconds)
+2016-10-17 19:48:13		[19:48]
+2016-10-17 19:51:13	<--	karswell` (~user@83.208.208.46.dyn.plus.net) has quit (Remote host closed the connection)
+2016-10-17 19:53:12	-->	karswell` (~user@83.208.208.46.dyn.plus.net) has joined #ardour
+2016-10-17 19:58:11	<--	timbyr (~timbyr@101.163.72.79) has quit (Ping timeout: 256 seconds)
+2016-10-17 19:58:54	-->	timbyr (~timbyr@101.163.72.79) has joined #ardour
+2016-10-17 20:03:44	<--	naught101 (~naught101@14-202-176-150.static.tpgi.com.au) has quit (Ping timeout: 260 seconds)
+2016-10-17 20:03:44		[20:03]
+2016-10-17 20:05:19	-->	edogawa (~quassel@88-117-116-196.adsl.highway.telekom.at) has joined #ardour
+2016-10-17 20:08:17	-->	remixvinil (~remix@176.60.213.3) has joined #ardour
+2016-10-17 20:10:21	-->	vok` (~pi@pool-96-245-193-142.phlapa.fios.verizon.net) has joined #ardour
+2016-10-17 20:16:00		[20:10]
+2016-10-17 20:18:12	<--	freedom01 (~freedom@112.206.174.211) has quit (Ping timeout: 260 seconds)
+2016-10-17 20:22:24	<--	jpbouza (~Juan@191.85.137.86) has quit (Remote host closed the connection)
+2016-10-17 20:28:00		[20:22]
+2016-10-17 20:28:04	-->	freedom01 (~freedom@112.206.160.40) has joined #ardour
+2016-10-17 20:30:03	-->	takuan (~takuan@d8D86B94F.access.telenet.be) has joined #ardour
+2016-10-17 20:36:00		[20:30]
+2016-10-17 20:37:57	<--	timbyr (~timbyr@101.163.72.79) has quit (Ping timeout: 256 seconds)
+2016-10-17 20:43:00		[20:37]
+2016-10-17 20:45:19	-->	timbyr (~timbyr@101.163.72.79) has joined #ardour
+2016-10-17 20:48:27	-->	ahellquist_wrk (~aht@109-124-147-131.customer.t3.se) has joined #ardour
+2016-10-17 20:54:00		[20:48]
+2016-10-17 20:54:57	<--	timbyr (~timbyr@101.163.72.79) has quit (Ping timeout: 260 seconds)
+2016-10-17 21:03:36	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined #ardour
+2016-10-17 21:03:36		[21:03]
+2016-10-17 21:03:36	--	Topic for #ardour is "5.4 is released | download: http://ardour.org/download |  paste to http://pastebin.com/ | OS X users please /join #ardour-osx"
+2016-10-17 21:03:36	--	Topic set by las on Sat, 01 Oct 2016 05:02:53
+2016-10-17 21:03:36	--	Channel #ardour: 145 nicks (1 op, 0 voices, 144 normals)
+2016-10-17 21:03:36	***	Buffer Playback...
+2016-10-17 21:03:36	Bitrunner	[23:44:44] and /dev/crystal_ball is dysfunctional even on newest Linux Kernels :-( [23:44:44]
+2016-10-17 21:03:36	Somethis	[23:44:54] would work ... unless it's Jazz or an REM song. [23:44:54]
+2016-10-17 21:03:36	Bitrunner	[23:45:05] or may be some modern avant garde composition [23:45:05]
+2016-10-17 21:03:36	Bitrunner	[23:47:07] ok, you never need that plugin for Free Jazz by Definition ;) [23:47:07]
+2016-10-17 21:03:36	Somethis	[23:49:47] rgareus: ... I just reopened the project and am getting a brand new "Ardour cannot find the audio file ..." dialogue ... [23:49:47]
+2016-10-17 21:03:36	Somethis	[23:50:16] rgareus: would it help if I document what happens? [23:50:16]
+2016-10-17 21:03:36	rgareus	[23:51:03] Somethis: not really. if external files are removed, there's not much we can do. [23:51:03]
+2016-10-17 21:03:36	Somethis	[23:51:50] rgareus: mhmm, yes that makes sense. I didn't (re)move any files, though. [23:51:50]
+2016-10-17 21:03:36	rgareus	[23:52:25] I suppose "a remove all missing files from session" option or something could be added [23:52:25]
+2016-10-17 21:03:36	Somethis	[23:52:38] ok, it's a file in a subfolder called *interchange* [23:52:38]
+2016-10-17 21:03:36	rgareus	[23:53:03] mmh. that's inside of the session-dir [23:53:03]
+2016-10-17 21:03:36	Somethis	[23:54:51] http://imgur.com/a/QXEpV [23:54:51]
+2016-10-17 21:03:36	LAbot	[23:54:52] Title: Saving to a new Session in Ardour - Album on Imgur (at imgur.com) [23:54:52]
+2016-10-17 21:03:36	Somethis	[23:54:57] step 4 ... [23:54:57]
+2016-10-17 21:03:36	Somethis	[23:55:27] checking if that file exists [23:55:27]
+2016-10-17 21:03:36	Somethis	[23:56:58] The file's not there (and neither a similar one) ... strange. [23:56:58]
+2016-10-17 21:03:36	the_CLA	[23:59:52] Somethis: Is that the original session or the saved-as one? [23:59:52]
+2016-10-17 21:03:36	Somethis	[00:00:36] the_CLA: that's the saved as one ... I'm checking the logfile for entries of the missing file. [00:00:36]
+2016-10-17 21:03:36	Somethis	[00:01:24] the_CLA: ok ... the last entry reads ... [INFO]: attempting to copy /home/gemini/Desktop/Files/Media/Music Composition/20160923-GoodbyeBrigitte_Backup09/dead/Vocals Temp-1.wav to /home/gemini/Desktop/Files/Media/Music Composition/20171018-GoodbyeBrigitte/dead/Vocals Temp-1.wav [00:01:24]
+2016-10-17 21:03:36	Somethis	[00:02:13] I presume "dead" is a folder full of intentionally deleted files? [00:02:13]
+2016-10-17 21:03:36	the_CLA	[00:03:22] O.o [00:03:22]
+2016-10-17 21:03:36	the_CLA	[00:04:16] Well, it's the place where session cleanup copies the files first. Just confusing that the save as function tries to copy anything from there. [00:04:16]
+2016-10-17 21:03:36	Somethis	[00:06:36] the_CLA: and Ardour looks for the file in /interchange .. on restart [00:06:36]
+2016-10-17 21:03:36	Somethis	[00:08:40] any suggestions ... last time "Skip all missing files" crashed Ardour. [00:08:40]
+2016-10-17 21:03:36	the_CLA	[00:10:02] Somethis: No idea. I think there were also some changes to "save as" after 4.6 - but not sure if those matter in that case. [00:10:02]
+2016-10-17 21:03:36	Somethis	[00:10:27] the_CLA: ok, thanks, though. [00:10:27]
+2016-10-17 21:03:36	the_CLA	[00:11:27] I guess before trying to debug things you should update to the latest release to see if the issues still exist. [00:11:27]
+2016-10-17 21:03:36	Somethis	[00:11:39] yup ... [00:11:39]
+2016-10-17 21:03:36	the_CLA	[00:11:55] Anyway. Time to get some sleep for me! [00:11:55]
+2016-10-17 21:03:36	Somethis	[00:13:25] the_CLA: good night ;-) [00:13:25]
+2016-10-17 21:03:36	Somethis	[00:13:35] same here, mhmpf [00:13:35]
+2016-10-17 21:03:36	nstewart	[02:39:54] rgareus: the vamp_audio_to_midi script. if I'm reading it right it wants ONE audio region and ONE midi region the same size to hold output? How to create the empty midi region? (It's not obvious. I had a  couple ideas I tried that didn't work) [02:39:54]
+2016-10-17 21:03:36	las_	[02:55:28] nstewart, what did you try? [02:55:28]
+2016-10-17 21:03:36	nstewart	[03:55:45] one thing I tried was creating markers at the ends of the audio region, then try to create a region in the midi track, but without content, I can't seem to do region operations [03:55:45]
+2016-10-17 21:03:36	nstewart	[03:57:30] paas44 (I think it was) and myself scratched our heads a bit and came up with some ideas which I don't recall but were unsuccessful [03:57:30]
+2016-10-17 21:03:36	las_	[04:02:50] nstewart, creating a region always requires having a source [04:02:50]
+2016-10-17 21:03:36	las_	[04:03:04] nstewart, so you'd need an SMFSource to get started [04:03:04]
+2016-10-17 21:03:36	nstewart	[04:06:32] I don't see that it knows about anything higher than a midi region.  [04:06:32]
+2016-10-17 21:03:36	las_	[04:12:11] nstewart, reviewing the lua bindings, what you need isn't there [04:12:11]
+2016-10-17 21:03:36	nstewart	[04:12:27] so the track already IS an SMF  on disk? [04:12:27]
+2016-10-17 21:03:36	las_	[04:12:49] nstewart, don't get the levels confused [04:12:49]
+2016-10-17 21:03:36	las_	[04:13:17] nstewart, the only thing that knows about files on disk are diskstreams (hidden component in a Track) and regions [04:13:17]
+2016-10-17 21:03:36	las_	[04:13:33] nstewart, for playback purposes, a track is just a playlist; no sources [04:13:33]
+2016-10-17 21:03:36	las_	[04:13:47] nstewart, for recording purposes, a track is a diskstream, and it has 1 or more sources to write to [04:13:47]
+2016-10-17 21:03:36	nstewart	[04:13:56] if I can figure out what is needed I'll take a stab at it. But I have to drop.  [04:13:56]
+2016-10-17 21:03:36	las_	[04:14:12] nstewart, regions are the main thing that reference sources because they are the objects that actually read data from them [04:14:12]
+2016-10-17 21:03:36	las_	[04:14:28] rgareus, there's no constructor for a MIDI region [04:14:28]
+2016-10-17 21:03:36	las_	[04:15:13] nstewart, ^^^^^^^^^^^^^^^^^^ [04:15:13]
+2016-10-17 21:03:36	las_	[04:15:17] rgareus, sorry, not for you [04:15:17]
+2016-10-17 21:03:36	nstewart	[04:21:02] is there a Region constructor for that matter? Didn't see it. I thought I recalled something in one of the docs or examples that there was a reason - like you shouldn't create them directly. but I'm foggy  [04:21:02]
+2016-10-17 21:03:36	***	Playback Complete.
+2016-10-17 21:04:35	--	Channel created on Sat, 25 Nov 2006 20:42:44
+2016-10-17 21:07:26	<--	rhydermike (~quassel@cpc80381-grim18-2-0-cust221.12-3.cable.virginm.net) has quit (Remote host closed the connection)
+2016-10-17 21:12:56	-->	polosson (~polosson@lns-bzn-61-82-250-115-96.adsl.proxad.net) has joined #ardour
+2016-10-17 21:15:38	-->	mbenson_ (~mbenson@216.1.180.2) has joined #ardour
+2016-10-17 21:18:29	<--	mbenson (~mbenson@apache/committer/mbenson) has quit (Ping timeout: 260 seconds)
+2016-10-17 21:23:15	-->	lerni (~lerni@183.229.107.92.dynamic.wline.res.cust.swisscom.ch) has joined #ardour
+2016-10-17 21:23:15		[21:23]
+2016-10-17 21:24:04	<--	Stuzz (~Stuzz@124-170-181-135.dyn.iinet.net.au) has quit (Quit: Vote Ziltoid!)
+2016-10-17 21:29:54	-->	dsr1204 (~dsr1204@99-111-235-130.lightspeed.cicril.sbcglobal.net) has joined #ardour
+2016-10-17 21:30:44	-->	Elysion (~elysion@ppp121-45-81-39.bras1.adl6.internode.on.net) has joined #ardour
+2016-10-17 21:36:00		[21:30]
+2016-10-17 21:37:56	-->	polosson_ (~polosson@lns-bzn-26-82-254-125-183.adsl.proxad.net) has joined #ardour
+2016-10-17 21:38:08	<--	polosson_ (~polosson@lns-bzn-26-82-254-125-183.adsl.proxad.net) has quit (Client Quit)
+2016-10-17 21:41:41	<--	polosson (~polosson@lns-bzn-61-82-250-115-96.adsl.proxad.net) has quit (Ping timeout: 250 seconds)
+2016-10-17 21:47:00		[21:41]
+2016-10-17 21:50:48	--	irc: disconnected from server
+2016-10-18 00:14:23	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined #ardour
+2016-10-18 00:14:23		[00:14]
+2016-10-18 00:14:23	--	Topic for #ardour is "5.4 is released | download: http://ardour.org/download |  paste to http://pastebin.com/ | OS X users please /join #ardour-osx"
+2016-10-18 00:14:23	--	Topic set by las on Sat, 01 Oct 2016 05:02:53
+2016-10-18 00:14:23	--	Channel #ardour: 150 nicks (1 op, 0 voices, 149 normals)
+2016-10-18 00:14:23	***	Buffer Playback...
+2016-10-18 00:14:23	Somethis	[23:51:50] rgareus: mhmm, yes that makes sense. I didn't (re)move any files, though. [23:51:50]
+2016-10-18 00:14:23	rgareus	[23:52:25] I suppose "a remove all missing files from session" option or something could be added [23:52:25]
+2016-10-18 00:14:23	Somethis	[23:52:38] ok, it's a file in a subfolder called *interchange* [23:52:38]
+2016-10-18 00:14:23	rgareus	[23:53:03] mmh. that's inside of the session-dir [23:53:03]
+2016-10-18 00:14:23	Somethis	[23:54:51] http://imgur.com/a/QXEpV [23:54:51]
+2016-10-18 00:14:23	LAbot	[23:54:52] Title: Saving to a new Session in Ardour - Album on Imgur (at imgur.com) [23:54:52]
+2016-10-18 00:14:23	Somethis	[23:54:57] step 4 ... [23:54:57]
+2016-10-18 00:14:23	Somethis	[23:55:27] checking if that file exists [23:55:27]
+2016-10-18 00:14:23	Somethis	[23:56:58] The file's not there (and neither a similar one) ... strange. [23:56:58]
+2016-10-18 00:14:23	the_CLA	[23:59:52] Somethis: Is that the original session or the saved-as one? [23:59:52]
+2016-10-18 00:14:23	Somethis	[00:00:36] the_CLA: that's the saved as one ... I'm checking the logfile for entries of the missing file. [00:00:36]
+2016-10-18 00:14:23	Somethis	[00:01:24] the_CLA: ok ... the last entry reads ... [INFO]: attempting to copy /home/gemini/Desktop/Files/Media/Music Composition/20160923-GoodbyeBrigitte_Backup09/dead/Vocals Temp-1.wav to /home/gemini/Desktop/Files/Media/Music Composition/20171018-GoodbyeBrigitte/dead/Vocals Temp-1.wav [00:01:24]
+2016-10-18 00:14:23	Somethis	[00:02:13] I presume "dead" is a folder full of intentionally deleted files? [00:02:13]
+2016-10-18 00:14:23	the_CLA	[00:03:22] O.o [00:03:22]
+2016-10-18 00:14:23	the_CLA	[00:04:16] Well, it's the place where session cleanup copies the files first. Just confusing that the save as function tries to copy anything from there. [00:04:16]
+2016-10-18 00:14:23	Somethis	[00:06:36] the_CLA: and Ardour looks for the file in /interchange .. on restart [00:06:36]
+2016-10-18 00:14:23	Somethis	[00:08:40] any suggestions ... last time "Skip all missing files" crashed Ardour. [00:08:40]
+2016-10-18 00:14:23	the_CLA	[00:10:02] Somethis: No idea. I think there were also some changes to "save as" after 4.6 - but not sure if those matter in that case. [00:10:02]
+2016-10-18 00:14:23	Somethis	[00:10:27] the_CLA: ok, thanks, though. [00:10:27]
+2016-10-18 00:14:23	the_CLA	[00:11:27] I guess before trying to debug things you should update to the latest release to see if the issues still exist. [00:11:27]
+2016-10-18 00:14:23	Somethis	[00:11:39] yup ... [00:11:39]
+2016-10-18 00:14:23	the_CLA	[00:11:55] Anyway. Time to get some sleep for me! [00:11:55]
+2016-10-18 00:14:23	Somethis	[00:13:25] the_CLA: good night ;-) [00:13:25]
+2016-10-18 00:14:23	Somethis	[00:13:35] same here, mhmpf [00:13:35]
+2016-10-18 00:14:23	nstewart	[02:39:54] rgareus: the vamp_audio_to_midi script. if I'm reading it right it wants ONE audio region and ONE midi region the same size to hold output? How to create the empty midi region? (It's not obvious. I had a  couple ideas I tried that didn't work) [02:39:54]
+2016-10-18 00:14:23	las_	[02:55:28] nstewart, what did you try? [02:55:28]
+2016-10-18 00:14:23	nstewart	[03:55:45] one thing I tried was creating markers at the ends of the audio region, then try to create a region in the midi track, but without content, I can't seem to do region operations [03:55:45]
+2016-10-18 00:14:23	nstewart	[03:57:30] paas44 (I think it was) and myself scratched our heads a bit and came up with some ideas which I don't recall but were unsuccessful [03:57:30]
+2016-10-18 00:14:23	las_	[04:02:50] nstewart, creating a region always requires having a source [04:02:50]
+2016-10-18 00:14:23	las_	[04:03:04] nstewart, so you'd need an SMFSource to get started [04:03:04]
+2016-10-18 00:14:23	nstewart	[04:06:32] I don't see that it knows about anything higher than a midi region.  [04:06:32]
+2016-10-18 00:14:23	las_	[04:12:11] nstewart, reviewing the lua bindings, what you need isn't there [04:12:11]
+2016-10-18 00:14:23	nstewart	[04:12:27] so the track already IS an SMF  on disk? [04:12:27]
+2016-10-18 00:14:23	las_	[04:12:49] nstewart, don't get the levels confused [04:12:49]
+2016-10-18 00:14:23	las_	[04:13:17] nstewart, the only thing that knows about files on disk are diskstreams (hidden component in a Track) and regions [04:13:17]
+2016-10-18 00:14:23	las_	[04:13:33] nstewart, for playback purposes, a track is just a playlist; no sources [04:13:33]
+2016-10-18 00:14:23	las_	[04:13:47] nstewart, for recording purposes, a track is a diskstream, and it has 1 or more sources to write to [04:13:47]
+2016-10-18 00:14:23	nstewart	[04:13:56] if I can figure out what is needed I'll take a stab at it. But I have to drop.  [04:13:56]
+2016-10-18 00:14:23	las_	[04:14:12] nstewart, regions are the main thing that reference sources because they are the objects that actually read data from them [04:14:12]
+2016-10-18 00:14:23	las_	[04:14:28] rgareus, there's no constructor for a MIDI region [04:14:28]
+2016-10-18 00:14:23	las_	[04:15:13] nstewart, ^^^^^^^^^^^^^^^^^^ [04:15:13]
+2016-10-18 00:14:23	las_	[04:15:17] rgareus, sorry, not for you [04:15:17]
+2016-10-18 00:14:23	nstewart	[04:21:02] is there a Region constructor for that matter? Didn't see it. I thought I recalled something in one of the docs or examples that there was a reason - like you shouldn't create them directly. but I'm foggy  [04:21:02]
+2016-10-18 00:14:23	cglocke	[08:35:28] good morning! [08:35:28]
+2016-10-18 00:14:23	cglocke	[08:36:16] any plugin recommendations for frequency "sweeping"? I want to start at a specific freq and increase or decrease the frequency over time until another freq is reached (e.g. to create a simple siren)...  [08:36:16]
+2016-10-18 00:14:23	rgareus	[08:38:07] cglocke: you could automate invada's test-tone generator -- but I don't know if it's a smooth ramp. [08:38:07]
+2016-10-18 00:14:23	cglocke	[08:41:17] ok thx, I'll try that :) [08:41:17]
+2016-10-18 00:14:23	cglocke	[08:47:59] rgareus... any tip on atomation btw? :D [08:47:59]
+2016-10-18 00:14:23	cglocke	[08:48:02] *automation [08:48:02]
+2016-10-18 00:14:23	cglocke	[08:53:55] ah xD found it :) [08:53:55]
+2016-10-18 00:14:23	***	Playback Complete.
+2016-10-18 00:15:15	--	Channel created on Sat, 25 Nov 2006 20:42:44
+2016-10-18 00:17:45	-->	electro-flinch (~colinf@axicon.plus.com) has joined #ardour
+2016-10-18 00:22:38	-->	naught101 (~naught101@14-202-176-150.static.tpgi.com.au) has joined #ardour
+2016-10-18 00:23:46	-->	freedom01 (~freedom@112.206.160.40) has joined #ardour
+2016-10-18 00:27:43	<--	iorec (sid4569@gateway/web/irccloud.com/x-nfyywnitiarrryup) has quit (Read error: Connection reset by peer)
+2016-10-18 00:28:24	-->	iorec (sid4569@gateway/web/irccloud.com/x-phvjgkjaggopokhp) has joined #ardour
+2016-10-18 00:34:00		[00:28]
+2016-10-18 00:35:47	-->	son0p (~ff@181.134.22.152) has joined #ardour
+2016-10-18 00:37:36	-->	Elysion (~elysion@ppp121-45-81-39.bras1.adl6.internode.on.net) has joined #ardour
+2016-10-18 00:43:00		[00:37]
+2016-10-18 00:43:43	<--	timbyr (~timbyr@101.163.72.79) has quit (Ping timeout: 265 seconds)
+2016-10-18 00:45:34	-->	timbyr (~timbyr@101.163.72.79) has joined #ardour
+2016-10-18 00:51:00		[00:45]
+2016-10-18 00:55:10	-->	ocbtec (~ocbtec@dslb-088-075-066-222.088.075.pools.vodafone-ip.de) has joined #ardour
+2016-10-18 01:01:00		[00:55]
+2016-10-18 01:01:12	<--	naught101 (~naught101@14-202-176-150.static.tpgi.com.au) has quit (Ping timeout: 252 seconds)
+2016-10-18 01:06:42	<--	GrusGrus (~Thunderbi@194.100.8.254) has quit (Ping timeout: 252 seconds)
+2016-10-18 01:07:51	-->	Yruama_Lairba (~UTILISATE@mut38-h04-89-80-39-202.dsl.sta.abo.bbox.fr) has joined #ardour
+2016-10-18 01:13:00		[01:07]
+2016-10-18 01:17:56	-->	AndChat|320025 (~AndChat32@152.200.129.255) has joined #ardour
+2016-10-18 01:18:27	-->	Caterpillar2 (~caterpill@unaffiliated/caterpillar) has joined #ardour
+2016-10-18 01:18:28	--	AndChat|320025 is now known as son0p_
+2016-10-18 01:18:30	<--	Caterpillar (~caterpill@unaffiliated/caterpillar) has quit (Ping timeout: 250 seconds)
+2016-10-18 01:23:06	<--	polosson (~polosson@lns-bzn-26-82-254-125-183.adsl.proxad.net) has quit (Ping timeout: 250 seconds)
+2016-10-18 01:29:00		[01:23]
+2016-10-18 01:31:11	-->	GrusGrus (~Thunderbi@2001:999:40:938f:785c:3d4c:612f:610e) has joined #ardour
+2016-10-18 01:32:03	-->	naught101 (~naught101@14-202-176-150.static.tpgi.com.au) has joined #ardour
+2016-10-18 01:38:00		[01:32]
+2016-10-18 01:38:15	-->	yann-kaelig (~inyan@89-64-13-143.dynamic.chello.pl) has joined #ardour
+2016-10-18 01:44:00		[01:38]
+2016-10-18 01:46:59	<--	yann-kaelig (~inyan@89-64-13-143.dynamic.chello.pl) has quit (Ping timeout: 252 seconds)
+2016-10-18 01:51:10	-->	yann-kaelig (~inyan@89-64-13-143.dynamic.chello.pl) has joined #ardour
+2016-10-18 01:57:00		[01:51]
+2016-10-18 02:02:39	<--	yann-kaelig (~inyan@89-64-13-143.dynamic.chello.pl) has quit (Ping timeout: 256 seconds)
+2016-10-18 02:08:00		[02:02]
+2016-10-18 02:10:05	<--	phoracek (~phoracek@ip-89-102-24-203.net.upcbroadband.cz) has quit (Ping timeout: 252 seconds)
+2016-10-18 02:16:00		[02:10]
+2016-10-18 02:20:19	<--	dizero (~dizero@120.146.29.234) has quit (Ping timeout: 251 seconds)
+2016-10-18 02:23:46	-->	yann-kaelig (~inyan@89-64-13-143.dynamic.chello.pl) has joined #ardour
+2016-10-18 02:29:00		[02:23]
+2016-10-18 02:35:58	<--	dsr1204 (~dsr1204@99-111-235-130.lightspeed.cicril.sbcglobal.net) has quit (Ping timeout: 256 seconds)
+2016-10-18 02:37:49	-->	henkz (~henke@c-c4c671d5.215-6-64736c10.cust.bredbandsbolaget.se) has joined #ardour
+2016-10-18 02:43:00		[02:37]
+2016-10-18 02:43:23	IOhannes	las_: another patch for spelling errors https://anonscm.debian.org/cgit/pkg-multimedia/ardour.git/tree/debian/patches/0080-more-spelling.patch
+2016-10-18 02:43:24	LAbot	Title: pkg-multimedia/ardour - ardour Debian packaging (at anonscm.debian.org)
+2016-10-18 02:43:52	IOhannes	i only discovered those errors today, when the build finally completed
+2016-10-18 02:45:21	-->	Lex_NewtoN (~quassel@5.44.169.197) has joined #ardour
+2016-10-18 02:49:29	<--	karswell` (~user@83.208.208.46.dyn.plus.net) has quit (Remote host closed the connection)
+2016-10-18 02:51:24	-->	karswell` (~user@83.208.208.46.dyn.plus.net) has joined #ardour
+2016-10-18 02:52:48	-->	dsr1204 (~dsr1204@99-111-235-130.lightspeed.cicril.sbcglobal.net) has joined #ardour
+2016-10-18 02:53:27	<--	rghvdberg (~rghvdberg@145.130.225.41) has quit (Remote host closed the connection)
+2016-10-18 02:53:43	-->	rghvdberg (~rob@145.130.225.41) has joined #ardour
+2016-10-18 02:57:58	<--	GrusGrus (~Thunderbi@2001:999:40:938f:785c:3d4c:612f:610e) has quit (Ping timeout: 245 seconds)
+2016-10-18 02:59:02	<--	son0p (~ff@181.134.22.152) has quit (Quit: Lost terminal)
+2016-10-18 02:59:02		[02:59]
+2016-10-18 03:02:04	<--	karswell` (~user@83.208.208.46.dyn.plus.net) has quit (Read error: Connection reset by peer)
+2016-10-18 03:02:36	<--	yann-kaelig (~inyan@89-64-13-143.dynamic.chello.pl) has quit (Ping timeout: 256 seconds)
+2016-10-18 03:02:54	<--	hrubi (~hrubi@cgn1.wosa.cz) has quit (Ping timeout: 252 seconds)
+2016-10-18 03:03:57	-->	karswell` (~user@83.208.208.46.dyn.plus.net) has joined #ardour
+2016-10-18 03:05:28	<--	freedom01 (~freedom@112.206.160.40) has quit (Ping timeout: 245 seconds)
+2016-10-18 03:09:05	<--	takuan (~takuan@d8D86B94F.access.telenet.be) has quit (Ping timeout: 244 seconds)
+2016-10-18 03:10:58	-->	takuan (~takuan@d8D86B94F.access.telenet.be) has joined #ardour
+2016-10-18 03:16:00		[03:10]
+2016-10-18 03:16:24	-->	freedom01 (~freedom@112.206.160.40) has joined #ardour
+2016-10-18 03:18:48	-->	UlrichH (~UlrichH@1-213-190-109.dsl.ovh.fr) has joined #ardour
+2016-10-18 03:24:00		[03:18]
+2016-10-18 03:25:23	-->	clark|w (~clark_wil@12.22.75.10) has joined #ardour
+2016-10-18 03:25:44	<--	naught101 (~naught101@14-202-176-150.static.tpgi.com.au) has quit (Ping timeout: 250 seconds)
+2016-10-18 03:26:42	-->	vekoon (~vekoon@188-141-112-94.dynamic.upc.ie) has joined #ardour
+2016-10-18 03:26:44	<--	zeograd (~zeograd@78.253.202.26) has quit (Ping timeout: 252 seconds)
+2016-10-18 03:32:00		[03:26]
+2016-10-18 03:39:11	-->	hrubi (~hrubi@cgn1.wosa.cz) has joined #ardour
+2016-10-18 03:45:00		[03:39]
+2016-10-18 03:57:45	<--	remixvinil (~remix@176.60.213.3) has quit (Quit: Leaving.)
+2016-10-18 04:00:06	-->	nstewart (d855aa94@gateway/web/freenode/ip.216.85.170.148) has joined #ardour
+2016-10-18 04:00:06		[04:00]
+2016-10-18 04:02:33	IOhannes	rgareus or whoever is responsible for the webpage:
+2016-10-18 04:02:48	IOhannes	'man ardour' points me to http://ardour.org/mantis/
+2016-10-18 04:03:21	IOhannes	maybe this should be a redirect to http://tracker.a.o
+2016-10-18 04:04:25	rgareus	IOhannes: can you update the man page?
+2016-10-18 04:04:44	IOhannes	i can (and did) for the debian package
+2016-10-18 04:05:05	IOhannes	but the wrong URL is in the upstream manpage
+2016-10-18 04:06:21	<--	Joschii (~joschii@89.204.138.153) has quit (Ping timeout: 260 seconds)
+2016-10-18 04:10:02	-->	zeograd (~zeograd@78.253.202.26) has joined #ardour
+2016-10-18 04:10:47	rgareus	IOhannes: I'll fix that there
+2016-10-18 04:11:23	 *	rgareus wasn't aware that there's a man page at all :)
+2016-10-18 04:13:14	<--	Elysion (~elysion@ppp121-45-81-39.bras1.adl6.internode.on.net) has quit (Read error: Connection reset by peer)
+2016-10-18 04:14:09	nstewart	rgareus: had some questions about the _vamp_audio_to_midi plugin. It seems to want ONE audio region and ONE MIDI region (presumably the same size, but empty to hold the output.) I haven't been able to figure out how to create an empty midi region, and it doesn't appear that I can create one in the script. 
+2016-10-18 04:14:27	nstewart	I know constructors aren't exported, but I wasn't sure how to create it looking at the bindings.
+2016-10-18 04:15:28	nstewart	If the tracks are selected instead, it makes it simpler to decide where to put it I suppose. But you can't currently select one region and one track. They must be like things
+2016-10-18 04:15:28		[04:15]
+2016-10-18 04:16:59	rgareus	nstewart: actually I don't even know what the internal API is to create MIDI regions :)
+2016-10-18 04:17:52	rgareus	nstewart: Probably some RegionFactory that's not yet bound
+2016-10-18 04:19:55	-->	Joschii (~joschii@89.204.135.197) has joined #ardour
+2016-10-18 04:25:00		[04:19]
+2016-10-18 04:26:05	-->	nilg (~user@92.247.85.22) has joined #ardour
+2016-10-18 04:26:43	-->	sdoherty (sdoherty@nat/redhat/x-inatlqlsjisiacak) has joined #ardour
+2016-10-18 04:27:38	-->	papachef (~compsogna@cxr69-h06-212-195-56-168.dsl.sta.abo.bbox.fr) has joined #ardour
+2016-10-18 04:32:02	<--	dsr1204 (~dsr1204@99-111-235-130.lightspeed.cicril.sbcglobal.net) has quit (Ping timeout: 250 seconds)
+2016-10-18 04:38:00		[04:32]
+2016-10-18 04:40:03	-->	JL__ (52e3be7c@gateway/web/freenode/ip.82.227.190.124) has joined #ardour
+2016-10-18 04:40:31	JL__	las: thanks :) 
+2016-10-18 04:40:57	JL__	hi, did somebody try sooper looper ?
+2016-10-18 04:43:01	-->	jpbouza (~Juan@191.85.137.86) has joined #ardour
+2016-10-18 04:49:00		[04:43]
+2016-10-18 04:51:17	prokoudine	JL__, years ago :)
+2016-10-18 04:51:35	prokoudine	rgareus, las: i wonder if https://community.ardour.org/realfaq is supposed to be maintained
+2016-10-18 04:52:43	JL__	prokoudine: as i did.. it worked... but now, no more...
+2016-10-18 04:53:47	rgareus	JL__: it's used on the MOD as looper
+2016-10-18 04:54:09	-->	phoracek (~phoracek@auth46-139.fi.muni.cz) has joined #ardour
+2016-10-18 04:54:26	JL__	rgareus: do you have another suggestion ?
+2016-10-18 04:54:52	prokoudine	kluppe?
+2016-10-18 04:55:06	prokoudine	giada
+2016-10-18 04:55:10	las	prokoudine: "supposed to be" is ambiguous
+2016-10-18 04:55:13	las	prokoudine: did you fnd a link to it
+2016-10-18 04:55:26	prokoudine	las: yeah, i was ooking for explanation on ardour and mp3
+2016-10-18 04:55:27	las	JL__: sooperlooper is probably the best live looper for linux
+2016-10-18 04:55:40	las	JL__: and among the best 3 live loopers for any platform
+2016-10-18 04:55:50	JL__	las: yes, but it was ok here
+2016-10-18 04:56:19	prokoudine	3rd alternative (sort of) would be luppp
+2016-10-18 04:56:38	prokoudine	but they all have only a subset of overlapping features
+2016-10-18 04:57:09	JL__	prokoudine: thanks, only tar.gz, im not able to handle this :)
+2016-10-18 04:58:06	prokoudine	which of the three taht i mentioned?
+2016-10-18 04:58:48	JL__	prokoudine: kluppe is linux only (kernel >= 2.4) for now
+2016-10-18 04:59:03	-->	max_ (5c12f03d@gateway/web/freenode/ip.92.18.240.61) has joined #ardour
+2016-10-18 04:59:05	prokoudine	ah
+2016-10-18 04:59:27	--	max_ is now known as Guest72787
+2016-10-18 05:00:07	<--	Guest72787 (5c12f03d@gateway/web/freenode/ip.92.18.240.61) has quit (Client Quit)
+2016-10-18 05:01:06	JL__	i could try with an asus ( fedora), Ardour is happy with it  :)
+2016-10-18 05:02:16	prokoudine	las, you might also want to update the copyright year in the general footer
+2016-10-18 05:03:18	-->	yann-kaelig (~inyan@89-64-13-143.dynamic.chello.pl) has joined #ardour
+2016-10-18 05:04:30	JL__	prokoudine: thanks ! https://www.giadamusic.com/download   with os x
+2016-10-18 05:04:30		[05:04]
+2016-10-18 05:04:31	LAbot	Title: Download - Giada - Your Hardcore Loop Machine (at www.giadamusic.com)
+2016-10-18 05:06:31	JL__	prokoudine: :)) beautiful crashes
+2016-10-18 05:06:34	nstewart	ok git gurus. I have unpushed commits. That should have been in a branch. I checked out a clean trunk and created a branch. Both trunk/unpushed and mybranch are local only. How can pull from trunk/unpushed into mybranch?
+2016-10-18 05:06:47	las	prokoudine: done, thanks.
+2016-10-18 05:07:17	<--	ahellquist_wrk (~aht@109-124-147-131.customer.t3.se) has quit (Ping timeout: 260 seconds)
+2016-10-18 05:07:34	JL__	thanks to all, bye
+2016-10-18 05:08:18	las	IOhannes: your spelling patch includes changes to the english (original) in .po files. this is nuts ..
+2016-10-18 05:08:42	las	IOhannes: and one of the changed lines that is legitimate doesn't actually fix the spelling mistake
+2016-10-18 05:09:42	<--	JL__ (52e3be7c@gateway/web/freenode/ip.82.227.190.124) has quit (Quit: Page closed)
+2016-10-18 05:11:19	<--	yann-kaelig (~inyan@89-64-13-143.dynamic.chello.pl) has quit (Ping timeout: 250 seconds)
+2016-10-18 05:16:31	-->	krabador (~krabador@unaffiliated/krabador) has joined #ardour
+2016-10-18 05:17:16	IOhannes	the patch fixes the spelling in the c++ source files.
+2016-10-18 05:17:39	IOhannes	since the string gets translated, it also fixes the occurences all the .po files
+2016-10-18 05:18:08	IOhannes	including en (even though it doesn't do anything)
+2016-10-18 05:18:43	IOhannes	i could have also just fixed the english "translation", but i think it better to just remove all occurences of the spelling error.
+2016-10-18 05:19:02	IOhannes	your second remark i don't understand. please point to the actual line
+2016-10-18 05:19:30	las	IOhannes:the last chunk
+2016-10-18 05:19:30		[05:19]
+2016-10-18 05:19:54	las	IOhannes: it fixes performed but not operations :)
+2016-10-18 05:20:09	IOhannes	indeed
+2016-10-18 05:20:13	las	IOhannes: i'd prefer to not commit a source code change AND a .po file change as a single commit
+2016-10-18 05:21:38	IOhannes	would it be possible for you to just take the patch, apply it and then git-commit it as two separate commits?
+2016-10-18 05:22:14	IOhannes	my patch is not really a git-patch anyhow (though you might be able to git-am it)
+2016-10-18 05:22:38	IOhannes	so what is the "nuts" part?
+2016-10-18 05:23:11	 *	IOhannes has to run; ttyl
+2016-10-18 05:27:39	las	IOhannes: ok
+2016-10-18 05:33:00		[05:27]
+2016-10-18 05:43:13	<--	nilg (~user@92.247.85.22) has quit (Remote host closed the connection)
+2016-10-18 05:48:45	<--	Caterpillar2 (~caterpill@unaffiliated/caterpillar) has quit (Ping timeout: 256 seconds)
+2016-10-18 05:48:45		[05:48]
+2016-10-18 06:00:16	<--	nils (nils@nat/redhat/x-fzyilkjtbbkzspuy) has quit (Quit: Leaving)
+2016-10-18 06:02:49	<--	phoracek (~phoracek@auth46-139.fi.muni.cz) has quit (Ping timeout: 260 seconds)
+2016-10-18 06:03:58	<--	UlrichH (~UlrichH@1-213-190-109.dsl.ovh.fr) has quit (Quit: Leaving)
+2016-10-18 06:03:58		[06:03]
+2016-10-18 06:04:30	<--	sigma6 (~mbeer@gate.codingtechnologies.de) has quit (Ping timeout: 256 seconds)
+2016-10-18 06:06:22	prokoudine	las: unsure what you meant by "fixed" :)
+2016-10-18 06:07:37	las	prokoudine: copyright date
+2016-10-18 06:08:23	prokoudine	ah
+2016-10-18 06:09:55	<--	analphabet (jfwDWnj0ll@markab.uberspace.de) has quit (Changing host)
+2016-10-18 06:09:55	-->	analphabet (jfwDWnj0ll@unaffiliated/analphabet) has joined #ardour
+2016-10-18 06:15:00		[06:09]
+2016-10-18 06:18:48	<--	rghvdberg (~rob@145.130.225.41) has quit (Remote host closed the connection)
+2016-10-18 06:23:52	<--	krabador (~krabador@unaffiliated/krabador) has quit (Ping timeout: 244 seconds)
+2016-10-18 06:26:23	Defcronyke	las I remember sooperlooper. I used it about 8 years  ago for some songs, and at the time it had a bug which caused some loops to sometimes only run on one of the stereo channels. after that I prefer freewheeling for loops
+2016-10-18 06:26:38	las	Defcronyke: does FW even still build?
+2016-10-18 06:26:41	Defcronyke	no idea
+2016-10-18 06:26:46	Defcronyke	i just loop in ardour now
+2016-10-18 06:26:51	-->	krabador (~krabador@unaffiliated/krabador) has joined #ardour
+2016-10-18 06:32:00		[06:26]
+2016-10-18 06:38:56	<--	mbenson_ (~mbenson@216.1.180.2) has quit (Quit: Leaving)
+2016-10-18 06:38:57	-->	avoca (~avoca@92.251.234.182.threembb.ie) has joined #ardour
+2016-10-18 06:39:14	--	mbenson_away is now known as mbenson
+2016-10-18 06:39:39	-->	Caterpillar (~caterpill@unaffiliated/caterpillar) has joined #ardour
+2016-10-18 06:39:46	<--	mbenson (~mbenson@108-87-152-117.lightspeed.nsvltn.sbcglobal.net) has quit (Changing host)
+2016-10-18 06:39:46	-->	mbenson (~mbenson@apache/committer/mbenson) has joined #ardour
+2016-10-18 06:44:13	<--	Guest58124 (~Thunderbi@d118-75-67-2.try.wideopenwest.com) has quit (Ping timeout: 250 seconds)
+2016-10-18 06:50:00		[06:44]
+2016-10-18 06:51:04	<--	NoteOn (~noteon@s174004.ppp.asahi-net.or.jp) has quit (Quit: Leaving...)
+2016-10-18 06:51:30	-->	NoteOn (~noteon@s174004.ppp.asahi-net.or.jp) has joined #ardour
+2016-10-18 06:57:00		[06:51]
+2016-10-18 06:57:08	<--	nostar (~nostar@2601:406:4401:3f50:2e56:dcff:fe7b:ec0d) has quit (Ping timeout: 245 seconds)
+2016-10-18 07:00:34	-->	rhydermike (~quassel@cpc80381-grim18-2-0-cust221.12-3.cable.virginm.net) has joined #ardour
+2016-10-18 07:05:35	<--	nstewart (d855aa94@gateway/web/freenode/ip.216.85.170.148) has quit (Ping timeout: 260 seconds)
+2016-10-18 07:07:15	-->	nostar (~nostar@2601:406:4401:3f50:2e56:dcff:fe7b:ec0d) has joined #ardour
+2016-10-18 07:08:35	-->	yann-kaelig (~inyan@89-64-13-143.dynamic.chello.pl) has joined #ardour
+2016-10-18 07:08:41	-->	dsr1204 (~dsr1204@99-111-235-130.lightspeed.cicril.sbcglobal.net) has joined #ardour
+2016-10-18 07:14:00		[07:08]
+2016-10-18 07:17:01	<--	timbyr (~timbyr@101.163.72.79) has quit (Ping timeout: 260 seconds)
+2016-10-18 07:19:09	-->	Valvalion (~Valvalion@187.104-201-80.adsl-dyn.isp.belgacom.be) has joined #ardour
+2016-10-18 07:19:22	-->	timbyr (~timbyr@101.163.72.79) has joined #ardour
+2016-10-18 07:20:58	<--	NoteOn (~noteon@s174004.ppp.asahi-net.or.jp) has quit (Quit: Leaving...)
+2016-10-18 07:21:10	-->	NoteOn (~noteon@s174004.ppp.asahi-net.or.jp) has joined #ardour
+2016-10-18 07:23:55	-->	tweed (~Thunderbi@d118-75-67-2.try.wideopenwest.com) has joined #ardour
+2016-10-18 07:24:19	--	tweed is now known as Guest11032
+2016-10-18 07:27:30	<--	Lex_NewtoN (~quassel@5.44.169.197) has quit (Remote host closed the connection)
+2016-10-18 07:33:00		[07:27]
+2016-10-18 07:33:28	<--	AlexRussia (~Alex@unaffiliated/alexrussia) has quit (*.net *.split)
+2016-10-18 07:33:28	<--	beisner (~beisner@104.49.224.165) has quit (*.net *.split)
+2016-10-18 07:33:28	<--	sobukus (~thomas@sourcemage/mage/sobukus) has quit (*.net *.split)
+2016-10-18 07:33:29	<--	[lsd]_ (~pants@mail.wootangent.net) has quit (*.net *.split)
+2016-10-18 07:33:29	<--	nt (~nt@cpe-2606-A000-4549-AA00-862B-2BFF-FEBC-32A3.dyn6.twc.com) has quit (*.net *.split)
+2016-10-18 07:33:29	<--	zequence (~zequence@ubuntu/member/zequence) has quit (*.net *.split)
+2016-10-18 07:33:29	<--	c3r1c3 (~c3r1c3@ip72-211-87-79.no.no.cox.net) has quit (*.net *.split)
+2016-10-18 07:33:29	<--	kmicu (kmicu@2a00:d880:3:1::73d7:67f8) has quit (*.net *.split)
+2016-10-18 07:33:32	<--	adi_ (~adi@ak.loris.tv) has quit (*.net *.split)
+2016-10-18 07:33:32	<--	njoliat (~njoliat@pte.the-nsa.org) has quit (*.net *.split)
+2016-10-18 07:33:32	<--	dT (timoh@kapsi.fi) has quit (*.net *.split)
+2016-10-18 07:33:33	<--	Artefact2 (~Artefact2@unaffiliated/artefact2) has quit (*.net *.split)
+2016-10-18 07:33:34	<--	octave (~octave@unaffiliated/octave) has quit (*.net *.split)
+2016-10-18 07:33:34	<--	ristic (~risitc@46.101.231.43) has quit (*.net *.split)
+2016-10-18 07:33:34	<--	tkln (~aapo@pug1.kyla.fi) has quit (*.net *.split)
+2016-10-18 07:33:35	-->	[lsd] (~pants@mail.wootangent.net) has joined #ardour
+2016-10-18 07:33:36	-->	kmic (~kmicu@176.56.237.191) has joined #ardour
+2016-10-18 07:33:36	-->	dT (timoh@kapsi.fi) has joined #ardour
+2016-10-18 07:33:37	-->	tkln (~aapo@pug1.kyla.fi) has joined #ardour
+2016-10-18 07:33:38	-->	zequence (~zequence@h-141-65.a336.priv.bahnhof.se) has joined #ardour
+2016-10-18 07:33:38	<--	zequence (~zequence@h-141-65.a336.priv.bahnhof.se) has quit (Changing host)
+2016-10-18 07:33:38	-->	zequence (~zequence@ubuntu/member/zequence) has joined #ardour
+2016-10-18 07:33:47	-->	Artefact2 (~Artefact2@unaffiliated/artefact2) has joined #ardour
+2016-10-18 07:33:56	-->	sobukus (~thomas@176.9.85.107) has joined #ardour
+2016-10-18 07:33:57	-->	c3r1c3 (~c3r1c3@ip72-211-87-79.no.no.cox.net) has joined #ardour
+2016-10-18 07:33:58	-->	adi_ (~adi@2a01:4f8:100:7485::4) has joined #ardour
+2016-10-18 07:34:09	-->	njoliat (~njoliat@pte.the-nsa.org) has joined #ardour
+2016-10-18 07:34:23	-->	ristic (~risitc@46.101.231.43) has joined #ardour
+2016-10-18 07:34:43	-->	beisner (~beisner@104.49.224.165) has joined #ardour
+2016-10-18 07:34:44	-->	octave (~octave@unaffiliated/octave) has joined #ardour
+2016-10-18 07:35:10	-->	AlexRussia (~Alex@unaffiliated/alexrussia) has joined #ardour
+2016-10-18 07:41:00		[07:35]
+2016-10-18 07:41:15	-->	nt (~nt@cpe-2606-A000-4549-AA00-862B-2BFF-FEBC-32A3.dyn6.twc.com) has joined #ardour
+2016-10-18 07:45:46	<--	avoca (~avoca@92.251.234.182.threembb.ie) has quit (Quit: WeeChat 1.5)
+2016-10-18 07:49:48	<--	falktx (~falktx@185.19.197.52) has quit (Read error: Connection reset by peer)
+2016-10-18 07:49:57	<--	Caterpillar (~caterpill@unaffiliated/caterpillar) has quit (Quit: You were not made to live as brutes, but to follow virtue and knowledge.)
+2016-10-18 07:51:03	<--	NoteOn (~noteon@s174004.ppp.asahi-net.or.jp) has quit (Quit: Leaving...)
+2016-10-18 07:51:06	<--	yann-kaelig (~inyan@89-64-13-143.dynamic.chello.pl) has quit (Ping timeout: 250 seconds)
+2016-10-18 07:51:16	-->	NoteOn (~noteon@s174004.ppp.asahi-net.or.jp) has joined #ardour
+2016-10-18 07:53:18	the_CLA_2	rgareus: Is there some click combo to show/hide inline displays, so one doesn't need to go through the context menus?
+2016-10-18 07:59:00		[07:53]
+2016-10-18 07:59:10	rgareus	the_CLA_2: not that I know of
+2016-10-18 07:59:56	the_CLA_2	Would be nice to have, I think.
+2016-10-18 08:00:53	-->	tom- (~srv@84-74-158-93.dclient.hispeed.ch) has joined #ardour
+2016-10-18 08:01:21	<--	octave (~octave@unaffiliated/octave) has quit (Ping timeout: 260 seconds)
+2016-10-18 08:01:36	-->	octave (~octave@unaffiliated/octave) has joined #ardour
+2016-10-18 08:07:00		[08:01]
+2016-10-18 08:07:26	<--	krabador (~krabador@unaffiliated/krabador) has quit (Quit: Leaving)
+2016-10-18 08:08:46	-->	krabador (~krabador@unaffiliated/krabador) has joined #ardour
+2016-10-18 08:13:53	-->	remixvinil (~remix@95.46.18.239) has joined #ardour
+2016-10-18 08:13:58	<--	melanie__ (~melanie@d86-32-65-86.cust.tele2.at) has quit (Read error: Connection reset by peer)
+2016-10-18 08:15:40	-->	melanie__ (~melanie@d86-32-65-86.cust.tele2.at) has joined #ardour
+2016-10-18 08:17:49	<--	electro-flinch (~colinf@axicon.plus.com) has quit (Quit: Leaving.)
+2016-10-18 08:23:00		[08:17]
+2016-10-18 08:23:00	<--	dsr1204 (~dsr1204@99-111-235-130.lightspeed.cicril.sbcglobal.net) has quit (Ping timeout: 250 seconds)
+2016-10-18 08:23:50	Chloe	h/49
+2016-10-18 08:23:53	Chloe	oops
+2016-10-18 08:29:00		[08:23]
+2016-10-18 08:31:16	-->	nstewart (d855aa94@gateway/web/freenode/ip.216.85.170.148) has joined #ardour
+2016-10-18 08:37:00		[08:31]
+2016-10-18 08:41:11	-->	_FrnchFrgg_ (~Icedove@2a01:e35:2e92:63f0:fa16:54ff:fef7:e1a8) has joined #ardour
+2016-10-18 08:47:00		[08:41]
+2016-10-18 08:47:16	<--	sdoherty (sdoherty@nat/redhat/x-inatlqlsjisiacak) has quit (Ping timeout: 256 seconds)
+2016-10-18 08:50:27	-->	sdoherty (sdoherty@nat/redhat/x-gcmrltrgffjwtzrq) has joined #ardour
+2016-10-18 08:56:00		[08:50]
+2016-10-18 09:07:50	<--	dsheeler (~six600110@c-73-168-55-181.hsd1.il.comcast.net) has quit (Quit: Ex-Chat)
+2016-10-18 09:08:45	<--	clark|w (~clark_wil@12.22.75.10) has quit (Quit: Leaving)
+2016-10-18 09:09:40	<--	sdoherty (sdoherty@nat/redhat/x-gcmrltrgffjwtzrq) has quit (Ping timeout: 260 seconds)
+2016-10-18 09:10:33	-->	yann-kaelig (~inyan@89-64-13-143.dynamic.chello.pl) has joined #ardour
+2016-10-18 09:16:00		[09:10]
+2016-10-18 09:16:06	<--	krabador (~krabador@unaffiliated/krabador) has quit (Quit: Leaving)
+2016-10-18 09:17:20	-->	tweed (~Thunderbi@d118-75-67-2.try.wideopenwest.com) has joined #ardour
+2016-10-18 09:17:34	<--	Guest11032 (~Thunderbi@d118-75-67-2.try.wideopenwest.com) has quit (Read error: Connection reset by peer)
+2016-10-18 09:17:44	--	tweed is now known as Guest94132
+2016-10-18 09:21:00	<--	karswell` (~user@83.208.208.46.dyn.plus.net) has quit (Remote host closed the connection)
+2016-10-18 09:21:21	-->	kyan (~kyan@cpe-74-78-187-9.maine.res.rr.com) has joined #ardour
+2016-10-18 09:22:32	-->	peterere1 (~petern@pi-t0.fuzzle.org) has joined #ardour
+2016-10-18 09:23:12	<--	peterere1 (~petern@pi-t0.fuzzle.org) has quit (Client Quit)
+2016-10-18 09:26:23	-->	sdoherty (sdoherty@nat/redhat/x-knizuldmfupsgghn) has joined #ardour
+2016-10-18 09:27:39	<--	kyan (~kyan@cpe-74-78-187-9.maine.res.rr.com) has quit (Ping timeout: 265 seconds)
+2016-10-18 09:29:05	<--	papachef (~compsogna@cxr69-h06-212-195-56-168.dsl.sta.abo.bbox.fr) has quit (Remote host closed the connection)
+2016-10-18 09:34:23	rgareus	the_CLA_2: shift + click ?
+2016-10-18 09:34:23		[09:34]
+2016-10-18 09:35:17	the_CLA_2	rgareus: Something like that.
+2016-10-18 09:35:38	rgareus	ctrl + click is already taken
+2016-10-18 09:35:52	the_CLA_2	Ah. What does that do?
+2016-10-18 09:36:04	rgareus	open the generic UI
+2016-10-18 09:36:13	rgareus	see the tooltip
+2016-10-18 09:36:20	rgareus	shift + right click -> remove processor
+2016-10-18 09:36:32	the_CLA_2	Erm... here Alt + double click opens the generic UI.
+2016-10-18 09:36:55	the_CLA_2	...if I'm not mistaken. Will try again...
+2016-10-18 09:36:55	rgareus	ctrl + right click -> open GUI
+2016-10-18 09:37:17	rgareus	"double click"  opens the GUI (regardless of modifiers)
+2016-10-18 09:38:36	the_CLA_2	Ctrl + left click does nothing here.
+2016-10-18 09:38:47	rgareus	it would also be nice to have a <modifier> + click to toggle bypass on the complete processor (no need to hit the LED)
+2016-10-18 09:39:04	the_CLA_2	Ctrl + double click opens the native UI.
+2016-10-18 09:39:08	rgareus	Ctrl + left *double* click
+2016-10-18 09:39:14	rgareus	re-read the tooltip :)
+2016-10-18 09:39:18	the_CLA_2	Alt +double generic
+2016-10-18 09:40:35	-->	kyan (~kyan@cpe-74-78-187-9.maine.res.rr.com) has joined #ardour
+2016-10-18 09:42:16	-->	Caterpillar (~caterpill@unaffiliated/caterpillar) has joined #ardour
+2016-10-18 09:48:00		[09:42]
+2016-10-18 09:56:59	-->	slyrus (~chatzilla@107.201.4.172) has joined #ardour
+2016-10-18 10:02:00		[09:56]
+2016-10-18 10:09:09	<--	kyan (~kyan@cpe-74-78-187-9.maine.res.rr.com) has quit (Ping timeout: 244 seconds)
+2016-10-18 10:09:31	<--	aloiscochard (uid2076@gateway/web/irccloud.com/x-cvbwxgkkknmueodf) has quit (Quit: Connection closed for inactivity)
+2016-10-18 10:14:01	<--	nstewart (d855aa94@gateway/web/freenode/ip.216.85.170.148) has quit (Ping timeout: 260 seconds)
+2016-10-18 10:14:37	<--	Caterpillar (~caterpill@unaffiliated/caterpillar) has quit (Quit: You were not made to live as brutes, but to follow virtue and knowledge.)
+2016-10-18 10:15:31	-->	Caterpillar (~caterpill@unaffiliated/caterpillar) has joined #ardour
+2016-10-18 10:20:15	<--	sdoherty (sdoherty@nat/redhat/x-knizuldmfupsgghn) has quit (Remote host closed the connection)
+2016-10-18 10:20:15		[10:20]
+2016-10-18 10:20:23	-->	clark|w (~clark_wil@173-25-41-60.client.mchsi.com) has joined #ardour
+2016-10-18 10:21:21	-->	kyan (~kyan@cpe-74-78-187-9.maine.res.rr.com) has joined #ardour
+2016-10-18 10:22:31	<--	timbyr (~timbyr@101.163.72.79) has quit (Ping timeout: 252 seconds)
+2016-10-18 10:25:02	<--	bazz (~bazz@eclair.whatbox.ca) has quit (Changing host)
+2016-10-18 10:25:02	-->	bazz (~bazz@unaffiliated/bazz) has joined #ardour
+2016-10-18 10:26:36	rgareus	the_CLA_2: there you go.
+2016-10-18 10:29:12	-->	timbyr (~timbyr@101.163.72.79) has joined #ardour
+2016-10-18 10:35:00		[10:29]
+2016-10-18 10:35:32	<--	melanie__ (~melanie@d86-32-65-86.cust.tele2.at) has quit (Ping timeout: 260 seconds)
+2016-10-18 10:37:00	-->	melanie__ (~melanie@d86-32-65-86.cust.tele2.at) has joined #ardour
+2016-10-18 10:42:00		[10:37]
+2016-10-18 10:58:29	the_CLA_2	rgareus: Build failed: http://paste.debian.net/hidden/3ba802a6/
+2016-10-18 10:58:29		[10:58]
+2016-10-18 10:59:08	the_CLA_2	Uh, I guess that's for las ^^^^ ;)
+2016-10-18 11:00:12	las	the_CLA_2: already fixewd
+2016-10-18 11:02:07	<--	remixvinil (~remix@95.46.18.239) has quit (Ping timeout: 256 seconds)
+2016-10-18 11:06:33	<--	yann-kaelig (~inyan@89-64-13-143.dynamic.chello.pl) has quit (Quit: Leaving)
+2016-10-18 11:12:00		[11:06]
+2016-10-18 11:15:28	<--	LAbot (~supybot@2001:468:c80:2133:1618:77ff:fe46:fa3c) has quit (Remote host closed the connection)
+2016-10-18 11:17:26	<--	nostar (~nostar@2601:406:4401:3f50:2e56:dcff:fe7b:ec0d) has quit (Ping timeout: 256 seconds)
+2016-10-18 11:17:27	<--	till[m] (tillmatrix@gateway/shell/matrix.org/x-ogwvqaltehdguwjj) has quit (Ping timeout: 256 seconds)
+2016-10-18 11:17:27	<--	unclechu (unclechuma@gateway/shell/matrix.org/x-iiugiucgtisbjqdv) has quit (Ping timeout: 256 seconds)
+2016-10-18 11:17:27	<--	M-SpaceHobo (spacehoboz@gateway/shell/matrix.org/x-psldghbuhhmmuceg) has quit (Ping timeout: 256 seconds)
+2016-10-18 11:17:27	<--	las_ (~las@2601:47:4300:4e00::8) has quit (Ping timeout: 256 seconds)
+2016-10-18 11:17:27	<--	dl2s4 (~dsl2@2605:6400:1:fed5:22:2aec:234f:5a46) has quit (Ping timeout: 256 seconds)
+2016-10-18 11:17:27	<--	XDjackieXD (~XDjackieX@2a03:f80:ed15:151:236:12:222:1) has quit (Ping timeout: 256 seconds)
+2016-10-18 11:19:28	-->	M-SpaceHobo (spacehoboz@gateway/shell/matrix.org/x-izvormcnaobxynfr) has joined #ardour
+2016-10-18 11:19:29	-->	XDjackieXD (~XDjackieX@2a03:f80:ed15:151:236:12:222:1) has joined #ardour
+2016-10-18 11:19:45	-->	dl2s4 (~dsl2@humble.cf) has joined #ardour
+2016-10-18 11:20:01	-->	nostar (~nostar@2601:406:4401:3f50:2e56:dcff:fe7b:ec0d) has joined #ardour
+2016-10-18 11:20:08	-->	las_ (~las@2601:47:4300:4e00::8) has joined #ardour
+2016-10-18 11:21:11	-->	unclechu (unclechuma@gateway/shell/matrix.org/x-zkcnbftdiicitfbl) has joined #ardour
+2016-10-18 11:21:40	-->	till[m] (tillmatrix@gateway/shell/matrix.org/x-phycebenbyuavawc) has joined #ardour
+2016-10-18 11:21:44	-->	LAbot (~supybot@2001:468:c80:2133:1618:77ff:fe46:fa3c) has joined #ardour
+2016-10-18 11:22:57	<--	takuan (~takuan@d8D86B94F.access.telenet.be) has quit (Remote host closed the connection)
+2016-10-18 11:28:00		[11:22]
+2016-10-18 11:31:07	the_CLA_2	rgareus: Maybe add Shift+double to the popup info as well.
+2016-10-18 11:32:10	rgareus	the_CLA_2: easier said than done. -- it should only be there for plugins that have an inline display
+2016-10-18 11:32:51	the_CLA_2	rgareus: Maybe just add "(if available)" to it.
+2016-10-18 11:34:43	<--	Valvalion (~Valvalion@187.104-201-80.adsl-dyn.isp.belgacom.be) has quit (Remote host closed the connection)
+2016-10-18 11:34:44	<--	Caterpillar (~caterpill@unaffiliated/caterpillar) has quit (Quit: You were not made to live as brutes, but to follow virtue and knowledge.)
+2016-10-18 11:35:05	<--	_FrnchFrgg_ (~Icedove@2a01:e35:2e92:63f0:fa16:54ff:fef7:e1a8) has quit (Ping timeout: 260 seconds)
+2016-10-18 11:35:12	rgareus	the_CLA_2: well, it isn't that hard after all.
+2016-10-18 11:35:13	-->	kyan_ (~kyan@cpe-74-78-187-9.maine.res.rr.com) has joined #ardour
+2016-10-18 11:36:42	<--	kyan (~kyan@cpe-74-78-187-9.maine.res.rr.com) has quit (Ping timeout: 265 seconds)
+2016-10-18 11:39:14	rgareus	las_: your recent commit breaks ALSA MIDI device setup
+2016-10-18 11:39:41	rgareus	las_: and probably as well for PortMIDI
+2016-10-18 11:39:44	--	kyan_ is now known as kyan
+2016-10-18 11:41:06	rgareus	las: ^^
+2016-10-18 11:41:43	las	rgareus: what did it break? no longer calling something?
+2016-10-18 11:42:26	rgareus	las: I need to start the backend first
+2016-10-18 11:42:47	las	rgareus: i'll revert that part
+2016-10-18 11:42:55	rgareus	las:  it's a "device setup"
+2016-10-18 11:42:57	rgareus	not a port setup
+2016-10-18 11:43:38	rgareus	also changing the MIDI system no longer updates the device list
+2016-10-18 11:43:38		[11:43]
+2016-10-18 11:43:45	las	rgareus: hmm. not sure how i broke it
+2016-10-18 11:43:59	las	rgareus: i removed ::setup_midi_tab_for_jack()
+2016-10-18 11:44:25	las	rgareus: and cleaned out the otherwise empty ::set_midi_tab_for_backend()
+2016-10-18 11:45:36	rgareus	and apart from that.. it does not fit in 1920px in width :)  http://robin.linuxaudio.org/tmp/funny_midi.png  
+2016-10-18 11:45:43	rgareus	but I suppose that's just work-in-progress
+2016-10-18 11:46:45	rgareus	aah I've switched forth and back a couple of times..  it kept adding table headers
+2016-10-18 11:47:12	las	rgareus: yes
+2016-10-18 11:49:25	las	rgareus: that's fixed already, will commit within a few minutes
+2016-10-18 11:49:34	las	rgareus: but i don't see how this would break MIDI device setup
+2016-10-18 11:51:18	las	rgareus: it just fills out 2 treemodels/views when the engine emits Running
+2016-10-18 11:51:24	las	rgareus: after everything else is done
+2016-10-18 11:51:43	las	rgareus: what's the nature of the breakage?
+2016-10-18 11:52:33	rgareus	las: select "ALSA"  click the "MIDI device setup"  button
+2016-10-18 11:52:43	rgareus	las: devices are listed *before* starting the engine
+2016-10-18 11:53:27	rgareus	las: and one can calibrate midi latency there
+2016-10-18 11:54:16	rgareus	las: back in 6bf65dd21da1     clicking on "Midi Device Setup"  at  http://robin.linuxaudio.org/tmp/old_engine_dialog.png
+2016-10-18 11:54:26	rgareus	las: went to  http://robin.linuxaudio.org/tmp/old_midi_setup.png
+2016-10-18 11:54:44	-->	jpt9 (~jpt9@unaffiliated/jpt9) has joined #ardour
+2016-10-18 11:55:32	rgareus	.. and then to the midi latency measurement tool (latency per device,  select port on the device)(
+2016-10-18 11:55:32	jpt9	Is there any way to have Ardour play audio files you've imported at a different sample rate (i.e. changing both tempo/pitch), similar to changing the sample rate for a track in Audacity?
+2016-10-18 11:55:59	rgareus	jpt9: there's a time-stretch tool
+2016-10-18 11:56:41	rgareus	but that preserves pitch
+2016-10-18 11:57:20	rgareus	the only other option is vari-speed playback -- but that's the complete session.
+2016-10-18 11:58:17	las	rgareus: ah, accidental text deletion and poor git diff rendering .. sorry.
+2016-10-18 11:58:56	jpt9	rgareus: Actually, in the list of resample methods, it's got an option for just resampling without preserving pitch.
+2016-10-18 11:58:56		[11:58]
+2016-10-18 11:59:44	rgareus	las: and incorrect function name on my part.
+2016-10-18 12:00:05	rgareus	las: refill_midi_ports()  did actually show   the  midi_device_table.
+2016-10-18 12:00:14	the_CLA_2	rgareus: Doesn't the timestretch tool also have a mode that varies the pitch... I seem to remember that this had been added at some point.
+2016-10-18 12:01:11	las	rgareus: should be fixed now
+2016-10-18 12:01:13	las	the_CLA_2: it does
+2016-10-18 12:01:18	Defcronyke	las, if the industry is broken, it can always be fixed (regarding the LAU list)
+2016-10-18 12:01:29	las	Defcronyke: dream on, and dream big
+2016-10-18 12:01:36	Defcronyke	las I do dream big
+2016-10-18 12:01:50	<--	Headwar (~edouard@2a01cb00054ce400087d80389f111565.ipv6.abo.wanadoo.fr) has quit (Quit: Leaving)
+2016-10-18 12:02:34	las	Defcronyke: the idea that you're going to get plugin developers to agree on how to share realtime analysis data is, to me, a total pipedream
+2016-10-18 12:02:58	Defcronyke	okay well you're the expert
+2016-10-18 12:03:07	las	Defcronyke: no, just a pessimist :)
+2016-10-18 12:03:08	Defcronyke	i disagree though
+2016-10-18 12:03:13	Defcronyke	clearly
+2016-10-18 12:03:43	las	Defcronyke: there's only really 1 successful "standard" in the audio/MIDI tech world over the last 30 years, and that's MIDI
+2016-10-18 12:03:44	<--	jbitdrop (~jbitdrop@x55b5f3b4.dyn.telefonica.de) has quit (Quit: leaving)
+2016-10-18 12:04:10	Defcronyke	and midi is pretty good at least from an end-user perspective (at least from my perspective)
+2016-10-18 12:04:18	las	Defcronyke: there are more or less no other standards that are widely let along universally adopted, other than some licensed interconnection technologies like S/PDIF and ADAT and MADI
+2016-10-18 12:04:27	las	Defcronyke: yeah, but MIDI is 30+ years old
+2016-10-18 12:04:29	Defcronyke	midi actually happened though
+2016-10-18 12:04:38	las	Defcronyke: the industry has been incapable of doing anything like that ever since
+2016-10-18 12:04:46	Defcronyke	it's all too cut-ass
+2016-10-18 12:04:53	las	Defcronyke: audio-over-ethernet being the prime modern day example
+2016-10-18 12:04:57	Defcronyke	cooperate for gods sake
+2016-10-18 12:05:15	las	Defcronyke: they all think they've got the next Big Thing and thus there's no reason to do so
+2016-10-18 12:05:39	las	Defcronyke: that if *their* "standard" wins, they will make a fortune on licensing fees
+2016-10-18 12:05:49	las	Defcronyke: it is a pipedream but it seems so much the dominant mentality
+2016-10-18 12:05:50	Defcronyke	that's why it should be open
+2016-10-18 12:06:05	las	Defcronyke: almost nothing in the audio tech world is open
+2016-10-18 12:06:10	Defcronyke	OpenGL kindof works, audio can have open standards too
+2016-10-18 12:06:18	las	Defcronyke: but IT DOESN'T
+2016-10-18 12:06:21	Defcronyke	lol
+2016-10-18 12:06:24	Defcronyke	kindof
+2016-10-18 12:06:34	las	Defcronyke: citing an example from a totally different universe doesn't help
+2016-10-18 12:06:42	Defcronyke	audio and video are related
+2016-10-18 12:06:50	las	Defcronyke: not in terms of technology or standards
+2016-10-18 12:06:59	las	Defcronyke: or even the companies, for the most part
+2016-10-18 12:07:11	las	anyway, got to run out and make dinner for my (adult) kids because i said i would
+2016-10-18 12:07:21	Defcronyke	las I don't like your pessimism :P but I love your DAW
+2016-10-18 12:10:58	-->	Stuzz (~Stuzz@124-170-181-135.dyn.iinet.net.au) has joined #ardour
+2016-10-18 12:12:22	rgareus	for the case at hand (auto-configure plugin chain) you also need _very_ detailed knowledge about the blocks. e.g. "How does this EQ affect signal phase depending on <parameters>"
+2016-10-18 12:14:01	rgareus	I don't see auto-config happen with a random set of plugins.  they'll all come from one maker. and the  tool that does the analysis is trained (neural network) and optimized (heuristics) for the given set of plugins.
+2016-10-18 12:14:01		[12:14]
+2016-10-18 12:14:19	las	indeed
+2016-10-18 12:14:35	--	las is now known as las-at-home
+2016-10-18 12:14:42	--	las-at-home is now known as las-at-work
+2016-10-18 12:16:11	-->	krabador (~krabador@unaffiliated/krabador) has joined #ardour
+2016-10-18 12:18:58	rgareus	I suppose you could analyse all available plugins and train some neural net.  That'll be faster than inventing a communication mechanism.
+2016-10-18 12:20:02	the_CLA_2	. o O ( las@home - the new Boinc client for finding signs of new open standards in the audio industry. )
+2016-10-18 12:25:08	Stuzz	las-at-home/work is one 'n the same ain't it?
+2016-10-18 12:31:00		[12:25]
+2016-10-18 12:38:52	<--	edogawa (~quassel@88-117-116-196.adsl.highway.telekom.at) has quit (Remote host closed the connection)
+2016-10-18 12:43:13	Defcronyke	so the open source community is also broken las?
+2016-10-18 12:43:37	Defcronyke	people can collaborate and come to agreements as I'm sure you know
+2016-10-18 12:47:28	--	las_ is now known as las
+2016-10-18 12:47:28		[12:47]
+2016-10-18 12:47:38	las	Stuzz, different computers, different locations for this week
+2016-10-18 12:48:10	<--	olinuxx (~capturixe@ANancy-653-1-37-124.w86-197.abo.wanadoo.fr) has quit (Remote host closed the connection)
+2016-10-18 12:48:52	-->	barjac (~barjac@host86-184-235-112.range86-184.btcentralplus.com) has joined #ardour
+2016-10-18 12:49:51	tom-	Defcronyke: if you have a bunch of plugins that share data, it's mostly a task to define what and how they would share it
+2016-10-18 12:50:49	Defcronyke	tom- I don't have a solution to the idea at all, but I know it can be done with just some effort and less naysaying
+2016-10-18 12:51:33	Defcronyke	when people are so pessimisitic i start to suspect they have a nafarious agenda
+2016-10-18 12:51:37	barjac	las: Hi is there a direct link to the versioned source tarballs? like http..???..%{version}.tar.bz2
+2016-10-18 12:52:25	tom-	Defcronyke: you can't expect from others to share your vision or provide help to achieve that
+2016-10-18 12:52:32	Defcronyke	I don't
+2016-10-18 12:52:48	Defcronyke	in fact, I may not even help with it either. it's not my idea
+2016-10-18 12:52:57	Defcronyke	but it absoultely can be done
+2016-10-18 12:53:26	tom-	Defcronyke: it's out of question that plugins *could* act like a swarm of bees
+2016-10-18 12:53:29	-->	remixvinil (~remix@95.46.18.239) has joined #ardour
+2016-10-18 12:53:53	Defcronyke	tom- do you mean with current open source technology, or in general?
+2016-10-18 12:53:57	tom-	Defcronyke: the are subtle design details. is there still a central orchestration
+2016-10-18 12:54:46	tom-	or a node-to-node control
+2016-10-18 12:55:09	tom-	if it's totally bionic, how would be the start sequence etc.
+2016-10-18 12:55:22	Defcronyke	it just bothers me when people say "it can't be done" because "no-one is currently willing to try"
+2016-10-18 12:55:38	-->	barjac-pi2 (~baz@host86-184-235-112.range86-184.btcentralplus.com) has joined #ardour
+2016-10-18 12:55:58	tom-	if i could give you a hint, spend less energy on that part
+2016-10-18 12:57:08	tom-	rather start to markup data that needs to be shared
+2016-10-18 12:58:10	barjac	las: ^^ barjac is also barjac-pi2 if I have to go away ;)
+2016-10-18 12:59:13	tom-	Defcronyke: ardour is a nice test platform to script plugins that read/control each other
+2016-10-18 12:59:18	las	barjac, there is one, but i don't know it ....
+2016-10-18 12:59:31	tom-	Defcronyke: you also have all the "classical" aspects
+2016-10-18 13:00:04	las	barjac, and i don't have IRC logs here to look at
+2016-10-18 13:00:13	tom-	plus daw/session aspects. really a great bed for experimenting such things. i think there is even shared memory space between plugins, not sure on that one
+2016-10-18 13:00:17	las	barjac, rgareus knows it but he not be around any more
+2016-10-18 13:00:28	Stuzz	I thought I had a question for this audience, but I guess I was mistaken :(
+2016-10-18 13:00:57	las	Defcronyke, i'm not pessimistic because i think "it's just too hard"
+2016-10-18 13:01:12	Defcronyke	I didn't think you would find it hard
+2016-10-18 13:01:14	barjac	las: Ah that's an idea - http logs - I didn't think of that :) :)
+2016-10-18 13:01:24	las	Defcronyke, i'm pessimistic because (a) it actually IS hard (b) the payoff is small (b) the politics are awful
+2016-10-18 13:01:50	Defcronyke	las those are fair points, but just don't say it won't happen please
+2016-10-18 13:01:55	Defcronyke	you don't know
+2016-10-18 13:01:59	las	Defcronyke, no, I don't
+2016-10-18 13:02:19	las	Defcronyke, everything i say should be prefixed by "i think" or "i doubt". i am not trying to say "i know"
+2016-10-18 13:02:28	Defcronyke	then prefix it ;)
+2016-10-18 13:02:28		[13:02]
+2016-10-18 13:02:29	 *	rgareus reads the backlog
+2016-10-18 13:03:50	rgareus	barjac: https://community.ardour.org/src/
+2016-10-18 13:03:56	-->	naught101 (~naught101@14-202-176-150.static.tpgi.com.au) has joined #ardour
+2016-10-18 13:04:10	barjac	rgareus: Great, thanks :)
+2016-10-18 13:04:25	rgareus	barjac: it's uscan compatible (machine readable latest version)
+2016-10-18 13:06:02	rgareus	barjac: the uscan config is http://paste.debian.net/856636/ 
+2016-10-18 13:06:16	barjac	rgareus: wget https://community.ardour.org/src/Ardour-5.4.0.tar.bz2 works - that's all I need :)
+2016-10-18 13:06:42	rgareus	barjac: it'll stop working once 5.5 is out. you only get the latest version
+2016-10-18 13:06:43	<--	las (~las@2601:47:4300:4e00::8) has quit (Ping timeout: 245 seconds)
+2016-10-18 13:07:13	barjac	rgareus: but then wget https://community.ardour.org/src/Ardour-5.5.0.tar.bz2 will work - no?
+2016-10-18 13:07:28	rgareus	correct
+2016-10-18 13:07:31	Defcronyke	rgareus, if the current technologies make it unrealistic, the technologies will have to change once it becomes in high demand
+2016-10-18 13:07:51	rgareus	Defcronyke: yeah, never say never.
+2016-10-18 13:08:33	barjac	rgareus: It's for our spec file so the link is automatically tied to the version
+2016-10-18 13:09:42	rgareus	Defcronyke: "Siri, make me a pancake." :)
+2016-10-18 13:09:49	Defcronyke	rgareus: anyway, I'm not totally convinced that the OP on that isn't a troll
+2016-10-18 13:10:27	Defcronyke	seems like they start all the threads these days
+2016-10-18 13:10:53	tom-	plugins that somehow do hard work and then share their results is not totally absurd
+2016-10-18 13:11:56	tom-	i've just read the "plugins future" thread
+2016-10-18 13:12:07	Defcronyke	that's the one I'm talking about
+2016-10-18 13:12:15	rgareus	barjac: so that'll break once ardour updates, but the spec file is not updated -- unless you mirror the source
+2016-10-18 13:12:30	tom-	and was speculating Defcronyke was the one of that thread :)
+2016-10-18 13:12:33	rgareus	barjac: las-at-work had a strong opinion about not making old versions available, so that's what it's now.
+2016-10-18 13:12:42	Defcronyke	tom- i am Jeremy
+2016-10-18 13:12:58	Defcronyke	not the OP
+2016-10-18 13:13:13	tom-	okie
+2016-10-18 13:13:54	tom-	not a troll i think
+2016-10-18 13:14:38	tom-	maybe a bit fuzzy, more like a broad field of generic "networked nodes" stuff
+2016-10-18 13:14:53	barjac	rgareus: Well old versions will be in our svn so it's not an issue - just makes updates much easier for maintainer (me) when a new release comes out.
+2016-10-18 13:15:39	<--	Yruama_Lairba (~UTILISATE@mut38-h04-89-80-39-202.dsl.sta.abo.bbox.fr) has quit (Ping timeout: 244 seconds)
+2016-10-18 13:15:44	rgareus	barjac: yeah, the debian team wanted the same -- which is why I've hacked that /src/ page.  
+2016-10-18 13:16:09	<--	jpt9 (~jpt9@unaffiliated/jpt9) has left #ardour
+2016-10-18 13:16:18	barjac	rgareus: :) Thanks
+2016-10-18 13:16:48	rgareus	the tar ball is also the /last step of a release  (git tag is the very first;   debian wrongly watched github's tags)
+2016-10-18 13:17:22	rgareus	if something goes amiss after the tag ... release builds .. testing   ....  NO TAR BALL  ; start over  -> debian was screwed (happend with ardour 5.2)
+2016-10-18 13:20:53	rgareus	Defcronyke: personally, I'd also rather have a good overdrive and amp-sim first that can match the Fender Twin here.  Rather than a couple of crap plugins talking to each other...
+2016-10-18 13:20:53		[13:20]
+2016-10-18 13:21:34	rgareus	just to set priorities straight.
+2016-10-18 13:22:02	rgareus	and nylon guitar strings that don't need 5 hours or re-tuning after changing them... please!
+2016-10-18 13:22:06	Defcronyke	hehe okay
+2016-10-18 13:22:19	-->	dsr1204 (~dsr1204@99-111-235-130.lightspeed.cicril.sbcglobal.net) has joined #ardour
+2016-10-18 13:22:28	Defcronyke	yes unless our time on the earth was infinite, we have to consider priorities
+2016-10-18 13:24:19	rgareus	well, dreams and crazy ideas are important.
+2016-10-18 13:24:45	Defcronyke	so first priority should be solving death
+2016-10-18 13:25:11	Defcronyke	second, space colonization so the earth doesn't fill up too much from the first
+2016-10-18 13:25:18	rgareus	that'll create more problems than it's worth :)
+2016-10-18 13:27:44	<--	barjac (~barjac@host86-184-235-112.range86-184.btcentralplus.com) has quit (Remote host closed the connection)
+2016-10-18 13:27:47	-->	las (~las@2601:47:4300:4e00::8) has joined #ardour
+2016-10-18 13:28:13	tom-	from a plugins' host perspective, plugins that self-organize must look like a flash-mob :)
+2016-10-18 13:29:20	<--	ocbtec (~ocbtec@dslb-088-075-066-222.088.075.pools.vodafone-ip.de) has quit (Quit: leaving)
+2016-10-18 13:32:46	Defcronyke	solving death though... nah I'll just produce with Ardour
+2016-10-18 13:32:58	<--	las (~las@2601:47:4300:4e00::8) has quit (Ping timeout: 245 seconds)
+2016-10-18 13:38:00		[13:32]
+2016-10-18 13:43:17	-->	las (~las@2601:47:4300:4e00::8) has joined #ardour
+2016-10-18 13:49:00		[13:43]
+2016-10-18 13:50:30	<--	krabador (~krabador@unaffiliated/krabador) has quit (Quit: Leaving)
+2016-10-18 13:56:00		[13:50]
+2016-10-18 13:58:54	<--	slyrus (~chatzilla@107.201.4.172) has quit (Ping timeout: 252 seconds)
+2016-10-18 14:04:00		[13:58]
+2016-10-18 14:04:51	tom-	las: can you hear me?
+2016-10-18 14:10:00		[14:04]
