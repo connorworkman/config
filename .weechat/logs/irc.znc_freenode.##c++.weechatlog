@@ -3799,3 +3799,110 @@
 2016-10-18 14:19:10	-->	hurtletad (~filtered@5CEC365.rev.sefiber.dk) has joined ##c++
 2016-10-18 14:20:03	<--	mentoc (~wmerfalen@c-174-52-118-55.hsd1.ut.comcast.net) has quit (Read error: Connection reset by peer)
 2016-10-18 14:20:18	-->	kolobyte (~aaa@unaffiliated/kolobyte) has joined ##c++
+2016-10-18 14:22:28	w3z	because youre capturing a reference by reference ...
+2016-10-18 14:22:33	<--	Alucards (~Thunderbi@eduD25A.kent.ac.uk) has quit (Ping timeout: 252 seconds)
+2016-10-18 14:22:59	-->	mentoc (~wmerfalen@c-174-52-118-55.hsd1.ut.comcast.net) has joined ##c++
+2016-10-18 14:23:13	<--	xaxxon (~xaxxon@2601:602:9d00:d58b:c491:8c12:e82a:d853) has quit (Quit: Leaving)
+2016-10-18 14:23:57	-->	samik (~smukherje@netops-105.sfo1.bitgravity.com) has joined ##c++
+2016-10-18 14:25:01	<--	mentoc (~wmerfalen@c-174-52-118-55.hsd1.ut.comcast.net) has quit (Read error: Connection reset by peer)
+2016-10-18 14:25:12	pepper_chico	building up objects (lambdas) upon dead refs (ref arguments)
+2016-10-18 14:26:05	<--	davidstone (~davidston@184-96-182-164.hlrn.qwest.net) has quit (Quit: Leaving)
+2016-10-18 14:27:29	<--	hemz (8ed9c5d4@gateway/web/cgi-irc/kiwiirc.com/ip.142.217.197.212) has quit (Quit: http://www.kiwiirc.com/ - A hand crafted IRC client)
+2016-10-18 14:27:44	w3z	it doesnt look like the objects being referenced have expired though ...hmm
+2016-10-18 14:27:44		[14:27]
+2016-10-18 14:28:00	-->	mentoc (~wmerfalen@c-174-52-118-55.hsd1.ut.comcast.net) has joined ##c++
+2016-10-18 14:28:15	<--	peeps (~peepsalot@cpe-173-174-74-169.austin.res.rr.com) has quit (Quit: Leaving)
+2016-10-18 14:28:27	<--	Markow (~Markow@176.122.215.103) has quit (Remote host closed the connection)
+2016-10-18 14:29:19	pepper_chico	yeah...
+2016-10-18 14:29:39	pepper_chico	that's what I was trying to figure out as well
+2016-10-18 14:29:48	<--	Brklyn (~truthbk@38.122.226.210) has quit (Ping timeout: 260 seconds)
+2016-10-18 14:30:00	<--	mentoc (~wmerfalen@c-174-52-118-55.hsd1.ut.comcast.net) has quit (Read error: Connection reset by peer)
+2016-10-18 14:30:03	pepper_chico	but I guess that's like pushing "end-of-expression" too much
+2016-10-18 14:30:43	<--	pdtpatrick (~Patrick@199.201.64.139) has quit (Remote host closed the connection)
+2016-10-18 14:31:00	pepper_chico	I'm suspecting the inner subexpressions (building up lambda objects) are already end-of-expressions
+2016-10-18 14:31:00	w3z	oh this guy has [](auto x){ return 100*x; }
+2016-10-18 14:31:13	roko	So i get a corrupt memory error if i compile my program with g++-4.8 but not when I compile it with g++-5.4. Any idea what may be going wrong?
+2016-10-18 14:31:43	<--	Gustavo6046 (~Gustavo60@unaffiliated/gustavo6046) has quit (Quit: *rooonc* *yawn* *accidentally dropping a spore* *rooonc* zZzZzZ)
+2016-10-18 14:32:11	<--	Cohedrin (~textual@c-73-170-239-253.hsd1.ca.comcast.net) has quit (Quit: My Mac has gone to sleep. ZZZzzz…)
+2016-10-18 14:32:13	w3z	still not the problem ...anyway you can just drop the & in &f1,&f2 btw
+2016-10-18 14:32:22	-->	ReverseBlade (~user@213.74.212.180) has joined ##c++
+2016-10-18 14:32:47	-->	andyhuzhill (~Thunderbi@14.23.45.178) has joined ##c++
+2016-10-18 14:32:52	pepper_chico	still by value, though simpler
+2016-10-18 14:32:59	m_ben	w3z: even w/o the [](auto x){ return 100*x;} I'm getting a segfault
+2016-10-18 14:33:05	-->	mentoc (~wmerfalen@c-174-52-118-55.hsd1.ut.comcast.net) has joined ##c++
+2016-10-18 14:33:40	<--	degva (~degva@190.232.18.40) has quit (Ping timeout: 250 seconds)
+2016-10-18 14:34:13	pepper_chico	my suspicion is that the refs can live untion end of expression, but is it non-ub to carry refs in and out like that?
+2016-10-18 14:34:32	m_ben	it doesn't work with [f1,f2]
+2016-10-18 14:34:34	pepper_chico	I have never looked that up
+2016-10-18 14:34:38	<--	EvilPenguin (~EvilPengu@bur-inet-pa-1.disney.com) has quit (Ping timeout: 245 seconds)
+2016-10-18 14:34:42	-->	SunnyD_ (~SunnyD@cpe-72-178-78-211.hot.res.rr.com) has joined ##c++
+2016-10-18 14:34:47	<--	nilof (~saolof@92-32-80-134.tn.glocalnet.net) has quit (Remote host closed the connection)
+2016-10-18 14:34:50	<--	re1 (~reiser@178.220.1.2) has quit (Read error: Connection reset by peer)
+2016-10-18 14:35:11	-->	SwiftMatt (~Objective@130.253.27.134) has joined ##c++
+2016-10-18 14:35:11	<--	mentoc (~wmerfalen@c-174-52-118-55.hsd1.ut.comcast.net) has quit (Read error: Connection reset by peer)
+2016-10-18 14:35:42	m_ben	strange, it works with clang, but not with gcc: http://melpon.org/wandbox/permlink/TrBPwCnrJSFnmH6u
+2016-10-18 14:36:19	-->	drockwood94 (~ethan@2601:245:0:de2b::fb7f) has joined ##c++
+2016-10-18 14:36:32	pepper_chico	indeed
+2016-10-18 14:36:43	<--	mad_enz (~mad_enz@2607:f090:488d:2ab:f9c1:9559:d581:aa23) has quit (Ping timeout: 245 seconds)
+2016-10-18 14:36:50	pepper_chico	s/untion/until/
+2016-10-18 14:37:49	m_ben	and it also works if I forward the arguments into the lambdas as in [_f1=FWD(f1), _f2=FWD(f2)]
+2016-10-18 14:38:04	-->	mentoc (~wmerfalen@c-174-52-118-55.hsd1.ut.comcast.net) has joined ##c++
+2016-10-18 14:38:39	-->	Cohedrin (~textual@73.93.140.194) has joined ##c++
+2016-10-18 14:39:08	-->	whaletechno (~whaletech@unaffiliated/whaletechno) has joined ##c++
+2016-10-18 14:39:14	<--	heiner (~heiner@dslc-082-082-226-040.pools.arcor-ip.net) has quit (Disconnected by services)
+2016-10-18 14:39:24	-->	heiner (~heiner@dslb-178-005-128-118.178.005.pools.vodafone-ip.de) has joined ##c++
+2016-10-18 14:39:35	-->	pdtpatrick (~Patrick@73.109.61.47) has joined ##c++
+2016-10-18 14:39:39	pepper_chico	basically is this ok? {foo(foo(42));} template<class T> T &foo(T &&v) { return v;}
+2016-10-18 14:39:53	pepper_chico	{foo(foo(42));} template<class T> T &foo(T &&v) { return v;}
+2016-10-18 14:39:54	geordi	<no output>
+2016-10-18 14:40:22	pepper_chico	compiles, but I dunno whether it's not ub
+2016-10-18 14:40:22	<--	mentoc (~wmerfalen@c-174-52-118-55.hsd1.ut.comcast.net) has quit (Read error: Connection reset by peer)
+2016-10-18 14:40:28	<--	snover (~Adium@unaffiliated/snover) has quit (Quit: Leaving.)
+2016-10-18 14:40:57	pepper_chico	I know just foo(42) is fine
+2016-10-18 14:41:08	<--	cd80 (~bf3@46.166.190.185) has quit (Quit: leaving)
+2016-10-18 14:41:12	-->	hualet (~hualet@118.184.15.164) has joined ##c++
+2016-10-18 14:42:02	w3z	it breaks at 6
+2016-10-18 14:42:11	w3z	for your composition depth
+2016-10-18 14:42:33	<--	KAHR-Alpha (~Alpha@AReims-652-1-18-165.w90-18.abo.wanadoo.fr) has quit (Ping timeout: 256 seconds)
+2016-10-18 14:42:59	-->	mentoc (~wmerfalen@c-174-52-118-55.hsd1.ut.comcast.net) has joined ##c++
+2016-10-18 14:42:59		[14:42]
+2016-10-18 14:43:14	<--	leeter (~leeter@unaffiliated/leeter) has quit (Read error: Connection reset by peer)
+2016-10-18 14:43:26	<--	Henke37 (~Henrik@81-227-16-59-no133.bredband.skanova.com) has quit (Quit: ERR_SHUTDOWN)
+2016-10-18 14:43:45	m_ben	what breaks?
+2016-10-18 14:43:46	w3z	hmm, even thats not true
+2016-10-18 14:44:03	w3z	it wont segfault if you reduce the set of params for comp1 by 1
+2016-10-18 14:44:26	-->	matiu (~matiu@unaffiliated/matiu) has joined ##c++
+2016-10-18 14:44:28	m_ben	it also won't segfault if you remove f and g
+2016-10-18 14:44:35	w3z	but if you create a single comp1 of 6 args, and dont create comp2 it wont seg fault
+2016-10-18 14:45:01	w3z	i wont segfaut if you remove any of the elements from comp1 afaik
+2016-10-18 14:45:05	<--	matiu (~matiu@unaffiliated/matiu) has quit (Client Quit)
+2016-10-18 14:45:05	<--	mentoc (~wmerfalen@c-174-52-118-55.hsd1.ut.comcast.net) has quit (Read error: Connection reset by peer)
+2016-10-18 14:45:19	w3z	somethings happening when you compose comp1 with something else to generate comp2
+2016-10-18 14:46:01	w3z	auto comp1 = compose(f1,f,f,g,f1,f2,f3,fu); //still good
+2016-10-18 14:46:12	-->	Izhido (~Mutter@190.10.59.31) has joined ##c++
+2016-10-18 14:46:40	w3z	but as soon as you create comp2 and f1 has at least 5  elementes it breaks
+2016-10-18 14:46:53	<--	ezzieyguywuf (~wolfie@unaffiliated/ezzieyguywuf) has quit (Ping timeout: 252 seconds)
+2016-10-18 14:46:54	m_ben	did you also try to call it? as in comp1(1111)
+2016-10-18 14:46:59	w3z	yes
+2016-10-18 14:46:59	m_ben	it still segfaults
+2016-10-18 14:47:08	<--	pdtpatrick (~Patrick@73.109.61.47) has quit (Ping timeout: 265 seconds)
+2016-10-18 14:47:10	<--	Izhido (~Mutter@190.10.59.31) has quit (Client Quit)
+2016-10-18 14:47:27	w3z	std::cout << comp1(3) << std::endl;  604
+2016-10-18 14:47:28	-->	Izhido (~Mutter@190.10.59.31) has joined ##c++
+2016-10-18 14:47:34	m_ben	doesn't work when I try it
+2016-10-18 14:47:42	w3z	oh i switched to clang, lets see if gcc still breaks
+2016-10-18 14:48:00	-->	mentoc (~wmerfalen@c-174-52-118-55.hsd1.ut.comcast.net) has joined ##c++
+2016-10-18 14:48:08	m_ben	well, I tried it with gcc :)
+2016-10-18 14:48:08	w3z	ah, yes gcc breaks with the above, clang lives on
+2016-10-18 14:48:58	<--	Izhido (~Mutter@190.10.59.31) has quit (Remote host closed the connection)
+2016-10-18 14:49:41	-->	Izhido (~Mutter@190.10.59.31) has joined ##c++
+2016-10-18 14:52:35	-->	mad_enz (~mad_enz@2607:f090:488d:2ab:21ba:32cd:c4d1:daba) has joined ##c++
+2016-10-18 14:52:42	-->	pdtpatrick (~Patrick@2620:10d:c090:180::1:3df0) has joined ##c++
+2016-10-18 14:53:00	w3z	so gcc seg faults at 3
+2016-10-18 14:53:44	m_ben	and doesn't compile at all with [f1,f2]
+2016-10-18 14:54:09	w3z	?
+2016-10-18 14:54:58	pepper_chico	the fact of not compiling with [f1, f2] isn't as interesting to discover exactly why the compilers are segfaulting, is it their problem or your coding is relying on UB
+2016-10-18 14:55:23	m_ben	doesn't compile with 'return [f1,f2](auto&&... xs) { return f1(f2(FWD(xs)...)); }`
+2016-10-18 14:55:36	w3z	i see, it doesnt like the fact that f and g are function references
+2016-10-18 14:55:36	<--	mentoc (~wmerfalen@c-174-52-118-55.hsd1.ut.comcast.net) has quit (Read error: Connection reset by peer)
+2016-10-18 14:56:10	w3z	making them +f, and +g allows gcc to capture by value there

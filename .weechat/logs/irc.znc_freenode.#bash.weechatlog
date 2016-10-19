@@ -3925,3 +3925,67 @@
 2016-10-18 14:21:43	<--	jlf (~user@pdpc/supporter/active/jlf) has quit (Ping timeout: 245 seconds)
 2016-10-18 14:22:02	-->	led_belly (~led_belly@node-1w7jr9y6n4b6g22zpkaw1h31v.ipv6.telus.net) has joined #bash
 2016-10-18 14:22:03	johncarter	guys i've a strange problem with a bash script wrote by me, when I run it as normal with "sudo openvpn.sh start" it goes in the else statement of the if condition, if I run it as "sudo bash -x openvpn.sh start" it goes in the "then" statement of the if... How it is possible?
+2016-10-18 14:22:17	murder	I was thinking about using lsof indeed, just worried about excessive processing by invoking lsof for each of the 10+ files
+2016-10-18 14:22:25	johncarter	Here the script: https://paste.fedoraproject.org/455211/83607814/
+2016-10-18 14:23:09	izabera	murder: your computer can do more than 10 things at once
+2016-10-18 14:23:18	murder	because the shebang is sh
+2016-10-18 14:23:43	-->	hamsterpower (~hamsterpo@38.122.222.34) has joined #bash
+2016-10-18 14:24:26	johncarter	murder: what's the difference?
+2016-10-18 14:24:32	hamsterpower	hey people, when I do $file > ${file}.gz, I get Permission denied err but it still creates gz file for me. Can I just 2>/dev/null and not worry about it?
+2016-10-18 14:24:34	izabera	johncarter: what if condition?
+2016-10-18 14:24:52	<--	e14 (~e14@2601:184:4100:1ea6:44f8:cb49:c142:6fb0) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-10-18 14:24:57	<--	rominronin-WORK (~rominroni@212.186.112.18) has quit (Ping timeout: 260 seconds)
+2016-10-18 14:25:20	izabera	hamsterpower: why don't you try to understand what's causing the error?
+2016-10-18 14:25:26	johncarter	izabera: if [ "$(echo ${OPENVPN_PID})" == "" ] && [ "$(pgrep openvpn)" == "" ]  -- in the first function "start_openvpn"
+2016-10-18 14:25:50	llua	nah, just sweep the problem under the rug
+2016-10-18 14:26:08	llua	add a FIXME tho
+2016-10-18 14:26:16	hamsterpower	izabera: is it trying to remove the original file?
+2016-10-18 14:26:24	<--	mlandoceansky (~m_los_f@58.38.212.209) has quit (Ping timeout: 252 seconds)
+2016-10-18 14:26:24	hamsterpower	but I created that file...
+2016-10-18 14:26:53	izabera	your error message is very generic and i have no way to know what's going on in your system
+2016-10-18 14:26:59	-->	e14 (~e14@c-24-91-74-152.hsd1.ma.comcast.net) has joined #bash
+2016-10-18 14:27:10	<--	NEILPDX (47edc114@gateway/web/freenode/ip.71.237.193.20) has quit (Ping timeout: 260 seconds)
+2016-10-18 14:27:25	johncarter	izabera: here the variables used http://paste.fedoraproject.org/455212/14768368
+2016-10-18 14:27:41	johncarter	if you want
+2016-10-18 14:28:04	izabera	johncarter: you're setting OPENVPN_PID
+2016-10-18 14:28:13	izabera	can you see why your if is failing?
+2016-10-18 14:30:21	hamsterpower	oh I got it, me just being me
+2016-10-18 14:30:23	johncarter	izabera: no...
+2016-10-18 14:31:05	izabera	!-x > johncarter
+2016-10-18 14:31:05	greybot	johncarter: set -x (or ''bash -x myscript'') makes bash output the exact command that it will run after parsing and expansion. You can put ''set -x'' just before the code you want to debug (turn off with ''set +x''). To add more information, change PS4 first: eg. PS4='+($?) $BASH_SOURCE:$FUNCNAME:$LINENO:'
+2016-10-18 14:31:20	<--	zub1n (~zub1n@unaffiliated/zub1n) has quit (Ping timeout: 250 seconds)
+2016-10-18 14:32:12	<--	maroloccio (~weechat@2001:b07:6443:b979:d19f:f72b:8a7:25db) has quit (Ping timeout: 250 seconds)
+2016-10-18 14:32:22	johncarter	thanks, now try
+2016-10-18 14:32:22		[14:32]
+2016-10-18 14:32:42	<--	Kawaxi (kawaxi@gateway/shell/elitebnc/x-tptkcdozftqabxun) has quit (Changing host)
+2016-10-18 14:32:42	-->	Kawaxi (kawaxi@unaffiliated/kawaxi) has joined #bash
+2016-10-18 14:32:42	<--	Kawaxi (kawaxi@unaffiliated/kawaxi) has quit (Changing host)
+2016-10-18 14:32:42	-->	Kawaxi (kawaxi@gateway/shell/elitebnc/x-tptkcdozftqabxun) has joined #bash
+2016-10-18 14:38:00		[14:32]
+2016-10-18 14:38:25	<--	ArkaZeen (~ArkaZeen@rn-nat-129-97-131-0.dynamic.uwaterloo.ca) has quit
+2016-10-18 14:39:14	<--	heiner (~heiner@dslc-082-082-226-040.pools.arcor-ip.net) has quit (Disconnected by services)
+2016-10-18 14:39:39	-->	heiner (~heiner@dslb-178-005-128-118.178.005.pools.vodafone-ip.de) has joined #bash
+2016-10-18 14:40:43	johncarter	izabera: done, here's the logfile http://paste.fedoraproject.org/455216/37478147, It works but if I running it whitout bash -x it doesn't work...
+2016-10-18 14:41:07	hamsterpower	oh neat gzip doesn't change mtime of the file
+2016-10-18 14:41:08	<--	cd80 (~bf3@46.166.190.185) has quit (Quit: leaving)
+2016-10-18 14:41:26	-->	node9_ (~node9@177.154.139.195) has joined #bash
+2016-10-18 14:41:38	izabera	johncarter: is it hard to read the whole message that greybot wrote?
+2016-10-18 14:43:14	-->	mlandoceansky (~m_los_f@124.74.107.126) has joined #bash
+2016-10-18 14:43:32	<--	diogenese (diogenese@diogenese.velotech.net) has quit (Quit: Leaving)
+2016-10-18 14:43:52	-->	jottr (~jottr@unaffiliated/jottr) has joined #bash
+2016-10-18 14:44:01	-->	diogenese (diogenese@diogenese.velotech.net) has joined #bash
+2016-10-18 14:44:33	<--	node9 (~node9@CPE0c473dd24701-CM0c473dd24700.cpe.net.cable.rogers.com) has quit (Ping timeout: 252 seconds)
+2016-10-18 14:46:04	<--	mlandoceansky (~m_los_f@124.74.107.126) has quit (Read error: Connection reset by peer)
+2016-10-18 14:47:45	<--	_adb (~abelleni@host-184-175-142-71.host.ussignalcom.net) has left #bash
+2016-10-18 14:48:56	<--	jottr (~jottr@unaffiliated/jottr) has quit (Ping timeout: 260 seconds)
+2016-10-18 14:49:25	<--	felixn (~felixn@c-24-22-72-36.hsd1.or.comcast.net) has quit (Quit: Textual IRC Client: www.textualapp.com)
+2016-10-18 14:51:00	<--	telex (teletype@freeshell.de) has quit (Remote host closed the connection)
+2016-10-18 14:52:09	<--	Al3xG0 (~unix@unaffiliated/al3xg0) has quit (Remote host closed the connection)
+2016-10-18 14:52:31	-->	telex (teletype@freeshell.de) has joined #bash
+2016-10-18 14:52:50	-->	Gup (~Gup__@host86-130-29-94.range86-130.btcentralplus.com) has joined #bash
+2016-10-18 14:53:32	<--	flex (~flex@dslb-178-008-140-022.178.008.pools.vodafone-ip.de) has quit (Ping timeout: 260 seconds)
+2016-10-18 14:53:32		[14:53]
+2016-10-18 14:53:59	<--	joyceg (uid91416@gateway/web/irccloud.com/x-foyqsmszgirrqycj) has quit (Quit: Connection closed for inactivity)
+2016-10-18 14:54:01	-->	stacks88 (~x@167.114.219.244) has joined #bash
+2016-10-18 14:54:13	<--	Gup_ (~Gup__@host86-143-24-100.range86-143.btcentralplus.com) has quit (Ping timeout: 252 seconds)
+2016-10-18 14:54:28	-->	fatalhalt (~fatalhalt@c-73-246-193-29.hsd1.il.comcast.net) has joined #bash
