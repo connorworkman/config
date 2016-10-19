@@ -151,6 +151,7 @@ vnoremap <Leader>dp <Esc>:'<,'>diffput<CR>
 nnoremap <Leader>dw <Esc>:wincmd p<CR>
 
 " Allow saving of files as sudo when I forgot to start vim using sudo.
+command sudo silent w !sudo dd of=%
 cnoremap w!! silent w !sudo dd of=%
 "cnoremap w!! silent w !sudo tee %
 
