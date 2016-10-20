@@ -1936,3 +1936,297 @@
 2016-10-19 20:30:31	-->	klow (~textual@c-98-247-49-57.hsd1.wa.comcast.net) has joined #openvpn
 2016-10-19 20:32:48	-->	zulutango (~coughdrop@d27-99-34-168.bla1.nsw.optusnet.com.au) has joined #openvpn
 2016-10-19 20:34:44	--	irc: disconnected from server
+2016-10-19 20:40:05	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined #openvpn
+2016-10-19 20:40:05		[20:40]
+2016-10-19 20:40:05	--	Topic for #openvpn is "OpenVPN Community Support Channel || PLEASE read entire /topic || Current Release: 2.3.12 (23 Aug 2016) || First time? Use !welcome and !goal || Access-Server? /join #openvpn-as || Your problem is probably firewall. Really || TAP/bridging is almost always a bad idea || Vulninfo: !heartbleed !poodle !ovpnuke !sweet32 || Patience is a virtue"
+2016-10-19 20:40:05	--	Topic set by danhunsaker (sid145261@openvpn/corp/danhunsaker) on Sun, 09 Oct 2016 21:20:15
+2016-10-19 20:40:05	--	Channel #openvpn: 226 nicks (8 ops, 2 voices, 216 normals)
+2016-10-19 20:40:05	***	Buffer Playback...
+2016-10-19 20:40:05	@vpnHelper	[22:33:52] "xy" is http://mywiki.wooledge.org/XyProblem -- I want to do X, but I'm asking how to do Y... [22:33:52]
+2016-10-19 20:40:05	monsterco	[22:34:10] so many clients using shared keys can NOT simultaneously ping each other? [22:34:10]
+2016-10-19 20:40:05	Eugene	[22:34:12] You probably actually want to do TLS mode without doing client-certs... eg password or some other auth mechanism [22:34:12]
+2016-10-19 20:40:05	monsterco	[22:34:35] I want to simply my network - that's all [22:34:35]
+2016-10-19 20:40:05	Eugene	[22:34:40] In shared-key mode you don't have server/client, just 2 peers [22:34:40]
+2016-10-19 20:40:05	Eugene	[22:34:53] Your questions verbs don't exactly fit [22:34:53]
+2016-10-19 20:40:05	monsterco	[22:35:22] I have  a client with 3 offices and I want all to use SHARED keys but be able to ping each other - not sure what other way this can be said [22:35:22]
+2016-10-19 20:40:05	Eugene	[22:35:34] And you can't do that in shared-key mode with only one instance [22:35:34]
+2016-10-19 20:40:05	Eugene	[22:35:37] So, no. [22:35:37]
+2016-10-19 20:40:05	monsterco	[22:35:52] thanks [22:35:52]
+2016-10-19 20:40:05	Eugene	[22:35:54] You can(and should) use TLS mode, which can do that just fine [22:35:54]
+2016-10-19 20:40:05	monsterco	[23:20:34] Eugene - key management headache...anyhow, exploring PKI etc for all clients now anyways [23:20:34]
+2016-10-19 20:40:05	badloop	[02:10:33] trying to set up openvpn over tcp and i'm getting the following error when connecting:  "TCP_SIZE_ERROR" [02:10:33]
+2016-10-19 20:40:05	badloop	[02:11:01] "TCP packet extract error: embedded_packet_size_error" [02:11:01]
+2016-10-19 20:40:05	@danhunsaker	[02:16:23] !whatis speed 5 [02:16:23]
+2016-10-19 20:40:05	@vpnHelper	[02:16:23] less likely are issues with bad TCP window scaling or the sliding window; generally, don't 2nd guess TCP (in openvpn or your OS knobs) [02:16:23]
+2016-10-19 20:40:05	@danhunsaker	[02:16:51] !tcp [02:16:51]
+2016-10-19 20:40:05	@vpnHelper	[02:16:52] "tcp" is (#1) Sometimes you cannot avoid tunneling over tcp, but if you can avoid it, DO. http://sites.inka.de/~bigred/devel/tcp-tcp.html Why TCP Over TCP Is A Bad Idea., or (#2) http://www.openvpn.net/papers/BLUG-talk/14.html for a presentation by James Yonan (OpenVPN lead developer), or (#3) if you must use tcp, you likely want --tcp-nodelay [02:16:52]
+2016-10-19 20:40:05	badloop	[02:17:34] danhunsaker: fair enough... this was more of a last resort.  any good solutions for reverse proxying udp traffic? [02:17:34]
+2016-10-19 20:40:05	@danhunsaker	[02:17:56] !goal [02:17:56]
+2016-10-19 20:40:05	@vpnHelper	[02:17:58] "goal" is Please clearly state your goal for your vpn: example, I would like to access the lan behind the server , I would like to access the internet over my vpn , I just want a secure connection between 2 computers , etc [02:17:58]
+2016-10-19 20:40:05	badloop	[02:19:26] i want to run my openvpn in a VM behind my firewall, but i dont want to completely sacrifice the ports necessary for running openvpn, so I have a reverse proxy set up to forward the https traffic to my openvpn server [02:19:26]
+2016-10-19 20:40:05	badloop	[02:19:36] i'd like a similar solution for the udp traffic to the server [02:19:36]
+2016-10-19 20:40:05	badloop	[02:19:57] although i suppose i could just configure the port to be natted through my firewall directly to the openvpn server [02:19:57]
+2016-10-19 20:40:05	@danhunsaker	[02:26:55] That tends to be the preferred configuration, yes - port forwarding. [02:26:55]
+2016-10-19 20:40:05	@danhunsaker	[02:27:12] Which is why OpenVPN UDP has a predefined port. [02:27:12]
+2016-10-19 20:40:05	@danhunsaker	[02:27:25] That isn't used by anything else, by default. [02:27:25]
+2016-10-19 20:40:05	badloop	[02:29:26] yeah, its just not quite as elegant as proxying it via the dns name, but it works, so i'll just deal with it.  ;-) [02:29:26]
+2016-10-19 20:40:05	badloop	[02:29:32] thanks for the help [02:29:32]
+2016-10-19 20:40:05	@danhunsaker	[02:30:45] It's ... not exactly supported to do name-based proxying of a VPN ... [02:30:45]
+2016-10-19 20:40:05	@danhunsaker	[02:31:23] Not even sure where you'd get the name to do the proxying with in the first place...  Especially with UDP, being stateless as it is. [02:31:23]
+2016-10-19 20:40:05	badloop	[02:32:21] well really all thats required is being able to proxy the udp packets based on the dns name.... same as tcp... udp just isn't as easy to deal with as udp stream.  nginx supports it in their pro version, so hopefully it will come to the free version in early 2017 [02:32:21]
+2016-10-19 20:40:05	badloop	[02:32:32] https://www.nginx.com/blog/announcing-udp-load-balancing/ [02:32:32]
+2016-10-19 20:40:05	badloop	[02:32:47] wow brain fart, i meant to say that a udp stream isn't as easy to deal with as a TCP stream [02:32:47]
+2016-10-19 20:40:05	@danhunsaker	[02:33:07] Right, but where does the load balancer even get the DNS name from? [02:33:07]
+2016-10-19 20:40:05	badloop	[02:36:19] from the client? [02:36:19]
+2016-10-19 20:40:05	badloop	[02:37:15] example, i have web.host.com and vpn.host.com, both can connect to my firewall via port 80 .. my load balancer/proxy understands the dns name and can send the traffic to the correct server based on that name [02:37:15]
+2016-10-19 20:40:05	badloop	[02:37:48] a great example of why this is needed is if i had multiple vlans that i wanted to offer separate vpns for [02:37:48]
+2016-10-19 20:40:05	@danhunsaker	[02:38:02] And when does the client send that information, over the encrypted link, in a way that an HTTPS load balancer could understand it and forward the request to a non-HTTP backend? [02:38:02]
+2016-10-19 20:40:05	badloop	[02:38:37] the secure communication from the client is with the proxy, not the backend [02:38:37]
+2016-10-19 20:40:05	@danhunsaker	[02:38:47] Not in the case of a VPN. [02:38:47]
+2016-10-19 20:40:05	badloop	[02:39:00] fair point [02:39:00]
+2016-10-19 20:40:05	@danhunsaker	[02:39:14] And in fact, not in the case of most HTTPS proxies, either. [02:39:14]
+2016-10-19 20:40:05	@danhunsaker	[02:39:37] s/most/some/ [02:39:37]
+2016-10-19 20:40:05	@danhunsaker	[02:40:30] If the backend is responsible for providing its own certs, then the proxy just uses SNI to forward the request, still encrypted, to the correct backend server. [02:40:30]
+2016-10-19 20:40:05	@danhunsaker	[02:40:41] It doesn't have to, of course. [02:40:41]
+2016-10-19 20:40:05	@danhunsaker	[02:42:27] Theoretically, SNI could be used for VPN connections as well, but VPNs aren't generally tied to specific hostnames, as they generally aren't provided from shared servers, and even when they are, ports are specified manually either way, so changing ports is far simpler.  The VPN doesn't typically have any reason to care what hostname led a user to it. [02:42:27]
+2016-10-19 20:40:05	@danhunsaker	[02:42:50] So VPN clients don't actually send the SNI info in the first place. [02:42:50]
+2016-10-19 20:40:05	@danhunsaker	[02:44:43] To be clear, you do have a valid use case.  But.  Since you have to provide a configuration file for clients to connect anyway, it's generally preferred to put such customizations there or in a server-side client configuration directory (CCD). [02:44:43]
+2016-10-19 20:40:05	badloop	[02:52:09] fair enough [02:52:09]
+2016-10-19 20:40:05	***	Playback Complete.
+2016-10-19 20:40:18	--	irc: disconnected from server
+2016-10-20 00:25:35	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined #openvpn
+2016-10-20 00:25:35		[00:25]
+2016-10-20 00:25:35	--	Topic for #openvpn is "OpenVPN Community Support Channel || PLEASE read entire /topic || Current Release: 2.3.12 (23 Aug 2016) || First time? Use !welcome and !goal || Access-Server? /join #openvpn-as || Your problem is probably firewall. Really || TAP/bridging is almost always a bad idea || Vulninfo: !heartbleed !poodle !ovpnuke !sweet32 || Patience is a virtue"
+2016-10-20 00:25:35	--	Topic set by danhunsaker (sid145261@openvpn/corp/danhunsaker) on Sun, 09 Oct 2016 21:20:15
+2016-10-20 00:25:35	--	Channel #openvpn: 224 nicks (8 ops, 2 voices, 214 normals)
+2016-10-20 00:25:35	***	Buffer Playback...
+2016-10-20 00:25:35	monsterco	[22:34:35] I want to simply my network - that's all [22:34:35]
+2016-10-20 00:25:35	Eugene	[22:34:40] In shared-key mode you don't have server/client, just 2 peers [22:34:40]
+2016-10-20 00:25:35	Eugene	[22:34:53] Your questions verbs don't exactly fit [22:34:53]
+2016-10-20 00:25:35	monsterco	[22:35:22] I have  a client with 3 offices and I want all to use SHARED keys but be able to ping each other - not sure what other way this can be said [22:35:22]
+2016-10-20 00:25:35	Eugene	[22:35:34] And you can't do that in shared-key mode with only one instance [22:35:34]
+2016-10-20 00:25:35	Eugene	[22:35:37] So, no. [22:35:37]
+2016-10-20 00:25:35	monsterco	[22:35:52] thanks [22:35:52]
+2016-10-20 00:25:35	Eugene	[22:35:54] You can(and should) use TLS mode, which can do that just fine [22:35:54]
+2016-10-20 00:25:35	monsterco	[23:20:34] Eugene - key management headache...anyhow, exploring PKI etc for all clients now anyways [23:20:34]
+2016-10-20 00:25:35	badloop	[02:10:33] trying to set up openvpn over tcp and i'm getting the following error when connecting:  "TCP_SIZE_ERROR" [02:10:33]
+2016-10-20 00:25:35	badloop	[02:11:01] "TCP packet extract error: embedded_packet_size_error" [02:11:01]
+2016-10-20 00:25:35	@danhunsaker	[02:16:23] !whatis speed 5 [02:16:23]
+2016-10-20 00:25:35	@vpnHelper	[02:16:23] less likely are issues with bad TCP window scaling or the sliding window; generally, don't 2nd guess TCP (in openvpn or your OS knobs) [02:16:23]
+2016-10-20 00:25:35	@danhunsaker	[02:16:51] !tcp [02:16:51]
+2016-10-20 00:25:35	@vpnHelper	[02:16:52] "tcp" is (#1) Sometimes you cannot avoid tunneling over tcp, but if you can avoid it, DO. http://sites.inka.de/~bigred/devel/tcp-tcp.html Why TCP Over TCP Is A Bad Idea., or (#2) http://www.openvpn.net/papers/BLUG-talk/14.html for a presentation by James Yonan (OpenVPN lead developer), or (#3) if you must use tcp, you likely want --tcp-nodelay [02:16:52]
+2016-10-20 00:25:35	badloop	[02:17:34] danhunsaker: fair enough... this was more of a last resort.  any good solutions for reverse proxying udp traffic? [02:17:34]
+2016-10-20 00:25:35	@danhunsaker	[02:17:56] !goal [02:17:56]
+2016-10-20 00:25:35	@vpnHelper	[02:17:58] "goal" is Please clearly state your goal for your vpn: example, I would like to access the lan behind the server , I would like to access the internet over my vpn , I just want a secure connection between 2 computers , etc [02:17:58]
+2016-10-20 00:25:35	badloop	[02:19:26] i want to run my openvpn in a VM behind my firewall, but i dont want to completely sacrifice the ports necessary for running openvpn, so I have a reverse proxy set up to forward the https traffic to my openvpn server [02:19:26]
+2016-10-20 00:25:35	badloop	[02:19:36] i'd like a similar solution for the udp traffic to the server [02:19:36]
+2016-10-20 00:25:35	badloop	[02:19:57] although i suppose i could just configure the port to be natted through my firewall directly to the openvpn server [02:19:57]
+2016-10-20 00:25:35	@danhunsaker	[02:26:55] That tends to be the preferred configuration, yes - port forwarding. [02:26:55]
+2016-10-20 00:25:35	@danhunsaker	[02:27:12] Which is why OpenVPN UDP has a predefined port. [02:27:12]
+2016-10-20 00:25:35	@danhunsaker	[02:27:25] That isn't used by anything else, by default. [02:27:25]
+2016-10-20 00:25:35	badloop	[02:29:26] yeah, its just not quite as elegant as proxying it via the dns name, but it works, so i'll just deal with it.  ;-) [02:29:26]
+2016-10-20 00:25:35	badloop	[02:29:32] thanks for the help [02:29:32]
+2016-10-20 00:25:35	@danhunsaker	[02:30:45] It's ... not exactly supported to do name-based proxying of a VPN ... [02:30:45]
+2016-10-20 00:25:35	@danhunsaker	[02:31:23] Not even sure where you'd get the name to do the proxying with in the first place...  Especially with UDP, being stateless as it is. [02:31:23]
+2016-10-20 00:25:35	badloop	[02:32:21] well really all thats required is being able to proxy the udp packets based on the dns name.... same as tcp... udp just isn't as easy to deal with as udp stream.  nginx supports it in their pro version, so hopefully it will come to the free version in early 2017 [02:32:21]
+2016-10-20 00:25:35	badloop	[02:32:32] https://www.nginx.com/blog/announcing-udp-load-balancing/ [02:32:32]
+2016-10-20 00:25:35	badloop	[02:32:47] wow brain fart, i meant to say that a udp stream isn't as easy to deal with as a TCP stream [02:32:47]
+2016-10-20 00:25:35	@danhunsaker	[02:33:07] Right, but where does the load balancer even get the DNS name from? [02:33:07]
+2016-10-20 00:25:35	badloop	[02:36:19] from the client? [02:36:19]
+2016-10-20 00:25:35	badloop	[02:37:15] example, i have web.host.com and vpn.host.com, both can connect to my firewall via port 80 .. my load balancer/proxy understands the dns name and can send the traffic to the correct server based on that name [02:37:15]
+2016-10-20 00:25:35	badloop	[02:37:48] a great example of why this is needed is if i had multiple vlans that i wanted to offer separate vpns for [02:37:48]
+2016-10-20 00:25:35	@danhunsaker	[02:38:02] And when does the client send that information, over the encrypted link, in a way that an HTTPS load balancer could understand it and forward the request to a non-HTTP backend? [02:38:02]
+2016-10-20 00:25:35	badloop	[02:38:37] the secure communication from the client is with the proxy, not the backend [02:38:37]
+2016-10-20 00:25:35	@danhunsaker	[02:38:47] Not in the case of a VPN. [02:38:47]
+2016-10-20 00:25:35	badloop	[02:39:00] fair point [02:39:00]
+2016-10-20 00:25:35	@danhunsaker	[02:39:14] And in fact, not in the case of most HTTPS proxies, either. [02:39:14]
+2016-10-20 00:25:35	@danhunsaker	[02:39:37] s/most/some/ [02:39:37]
+2016-10-20 00:25:35	@danhunsaker	[02:40:30] If the backend is responsible for providing its own certs, then the proxy just uses SNI to forward the request, still encrypted, to the correct backend server. [02:40:30]
+2016-10-20 00:25:35	@danhunsaker	[02:40:41] It doesn't have to, of course. [02:40:41]
+2016-10-20 00:25:35	@danhunsaker	[02:42:27] Theoretically, SNI could be used for VPN connections as well, but VPNs aren't generally tied to specific hostnames, as they generally aren't provided from shared servers, and even when they are, ports are specified manually either way, so changing ports is far simpler.  The VPN doesn't typically have any reason to care what hostname led a user to it. [02:42:27]
+2016-10-20 00:25:35	@danhunsaker	[02:42:50] So VPN clients don't actually send the SNI info in the first place. [02:42:50]
+2016-10-20 00:25:35	@danhunsaker	[02:44:43] To be clear, you do have a valid use case.  But.  Since you have to provide a configuration file for clients to connect anyway, it's generally preferred to put such customizations there or in a server-side client configuration directory (CCD). [02:44:43]
+2016-10-20 00:25:35	badloop	[02:52:09] fair enough [02:52:09]
+2016-10-20 00:25:35	seoner	[10:16:16] hi [10:16:16]
+2016-10-20 00:25:35	seoner	[10:16:35] Option 'explicit-exit-notify' in [PUSH-OPTIONS]:7 is ignored by previous <connection> blocks [10:16:35]
+2016-10-20 00:25:35	seoner	[10:16:43] what is this about? [10:16:43]
+2016-10-20 00:25:35	***	Playback Complete.
+2016-10-20 00:26:42	--	Channel created on Sat, 25 Nov 2006 20:42:40
+2016-10-20 00:31:12	-->	Tenhi_ (~tenhi@static-ip-69-64-50-196.inaddr.ip-pool.com) has joined #openvpn
+2016-10-20 00:37:00		[00:31]
+2016-10-20 00:37:03	@dazo	seoner: the explicit-exit-notify feature ... or the ignoring?
+2016-10-20 00:37:28	seoner	dazo: both?
+2016-10-20 00:38:51	@dazo	explicit-exit-notify is used with the UDP protocol only.  As UDP is stateless, when a client disconnects it just stops sending packets to the server.  With this feature enabled, the last packet(s) it will send is a message telling the server "I'm closing now"
+2016-10-20 00:39:41	@dazo	For TCP, that is implicit as the TCP protocol is stateful ... so when the client shuts down, the TCP protocol ensures that the server knows the client closed the connection
+2016-10-20 00:39:52	@dazo	Regarding the ignoring ... I
+2016-10-20 00:40:04	@dazo	we'll need to see the config file to understand that better
+2016-10-20 00:40:06	@dazo	!configs
+2016-10-20 00:40:07	@vpnHelper	"configs" is (#1) please !paste your client and server configs (with comments removed, you can use `grep -vE '^#|^;|^$' server.conf`), also include which OS and ovpn version, or (#2) dont forget to include any ccd entries, or (#3) pfSense, see http://www.secure-computing.net/wiki/index.php/OpenVPN/pfSense to obtain your config, or (#4) remove inline private key or tls-auth key before posting
+2016-10-20 00:42:14	seoner	dazo:
+2016-10-20 00:42:16	seoner	I can send you the client conf but I have no access to the server conf. Since I do not run the server itself. Is this OK?
+2016-10-20 00:44:53	seoner	http://paste.debian.net/884215/ - Windows 7 - OpenVPN GUI 2.3.12 x86_64
+2016-10-20 00:45:18	@dazo	seoner: lets have a look on the client config first and see
+2016-10-20 00:45:49	seoner	dazo: sure
+2016-10-20 00:46:08	@dazo	seoner: can you change verb 1 to verb 4 and provide the log file?
+2016-10-20 00:46:30	@dazo	the complete log file from the beginning of the openvpn start and until it has initialized
+2016-10-20 00:46:32	@dazo	!logs
+2016-10-20 00:46:34	@vpnHelper	"logs" is (#1) please pastebin your logfiles from both client and server with verb set to 4 (only use 5 if asked), or (#2) In the Windows client(OpenVPN-GUI) right-click the status icon and pick View Log, or (#3) In the OS X client(Tunnelblick) right-click it and select Copy log text to clipboard, or (#4) if you dont know how to find your logs, see !logfile
+2016-10-20 00:47:05	<--	zulutango (~coughdrop@d27-99-34-168.bla1.nsw.optusnet.com.au) has quit (Ping timeout: 256 seconds)
+2016-10-20 00:51:01	@dazo	seoner: that's --verb 1 ... not --verb 4
+2016-10-20 00:51:47	seoner	dazo: dazo: then i will need restart. brb
+2016-10-20 00:52:07	<--	seoner (~usr@unaffiliated/sand3r) has quit (Quit: leaving)
+2016-10-20 00:52:07		[00:52]
+2016-10-20 00:52:36	<--	klow (~textual@c-98-247-49-57.hsd1.wa.comcast.net) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-10-20 00:55:54	-->	seoner (~usr@unaffiliated/sand3r) has joined #openvpn
+2016-10-20 01:01:00		[00:55]
+2016-10-20 01:01:54	-->	metachr0n (~nobody@gateway/vpn/privateinternetaccess/metachr0n) has joined #openvpn
+2016-10-20 01:03:10	seoner	dazo: done
+2016-10-20 01:07:27	-->	Azelphur (~Azelphur@znc.azelphur.com) has joined #openvpn
+2016-10-20 01:09:06	Azelphur	Hi folks, I'm trying to use a VPN on an ArchLinux server without routing all my traffic through the VPN. Instaed just binding the specific applications I want to that interface. I added route-noexec to my config, however running curl --interface tun0  -s http://whatismijnip.nl |cut -d " " -f 5 just hangs, forever. Any ideas?
+2016-10-20 01:09:34	-->	irco (~irco@HSI-KBW-134-3-111-4.hsi14.kabel-badenwuerttemberg.de) has joined #openvpn
+2016-10-20 01:11:34	@dazo	seoner: alright, so the --explicit-exit-notify is pushed from server ... which the client have to ignore, as there are two --remote lines in the config
+2016-10-20 01:12:17	@dazo	seoner: there's nothing you can do about it ... what you can do, is to just add 'explicit-exit-notify' in your own config ... this is anyhow a useful feature to add
+2016-10-20 01:13:48	@rob0	Azelphur, I guess you don't have the routes you need?  Sounds like you also needed policy routing.
+2016-10-20 01:14:16	Azelphur	rob0, I see, how would I enable that?
+2016-10-20 01:16:03	@rob0	well, that's impossible to say at this point, but first, do you not control the server?  If you don't want --redirect-gateway, don't enable it.
+2016-10-20 01:16:03		[01:16]
+2016-10-20 01:16:09	@rob0	!redirect
+2016-10-20 01:16:10	@vpnHelper	"redirect" is (#1) to make all inet traffic flow through the vpn, you will need --redirect-gateway (see !def1), as well as IP forwarding (see !ipforward) and NAT (see !nat) enabled on the server., or (#2) you may need to use a different dns server when redirecting gateway, see !dns or !pushdns, or (#3) if using ipv6 try: route-ipv6 2000::/3, or (#4) Handy troubleshooting flowchart:
+2016-10-20 01:16:11	@vpnHelper	http://pekster.sdf.org/misc/redirect.png
+2016-10-20 01:16:52	@rob0	"Routing all traffic through the VPN" is not an openvpn default setting.
+2016-10-20 01:17:01	seoner	dazo: Thanks. Is it a security risk to run without 'explicit-exit-notify'? What would it mean for me?
+2016-10-20 01:19:24	-->	metachr01 (~nobody@gateway/vpn/privateinternetaccess/metachr0n) has joined #openvpn
+2016-10-20 01:21:30	seoner	dazo: dazo: and why I have never seen this message before? it's the server host that change the server settings?
+2016-10-20 01:21:54	@dazo	seoner: you probably wouldn't notice much, but the service provider will know exactly when you stopped the VPN client and their OpenVPN server can release your session information quicker
+2016-10-20 01:22:18	@dazo	you probably haven't seen it before as they probably didn't push this setting earlier
+2016-10-20 01:22:29	@dazo	this option comes from the openvpn server to your client
+2016-10-20 01:22:36	<--	metachr01 (~nobody@gateway/vpn/privateinternetaccess/metachr0n) has quit (Client Quit)
+2016-10-20 01:22:37	<--	rich0 (~quassel@gentoo/developer/rich0) has quit (Remote host closed the connection)
+2016-10-20 01:24:30	seoner	dazo: i see
+2016-10-20 01:26:13	Azelphur	rob0, I don't control the server
+2016-10-20 01:27:05	seoner	dazo: dazo: one more question, What does the "block-outside-dns" mean? Does that mean I can not use "optional" DNS servers?
+2016-10-20 01:27:44	@dazo	seoner: it tries to avoid leaking DNS queries to other DNS servers outside the VPN
+2016-10-20 01:28:28	Azelphur	rob0, for reference, it's a VPN Service from torguard :)
+2016-10-20 01:28:55	@dazo	seoner: if you trust the VPN service, this is a good thing ... if you don't trust the VPN service .... well, then this is bad - but not worse than that you use their service anyhow to transport your data
+2016-10-20 01:29:28	@dazo	Azelphur: sounds like you need to get in touch with their support then
+2016-10-20 01:30:24	seoner	dazo:
+2016-10-20 01:30:29	Azelphur	dazo, suppose I could do, not sure I'd get anywhere though as I'm trying to do nonstandard use
+2016-10-20 01:30:33	seoner	If I use the DNS servers from opennicproject.org, what would it mean then?
+2016-10-20 01:30:38	seoner	dazo
+2016-10-20 01:31:22	-->	rich0_ (~quassel@gentoo/developer/rich0) has joined #openvpn
+2016-10-20 01:31:22		[01:31]
+2016-10-20 01:31:43	seoner	dazo: You can still use DNS servers from opennicproject.org with "block-outside-dns"?
+2016-10-20 01:37:00		[01:31]
+2016-10-20 01:37:10	@dazo	seoner: try and see what happens .... the block-outside-dns feature does update the Windows Firewall on the fly to control where DNS queries goes
+2016-10-20 01:37:43	@dazo	Azelphur: well, if you can't do anything with the server config ... there's not much you can do than to obey the usage your VPN service expects
+2016-10-20 01:40:59	Azelphur	dazo, according to the docs https://community.openvpn.net/openvpn/wiki/IgnoreRedirectGateway you're supposed to be able to ignore redirect gateway as I have done above, but it doesn't seem to work
+2016-10-20 01:41:02	@vpnHelper	Title: IgnoreRedirectGateway – OpenVPN Community (at community.openvpn.net)
+2016-10-20 01:41:11	@rob0	dazo, well, maybe, but you have to know a fair bit about advanced Linux networking (multiple route tables, policy routing.)
+2016-10-20 01:42:00	@rob0	seoner, I would think that "outside" DNS means outside the VPN?
+2016-10-20 01:42:02	Azelphur	well, it works in the sense that it stops my traffic going through the TUN interface, but any traffic that I do try and send through the tun interface seems to just hang
+2016-10-20 01:42:50	@rob0	Azelphur, yes, as far as we know you don't have any route or any rules for that.
+2016-10-20 01:43:02	@rob0	!route
+2016-10-20 01:43:03	@vpnHelper	"route" is (#1) http://www.secure-computing.net/wiki/index.php/OpenVPN/Routing or https://community.openvpn.net/openvpn/wiki/RoutedLans (same page mirrored) if you have lans behind openvpn, read it DONT SKIM IT, or (#2) READ IT DONT SKIM IT!, or (#3) See !tcpip for a basic networking guide, or (#4) See !serverlan or !clientlan for steps and troubleshooting flowcharts
+2016-10-20 01:43:10	@rob0	!lartc
+2016-10-20 01:43:11	@vpnHelper	"lartc" is (#1) LARTC is the de-facto guide to policy routing and QoS (tc, or traffic control) on Linux. http://lartc.org/howto/ . Policy routing in Ch. 4, QoS in Ch. 9. Start at the beginning if you're new to advanced routing on Linux, or (#2) there is also a writeup on policy routing at https://community.openvpn.net/openvpn/wiki/Concepts-PolicyRouting-Linux
+2016-10-20 01:44:10	Azelphur	I see, so basically I have to set up a route in order to disable the default gateway stuff :)
+2016-10-20 01:45:15	seoner	dazo rob0: well i use the DNS servers from opennicproject.org and the block-outside-dns feature. dnsleaktest.com say that I use the DNS servers from opennicproject.org but I do not use Windows Firewall but i use another firewall.
+2016-10-20 01:45:48	seoner	that is my situation
+2016-10-20 01:46:00	@rob0	Yes, lartc.org has a page about multiple uplinks that might be useful.
+2016-10-20 01:51:00		[01:46]
+2016-10-20 01:55:10	-->	rich0__ (~quassel@gentoo/developer/rich0) has joined #openvpn
+2016-10-20 01:55:58	<--	rich0_ (~quassel@gentoo/developer/rich0) has quit (Ping timeout: 250 seconds)
+2016-10-20 01:56:07	seoner	dazo: Is that something to worry about?
+2016-10-20 01:59:04	<--	shio (~shio@134.121.101.84.rev.sfr.net) has quit (Quit: Leaving)
+2016-10-20 02:05:00		[01:59]
+2016-10-20 02:06:25	<--	AlexRussia (~Alex@unaffiliated/alexrussia) has quit (Ping timeout: 256 seconds)
+2016-10-20 02:07:48	<--	jesopo (jess@lolnerd.net) has quit (Quit: et nos unum sumus)
+2016-10-20 02:08:31	-->	shio (~shio@134.121.101.84.rev.sfr.net) has joined #openvpn
+2016-10-20 02:14:00		[02:08]
+2016-10-20 02:15:24	-->	ExoUNX (~textual@unaffiliated/exounx) has joined #openvpn
+2016-10-20 02:21:00		[02:15]
+2016-10-20 02:27:22	seoner	dazo rob0: thank you. bye
+2016-10-20 02:31:12	<--	AndrewAlexMac (~andrewale@185.21.218.136) has quit (Ping timeout: 252 seconds)
+2016-10-20 02:31:47	<--	seoner (~usr@unaffiliated/sand3r) has quit (Ping timeout: 244 seconds)
+2016-10-20 02:35:59	-->	NoSleeves (uid180082@gateway/web/irccloud.com/x-cdvriikzzwxitdbo) has joined #openvpn
+2016-10-20 02:38:27	-->	davimore_ (~davimore@46.227.67.83) has joined #openvpn
+2016-10-20 02:38:27		[02:38]
+2016-10-20 02:41:21	-->	AndrewAlexMac (~andrewale@185.21.218.136) has joined #openvpn
+2016-10-20 02:41:36	<--	davimore__ (~davimore@46.227.67.83) has quit (Ping timeout: 260 seconds)
+2016-10-20 02:46:03	-->	AlexRussia (~Alex@unaffiliated/alexrussia) has joined #openvpn
+2016-10-20 02:52:00		[02:46]
+2016-10-20 03:12:29	<--	Noldorin (~noldorin@unaffiliated/noldorin) has quit (Quit: Textual IRC Client: www.textualapp.com)
+2016-10-20 03:12:29		[03:12]
+2016-10-20 03:17:13	-->	Noldorin (~noldorin@unaffiliated/noldorin) has joined #openvpn
+2016-10-20 03:19:45	Azelphur	rob0: hmm, is it actually possible to add a route that would allow me to run curl http://blah and have that go through eth0, and curl --interface tun0 http://blah and have that go through OpenVPN - without knowing ahead of time what blah might be?
+2016-10-20 03:20:31	-->	troulouliou_div2 (~troulouli@unaffiliated/troulouliou-div2/x-0271439) has joined #openvpn
+2016-10-20 03:22:18	-->	monsterco (~monsterco@70.50.209.133) has joined #openvpn
+2016-10-20 03:27:34	@rob0	you'd need an alternate route table and a rule to select that table, probably based on source IP
+2016-10-20 03:27:34		[03:27]
+2016-10-20 03:30:36	<--	Voldenet (~Voldenet@unaffiliated/voldenet) has quit (Ping timeout: 260 seconds)
+2016-10-20 03:32:41	-->	ScotchYip (~psychotic@ip-45-42-11-10.fibre.fibrestream.ca) has joined #openvpn
+2016-10-20 03:33:34	Azelphur	rob0: I see, I did read some stuff about setting specific users to go through the VPN, that would also be a good solution for me and may be easier?
+2016-10-20 03:35:09	<--	troulouliou_div2 (~troulouli@unaffiliated/troulouliou-div2/x-0271439) has quit (Ping timeout: 260 seconds)
+2016-10-20 03:35:55	-->	Voldenet (~Voldenet@unaffiliated/voldenet) has joined #openvpn
+2016-10-20 03:37:24	-->	MikeDebian (~ML@a81-84-80-8.cpe.netcabo.pt) has joined #openvpn
+2016-10-20 03:40:28	@rob0	If the users are on the VPN client, a possible alternate way to select the rule is by fwmark, and have iptables apply the fwmark using -m owner --uid-owner
+2016-10-20 03:40:47	@rob0	might have a few gotchas, doing it by source IP is easier
+2016-10-20 03:41:09	@rob0	but you can have more than one rule, too
+2016-10-20 03:41:27	Azelphur	I see
+2016-10-20 03:44:11	-->	navidr (uid112413@gateway/web/irccloud.com/x-qrsnbqcbfqnafkff) has joined #openvpn
+2016-10-20 03:44:11		[03:44]
+2016-10-20 03:50:41	-->	troulouliou_div2 (~troulouli@unaffiliated/troulouliou-div2/x-0271439) has joined #openvpn
+2016-10-20 03:52:29	-->	SviMik (~pIRCuser8@131-250-35-213.dyn.estpak.ee) has joined #openvpn
+2016-10-20 03:58:00		[03:52]
+2016-10-20 04:00:53	-->	mrpops2ko (~mrpops2ko@46.28.49.141.adsl.inet-telecom.org) has joined #openvpn
+2016-10-20 04:06:00		[04:00]
+2016-10-20 04:08:28	-->	davimore__ (~davimore@46.227.67.83) has joined #openvpn
+2016-10-20 04:10:51	-->	davimore (~davimore@46.227.67.83) has joined #openvpn
+2016-10-20 04:11:20	<--	davimore_ (~davimore@46.227.67.83) has quit (Ping timeout: 250 seconds)
+2016-10-20 04:13:04	<--	davimore__ (~davimore@46.227.67.83) has quit (Ping timeout: 250 seconds)
+2016-10-20 04:18:15	<--	metachr0n (~nobody@gateway/vpn/privateinternetaccess/metachr0n) has quit (Quit: WeeChat 1.5)
+2016-10-20 04:18:39	<--	skyroveRR (~skyroveRR@unaffiliated/skyroverr) has quit (Quit: skyroveRR)
+2016-10-20 04:24:00		[04:18]
+2016-10-20 04:24:00	-->	skyroveRR (~skyroveRR@unaffiliated/skyroverr) has joined #openvpn
+2016-10-20 04:28:02	<--	mrpops2ko (~mrpops2ko@46.28.49.141.adsl.inet-telecom.org) has quit (Ping timeout: 244 seconds)
+2016-10-20 04:34:00		[04:28]
+2016-10-20 04:40:09	-->	DWWagner (~dwagner@209.164.17.78) has joined #openvpn
+2016-10-20 04:40:50	DWWagner	!goal
+2016-10-20 04:40:52	@vpnHelper	"goal" is Please clearly state your goal for your vpn: example, I would like to access the lan behind the server , I would like to access the internet over my vpn , I just want a secure connection between 2 computers , etc
+2016-10-20 04:41:01	DWWagner	!welcome
+2016-10-20 04:41:02	@vpnHelper	"welcome" is (#1) Start by stating your !goal, such as 'I would like to access the internet over my vpn', or (#2) New to IRC? see the link in !ask, or (#3) We may need you to !paste your !logs and !configs and maybe !interface to help you, or (#4) See !howto for beginners, or (#5) See !route for lans behind openvpn, or (#6) !redirect for sending inet traffic through the server, or (#7) Also
+2016-10-20 04:41:03	@vpnHelper	interesting: !man !/30 !topology !iporder !sample !forum !wiki !mitm, or (#8) Don't use 192.168.1.0/24 or 192.168.0.0/24 (too much potential for conflict), or (#9) And again, if you think you need !tap, you're probably wrong
+2016-10-20 04:41:31	DWWagner	!tap
+2016-10-20 04:41:32	@vpnHelper	"tap" is (#1) http://openvpn.net/index.php/documentation/faq.html#bridge1, or (#2) http://openvpn.net/index.php/documentation/miscellaneous/ethernet-bridging.html, or (#3) Bridging looks like a good choice to people who don't know how to set up IP routing, but to learn routing is generally far better, or (#4) Useful for windows sharing (without wins server) and LAN gaming, anything where the
+2016-10-20 04:41:33	@vpnHelper	protocol uses MAC addresses instead of IP addresses, but essentially nowhere else, or (#5) For tun/tap and route/bridge comparing, see https://community.openvpn.net/openvpn/wiki/BridgingAndRouting
+2016-10-20 04:45:34	DWWagner	OK, I have a working bridged VPN, but I am getting duplicate ping replies from certain hosts and ARP seems to be slow sometimes.  *I* would prefer to use routed mode, but it is not my choice at the moment (working on a convincing argument).  Server-bridge is a Ubuntu 16.04 LTS box, issue happens when connecting from both Linux and windows hosts.  I've seen that this is a pretty frequent issue, but I haven't got a good solution yet.  Thanks!
+2016-10-20 04:46:28	-->	davimore_ (~davimore@46.227.67.83) has joined #openvpn
+2016-10-20 04:48:56	<--	monsterco (~monsterco@70.50.209.133) has quit (Quit: Going offline, see ya! (www.adiirc.com))
+2016-10-20 04:49:02	<--	davimore (~davimore@46.227.67.83) has quit (Ping timeout: 250 seconds)
+2016-10-20 04:49:02		[04:49]
+2016-10-20 04:55:45	<--	ade_b (~Ade@redhat/adeb) has quit (Quit: Too sexy for his shirt)
+2016-10-20 05:01:00		[04:55]
+2016-10-20 05:02:59	<--	Algernop (~Algernop@unaffiliated/algernop) has quit (Read error: Connection reset by peer)
+2016-10-20 05:04:10	-->	Algernop (~Algernop@unaffiliated/algernop) has joined #openvpn
+2016-10-20 05:10:00		[05:04]
+2016-10-20 05:14:13	<--	redpill (~redpill@unaffiliated/redpill) has quit (Read error: Connection reset by peer)
+2016-10-20 05:14:21	-->	gffa (~unknown@unaffiliated/gffa) has joined #openvpn
+2016-10-20 05:15:35	<--	shootbird (~quassel@beepbeep.serverpit.com) has quit (Ping timeout: 256 seconds)
+2016-10-20 05:18:55	-->	ade_b (~Ade@redhat/adeb) has joined #openvpn
+2016-10-20 05:23:40	-->	shootbird (~quassel@beepbeep.serverpit.com) has joined #openvpn
+2016-10-20 05:25:25	-->	jackbrown (~se@unaffiliated/jackbrown) has joined #openvpn
+2016-10-20 05:25:25		[05:25]
+2016-10-20 05:35:33	@dazo	DWWagner: what you are discribing is a common issue with bridging and tap
+2016-10-20 05:36:01	@dazo	DWWagner: the easiest way to fix it:  tun+routed mode
+2016-10-20 05:36:05	@dazo	really.
+2016-10-20 05:42:00		[05:36]
+2016-10-20 05:51:29	-->	SkinnyMelon (~SkinnyMel@54003371.dsl.pool.telekom.hu) has joined #openvpn
+2016-10-20 05:56:47	DWWagner	dazo: Yeah, that's what I figured.  I use tun for personal needs, but the boss selected tap for "ease", I think.  I'm working on worming out of that :)
+2016-10-20 05:57:15	DWWagner	Besides, we get mobile compatibility then, and I think that is a plus for us.
+2016-10-20 05:57:16		[05:57]
+2016-10-20 05:57:21	-->	shiriru (~shiriru@213.91.236.225) has joined #openvpn
+2016-10-20 06:03:00		[05:57]
+2016-10-20 06:03:01	-->	redpill (~redpill@unaffiliated/redpill) has joined #openvpn
+2016-10-20 06:03:17	-->	chamunks (chamunks@loki.entityreborn.com) has joined #openvpn
+2016-10-20 06:07:09	@dazo	*grmbl* ... restarting my own VPN and suddenly I start getting MULTI: bad source address from client [10.35.7.2], packet dropped
+2016-10-20 06:08:41	@dazo	the only configuration change I did was flipping the chroot and tmp-dir stuff ... plus testing out some stuff in the systemd unit file :/

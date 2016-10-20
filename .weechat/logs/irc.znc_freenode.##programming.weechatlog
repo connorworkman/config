@@ -11504,3 +11504,1305 @@
 2016-10-19 20:34:32	-->	Alina-malina (~Alina-mal@unaffiliated/alina-malina) has joined ##programming
 2016-10-19 20:34:37	-->	Dr-G (~Dr-G@unaffiliated/dr-g) has joined ##programming
 2016-10-19 20:34:42	--	irc: disconnected from server
+2016-10-19 20:40:03	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined ##programming
+2016-10-19 20:40:03		[20:40]
+2016-10-19 20:40:03	--	Topic for ##programming is "Community Chat & Programming/Computer Science Discussion | If you have a question, don't ask to ask, just ask! | Paste > 2 lines to a pastebin such as http://ideone.com | Channel rules: http://tinyurl.com/2lb-programming | Colour codes filtered again because idiets."
+2016-10-19 20:40:03	--	Topic set by unreal_ on Thu, 02 Jun 2016 00:53:27
+2016-10-19 20:40:03	--	Channel ##programming: 604 nicks (1 op, 6 voices, 597 normals)
+2016-10-19 20:40:03	***	Buffer Playback...
+2016-10-19 20:40:03	michael__	[05:58:50] What I posted above lets C and C++ users each call the correct style, but doesn't hide nsFunction, and is a little messy [05:58:50]
+2016-10-19 20:40:03	imode	[05:59:21] you could have it so that you only define nsFunction inside the compilation unit that you define Function in. [05:59:21]
+2016-10-19 20:40:03	imode	[05:59:44] (if you're using C++. otherwise, define nsFunction.) [05:59:44]
+2016-10-19 20:40:03	imode	[06:00:07] something like #ifndef __cplusplus void nsFunction(int x); #endif [06:00:07]
+2016-10-19 20:40:03	imode	[06:00:55] and in whatever.c, void nsFunction(int x) { <whatever> } namespace ns { inline void Function(x) { nsFunction(x); } } [06:00:55]
+2016-10-19 20:40:03	michael__	[06:00:57] But the C++ inline has to have access to the C functions, so I need to define them, then hide them [06:00:57]
+2016-10-19 20:40:03	imode	[06:01:19] here, let me type it up. [06:01:19]
+2016-10-19 20:40:03	michael__	[06:02:05] I could do it not inline, but the extra jump would be a performance penalty (Running on an embedded platform with not much resources) [06:02:05]
+2016-10-19 20:40:03	michael__	[06:03:01] I could define them only in their domain, and symlink header.c to header.cpp [06:03:01]
+2016-10-19 20:40:03	michael__	[06:03:09] And compile both separately [06:03:09]
+2016-10-19 20:40:03	imode	[06:03:30] one sec. [06:03:30]
+2016-10-19 20:40:03	imode	[06:03:42] http://pastebin.com/dAcxMgTf [06:03:42]
+2016-10-19 20:40:03	imode	[06:03:49] something like this. [06:03:49]
+2016-10-19 20:40:03	imode	[06:04:27] if you're using C++, nsFunction is never declared in the header, but it's used in the compilation unit. [06:04:27]
+2016-10-19 20:40:03	imode	[06:04:36] so other parts of your program can't see it. [06:04:36]
+2016-10-19 20:40:03	imode	[06:04:49] you'll always use ns::Function [06:04:49]
+2016-10-19 20:40:03	imode	[06:05:02] (big, large, glowing neon disclaimer: I'm not a C++ person.) [06:05:02]
+2016-10-19 20:40:03	michael__	[06:05:10] I thought inlines had to be defined in the header? [06:05:10]
+2016-10-19 20:40:03	imode	[06:05:25] I don't think so. let me double-check. [06:05:25]
+2016-10-19 20:40:03	imode	[06:06:16] https://stackoverflow.com/questions/5057021/why-are-c-inline-functions-in-the-header this answer gets it right. [06:06:16]
+2016-10-19 20:40:03	imode	[06:06:40] his comment that "because you don't declare it inline doesn't mean the compiler can't inline the function" is pretty accurate. the compiler is pretty smart. [06:06:40]
+2016-10-19 20:40:03	michael__	[06:07:55] I'm going to define them separately, and compile them twice.  Once as C, once as C++ [06:07:55]
+2016-10-19 20:40:03	 *	imode [06:08:05] shrugs. [06:08:05]
+2016-10-19 20:40:03	imode	[06:08:13] probably for the best. [06:08:13]
+2016-10-19 20:40:03	imode	[06:08:20] but this is one option. [06:08:20]
+2016-10-19 20:40:03	doxterpepper	[06:14:53] So what is a code linter? [06:14:53]
+2016-10-19 20:40:03	doxterpepper	[06:15:20] Is it basically to act as a compiler and catch bad code? [06:15:20]
+2016-10-19 20:40:03	liste	[06:16:28] doxterpepper: it analyzes your code and catches common mistakes and code smells [06:16:28]
+2016-10-19 20:40:03	Coldseeker	[06:16:39] doxterpepper: basically. it goes over code and looks no only for errors, but also suspect code, things that might be *valid* but tend to be bad signs. (eg, code smells, antipatterns) [06:16:39]
+2016-10-19 20:40:03	doxterpepper	[06:17:37] gotcha, that's what I figured. They seem really useful for interpreted languages like ruby or python, are they usually used much for compiled languages? [06:17:37]
+2016-10-19 20:40:03	Coldseeker	[06:18:03] doxterpepper: they orginally became popular back in the bad old days when compilers could barely detect flat out errors, and couldn't produce a useful error message if their life depended on it. these days they mainly focus on antipatterns, and yes interpreted languages. [06:18:03]
+2016-10-19 20:40:03	michael__	[06:18:33] Hmm, wonder what my code would look like.  I like using gotos [06:18:33]
+2016-10-19 20:40:03	Coldseeker	[06:19:11] doxterpepper: its not uncommon for modern linters to be combined with style and code policy enforcement. as well as "advanced" things like function contracts, limits, etc, etc. [06:19:11]
+2016-10-19 20:40:03	doxterpepper	[06:19:30] Gotcha, I had heard of linters but never really researched them too much. I was thinkgin about starting to use one on a rails project to try and catch silly mistakes we make [06:19:30]
+2016-10-19 20:40:03	doxterpepper	[06:20:05] Can you usually set what style to look for? [06:20:05]
+2016-10-19 20:40:03	Coldseeker	[06:21:01] doxterpepper: thats generally the idea, though it depends on the specific linter. [06:21:01]
+2016-10-19 20:40:03	liste	[06:21:33] doxterpepper: they're useful for both dynamic and static languages, but are extra useful for dynamic ones because there isn't a compiler catching errors [06:21:33]
+2016-10-19 20:40:03	Kitlith	[06:21:50] I use a linter built into my editor, so I don't have to compile before seeing my silly mistakes. [06:21:50]
+2016-10-19 20:40:03	Coldseeker	[06:22:09] (a linter that can't except at least some configuration generally isn't very useful; there is always an edge case where "bad" code is just the best way to go.) [06:22:09]
+2016-10-19 20:40:03	doxterpepper	[06:24:16] I think im going to look more into them. My team tends to do silly thins because they aren't as familiar with rails so it would proabably help some [06:24:16]
+2016-10-19 20:40:03	doxterpepper	[06:25:34] Anybody have suggestions for linters related to ruby and or ruby on rails? [06:25:34]
+2016-10-19 20:40:03	meshsmith	[06:27:36] General question: ruby or python for web app? [06:27:36]
+2016-10-19 20:40:03	imode	[06:28:01] lolcode, obviously. [06:28:01]
+2016-10-19 20:40:03	Shayanjm	[06:28:21] meshsmith: whichever you know right now. [06:28:21]
+2016-10-19 20:40:03	doxterpepper	[06:28:34] meshsmith: Both are good, basically do the same thing. I'd go with whichever you know better [06:28:34]
+2016-10-19 20:40:03	meshsmith	[06:29:25] k, more fun with japanese gems. [06:29:25]
+2016-10-19 20:40:03	rai_	[06:30:52] meshsmith: you can get webapps up quickly with ruby (really quickly) [06:30:52]
+2016-10-19 20:40:03	stoveeee	[06:32:54] Whats a good resource for going from AP Comp Sci level of Java knowledge to full scale Java developer? I've tried pet projects like a Statistics software analysis thing and I've fiddled with API access, but I don't feel like I know enough to give those tasks a serious shot [06:32:54]
+2016-10-19 20:40:03	meshsmith	[06:32:56] mostly just trying to write down what I have as an idea and slowly solidify it into something worth building. [06:32:56]
+2016-10-19 20:40:03	ayjay_t	[06:38:11] C is the best programming language [06:38:11]
+2016-10-19 20:40:03	***	Playback Complete.
+2016-10-19 20:40:18	--	irc: disconnected from server
+2016-10-20 00:25:32	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined ##programming
+2016-10-20 00:25:32		[00:25]
+2016-10-20 00:25:32	--	Topic for ##programming is "Community Chat & Programming/Computer Science Discussion | If you have a question, don't ask to ask, just ask! | Paste > 2 lines to a pastebin such as http://ideone.com | Channel rules: http://tinyurl.com/2lb-programming | Colour codes filtered again because idiets."
+2016-10-20 00:25:32	--	Topic set by unreal_ on Thu, 02 Jun 2016 00:53:27
+2016-10-20 00:25:32	--	Channel ##programming: 623 nicks (1 op, 7 voices, 615 normals)
+2016-10-20 00:25:32	***	Buffer Playback...
+2016-10-20 00:25:32	MisterSyntax	[09:56:48] others , civilians/employers/employees [09:56:48]
+2016-10-20 00:25:32	Belxjander	[09:57:16] mistersyntax:  been doing that over a long time already [09:57:16]
+2016-10-20 00:25:32	MisterSyntax	[09:57:21] probably military too so i dunno why i mentioned civilians instead of -all inhabitants- :p lol [09:57:21]
+2016-10-20 00:25:32	+exio4	[09:57:26] https://en.m.wikipedia.org/wiki/Siesta [09:57:26]
+2016-10-20 00:25:32	MisterSyntax	[09:58:14] at least as far as i know, people in the netherlands think a person is crazy or depressed if he/she takes a nap during the day [09:58:14]
+2016-10-20 00:25:32	Belxjander	[09:58:51] I would need to avoid there then [09:58:51]
+2016-10-20 00:25:32	sbrg	[09:58:51] lol [09:58:51]
+2016-10-20 00:25:32	MisterSyntax	[10:00:19] well if you don't mind what others think you can obv. just take a nap, however i wouldn't try that @ work, 'cuz then the boss quickly goes from "what a good employee" to "wouw that employee doesn't add any value" [10:00:19]
+2016-10-20 00:25:32	MisterSyntax	[10:00:56] ofc. you can still "take a walk" and take a nap somewhere else XD (like i do LOL ) [10:00:56]
+2016-10-20 00:25:32	jkbbwr	[10:01:12] Howdy all [10:01:12]
+2016-10-20 00:25:32	MisterSyntax	[10:01:22] howdy partner [10:01:22]
+2016-10-20 00:25:32	MisterSyntax	[10:01:46] how are them horses ? seen any indians i can turn in for a bounty? [10:01:46]
+2016-10-20 00:25:32	jkbbwr	[10:01:56] No. Don't do that [10:01:56]
+2016-10-20 00:25:32	 *	MisterSyntax [10:01:59] rofls [10:01:59]
+2016-10-20 00:25:32	+rindolf	[10:02:48] jkbbwr: hi, sup? [10:02:48]
+2016-10-20 00:25:32	MisterSyntax	[10:02:51] jkbbwr, haha ok ;) i like stereotyping sometimes lol [10:02:51]
+2016-10-20 00:25:32	jkbbwr	[10:06:14] rindolf: thinking about crypto [10:06:14]
+2016-10-20 00:25:32	+rindolf	[10:06:28] jkbbwr: ah. [10:06:28]
+2016-10-20 00:25:32	jkbbwr	[10:06:53] Its hard. [10:06:53]
+2016-10-20 00:25:32	MisterSyntax	[10:07:53] i'm gonna take a walk outside, so, afk. bb gl hf ppl [10:07:53]
+2016-10-20 00:25:32	+rindolf	[10:11:01] jkbbwr: http://www.catonmat.net/blog/musical-geek-friday-crypto/ - crypto! [10:11:01]
+2016-10-20 00:25:32	+rindolf	[10:11:18] MisterSyntax: ciao! Enjoy. [10:11:18]
+2016-10-20 00:25:32	+vendu	[10:11:35] hello :) [10:11:35]
+2016-10-20 00:25:32	+rindolf	[10:13:58] vendu: meow. [10:13:58]
+2016-10-20 00:25:32	+rindolf	[10:14:19] vendu: sup? [10:14:19]
+2016-10-20 00:25:32	+vendu	[10:14:24] rindolf, woof :) [10:14:24]
+2016-10-20 00:25:32	+vendu	[10:14:30] not much, just having coffee =) [10:14:30]
+2016-10-20 00:25:32	+vendu	[10:14:31] you? [10:14:31]
+2016-10-20 00:25:32	+rindolf	[10:14:34] vendu: roar! [10:14:34]
+2016-10-20 00:25:32	+rindolf	[10:14:58] vendu: I'm consolidating two Perl programs that diverged a little. [10:14:58]
+2016-10-20 00:25:32	+vendu	[10:15:06] :) [10:15:06]
+2016-10-20 00:25:32	+rindolf	[10:15:38] vendu: what kind of coffee are you having? [10:15:38]
+2016-10-20 00:25:32	+vendu	[10:15:51] hehe just standard stuff, nothing fancy :) [10:15:51]
+2016-10-20 00:25:32	 *	sbrg [10:15:54] is also having coffee [10:15:54]
+2016-10-20 00:25:32	sbrg	[10:16:11] rather bad coffee, because I ran out of the coffee in my coffee bin and then added some other coffee brand so it tastes .. meh [10:16:11]
+2016-10-20 00:25:32	+rindolf	[10:19:04] sbrg: ah. :-( [10:19:04]
+2016-10-20 00:25:32	sbrg	[10:19:11] coffee is coffee, though. [10:19:11]
+2016-10-20 00:25:32	+rindolf	[10:19:11] vendu: ah [10:19:11]
+2016-10-20 00:25:32	sbrg	[10:19:19] it's good even when it's bad [10:19:19]
+2016-10-20 00:25:32	sbrg	[10:19:29] it's like sex. i'd rather have bad sex than no sex at all. [10:19:29]
+2016-10-20 00:25:32	+rindolf	[10:21:03] vendu: any progress with your malloc? [10:21:03]
+2016-10-20 00:25:32	extor	[10:21:22] Anyone tried this, is it something exceptional? https://en.wikipedia.org/wiki/Understand_%28software%29 [10:21:22]
+2016-10-20 00:25:32	Aquazi	[10:23:08] Hey all, got a js program I did for an exercise [10:23:08]
+2016-10-20 00:25:32	Aquazi	[10:23:18] http://pastebin.com/xUAKadbb [10:23:18]
+2016-10-20 00:25:32	Aquazi	[10:24:05] The problem is, if the for loop finds an "A" it will put any word (of "Aquazi".length) into the hits array [10:24:05]
+2016-10-20 00:25:32	Aquazi	[10:24:28] What can I use to make sure I only have "Aquazi"? [10:24:28]
+2016-10-20 00:25:32	Batholith	[10:24:55] What would you call a function that takes an argument, asserts that the argument is not null, and then returns the argument? [10:24:55]
+2016-10-20 00:25:32	Aquazi	[10:25:13] e.g. if I add Arousal to the text, I'll also have "A","r","o","u","s","a", in the hits array [10:25:13]
+2016-10-20 00:25:32	Batholith	[10:25:15] EnsureNotNull? I'm really bad with names. [10:25:15]
+2016-10-20 00:25:32	liste	[10:25:23] Batholith: that exactly [10:25:23]
+2016-10-20 00:25:32	***	Playback Complete.
+2016-10-20 00:25:37	Batholith	liste: Thank you!
+2016-10-20 00:25:41	<--	BlackFish (BlackFish@cpc81297-enfi21-2-0-cust183.20-2.cable.virginm.net) has quit (Ping timeout: 260 seconds)
+2016-10-20 00:25:52	liste	though ensureNotNull may also be a function that doesn't return anything
+2016-10-20 00:25:54	<--	davasaurous (~dwillie@220.240.163.223) has quit (Quit: WeeChat 1.5)
+2016-10-20 00:26:14	--	Channel created on Sat, 03 Feb 2007 19:23:51
+2016-10-20 00:26:23	liste	but I guess it doesn't matter (:
+2016-10-20 00:26:31	-->	Vuks (~Vuks@unaffiliated/vuks69) has joined ##programming
+2016-10-20 00:26:33	liste	the returning one can be used either way
+2016-10-20 00:26:37	GeDaMo	Batholith: what will it return if it's null?
+2016-10-20 00:27:17	Batholith	GeDaMo: It doesn't.
+2016-10-20 00:27:41	GeDaMo	So it ends the program?
+2016-10-20 00:27:47	Batholith	GeDaMo: I use C++'s assert macro.
+2016-10-20 00:27:51	-->	Rounin (~david@ti0169a400-0661.bb.online.no) has joined ##programming
+2016-10-20 00:28:14	Batholith	So yeah, it basically shows an assert error and exits.
+2016-10-20 00:28:20	GeDaMo	Ok
+2016-10-20 00:29:25	-->	alhariel (~wolfcub@177.131.178.154) has joined ##programming
+2016-10-20 00:29:48	+rindolf	Batholith: aren't assert()s disabled in non-debug compiles?
+2016-10-20 00:30:09	<--	swex (~quassel@95-26-49-47.broadband.corbina.ru) has quit (Remote host closed the connection)
+2016-10-20 00:30:22	<--	DevAntoine (~DevAntoin@46.29.126.206) has quit (Ping timeout: 265 seconds)
+2016-10-20 00:30:45	Batholith	I'm too lazy to do { auto a = GetSomePointer(); auto b = UseThePointer(a); b->Foo(); } So I'm just gonna wrap the two calls with EnsureNotNull.
+2016-10-20 00:31:34	+rindolf	Aquazi: line 6 seems wrong because you compare a single character to a two-char string.
+2016-10-20 00:31:44	-->	Fixer (~quassel@213.179.252.8) has joined ##programming
+2016-10-20 00:32:02	Aquazi	yeah, it's "A"
+2016-10-20 00:32:14	Batholith	rindolf: Yeah, which should be okay for my usecase. If I need it in release, I'll figure something else out. :)
+2016-10-20 00:32:16	Aquazi	I misstyped, but that wasn't the prolem
+2016-10-20 00:32:44	meshsmith	anyone know where I can get dark color schemes for mIRC?
+2016-10-20 00:32:56	+rindolf	Aquazi: you can use .index(...)
+2016-10-20 00:33:05	Batholith	Have you googled "mIRC themes"?
+2016-10-20 00:33:14	Aquazi	meshsmith, use HexChat, seems the best for customizing imo
+2016-10-20 00:33:25	Aquazi	mIRC had nonamescript themes
+2016-10-20 00:34:29	meshsmith	I used a search engine to look for mIRC themes and they all seem to point to AdiIRC, not even HexChat.
+2016-10-20 00:34:41	moffz0r	liste: what?
+2016-10-20 00:34:54	liste	moffz0r: ?
+2016-10-20 00:35:08	moffz0r	<liste> moffz0r: maybe read the manual of some tech you're using, or just a good programming book?
+2016-10-20 00:35:16	meshsmith	I dont like HexChat, it is too simple to be honest.  Probably an acquired taste.
+2016-10-20 00:35:25	liste	moffz0r: sorry, wrong person
+2016-10-20 00:35:30	liste	it was meant for MisterSyntax
+2016-10-20 00:35:30	moffz0r	ah ok. np!
+2016-10-20 00:36:27	-->	M4l3z (~M4l3z@LFbn-1-4220-37.w92-169.abo.wanadoo.fr) has joined ##programming
+2016-10-20 00:36:56	<--	Derperperd (~anonymous@ool-4578ed66.dyn.optonline.net) has quit (Quit: Derperperd)
+2016-10-20 00:37:46	<--	Aquazi (~Aquazi@host65-199-dynamic.32-79-r.retail.telecomitalia.it) has quit (Quit: Leaving)
+2016-10-20 00:38:53	<--	kingplusplus (~kingplusp@154.16.63.192) has quit (Quit: kingplusplus)
+2016-10-20 00:40:39	-->	Aquazi (~Aquazi@host65-199-dynamic.32-79-r.retail.telecomitalia.it) has joined ##programming
+2016-10-20 00:40:39		[00:40]
+2016-10-20 00:40:50	<--	Aquazi (~Aquazi@host65-199-dynamic.32-79-r.retail.telecomitalia.it) has quit (Read error: Connection reset by peer)
+2016-10-20 00:41:14	-->	Aquazi (~Aquazi@host65-199-dynamic.32-79-r.retail.telecomitalia.it) has joined ##programming
+2016-10-20 00:41:38	<--	django_ (~django_@unaffiliated/django-/x-8345756) has quit (Quit: Leaving)
+2016-10-20 00:41:43	Belxjander	HexChat is a child of Xchat derived from AmIRC for AmigaOS so simplicity is there
+2016-10-20 00:41:49	-->	Aquazi_ (~Aquazi@host65-199-dynamic.32-79-r.retail.telecomitalia.it) has joined ##programming
+2016-10-20 00:41:52	<--	milesrout (~milesrout@unaffiliated/milesrout) has quit (Ping timeout: 256 seconds)
+2016-10-20 00:42:24	Batholith	Mozilla's coding guide line doesn't say what prefix, if any, to use with function pointers. :(
+2016-10-20 00:42:38	-->	Guest26 (~textual@nat3-minsk-pool-46-53-182-142.telecom.by) has joined ##programming
+2016-10-20 00:42:48	Batholith	I guess I'll go with the variable naming guideline then.
+2016-10-20 00:42:57	<--	RumpledElf (~rumpledel@drupal.org/user/173054/view) has quit (Quit: My iMac has gone to sleep. ZZZzzz…)
+2016-10-20 00:44:38	<--	Drlars (~Larson@a95-93-29-97.cpe.netcabo.pt) has quit (Quit: This computer has gone to sleep)
+2016-10-20 00:44:48	-->	DevAntoine (~DevAntoin@46.29.126.206) has joined ##programming
+2016-10-20 00:45:19	<--	hooo (~allplayer@195-230-46-96.adsl.highway.telekom.at) has quit (Quit: Leaving)
+2016-10-20 00:45:37	<--	maret (~peter@47.59.228.161) has quit (Quit: maret)
+2016-10-20 00:47:04	<--	Kol (Kol@S0106bcd1656621da.vc.shawcable.net) has quit (Ping timeout: 250 seconds)
+2016-10-20 00:48:44	<--	Karyon (~Karyon@unaffiliated/karyon) has quit (Ping timeout: 265 seconds)
+2016-10-20 00:49:27	-->	Drlars (~Larson@a95-93-29-97.cpe.netcabo.pt) has joined ##programming
+2016-10-20 00:51:11	-->	joebobjoe (~joebobjoe@104-136-31-251.res.bhn.net) has joined ##programming
+2016-10-20 00:52:52	Xatenev	Would you prefer if(1 == $count) or if($count == 1) ?
+2016-10-20 00:53:41	<--	yumaokao (~yumaokao@218-161-54-18.HINET-IP.hinet.net) has quit (Ping timeout: 260 seconds)
+2016-10-20 00:53:52	-->	lowin (~lowin@31.56.128.118) has joined ##programming
+2016-10-20 00:54:03	-->	aval (~aval@nat-wlan-uzh-89-206-64-008.uzh.ch) has joined ##programming
+2016-10-20 00:54:03	<--	Aquazi (~Aquazi@host65-199-dynamic.32-79-r.retail.telecomitalia.it) has quit (Quit: Leaving)
+2016-10-20 00:54:11	liste	Xatenev: the latter in general
+2016-10-20 00:54:23	Xatenev	liste: Its just a matter of preference tho or?
+2016-10-20 00:54:31	<--	lowin (~lowin@31.56.128.118) has quit (Max SendQ exceeded)
+2016-10-20 00:54:42	liste	Xatenev: it matters in languages where assignment is an expression
+2016-10-20 00:54:43	-->	purplex88 (~purplex88@unaffiliated/purplex88) has joined ##programming
+2016-10-20 00:54:44	<--	m-Schlitzer (~marcel@2001:1a80:30b4:2:b5cb:5b12:34f4:3738) has left ##programming ("WeeChat 1.4")
+2016-10-20 00:54:56	liste	if (5 = value) doesn't compile, if (value = 5) does
+2016-10-20 00:54:57	Xatenev	liste: Oh yeah when you make a spelling mistake it could lead to weird errors
+2016-10-20 00:55:13	liste	though that's caught by linters
+2016-10-20 00:55:16	-->	lowin (~lowin@31.56.128.118) has joined ##programming
+2016-10-20 00:55:16	<--	test1600 (~test1600@unaffiliated/test1600) has quit (Quit: Leaving)
+2016-10-20 00:55:23	<--	lowin (~lowin@31.56.128.118) has quit (Max SendQ exceeded)
+2016-10-20 00:55:33	liste	also, in Java, "string".equals(variable) can't throw a NPE
+2016-10-20 00:55:33	-->	betandr (~betandr@132.185.153.7) has joined ##programming
+2016-10-20 00:55:42	liste	variable.equals("string") can
+2016-10-20 00:55:42		[00:55]
+2016-10-20 00:56:02	<--	joebobjoe (~joebobjoe@104-136-31-251.res.bhn.net) has quit (Ping timeout: 256 seconds)
+2016-10-20 00:56:12	-->	lowin (~lowin@31.56.128.118) has joined ##programming
+2016-10-20 00:57:12	sbrg	ugh. i'm implementing a datastructure in Haskell that is described in a paper where the various algorithms assume the use of mutation/pointers, etc. the algorithms are mostly pretty elegant, except for some parts. like, the rebuilding part uses a "dummy node" and shit. ew.
+2016-10-20 00:57:27	sbrg	and it's proving pretty tough to grok exactly how I can not use a dummy node
+2016-10-20 00:58:04	<--	mintograde (~nn@47.202.59.248) has quit (Ping timeout: 260 seconds)
+2016-10-20 00:59:49	-->	systemfault (~rcyr@unaffiliated/rcyr) has joined ##programming
+2016-10-20 00:59:50	<--	LordKalma (~LordKalma@unaffiliated/lordkalma) has quit (Quit: Leaving)
+2016-10-20 01:00:14	<--	Drlars (~Larson@a95-93-29-97.cpe.netcabo.pt) has quit (Quit: This computer has gone to sleep)
+2016-10-20 01:00:34	Batholith	Is 4(%ebp) the same as *(ebp + 4)? I'm always confused by that.
+2016-10-20 01:00:37	jkbbwr	Hey people are using my interview question
+2016-10-20 01:00:54	GeDaMo	Batholith: yes, unless the instruction is lea
+2016-10-20 01:01:11	Batholith	Ah, thanks!
+2016-10-20 01:01:54	-->	metachr0n (~nobody@gateway/vpn/privateinternetaccess/metachr0n) has joined ##programming
+2016-10-20 01:02:44	Batholith	jkbbwr: What's your interview question?
+2016-10-20 01:02:54	<--	systemfault (~rcyr@unaffiliated/rcyr) has quit (Client Quit)
+2016-10-20 01:03:24	Rounin	Batholith: Does one use pointer arithmetic in assembly, or is that C?
+2016-10-20 01:03:45	Rounin	I think you can even use 4[array] or some obscure syntax to emulate the assembly one
+2016-10-20 01:03:52	Rounin	In C
+2016-10-20 01:05:02	jkbbwr	Batholith: Whats wrong with var.Equals("test")
+2016-10-20 01:05:15	Batholith	jkbbwr: Oh, heh.
+2016-10-20 01:05:46	Rounin	Ah... Null pointer exception?
+2016-10-20 01:05:52	velco	Batholith, 4(%ebp) is the att&t syntax for [%ebp+4] in intel syntax
+2016-10-20 01:05:57	Xatenev	jkbbwr: I hope thats only for java devs. :p
+2016-10-20 01:06:00	+rindolf	sbrg: why do you need to do it?
+2016-10-20 01:06:01	<--	Rashad (~chatzilla@46.185.153.126) has quit (Ping timeout: 244 seconds)
+2016-10-20 01:06:09	jkbbwr	Xatenev: yes it is
+2016-10-20 01:06:11	Rounin	I nearly automatically use "some object".equals(foo) if I can... Though C# has that nice ?? thing or whatever
+2016-10-20 01:06:11	jkbbwr	Remram: yes it can
+2016-10-20 01:06:18	-->	donught (~donught@108-77-18-22.lightspeed.sndgca.sbcglobal.net) has joined ##programming
+2016-10-20 01:06:19	liste	jkbbwr: also, upper case Equals (;:
+2016-10-20 01:06:23	<--	chiken (~chiken@60-242-215-61.static.tpgi.com.au) has quit (Quit: Leaving)
+2016-10-20 01:06:29	velco	err, without the % in the intel syntax
+2016-10-20 01:06:31	liste	(it has eyebrows)
+2016-10-20 01:06:31	Batholith	velco: Thanks. :)
+2016-10-20 01:06:37	GeDaMo	velco: except Intel syntax doesn't use % as a register prefix :P
+2016-10-20 01:06:44	velco	yeah
+2016-10-20 01:06:51	GeDaMo	Damnit! I was typing :P
+2016-10-20 01:07:10	<--	lowin (~lowin@31.56.128.118) has quit (Ping timeout: 250 seconds)
+2016-10-20 01:07:21	-->	Drlars (~Larson@a95-93-29-97.cpe.netcabo.pt) has joined ##programming
+2016-10-20 01:07:27	Xatenev	How long do you need to read some basic assembler code when your comfortable with what registers are and how they work GeDaMo velco
+2016-10-20 01:07:36	Xatenev	(when your confident in C aswell)
+2016-10-20 01:07:59	GeDaMo	Registers aren't complicated, they're just like a fixed set of variables in the CPU
+2016-10-20 01:08:15	velco	no idea, I coded in ASM before I knew C
+2016-10-20 01:08:22	Xatenev	velco: :p
+2016-10-20 01:08:28	GeDaMo	Hmmmm .... yeah, I think I did too
+2016-10-20 01:08:33	Xatenev	Im going the other way around
+2016-10-20 01:08:34	Xatenev	:p
+2016-10-20 01:08:52	GeDaMo	Addressing modes are a bit more complicated
+2016-10-20 01:08:56	velco	really, in Apple ][, there was BASIC and 6502 ASM
+2016-10-20 01:09:06	jkbbwr	liste: Too much C#
+2016-10-20 01:09:13	-->	irco (~irco@HSI-KBW-134-3-111-4.hsi14.kabel-badenwuerttemberg.de) has joined ##programming
+2016-10-20 01:09:16	-->	Sadale (~Sadale@unaffiliated/sadale) has joined ##programming
+2016-10-20 01:09:26	Rounin	There's also knowing assembly and knowing assembly... You can code in assembly just fine just knowing a select few instructions and using random registers for everything
+2016-10-20 01:09:29	velco	the UCSD Pascal required a memory extension board
+2016-10-20 01:09:35	Rounin	But to code efficient assembly is probably a very complex art form
+2016-10-20 01:10:04	Xatenev	velco: How old is that computer?
+2016-10-20 01:10:07	Xatenev	velco: I think I didnt live back then. lol
+2016-10-20 01:10:10	velco	Rounin, true, true, for out-of-order superscalar pipelines CPUS :)
+2016-10-20 01:10:22	GeDaMo	Don't forget cache!
+2016-10-20 01:11:26	Xatenev	Yea I got nothing to do so I went from web developing(php,node) towards C# => C(++) => assembler
+2016-10-20 01:11:26		[01:11]
+2016-10-20 01:11:28	Xatenev	lol
+2016-10-20 01:11:40	velco	Xatenev, 1986, although the computer model was from 1982, clone of something perhaps older :)
+2016-10-20 01:11:55	Rounin	You can be one of them full-stack developers that are so sought-after
+2016-10-20 01:11:56	GeDaMo	"assembly" is the language; "assembler" is the program which translates assembly to machine code
+2016-10-20 01:12:32	Xatenev	Rounin: Well - I am a fullstack developer right now
+2016-10-20 01:12:36	Xatenev	Rounin: and that sucks. xD
+2016-10-20 01:12:44	Xatenev	GeDaMo: Yeap, sorry for the terminology mistake
+2016-10-20 01:12:50	GeDaMo	Yeah, write all your websites in asm for speed! :P
+2016-10-20 01:12:50	Xatenev	velco: Yea I didnt live back then.. shit :P
+2016-10-20 01:12:53	Xatenev	GeDaMo: Web assembly ftw
+2016-10-20 01:13:17	Xatenev	http://i.imgur.com/INBvStO.png
+2016-10-20 01:13:26	GeDaMo	"A Reddit clone in two evenings and 666 lines of x86 assembly" https://www.reddit.com/r/programming/comments/b0a2z/a_reddit_clone_in_two_evenings_and_666_lines_of/
+2016-10-20 01:13:41	velco	the subtitle is spot on !
+2016-10-20 01:14:05	<--	havaisnom (~javaisnom@47.148.179.80) has left ##programming
+2016-10-20 01:15:51	aval	Xatenev: well, there _is_ https://en.wikipedia.org/wiki/WebAssembly
+2016-10-20 01:16:09	Xatenev	aval: Yes that was what I talked about?
+2016-10-20 01:16:19	+rindolf	aval: it's client-side though.
+2016-10-20 01:16:19	aval	ok :)
+2016-10-20 01:17:18	<--	meth (~meth@unaffiliated/meth) has quit (Quit: Snoochie Boochies!)
+2016-10-20 01:17:29	<--	SpaceDanceCJ (~Sasha@178.121.173.68) has quit (Quit: Going offline, see ya! (www.adiirc.com))
+2016-10-20 01:18:10	Xatenev	https://en.wikipedia.org/wiki/LOLCODE
+2016-10-20 01:18:18	Xatenev	lol
+2016-10-20 01:18:42	<--	dreams (~dreams@95.185.97.43) has quit (Ping timeout: 256 seconds)
+2016-10-20 01:19:00	jkbbwr	I have a 32mb l3 cache in my CPU
+2016-10-20 01:19:18	-->	Rashad (~chatzilla@86.108.3.27) has joined ##programming
+2016-10-20 01:19:24	-->	metachr01 (~nobody@gateway/vpn/privateinternetaccess/metachr0n) has joined ##programming
+2016-10-20 01:19:50	jkbbwr	Time to make some more registers
+2016-10-20 01:20:11	-->	krnel (~AndChat30@adsl-103.37.6.242.tellas.gr) has joined ##programming
+2016-10-20 01:21:10	krnel	Guys anyone here hacking into linux kernel?
+2016-10-20 01:21:12	-->	yumaokao (~yumaokao@218-161-54-18.HINET-IP.hinet.net) has joined ##programming
+2016-10-20 01:22:14	<--	Drlars (~Larson@a95-93-29-97.cpe.netcabo.pt) has quit (Quit: This computer has gone to sleep)
+2016-10-20 01:22:36	<--	metachr01 (~nobody@gateway/vpn/privateinternetaccess/metachr0n) has quit (Client Quit)
+2016-10-20 01:23:26	GeDaMo	Not recently
+2016-10-20 01:24:01	krnel	Mm i have a friend whos very intrested in it
+2016-10-20 01:24:19	krnel	I was thinking to recommend him freenode
+2016-10-20 01:24:19	-->	Karyon (~Karyon@unaffiliated/karyon) has joined ##programming
+2016-10-20 01:24:45	GeDaMo	Maybe ##kernel
+2016-10-20 01:25:20	<--	sh4z (lml@unaffiliated/sh4z) has quit (Read error: Connection reset by peer)
+2016-10-20 01:25:35	GeDaMo	Or ##linux
+2016-10-20 01:28:23	<--	koldbrutality (~koldbruta@108-90-227-153.lightspeed.sndgca.sbcglobal.net) has quit (Ping timeout: 245 seconds)
+2016-10-20 01:28:23		[01:28]
+2016-10-20 01:29:50	Rashad	Hey everyone.
+2016-10-20 01:30:16	GeDaMo	Hi Rashad :)
+2016-10-20 01:30:16	krnel	Cool thanks!!
+2016-10-20 01:30:30	GeDaMo	You can search channel names with /msg alis list *pattern*
+2016-10-20 01:30:38	Xatenev	Rashad: Hi
+2016-10-20 01:30:40	<--	yumaokao (~yumaokao@218-161-54-18.HINET-IP.hinet.net) has quit (Ping timeout: 260 seconds)
+2016-10-20 01:31:09	Rashad	I was thinking of making a "code bank" where you search for functions (say, "binary to decimal converter") and you get solutions in every language.
+2016-10-20 01:31:16	Rashad	Populated by the community.
+2016-10-20 01:31:28	Random832	Rashad: so like rosetta code?
+2016-10-20 01:31:34	Rashad	Let me search that.
+2016-10-20 01:31:36	<--	Karyon (~Karyon@unaffiliated/karyon) has quit (Ping timeout: 260 seconds)
+2016-10-20 01:31:45	<--	dhil (~dhil@dhcp-90-078.inf.ed.ac.uk) has quit (Ping timeout: 265 seconds)
+2016-10-20 01:32:16	Rashad	Kind of, but more straightforward...
+2016-10-20 01:33:07	Rashad	OldCoder from ##ventures criticized the idea as a "chicken and egg" problem: how do you convince users to contribute before there is some "critical mass" to drive these contributions.
+2016-10-20 01:33:13	Rashad	Which is fair.
+2016-10-20 01:33:24	<--	mahiru (~mahiru@217.175.38.170) has quit (Remote host closed the connection)
+2016-10-20 01:33:31	Rashad	It's a piece of cake to implement, though.
+2016-10-20 01:33:50	Rashad	You upvote user contributions and they get points for that, etc.
+2016-10-20 01:34:09	-->	Wizek__ (~Wizek@catv-89-132-132-110.catv.broadband.hu) has joined ##programming
+2016-10-20 01:34:24	Rashad	Anyway, the larger idea was to make a "component designer" since custom components is the future of the web for the next I don't know how many years.
+2016-10-20 01:34:30	GeDaMo	You persuade people to contribute by doing it wrong :P
+2016-10-20 01:34:45	<--	jeaye (~jeaye@unaffiliated/jeaye) has quit (Ping timeout: 260 seconds)
+2016-10-20 01:34:48	Rashad	Something visual but NOT wysiwyg.
+2016-10-20 01:35:52	Rashad	Basically, you write your component in Angular or vuejs, etc, then you expose an interface for the user to customize the component visually... for example you expose the following properties: background-color, margin, etc.
+2016-10-20 01:36:14	sbrg	rindolf: do what?
+2016-10-20 01:36:43	Rashad	And at the end you get an integrated solution for building modern web/mobile apps using a bank of components, functions, objects, etc. all in one environment.
+2016-10-20 01:37:03	-->	jeaye (~jeaye@unaffiliated/jeaye) has joined ##programming
+2016-10-20 01:37:04	Rashad	And even integrate the server side similar (but not exactly like) meteorjs.
+2016-10-20 01:37:31	Rashad	similar to.. *
+2016-10-20 01:37:32	+rindolf	sbrg: that data structure in Haskell.
+2016-10-20 01:37:47	sbrg	rindolf: I don't need to do it in haskell. I just prefer doing it
+2016-10-20 01:38:08	+rindolf	sbrg: why do you need to do it at all?
+2016-10-20 01:38:10	<--	justJanne (~justJanne@kuschku.de) has quit (Quit: So, if you can't find me, look to the western sky. As someone told me lately, everyone deserves a chance to fly.)
+2016-10-20 01:38:12	sbrg	course
+2016-10-20 01:38:16	sbrg	advanced datastructures
+2016-10-20 01:38:25	+rindolf	sbrg: ah.
+2016-10-20 01:38:33	+rindolf	sbrg: for uni?
+2016-10-20 01:38:35	sbrg	aye
+2016-10-20 01:38:50	-->	justJanne (~justJanne@kuschku.de) has joined ##programming
+2016-10-20 01:38:51	-->	dreams (~dreams@95.185.104.139) has joined ##programming
+2016-10-20 01:38:54	-->	Drlars (~Larson@a95-93-29-97.cpe.netcabo.pt) has joined ##programming
+2016-10-20 01:39:52	Rashad	Anyone would be interested in that kind of software I described earlier?
+2016-10-20 01:40:19	-->	TheRinger (~TheRinger@c-73-35-211-122.hsd1.wa.comcast.net) has joined ##programming
+2016-10-20 01:41:37	<--	krnel (~AndChat30@adsl-103.37.6.242.tellas.gr) has quit (Quit: Bye)
+2016-10-20 01:43:14	-->	marchelzo (~marchelzo@unaffiliated/marchelzo) has joined ##programming
+2016-10-20 01:44:45	<--	Haliucinas (~Haliucina@88-119-97-225.static.zebra.lt) has quit (Quit: Leaving)
+2016-10-20 01:44:45		[01:44]
+2016-10-20 01:45:16	-->	swex (~quassel@95-26-49-47.broadband.corbina.ru) has joined ##programming
+2016-10-20 01:46:26	<--	DevAntoine (~DevAntoin@46.29.126.206) has quit (Ping timeout: 250 seconds)
+2016-10-20 01:46:32	<--	obZen (~quassel@pool-74-108-121-127.nycmny.fios.verizon.net) has quit (Remote host closed the connection)
+2016-10-20 01:46:50	-->	brettdong (~brettdong@120.52.94.124) has joined ##programming
+2016-10-20 01:48:27	+rindolf	Rashad: regarding your idea - it does seem like a chicken and egg problem.
+2016-10-20 01:48:44	<--	Condor (~condor@unaffiliated/condor) has quit (Ping timeout: 256 seconds)
+2016-10-20 01:49:13	+rindolf	Rashad: and Rosetta Code seems too similar to it (although it does have a major licensing problem).
+2016-10-20 01:49:35	Rashad	And it's not as user friendly as I want it to be.
+2016-10-20 01:50:23	Rashad	Just think about it: almost everyone now is interested in making web/mobile apps...
+2016-10-20 01:50:57	<--	dreams (~dreams@95.185.104.139) has quit (Quit: WeeChat 0.3.8)
+2016-10-20 01:51:17	Rashad	If there is a "one place" to go for making an app including server and client side stuff it would make everyone's life a lot easier.
+2016-10-20 01:51:25	-->	adsc (1f180acd@gateway/web/freenode/ip.31.24.10.205) has joined ##programming
+2016-10-20 01:51:34	velco	to brighter future though mindless copy/paste ... this can only end well ...
+2016-10-20 01:51:38	velco	through*
+2016-10-20 01:52:03	adsc	it works for whole nations, so...
+2016-10-20 01:52:11	+rindolf	velco: heh.
+2016-10-20 01:52:27	<--	grim001 (~grim001@ip24-253-45-21.lv.lv.cox.net) has quit (Read error: Connection reset by peer)
+2016-10-20 01:54:01	-->	DevAntoine (~DevAntoin@46.29.126.206) has joined ##programming
+2016-10-20 01:54:48	+rindolf	velco: I met some people online who seemed to know how to construct larger algorithms from their programming languages' primitives.
+2016-10-20 01:55:01	velco	there are several (research) groups that work on ... let's call it next level code completion ... generating snippets of typical API usage, something like completion, but for several functions and with appropriate control flow, all based on machine learnign from existing code bases
+2016-10-20 01:55:24	-->	joebobjoe (~joebobjoe@104-136-31-251.res.bhn.net) has joined ##programming
+2016-10-20 01:55:32	-->	Karyon (~Karyon@unaffiliated/karyon) has joined ##programming
+2016-10-20 01:55:37	Rashad	People rely on AI much more than they should...
+2016-10-20 01:55:51	Rashad	AI will bring its own problems that are hard to solve on their account.
+2016-10-20 01:55:59	Rashad	Let me give you an example...
+2016-10-20 01:56:57	Rashad	Last year I worked as an intern for ADSC in Singapore... The problem my team was trying to solve is "sound source localization using microphone arrays"... The idea of making a robot able to detect where a certain sound came from.
+2016-10-20 01:57:04	-->	przemkovv-bis (~przemkovv@psocoptera.cie.put.poznan.pl) has joined ##programming
+2016-10-20 01:57:09	Rashad	Fundamentally it's a /physics/ problem.
+2016-10-20 01:57:31	Rashad	Without understanding sound waves, noise and reverberation no amount of AI will solve anything.
+2016-10-20 01:57:52	-->	yumaokao (~yumaokao@218-161-54-18.HINET-IP.hinet.net) has joined ##programming
+2016-10-20 01:58:11	Rashad	However, it's really difficult for a robot to localize sounds for some reason and no one is even halfway towards the final goal.
+2016-10-20 01:58:21	velco	did anyone try to solve sound source location using AI techniques ?
+2016-10-20 01:58:43	Rashad	But we know it is solvable because animals can do it with ears instead of microphones.... mind you... only TWO ears.
+2016-10-20 01:59:14	Rashad	The rule of thumb for microphone arrays is that you need a N microphones for N sound sources..
+2016-10-20 01:59:15	velco	what are ears if not a device which transforms sound waves in electrical signals, i.e. a microphone ?
+2016-10-20 01:59:36	monq	ears also control balance
+2016-10-20 01:59:40	Rashad	So my team was using "deep neural networks" to solve the problem.
+2016-10-20 01:59:55	velco	monq, that's more like accidental ;)
+2016-10-20 01:59:55		[01:59]
+2016-10-20 02:00:08	<--	joebobjoe (~joebobjoe@104-136-31-251.res.bhn.net) has quit (Ping timeout: 260 seconds)
+2016-10-20 02:00:10	monq	they are dual-function :p
+2016-10-20 02:00:11	Rashad	However I didn't know shit about that so I studied and simulated some mathematical solutions.
+2016-10-20 02:00:14	-->	mahiru (~mahiru@217.175.38.170) has joined ##programming
+2016-10-20 02:00:25	<--	jan64 (~jan64@afip46.neoplus.adsl.tpnet.pl) has quit (Ping timeout: 260 seconds)
+2016-10-20 02:00:38	Rashad	But I always kept in mind that it is a /physics/ problem before all and tried not to get distracted by the AI stuff....
+2016-10-20 02:01:25	Rashad	And at the end of my internship I discovered a simple suggestion for improving the accuracy of the microphone array which was just "shaking" the array like how a phone vibrates..
+2016-10-20 02:01:54	<--	Jellypuff (~Jellypuff@c-94-255-244-122.cust.bredband2.com) has quit (Quit: Jellypuff)
+2016-10-20 02:01:58	-->	Condor (~condor@unaffiliated/condor) has joined ##programming
+2016-10-20 02:02:02	<--	Karyon (~Karyon@unaffiliated/karyon) has quit (Ping timeout: 250 seconds)
+2016-10-20 02:02:48	<--	macobo (~quassel@6676-235b-7b0c-341e-d180-88ae-07d0-2001.dyn.estpak.ee) has quit (Read error: Connection reset by peer)
+2016-10-20 02:03:01	-->	macobo (~quassel@6676-235b-7b0c-341e-d180-88ae-07d0-2001.dyn.estpak.ee) has joined ##programming
+2016-10-20 02:03:19	Rashad	And I got this certificate for it: https://goo.gl/5u1jeK :)
+2016-10-20 02:03:51	velco	heh, cool!
+2016-10-20 02:03:52	Rashad	I had the idea, demonstrated it to my supervisor, then a few days later I crashed and had to be hospitalized for psychosis.
+2016-10-20 02:04:09	-->	synthroid (~synthroid@gateway/vpn/privateinternetaccess/synthroid) has joined ##programming
+2016-10-20 02:04:50	-->	Karyon (~Karyon@unaffiliated/karyon) has joined ##programming
+2016-10-20 02:04:55	Rashad	This is the letter I sent for the director of ADSC from the hospital few days after I was admitted: https://goo.gl/uG1bLh
+2016-10-20 02:05:10	Rashad	Because my supervisor was a bitch and didn't tell anyone about my idea...
+2016-10-20 02:05:19	-->	GenteelBen (GenteelBen@cpc70133-lutn12-2-0-cust324.9-3.cable.virginm.net) has joined ##programming
+2016-10-20 02:06:18	velco	yay, handwriting :D
+2016-10-20 02:06:33	velco	haven't seen for a long time ...
+2016-10-20 02:06:52	<--	iLembus (~iLembus@pix.uks-software.de) has quit (Quit: Leaving)
+2016-10-20 02:07:46	-->	Endarked (~endarked@82.145.93.150) has joined ##programming
+2016-10-20 02:09:09	-->	anonymuse (~anonymuse@cpe-66-108-150-242.nyc.res.rr.com) has joined ##programming
+2016-10-20 02:09:34	Rashad	After I flied back to Jordan, got hospitalized again, I sent an email to my supervisor asking if my idea had any merit experimentally, because the day I collected my stuff from their offices and signed my papers of the end of the internship, etc, I learned that they have constructed an array to test the idea...
+2016-10-20 02:09:39	Rashad	but I got no response.
+2016-10-20 02:09:48	Rashad	Basically they are not interested in involving me any more.
+2016-10-20 02:09:50	Rashad	:S
+2016-10-20 02:09:51	-->	betandr_ (~betandr@132.185.153.7) has joined ##programming
+2016-10-20 02:09:59	<--	betandr_ (~betandr@132.185.153.7) has quit (Read error: Connection reset by peer)
+2016-10-20 02:10:17	-->	betandr_ (~betandr@132.185.153.7) has joined ##programming
+2016-10-20 02:10:54	<--	betandr (~betandr@132.185.153.7) has quit (Ping timeout: 265 seconds)
+2016-10-20 02:13:10	Rashad	I understand that my internship was over and that they have competition, etc, but even before I got hospitalized there my supervisor kept dismissing my requests for experimentally testing the idea or even plugging it in in some advanced simulator not the one I made during my internship on matlab.
+2016-10-20 02:13:37	Rashad	I needed them much more than they needed me so I don't understand why wouldn't he didn't involve me at all in that...
+2016-10-20 02:14:04	<--	Endarked (~endarked@82.145.93.150) has quit (Ping timeout: 260 seconds)
+2016-10-20 02:14:42	-->	unl0ckd (~unl0ckd@unaffiliated/unl0ckd) has joined ##programming
+2016-10-20 02:15:11	-->	ExoUNX (~textual@unaffiliated/exounx) has joined ##programming
+2016-10-20 02:15:11		[02:15]
+2016-10-20 02:15:50	adsc	may be fear of insurance problems
+2016-10-20 02:15:51	jkbbwr	Bleh.
+2016-10-20 02:16:51	Rashad	adsc: In the internship contract my idea belongs to them and they already know that... I could have just hid it and not tell them about it and not have given them the right to own my idea.
+2016-10-20 02:16:52	adsc	some organisations try to seperate them as much as possible from people getting sick, especially if it's psychological illnesses, because they fear the work environment might be partly to blame for the illness
+2016-10-20 02:17:06	Rashad	I just wanted to do the science part, didn't care about "prizes" or anything.
+2016-10-20 02:17:19	jkbbwr	Rashad: Find a better research group
+2016-10-20 02:17:35	Rashad	jkbbwr: It was a 10-weeks internship program... nothing long term.
+2016-10-20 02:18:12	jkbbwr	Ok
+2016-10-20 02:20:17	<--	anonymuse (~anonymuse@cpe-66-108-150-242.nyc.res.rr.com) has quit (Remote host closed the connection)
+2016-10-20 02:23:18	<--	drakced (~snow@h125-058-084-090.user.starcat.ne.jp) has quit (Ping timeout: 256 seconds)
+2016-10-20 02:23:55	-->	Extreminador (~Extremina@a83-132-24-133.cpe.netcabo.pt) has joined ##programming
+2016-10-20 02:24:37	Rashad	So yeah, my point is don't use AI just because you are lazy.
+2016-10-20 02:25:58	adsc	why not? if it solves your problem with enough precision...
+2016-10-20 02:26:17	-->	WayToDoor (~milk.bott@193.55.29.169) has joined ##programming
+2016-10-20 02:26:17	Rashad	Btw yesterday I watched an excellent talk by Sam Harris on AI: https://www.youtube.com/watch?v=8nt3edWLgIg I highly recommend it.
+2016-10-20 02:27:00	Rashad	adsc: AI is wonderful but if your attitude is: "fuck it.. this is too hard... let me try if the computer can figure it out for me..."
+2016-10-20 02:27:08	Rashad	AI will bring its own hard problems to solve also.
+2016-10-20 02:27:14	adsc	of course
+2016-10-20 02:27:24	adsc	I was more thinking about pattern matching problems
+2016-10-20 02:28:21	-->	Dr-G (~Dr-G@unaffiliated/dr-g) has joined ##programming
+2016-10-20 02:28:50	adsc	btw. I don't really like the term AI...it is an umbrella term for a lot of different things that usually don't have that much to do with each other
+2016-10-20 02:29:44	Rashad	adsc is an INTP.
+2016-10-20 02:31:31	-->	modlin (~quassel@93.123.41.167) has joined ##programming
+2016-10-20 02:31:31		[02:31]
+2016-10-20 02:31:35	adsc	what is that supposed to mean?
+2016-10-20 02:33:55	<--	Bernzel (~Benzel@c83-255-193-182.bredband.comhem.se) has quit (Quit: QuitMessage Long Live Hendrix)
+2016-10-20 02:33:58	Rashad	You dismantled AI to its parts, instead of synthesizing its parts to the whole.
+2016-10-20 02:34:15	-->	Bernzel (~Benzel@c83-255-193-182.bredband.comhem.se) has joined ##programming
+2016-10-20 02:35:18	JX7P	According to this account, self-referential cognition
+2016-10-20 02:35:18	JX7P	benefits from the particularly elaborative
+2016-10-20 02:35:18	JX7P	nature of the self-construct, through which incoming
+2016-10-20 02:35:18	JX7P	information is comparatively easily encoded,
+2016-10-20 02:35:18	JX7P	organized, and enriched by extant knowledge
+2016-10-20 02:35:22	JX7P	whoops, wrong tab
+2016-10-20 02:36:32	-->	piou (~piou@unaffiliated/piou) has joined ##programming
+2016-10-20 02:36:54	-->	FullmetalSora (~Sora@52.83-245-81.adsl-dyn.isp.belgacom.be) has joined ##programming
+2016-10-20 02:36:57	<--	Karyon (~Karyon@unaffiliated/karyon) has quit (Ping timeout: 244 seconds)
+2016-10-20 02:37:08	-->	lowin (~lowin@151.245.124.26) has joined ##programming
+2016-10-20 02:37:10	<--	lowin (~lowin@151.245.124.26) has quit (Max SendQ exceeded)
+2016-10-20 02:37:33	FullmetalSora	Hello ! What should i prefer ? : Class members or passing arguments between internal methods?
+2016-10-20 02:38:00	adsc	Rashad: referencing through things that don't really form a whole as a whole has no real merit in my opinion
+2016-10-20 02:39:00	adsc	we can invent an umbrella term for tire + dog + waterfall + yarn, for example quabagloz, but this term will rarely be useful
+2016-10-20 02:40:40	+rindolf	FullmetalSora: hi.
+2016-10-20 02:40:49	FullmetalSora	hi rindolf  :)
+2016-10-20 02:40:58	<--	JohnMcClain (~John@209.222.0.124) has quit (Quit: Leaving.)
+2016-10-20 02:41:37	+rindolf	FullmetalSora: I normally prefer to use class members if I need to have .foo() passes param to .bar() which passes it to .baz()/etc.
+2016-10-20 02:42:31	FullmetalSora	In my case it's just the run method in java that must pass a few params to another method rindolf
+2016-10-20 02:43:30	-->	Stolous (~stolous@cam44-2-82-226-50-139.fbx.proxad.net) has joined ##programming
+2016-10-20 02:43:35	adsc	you shouldn't track state in class members if the state does not belong to the class
+2016-10-20 02:43:37	<--	aval (~aval@nat-wlan-uzh-89-206-64-008.uzh.ch) has quit (Ping timeout: 252 seconds)
+2016-10-20 02:44:54	<--	Drlars (~Larson@a95-93-29-97.cpe.netcabo.pt) has quit (Quit: This computer has gone to sleep)
+2016-10-20 02:45:04	+rindolf	adsc: well, you can put them in a separate object (not necessarily in the OOP sense).
+2016-10-20 02:47:18	-->	ezekielnoob (~ezekielno@120.28.121.179) has joined ##programming
+2016-10-20 02:47:18		[02:47]
+2016-10-20 02:48:01	<--	Rashad (~chatzilla@86.108.3.27) has quit (Ping timeout: 260 seconds)
+2016-10-20 02:48:18	-->	Drlars (~Larson@a95-93-29-97.cpe.netcabo.pt) has joined ##programming
+2016-10-20 02:48:23	<--	RedOrangeZ (~RedOrange@c-73-30-227-113.hsd1.pa.comcast.net) has quit (Ping timeout: 245 seconds)
+2016-10-20 02:48:34	-->	Twipply (~Dunno@cpc1-mapp10-2-0-cust641.12-4.cable.virginm.net) has joined ##programming
+2016-10-20 02:49:40	adsc	yeah, it might even make sense, then
+2016-10-20 02:50:16	-->	tdn (~tdn@syrah.adora.dk) has joined ##programming
+2016-10-20 02:50:56	<--	zaherdirkey (~zaherdirk@37.48.152.17) has quit (Read error: Connection reset by peer)
+2016-10-20 02:50:59	<--	WayToDoor (~milk.bott@193.55.29.169) has quit (Quit: Textual IRC Client: www.textualapp.com)
+2016-10-20 02:51:42	-->	EMChamp (~EMChamp@ae073194.dynamic.ppp.asahi-net.or.jp) has joined ##programming
+2016-10-20 02:51:52	<--	mjh (mjh@l0g1c.com) has left ##programming
+2016-10-20 02:52:27	<--	sagerdearia (~necrodear@unaffiliated/necrodearia) has quit (Ping timeout: 244 seconds)
+2016-10-20 02:53:15	-->	LordKalma (~LordKalma@unaffiliated/lordkalma) has joined ##programming
+2016-10-20 02:53:49	<--	mattallmill (~mattallmi@ip68-103-129-112.ks.ok.cox.net) has quit (Quit: Konversation terminated!)
+2016-10-20 02:54:25	-->	lowin (~lowin@151.245.124.26) has joined ##programming
+2016-10-20 02:55:00	-->	aval (~aval@nat-wlan-uzh-89-206-64-008.uzh.ch) has joined ##programming
+2016-10-20 02:55:55	-->	elelellelelelell (1f11fc1e@gateway/web/freenode/ip.31.17.252.30) has joined ##programming
+2016-10-20 02:56:20	-->	joebobjoe (~joebobjoe@104-136-31-251.res.bhn.net) has joined ##programming
+2016-10-20 02:56:21	-->	Jellypuff (~Jellypuff@c-94-255-244-122.cust.bredband2.com) has joined ##programming
+2016-10-20 02:56:52	elelellelelelell	hey, I am trying to change  an html attribute with a javascript function. but the normal .attribute = newAtt syntax doesnt seem to work... can anyone help ? http://pastebin.com/t11PJx6K
+2016-10-20 02:57:06	-->	concerti (~concerti@69.176.152.153) has joined ##programming
+2016-10-20 02:57:38	<--	Coldseeker (~Frosty@adsl-au-4-105.ozonline.com.au) has quit (Quit: The one good thing about repeating your mistakes is that you know when to cringe.)
+2016-10-20 02:57:39	+rindolf	elelellelelelell: that's not the way to do it with DOM elements.
+2016-10-20 02:57:51	-->	Tims_Tech (~Tims_Tech@unaffiliated/tims-tech) has joined ##programming
+2016-10-20 02:57:53	+rindolf	elelellelelelell: can you use jQuery?
+2016-10-20 02:57:57	elelellelelelell	no
+2016-10-20 02:58:14	elelellelelelell	its for a school project where we may only use client sided stuff
+2016-10-20 02:59:16	+rindolf	elelellelelelell: jQuery is client-side.
+2016-10-20 02:59:32	-->	meth (~meth@unaffiliated/meth) has joined ##programming
+2016-10-20 02:59:35	elelellelelelell	I didnt know that ;D
+2016-10-20 02:59:38	<--	marchelzo (~marchelzo@unaffiliated/marchelzo) has quit (Ping timeout: 245 seconds)
+2016-10-20 02:59:58	+rindolf	elelellelelelell: not sure if you're allowed to use it.
+2016-10-20 03:00:13	elelellelelelell	but everywhere I look online they say it should work with the .attribute stuff
+2016-10-20 03:00:22	<--	betandr_ (~betandr@132.185.153.7) has quit (Remote host closed the connection)
+2016-10-20 03:00:51	elelellelelelell	also .setAttribute("onclick","newatt")
+2016-10-20 03:00:51	-->	betandr (~betandr@132.185.153.7) has joined ##programming
+2016-10-20 03:00:52	+rindolf	elelellelelelell: anyway, look into .setAttribute(...)
+2016-10-20 03:01:00	elelellelelelell	doesnt work either :(
+2016-10-20 03:01:16	<--	joebobjoe (~joebobjoe@104-136-31-251.res.bhn.net) has quit (Ping timeout: 256 seconds)
+2016-10-20 03:01:17	<--	xtrntr (~Thunderbi@138.75.199.236) has quit (Ping timeout: 256 seconds)
+2016-10-20 03:01:26	<--	tlaxkit (~Thunderbi@92.185.154.236) has quit (Remote host closed the connection)
+2016-10-20 03:01:39	adsc	so you don't see the onclick value changing in the inspector?
+2016-10-20 03:01:45	-->	tlaxkit (~Thunderbi@92.185.154.236) has joined ##programming
+2016-10-20 03:01:51	-->	marchelzo (~marchelzo@unaffiliated/marchelzo) has joined ##programming
+2016-10-20 03:02:50	elelellelelelell	yes, it doesnt see mto change
+2016-10-20 03:02:50		[03:02]
+2016-10-20 03:03:12	elelellelelelell	i am using chrome for debugging, not sure if that is relevant
+2016-10-20 03:03:35	-->	xtrntr (~Thunderbi@138.75.199.236) has joined ##programming
+2016-10-20 03:03:47	-->	besna (~bebna@p5DC144D3.dip0.t-ipconnect.de) has joined ##programming
+2016-10-20 03:05:16	-->	anonymuse (~anonymuse@ip-64-134-65-172.public.wayport.net) has joined ##programming
+2016-10-20 03:05:17	<--	betandr (~betandr@132.185.153.7) has quit (Ping timeout: 260 seconds)
+2016-10-20 03:06:20	elelellelelelell	oh,it gives me a new error: y.setAttribute is not a function
+2016-10-20 03:07:13	<--	modlin (~quassel@93.123.41.167) has quit (Remote host closed the connection)
+2016-10-20 03:08:15	-->	Smeef (~deathonat@unaffiliated/smeef) has joined ##programming
+2016-10-20 03:08:17	-->	Karyon (~Karyon@unaffiliated/karyon) has joined ##programming
+2016-10-20 03:08:25	<--	brettdong (~brettdong@120.52.94.124) has quit
+2016-10-20 03:08:33	-->	armistace (~armistace@29.06.01a8.ip4.static.sl-reverse.com) has joined ##programming
+2016-10-20 03:09:54	<--	anonymuse (~anonymuse@ip-64-134-65-172.public.wayport.net) has quit (Remote host closed the connection)
+2016-10-20 03:10:24	elelellelelelell	any1 able to help?
+2016-10-20 03:10:38	elelellelelelell	setAttribute is not a function  is my new error
+2016-10-20 03:12:16	adsc	well, it works for me
+2016-10-20 03:12:22	adsc	not sure what you're doing wrong
+2016-10-20 03:12:29	<--	Noldorin (~noldorin@unaffiliated/noldorin) has quit (Quit: Textual IRC Client: www.textualapp.com)
+2016-10-20 03:12:35	-->	Topothemorning (~Topothemo@pool-108-31-2-94.washdc.fios.verizon.net) has joined ##programming
+2016-10-20 03:13:04	adsc	e.g. on the google page i open dev tools
+2016-10-20 03:13:21	elelellelelelell	you can visit the page and see for yourself :D
+2016-10-20 03:13:42	elelellelelelell	https://goo.gl/l0Hdo0
+2016-10-20 03:14:01	<--	Dreg (~Dreg@fr33project.org) has left ##programming
+2016-10-20 03:14:41	elelellelelelell	so, I have a Button made by html. when I click that button it executes some script, and changes the new direction of the button (onclick())
+2016-10-20 03:15:04	elelellelelelell	but that direction doesnt change when I execute the function
+2016-10-20 03:16:02	adsc	on that page, if i open dev tools, then in the js console, i enter: var a = document.getElementById("option1"); a.setAttribute("onclick", "alert('hello')");
+2016-10-20 03:16:15	adsc	when I then click on option1, the alert appears
+2016-10-20 03:16:30	-->	govg (~govg@unaffiliated/govg) has joined ##programming
+2016-10-20 03:17:15	elelellelelelell	yes, but it should target the element with the class name "button1"
+2016-10-20 03:17:24	<--	meth (~meth@unaffiliated/meth) has quit (Quit: Snoochie Boochies!)
+2016-10-20 03:17:27	-->	m4l3z_ (~m4l3z@2a01cb040226f2004cdbbf8e8ac36cb2.ipv6.abo.wanadoo.fr) has joined ##programming
+2016-10-20 03:17:43	-->	Tazmain (~Tazmain@41.161.94.2) has joined ##programming
+2016-10-20 03:17:50	Xatenev	Nice feeling when you apply for way too much money and still get invited!
+2016-10-20 03:17:50		[03:17]
+2016-10-20 03:17:50	-->	Noldorin (~noldorin@unaffiliated/noldorin) has joined ##programming
+2016-10-20 03:17:50	Xatenev	lol
+2016-10-20 03:18:15	adsc	elelellelelelell: well, you seem to have different problems, because the .setAttribute clearly works
+2016-10-20 03:18:31	-->	SpaceDanceCJ (~Sasha@178.121.173.68) has joined ##programming
+2016-10-20 03:18:31	elelellelelelell	yes, maybe not on a class?
+2016-10-20 03:18:33	<--	Xatenev (~Gerd@pd907f4d2.dip0.t-ipconnect.de) has left ##programming
+2016-10-20 03:18:43	adsc	yes, it works on any attribute
+2016-10-20 03:18:52	-->	Haliucinas (~Haliucina@88-119-97-225.static.zebra.lt) has joined ##programming
+2016-10-20 03:18:55	<--	Haliucinas (~Haliucina@88-119-97-225.static.zebra.lt) has quit (Remote host closed the connection)
+2016-10-20 03:18:59	elelellelelelell	it even gives me the error message that setattribute is not a function
+2016-10-20 03:19:12	elelellelelelell	onclick is an attribute right?
+2016-10-20 03:19:13	adsc	setattribute isn't, but setAttribute is
+2016-10-20 03:19:21	elelellelelelell	yes, i meant that :D
+2016-10-20 03:19:22	-->	guest100 (b64d6cb8@gateway/web/freenode/ip.182.77.108.184) has joined ##programming
+2016-10-20 03:19:30	adsc	and yes, onclick is an attribute
+2016-10-20 03:19:45	<--	Condor (~condor@unaffiliated/condor) has quit (Ping timeout: 260 seconds)
+2016-10-20 03:19:49	elelellelelelell	var y = document.getElementsByClassName("button1"); 	y.setAttribute("onclick", "alert('hello')");
+2016-10-20 03:19:50	guest100	If i push_back() an element in a vector, then is it added by reference or value. I mean if i then change value of variable pushed back, will it affect the element of vector?
+2016-10-20 03:19:56	ciniglio	elelellelelelell: are you using getElementsByClassName? If so, you have an array, and need to apply to the item
+2016-10-20 03:20:02	ciniglio	i.e. y[0].setAttribute...
+2016-10-20 03:20:08	elelellelelelell	wait....
+2016-10-20 03:20:12	adsc	elelellelelelell: y is an array of elements
+2016-10-20 03:20:23	adsc	if you use getElementsByCLassName
+2016-10-20 03:20:32	adsc	note the "s" after Element
+2016-10-20 03:20:39	elelellelelelell	duuuuuuuude
+2016-10-20 03:20:41	elelellelelelell	thanks
+2016-10-20 03:20:42	elelellelelelell	:D
+2016-10-20 03:20:42	adsc	it indicates it will return multiples
+2016-10-20 03:21:12	elelellelelelell	it works
+2016-10-20 03:22:31	adsc	guest100: sounds like an easy test
+2016-10-20 03:22:47	Random832	it's a NodeList or an HTMLCollection, not an array
+2016-10-20 03:22:56	elelellelelelell	just 10/10
+2016-10-20 03:22:58	adsc	yeah, true
+2016-10-20 03:23:01	elelellelelelell	thanks a lot :DDDD
+2016-10-20 03:23:06	elelellelelelell	saved my ass
+2016-10-20 03:23:30	<--	Karyon (~Karyon@unaffiliated/karyon) has quit (Ping timeout: 250 seconds)
+2016-10-20 03:23:43	guest100	adsc: plz tell a way to change values in vector also if i change original values?
+2016-10-20 03:23:45	Random832	(MDN says it's an HTMLCollection, W3C says it's a NodeList - I think the only difference is that an HTMLCollection can only contain HTMLElements.
+2016-10-20 03:24:48	adsc	guest100: get a reference to the vectored value somehow?
+2016-10-20 03:25:10	-->	sagerdearia (~necrodear@unaffiliated/necrodearia) has joined ##programming
+2016-10-20 03:25:21	guest100	adsc: plz elaborate how
+2016-10-20 03:25:29	-->	k299 (~chatzilla@219.85.192.20) has joined ##programming
+2016-10-20 03:26:31	-->	Rashad (~chatzilla@46.185.153.126) has joined ##programming
+2016-10-20 03:26:35	guest100	i dont want to specifically change the value like calling a function to change the value.
+2016-10-20 03:26:49	guest100	i want it to be automatically changed just as the case in references
+2016-10-20 03:27:18	+rindolf	guest100: use another level of indirection! ;-)
+2016-10-20 03:27:47	guest100	rindolf: so you mean i should use a vector of pointers to the values
+2016-10-20 03:29:04	-->	_0x736e (~desnesn@32.59.181.66) has joined ##programming
+2016-10-20 03:30:07	-->	dhil (~dhil@dhcp-90-078.inf.ed.ac.uk) has joined ##programming
+2016-10-20 03:30:41	+rindolf	guest100: possibly.
+2016-10-20 03:30:44	guest100	any other better way? as i dont like using pointers much
+2016-10-20 03:31:08	<--	LordKalma (~LordKalma@unaffiliated/lordkalma) has quit (Ping timeout: 260 seconds)
+2016-10-20 03:31:24	+rindolf	guest100: what's wrong with pointers?
+2016-10-20 03:31:45	ciniglio	guest100: use an array of size 1? basically a disguised pointer, but may be easier to deal with depending on language
+2016-10-20 03:32:04	+rindolf	guest100: is this C or C++?
+2016-10-20 03:32:18	guest100	C++
+2016-10-20 03:32:42	+rindolf	guest100: ah, then C++ has some pointer-wrapping templates
+2016-10-20 03:32:56	+rindolf	unique_ptr / shared_ptr / etc.
+2016-10-20 03:32:56		[03:32]
+2016-10-20 03:33:27	-->	Condor (~condor@unaffiliated/condor) has joined ##programming
+2016-10-20 03:33:37	-->	jan64 (~jan64@afip46.neoplus.adsl.tpnet.pl) has joined ##programming
+2016-10-20 03:33:45	guest100	so which one is best suited for the purpose?
+2016-10-20 03:34:58	+rindolf	guest100: unique_ptr is normally preferable I think, but not always possible to use.
+2016-10-20 03:35:09	+rindolf	okuu: here?
+2016-10-20 03:35:35	guest100	rindolf: ok thank you, will check if its feasible
+2016-10-20 03:35:46	 *	guest100 thanks all for the help
+2016-10-20 03:36:49	+rindolf	guest100: you're welcome .
+2016-10-20 03:37:07	+rindolf	guest100: note that I'm not a C++ expert.
+2016-10-20 03:37:48	<--	FullmetalSora (~Sora@52.83-245-81.adsl-dyn.isp.belgacom.be) has quit (Quit: Leaving)
+2016-10-20 03:39:09	-->	joebobjoe (~joebobjoe@104-136-31-251.res.bhn.net) has joined ##programming
+2016-10-20 03:41:49	<--	elelellelelelell (1f11fc1e@gateway/web/freenode/ip.31.17.252.30) has quit (Quit: Page closed)
+2016-10-20 03:43:47	<--	viscera (~viscera@unaffiliated/viscera) has quit (Quit: WeeChat 1.6)
+2016-10-20 03:44:04	-->	aajjbb (~aajjbb@177.193.235.201) has joined ##programming
+2016-10-20 03:44:12	<--	joebobjoe (~joebobjoe@104-136-31-251.res.bhn.net) has quit (Ping timeout: 260 seconds)
+2016-10-20 03:44:20	<--	shovel_boss (~shovel_bo@unaffiliated/shovel-boss/x-4881665) has quit (Read error: Connection reset by peer)
+2016-10-20 03:45:25	<--	armistace (~armistace@29.06.01a8.ip4.static.sl-reverse.com) has quit (Ping timeout: 260 seconds)
+2016-10-20 03:48:13	-->	lf94 (~lf94@unaffiliated/lf94) has joined ##programming
+2016-10-20 03:48:13		[03:48]
+2016-10-20 03:48:49	-->	duggiefresh (~duggiefre@97-126-34-89.tukw.qwest.net) has joined ##programming
+2016-10-20 03:49:17	<--	marchelzo (~marchelzo@unaffiliated/marchelzo) has quit (Ping timeout: 244 seconds)
+2016-10-20 03:50:50	-->	Nia (~nia@unaffiliated/nid) has joined ##programming
+2016-10-20 03:51:08	-->	Sendoushi (~Sendoushi@188.251.174.190) has joined ##programming
+2016-10-20 03:51:25	-->	plombo (~plombo@c-71-205-199-243.hsd1.co.comcast.net) has joined ##programming
+2016-10-20 03:54:26	<--	SpaceDanceCJ (~Sasha@178.121.173.68) has quit (Quit: Going offline, see ya! (www.adiirc.com))
+2016-10-20 03:54:33	-->	Guntor (~ganesh@2405:205:8404:1201:801e:1dce:f5f2:1152) has joined ##programming
+2016-10-20 03:55:31	-->	rgr (~user@p20030086AB0F06237EDD90FFFE49493A.dip0.t-ipconnect.de) has joined ##programming
+2016-10-20 03:55:59	-->	chan20 (~quassel@124.123.81.196) has joined ##programming
+2016-10-20 03:56:24	-->	artemisart (~artemisar@cop60-1-82-240-26-149.fbx.proxad.net) has joined ##programming
+2016-10-20 03:56:45	<--	xxNamuxx (~Name@ppp14-2-137-215.bras1.hba1.internode.on.net) has quit (Ping timeout: 265 seconds)
+2016-10-20 03:56:48	--	artemisart is now known as Guest18948
+2016-10-20 03:57:12	<--	tgrkzus (~tgrkzus@60-242-7-87.static.tpgi.com.au) has quit (Read error: Connection reset by peer)
+2016-10-20 03:58:02	-->	anonymuse (~anonymuse@65.209.61.114) has joined ##programming
+2016-10-20 03:58:21	<--	m_ben (~m_ben@unaffiliated/m-ben/x-5917362) has left ##programming ("WeeChat 1.6")
+2016-10-20 03:58:28	-->	LordKalma (~LordKalma@unaffiliated/lordkalma) has joined ##programming
+2016-10-20 03:59:50	-->	duggiefr_ (~duggiefre@69.53.245.201) has joined ##programming
+2016-10-20 04:01:50	+rindolf	More TypeScript problems. :-(
+2016-10-20 04:02:27	 *	rindolf is away - walk
+2016-10-20 04:02:57	-->	ar1a (~aria@209.141.47.215) has joined ##programming
+2016-10-20 04:03:14	<--	duggiefresh (~duggiefre@97-126-34-89.tukw.qwest.net) has quit (Ping timeout: 244 seconds)
+2016-10-20 04:03:14		[04:03]
+2016-10-20 04:04:09	<--	tlaxkit (~Thunderbi@92.185.154.236) has quit (Quit: tlaxkit)
+2016-10-20 04:04:18	<--	Siegfried (~user@2607:f470:6:3003:80d9:b2de:f73b:d2f1) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-10-20 04:04:20	<--	_0x736e (~desnesn@32.59.181.66) has quit (Quit: WeeChat 1.5)
+2016-10-20 04:08:17	<--	Heffree (~Heffree@2601:241:100:edf1:8d1a:75c1:cc04:e74a) has quit (Ping timeout: 260 seconds)
+2016-10-20 04:09:38	<--	aval (~aval@nat-wlan-uzh-89-206-64-008.uzh.ch) has quit (Ping timeout: 245 seconds)
+2016-10-20 04:09:59	-->	jotak (~tux@unaffiliated/jotak) has joined ##programming
+2016-10-20 04:11:33	<--	blaztinn (~Thunderbi@93-103-13-189.static.t-2.net) has quit (Ping timeout: 260 seconds)
+2016-10-20 04:12:18	<--	duggiefr_ (~duggiefre@69.53.245.201) has quit (Read error: Connection reset by peer)
+2016-10-20 04:12:52	-->	duggiefresh (~duggiefre@97-126-34-89.tukw.qwest.net) has joined ##programming
+2016-10-20 04:13:27	-->	modlin (~quassel@93.123.41.167) has joined ##programming
+2016-10-20 04:13:30	<--	Guest18948 (~artemisar@cop60-1-82-240-26-149.fbx.proxad.net) has quit (Ping timeout: 252 seconds)
+2016-10-20 04:13:36	<--	PlasmaStar (Plasma@unaffiliated/plasmastar) has quit (Ping timeout: 260 seconds)
+2016-10-20 04:14:12	-->	Kixxy (~kixxy@unaffiliated/kixxy) has joined ##programming
+2016-10-20 04:14:29	-->	aval (~aval@nat-wlan-uzh-89-206-64-008.uzh.ch) has joined ##programming
+2016-10-20 04:15:43	-->	mizu_no_oto_work (~textual@104.207.209.180) has joined ##programming
+2016-10-20 04:15:45	-->	Denommus (~user@unaffiliated/denommus) has joined ##programming
+2016-10-20 04:18:05	-->	patarr (~patarr@unaffiliated/patarr) has joined ##programming
+2016-10-20 04:18:15	<--	metachr0n (~nobody@gateway/vpn/privateinternetaccess/metachr0n) has quit (Quit: WeeChat 1.5)
+2016-10-20 04:18:15		[04:18]
+2016-10-20 04:18:20	-->	mangolisk (~mangolisk@S0106848dc7ebaa06.vc.shawcable.net) has joined ##programming
+2016-10-20 04:18:49	-->	PlasmaStar (Plasma@unaffiliated/plasmastar) has joined ##programming
+2016-10-20 04:19:01	<--	aval (~aval@nat-wlan-uzh-89-206-64-008.uzh.ch) has quit (Ping timeout: 256 seconds)
+2016-10-20 04:19:30	-->	RedOrangeZ (~RedOrange@c-73-30-227-113.hsd1.pa.comcast.net) has joined ##programming
+2016-10-20 04:20:02	-->	nikivi (~nikivi@dhcp-077-250-172-150.chello.nl) has joined ##programming
+2016-10-20 04:20:06	<--	yumaokao (~yumaokao@218-161-54-18.HINET-IP.hinet.net) has quit (Ping timeout: 252 seconds)
+2016-10-20 04:20:36	-->	BlackFish (BlackFish@cpc81297-enfi21-2-0-cust183.20-2.cable.virginm.net) has joined ##programming
+2016-10-20 04:20:50	-->	yumaokao (~yumaokao@218-161-54-18.HINET-IP.hinet.net) has joined ##programming
+2016-10-20 04:23:49	<--	synthroid (~synthroid@gateway/vpn/privateinternetaccess/synthroid) has quit (Remote host closed the connection)
+2016-10-20 04:25:16	<--	jotak (~tux@unaffiliated/jotak) has quit (Ping timeout: 265 seconds)
+2016-10-20 04:26:41	Sadale	Chloe, hi :P
+2016-10-20 04:27:02	<--	Chloe (~chloe@unaffiliated/chloe) has left ##programming ("WeeChat 1.4")
+2016-10-20 04:27:04	-->	mr_pinc (~mr_pinc@12.169.71.4) has joined ##programming
+2016-10-20 04:27:22	-->	jan64_ (~jan64@aazn177.neoplus.adsl.tpnet.pl) has joined ##programming
+2016-10-20 04:28:44	ar1a	kek
+2016-10-20 04:29:52	<--	Elysion (~elysion@ppp121-45-81-39.bras1.adl6.internode.on.net) has quit
+2016-10-20 04:30:32	<--	anonymuse (~anonymuse@65.209.61.114) has quit (Read error: Connection reset by peer)
+2016-10-20 04:30:48	<--	jan64 (~jan64@afip46.neoplus.adsl.tpnet.pl) has quit (Ping timeout: 256 seconds)
+2016-10-20 04:30:53	-->	anonymuse (~anonymuse@65.209.61.114) has joined ##programming
+2016-10-20 04:31:36	-->	Endarked (~endarked@2a01:11bf:5b1:b300:16dd:a9ff:fe11:99a2) has joined ##programming
+2016-10-20 04:31:43	<--	patarr (~patarr@unaffiliated/patarr) has quit (Quit: patarr)
+2016-10-20 04:31:44	<--	plombo (~plombo@c-71-205-199-243.hsd1.co.comcast.net) has quit (Ping timeout: 260 seconds)
+2016-10-20 04:31:49	xtrntr	hey guys, anyone got into learning C++ through side projects?
+2016-10-20 04:32:13	xtrntr	i've seen some real interesting jobs that make heavy use of C++, and i'm not sure how to break into these industries
+2016-10-20 04:32:29	monq	learn C++
+2016-10-20 04:32:30	adsc	you could work on some open source projects
+2016-10-20 04:32:33	xtrntr	i've been mainly using python and scheme because dynamic languages are great for learning
+2016-10-20 04:32:42	ar1a	hat kind of side projects?
+2016-10-20 04:32:43	xtrntr	and fun for a beginner
+2016-10-20 04:32:44	adsc	and then try to get a trainee job
+2016-10-20 04:32:45	ar1a	what*
+2016-10-20 04:32:59	pluszak	xtrntr: how much have you been using them?
+2016-10-20 04:32:59	xtrntr	not quite sure what side projects c++ is suited for
+2016-10-20 04:33:08	adsc	any
+2016-10-20 04:33:09	xtrntr	i've just started programming like a year ago,
+2016-10-20 04:33:12	<--	przemkovv-bis (~przemkovv@psocoptera.cie.put.poznan.pl) has quit (Ping timeout: 244 seconds)
+2016-10-20 04:33:14	-->	wz1000 (~wz1000@182.64.82.3) has joined ##programming
+2016-10-20 04:33:15	pluszak	xtrntr: giant death robots?
+2016-10-20 04:33:15		[04:33]
+2016-10-20 04:33:15	guest100	can someone tell me how to implement hashing algorithm for user defind types
+2016-10-20 04:33:22	monq	xtrntr, make a game
+2016-10-20 04:33:30	<--	m4l3z_ (~m4l3z@2a01cb040226f2004cdbbf8e8ac36cb2.ipv6.abo.wanadoo.fr) has quit (Quit: Leaving)
+2016-10-20 04:33:30	ar1a	guest100, in c++?
+2016-10-20 04:33:35	<--	wz1000 (~wz1000@182.64.82.3) has quit (Client Quit)
+2016-10-20 04:33:36	ar1a	xtrntr, make a roguelike, tutorials on youtube for that
+2016-10-20 04:33:36	guest100	having a problem in inserting an object of user defined type into an unordered map
+2016-10-20 04:33:50	-->	eivarv (~eivarv@cm-84.215.4.97.getinternet.no) has joined ##programming
+2016-10-20 04:33:53	-->	m4l3z_ (~m4l3z@2a01cb040226f2004cdbbf8e8ac36cb2.ipv6.abo.wanadoo.fr) has joined ##programming
+2016-10-20 04:34:13	<--	kggr (~korggrodn@mail.ramtex.by) has quit (Ping timeout: 245 seconds)
+2016-10-20 04:34:14	<--	dminuoso_ (~dminuoso@unaffiliated/dminuoso) has quit (Ping timeout: 244 seconds)
+2016-10-20 04:34:18	<--	zacts (~zacts@dragora/developer/zacts) has quit (Quit: WeeChat 1.6)
+2016-10-20 04:34:20	xtrntr	open source sounds good
+2016-10-20 04:34:40	-->	wz1000 (~wz1000@182.64.82.3) has joined ##programming
+2016-10-20 04:34:41	ar1a	well that switched quickly
+2016-10-20 04:34:58	-->	django_ (~django_@unaffiliated/django-/x-8345756) has joined ##programming
+2016-10-20 04:35:02	lf94	Nintendo just released footage of their new console, "Nintendo Switch"
+2016-10-20 04:35:32	ar1a	its so small, itll either overheat or be shit
+2016-10-20 04:35:34	xtrntr	i kind of have a feeling side projects in c++ would be a pain
+2016-10-20 04:35:48	GeDaMo	https://twitter.com/NintendoAmerica/status/789103913328709632
+2016-10-20 04:35:51	monq	nintendo switch (me for a playstation)
+2016-10-20 04:35:53	xtrntr	they wouldn't be fun
+2016-10-20 04:35:54	monq	? :D
+2016-10-20 04:35:56	-->	zacts (~zacts@dragora/developer/zacts) has joined ##programming
+2016-10-20 04:35:56	<--	thecha (~thecha@unaffiliated/thecha) has quit (Ping timeout: 260 seconds)
+2016-10-20 04:36:01	-->	tehcha (~thecha@x55b030f1.dyn.telefonica.de) has joined ##programming
+2016-10-20 04:36:02	<--	tehcha (~thecha@x55b030f1.dyn.telefonica.de) has quit (Changing host)
+2016-10-20 04:36:02	-->	tehcha (~thecha@unaffiliated/thecha) has joined ##programming
+2016-10-20 04:36:14	GeDaMo	https://cdn03.nintendo-europe.com/media/images/10_share_images/systems_11/nintendo_switch_1/CI_NintendoSwitch_Console_image912w.png
+2016-10-20 04:36:59	monq	i don't get it
+2016-10-20 04:37:04	mr_pinc	Anonye know if there is a way to export a driver from a network connection settings on windows?
+2016-10-20 04:37:23	monq	`export a driver`?
+2016-10-20 04:37:39	monq	as in the whole driver
+2016-10-20 04:37:43	monq	or just the settings
+2016-10-20 04:37:46	mr_pinc	the driver
+2016-10-20 04:37:57	monq	i've never heard of that before
+2016-10-20 04:38:22	<--	lowin (~lowin@151.245.124.26) has quit (Ping timeout: 244 seconds)
+2016-10-20 04:39:03	<--	Endarked (~endarked@2a01:11bf:5b1:b300:16dd:a9ff:fe11:99a2) has quit (Quit: WeeChat 1.5)
+2016-10-20 04:39:07	-->	dminuoso_ (~dminuoso@unaffiliated/dminuoso) has joined ##programming
+2016-10-20 04:39:43	mr_pinc	i'll explain my problem. i've got a piece of software that on windows 7 that installs an item into my network devices - it's for VPNing into private networks.  On windows 10 the software seems to install fine but never adds the item to my network devices - id' like to know if there is a way i can extract the .inf and drivers from the working windows 7 machine so I can try to install it
+2016-10-20 04:39:43	mr_pinc	on windows 10
+2016-10-20 04:40:49	monq	hmm, maybe
+2016-10-20 04:40:51	monq	i really don't know
+2016-10-20 04:41:01	mr_pinc	np - thanks anyway
+2016-10-20 04:41:03	-->	synthroid (~synthroid@gateway/vpn/privateinternetaccess/synthroid) has joined ##programming
+2016-10-20 04:43:01	<--	aajjbb (~aajjbb@177.193.235.201) has quit (Ping timeout: 244 seconds)
+2016-10-20 04:43:37	-->	Endarked (~endarked@2a01:11bf:5b1:b300:16dd:a9ff:fe11:99a2) has joined ##programming
+2016-10-20 04:44:16	<--	Rickmasta (~Rick@pool-96-246-90-176.nycmny.fios.verizon.net) has quit (Ping timeout: 250 seconds)
+2016-10-20 04:44:21	okuu	rindolf: Sorry, wasn't paying attention.
+2016-10-20 04:44:36	-->	jotak (~tux@50.red-176-86-2.dynamicip.rima-tde.net) has joined ##programming
+2016-10-20 04:44:36	<--	jotak (~tux@50.red-176-86-2.dynamicip.rima-tde.net) has quit (Changing host)
+2016-10-20 04:44:36	-->	jotak (~tux@unaffiliated/jotak) has joined ##programming
+2016-10-20 04:44:39	okuu	Why is it bad in Python to have a class without __init__ ?
+2016-10-20 04:44:55	<--	zump (7cbea401@gateway/web/freenode/ip.124.190.164.1) has quit (Ping timeout: 260 seconds)
+2016-10-20 04:45:28	+rindolf	okuu: guest100 was seeking help with C++
+2016-10-20 04:45:31	okuu	Doesn't it mean that the class just uses the __init__ inherited from some superclass?
+2016-10-20 04:45:31	okuu	rindolf: Oh.
+2016-10-20 04:45:37	-->	toothe (~awiggin@c-71-62-73-144.hsd1.va.comcast.net) has joined ##programming
+2016-10-20 04:45:54	toothe	I am trying to work with gdb on Windows.
+2016-10-20 04:46:06	+rindolf	toothe: oh.
+2016-10-20 04:46:13	+rindolf	toothe: in cygwin?
+2016-10-20 04:46:14	toothe	I have not been able to stop a process and get my console back.
+2016-10-20 04:46:19	toothe	I don't think so?
+2016-10-20 04:46:24	+rindolf	toothe: ah.
+2016-10-20 04:46:27	toothe	Its native.
+2016-10-20 04:46:42	+rindolf	toothe: did  you try running in a different terminal?
+2016-10-20 04:46:43	toothe	This process is multithreaded. I would liek to have one thread continue to run, and inspect the other threads.
+2016-10-20 04:46:47	toothe	Is there a clean way to do that?
+2016-10-20 04:46:48	adsc	xtrntr: that doesn't make sense
+2016-10-20 04:46:52	toothe	rindolf: I don't follow?
+2016-10-20 04:47:07	-->	Rickmasta (~Rick@pool-96-246-90-176.nycmny.fios.verizon.net) has joined ##programming
+2016-10-20 04:47:29	<--	Condor (~condor@unaffiliated/condor) has quit (Ping timeout: 260 seconds)
+2016-10-20 04:47:33	adsc	xtrntr: it's like saying to read Harry Potter in Spanish is not fun
+2016-10-20 04:47:35	toothe	I'm only marginally versed in gdb (Though I really really enjoy it)
+2016-10-20 04:47:35	-->	pmercado (~pmercado@186-104-164-103.baf.movistar.cl) has joined ##programming
+2016-10-20 04:48:45	+rindolf	toothe: did  you try running the target process in a separate console/terminal window?
+2016-10-20 04:48:45		[04:48]
+2016-10-20 04:48:52	<--	m4l3z_ (~m4l3z@2a01cb040226f2004cdbbf8e8ac36cb2.ipv6.abo.wanadoo.fr) has quit (Ping timeout: 250 seconds)
+2016-10-20 04:49:01	toothe	no...I don't think I understand what you are saying?
+2016-10-20 04:49:10	+rindolf	toothe: I recall i being possible on Linux.
+2016-10-20 04:49:10	-->	joebobjoe (~joebobjoe@104-136-31-251.res.bhn.net) has joined ##programming
+2016-10-20 04:49:16	<--	velco (~chill@vlan-nesebar-60-155.comnet.bg) has quit (Quit: Leaving)
+2016-10-20 04:49:55	+rindolf	toothe: see http://stackoverflow.com/questions/8963208/gdb-display-output-of-target-application-in-a-separate-window#15305402
+2016-10-20 04:50:33	 *	toothe reads
+2016-10-20 04:50:36	-->	lowin (~lowin@151.245.126.123) has joined ##programming
+2016-10-20 04:50:38	-->	IrishPrime (~IrishPrim@74.202.224.66) has joined ##programming
+2016-10-20 04:50:38	<--	IrishPrime (~IrishPrim@74.202.224.66) has quit (Max SendQ exceeded)
+2016-10-20 04:50:41	toothe	I should say, btw, Windows has come a LONG way. I might actually get a windows computer.
+2016-10-20 04:50:56	xtrntr	adsc: i guess i had a painful experience learning C
+2016-10-20 04:51:05	-->	IrishPrime (~IrishPrim@74.202.224.66) has joined ##programming
+2016-10-20 04:51:09	xtrntr	scheme/python were more fun to learn because i could actually get stuff done earlier
+2016-10-20 04:51:22	xtrntr	that may be because of the steeper learning curve tho
+2016-10-20 04:51:22	-->	grill__ (floatingpo@nat/ibm/x-gvwqduiicnjmvlyz) has joined ##programming
+2016-10-20 04:51:33	adsc	yeah, if you're coming from there, learning C/C++ might seem a bit tedious
+2016-10-20 04:52:05	-->	m4l3z_ (~m4l3z@2a01cb040226f2004cdbbf8e8ac36cb2.ipv6.abo.wanadoo.fr) has joined ##programming
+2016-10-20 04:52:29	<--	Dr-G (~Dr-G@unaffiliated/dr-g) has quit (Read error: Connection reset by peer)
+2016-10-20 04:52:59	adsc	but if you can't become comfortable with writing C/C++, you'll never be successful in a C/C++ job
+2016-10-20 04:53:01	-->	velco (~chill@vlan-nesebar-60-155.comnet.bg) has joined ##programming
+2016-10-20 04:53:29	adsc	you could stick with python and go into web dev, there are some popular frameworks around and thus there should be a few jobs out there, too
+2016-10-20 04:53:38	<--	joebobjoe (~joebobjoe@104-136-31-251.res.bhn.net) has quit (Ping timeout: 250 seconds)
+2016-10-20 04:54:16	<--	tirej (~tirej@unaffiliated/tirej) has quit (Ping timeout: 265 seconds)
+2016-10-20 04:54:29	toothe	rindolf: so that appears to work, but now I have no windows.
+2016-10-20 04:54:35	toothe	rindolf: Its a GUI application.
+2016-10-20 04:55:04	+rindolf	toothe: I see. :-(
+2016-10-20 04:55:11	toothe	hm...
+2016-10-20 04:57:12	toothe	I must say though, WIndows has really come a long long way.
+2016-10-20 04:57:16	toothe	THis is a very clean nice system.
+2016-10-20 04:57:25	toothe	and the tools-set is pretty smooth.
+2016-10-20 04:58:18	<--	mizu_no_oto_work (~textual@104.207.209.180) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-10-20 04:58:39	-->	Gasher (~gasher@179.43.176.34) has joined ##programming
+2016-10-20 04:58:40	Redfoxmoon	toothe, it's devolved after win7
+2016-10-20 04:58:43	-->	tlaxkit (~Thunderbi@92.185.154.236) has joined ##programming
+2016-10-20 04:59:04	toothe	oh?
+2016-10-20 04:59:06	toothe	do tell?
+2016-10-20 04:59:14	toothe	because Win7 was the last time I had a Windows machine aside from VMs
+2016-10-20 04:59:34	<--	Tims_Tech (~Tims_Tech@unaffiliated/tims-tech) has left ##programming ("bye")
+2016-10-20 04:59:34	Redfoxmoon	win8 basically bastardized windows 7
+2016-10-20 04:59:48	Redfoxmoon	killed a lot of good features and implemented idiot-proof "features" instead
+2016-10-20 04:59:54	Redfoxmoon	win10 basically completed that.
+2016-10-20 04:59:58	adsc	yeah, Windows has come a long way, it has developed from an OS that tried as hard as possible to not break BC to an OS that breaks BC even on incremental updates
+2016-10-20 05:00:34	ar1a	lmfao
+2016-10-20 05:00:47	-->	CoolBreeze (~CoolBreez@46.166.188.215) has joined ##programming
+2016-10-20 05:00:54	-->	Condor (~condor@unaffiliated/condor) has joined ##programming
+2016-10-20 05:01:12	-->	pleiadian (~pleiadian@5.28.97.217) has joined ##programming
+2016-10-20 05:01:48	-->	marchelzo (~marchelzo@unaffiliated/marchelzo) has joined ##programming
+2016-10-20 05:02:56	<--	wz1000 (~wz1000@182.64.82.3) has quit (Quit: WeeChat 1.6)
+2016-10-20 05:03:24	<--	sametsisartenep (~sametsisa@106.pool85-53-34.dynamic.orange.es) has quit (Quit: Thunderstorm incoming.)
+2016-10-20 05:04:12	<--	Rashad (~chatzilla@46.185.153.126) has quit (Ping timeout: 244 seconds)
+2016-10-20 05:04:12		[05:04]
+2016-10-20 05:04:56	monq	https://www.youtube.com/watch?v=ussCHoQttyQ
+2016-10-20 05:05:06	-->	asig3 (~asig3@216.76.219.87.dynamic.jazztel.es) has joined ##programming
+2016-10-20 05:05:22	-->	pjaio (~pjaio@nag77-2-83-152-154-106.fbx.proxad.net) has joined ##programming
+2016-10-20 05:05:53	<--	pjaio (~pjaio@nag77-2-83-152-154-106.fbx.proxad.net) has quit (Max SendQ exceeded)
+2016-10-20 05:06:18	<--	Guntor (~ganesh@2405:205:8404:1201:801e:1dce:f5f2:1152) has quit (Ping timeout: 245 seconds)
+2016-10-20 05:06:35	-->	kplgu (~kplgu@nag77-2-83-152-154-106.fbx.proxad.net) has joined ##programming
+2016-10-20 05:06:48	<--	kplgu (~kplgu@nag77-2-83-152-154-106.fbx.proxad.net) has quit (Max SendQ exceeded)
+2016-10-20 05:07:37	-->	Denommus` (~user@unaffiliated/denommus) has joined ##programming
+2016-10-20 05:07:40	<--	govg (~govg@unaffiliated/govg) has quit (Quit: leaving)
+2016-10-20 05:07:46	-->	kggr (~korggrodn@46.216.220.19) has joined ##programming
+2016-10-20 05:08:09	xtrntr	holy shit
+2016-10-20 05:08:16	xtrntr	apple software is so fucking bad
+2016-10-20 05:08:21	-->	phinxy (~tehhhd@unaffiliated/phinxy) has joined ##programming
+2016-10-20 05:08:24	meshsmith	Hey is there a way to get JavaScript to communicate with HTML SVG to detect when the tspan hits a boundary represented as a vector?
+2016-10-20 05:08:31	xtrntr	i can't figure out how to transfer files from my macbook to my ipad
+2016-10-20 05:08:33	xtrntr	after 20 minutes
+2016-10-20 05:08:42	monq	xtrntr, lol
+2016-10-20 05:08:49	<--	tdy1 (~tdy@unaffiliated/tdy) has quit (Ping timeout: 252 seconds)
+2016-10-20 05:08:53	xtrntr	im scared to think how my mom could handle this
+2016-10-20 05:09:08	<--	Guest26 (~textual@nat3-minsk-pool-46-53-182-142.telecom.by) has quit (Quit: My MacBook Air has gone to sleep. ZZZzzz…)
+2016-10-20 05:09:17	Redfoxmoon	xtrntr, when you're in the apple cult it's easy to use :-)
+2016-10-20 05:09:25	<--	Denommus (~user@unaffiliated/denommus) has quit (Ping timeout: 260 seconds)
+2016-10-20 05:09:32	xtrntr	i do like my macbook..
+2016-10-20 05:09:32	+rindolf	monq: heh, I remember that episode
+2016-10-20 05:09:46	monq	:)
+2016-10-20 05:09:57	monq	rindolf, i like how the likes and dislikes in that vid are balanced
+2016-10-20 05:09:59	adsc	xtrntr: aren't you supposed to have everything in the cloud by now?
+2016-10-20 05:10:08	-->	SrPx_ (~SrPx@179.55.108.239) has joined ##programming
+2016-10-20 05:10:10	xtrntr	you mean icloud?
+2016-10-20 05:10:12	<--	jasondockers (~jasondock@unaffiliated/jasondockers) has quit (Read error: Connection reset by peer)
+2016-10-20 05:10:25	xtrntr	i don't really want to pay for that beyond the free tier
+2016-10-20 05:10:26	monq	apples are nice but oranges is where it's at
+2016-10-20 05:10:29	-->	jasondockers (~jasondock@173.227.191.106) has joined ##programming
+2016-10-20 05:10:30	-->	mizu_no_oto_work (~textual@104.207.209.180) has joined ##programming
+2016-10-20 05:10:31	<--	SrPx_ (~SrPx@179.55.108.239) has quit (Client Quit)
+2016-10-20 05:10:53	--	jasondockers is now known as Guest5107
+2016-10-20 05:11:30	JX7P	herbert marcuse on those who deny rationalism's value: "The radical empiricist onslaught … provides the methodological justification for the debunking of the mind by the intellectuals—a positivism which, in its denial of the transcending elements of Reason, forms the academic counterpart of the socially required behavior.
+2016-10-20 05:11:30	JX7P	"
+2016-10-20 05:11:41	adsc	xtrntr: well, there you have your answer
+2016-10-20 05:11:52	adsc	xtrntr: if you pay, it's easy, if you don't pay, it's hard
+2016-10-20 05:12:44	-->	wz1000 (~wz1000@182.64.82.3) has joined ##programming
+2016-10-20 05:12:49	+rindolf	monq: my favourite fruit is cherries.
+2016-10-20 05:12:50	adsc	i mean, they thought long and hard on how to make it awkward for people using third party headphones to listen to music on their iphone
+2016-10-20 05:13:07	<--	EMChamp (~EMChamp@ae073194.dynamic.ppp.asahi-net.or.jp) has quit (Read error: Connection reset by peer)
+2016-10-20 05:13:07	<--	dminuoso_ (~dminuoso@unaffiliated/dminuoso) has quit (Remote host closed the connection)
+2016-10-20 05:13:21	monq	rindolf, mine are mandarines and nectarines
+2016-10-20 05:13:39	+rindolf	monq: ah, they are also good.
+2016-10-20 05:13:55	argoneus	a bit of a design question - I have a game that has a GUI as a frontend, I'm thinking of having my game logic and GUI separate for sure, but I'm not sure how to make them "communicate" - I was thinking of using an intermediate controller class that has references to both and works with them, any idea how this is done usually?
+2016-10-20 05:14:00	monq	and hot peppers, if those are fruit :p
+2016-10-20 05:14:00	argoneus	aso hello
+2016-10-20 05:14:01	<--	marchelzo (~marchelzo@unaffiliated/marchelzo) has quit (Ping timeout: 250 seconds)
+2016-10-20 05:14:01	argoneus	also*
+2016-10-20 05:14:13	<--	redpill (~redpill@unaffiliated/redpill) has quit (Read error: Connection reset by peer)
+2016-10-20 05:14:31	-->	patarr (~patarr@unaffiliated/patarr) has joined ##programming
+2016-10-20 05:14:36	-->	Xatenev (~Gerd@pd907f4d2.dip0.t-ipconnect.de) has joined ##programming
+2016-10-20 05:14:37	-->	r4z_ (~r4z@unaffiliated/r4z) has joined ##programming
+2016-10-20 05:14:41	Xatenev	Hello
+2016-10-20 05:14:48	Xatenev	When I got a hex number like 0x1234
+2016-10-20 05:14:49	-->	steeze (~steeze@63.76.231.82) has joined ##programming
+2016-10-20 05:15:25	Xatenev	Why does that need a space of 32 bit?
+2016-10-20 05:15:33	Xatenev	Im looking at this function in PHP http://php.net/manual/en/function.pack.php
+2016-10-20 05:15:40	monq	argoneus, that's quite an ambiguous question
+2016-10-20 05:15:47	argoneus	:<
+2016-10-20 05:15:58	monq	i just set up the events and that's it
+2016-10-20 05:15:59	monq	i don't see where the complication is
+2016-10-20 05:16:01	Xatenev	In the example code it converts hex numbers into a binary string
+2016-10-20 05:16:28	argoneus	mm, alright
+2016-10-20 05:16:29	Xatenev	via the v in the $format param it locks the arguments to unsigned shorts which are 16 bit
+2016-10-20 05:16:43	adsc	Xatenev: read the notes block on that page you linked
+2016-10-20 05:16:54	Xatenev	what is a "notes" block?
+2016-10-20 05:16:58	Xatenev	ah there
+2016-10-20 05:17:01	monq	argoneus, i usually separate my code by functionality. so maybe there's a "settings" source file that handles initialization of the settings dialog and the events
+2016-10-20 05:17:04	monq	if that makes sense
+2016-10-20 05:17:48	Xatenev	adsc: Does that apply to my confusion?
+2016-10-20 05:17:49	Xatenev	:D
+2016-10-20 05:18:22	argoneus	mmhm
+2016-10-20 05:18:28	<--	r4z (~r4z@unaffiliated/r4z) has quit (Ping timeout: 260 seconds)
+2016-10-20 05:18:29	argoneus	I'll try to figure it out
+2016-10-20 05:18:30	argoneus	thanks
+2016-10-20 05:18:37	monq	you can set up an elaborate system where you have a messaging system that handles event queues and whatnot but unless you're doing something really specific and huge i don't think you want that
+2016-10-20 05:18:55	Xatenev	adsc: When i add 'v' as format - that means every argument can take up to 16 bit space at MAX right?
+2016-10-20 05:19:01	monq	in most cases the simpler you can code something the better
+2016-10-20 05:19:41	Xatenev	adsc: so it splits " 0x1234" up to "0x12" and "0x34"
+2016-10-20 05:19:41		[05:19]
+2016-10-20 05:19:47	Xatenev	... If I got that right
+2016-10-20 05:20:13	adsc	yeah, it should
+2016-10-20 05:20:34	<--	mahiru (~mahiru@217.175.38.170) has quit (Read error: No route to host)
+2016-10-20 05:20:46	Xatenev	(A probably super stupid question) So that means one number in hex is always 8bit(1byte) ?
+2016-10-20 05:20:50	Xatenev	@adsc
+2016-10-20 05:20:59	-->	mahiru (~mahiru@217.175.38.170) has joined ##programming
+2016-10-20 05:21:07	Xatenev	0x1 => 1byte 0x12 => 2byte
+2016-10-20 05:22:49	<--	jotak (~tux@unaffiliated/jotak) has quit (Quit: Saliendo)
+2016-10-20 05:23:32	<--	rbern (~rbern@unaffiliated/rbern) has quit (Read error: Connection reset by peer)
+2016-10-20 05:24:06	monq	Xatenev, hexadecimal is a base 16 numeral system
+2016-10-20 05:24:07	-->	_r4z (~r4z@unaffiliated/r4z) has joined ##programming
+2016-10-20 05:24:14	-->	Krisostoomus (~Krisostoo@unaffiliated/kristjan85) has joined ##programming
+2016-10-20 05:24:17	monq	"0x" means hexadecimal, that's just notation
+2016-10-20 05:24:25	Krisostoomus	yo
+2016-10-20 05:24:27	Xatenev	yea I know that
+2016-10-20 05:24:34	monq	0xf means 0b1111
+2016-10-20 05:24:38	monq	which is 4 bits
+2016-10-20 05:24:47	monq	0xff is 0b11111111
+2016-10-20 05:24:49	monq	which is a byte
+2016-10-20 05:25:03	<--	_26thmeusoc (~26th@p4FD2645D.dip0.t-ipconnect.de) has quit (Ping timeout: 245 seconds)
+2016-10-20 05:25:21	<--	nikivi (~nikivi@dhcp-077-250-172-150.chello.nl) has quit (Quit: zzz)
+2016-10-20 05:25:28	monq	in decimal 0xf is 15 and 0xff is 255
+2016-10-20 05:25:29	adsc	Xatenev: no, it's a half-byte
+2016-10-20 05:26:05	monq	sometimes lovingly referred to as a nibble
+2016-10-20 05:26:28	<--	patarr (~patarr@unaffiliated/patarr) has quit (Quit: patarr)
+2016-10-20 05:26:49	adsc	i'm not sure what's happening there, Xatenev, i thought i has to do with always using 32bit ints, but it seems it's a different problem
+2016-10-20 05:27:03	monq	Xatenev, you just need to understand what kind of bits you are representing. then it all makes sense
+2016-10-20 05:27:16	-->	_26thmeusoc (~26th@p20030084AD16A849BA27EBFFFE010C42.dip0.t-ipconnect.de) has joined ##programming
+2016-10-20 05:27:25	-->	stoveeee (~stoveeee@209-80-137-133.client.mecnet.net) has joined ##programming
+2016-10-20 05:27:48	<--	r4z_ (~r4z@unaffiliated/r4z) has quit (Ping timeout: 260 seconds)
+2016-10-20 05:28:04	+rindolf	Krisostoomus: hi, sup?
+2016-10-20 05:28:13	adsc	0x1234 should only need 16 bits
+2016-10-20 05:28:39	adsc	maybe ask in ##php
+2016-10-20 05:29:07	Xatenev	monq: thats a great exaplanation
+2016-10-20 05:29:10	Xatenev	monq thank you
+2016-10-20 05:29:17	monq	yw
+2016-10-20 05:29:27	Xatenev	monq: when i have a number like 0b1010
+2016-10-20 05:29:53	Xatenev	monq: which is 10 in dec, how much bits is that
+2016-10-20 05:30:03	monq	you just typed it out yourself
+2016-10-20 05:30:08	monq	0b1010 - 4 bits
+2016-10-20 05:30:12	monq	the "0b" is just notation
+2016-10-20 05:30:13	-->	Rashad (~chatzilla@46.185.153.126) has joined ##programming
+2016-10-20 05:30:22	<--	Fixer (~quassel@213.179.252.8) has quit (Read error: Connection reset by peer)
+2016-10-20 05:30:51	Xatenev	Ah yeah thats simple
+2016-10-20 05:31:01	<--	diogenese (diogenese@diogenese.velotech.net) has quit (Read error: Connection reset by peer)
+2016-10-20 05:31:28	Xatenev	monq: so basically when i wnana know how big a number is (how much space it needs) I convert it into a bit string
+2016-10-20 05:31:33	Xatenev	monq: and just count the letters basically :D
+2016-10-20 05:31:36	Xatenev	simple-said
+2016-10-20 05:31:37	-->	Fixer (~quassel@213.179.252.8) has joined ##programming
+2016-10-20 05:31:38	<--	quaz0r (quaz@c-67-183-243-24.hsd1.wa.comcast.net) has quit (Quit: reboot)
+2016-10-20 05:31:41	monq	well, there's easier ways
+2016-10-20 05:31:41	sbrg	you just take the base 2 logarithm
+2016-10-20 05:31:48	sbrg	and round up
+2016-10-20 05:31:51	monq	^
+2016-10-20 05:32:01	-->	Guntor (~ganesh@2405:205:8404:1201:4ebb:58ff:fe32:8e1d) has joined ##programming
+2016-10-20 05:32:08	-->	diogenese (diogenese@diogenese.velotech.net) has joined ##programming
+2016-10-20 05:32:13	sbrg	and that gives you the number of bits needed to represent that number
+2016-10-20 05:32:38	monq	or multiply the digits in a hex string by 4... :p
+2016-10-20 05:32:44	-->	rbern (~rbern@unaffiliated/rbern) has joined ##programming
+2016-10-20 05:32:45	<--	eivarv (~eivarv@cm-84.215.4.97.getinternet.no) has quit (Quit: Sleep)
+2016-10-20 05:32:46	monq	and sum
+2016-10-20 05:32:55	-->	ariel_17 (ariel_17@unaffiliated/ariel-17/x-9613218) has joined ##programming
+2016-10-20 05:33:06	<--	anonymuse (~anonymuse@65.209.61.114) has quit (Remote host closed the connection)
+2016-10-20 05:34:02	adsc	yeah, each digit in a hex string needs 4 bits, because it represents 0-15, which takes 4 bits to represent
+2016-10-20 05:34:21	GeDaMo	Which is why programmers like hex :P
+2016-10-20 05:34:33	adsc	hence why 0x1234 should take up 16 bits
+2016-10-20 05:35:31	-->	maret (~peter@47.59.228.161) has joined ##programming
+2016-10-20 05:35:31		[05:35]
+2016-10-20 05:36:09	 *	rindolf casts a hex on GeDaMo 
+2016-10-20 05:36:38	Xatenev	So what size would 0x1234 result in exactly?
+2016-10-20 05:36:39	<--	Guntor (~ganesh@2405:205:8404:1201:4ebb:58ff:fe32:8e1d) has quit (Ping timeout: 256 seconds)
+2016-10-20 05:36:58	-->	przemkovv-bis (~przemkovv@150.254.33.190) has joined ##programming
+2016-10-20 05:36:58	GeDaMo	Two bytes, 16 bits
+2016-10-20 05:36:59	Xatenev	adsc: Oh
+2016-10-20 05:37:02	Xatenev	adsc: Didnt read your sentence
+2016-10-20 05:37:04	-->	Derperperd (~anonymous@nat14.adelphi.edu) has joined ##programming
+2016-10-20 05:37:09	Xatenev	I dont get it then
+2016-10-20 05:37:09	Xatenev	Ll
+2016-10-20 05:37:10	Xatenev	lol
+2016-10-20 05:37:18	<--	synthroid (~synthroid@gateway/vpn/privateinternetaccess/synthroid) has quit (Remote host closed the connection)
+2016-10-20 05:38:05	adsc	yeah, pack is one of those weird PHP functions
+2016-10-20 05:38:10	Xatenev	Not even refered to pack
+2016-10-20 05:38:18	adsc	would have to play around with it a bit to understand it
+2016-10-20 05:38:23	adsc	but no time for that now
+2016-10-20 05:38:30	Xatenev	When I throw this 0x1234 into a converter hex to binary
+2016-10-20 05:38:35	Xatenev	it gives me 0001001000110100
+2016-10-20 05:38:38	-->	ogradyd (~Thunderbi@HSI-KBW-109-193-043-181.hsi7.kabel-badenwuerttemberg.de) has joined ##programming
+2016-10-20 05:38:48	<--	donught (~donught@108-77-18-22.lightspeed.sndgca.sbcglobal.net) has quit (Ping timeout: 245 seconds)
+2016-10-20 05:38:49	<--	m4l3z_ (~m4l3z@2a01cb040226f2004cdbbf8e8ac36cb2.ipv6.abo.wanadoo.fr) has quit (Ping timeout: 260 seconds)
+2016-10-20 05:38:51	Xatenev	which are 16 numbers in total, but why is there a leftpad thats counted aswlel?
+2016-10-20 05:39:03	adsc	a leftpad?
+2016-10-20 05:39:06	-->	eivarv (~eivarv@cm-84.215.4.97.getinternet.no) has joined ##programming
+2016-10-20 05:39:07	-->	tdy1 (~tdy@unaffiliated/tdy) has joined ##programming
+2016-10-20 05:39:08	Xatenev	The first 3 0's
+2016-10-20 05:39:10	maret	Hi everyone, I am working on open source library and I would like some tips about how to make this project as succesful as possbile. Do you know some good books, podcasts or examples of great open source libraries where I can draw lessons from?
+2016-10-20 05:39:13	GeDaMo	Whole bytes
+2016-10-20 05:39:17	-->	m4l3z_ (~m4l3z@2a01cb040226f2004cdbbf8e8ac36cb2.ipv6.abo.wanadoo.fr) has joined ##programming
+2016-10-20 05:39:23	-->	Molt (~elektron@cpe-24-90-117-238.nyc.res.rr.com) has joined ##programming
+2016-10-20 05:39:25	adsc	that's the 1 in x1234
+2016-10-20 05:39:37	adsc	1  0001 in a half-byte
+2016-10-20 05:39:43	-->	Neslepaks (~Neslepaks@178.61.71.85) has joined ##programming
+2016-10-20 05:39:59	SlashLife	adsc: "nibble"
+2016-10-20 05:40:11	Xatenev	adsc: Ah hhhhhh
+2016-10-20 05:40:12	<--	Sendoushi (~Sendoushi@188.251.174.190) has quit
+2016-10-20 05:40:13	Xatenev	I GOT IT
+2016-10-20 05:40:22	SlashLife	NO YOU HAVEN'T!
+2016-10-20 05:40:23	+nitrix	Xatenev: Two bytes, 8 bits each: 00010010 00110100
+2016-10-20 05:40:24	SlashLife	I GOT IT!
+2016-10-20 05:40:28	 *	SlashLife runs away with it.
+2016-10-20 05:40:31	Xatenev	SlashLife: NOOO
+2016-10-20 05:40:36	<--	btborg (~btborg@c-76-119-188-48.hsd1.ma.comcast.net) has quit (Ping timeout: 250 seconds)
+2016-10-20 05:40:43	adsc	how can you run when you have no legs?
+2016-10-20 05:40:45	SlashLife	Octets. ;_;
+2016-10-20 05:40:50	+rindolf	maret: hi.
+2016-10-20 05:40:54	Xatenev	Ok I almost got it
+2016-10-20 05:40:59	Xatenev	a decimal 1 is binary 1
+2016-10-20 05:41:01	+rindolf	maret: in which language?
+2016-10-20 05:41:02	adsc	yeah, we really should talk about octets here
+2016-10-20 05:41:09	Xatenev	a hex 1 is decimal 1 but binary 0001
+2016-10-20 05:41:10	Xatenev	Whys that?
+2016-10-20 05:41:11	Xatenev	:D
+2016-10-20 05:41:16	Xatenev	thats my last question I think =(
+2016-10-20 05:41:19	+nitrix	1 is 1 in every bases.
+2016-10-20 05:41:26	+nitrix	Adding leading zeros makes no difference.
+2016-10-20 05:41:34	-->	sdlnv_ (~sdlnv@host38-116-dynamic.44-79-r.retail.telecomitalia.it) has joined ##programming
+2016-10-20 05:41:42	adsc	no, a hex 1 is also binary 1, but it's reserving 4 bits because it can go up to 15
+2016-10-20 05:41:44	adsc	or F
+2016-10-20 05:41:49	maret	rindolf: actually in few languages , me and my cooworkers are working on a wrapper for some API.
+2016-10-20 05:41:54	+nitrix	Even in binary, as those are just exponents of 2, summed up.
+2016-10-20 05:41:55	<--	dhil (~dhil@dhcp-90-078.inf.ed.ac.uk) has quit (Ping timeout: 244 seconds)
+2016-10-20 05:42:06	SlashLife	Xatenev: It still is a binary 1. It is just customary to always write hex digits as 4 bits, even when they do have leading zeros, because at that length you can easily convert one into the other.
+2016-10-20 05:42:12	Xatenev	adsc: but decimal can go up to 9
+2016-10-20 05:42:17	Xatenev	adsc: which would result in 1001 => 4 bits too
+2016-10-20 05:42:22	Xatenev	adsc: why arent they reserved? is the calculator shit?
+2016-10-20 05:42:22	Xatenev	:D
+2016-10-20 05:42:24	+rindolf	maret: a web API?
+2016-10-20 05:42:27	adsc	what?
+2016-10-20 05:42:31	maret	yes
+2016-10-20 05:42:38	+nitrix	adsc: The "reserving four bits" is a operational semantic, not denotational.
+2016-10-20 05:42:42	piou	Xatenev: 12345 = 0000000012345 -> it's just that binary generally is used to detail bytes so padding is more practical, it changes nothing of the value.
+2016-10-20 05:42:55	adsc	nitrix: he's talking about PHP's pack function
+2016-10-20 05:42:57	SlashLife	Xatenev: But you can move through a hex number by always converting a hex digit to four bits.
+2016-10-20 05:42:58	+rindolf	maret: then there are some bindgings generatros for web APIs.
+2016-10-20 05:42:59	-->	JamEngulfer (~JamEngulf@94.197.120.249.threembb.co.uk) has joined ##programming
+2016-10-20 05:43:00	+nitrix	adsc: It's the same value in the end.
+2016-10-20 05:43:09	SlashLife	You can't do that with decimal numbers.
+2016-10-20 05:43:16	-->	BustyLoliChan (~BustyLoli@c-67-163-66-115.hsd1.ut.comcast.net) has joined ##programming
+2016-10-20 05:43:20	SlashLife	0x90 is 1001 0000
+2016-10-20 05:43:22	-->	password4 (~password@unaffiliated/password2) has joined ##programming
+2016-10-20 05:43:30	piou	Xatenev: binary 0x1234 is 1001000110100. It's just not as easy to use this way to write it as 0001001000110100
+2016-10-20 05:43:49	maret	rindolf: maybe I wasn't clear I guess what I am asking is what makese a good library good? I would guess like good documentation, community with the community etc
+2016-10-20 05:43:59	SlashLife	decimal 90 in binary is 0101 1010
+2016-10-20 05:44:11	SlashLife	0x9 is 1001
+2016-10-20 05:44:17	SlashLife	decimal 9 is ... also 1001
+2016-10-20 05:44:50	piou	decimal 90 in binary is also 1011010
+2016-10-20 05:44:51	adsc	i...no longer remember what the original question was
+2016-10-20 05:44:56	SlashLife	So you can go from 0x90 to its binary representation by first turning 0x9 into its four bit equivalent: 1001, and then appending the four bit equivalent for 0x0: 0000
+2016-10-20 05:45:02	Xatenev	So bits are always in 4 bits steps counted?
+2016-10-20 05:45:20	-->	tbsf (~tbsf@8.37.102.31) has joined ##programming
+2016-10-20 05:45:20	Xatenev	4 8 12 16 => theres no way I can get 9 bits for a character sequence?
+2016-10-20 05:45:23	+rindolf	maret: I've written about it here - http://www.shlomifish.org/philosophy/computers/high-quality-software/rev2/
+2016-10-20 05:45:29	<--	sdlnv_ (~sdlnv@host38-116-dynamic.44-79-r.retail.telecomitalia.it) has quit (Client Quit)
+2016-10-20 05:45:29	SlashLife	No. Not always. But doing so allows for near trivial conversion to and from hex.
+2016-10-20 05:45:39	-->	Karyon (~Karyon@unaffiliated/karyon) has joined ##programming
+2016-10-20 05:45:42	adsc	what would you gain if you got 9 bits?
+2016-10-20 05:45:49	Xatenev	SlashLife: so thats done because of easyness for the conversion in the end
+2016-10-20 05:45:59	SlashLife	Yes, and it is just a convention.
+2016-10-20 05:46:02	lf94	adsc: more bits to do stuff :)
+2016-10-20 05:46:10	+rindolf	maret: perhaps I need to update it a little though.
+2016-10-20 05:46:12	Xatenev	SlashLife: Ok I got it then - is that different for other architectures?
+2016-10-20 05:46:17	Xatenev	adsc: You ask the wrong way
+2016-10-20 05:46:26	lf94	snap peas = greatness
+2016-10-20 05:46:29	adsc	lf94: not really, because if you didn't use fixed sizes, you'd have to somehow mark when the next number is coming
+2016-10-20 05:46:30	<--	BustyLoli-Chan (~BustyLoli@c-67-163-66-115.hsd1.ut.comcast.net) has quit (Ping timeout: 250 seconds)
+2016-10-20 05:46:32	+rindolf	maret: I don't mention continuous integration there for example.
+2016-10-20 05:46:33	SlashLife	If you have 0x15c, or 0b 0001 0101 1100, that's still the same binary number as 0b101011100
+2016-10-20 05:46:37	Xatenev	adsc: Why is it not possible to have 9 bits for a string (number) that would result in 9 bits originally
+2016-10-20 05:46:39	adsc	which would probably take up more bits than what you gain
+2016-10-20 05:46:40	Xatenev	adsc: which caused my confusion :)
+2016-10-20 05:46:56	Xatenev	adsc: When you dont know that its just a set convention
+2016-10-20 05:47:00	-->	Blondie (~Blondie@p5DDC469B.dip0.t-ipconnect.de) has joined ##programming
+2016-10-20 05:47:08	adsc	Xatenev: do you have a specific context for that question? because it's not true in general
+2016-10-20 05:47:16	Xatenev	adsc: No I dont
+2016-10-20 05:47:21	adsc	then it's wrong
+2016-10-20 05:47:26	Xatenev	Im trying to understand number systems
+2016-10-20 05:47:30	Xatenev	and how they work in computers
+2016-10-20 05:47:30	Xatenev	lol
+2016-10-20 05:47:31	<--	Pixi_ (~Xiti-@unaffiliated/xiti) has quit (Quit: Pixi_)
+2016-10-20 05:47:44	maret	rindolf: that's fine, CI is more general thing  related to code quality(which is ofc important with any code not just lib) I am curious about things more specifit to libraries for wider community
+2016-10-20 05:47:53	adsc	you CAN have a string that consists of an odd number of bits
+2016-10-20 05:48:08	SlashLife	But it helps with the conversion, because if you look at the 5, it actually gets a leading 0 in its four bit notation. You can write 0x5 as 0b101, too. But if you concatenate 0b1 0b101 (note: no leading 0) and 0b1100 to 0b11011100, you'll get a different number.
+2016-10-20 05:48:16	adsc	there is nothing inherent in the number system that forbids this
+2016-10-20 05:48:23	Xatenev	adsc: But in the computer architecture right?
+2016-10-20 05:48:28	adsc	no
+2016-10-20 05:48:35	Xatenev	adsc: So where is it defined that we work with 4 bit sequences
+2016-10-20 05:48:47	-->	Tims_Tech (~Tims_Tech@unaffiliated/tims-tech) has joined ##programming
+2016-10-20 05:48:47	Xatenev	and count them aswell
+2016-10-20 05:48:47	sbrg	who said anything about working with 4 bit sequences?
+2016-10-20 05:49:04	<--	Krisostoomus (~Krisostoo@unaffiliated/kristjan85) has quit (Quit: Leaving)
+2016-10-20 05:49:12	<--	kggr (~korggrodn@46.216.220.19) has quit (Ping timeout: 260 seconds)
+2016-10-20 05:49:13	Xatenev	0x2 => binary 0010 => thats 4 bits
+2016-10-20 05:49:15	adsc	Xatenev: I don't know of such a definition
+2016-10-20 05:49:17	Xatenev	or is it 2?
+2016-10-20 05:49:26	sbrg	It just so happens that when you convert binary to hexadecimal, you can look at 4 bits at a time and convert them like that.
+2016-10-20 05:49:37	SlashLife	Xatenev: It's as many bits as the underlying type storing it will take for it.
+2016-10-20 05:49:58	Xatenev	SlashLife: yea but apart from that it would be two bits thats needed rightß
+2016-10-20 05:49:58	<--	Karyon (~Karyon@unaffiliated/karyon) has quit (Ping timeout: 250 seconds)
+2016-10-20 05:50:05	sbrg	0x2 in hexadecimal is the same 2 in base 10 is the same as 10 in binary.
+2016-10-20 05:50:17	sbrg	to represent 2 in binary, you need two bits.
+2016-10-20 05:50:19	ciniglio	Xatenev: yes, you need two bits to represent the number 2
+2016-10-20 05:50:26	adsc	but if you're talking hardware, registers in the CPU have a certain size, and you can't load them with single bits...the "leading bits" will then be 0
+2016-10-20 05:50:28	Xatenev	Okay I understood something wrong some minutes ago..
+2016-10-20 05:50:30	SlashLife	You will need at least 2 bits to represent it (assuming you want to be able to represent all lower non-negative integers as well), but with four bits you could represent *all* numbers of the form 0xX
+2016-10-20 05:50:30	Xatenev	about the leading bits
+2016-10-20 05:50:59	SlashLife	i.e. all hex digits.
+2016-10-20 05:50:59		[05:50]
+2016-10-20 05:51:11	adsc	it's really not different from decimal at all
+2016-10-20 05:51:21	SlashLife	And that is different from decimal ... :P
+2016-10-20 05:51:28	<--	Drlars (~Larson@a95-93-29-97.cpe.netcabo.pt) has quit (Quit: This computer has gone to sleep)
+2016-10-20 05:51:36	<--	JamEngulfer (~JamEngulf@94.197.120.249.threembb.co.uk) has quit (Ping timeout: 260 seconds)
+2016-10-20 05:51:49	Xatenev	adsc: Its hard to understand correctly :/
+2016-10-20 05:51:51	SlashLife	... because to represent 0..9 you *still* need four binary digits, but you have additional space left for more values.
+2016-10-20 05:51:51	<--	piou (~piou@unaffiliated/piou) has quit (Quit: >/dev/null)
+2016-10-20 05:51:54	ciniglio	The 0xX representation is because you need 4 bits to represent the decimal number 15, which is the biggest number that has the form 0xX
+2016-10-20 05:52:02	+rindolf	maret: OK.
+2016-10-20 05:52:15	-->	patarr (~patarr@unaffiliated/patarr) has joined ##programming
+2016-10-20 05:52:15	<--	ariel_17 (ariel_17@unaffiliated/ariel-17/x-9613218) has quit (Quit: WeeChat 1.5)
+2016-10-20 05:52:24	Xatenev	sbrg: adsc I know again what caused my confusion
+2016-10-20 05:52:28	SlashLife	Whereas 0x0-0xf uses those four bits fully and exactly.
+2016-10-20 05:52:32	Xatenev	Somebody said 0x1234 results into 16 bits
+2016-10-20 05:52:33	-->	ariel_17 (ariel_17@unaffiliated/ariel-17/x-9613218) has joined ##programming
+2016-10-20 05:52:40	Xatenev	1001000110100 that are only 13 bits
+2016-10-20 05:52:50	Xatenev	we count the leading three 0's here
+2016-10-20 05:52:51	-->	dustyp90 (~Dustin@216.7.225.222) has joined ##programming
+2016-10-20 05:52:56	<--	stoveeee (~stoveeee@209-80-137-133.client.mecnet.net) has quit (Ping timeout: 260 seconds)
+2016-10-20 05:53:03	<--	ariel_17 (ariel_17@unaffiliated/ariel-17/x-9613218) has quit (Client Quit)
+2016-10-20 05:53:05	Xatenev	but decimal 2 is => 0b10
+2016-10-20 05:53:08	GeDaMo	If you're storing it in bytes
+2016-10-20 05:53:09	Xatenev	thats 2 bits
+2016-10-20 05:53:10	<--	Piratefish (~Piratefis@81.7.146.236) has quit (Read error: Connection reset by peer)
+2016-10-20 05:53:10	Xatenev	how does that make sense??
+2016-10-20 05:53:12	ciniglio	Right, but to represent every number 0xXXXX you need 16 bits
+2016-10-20 05:53:13	-->	xxNamuxx (~Name@ppp14-2-162-204.bras1.hba2.internode.on.net) has joined ##programming
+2016-10-20 05:53:25	-->	alex1a_ (~alex1a@a81-84-38-221.cpe.netcabo.pt) has joined ##programming
+2016-10-20 05:54:05	<--	dustyp90 (~Dustin@216.7.225.222) has quit (Max SendQ exceeded)
+2016-10-20 05:54:07	SlashLife	That's a nice way to think about it @ ciniglio
+2016-10-20 05:54:13	ciniglio	So you're right that specifically 0x1234 only requires 13 bits, but since we actually want to be able to represent 0x0000-0xFFFF, we use 16 bits and just say the first 3 are 0s
+2016-10-20 05:54:18	-->	joebobjoe (~joebobjoe@104-136-31-251.res.bhn.net) has joined ##programming
+2016-10-20 05:54:19	<--	alex1a (~alex1a@a81-84-38-221.cpe.netcabo.pt) has quit (Ping timeout: 244 seconds)
+2016-10-20 05:54:26	Xatenev	ciniglio: but who defines that
+2016-10-20 05:54:32	Xatenev	ciniglio: the PC architecture? no
+2016-10-20 05:54:34	SlashLife	Xatenev: To represent any hexadecimal number with N digits, you will need 4N bits.
+2016-10-20 05:54:56	-->	JamEngulfer (~JamEngulf@92.40.248.214.threembb.co.uk) has joined ##programming
+2016-10-20 05:55:02	ciniglio	that's just the definition of hexadecimal (0xXXXX) and binary
+2016-10-20 05:55:20	Xatenev	but adsc said the PC architecture doesnt define that, and the mathematical system doesnt either
+2016-10-20 05:55:20	reynir	Hmm, it seems you can't use unicode characters in gitconfig
+2016-10-20 05:55:20	SlashLife	Xatenev: It's a side effect of the fact that 16 = 2^4
+2016-10-20 05:55:31	<--	CoolBreeze (~CoolBreez@46.166.188.215) has quit (Remote host closed the connection)
+2016-10-20 05:55:39	sbrg	Xatenev: To represent EXACTLY 0x1234 and anything below, 13 bits is sufficient.
+2016-10-20 05:55:41	-->	synthroid (~synthroid@gateway/vpn/privateinternetaccess/synthroid) has joined ##programming
+2016-10-20 05:55:58	sbrg	To represent ANY hexadecimal that consists of 4 hexadecimal digits, you need 16 bits.
+2016-10-20 05:56:04	sbrg	0x0000 - 0xFFFF
+2016-10-20 05:56:27	Xatenev	okay I think i got that
+2016-10-20 05:56:30	-->	synthroi_ (~synthroid@50.202.5.122) has joined ##programming
+2016-10-20 05:56:33	Xatenev	last question :D
+2016-10-20 05:56:49	-->	CoolBreeze (~CoolBreez@46.166.190.213) has joined ##programming
+2016-10-20 05:56:50	Xatenev	When I pass into a function that takes decimal or hexadecimal values the params: 0x6 and 6
+2016-10-20 05:56:53	-->	dustyp90 (~Dustin@216.7.225.222) has joined ##programming
+2016-10-20 05:56:57	Xatenev	first is hex 2nd is decimal(int)
+2016-10-20 05:56:58	SlashLife	Xatenev: If you had a pool of 100 different symbols, then you could find a mapping so that you could represent every decimal number in half the number of symbols (rounded up) than it has digits.
+2016-10-20 05:57:03	SlashLife	No
+2016-10-20 05:57:07	+rindolf	Xatenev: 0x6 and 6 are the same
+2016-10-20 05:57:20	SlashLife	That's the most confusing thing about numbers: They exist apart from any representation.
+2016-10-20 05:57:28	Xatenev	that would result in 3 or 4 bits?
+2016-10-20 05:57:44	Xatenev	theoretically 3 but we use 4bits right? :p
+2016-10-20 05:57:47	+rindolf	Xatenev: numbers are not inherently hexadecimal or decimal or whatever - only their representation is.
+2016-10-20 05:58:02	sbrg	when you think "number" you should think "Number as i've always known numbers". when you think binary, decimal or some other base, you should think of it as translating from the numbers you've always known to another way of representing the same number.
+2016-10-20 05:58:18	sbrg	0b10 is not a different number from 2. it is the same number. it is just a different representation.
+2016-10-20 05:58:19	ciniglio	0x6 requires 3 bits; depending on the language or program, it may actually use a lot of 0's in front of those 3 bits
+2016-10-20 05:58:22	SlashLife	There is no decimal 9 or hexadecimal 9. A 9 is a 9 is a 9. Which is confusing, because 9 in itself is a representation.
+2016-10-20 05:58:47	Xatenev	ciniglio: SlashLife sbrg rindolf okay I got that
+2016-10-20 05:58:50	Xatenev	thanks a lot
+2016-10-20 05:58:56	+rindolf	Xatenev: yw.
+2016-10-20 05:58:57	Xatenev	I would have given up on myself already I guess.
+2016-10-20 05:58:58	Xatenev	loL
+2016-10-20 05:59:14	<--	joebobjoe (~joebobjoe@104-136-31-251.res.bhn.net) has quit (Ping timeout: 250 seconds)
+2016-10-20 05:59:17	SlashLife	But if you think of 9 as nine dots on a sheet of paper, they are still nine dots. No matter whether you write their number as 0x9 (hex), 9 (dec), 011 (oct) or 0b1001 (bin)
+2016-10-20 05:59:33	<--	ygeLN (~zeMMRTTso@unaffiliated/ygeln) has quit (Ping timeout: 248 seconds)
+2016-10-20 05:59:46	Xatenev	Yeap
+2016-10-20 05:59:49	Xatenev	Thank you :)
+2016-10-20 05:59:56	Xatenev	(17:58:22) ciniglio: 0x6 requires 3 bits; depending on the language or program, it may actually use a lot of 0's in front of those 3 bits || this helped me a lot
+2016-10-20 06:00:00	+rindolf	Xatenev: you're welcome .
+2016-10-20 06:00:08	<--	Silmarilion (~Silmarili@iecommailer.itaf.eu) has quit (Remote host closed the connection)
+2016-10-20 06:00:12	-->	asig (~asig3@42.222.20.95.dynamic.jazztel.es) has joined ##programming
+2016-10-20 06:00:17	<--	synthroid (~synthroid@gateway/vpn/privateinternetaccess/synthroid) has quit (Ping timeout: 260 seconds)
+2016-10-20 06:00:22	-->	_0x736e (~desnesn@32.59.181.66) has joined ##programming
+2016-10-20 06:00:27	Xatenev	Shit web development - you dont get in contact too much with the basics anymore.. lol
+2016-10-20 06:00:31	ciniglio	Glad to hear :-)
+2016-10-20 06:00:36	-->	btborg (~btborg@c-76-119-188-48.hsd1.ma.comcast.net) has joined ##programming
+2016-10-20 06:00:43	-->	pumafied (~pumafied1@ip68-13-96-230.om.om.cox.net) has joined ##programming
+2016-10-20 06:00:59	-->	junka (~junka@unaffiliated/junka) has joined ##programming
+2016-10-20 06:01:01	<--	btborg (~btborg@c-76-119-188-48.hsd1.ma.comcast.net) has quit (Max SendQ exceeded)
+2016-10-20 06:01:13	-->	xavca (~xavca@mar13-2-82-246-223-195.fbx.proxad.net) has joined ##programming
+2016-10-20 06:01:13	<--	Remram (~remram44@unaffiliated/remram) has quit (Ping timeout: 260 seconds)
+2016-10-20 06:01:19	SlashLife	I wouldn't actually even consider this basic programming. Basic math, possibly. Too basic to actually be taught at school, because it heavily touches on philosophy.
+2016-10-20 06:01:28	SlashLife	"Can numbers be without a representation?"
+2016-10-20 06:01:38	junka	which open source alternative for matlab would you suggest for a newbie, pretty please?
+2016-10-20 06:01:42	+rindolf	Xatenev: well, Knuth complained that modern programmers mostly just wrangle APIs.
+2016-10-20 06:01:45	<--	X-Scale (~ARM@2001:0:53aa:64c:0:f2bd:b176:2199) has quit (Quit:  HydraIRC -> http://www.hydrairc.com <- The alternative IRC client)
+2016-10-20 06:01:52	<--	pleiadian (~pleiadian@5.28.97.217) has quit (Ping timeout: 260 seconds)
+2016-10-20 06:01:54	Xatenev	rindolf: Yea thats what we do.
+2016-10-20 06:02:03	<--	Blondie (~Blondie@p5DDC469B.dip0.t-ipconnect.de) has quit (Quit: Blondie)
+2016-10-20 06:02:06	-->	ygeLN (~zeMMRTTso@unaffiliated/ygeln) has joined ##programming
+2016-10-20 06:02:09	Xatenev	rindolf: A lot of programmers nowadays are completly lost when they gotta develop a system on their own
+2016-10-20 06:02:10	<--	Tazmain (~Tazmain@41.161.94.2) has quit (Quit: Leaving)
+2016-10-20 06:02:11	SlashLife	rindolf: And that should be me cue to get back to implementing this hashmap. :)
+2016-10-20 06:02:14	Xatenev	rindolf: and they cant just attach apis together
+2016-10-20 06:02:16	--	vash is now known as koan
+2016-10-20 06:02:29	<--	lsk (~lsk@enucs/member/lsk) has quit (Read error: Connection reset by peer)
+2016-10-20 06:02:33	<--	rbern (~rbern@unaffiliated/rbern) has quit (Ping timeout: 245 seconds)
+2016-10-20 06:02:44	<--	asig3 (~asig3@216.76.219.87.dynamic.jazztel.es) has quit (Ping timeout: 260 seconds)
+2016-10-20 06:03:00	Xatenev	SlashLife: Tbh nobody in our whole company knows how the math systems really work with PCS
+2016-10-20 06:03:01	-->	redpill (~redpill@unaffiliated/redpill) has joined ##programming
+2016-10-20 06:03:17	<--	okuu (~pyon@unaffiliated/pyon) has quit (Quit: Unyu~. Fix config.)
+2016-10-20 06:03:34	Xatenev	SlashLife: how the space reserving works or how PHP f.e. handles numbers internally, how much bits 0x12 is
+2016-10-20 06:03:35	SlashLife	Xatenev: That's what low level developers and engineers are there for: So ordinary folks don't have to.
+2016-10-20 06:03:50	Xatenev	SlashLife: Yea but they should be capable of that
+2016-10-20 06:04:00	Xatenev	SlashLife: Well - atleast I wanna be capable of that ;) or I feel bad lol
+2016-10-20 06:04:02	-->	Remram (~remram44@unaffiliated/remram) has joined ##programming
+2016-10-20 06:04:09	SlashLife	You can't just answer how much bits 0x12 is.
+2016-10-20 06:04:11	sbrg	go do an online Cs course
+2016-10-20 06:04:31	SlashLife	You first need to specify whether you mean a specific implementation of the minimal amount required to represent it or whatever.
+2016-10-20 06:04:36	-->	okuu (~pyon@unaffiliated/pyon) has joined ##programming
+2016-10-20 06:04:40	<--	junka (~junka@unaffiliated/junka) has quit (Read error: Connection reset by peer)
+2016-10-20 06:04:49	sbrg	okuu: you sneaky man you
+2016-10-20 06:04:49	SlashLife	"How many bits is 0x12" is just too vague of a question.
+2016-10-20 06:04:53	sbrg	okuu: i had no idea you were pyon
+2016-10-20 06:04:56	-->	Erati (~Erati@cpe-172-74-75-198.nc.res.rr.com) has joined ##programming
+2016-10-20 06:04:56	sbrg	until now.
+2016-10-20 06:04:57	Xatenev	SlashLife: That was what I mentioned when I said "0x6 requires 3 bits; depending on the language or program, it may actually use a lot of 0's in front of those 3 bits" this helped me a LOT
+2016-10-20 06:04:58	Xatenev	:)
+2016-10-20 06:05:09	Xatenev	That was especially the part I didnt get inb4 about the whole thing
+2016-10-20 06:05:26	Xatenev	Thanks for all the long-going help :) gotta go home
+2016-10-20 06:05:27	Xatenev	see you!
+2016-10-20 06:05:32	<--	dustyp90 (~Dustin@216.7.225.222) has quit (Ping timeout: 260 seconds)
+2016-10-20 06:05:49	<--	xavca (~xavca@mar13-2-82-246-223-195.fbx.proxad.net) has quit (Max SendQ exceeded)
+2016-10-20 06:06:00	<--	_0x736e (~desnesn@32.59.181.66) has quit (Ping timeout: 256 seconds)
+2016-10-20 06:06:00		[06:06]
+2016-10-20 06:06:01	<--	Xatenev (~Gerd@pd907f4d2.dip0.t-ipconnect.de) has left ##programming
+2016-10-20 06:06:09	<--	adsc (1f180acd@gateway/web/freenode/ip.31.24.10.205) has quit (Quit: Page closed)
+2016-10-20 06:06:39	-->	uofxj (~uofxj@mar13-2-82-246-223-195.fbx.proxad.net) has joined ##programming
+2016-10-20 06:06:44	SlashLife	Xatenev: I just ordered https://www.amazon.com/dp/0201834545 to get some more insight into how things in C++ work. I especially never attempted to really wrap my head around how multiple (possibly virtual) inheritence comes together under the hood to make things like RTTI possible.
+2016-10-20 06:07:00	SlashLife	BAH! I SMACK HIM!
+2016-10-20 06:07:06	<--	mangolisk (~mangolisk@S0106848dc7ebaa06.vc.shawcable.net) has quit (Read error: Connection reset by peer)
+2016-10-20 06:08:02	+rindolf	SlashLife: you're implementing your own hash table?
+2016-10-20 06:08:41	SlashLife	rindolf: Yeah. Job interview assignment. No global lock, concurrent reads and writes, ...
+2016-10-20 06:09:00	-->	qrestlove (~qrestlove@cpe-66-68-40-90.austin.res.rr.com) has joined ##programming
+2016-10-20 06:09:08	okuu	sbrg: Hah.
+2016-10-20 06:09:17	+rindolf	SlashLife: ah.
+2016-10-20 06:09:40	+rindolf	SlashLife: sounds pretty cool
+2016-10-20 06:10:23	-->	Krisostoomus (~Krisostoo@20-170-190-90.dyn.estpak.ee) has joined ##programming
+2016-10-20 06:10:24	<--	Krisostoomus (~Krisostoo@20-170-190-90.dyn.estpak.ee) has quit (Changing host)
+2016-10-20 06:10:24	-->	Krisostoomus (~Krisostoo@unaffiliated/kristjan85) has joined ##programming
+2016-10-20 06:10:38	+rindolf	SlashLife: though I don't expect its performance to be spectacular - I've grown suspicious of shared resources in multithreading
+2016-10-20 06:10:49	<--	tlaxkit (~Thunderbi@92.185.154.236) has quit (Quit: tlaxkit)
+2016-10-20 06:10:55	okuu	Damn. I keep cutting text when I use programs other than Emacs.
+2016-10-20 06:10:56	<--	shakalaka (~shakalaka@ec2-52-52-27-0.us-west-1.compute.amazonaws.com) has quit (Quit: bye.)
+2016-10-20 06:11:02	<--	miklcct (michael@server.miklcct.csproject.org) has quit (Read error: Connection reset by peer)
+2016-10-20 06:11:02	okuu	I instinctively save files using C-x C-s.
+2016-10-20 06:11:09	sbrg	other than emacs?! what is this
+2016-10-20 06:11:13	-->	Guest26 (~textual@nat3-minsk-pool-46-53-182-142.telecom.by) has joined ##programming
+2016-10-20 06:11:17	+rindolf	SlashLife: maybe ask vendu for some insights - he deals with that a lot
+2016-10-20 06:11:18	-->	sladkoff (~sladkoff@x4e35e620.dyn.telefonica.de) has joined ##programming
+2016-10-20 06:11:22	<--	django_ (~django_@unaffiliated/django-/x-8345756) has quit (Ping timeout: 250 seconds)

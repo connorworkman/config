@@ -768,6 +768,7 @@ hash -d code=${HOME}/code
 hash -d aur=${HOME}/code/aur
 hash -d config=/store/config
 hash -d djzomg=/run/media/alyptik/microSDXC/Music/djzomg
+hash -d wanderlust=/run/media/alyptik/microSDXC/wanderlust
 #hash -d torrents=${HOME}/torrents
 #hash -d school=${HOME}/school
 #hash -d tv=$HOME/video/tv

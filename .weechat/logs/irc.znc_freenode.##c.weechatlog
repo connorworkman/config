@@ -7823,3 +7823,1048 @@
 2016-10-19 20:34:32	<--	Alina-malina (~Alina-mal@37.157.216.159) has quit (Changing host)
 2016-10-19 20:34:32	-->	Alina-malina (~Alina-mal@unaffiliated/alina-malina) has joined ##C
 2016-10-19 20:34:39	--	irc: disconnected from server
+2016-10-19 20:40:00	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined ##C
+2016-10-19 20:40:00		[20:40]
+2016-10-19 20:40:00	--	Topic for ##C is "The C Programming Language | C11 is the current C Standard | PASTE (>3 lines): http://ideone.com/ | WIKI: http://www.iso-9899.info/ | BOOKS: http://www.iso-9899.info/wiki/Books | Test your C knowledge in #cjeopardy!"
+2016-10-19 20:40:00	--	Topic set by pragma- on Sat, 28 Nov 2015 11:48:40
+2016-10-19 20:40:01	--	Channel ##C: 963 nicks (1 op, 0 voices, 962 normals)
+2016-10-19 20:40:01	***	Buffer Playback...
+2016-10-19 20:40:01	CaZe	[04:47:21] dx: What's ubsan? [04:47:21]
+2016-10-19 20:40:01	dx	[04:47:39] CaZe: undefined behavior sanitizer aka -fsanitize=undefined [04:47:39]
+2016-10-19 20:40:01	dx	[04:48:33] it's what throws the runtime error i had with the left shift, and this one is formatted just like that one [04:48:33]
+2016-10-19 20:40:01	CaZe	[04:49:58] dx: Doesn't really matter. It could be the CPU telling you to fuck off. [04:49:58]
+2016-10-19 20:40:01	dx	[04:50:30] well yeah, but i don't have access to any CPU that does that [04:50:30]
+2016-10-19 20:40:01	CaZe	[04:51:27] <CPU> I can only access ints at every fourth address, so, 0, 4, 8, etc. You want me to access an int at address 13? Fuck you. [04:51:27]
+2016-10-19 20:40:01	CaZe	[04:51:48] Are you sure? [04:51:48]
+2016-10-19 20:40:01	lochs	[04:51:57] ,snack CPU [04:51:57]
+2016-10-19 20:40:01	 *	candide [04:51:58] gives CPU a teeny bowl of Corn Flakes. [04:51:58]
+2016-10-19 20:40:01	CaZe	[04:52:50] dx: They usually throw a trap or something. [04:52:50]
+2016-10-19 20:40:01	Stragus	[04:53:55] On x86, misaligned loads/stores are typically just a little slower. On most intel chips though, you hit a huge penalty for crossing a cache line... and an astronomical penalty for crossing a page boundary [04:53:55]
+2016-10-19 20:40:01	chrisf	[04:53:59] in the fun cases the low bits of the address just get thrown away [04:53:59]
+2016-10-19 20:40:01	chrisf	[04:54:13] [not x86] [04:54:13]
+2016-10-19 20:40:01	Random832	[04:55:32] or you get a bus error [04:55:32]
+2016-10-19 20:40:01	chrisf	[04:55:37] so you dont even trap, you just get the wrong thing [04:55:37]
+2016-10-19 20:40:01	Random832	[04:55:50] ah that [04:55:50]
+2016-10-19 20:40:01	Stragus	[04:55:59] That sounds fun chrisf, I could imagine some cute optimizations with that [04:55:59]
+2016-10-19 20:40:01	chrisf	[04:56:34] Stragus: tagged pointers without needing to mask them out on use [04:56:34]
+2016-10-19 20:40:01	Random832	[04:57:56] the cpu in HP calculators has a 20 bit word and 4-bit addressable memory, but I can't remember if it had alignment requirements [04:57:56]
+2016-10-19 20:40:01	chrisf	[05:00:45] Stragus: arm < v6 is as special beast like this. [05:00:45]
+2016-10-19 20:40:01	chrisf	[05:01:20] Stragus: unaligned loads return rotated contents; unaligned stores get their low bits thrown away [05:01:20]
+2016-10-19 20:40:01	Stragus	[05:02:16] Ohh, rotated loads, that could be fun [05:02:16]
+2016-10-19 20:40:01	chrisf	[05:02:26] which is neat if you want rotated loads [05:02:26]
+2016-10-19 20:40:01	Stragus	[05:02:27] If you don't like the guy who's going to maintain your code next... [05:02:27]
+2016-10-19 20:40:01	chrisf	[05:02:37] the asymmetry is a menace [05:02:37]
+2016-10-19 20:40:01	chrisf	[05:05:56] there are worse machines to program in assembly [05:05:56]
+2016-10-19 20:40:01	Stragus	[05:07:53] ARM assembly is great, NEON is fantastic [05:07:53]
+2016-10-19 20:40:01	Stragus	[05:08:16] Although the documentation itself is atrociously bad... especially for intrinsics [05:08:16]
+2016-10-19 20:40:01	chrisf	[05:08:34] ive not had the pleasure of doing serious NEON [05:08:34]
+2016-10-19 20:40:01	Stragus	[05:08:54] It's everything MMX/3dnow!/SSE/AVX should have been, in one shot done properly [05:08:54]
+2016-10-19 20:40:01	Stragus	[05:09:19] With... the exception of not having a movmskps-like instruction, branching on NEON vectors is nasty [05:09:19]
+2016-10-19 20:40:01	chrisf	[05:11:52] vtbl/vtbx looks interesting [05:11:52]
+2016-10-19 20:40:01	Stragus	[05:14:16] It's full of crazy useful instructions, basic stuff that just does what you need [05:14:16]
+2016-10-19 20:40:01	Stragus	[05:14:44] Intel apparently designed all of MMX/SSE/AVX based on what was convenient/easy for them, without any regard for what people actually need [05:14:44]
+2016-10-19 20:40:01	chrisf	[05:14:46] huh, strided loads. [05:14:46]
+2016-10-19 20:40:01	chrisf	[05:15:39] i like this already [05:15:39]
+2016-10-19 20:40:01	Stragus	[05:16:30] After discovering NEON, I loved it so much that I googled if it were possible to build an ARM-based desktop [05:16:30]
+2016-10-19 20:40:01	clue	[05:23:50] http://ideone.com/wbSNKT besides the lack of the header, I keep getting a Undefined symbols for architecture x86_64:   "_err_dump", referenced from:       _myfunc in downPath-3f2568.o   "_err_quit", referenced from: .... [05:23:50]
+2016-10-19 20:40:01	clue	[05:23:55] can someone explain me why? [05:23:55]
+2016-10-19 20:40:01	Stragus	[05:26:45] What is err_dump()? [05:26:45]
+2016-10-19 20:40:01	Stragus	[05:27:16] These certainly aren't functions I know [05:27:16]
+2016-10-19 20:40:01	Neslepaks	[05:27:49] Why aren't the childs getting reaped, can anyone tell me? https://ideone.com/TSPL4s [05:27:49]
+2016-10-19 20:40:01	clue	[05:42:20] Stragus: I just realized these are all functions created by the writer of the book im using [05:42:20]
+2016-10-19 20:40:01	Maxdamantus	[05:50:15] Neslepaks: you probably want to actually associate the children with a single process group and avoid just killing the parent. [05:50:15]
+2016-10-19 20:40:01	Maxdamantus	[05:50:24] (itself) [05:50:24]
+2016-10-19 20:40:01	blz37	[06:03:21] Two ways to use a linked list: embed the linked node in the data node or the linked node envelopes the data. There is some fancy terms for those. I couldn't recall them right away. If anybody knows at the top of their head, let me know. [06:03:21]
+2016-10-19 20:40:01	blz37	[06:03:26] Sorry, not strictly c question. [06:03:26]
+2016-10-19 20:40:01	blz37	[06:13:09] Found them: exogenous and endogenous. [06:13:09]
+2016-10-19 20:40:01	Stragus	[06:21:25] blz37: I would stick to "inside the struct" and "outside the struct" [06:21:25]
+2016-10-19 20:40:01	blz37	[06:24:11] Stragus: I agree. According to google search, the last book with those words were published in 1983: Data Structures and Network Algorithms by Robert Endre Tarjan. [06:24:11]
+2016-10-19 20:40:01	***	Playback Complete.
+2016-10-19 20:40:07	--	Channel created on Sat, 25 Nov 2006 20:42:39
+2016-10-19 20:40:17	--	irc: disconnected from server
+2016-10-20 00:25:30	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined ##C
+2016-10-20 00:25:30		[00:25]
+2016-10-20 00:25:30	--	Topic for ##C is "The C Programming Language | C11 is the current C Standard | PASTE (>3 lines): http://ideone.com/ | WIKI: http://www.iso-9899.info/ | BOOKS: http://www.iso-9899.info/wiki/Books | Test your C knowledge in #cjeopardy!"
+2016-10-20 00:25:30	--	Topic set by pragma- on Sat, 28 Nov 2015 11:48:40
+2016-10-20 00:25:30	--	Channel ##C: 983 nicks (1 op, 0 voices, 982 normals)
+2016-10-20 00:25:30	***	Buffer Playback...
+2016-10-20 00:25:30	M4GNV5	[08:25:10] try that, if your lucky you get a conditional jump depending on conditional memory warning etc. and can fix it easily [08:25:10]
+2016-10-20 00:25:30	theFam	[08:25:20] thanks [08:25:20]
+2016-10-20 00:25:30	theFam	[08:27:43] M4GNV5: ==19119== Invalid write of size 4 ??? it points to the memcpy, but i am confused? where does it write that is wrong? [08:27:43]
+2016-10-20 00:25:30	M4GNV5	[08:28:41] can you send the full output? (pastebin etc.) [08:28:41]
+2016-10-20 00:25:30	M4GNV5	[08:28:56] however from that one line i guess the first argument you pass to memcpy is wrong [08:28:56]
+2016-10-20 00:25:30	theFam	[08:29:02] yes, of course [08:29:02]
+2016-10-20 00:25:30	theFam	[08:29:59] M4GNV5: funnily enough it works on valgrind [08:29:59]
+2016-10-20 00:25:30	M4GNV5	[08:31:10] hmm and no warnings by valgrind? [08:31:10]
+2016-10-20 00:25:30	theFam	[08:31:12] M4GNV5: http://termbin.com/1pif [08:31:12]
+2016-10-20 00:25:30	theFam	[08:31:29] M4GNV5: there are, i put them there [08:31:29]
+2016-10-20 00:25:30	M4GNV5	[08:32:00] i guess you should fix the "Conditional jump or move depends on uninitialised value" first [08:32:00]
+2016-10-20 00:25:30	M4GNV5	[08:32:09] also did you compile with -g? [08:32:09]
+2016-10-20 00:25:30	M4GNV5	[08:32:18] for some reason your missing backtraces [08:32:18]
+2016-10-20 00:25:30	theFam	[08:33:00] M4GNV5: huh [08:33:00]
+2016-10-20 00:25:30	theFam	[08:33:10] if doesnt show anything else [08:33:10]
+2016-10-20 00:25:30	theFam	[08:33:18] no didnt compile with -g [08:33:18]
+2016-10-20 00:25:30	M4GNV5	[08:33:41] compile with -g then you should get backtraces with line numbers for every warning [08:33:41]
+2016-10-20 00:25:30	M4GNV5	[08:33:55] only the most recent function is pretty useless lol [08:33:55]
+2016-10-20 00:25:30	M4GNV5	[08:34:27] ima drive home now though, gonna be back in 1.5-2h [08:34:27]
+2016-10-20 00:25:30	theFam	[08:34:47] ok [08:34:47]
+2016-10-20 00:25:30	CaZe	[08:36:13] theFam: What line did you say it segfaulted? [08:36:13]
+2016-10-20 00:25:30	theFam	[08:37:59] CaZe: the line after varr_unshift [08:37:59]
+2016-10-20 00:25:30	theFam	[08:38:48] can i not copy to 4 bytes after a pointer? i am confused [08:38:48]
+2016-10-20 00:25:30	CaZe	[08:44:48] theFam: What is he expected output? [08:44:48]
+2016-10-20 00:25:30	theFam	[08:46:29] CaZe: 0 4 8 12 as the positions array items [08:46:29]
+2016-10-20 00:25:30	CaZe	[08:47:55] theFam: I get: "0x5e1deb85e60 0x5e1deb85e70\n0 0\n0 4\n0 8\n\n" [08:47:55]
+2016-10-20 00:25:30	theFam	[08:48:29] weird [08:48:29]
+2016-10-20 00:25:30	CaZe	[08:48:31] theFam: Oh, and I added a bunch of casts to char *. [08:48:31]
+2016-10-20 00:25:30	theFam	[08:48:37] huh [08:48:37]
+2016-10-20 00:25:30	CaZe	[08:49:02] Because of what klys said. [08:49:02]
+2016-10-20 00:25:30	CaZe	[08:51:13] http://termbin.com/wc3y [08:51:13]
+2016-10-20 00:25:30	theFam	[08:53:16] can you post your code? [08:53:16]
+2016-10-20 00:25:30	theFam	[08:53:17] maybe my arm device is broken [08:53:17]
+2016-10-20 00:25:30	theFam	[08:53:17] klys? [08:53:17]
+2016-10-20 00:25:30	theFam	[08:53:17] ah [08:53:17]
+2016-10-20 00:25:30	theFam	[08:53:17] thanks [08:53:17]
+2016-10-20 00:25:30	theFam	[08:54:30] sieg heil [08:54:30]
+2016-10-20 00:25:30	theFam	[08:55:51] CaZe: probably void */int * would be more appropiate but I see what you mean [08:55:51]
+2016-10-20 00:25:30	CaZe	[08:56:08] Why int *? [08:56:08]
+2016-10-20 00:25:30	theFam	[08:56:18] for the positions array [08:56:18]
+2016-10-20 00:25:30	CaZe	[08:57:28] Which line? [08:57:28]
+2016-10-20 00:25:30	theFam	[08:58:07] CaZe: nevermind [08:58:07]
+2016-10-20 00:25:30	theFam	[08:58:13] you didnt change it [08:58:13]
+2016-10-20 00:25:30	theFam	[08:58:38] brb lunch [08:58:38]
+2016-10-20 00:25:30	CaZe	[08:58:48] positions is declared as an int *, so I didn't need to. [08:58:48]
+2016-10-20 00:25:30	CaZe	[08:59:24] items is declared as a void *, so if you want to do arithmetic on it, it needs to know the size of what's being pointed to. [08:59:24]
+2016-10-20 00:25:30	CaZe	[09:01:12] Anyway, I'd be surprised if that fixed your problem. Your system was probably treating the void * as char * anyway, for the purposes of pointer arithmetic. [09:01:12]
+2016-10-20 00:25:30	theFam	[09:18:30] CaZe: it's still buggy here, but that might be my device. thanks for the help/ [09:18:30]
+2016-10-20 00:25:30	M4GNV5	[10:19:00] ay re [10:19:00]
+2016-10-20 00:25:30	M4GNV5	[10:19:03] still not fixed? [10:19:03]
+2016-10-20 00:25:30	***	Playback Complete.
+2016-10-20 00:25:56	--	Channel created on Sat, 25 Nov 2006 20:42:39
+2016-10-20 00:25:56	-->	JeanCarloMachado (~jean@179.160.190.201) has joined ##C
+2016-10-20 00:29:21	-->	ShekharReddy (uid132367@gateway/web/irccloud.com/x-molzxeqoqhbonojc) has joined ##C
+2016-10-20 00:30:59	-->	rtkt (~rtkt@194.230.159.94) has joined ##C
+2016-10-20 00:31:18	<--	gagbo (~gagbo@unaffiliated/gagbo) has quit (Ping timeout: 252 seconds)
+2016-10-20 00:31:55	<--	titodrew (~titodrew@41.147.132.12) has quit (Ping timeout: 244 seconds)
+2016-10-20 00:32:48	<--	gniourf (~gniourf@pdm-l03.insa-lyon.fr) has quit (Ping timeout: 256 seconds)
+2016-10-20 00:35:21	-->	kw01f (~kw01f@merlin.mvtec.com) has joined ##C
+2016-10-20 00:37:49	LukeLR	I'm using getopt to parse command line flags: http://ideone.com/tzBR1F (ideone doesn't know unistd.h, on my computer, this compiles).
+2016-10-20 00:38:31	LukeLR	When I call my binary like ./send it never terminates, although it should print an error message of having too few arguments.
+2016-10-20 00:38:38	<--	RTFM[away] (~RTFMaway]@unaffiliated/rtfmaway/x-3892344) has quit (Ping timeout: 244 seconds)
+2016-10-20 00:39:01	--	Flux_TheJH is now known as TheJH
+2016-10-20 00:39:02	LukeLR	If I call it with ./send -b it prints "binary mode enabled" as it should, but after that, it doesn't terminate as well
+2016-10-20 00:39:24	LukeLR	I've already found out that it is the while-loop of getopt that never ends. What am I doing wrong?
+2016-10-20 00:40:35	-->	hoenir (~hoenir@79.112.124.169) has joined ##C
+2016-10-20 00:40:35		[00:40]
+2016-10-20 00:41:54	<--	ap0c (~ap0c@unaffiliated/ap0c) has quit (Quit: Leaving)
+2016-10-20 00:43:10	-->	hiwk (1776@fukushima.lysator.liu.se) has joined ##C
+2016-10-20 00:44:51	-->	n1lp0int3r (~p0int3r@203.233.108.93.rev.vodafone.pt) has joined ##C
+2016-10-20 00:45:38	<--	kw01f (~kw01f@merlin.mvtec.com) has quit (Remote host closed the connection)
+2016-10-20 00:46:54	-->	gniourf (~gniourf@pdm-l03.insa-lyon.fr) has joined ##C
+2016-10-20 00:50:19	-->	psychicist__ (~psychicis@ip127-8-212-87.adsl2.static.versatel.nl) has joined ##C
+2016-10-20 00:50:59	<--	zwliew (uid161395@gateway/web/irccloud.com/x-fvljsxnyfniaezmv) has quit (Quit: Connection closed for inactivity)
+2016-10-20 00:50:59	<--	psychicist__ (~psychicis@ip127-8-212-87.adsl2.static.versatel.nl) has quit (Client Quit)
+2016-10-20 00:51:35	-->	thib (~Thibaut12@wikimedia/Thibaut120094) has joined ##C
+2016-10-20 00:52:32	-->	psychicist__ (~psychicis@ip127-8-212-87.adsl2.static.versatel.nl) has joined ##C
+2016-10-20 00:52:35	<--	JeanCarloMachado (~jean@179.160.190.201) has quit (Ping timeout: 244 seconds)
+2016-10-20 00:52:36	VLetrmx	LukeLR, are you sure? looks fine to me
+2016-10-20 00:53:07	LukeLR	yep, to me as well. but I'm sure, adding some output to the loop results in endless output
+2016-10-20 00:53:24	LukeLR	and gdb says it's jumping between the switch(c) and the while(...) forever
+2016-10-20 00:53:32	<--	shangul (~shangul@5.233.159.163) has quit (Quit: visit my channel: #shangul)
+2016-10-20 00:53:52	-->	lowin (~lowin@31.56.128.118) has joined ##C
+2016-10-20 00:54:31	<--	lowin (~lowin@31.56.128.118) has quit (Max SendQ exceeded)
+2016-10-20 00:54:40	-->	JeanCarloMachado (~jean@189.35.201.232) has joined ##C
+2016-10-20 00:55:16	-->	lowin (~lowin@31.56.128.118) has joined ##C
+2016-10-20 00:55:23	<--	lowin (~lowin@31.56.128.118) has quit (Max SendQ exceeded)
+2016-10-20 00:55:56	VLetrmx	LukeLR, i've compiled it here and the loop terminates
+2016-10-20 00:55:56		[00:55]
+2016-10-20 00:56:12	-->	lowin (~lowin@31.56.128.118) has joined ##C
+2016-10-20 00:57:40	-->	freakyfidlers (~freakyfid@ool-435018c7.dyn.optonline.net) has joined ##C
+2016-10-20 01:01:11	<--	hyphenated (~hyphenate@103.26.17.55) has quit (Quit: hyphenated)
+2016-10-20 01:01:54	-->	metachr0n (~nobody@gateway/vpn/privateinternetaccess/metachr0n) has joined ##C
+2016-10-20 01:03:03	fizzie	getopt returns an int, not a char.
+2016-10-20 01:03:19	fizzie	If you happen to have a system where 'char' is unsigned, ((c = ...) != -1) can't ever be true.
+2016-10-20 01:03:33	fizzie	Er, false.
+2016-10-20 01:04:27	izalove	in what systems char is unsigned?
+2016-10-20 01:04:39	<--	okra (~stephen@enlightenment/developer/okra) has quit (Ping timeout: 256 seconds)
+2016-10-20 01:04:46	dminuoso_	This is going to be good.
+2016-10-20 01:04:49	 *	dminuoso_ grabs the popcorn
+2016-10-20 01:04:58	izalove	no i'm just curious
+2016-10-20 01:05:15	fizzie	izalove: GCC with -funsigned-char. There's probably some way of finding out the defaults for all GCC targets from the sources.
+2016-10-20 01:05:22	-->	deekej (deekej@nat/redhat/x-hledfyidvwakubvm) has joined ##C
+2016-10-20 01:06:23	<--	chiken (~chiken@60-242-215-61.static.tpgi.com.au) has quit (Quit: Leaving)
+2016-10-20 01:06:34	-->	kw01f (~kw01f@merlin.mvtec.com) has joined ##C
+2016-10-20 01:06:58	-->	LoneHermit (~lonehermi@199.231.245.197) has joined ##C
+2016-10-20 01:07:10	<--	lowin (~lowin@31.56.128.118) has quit (Ping timeout: 250 seconds)
+2016-10-20 01:07:22	fizzie	izalove: Internet suggests ARM compilers conventionally make it unsigned.
+2016-10-20 01:07:30	dminuoso_	izalove: Char is unsigned on the following syste... wait a moment! It should not matter because code that relies on signedness of a char should use signed/unsigned char. ;-
+2016-10-20 01:07:33	dminuoso_	;-)
+2016-10-20 01:08:38	theFam	M4GNV5: still nope
+2016-10-20 01:08:55	izalove	dminuoso_: how do you change all the functions ever written by somebody else to use signed/unsigned char ?
+2016-10-20 01:09:00	-->	kamog (~user@95.73.173.223) has joined ##C
+2016-10-20 01:09:08	<--	mohabaks (~mohabaks@105.231.54.192) has quit (Ping timeout: 244 seconds)
+2016-10-20 01:09:12	M4GNV5	theFam, can you send me the code, i dont have it on this pc
+2016-10-20 01:09:20	dminuoso_	izalove: I usually take a poke stick and make them do it.
+2016-10-20 01:09:34	izalove	diplomatic approach
+2016-10-20 01:09:47	theFam	M4GNV5: i just pushed it, find it at https://github.com/BadBoy21/Collaborative/
+2016-10-20 01:09:52	theFam	development branch
+2016-10-20 01:09:53	<--	psychicist__ (~psychicis@ip127-8-212-87.adsl2.static.versatel.nl) has quit (Quit: Lost terminal)
+2016-10-20 01:11:20	<--	kw01f (~kw01f@merlin.mvtec.com) has quit (Ping timeout: 250 seconds)
+2016-10-20 01:11:20		[01:11]
+2016-10-20 01:11:21	<--	enso (~damien@hlfxns016cw-156034000026.dhcp-dynamic.FibreOP.ns.bellaliant.net) has quit (Quit: Lost terminal)
+2016-10-20 01:11:59	theFam	M4GNV5: i do gcc -o test.o -O2 -g *.c
+2016-10-20 01:13:28	<--	DingoSaar (~hagen@pD9E09004.dip0.t-ipconnect.de) has quit (Ping timeout: 260 seconds)
+2016-10-20 01:13:54	-->	karakedi (~eAC53C340@unaffiliated/orphan) has joined ##C
+2016-10-20 01:16:12	-->	okra (~stephen@enlightenment/developer/okra) has joined ##C
+2016-10-20 01:16:35	<--	stfn (~stfn@unaffiliated/stfn) has quit (Remote host closed the connection)
+2016-10-20 01:16:44	<--	jimvideo (~jimvideo@172.77.24.105) has quit (Ping timeout: 260 seconds)
+2016-10-20 01:17:29	<--	SpaceDanceCJ (~Sasha@178.121.173.68) has quit (Quit: Going offline, see ya! (www.adiirc.com))
+2016-10-20 01:18:12	-->	psychicist__ (~psychicis@ip127-8-212-87.adsl2.static.versatel.nl) has joined ##C
+2016-10-20 01:19:24	-->	metachr01 (~nobody@gateway/vpn/privateinternetaccess/metachr0n) has joined ##C
+2016-10-20 01:19:58	-->	__dutch__ (~DutchIngr@97.66.215.44) has joined ##C
+2016-10-20 01:20:16	LukeLR	I have run my code on my laptop now, and it works, no endless loop
+2016-10-20 01:20:35	LukeLR	the platform this code is written for is raspberry pi, so the hint with "arm compilers make it unsigned" might apply
+2016-10-20 01:20:45	LukeLR	any ideas?
+2016-10-20 01:21:02	-->	niekniek (~niekniek@164-205-145-85.ftth.glasoperator.nl) has joined ##C
+2016-10-20 01:21:12	LukeLR	I've always used c = getopt (...) != EOF instead of != -1 but all online documentation said it should be -1
+2016-10-20 01:21:33	fizzie	Use 'int c' instead of 'char c'.
+2016-10-20 01:21:54	LukeLR	Okay, thanks, I'll give that a try
+2016-10-20 01:22:36	<--	metachr01 (~nobody@gateway/vpn/privateinternetaccess/metachr0n) has quit (Client Quit)
+2016-10-20 01:22:45	LukeLR	Hey, it works! Thanks, fizzie!
+2016-10-20 01:23:05	LukeLR	So the problem was that char is unsigned on ARM processors and therefore could never equal -1?
+2016-10-20 01:23:42	fizzie	Yes.
+2016-10-20 01:24:00	-->	dril (~bin@unaffiliated/dril) has joined ##C
+2016-10-20 01:24:00	fizzie	(Or, more generally, the signedness of char is implementation-defined.)
+2016-10-20 01:24:27	fizzie	It's the same reason why you need to use int c for the conventional while ((c = getchar()) != EOF) loop.
+2016-10-20 01:24:40	M4GNV5	theFam, hehe i found it
+2016-10-20 01:24:53	M4GNV5	your doing (int *)bla + sizeof(int)
+2016-10-20 01:24:53	LukeLR	okay, thanks a lot. It would have taken me ages to figue that out ^^
+2016-10-20 01:25:20	<--	sh4z (lml@unaffiliated/sh4z) has quit (Read error: Connection reset by peer)
+2016-10-20 01:26:04	M4GNV5	theFam, what you want is (int *)bla + 1
+2016-10-20 01:28:06	M4GNV5	"final value = (address) + (number * size of data type)" - http://www.c4learn.com/c-programming/c-pointer-addition/ (there are probably better readings on that though)
+2016-10-20 01:28:06		[01:28]
+2016-10-20 01:29:40	-->	stfn (~stfn@unaffiliated/stfn) has joined ##C
+2016-10-20 01:30:38	<--	Guest35924 (~Nuck@c-67-181-18-100.hsd1.ca.comcast.net) has quit (Read error: Connection reset by peer)
+2016-10-20 01:31:47	-->	umpc (~umpc@unaffiliated/umpc) has joined ##C
+2016-10-20 01:32:14	-->	sashapont (~sashapont@93-120-203-162.dynamic.mts-nn.ru) has joined ##C
+2016-10-20 01:32:15	M4GNV5	"(...) If the expression P points to the i-th element of an array object, the expressions (P)+N (equivalently, N+(P)) and (P)-N (where N has the value n) point to, respectively, the i+n-th and i−n-th elements of the array object, provided they exist" - http://www.open-std.org/jtc1/sc22/wg14/www/docs/n1124.pdf 6.5.6-8 (page 95)
+2016-10-20 01:32:40	<--	sashapont (~sashapont@93-120-203-162.dynamic.mts-nn.ru) has left ##C
+2016-10-20 01:33:37	-->	mohabaks (~mohabaks@154.76.24.138) has joined ##C
+2016-10-20 01:34:28	-->	pwn (c21f3a08@gateway/web/freenode/ip.194.31.58.8) has joined ##C
+2016-10-20 01:34:42	pwn	Can someone suggest a good C unit testing framework?
+2016-10-20 01:36:39	-->	nuck (~Nuck@c-67-181-18-100.hsd1.ca.comcast.net) has joined ##C
+2016-10-20 01:37:03	--	nuck is now known as Guest67391
+2016-10-20 01:37:32	<--	interf (~int@unaffiliated/inter) has quit (Ping timeout: 256 seconds)
+2016-10-20 01:37:36	-->	Gathis (~TheBlack@unaffiliated/gathis) has joined ##C
+2016-10-20 01:37:39	-->	dhk (~dhk@138.59.24.18) has joined ##C
+2016-10-20 01:39:25	theFam	M4GNV5: have to put () around it i guess
+2016-10-20 01:40:12	theFam	M4GNV5: so what you're saying is i need to increment the address not by sizeof(int) but by one?
+2016-10-20 01:41:00	theFam	welp, that works
+2016-10-20 01:41:03	theFam	o.O
+2016-10-20 01:41:14	M4GNV5	ahh well either you do new_positions + sizeof(int) OR (int *)new_position + 1 but both means you increment by sizeof(int) * sizeof(int) (probably 4 or 16)
+2016-10-20 01:41:37	theFam	huh weird
+2016-10-20 01:41:38	theFam	now it works
+2016-10-20 01:41:41	theFam	thanks
+2016-10-20 01:43:14	-->	marchelzo (~marchelzo@unaffiliated/marchelzo) has joined ##C
+2016-10-20 01:43:14		[01:43]
+2016-10-20 01:43:42	<--	dhk (~dhk@138.59.24.18) has quit (Quit: Leaving)
+2016-10-20 01:43:51	-->	Akuli (~Akuli@mobile-access-bceed4-80.dhcp.inet.fi) has joined ##C
+2016-10-20 01:43:53	-->	gagbo (~gagbo@unaffiliated/gagbo) has joined ##C
+2016-10-20 01:44:17	theFam	i guess i need to check how memory addresses work again
+2016-10-20 01:44:45	<--	Haliucinas (~Haliucina@88-119-97-225.static.zebra.lt) has quit (Quit: Leaving)
+2016-10-20 01:45:29	<--	johnmilton (~johnmilto@192.206.23.197) has quit (Ping timeout: 260 seconds)
+2016-10-20 01:45:32	Akuli	it seems like that i can point to a value of any time with a void * pointer. is this correct? is there any reason why i shouldn't use a void * pointer every time i need a pointer?
+2016-10-20 01:45:41	Akuli	i mean.. a value of any type
+2016-10-20 01:45:56	-->	fassl_ (~fassl@192-164-253-167.adsl.highway.telekom.at) has joined ##C
+2016-10-20 01:45:58	-->	[0x8b30cc] (~0x8b30cc]@unaffiliated/x8b30cc) has joined ##C
+2016-10-20 01:46:19	pwn	Akuli: Type checking, Pointer arithmetic, etc...
+2016-10-20 01:46:29	<--	niekniek (~niekniek@164-205-145-85.ftth.glasoperator.nl) has quit (Quit: niekniek)
+2016-10-20 01:46:34	Akuli	don't void pointers do pointer arithmetic?
+2016-10-20 01:46:43	<--	cbot (~cbot@dyn-209-2-226-221.dyn.columbia.edu) has quit (Quit: This computer has gone to sleep)
+2016-10-20 01:47:02	kamog	Akuli: no, void is an incomplete type
+2016-10-20 01:47:37	Akuli	oh i see, the pointer type defines how pointer arithmetic works... that makes sense
+2016-10-20 01:47:41	-->	dhk (~dhk@138.59.24.18) has joined ##C
+2016-10-20 01:47:54	kamog	Akuli: also, you can point only to entities of an object type with void *, not to functions.
+2016-10-20 01:48:49	<--	maho (~m4ho@p5DD1586A.dip0.t-ipconnect.de) has quit (Quit: WeeChat 1.4)
+2016-10-20 01:50:02	-->	interf (~int@unaffiliated/inter) has joined ##C
+2016-10-20 01:51:24	Random832	you can convert any function pointer to any other function pointer, so you can use like int(*)() as a generic function pointer (you have to convert it back before calling it)
+2016-10-20 01:51:27	theFam	kamog: noow it makes sense!
+2016-10-20 01:51:44	theFam	you also solved my question you know. :)
+2016-10-20 01:52:28	-->	m4ho (~m4ho@unaffiliated/m4ho) has joined ##C
+2016-10-20 01:52:56	-->	eiku (~florian@cha74-h02-89-81-192-154.dsl.sta.abo.bbox.fr) has joined ##C
+2016-10-20 01:53:29	Akuli	another thing i'm wondering, is there any difference between a NULL-terminated array and a pointer to the first element of the array? they seem to behave very similarly
+2016-10-20 01:53:44	theFam	because new_positions is of type int* so when i add it sizeof(int) it moves forward by 16 bytes instead of 4
+2016-10-20 01:53:48	<--	rtkt (~rtkt@194.230.159.94) has quit (Ping timeout: 252 seconds)
+2016-10-20 01:54:37	theFam	because each +1 to int* moves it by 4 bytes
+2016-10-20 01:55:04	theFam	Random832: casting functions is legal, but calling them is UB
+2016-10-20 01:55:06	eiku	Hello, I am trying to shuffle an array of pointers and I am wondering whether I have to keep track of the indices I have already put in my shuffled pointer array or if there is some clever mathematical solution that wouldn’t involve temporary data
+2016-10-20 01:55:38	-->	rtkt (~rtkt@194.230.159.94) has joined ##C
+2016-10-20 01:57:08	<--	ioggstream (~rpolli@93-34-116-112.ip49.fastwebnet.it) has quit (Ping timeout: 245 seconds)
+2016-10-20 01:58:13	-->	regreg (regreg@85.121.54.224) has joined ##C
+2016-10-20 01:59:05	Random832	theFam: you cast it back to the correct type - it's calling them through a pointer to the wrong type that is UB
+2016-10-20 01:59:05		[01:59]
+2016-10-20 01:59:11	Xgc	eiku: What does shuffling have to do with "indices I have already put"?  Try to ask a specific question.
+2016-10-20 01:59:51	eiku	Xgc: OK, sorry for the noise… I’ll try to think a little more, then come back and explain it in a better way :)
+2016-10-20 02:00:13	Random832	also a function type with () can be used for any argument types except char, short, float, or ... (you then of course have to call with the correct arguments)
+2016-10-20 02:00:25	<--	jan64 (~jan64@afip46.neoplus.adsl.tpnet.pl) has quit (Ping timeout: 260 seconds)
+2016-10-20 02:00:25	Random832	at least it used to be i don't know if that's gone in C11
+2016-10-20 02:01:10	-->	murilo (~murilo@177.53.66.86) has joined ##C
+2016-10-20 02:01:17	-->	traquila (~traquila@digi00622.digicube.fr) has joined ##C
+2016-10-20 02:01:47	theFam	ayy, it works
+2016-10-20 02:02:09	Xgc	eiku: If you're worried about space, just run through the entire array.  Now you know you've touched every pointer at least once, without 0 or one extra pointer to handle the swap.
+2016-10-20 02:02:32	theFam	silly question: can i make a struct to hold function pointers and then initialize it to emulate a namespace?
+2016-10-20 02:02:58	Xgc	theFam: You can store function pointers.
+2016-10-20 02:03:35	<--	Beetny (~Beetny@14-202-48-200.tpgi.com.au) has quit (Ping timeout: 256 seconds)
+2016-10-20 02:03:51	theFam	that's cool, so you can do *(namespace.func)(args)?
+2016-10-20 02:04:09	theFam	or is there a way to not use the *()
+2016-10-20 02:04:16	Akuli	or namespace->func if the func is a pointer?
+2016-10-20 02:04:27	Akuli	oh wait... no :D that's not how -> works
+2016-10-20 02:04:56	theFam	haha yeah
+2016-10-20 02:05:03	theFam	you use -> if namespace is a pointer
+2016-10-20 02:05:11	Akuli	yeah right
+2016-10-20 02:05:19	-->	GenteelBen (GenteelBen@cpc70133-lutn12-2-0-cust324.9-3.cable.virginm.net) has joined ##C
+2016-10-20 02:05:20	Akuli	its like (*namespace).func
+2016-10-20 02:06:08	-->	xCrypto (~xCrypto@drmons0544w-142177154202.dhcp-dynamic.FibreOp.ns.bellaliant.net) has joined ##C
+2016-10-20 02:06:13	-->	johnmilton (~johnmilto@192.206.23.197) has joined ##C
+2016-10-20 02:06:23	eiku	I’d have suggested macros to get rid of the extra paren… before realizing it’s a really silly suggestion :D
+2016-10-20 02:06:41	theFam	eiku: why do you think that ;(
+2016-10-20 02:07:10	eiku	well, it complicates the call even further
+2016-10-20 02:07:38	eiku	like namespace_call (namespace, function, arg1, …)
+2016-10-20 02:07:46	-->	Endarked (~endarked@82.145.93.150) has joined ##C
+2016-10-20 02:08:06	<--	xameada (~xameada@ip98-165-190-88.ph.ph.cox.net) has quit (Ping timeout: 252 seconds)
+2016-10-20 02:08:29	<--	[0x8b30cc] (~0x8b30cc]@unaffiliated/x8b30cc) has quit (Quit: Leaving)
+2016-10-20 02:08:33	<--	xCrypto2 (~xCrypto@drmons0544w-142177154202.dhcp-dynamic.FibreOp.ns.bellaliant.net) has quit (Ping timeout: 260 seconds)
+2016-10-20 02:09:12	theFam	eiku: haha
+2016-10-20 02:09:19	theFam	what about
+2016-10-20 02:09:28	eiku	a new preprocessor just for that?
+2016-10-20 02:09:32	eiku	:D
+2016-10-20 02:09:38	theFam	#define namespace.func namespace_func
+2016-10-20 02:09:45	<--	freakazoid0223_ (~chatzilla@pool-108-52-4-128.phlapa.fios.verizon.net) has quit (Ping timeout: 260 seconds)
+2016-10-20 02:09:47	theFam	does it replace function names?
+2016-10-20 02:09:53	eiku	would that work?
+2016-10-20 02:09:57	M4GNV5	Random832, kamog > you cannot point to functions with void * - wait what? is that some kind of compatability thing for architectures where the instructions arent in memory? because doing a void *foo = printf; works fine for me?!
+2016-10-20 02:10:11	theFam	eiku: can't know without trying for sure
+2016-10-20 02:10:16	<--	fassl_ (~fassl@192-164-253-167.adsl.highway.telekom.at) has quit (Ping timeout: 250 seconds)
+2016-10-20 02:10:18	<--	Markaci (~Mark@108.162.148.118) has quit (Quit: I'm as mad as hell, and I'm not going to take this anymore!)
+2016-10-20 02:10:21	theFam	lemme test
+2016-10-20 02:10:35	eiku	well, don’t take my word for anything C-related, I’m new to C
+2016-10-20 02:10:50	eiku	(or new again to be more precise)
+2016-10-20 02:10:55	-->	freakazoid0223 (~chatzilla@pool-108-52-4-128.phlapa.fios.verizon.net) has joined ##C
+2016-10-20 02:11:02	theFam	me too
+2016-10-20 02:12:56	Xgc	eiku: If p is a function pointer of the correct type: p(...);  is all you need.
+2016-10-20 02:13:02	<--	mohabaks (~mohabaks@154.76.24.138) has quit (Ping timeout: 250 seconds)
+2016-10-20 02:13:13	Random832	M4GNV5: it's just not allowed by the C standard. The fact that it works on your implementation doesn't mean anything (though, POSIX *does* require that it works, and it also works on Windows, because both platforms have APIs whose semantics require it to work)
+2016-10-20 02:13:16	Xgc	theFam: Sorry. That was for you.
+2016-10-20 02:14:04	<--	Endarked (~endarked@82.145.93.150) has quit (Ping timeout: 260 seconds)
+2016-10-20 02:14:05	Xgc	theFam: It's not necessary to do this: (*p)(...);
+2016-10-20 02:14:05		[02:14]
+2016-10-20 02:14:07	theFam	Xgc: so we CAN put a function pointer inside a struct and then to mystruct.func(arg)?
+2016-10-20 02:14:11	<--	novns (~novns@unaffiliated/novns) has quit (Remote host closed the connection)
+2016-10-20 02:14:15	Xgc	theFam: Correct.
+2016-10-20 02:14:18	theFam	that's nice, i like this
+2016-10-20 02:14:46	Random832	But e.g. you could have a system where function pointers are 32 bits but data pointers are 16 bits. This would be natural for the "medium" memory model on DOS, for example.
+2016-10-20 02:15:01	-->	ExoUNX (~textual@unaffiliated/exounx) has joined ##C
+2016-10-20 02:15:25	-->	RTFM[away] (~RTFMaway]@unaffiliated/rtfmaway/x-3892344) has joined ##C
+2016-10-20 02:15:37	-->	Blue_Hat (~TwinKam20@206.214.26.146) has joined ##C
+2016-10-20 02:17:45	-->	P6hjakonn (~Tinker@4a5f-64ab-b98a-cde0-2d80-8a2c-07d0-2001.dyn.estpak.ee) has joined ##C
+2016-10-20 02:18:24	-->	kw01f (~kw01f@merlin.mvtec.com) has joined ##C
+2016-10-20 02:18:32	theFam	Random832: would that be of concern
+2016-10-20 02:19:38	-->	cryptty (~ptytty@bcdd25c0.skybroadband.com) has joined ##C
+2016-10-20 02:19:49	<--	cryptty (~ptytty@bcdd25c0.skybroadband.com) has quit (Quit: leaving)
+2016-10-20 02:20:06	Random832	theFam: it basically means you can't use void * to store function pointers in fully conforming standard C code. Most implementations allow it explicitly as an extension.
+2016-10-20 02:20:16	Random832	and if you're not trying to use void * it doesn't matter
+2016-10-20 02:20:33	theFam	ah, gotchu
+2016-10-20 02:21:02	theFam	isn't it struct { int (*func)(int, int); ... }
+2016-10-20 02:22:11	-->	cd80 (~bf3@5.153.234.146) has joined ##C
+2016-10-20 02:23:28	Random832	yeah
+2016-10-20 02:23:35	-->	vigole (~Thunderbi@178.252.165.108) has joined ##C
+2016-10-20 02:25:11	-->	re1_ (~reiser@178.220.1.2) has joined ##C
+2016-10-20 02:25:31	dminuoso_	theFam: http://roker.spamt.net/c++/datatypes_c55x.png
+2016-10-20 02:25:42	dminuoso_	theFam: That is an example architecture where data and function pointer sizes differ.
+2016-10-20 02:26:00	dminuoso_	(Just to show its not just a theoretical excercise)
+2016-10-20 02:27:05	<--	__dutch__ (~DutchIngr@97.66.215.44) has left ##C ("Leaving")
+2016-10-20 02:27:23	dminuoso_	You can always show this to your friends who claim "making assumptions about any types size is a safe thing to do.
+2016-10-20 02:28:00	pwn	dminuoso_: can you shutup?
+2016-10-20 02:28:31	<--	re1 (~reiser@178.220.1.2) has quit (Ping timeout: 256 seconds)
+2016-10-20 02:30:34	-->	ak_rosh (~InternetU@59.89.58.228) has joined ##C
+2016-10-20 02:30:34		[02:30]
+2016-10-20 02:31:31	-->	modlin (~quassel@93.123.41.167) has joined ##C
+2016-10-20 02:32:02	jantje	Hi
+2016-10-20 02:32:09	jantje	Hi having a typedef struct { int x:1 } tX; and a declaration like tX X = {0} , will it zero the four bytes or just the byte of the bitfield? Does {0} also mean 'all members' or just the first one?. Compiler is GCC.
+2016-10-20 02:32:42	jantje	I tried it out on my machine and it seems to initialize to zero even without the initializer, probably just luck?
+2016-10-20 02:32:53	-->	mzt (~mzt@p4FD2125E.dip0.t-ipconnect.de) has joined ##C
+2016-10-20 02:32:58	theFam	pwn: that was rude, fam
+2016-10-20 02:34:18	pwn	yeah long day, taking out my anger on random people on freenode.
+2016-10-20 02:34:25	 *	jantje hides
+2016-10-20 02:35:55	<--	time-trav (~mzt@unaffiliated/mzt) has quit (Ping timeout: 252 seconds)
+2016-10-20 02:37:08	-->	lowin (~lowin@151.245.124.26) has joined ##C
+2016-10-20 02:37:10	<--	lowin (~lowin@151.245.124.26) has quit (Max SendQ exceeded)
+2016-10-20 02:37:52	<--	IntoxicatedHippo (~Intoxicat@124-168-246-145.dyn.iinet.net.au) has quit (Ping timeout: 260 seconds)
+2016-10-20 02:38:24	pwn	jantje: http://open-std.org/JTC1/SC22/WG14/www/docs/n1256.pdf
+2016-10-20 02:38:28	pwn	jantje: chapter 6.7.8
+2016-10-20 02:39:11	-->	f3r70rr35f (~fernando@186.36.52.35) has joined ##C
+2016-10-20 02:40:15	dminuoso_	jantje: What storage duration?
+2016-10-20 02:40:17	pwn	some information i could gather from the document is: unnamed members have undetermined values.. so you can only assume x is initialized.
+2016-10-20 02:40:24	-->	IntoxicatedHippo (~Intoxicat@124-168-246-145.dyn.iinet.net.au) has joined ##C
+2016-10-20 02:41:57	pwn	jantje: i think if only some members are initialized, the reminding members are initialized to 0. however since you are not talking about other members, but the unnamed space in the structure, i dont think you can guarantee it will be zero
+2016-10-20 02:42:47	<--	ShekharReddy (uid132367@gateway/web/irccloud.com/x-molzxeqoqhbonojc) has quit
+2016-10-20 02:44:08	dminuoso_	jantje: On ELF non-const objects with static storage duration you can expect to end up in .bss (there is no guarantee for this, but for GCC this might be a safe assumption I think)
+2016-10-20 02:45:05	<--	vigole (~Thunderbi@178.252.165.108) has quit (Quit: 0xF4)
+2016-10-20 02:45:12	-->	ioggstream (~rpolli@93-34-116-112.ip49.fastwebnet.it) has joined ##C
+2016-10-20 02:45:31	dminuoso_	jantje: Mmm, I think the standard even guaratees zero initialization for global objects...
+2016-10-20 02:47:18	<--	mzt (~mzt@p4FD2125E.dip0.t-ipconnect.de) has quit (Quit: mzt)
+2016-10-20 02:47:18		[02:47]
+2016-10-20 02:47:27	jantje	Okay, thanks. I'm talking about stack btw.
+2016-10-20 02:47:48	<--	psychicist__ (~psychicis@ip127-8-212-87.adsl2.static.versatel.nl) has quit (Ping timeout: 244 seconds)
+2016-10-20 02:48:14	pwn	ok found it
+2016-10-20 02:48:16	pwn	jantje: If there are fewer initializers in a brace-enclosed list than there are elements or members of an aggregate, or fewer characters in a string literal used to initialize an array of known size than there are elements in the array, the remainder of the aggregate shall be initialized implicitly the same as objects that have static storage duration
+2016-10-20 02:48:53	pwn	its filled with 0, the same way objects of static storage duration are implicitly initialized to 0.
+2016-10-20 02:49:14	pwn	Chapter 6.7.8 Semantics 21
+2016-10-20 02:49:18	dminuoso_	jantje: Im not sure about the last statement. For the stack there is no guarantee whatsoever - expect uninitialized objects to be filled with junk.
+2016-10-20 02:49:42	pwn	dminuoso_: that's simply incorrect
+2016-10-20 02:50:16	pwn	if the structure is partially initialized, the reminder of the elements will be initialized to 0.
+2016-10-20 02:51:37	pwn	*remainder
+2016-10-20 02:53:58	-->	xameada (~xameada@ip98-165-190-88.ph.ph.cox.net) has joined ##C
+2016-10-20 02:54:25	-->	lowin (~lowin@151.245.124.26) has joined ##C
+2016-10-20 02:54:31	<--	daniel-s (~daniel-s@bla31-1-82-241-231-138.fbx.proxad.net) has quit (Ping timeout: 244 seconds)
+2016-10-20 02:55:43	-->	eelstrebor (~eelstrebo@216.75.116.100) has joined ##C
+2016-10-20 02:56:49	-->	daniel-s (~daniel-s@bla31-1-82-241-231-138.fbx.proxad.net) has joined ##C
+2016-10-20 02:57:10	<--	dijital1 (~dijital1@pdpc/supporter/active/dijital1) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-10-20 02:57:24	CaZe	For that struct definition, there is no other object.
+2016-10-20 02:57:50	-->	Tims_Tech (~Tims_Tech@unaffiliated/tims-tech) has joined ##C
+2016-10-20 02:57:56	-->	spew (~ben@73.110.37.254) has joined ##C
+2016-10-20 02:58:23	<--	RTFM[away] (~RTFMaway]@unaffiliated/rtfmaway/x-3892344) has quit (Ping timeout: 250 seconds)
+2016-10-20 02:59:16	-->	RTFM[away] (~RTFMaway]@unaffiliated/rtfmaway/x-3892344) has joined ##C
+2016-10-20 02:59:18	CaZe	jantje: Why do you think there are four bytes?
+2016-10-20 02:59:38	<--	marchelzo (~marchelzo@unaffiliated/marchelzo) has quit (Ping timeout: 245 seconds)
+2016-10-20 02:59:47	<--	dwrngr` (~user@96-89-42-188-static.hfc.comcastbusiness.net) has quit (Remote host closed the connection)
+2016-10-20 03:00:03	jantje	 typedef struct { int x:1 } tX; allocates 4 bytes, the underlying type for the bitfield is an int.
+2016-10-20 03:00:23	jantje	or, at least 4 bytes.
+2016-10-20 03:01:26	<--	tlaxkit (~Thunderbi@92.185.154.236) has quit (Remote host closed the connection)
+2016-10-20 03:01:38	CaZe	jantje: What makes you say that?
+2016-10-20 03:01:45	-->	tlaxkit (~Thunderbi@92.185.154.236) has joined ##C
+2016-10-20 03:01:50	-->	marchelzo (~marchelzo@unaffiliated/marchelzo) has joined ##C
+2016-10-20 03:02:51	pwn	dminuoso_: maybe i was wrong?
+2016-10-20 03:02:51		[03:02]
+2016-10-20 03:02:54	pwn	dminuoso_: https://godbolt.org/g/dSFEjg
+2016-10-20 03:03:18	pwn	it takes the original value from the stack and uses bitwise operations to set and clear the relevant bit fields, without touching the rest of the fields
+2016-10-20 03:03:37	CaZe	pwn: You cannot learn anything by looking at the assembly.
+2016-10-20 03:03:47	-->	besna (~bebna@p5DC144D3.dip0.t-ipconnect.de) has joined ##C
+2016-10-20 03:03:51	jantje	CaZe: I don't know which 'rule' that says, but I believe when you read/write from an int:1, it will always write the size of the underlyging type, so in this case 4 bytes, maybe it's implementation specific.
+2016-10-20 03:04:12	CaZe	jantje: Why can't it just be a char?
+2016-10-20 03:04:16	pwn	CaZe: i can, but perhaps you can't because your brain is too limited to comprehend whats going on.
+2016-10-20 03:04:39	Akuli	what does this do?  int x: 1;
+2016-10-20 03:04:41	Akuli	is it a default value?
+2016-10-20 03:04:43	<--	kw01f (~kw01f@merlin.mvtec.com) has quit (Remote host closed the connection)
+2016-10-20 03:05:02	pwn	CaZe: When i do this code with optimization it only returns 2, as if all other bits are zeroed: https://godbolt.org/g/sPEykw
+2016-10-20 03:05:21	CaZe	pwn: It already assumes that the entire memory page is zeroed.
+2016-10-20 03:05:22	<--	yo5phz (~yo5phz___@83.103.155.5) has quit (Ping timeout: 244 seconds)
+2016-10-20 03:05:29	pwn	CaZe: but for the original code i showed, the rest of the struct isn't zeroed... really weird dont you think: https://godbolt.org/g/dSFEjg
+2016-10-20 03:05:43	pwn	hmmm perhaps..
+2016-10-20 03:05:54	pwn	Akuli: It means a bit field containing 1 bit
+2016-10-20 03:06:12	CaZe	pwn: Maybe your brain is too small to understand why you should not be looking at assembly to understand C semantics.
+2016-10-20 03:06:14	Akuli	so its always 0 or 1?
+2016-10-20 03:06:21	pwn	Akuli: it's good if you want to seperate an int into bit fields and use them as flags and stuff like that..
+2016-10-20 03:06:45	Akuli	can you recommend a tutorial or documentation about bit fields?
+2016-10-20 03:06:49	Akuli	seems interesting
+2016-10-20 03:06:53	pwn	Akuli: yes, but you can also do int x: 3; so it contains 3 bits.. so it can be 0-7
+2016-10-20 03:07:03	<--	okra (~stephen@enlightenment/developer/okra) has quit (Ping timeout: 256 seconds)
+2016-10-20 03:07:07	pwn	Akuli: google bro, i have no idea off the top of my head
+2016-10-20 03:07:13	<--	modlin (~quassel@93.123.41.167) has quit (Remote host closed the connection)
+2016-10-20 03:07:15	<--	spew (~ben@73.110.37.254) has quit (Remote host closed the connection)
+2016-10-20 03:07:36	M4GNV5	pwn, uhh carefull a int x : 3 can be -4 to 3
+2016-10-20 03:07:37	CaZe	Then how are the negative values represented?
+2016-10-20 03:07:42	CaZe	Brain too small.
+2016-10-20 03:08:06	Akuli	with the negativeness bit?
+2016-10-20 03:08:22	M4GNV5	bitfields with signed types are kinda meh, a one bit field of a signed type can be -1 and 0 afaik
+2016-10-20 03:08:33	-->	armistace (~armistace@29.06.01a8.ip4.static.sl-reverse.com) has joined ##C
+2016-10-20 03:08:52	fizzie	It's actually implementation-defined whether "int x : 3" is signed or not.
+2016-10-20 03:08:59	pwn	of course, i just meant it can have 8 values..
+2016-10-20 03:09:09	pwn	dont be stupid
+2016-10-20 03:09:13	-->	Appleman1234_ (~Appleman1@KD106154015081.au-net.ne.jp) has joined ##C
+2016-10-20 03:09:16	Akuli	i guess unsigned int x: 3 is never signed? :D
+2016-10-20 03:09:42	pwn	Akuli: yeah, just ignore these guys they are smartasses
+2016-10-20 03:09:52	fizzie	"unsigned int x : 3" is always unsigned, and "signed int x : 3" is always signed; plain "int" is implementation-defined when it comes to bitfields.
+2016-10-20 03:09:54	CaZe	He's referring to p10, and footnote 125.
+2016-10-20 03:10:03	<--	Appleman1234 (~Appleman1@KD106154015144.au-net.ne.jp) has quit (Disconnected by services)
+2016-10-20 03:10:14	--	Appleman1234_ is now known as Appleman1234
+2016-10-20 03:10:20	-->	spew (~ben@73.110.37.254) has joined ##C
+2016-10-20 03:10:46	CaZe	But let's look at the assembly, instead of what's actually written in the spec. We will learn something from that.
+2016-10-20 03:10:52	fizzie	And 6.7.2p5: "--, except that for bit-fields, it is implementation-defined whether the specifier "int" designates the same type as "signed int" or the same type as "unsigned int"."
+2016-10-20 03:12:11	pwn	CaZe: do you understand assembly or need some help deciphering it?
+2016-10-20 03:12:37	-->	jimvideo (~jimvideo@172.77.24.105) has joined ##C
+2016-10-20 03:12:42	CaZe	pwn: There's no reason to look at assembly.
+2016-10-20 03:13:09	M4GNV5	pwn, do you have a bad day or are you always so rude? :P
+2016-10-20 03:13:30	pwn	M4GNV5: he started it
+2016-10-20 03:13:53	CaZe	pwn: Actually, you did.
+2016-10-20 03:13:55	-->	longbow (~longbow@ppp-94-67-30-51.home.otenet.gr) has joined ##C
+2016-10-20 03:14:01	<--	Dreg (~Dreg@fr33project.org) has left ##C
+2016-10-20 03:14:12	pwn	True, i started it
+2016-10-20 03:14:15	CaZe	pwn: All I said was that you cannot learn C by looking at the assembly that a code fragment translates to.
+2016-10-20 03:14:17	pwn	was hoping nobody would notice
+2016-10-20 03:14:39	<--	interf (~int@unaffiliated/inter) has quit (Ping timeout: 252 seconds)
+2016-10-20 03:15:21	pwn	I was bored and was looking for some drama, what can i say.
+2016-10-20 03:15:23	pwn	bbl
+2016-10-20 03:15:23	M4GNV5	haha, what do you expect, in here there are only people that try to obey the standard and that get a heart attack already when you assume anything thats not defined by the standard. You probably want to go to ##asm even though the name doesnt suggest you will get better help with low level system dependent C than here
+2016-10-20 03:15:32	<--	pwn (c21f3a08@gateway/web/freenode/ip.194.31.58.8) has quit
+2016-10-20 03:15:46	M4GNV5	^ long text for pwcjr
+2016-10-20 03:15:52	-->	bneo99_ (~bneo99@115.135.156.114) has joined ##C
+2016-10-20 03:15:53	M4GNV5	nooo auto complete for pwn
+2016-10-20 03:16:04	-->	wetterfuchs (~wetterfuc@2a02:908:f761:63a0:76d4:35ff:fe1c:bd81) has joined ##C
+2016-10-20 03:16:43	CaZe	He was wondering if { 0 } would initalize all members of a struct to 0, and rather than looking it up, he decided to look at the assembly.
+2016-10-20 03:16:45	<--	bneo99_ (~bneo99@115.135.156.114) has quit (Max SendQ exceeded)
+2016-10-20 03:16:57	M4GNV5	hehe
+2016-10-20 03:17:03	CaZe	And he just got more questions when he did.
+2016-10-20 03:17:03	lowin	If I define a function as static, I can't call it when debugging my program with gdb, right?
+2016-10-20 03:17:08	M4GNV5	main[-1]={0};
+2016-10-20 03:17:15	<--	bneo99 (~bneo99@115.133.69.54) has quit (Ping timeout: 256 seconds)
+2016-10-20 03:17:23	-->	bneo99_ (~bneo99@115.135.156.114) has joined ##C
+2016-10-20 03:17:24	theFam	-1?
+2016-10-20 03:17:35	M4GNV5	wait fu it should be -1u
+2016-10-20 03:17:49	theFam	huh????
+2016-10-20 03:17:53	Akuli	is there any difference between a pointer to the first element of a null-terminated array and the actual array?
+2016-10-20 03:17:53		[03:17]
+2016-10-20 03:18:05	Akuli	they seem to behave really similarly
+2016-10-20 03:18:16	M4GNV5	basically -1u is (unsigned)-1 what is UNSIGNED_MAX
+2016-10-20 03:18:17	<--	bneo99_ (~bneo99@115.135.156.114) has quit (Max SendQ exceeded)
+2016-10-20 03:18:31	-->	SpaceDanceCJ (~Sasha@178.121.173.68) has joined ##C
+2016-10-20 03:18:48	-->	bneo99_ (~bneo99@115.135.156.114) has joined ##C
+2016-10-20 03:18:52	-->	Haliucinas (~Haliucina@88-119-97-225.static.zebra.lt) has joined ##C
+2016-10-20 03:18:55	<--	Haliucinas (~Haliucina@88-119-97-225.static.zebra.lt) has quit (Remote host closed the connection)
+2016-10-20 03:19:13	CaZe	Akuli: Their types are different.
+2016-10-20 03:19:28	M4GNV5	i guess someone is getting a heart attack now because (unsigned)-1 is not defined by the standard? or is it?
+2016-10-20 03:19:39	theFam	haha
+2016-10-20 03:19:40	<--	bneo99_ (~bneo99@115.135.156.114) has quit (Max SendQ exceeded)
+2016-10-20 03:19:48	theFam	it just sounds a little weird
+2016-10-20 03:20:04	Akuli	if i'm writing a function that's supposed to take an array as an argument do i need to worry about letting people pass in a pointer to the first element and an actual array?
+2016-10-20 03:20:05	koro	what does int x:1 dot?
+2016-10-20 03:20:07	koro	do
+2016-10-20 03:20:11	-->	bneo99_ (~bneo99@115.135.156.114) has joined ##C
+2016-10-20 03:20:27	-->	psychicist__ (~psychicis@ip127-8-212-87.adsl2.static.versatel.nl) has joined ##C
+2016-10-20 03:20:31	-->	troulouliou_div2 (~troulouli@unaffiliated/troulouliou-div2/x-0271439) has joined ##C
+2016-10-20 03:20:36	M4GNV5	koro, bitfield
+2016-10-20 03:20:38	Akuli	for example, functions that take strings as arguments seem to handle both just fine
+2016-10-20 03:20:43	CaZe	Akuli: When people talk about passing an array to a function, they usually mean passing a pointer to its first element.
+2016-10-20 03:20:45	-->	[0x8b30cc] (~0x8b30cc]@unaffiliated/x8b30cc) has joined ##C
+2016-10-20 03:21:02	CaZe	Akuli: It is rare that you pass a pointer to the actual array.
+2016-10-20 03:21:05	<--	bneo99_ (~bneo99@115.135.156.114) has quit (Max SendQ exceeded)
+2016-10-20 03:21:14	Akuli	yeah, thats what i meant
+2016-10-20 03:21:27	Akuli	does char stuff[10]; thingy(stuff); pass a pointer to the first element?
+2016-10-20 03:21:28	theFam	CaZe: string arrays
+2016-10-20 03:21:31	CaZe	Akuli: It usually only happens when the array _is_ the first element of an even larger array.
+2016-10-20 03:21:37	theFam	Akuli: yes
+2016-10-20 03:21:49	theFam	stuff is of type char*
+2016-10-20 03:21:54	-->	zwliew (uid161395@gateway/web/irccloud.com/x-tsejoempvoymrira) has joined ##C
+2016-10-20 03:21:55	Akuli	wow
+2016-10-20 03:22:03	Akuli	i thought char[...] and char * are different types
+2016-10-20 03:22:16	Akuli	and i was asking if there's difference between how they're used
+2016-10-20 03:22:20	theFam	they technically are not, but there are differences
+2016-10-20 03:22:23	CaZe	Akuli: A pointer to the array would have type char (*)[10].
+2016-10-20 03:22:28	theFam	^
+2016-10-20 03:22:45	theFam	argv is an example of that, it's a char **
+2016-10-20 03:22:48	CaZe	They technically are different, because they have completely different types.
+2016-10-20 03:22:58	theFam	CaZe: huh?
+2016-10-20 03:23:20	Akuli	so... i can just treat pointers as arrays and arrays as pointers and everything will work?
+2016-10-20 03:23:28	-->	pthreat (~pthreat@unaffiliated/lpthread) has joined ##C
+2016-10-20 03:23:29	<--	wetterfuchs (~wetterfuc@2a02:908:f761:63a0:76d4:35ff:fe1c:bd81) has quit (Ping timeout: 260 seconds)
+2016-10-20 03:23:33	CaZe	Akuli: Sometimes. Not always.
+2016-10-20 03:23:38	theFam	Akuli: cannot assume
+2016-10-20 03:23:43	Akuli	when do i need to worry about this?
+2016-10-20 03:23:45	theFam	based on context
+2016-10-20 03:23:48	theFam	yes
+2016-10-20 03:24:14	koro	why would you want to use the :1 thing?
+2016-10-20 03:24:18	CaZe	Akuli: When using sizeof, &, and a third thing I can't remember right now.
+2016-10-20 03:24:28	M4GNV5	koro, less memory usage
+2016-10-20 03:24:34	koro	really?
+2016-10-20 03:24:36	-->	dwrngr (~user@96-89-42-188-static.hfc.comcastbusiness.net) has joined ##C
+2016-10-20 03:24:41	pthreat	What's the :1 thing
+2016-10-20 03:24:55	koro	is there a guarantee that only that amount of bits is going to be used? i kind of doubt it
+2016-10-20 03:24:58	M4GNV5	pthreat, bitfield
+2016-10-20 03:25:07	Akuli	oh i see, &array is the array's memory address and &arraypointer is the pointer's memory address
+2016-10-20 03:25:09	CaZe	koro: It allows packing.
+2016-10-20 03:25:09	Akuli	now that makes sense
+2016-10-20 03:25:20	-->	frostschutz (~frostschu@x2f67c45.dyn.telefonica.de) has joined ##C
+2016-10-20 03:25:24	theFam	koro: you trade less memory usage for smaller available set of numbers
+2016-10-20 03:25:43	Akuli	do void thing(char * stuff) { ... } and void thingy(char stuff[]) { ... } differ in some way?
+2016-10-20 03:25:48	koro	so if you declare 8 different variables like int x:1, it will only use 8 bits for them?
+2016-10-20 03:25:52	M4GNV5	Akuli, no
+2016-10-20 03:26:08	Akuli	so i always get a pointer from a function definition?
+2016-10-20 03:26:20	Akuli	or an array?
+2016-10-20 03:26:22	CaZe	Akuli: No, but to pass a pointer to the array you had before, it would need to be void thing(char (*stuff)[10]);
+2016-10-20 03:26:26	M4GNV5	Akuli, even void thingything(char stuff[16]) { ... ) should be the same however the compiler will warn you if you do stuff[17] etc.
+2016-10-20 03:26:33	<--	eiku (~florian@cha74-h02-89-81-192-154.dsl.sta.abo.bbox.fr) has quit (Ping timeout: 244 seconds)
+2016-10-20 03:26:57	Akuli	hmm
+2016-10-20 03:27:52	koro	CaZe: but if you don't explicitly request packing it won't happen, or will it/
+2016-10-20 03:28:05	Random832	koro: It might be implementation-defined. I think it will probably use a whole int (at least 16 bits, most often 32) rather than 8 bits.
+2016-10-20 03:28:09	Akuli	so calling the function defines the type it's going to get?
+2016-10-20 03:28:27	CaZe	koro: It's required to if it can fit wholly.
+2016-10-20 03:28:33	theFam	it will warn you if you pass incompatible types
+2016-10-20 03:28:42	Akuli	oh there we go
+2016-10-20 03:28:44	koro	ah, nice
+2016-10-20 03:29:42	CaZe	,c11 6.7.2.1p11
+2016-10-20 03:29:43	@candide	 http://www.iso-9899.info/n1570.html#6.7.2.1p11 [Structure and union specifiers] An implementation may allocate any addressable storage unit large enough to hold a bit- field. If enough space remains, a bit-field that immediately follows another bit-field in a structure shall be packed into adjacent bits of the same unit. If insufficient space remains, whether a bi... [truncated; see http://sprunge.us/JRiM for full text.]
+2016-10-20 03:30:44	Random832	well, it does say "any addressable storage unit large enough"
+2016-10-20 03:30:45	<--	minimalism (~none@unaffiliated/minimalism) has quit (Quit: minimalism)
+2016-10-20 03:31:09	Random832	so i guess implementations are free to allocate it into a char if they feel like it, or an int, or even a long
+2016-10-20 03:31:12	-->	yo5phz (~yo5phz___@89.137.124.138) has joined ##C
+2016-10-20 03:31:13	-->	interf (~int@unaffiliated/inter) has joined ##C
+2016-10-20 03:31:17	--	theFam is now known as OxDEADBEEF
+2016-10-20 03:31:40	OxDEADBEEF	nobody registered this nick
+2016-10-20 03:31:46	CaZe	That's what I said before in response to the original question.
+2016-10-20 03:32:15	Random832	(subject to the constraint that if you have eight bits of bit fields in one struct, and the same fields followed by more in another struct, the prefix has to be compatible)
+2016-10-20 03:32:18	MrRobot01	i don't get this
+2016-10-20 03:32:19	MrRobot01	https://paste.fedoraproject.org/456156/70299147
+2016-10-20 03:32:58	<--	itaitb (~itaitb@unaffiliated/itaitb) has quit (Ping timeout: 260 seconds)
+2016-10-20 03:32:58		[03:32]
+2016-10-20 03:33:11	MrRobot01	calling function find_ip_address(hostname , ip_address);
+2016-10-20 03:33:13	MrRobot01	??
+2016-10-20 03:33:18	<--	[0x8b30cc] (~0x8b30cc]@unaffiliated/x8b30cc) has quit (Quit: Leaving)
+2016-10-20 03:33:37	-->	jan64 (~jan64@afip46.neoplus.adsl.tpnet.pl) has joined ##C
+2016-10-20 03:33:45	<--	dinfuehr (~dinfuehr@188-23-150-184.adsl.highway.telekom.at) has quit (Ping timeout: 260 seconds)
+2016-10-20 03:34:06	-->	nullptr| (~NullPtr|@ip-89-176-165-102.net.upcbroadband.cz) has joined ##C
+2016-10-20 03:34:18	-->	dinfuehr (~dinfuehr@188-23-215-126.adsl.highway.telekom.at) has joined ##C
+2016-10-20 03:34:38	<--	RTFM[away] (~RTFMaway]@unaffiliated/rtfmaway/x-3892344) has quit (Ping timeout: 245 seconds)
+2016-10-20 03:35:09	<--	troulouliou_div2 (~troulouli@unaffiliated/troulouliou-div2/x-0271439) has quit (Ping timeout: 260 seconds)
+2016-10-20 03:35:23	-->	RTFM[away] (~RTFMaway]@177.94.213.225) has joined ##C
+2016-10-20 03:35:23	<--	RTFM[away] (~RTFMaway]@177.94.213.225) has quit (Changing host)
+2016-10-20 03:35:23	-->	RTFM[away] (~RTFMaway]@unaffiliated/rtfmaway/x-3892344) has joined ##C
+2016-10-20 03:35:29	-->	eiku (~florian@cha74-h02-89-81-192-154.dsl.sta.abo.bbox.fr) has joined ##C
+2016-10-20 03:35:47	OxDEADBEEF	MrRobot01: it
+2016-10-20 03:35:53	pragma-	infantile beef
+2016-10-20 03:35:59	OxDEADBEEF	MrRobot01: it's right below main
+2016-10-20 03:36:06	OxDEADBEEF	pragma-: hehe
+2016-10-20 03:36:25	mikk0	0x0B00B5
+2016-10-20 03:36:31	OxDEADBEEF	haha
+2016-10-20 03:36:41	M4GNV5	0xB16B00B5
+2016-10-20 03:36:43	-->	dantob (~daniel@101.189.63.26) has joined ##C
+2016-10-20 03:37:08	MrRobot01	pragma-, okay
+2016-10-20 03:37:08	M4GNV5	0xDEADCODE, 0xCAFE, 0xBABE, ...
+2016-10-20 03:37:42	MrRobot01	the var ip_address ?
+2016-10-20 03:38:22	M4GNV5	hmmm im kinda temped to do ,cc main[-1u]={7};
+2016-10-20 03:38:24	MrRobot01	no value?
+2016-10-20 03:38:32	OxDEADBEEF	M4GNV5: sometimes i wonder about how many instructions were ever run instructions
+2016-10-20 03:38:36	OxDEADBEEF	erm
+2016-10-20 03:38:43	<--	cd80 (~bf3@5.153.234.146) has quit (Quit: leaving)
+2016-10-20 03:38:44	M4GNV5	wut?
+2016-10-20 03:38:47	-->	okra (~stephen@net26h32.itsd.state.ms.us) has joined ##C
+2016-10-20 03:38:48	<--	okra (~stephen@net26h32.itsd.state.ms.us) has quit (Changing host)
+2016-10-20 03:38:48	-->	okra (~stephen@enlightenment/developer/okra) has joined ##C
+2016-10-20 03:38:50	OxDEADBEEF	were ever run on computers*
+2016-10-20 03:39:06	M4GNV5	MrRobot01, its value is set by the function, the ipaddress is put in string form into it
+2016-10-20 03:39:24	<--	rtkt (~rtkt@194.230.159.94) has quit (Ping timeout: 252 seconds)
+2016-10-20 03:39:45	OxDEADBEEF	i want to know the total smounts of intructions processed
+2016-10-20 03:39:57	OxDEADBEEF	by computers since beginning of time
+2016-10-20 03:40:28	OxDEADBEEF	the bus is shaky and my ' key is close to my \n key
+2016-10-20 03:40:32	MrRobot01	??
+2016-10-20 03:40:34	mikk0	does your definition of a computer include an abacus
+2016-10-20 03:40:40	-->	DingoSaar (~hagen@217.224.132.58) has joined ##C
+2016-10-20 03:40:42	M4GNV5	lol
+2016-10-20 03:40:42	OxDEADBEEF	mikk0: electrical
+2016-10-20 03:40:54	-->	cd80 (~bf3@gateway/vpn/privateinternetaccess/emul16) has joined ##C
+2016-10-20 03:41:18	OxDEADBEEF	probably more than 10e18
+2016-10-20 03:42:16	lowin	Is it unconventional to separate a function into multiple blocks in hopes of making it more readable in future?
+2016-10-20 03:42:27	-->	FantAstic_FoE (~Nikhil@101.56.120.65) has joined ##C
+2016-10-20 03:42:33	lowin	split a function*
+2016-10-20 03:42:34	dminuoso_	lowin: Not really for readabilities sake.
+2016-10-20 03:42:55	dminuoso_	lowin: Split it into logical chunks that solve a problem each.
+2016-10-20 03:43:02	<--	RTFM[away] (~RTFMaway]@unaffiliated/rtfmaway/x-3892344) has quit (Ping timeout: 252 seconds)
+2016-10-20 03:43:15	-->	singularity00 (~singulari@236.lan-hi1-2.static.rozabg.com) has joined ##C
+2016-10-20 03:43:43	-->	RTFM[away] (~RTFMaway]@179.184.226.234) has joined ##C
+2016-10-20 03:43:44	M4GNV5	lowin, i was always told to give my code "room to breathe"
+2016-10-20 03:43:46	<--	RTFM[away] (~RTFMaway]@179.184.226.234) has quit (Changing host)
+2016-10-20 03:43:46	-->	RTFM[away] (~RTFMaway]@unaffiliated/rtfmaway/x-3892344) has joined ##C
+2016-10-20 03:43:58	lowin	dminuoso_, the problem is that variables must be declared at top of the blocks...
+2016-10-20 03:44:00	-->	aajjbb (~aajjbb@177.193.235.201) has joined ##C
+2016-10-20 03:44:10	dminuoso_	lowin: No they dont.
+2016-10-20 03:44:17	M4GNV5	in C89 lol
+2016-10-20 03:44:29	FantAstic_FoE	please recommend a good book on C for starting out programming
+2016-10-20 03:44:40	pragma-	fortunately you can create a block just about anywhere
+2016-10-20 03:44:43	-->	navidr (uid112413@gateway/web/irccloud.com/x-qrsnbqcbfqnafkff) has joined ##C
+2016-10-20 03:44:48	lowin	I'd forego C89 but microsoft still doesn't support later standards and Im going for portability here
+2016-10-20 03:45:08	dminuoso_	pragma-: Yes. I think its good practice to enclose every statement into a block to protect it from other blocks.
+2016-10-20 03:45:23	pragma-	there are gcc and clang for windows, I wouldn't worry about microsoft.
+2016-10-20 03:45:25	<--	armistace (~armistace@29.06.01a8.ip4.static.sl-reverse.com) has quit (Ping timeout: 260 seconds)
+2016-10-20 03:45:51	<--	re1_ (~reiser@178.220.1.2) has quit (Quit: Leaving)
+2016-10-20 03:46:53	Random832	lowin: microsoft does support declaring variables anywhere though, because C++ requires it
+2016-10-20 03:47:01	-->	hubcaps (~jessiem@ip98-165-107-34.ph.ph.cox.net) has joined ##C
+2016-10-20 03:47:02	<--	hubcaps (~jessiem@ip98-165-107-34.ph.ph.cox.net) has quit (Changing host)
+2016-10-20 03:47:02	-->	hubcaps (~jessiem@unaffiliated/hubcaps) has joined ##C
+2016-10-20 03:47:13	Random832	It's not uncommon to target the intersection of C99 and MSVC
+2016-10-20 03:47:19	FantAstic_FoE	i am planning on starting to learn programming,please recommend a good c book
+2016-10-20 03:47:31	dminuoso_	candide: give FantAstic_FoE books
+2016-10-20 03:47:39	 *	dminuoso_ kicks candide 
+2016-10-20 03:47:49	 *	candide kisses dminuoso_
+2016-10-20 03:47:54	dminuoso_	candide: give FantAstic_FoE books
+2016-10-20 03:47:57	dminuoso_	,books
+2016-10-20 03:47:57	@candide	See http://www.iso-9899.info/wiki/Books for some useful book recommendations, including free online resources!
+2016-10-20 03:48:03	pragma-	dminuoso_: http://www.iso-9899.info/wiki/Candide#Directing_output_to_a_user
+2016-10-20 03:48:03		[03:48]
+2016-10-20 03:48:07	dminuoso_	pragma-: Heh.
+2016-10-20 03:48:10	lowin	Random832, Last time I tried compiling my code on msvc i got bunch of errors complaining about it. I think it enforces c89 on .c files
+2016-10-20 03:48:18	mikk0	what is this.. book?
+2016-10-20 03:48:21	cd80	I'm always a fan of strangling code at inception
+2016-10-20 03:48:31	dminuoso_	pragma-: I was mixing candide up with nolyc from the C++ channels
+2016-10-20 03:49:03	MrRobot01	error : reference to `pthread_create' ??!!
+2016-10-20 03:49:17	<--	marchelzo (~marchelzo@unaffiliated/marchelzo) has quit (Ping timeout: 244 seconds)
+2016-10-20 03:49:20	<--	murilo (~murilo@177.53.66.86) has quit (Quit: Leaving)
+2016-10-20 03:49:30	MrRobot01	error : undefined reference to `pthread_create' ??!!
+2016-10-20 03:49:38	dminuoso_	FantAstic_FoE: If you are overwhelmed by the recommendations, I think the "classic" recommendation is "K&R" - you can't go wrong if you are unsure.
+2016-10-20 03:49:59	Random832	errors or warningS?
+2016-10-20 03:50:26	dminuoso_	candide: tell MrRobot01 about ld
+2016-10-20 03:50:26	@candide	MrRobot01: "Undefined reference" is a linker error. It's not a compile error. #includes don't help. You did not define the thing in the error message; you forgot to link the file that defines it; you forgot to link to the library that defines it; or, if it's a static library, you have the wrong order on the linker command line. Check which one. (Note that some linkers call it an unresolved external.)
+2016-10-20 03:50:29	MrRobot01	pthreadz.c:(.text+0x86): undefined reference to `pthread_create'
+2016-10-20 03:50:42	-->	troulouliou_div2 (~troulouli@unaffiliated/troulouliou-div2/x-0271439) has joined ##C
+2016-10-20 03:50:46	dminuoso_	pragma-: :)
+2016-10-20 03:50:49	Random832	you should be in ##posix, but you're missing -lpthread
+2016-10-20 03:51:09	FantAstic_FoE	but i have just started programming,is it a good choice
+2016-10-20 03:51:18	dminuoso_	FantAstic_FoE: Yes, it's fine.
+2016-10-20 03:51:22	MrRobot01	collect2: error: ld returned 1 exit status
+2016-10-20 03:51:31	FantAstic_FoE	thanks
+2016-10-20 03:51:41	dminuoso_	FantAstic_FoE: Just make sure you pick up the second edition of the book.
+2016-10-20 03:51:44	-->	NoRm4nD (~norm4nd@186.211.32.254) has joined ##C
+2016-10-20 03:51:48	pthreat	MrRobot01: Do more morphine
+2016-10-20 03:51:53	pthreat	that will take it away
+2016-10-20 03:51:54	MrRobot01	lol
+2016-10-20 03:51:58	OxDEADBEEF	Random832: don't forget that you need the -dev files on some systems (debian and spinoffs being some)
+2016-10-20 03:51:59	pragma-	dminuoso_: !errata
+2016-10-20 03:52:00	pthreat	h4xxxx
+2016-10-20 03:52:00	@candide	dminuoso_: When reading The C Programming Language, 2nd edition, by Kernighan and Ritchie, make sure you check the errata as well: http://www.iso-9899.info/2ediffs.html
+2016-10-20 03:52:05	OxDEADBEEF	-dev packages*
+2016-10-20 03:52:19	dminuoso_	Neet.
+2016-10-20 03:52:19	Random832	OxDEADBEEF: he'd be getting a different error if it were that.
+2016-10-20 03:52:19	dminuoso_	Neat.
+2016-10-20 03:52:26	FantAstic_FoE	sure
+2016-10-20 03:52:37	pragma-	I have a box of oreo cookies.
+2016-10-20 03:52:40	<--	rcombs (rcombs@irc.rcombs.me) has quit (Quit: ZNC - http://znc.in/ZNC)
+2016-10-20 03:52:47	cd80	I wonder how easy it is to pick up the 1st ed of k&r.. :)
+2016-10-20 03:52:47	pthreat	pragma-: wow
+2016-10-20 03:53:05	pthreat	pragma-: are you going to dip those mf's in milk ?
+2016-10-20 03:53:06	cd80	cooookies!
+2016-10-20 03:53:27	dminuoso_	cd80: You'd be surprised. People trying to be cheap skates looking for used books on ebay or amazon, accidentally picking up the first edition because $5 is hard to beat..
+2016-10-20 03:53:30	pragma-	it would be a sin to not dip them in milk
+2016-10-20 03:53:41	pthreat	In oreo's name, amen
+2016-10-20 03:53:45	cd80	dminuoso_: wow heh :)
+2016-10-20 03:53:55	FantAstic_FoE	dminuoso: can i pm u
+2016-10-20 03:54:12	dminuoso_	FantAstic_FoE: You may ask me the personal questions about my sex life in here.
+2016-10-20 03:54:26	<--	SpaceDanceCJ (~Sasha@178.121.173.68) has quit (Quit: Going offline, see ya! (www.adiirc.com))
+2016-10-20 03:54:33	<--	vikid (~vukini@mail.centaur.ae) has quit (Ping timeout: 256 seconds)
+2016-10-20 03:54:53	pthreat	lol
+2016-10-20 03:55:22	FantAstic_FoE	heard c is not the best option for learning programming
+2016-10-20 03:55:32	FantAstic_FoE	as a language
+2016-10-20 03:55:44	dminuoso_	There's the word "best" again.
+2016-10-20 03:55:54	<--	gila (~textual@46.166.137.231) has quit (Ping timeout: 252 seconds)
+2016-10-20 03:55:59	-->	chan20 (~quassel@124.123.81.196) has joined ##C
+2016-10-20 03:56:18	pragma-	I don't think best is the best word for determine which best is the best best of all the bestest bests.
+2016-10-20 03:56:27	pthreat	the best best of the best
+2016-10-20 03:56:31	pthreat	FantAstic_FoE: use python, every dumb fucker out there will tell you to use it
+2016-10-20 03:56:38	pthreat	yay!
+2016-10-20 03:56:46	pragma-	be the best or be the rest
+2016-10-20 03:56:52	pthreat	BAM!
+2016-10-20 03:57:11	FantAstic_FoE	ok thanks
+2016-10-20 03:57:23	phy1729	pragma-: mess with the best; die like the rest
+2016-10-20 03:57:27	-->	gila (~textual@5ED4FE92.cm-7-5d.dynamic.ziggo.nl) has joined ##C
+2016-10-20 03:57:37	pragma-	phy1729: wan shot, wan kill.
+2016-10-20 03:57:45	 *	pthreat lights up blunt and nods
+2016-10-20 03:57:56	-->	titodrew (~titodrew@154.69.93.138) has joined ##C
+2016-10-20 03:58:10	<--	FantAstic_FoE (~Nikhil@101.56.120.65) has left ##C ("Leaving")
+2016-10-20 03:58:37	CaZe	pragma-: Hydrox
+2016-10-20 03:58:50	-->	time-trav (~time-trav@unaffiliated/mzt) has joined ##C
+2016-10-20 03:58:56	dminuoso_	If that discouraged them to learn C then we have done our job right?
+2016-10-20 03:59:01	pragma-	no, these are quite distinctly oreos
+2016-10-20 03:59:04	MrRobot01	what gcc -pthread oh i find it
+2016-10-20 03:59:07	<--	spew (~ben@73.110.37.254) has quit (Remote host closed the connection)
+2016-10-20 03:59:23	dminuoso_	pragma-: Oh oreos. That reminds of that Penn & Teller episode on Fool Us...
+2016-10-20 04:00:08	-->	rtkt (~rtkt@194.230.159.94) has joined ##C
+2016-10-20 04:01:17	CaZe	pragma-: Hydrox are better.
+2016-10-20 04:01:41	pragma-	aside from the whole name-sounds-like-a-chemical thing
+2016-10-20 04:01:52	-->	adolf_stalin (~adolf_sta@205.157.178.141) has joined ##C
+2016-10-20 04:02:01	masochist	but everything is made of chemicals
+2016-10-20 04:02:25	pragma-	hydrox is made out of chemicals. oreos are made out of oreo.
+2016-10-20 04:02:55	pthreat	the filling in oreos is made of sugared dead baby fetuses
+2016-10-20 04:03:11	-->	rcombs (rcombs@irc.rcombs.me) has joined ##C
+2016-10-20 04:03:11		[04:03]
+2016-10-20 04:03:20	pthreat	oh, I forgot *spoiler alert*
+2016-10-20 04:03:32	CaZe	It's named after dihydrogen monoxide.
+2016-10-20 04:03:53	pragma-	i've heard of that stuff
+2016-10-20 04:04:09	<--	tlaxkit (~Thunderbi@92.185.154.236) has quit (Quit: tlaxkit)
+2016-10-20 04:04:11	pragma-	it's clear and flavorless and it has a 100% fatality rate for anybody that comes into touch with it
+2016-10-20 04:05:20	<--	Boobuigi (~weechat@2602:304:cdcd:350:9646:96ff:fe11:21a9) has quit (Quit: WeeChat 1.6)
+2016-10-20 04:05:22	<--	traquila (~traquila@digi00622.digicube.fr) has quit (Quit: Konversation terminated!)
+2016-10-20 04:05:26	pthreat	I feel tired
+2016-10-20 04:05:29	pthreat	I need oreos
+2016-10-20 04:06:31	<--	Akuli (~Akuli@mobile-access-bceed4-80.dhcp.inet.fi) has quit (Quit: Lähdössä)
+2016-10-20 04:07:17	pthreat	and x-rated things
+2016-10-20 04:07:36	 *	masochist imagines an email header, X-Rated
+2016-10-20 04:07:45	pthreat	I need to dip my oreo, so to speak ...
+2016-10-20 04:07:58	pthreat	Everyone needs to dip their oreos from time to time
+2016-10-20 04:08:29	pthreat	dereference that pointer, free it after
+2016-10-20 04:09:10	pthreat	amen
+2016-10-20 04:09:59	-->	jotak (~tux@unaffiliated/jotak) has joined ##C
+2016-10-20 04:11:07	-->	snyp (~Snyp@nas4.meghbelabroadband.in) has joined ##C
+2016-10-20 04:12:37	-->	spew (~ben@vpnusers.backstopsolutions.com) has joined ##C
+2016-10-20 04:13:27	-->	modlin (~quassel@93.123.41.167) has joined ##C
+2016-10-20 04:13:32	-->	waldo (~Waldo@unaffiliated/wallabyjenkins-/x-8450033) has joined ##C
+2016-10-20 04:13:36	<--	PlasmaStar (Plasma@unaffiliated/plasmastar) has quit (Ping timeout: 260 seconds)
+2016-10-20 04:13:43	<--	waldo (~Waldo@unaffiliated/wallabyjenkins-/x-8450033) has left ##C
+2016-10-20 04:13:46	<--	okra (~stephen@enlightenment/developer/okra) has quit (Ping timeout: 250 seconds)
+2016-10-20 04:15:51	-->	mizu_no_oto_work (~textual@104.207.209.180) has joined ##C
+2016-10-20 04:16:01	-->	Wetmelon (~wetmelon@host-73-169.ncasgro.asheville.nc.us.clients.pavlovmedia.com) has joined ##C
+2016-10-20 04:16:42	-->	evanvarvell (~evanvarve@97-88-184-50.dhcp.stls.mo.charter.com) has joined ##C
+2016-10-20 04:18:15	<--	metachr0n (~nobody@gateway/vpn/privateinternetaccess/metachr0n) has quit (Quit: WeeChat 1.5)
+2016-10-20 04:18:15		[04:18]
+2016-10-20 04:18:48	-->	PlasmaStar (Plasma@unaffiliated/plasmastar) has joined ##C
+2016-10-20 04:19:58	-->	nikivi (~nikivi@dhcp-077-250-172-150.chello.nl) has joined ##C
+2016-10-20 04:21:11	-->	okra (~stephen@net26h32.itsd.state.ms.us) has joined ##C
+2016-10-20 04:21:36	<--	okra (~stephen@net26h32.itsd.state.ms.us) has quit (Changing host)
+2016-10-20 04:21:36	-->	okra (~stephen@enlightenment/developer/okra) has joined ##C
+2016-10-20 04:24:01	-->	[0x8b30cc] (~0x8b30cc]@unaffiliated/x8b30cc) has joined ##C
+2016-10-20 04:25:16	<--	jotak (~tux@unaffiliated/jotak) has quit (Ping timeout: 265 seconds)
+2016-10-20 04:27:22	-->	jan64_ (~jan64@aazn177.neoplus.adsl.tpnet.pl) has joined ##C
+2016-10-20 04:27:46	catern	hey ##c!
+2016-10-20 04:28:39	-->	Grr_ (8173c30b@gateway/web/freenode/ip.129.115.195.11) has joined ##C
+2016-10-20 04:28:56	catern	I have a header file declaring some stuff A, B, C, and this header file includes other files to get declarations of other things A1 A2, B1, C1, C2, that my declarations depend on
+2016-10-20 04:29:03	Grr_	Hi I am trying to declare a struct and am having a hard time deciding what to put in it
+2016-10-20 04:29:17	catern	I want to put the #includes for A1, etc. just before each declaration that they are needed for
+2016-10-20 04:29:24	Grr_	In my set.h I have
+2016-10-20 04:29:28	Grr_	typedef int setElementT; typedef struct setCDT *setADT;
+2016-10-20 04:29:33	catern	is there any reason not to do this?
+2016-10-20 04:29:59	-->	sashapont (~sashapont@93-120-203-162.dynamic.mts-nn.ru) has joined ##C
+2016-10-20 04:30:17	Grr_	Now in that setCDT struct I am not entirely sure what to put here. I am trying to implement a function for set insertition
+2016-10-20 04:30:28	<--	daniel-s (~daniel-s@bla31-1-82-241-231-138.fbx.proxad.net) has quit (Ping timeout: 245 seconds)
+2016-10-20 04:30:48	<--	jan64 (~jan64@afip46.neoplus.adsl.tpnet.pl) has quit (Ping timeout: 256 seconds)
+2016-10-20 04:31:13	Grr_	int setInsertElementSorted(setADT S, setElementT E); /* if not successful, return 0; otherwise, return the num of elements after the insertion. Also note that the elements might be given in different orders, but your function should always keep the set in a sorted manner after each insertion */
+2016-10-20 04:31:36	-->	Endarked (~endarked@2a01:11bf:5b1:b300:16dd:a9ff:fe11:99a2) has joined ##C
+2016-10-20 04:33:15	-->	wz1000 (~wz1000@182.64.82.3) has joined ##C
+2016-10-20 04:33:15		[04:33]
+2016-10-20 04:33:35	<--	wz1000 (~wz1000@182.64.82.3) has quit (Client Quit)
+2016-10-20 04:34:14	<--	dminuoso_ (~dminuoso@unaffiliated/dminuoso) has quit (Ping timeout: 244 seconds)
+2016-10-20 04:34:18	<--	zacts (~zacts@dragora/developer/zacts) has quit (Quit: WeeChat 1.6)
+2016-10-20 04:34:21	<--	jlf (~user@pdpc/supporter/active/jlf) has quit (Ping timeout: 252 seconds)
+2016-10-20 04:34:39	-->	lompik (~lompik@2001:19f0:6800:1522:5400:ff:fe21:fd3d) has joined ##C
+2016-10-20 04:34:40	-->	wz1000 (~wz1000@182.64.82.3) has joined ##C
+2016-10-20 04:35:14	-->	kw01f (~kw01f@merlin.mvtec.com) has joined ##C
+2016-10-20 04:35:21	-->	phao (~phao@pontenova.dpi.ufv.br) has joined ##C
+2016-10-20 04:35:56	-->	zacts (~zacts@dragora/developer/zacts) has joined ##C
+2016-10-20 04:36:14	-->	kamisama (~kamisama@59.99.92.141) has joined ##C
+2016-10-20 04:36:23	<--	OxDEADBEEF (~u0_a131@unaffiliated/thefam) has quit (Quit: WeeChat 1.6)
+2016-10-20 04:36:39	-->	theFam (~u0_a131@unaffiliated/thefam) has joined ##C
+2016-10-20 04:36:42	Grr_	Thoughts?
+2016-10-20 04:36:44	kamisama	What the hell is linkedlist???
+2016-10-20 04:37:21	ski	a list made up of list nodes/cells, linked sequentially together via pointers, from one to the next
+2016-10-20 04:38:15	-->	gygias (~david@unaffiliated/gygias) has joined ##C
+2016-10-20 04:38:22	<--	lowin (~lowin@151.245.124.26) has quit (Ping timeout: 244 seconds)
+2016-10-20 04:38:37	Grr_	Yeah it is basically something that says this is here lets point to something down the line
+2016-10-20 04:39:03	<--	Endarked (~endarked@2a01:11bf:5b1:b300:16dd:a9ff:fe11:99a2) has quit (Quit: WeeChat 1.5)
+2016-10-20 04:39:06	ski	Grr_ : you could use an array, or some version of balanced tree, or ..
+2016-10-20 04:39:07	-->	dminuoso_ (~dminuoso@unaffiliated/dminuoso) has joined ##C
+2016-10-20 04:39:21	<--	c0defeed_away (~l4cr0ss@unaffiliated/l4cr0ss) has quit (Quit: Leaving)
+2016-10-20 04:39:33	-->	Judge_Dredd (~Judge_Dre@unaffiliated/judge-dredd/x-2170742) has joined ##C
+2016-10-20 04:39:47	Grr_	That is what I am supposed to use in this implementation
+2016-10-20 04:39:50	<--	SunnyD (~SunnyD@cpe-72-178-78-211.hot.res.rr.com) has quit (Quit: ChatZilla 0.9.90.1 [Firefox 30.0/20140605174243])
+2016-10-20 04:39:58	Grr_	It just the struct and its contents that are confusing me
+2016-10-20 04:41:21	ski	"that" being ?
+2016-10-20 04:41:49	ski	if an array, put it (or a pointer to it ?) inside the struct ?
+2016-10-20 04:41:54	MrRobot01	Grr_, me too
+2016-10-20 04:42:08	-->	vuoto (~vuoto@80-71-135-9.u.parknet.dk) has joined ##C
+2016-10-20 04:42:53	<--	gagbo (~gagbo@unaffiliated/gagbo) has quit (Quit: I'm out !)
+2016-10-20 04:43:01	<--	aajjbb (~aajjbb@177.193.235.201) has quit (Ping timeout: 244 seconds)
+2016-10-20 04:43:02	<--	Lowl3v3l (~Lowl3v3l@dslb-088-075-000-014.088.075.pools.vodafone-ip.de) has quit (Remote host closed the connection)
+2016-10-20 04:43:19	Grr_	Okay in the program there are three in total a b and s
+2016-10-20 04:43:27	Grr_	s is a combined one
+2016-10-20 04:43:37	-->	Endarked (~endarked@2a01:11bf:5b1:b300:16dd:a9ff:fe11:99a2) has joined ##C
+2016-10-20 04:43:44	Grr_	So in the struct should I declare these three arrays?
+2016-10-20 04:43:45	 *	ski has no idea what Grr_ is currently talking about
+2016-10-20 04:43:48	--	pulkit_ is now known as pulkitg
+2016-10-20 04:44:10	ski	"there are three in total" -- three *what* ?
+2016-10-20 04:44:14	kamisama	pointer=(struct name*)malloc(sizeof(struct name)); <-- This isnt working for me
+2016-10-20 04:44:14	@candide	It had been 3 days and 2 hours since someone casted malloc (see !dontcastmalloc).
+2016-10-20 04:44:25	Grr_	Arrays representing sets of numbers
+2016-10-20 04:44:35	Grr_	Three arrays
+2016-10-20 04:44:36	-->	jotak (~tux@50.red-176-86-2.dynamicip.rima-tde.net) has joined ##C
+2016-10-20 04:44:36	<--	jotak (~tux@50.red-176-86-2.dynamicip.rima-tde.net) has quit (Changing host)
+2016-10-20 04:44:36	-->	jotak (~tux@unaffiliated/jotak) has joined ##C
+2016-10-20 04:44:54	dminuoso_	"There.. are.. four.. structs" - this should become a meme. :|
+2016-10-20 04:45:09	Grr_	So I am thinking about this wrong
+2016-10-20 04:45:10	Grr_	?
+2016-10-20 04:46:03	<--	Grr_ (8173c30b@gateway/web/freenode/ip.129.115.195.11) has quit (Quit: Page closed)
+2016-10-20 04:46:58	kamisama	pointer=(struct name*)malloc(sizeof(struct name)); <-- This isnt working for me, It wont let me use assighn at all
+2016-10-20 04:48:34	dminuoso_	kamisama: Do not cast the return of malloc.
+2016-10-20 04:48:34		[04:48]
+2016-10-20 04:48:51	kamisama	meanings???
+2016-10-20 04:49:01	gl	,dontcastmalloc kamisama
+2016-10-20 04:49:01	@candide	kamisama: There is no need to cast the result of library functions that return void *; it makes your code hard to read, adds no value, and can hide a bug if you don't have a valid prototype in scope. See http://c-faq.com/malloc/mallocnocast.html
+2016-10-20 04:49:34	e	(note: unlikely to hide a bug if you live in the same decade as the rest of us)
+2016-10-20 04:50:16	-->	bse (~nick@211.64.160.8) has joined ##C
+2016-10-20 04:50:36	-->	lowin (~lowin@151.245.126.123) has joined ##C
+2016-10-20 04:50:38	-->	IrishPrime (~IrishPrim@74.202.224.66) has joined ##C
+2016-10-20 04:50:38	<--	IrishPrime (~IrishPrim@74.202.224.66) has quit (Max SendQ exceeded)
+2016-10-20 04:50:53	 *	ski . o O ( "There are four things" -- Proverbs 30:24 )
+2016-10-20 04:51:05	-->	IrishPrime (~IrishPrim@74.202.224.66) has joined ##C
+2016-10-20 04:53:12	<--	kamisama (~kamisama@59.99.92.141) has quit (Ping timeout: 250 seconds)
+2016-10-20 04:54:20	-->	syem (~s@unaffiliated/syem) has joined ##C
+2016-10-20 04:54:49	-->	ShekharReddy (uid132367@gateway/web/irccloud.com/x-zgljexegectfwunt) has joined ##C
+2016-10-20 04:54:57	-->	wetterfuchs (~wetterfuc@2a02:908:f761:63a0:76d4:35ff:fe1c:bd81) has joined ##C
+2016-10-20 04:57:00	-->	xocket (~xocket@unaffiliated/xocket) has joined ##C
+2016-10-20 04:57:14	-->	re1 (~reiser@178.220.1.2) has joined ##C
+2016-10-20 04:57:27	<--	yo5phz (~yo5phz___@89.137.124.138) has quit (Ping timeout: 256 seconds)
+2016-10-20 04:58:09	-->	tlaxkit (~Thunderbi@92.185.154.236) has joined ##C
+2016-10-20 04:58:18	<--	mizu_no_oto_work (~textual@104.207.209.180) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-10-20 04:59:15	<--	dantob (~daniel@101.189.63.26) has quit (Quit: dantob)
+2016-10-20 04:59:22	<--	Tims_Tech (~Tims_Tech@unaffiliated/tims-tech) has left ##C ("bye")
+2016-10-20 05:01:22	-->	Guest6802 (~Guest6802@124.40.246.86) has joined ##C
+2016-10-20 05:01:48	-->	marchelzo (~marchelzo@unaffiliated/marchelzo) has joined ##C
+2016-10-20 05:02:17	MrRobot01	out of topic : what's the different http://imgur.com/a/RXYe3
+2016-10-20 05:02:25	<--	wetterfuchs (~wetterfuc@2a02:908:f761:63a0:76d4:35ff:fe1c:bd81) has quit (Ping timeout: 260 seconds)
+2016-10-20 05:02:56	<--	wz1000 (~wz1000@182.64.82.3) has quit (Quit: WeeChat 1.6)
+2016-10-20 05:03:24	<--	sametsisartenep (~sametsisa@106.pool85-53-34.dynamic.orange.es) has quit (Quit: Thunderstorm incoming.)
+2016-10-20 05:03:33	<--	sashapont (~sashapont@93-120-203-162.dynamic.mts-nn.ru) has quit (Quit: sashapont)
+2016-10-20 05:03:42	<--	re1 (~reiser@178.220.1.2) has quit (Read error: Connection reset by peer)
+2016-10-20 05:03:42		[05:03]
+2016-10-20 05:03:58	-->	re1 (~reiser@178.220.1.2) has joined ##C
+2016-10-20 05:04:04	latch	coding style
+2016-10-20 05:04:12	pthreat	MrRobot01: left is for dicks
+2016-10-20 05:04:14	pthreat	that's all you need to know
+2016-10-20 05:04:34	-->	yo5phz (~yo5phz___@89.137.124.138) has joined ##C
+2016-10-20 05:04:46	-->	barmaley (~barmaley@94.228.207.169) has joined ##C
+2016-10-20 05:05:07	MrRobot01	pthreat, lol
+2016-10-20 05:05:10	-->	keoz (~keikoz@pha75-1-81-57-54-15.fbx.proxad.net) has joined ##C
+2016-10-20 05:05:31	MrRobot01	so i'm not
+2016-10-20 05:06:12	pthreat	I'll put that to judgement ....
+2016-10-20 05:06:17	-->	edr (~edr@pdpc/supporter/professional/edr) has joined ##C
+2016-10-20 05:06:51	-->	kamisama (~kamisama@59.99.92.141) has joined ##C
+2016-10-20 05:06:56	<--	kamisama (~kamisama@59.99.92.141) has quit (Max SendQ exceeded)
+2016-10-20 05:07:22	-->	kamisama (~kamisama@59.99.92.141) has joined ##C
+2016-10-20 05:07:35	<--	kamisama (~kamisama@59.99.92.141) has quit (Max SendQ exceeded)
+2016-10-20 05:08:21	-->	phinxy (~tehhhd@unaffiliated/phinxy) has joined ##C
+2016-10-20 05:08:36	-->	sashapont (~sashapont@93-120-203-162.dynamic.mts-nn.ru) has joined ##C
+2016-10-20 05:09:18	<--	kw01f (~kw01f@merlin.mvtec.com) has quit
+2016-10-20 05:09:33	<--	hubcaps (~jessiem@unaffiliated/hubcaps) has quit (Ping timeout: 252 seconds)
+2016-10-20 05:10:06	-->	kamisama (~kamisama@59.99.92.141) has joined ##C
+2016-10-20 05:10:11	<--	Judge_Dredd (~Judge_Dre@unaffiliated/judge-dredd/x-2170742) has quit (Quit: Leaving.)
+2016-10-20 05:10:12	<--	jasondockers (~jasondock@unaffiliated/jasondockers) has quit (Read error: Connection reset by peer)
+2016-10-20 05:10:29	-->	jasondockers (~jasondock@173.227.191.106) has joined ##C
+2016-10-20 05:10:30	-->	mizu_no_oto_work (~textual@104.207.209.180) has joined ##C
+2016-10-20 05:10:53	--	jasondockers is now known as Guest5107
+2016-10-20 05:11:38	-->	raycoll (~raycoll@c-50-181-214-8.hsd1.wa.comcast.net) has joined ##C
+2016-10-20 05:12:44	-->	wz1000 (~wz1000@182.64.82.3) has joined ##C
+2016-10-20 05:12:51	-->	c170 (8f5800de@gateway/web/freenode/ip.143.88.0.222) has joined ##C
+2016-10-20 05:13:07	<--	dminuoso_ (~dminuoso@unaffiliated/dminuoso) has quit (Remote host closed the connection)
+2016-10-20 05:13:48	<--	Ricardo1000 (~ricardo10@91.198.140.16) has quit (Remote host closed the connection)
+2016-10-20 05:14:01	<--	marchelzo (~marchelzo@unaffiliated/marchelzo) has quit (Ping timeout: 250 seconds)
+2016-10-20 05:14:13	<--	redpill (~redpill@unaffiliated/redpill) has quit (Read error: Connection reset by peer)
+2016-10-20 05:14:38	-->	ak_rosh_ (~InternetU@59.97.198.31) has joined ##C
+2016-10-20 05:14:38	<--	[0x8b30cc] (~0x8b30cc]@unaffiliated/x8b30cc) has quit (Ping timeout: 245 seconds)
+2016-10-20 05:15:14	<--	ShekharReddy (uid132367@gateway/web/irccloud.com/x-zgljexegectfwunt) has quit
+2016-10-20 05:16:07	<--	Guest6802 (~Guest6802@124.40.246.86) has quit (Quit: Leaving)
+2016-10-20 05:17:32	<--	ak_rosh (~InternetU@59.89.58.228) has quit (Ping timeout: 260 seconds)
+2016-10-20 05:17:57	<--	yo5phz (~yo5phz___@89.137.124.138) has quit (Ping timeout: 256 seconds)
+2016-10-20 05:20:11	-->	al-damiri (uid142631@gateway/web/irccloud.com/x-vifhsdpyskgooklb) has joined ##C
+2016-10-20 05:20:11		[05:20]
+2016-10-20 05:21:15	<--	kamisama (~kamisama@59.99.92.141) has quit (Ping timeout: 244 seconds)
+2016-10-20 05:22:49	<--	jotak (~tux@unaffiliated/jotak) has quit (Quit: Saliendo)
+2016-10-20 05:24:45	-->	jmnk (jargonmonk@gateway/shell/blinkenshell.org/x-zulewoevgnrbmvxp) has joined ##C
+2016-10-20 05:25:21	<--	nikivi (~nikivi@dhcp-077-250-172-150.chello.nl) has quit (Quit: zzz)
+2016-10-20 05:25:25	-->	jackbrown (~se@unaffiliated/jackbrown) has joined ##C
+2016-10-20 05:25:37	<--	xocket (~xocket@unaffiliated/xocket) has quit (Disconnected by services)
+2016-10-20 05:25:38	-->	xock_stream (~xocket@unaffiliated/xocket) has joined ##C
+2016-10-20 05:28:32	<--	TMM (~hp@fsf/member/pdpc.professional.tmm) has quit (Quit: Ex-Chat)
+2016-10-20 05:29:47	-->	niekniek (~niekniek@164-205-145-85.ftth.glasoperator.nl) has joined ##C
+2016-10-20 05:30:28	<--	interf (~int@unaffiliated/inter) has quit (Ping timeout: 252 seconds)
+2016-10-20 05:31:01	<--	diogenese (diogenese@diogenese.velotech.net) has quit (Read error: Connection reset by peer)
+2016-10-20 05:32:08	-->	diogenese (diogenese@diogenese.velotech.net) has joined ##C
+2016-10-20 05:32:21	-->	ak_rosh__ (~InternetU@59.94.229.186) has joined ##C
+2016-10-20 05:32:31	eiku	Hi again… I’m just curious: do you know any people/projects who use standard macros and make C look completely not like C?
+2016-10-20 05:33:13	eiku	(I’m aware that "look like" is subjective, so I’d add "in your opinion")
+2016-10-20 05:33:25	<--	dhk (~dhk@138.59.24.18) has quit (Ping timeout: 265 seconds)
+2016-10-20 05:33:40	<--	spew (~ben@vpnusers.backstopsolutions.com) has quit (Remote host closed the connection)
+2016-10-20 05:33:52	<--	singularity00 (~singulari@236.lan-hi1-2.static.rozabg.com) has quit (Quit: Konversation terminated!)
+2016-10-20 05:34:14	masochist	eiku: http://ioccc.org
+2016-10-20 05:34:15	@candide	Title of masochist's link: The International Obfuscated C Code Contest
+2016-10-20 05:34:21	masochist	okay, that feature needs to go
+2016-10-20 05:34:29	eiku	masochist: oh, I know about ioccc… I
+2016-10-20 05:34:32	-->	Dembel (~Dembel@31.132.177.120) has joined ##C
+2016-10-20 05:34:48	eiku	I was rather thinking of other kinds of things (not obfuscated ones)
+2016-10-20 05:34:59	eiku	though I really love buzzard and bellard’s work :D
+2016-10-20 05:35:17	-->	spew (~ben@vpnusers.backstopsolutions.com) has joined ##C
+2016-10-20 05:35:17		[05:35]
+2016-10-20 05:35:31	<--	ak_rosh_ (~InternetU@59.97.198.31) has quit (Ping timeout: 256 seconds)
+2016-10-20 05:35:44	<--	BlackPhoenix (~BlackFox@ip-6317.proline.net.ua) has quit (Ping timeout: 260 seconds)
+2016-10-20 05:35:55	<--	flaviodesousa (~flaviodes@213.187.85.4) has quit (Quit: KVIrc 4.2.0 Equilibrium http://www.kvirc.net/)
+2016-10-20 05:36:43	<--	bse (~nick@211.64.160.8) has quit (Remote host closed the connection)
+2016-10-20 05:37:20	-->	hippybear (~hippybear@172.58.40.64) has joined ##C
+2016-10-20 05:37:35	--	khisanth__ is now known as Khisanth
+2016-10-20 05:38:18	-->	Hun (~Hun@x4d071ab4.dyn.telefonica.de) has joined ##C
+2016-10-20 05:38:55	-->	theFam_ (~u0_a131@unaffiliated/thefam) has joined ##C
+2016-10-20 05:39:16	<--	theFam (~u0_a131@unaffiliated/thefam) has quit (Read error: Connection reset by peer)
+2016-10-20 05:39:43	-->	Neslepaks (~Neslepaks@178.61.71.85) has joined ##C
+2016-10-20 05:40:08	-->	jlf (~user@pdpc/supporter/active/jlf) has joined ##C
+2016-10-20 05:41:04	<--	vuoto (~vuoto@80-71-135-9.u.parknet.dk) has quit (Remote host closed the connection)
+2016-10-20 05:41:33	-->	sdlnv_ (~sdlnv@host38-116-dynamic.44-79-r.retail.telecomitalia.it) has joined ##C
+2016-10-20 05:42:11	<--	heurist__ (heurist@unaffiliated/heurist) has quit (Ping timeout: 252 seconds)
+2016-10-20 05:42:36	-->	itaitb (~itaitb@unaffiliated/itaitb) has joined ##C
+2016-10-20 05:43:01	-->	heurist__ (heurist@unaffiliated/heurist) has joined ##C
+2016-10-20 05:43:22	-->	YungRaj (~YungRaj@nat-165-91-12-39.tamulink.tamu.edu) has joined ##C
+2016-10-20 05:43:27	<--	theFam_ (~u0_a131@unaffiliated/thefam) has quit (Ping timeout: 256 seconds)
+2016-10-20 05:44:07	-->	interf (~int@unaffiliated/inter) has joined ##C
+2016-10-20 05:44:32	<--	phao (~phao@pontenova.dpi.ufv.br) has quit (Ping timeout: 265 seconds)
+2016-10-20 05:45:29	<--	sdlnv_ (~sdlnv@host38-116-dynamic.44-79-r.retail.telecomitalia.it) has quit (Client Quit)
+2016-10-20 05:46:59	-->	pylbrecht (~pylbrecht@2a02:8109:8a40:12b4:9eff:1344:72c0:fae) has joined ##C
+2016-10-20 05:47:00	-->	Blondie (~Blondie@p5DDC469B.dip0.t-ipconnect.de) has joined ##C
+2016-10-20 05:48:46	-->	Tims_Tech (~Tims_Tech@unaffiliated/tims-tech) has joined ##C
+2016-10-20 05:48:58	-->	theFam_ (~u0_a131@unaffiliated/thefam) has joined ##C
+2016-10-20 05:49:29	-->	jj96 (~jj96@115.248.50.27) has joined ##C
+2016-10-20 05:50:26	<--	syem (~s@unaffiliated/syem) has quit (Quit: Lost terminal)
+2016-10-20 05:50:26		[05:50]
+2016-10-20 05:50:40	-->	cross (~cross@spitfire.i.gajendra.net) has joined ##C
+2016-10-20 05:52:01	-->	daniel-s (~daniel-s@bla31-1-82-241-231-138.fbx.proxad.net) has joined ##C
+2016-10-20 05:52:27	jj96	http://ideone.com/TPpnNV What does this do? can someone explain?
+2016-10-20 05:52:51	-->	dustyp90 (~Dustin@216.7.225.222) has joined ##C
+2016-10-20 05:53:25	-->	alex1a_ (~alex1a@a81-84-38-221.cpe.netcabo.pt) has joined ##C
+2016-10-20 05:53:25	latch	eiku, I got a chuckle out of this one: http://www.ioccc.org/2005/chia/chia.c
+2016-10-20 05:53:28	<--	drozdziak1 (~drozdziak@do-atman.cubiware.com) has quit (Quit: WeeChat 1.5)
+2016-10-20 05:54:05	<--	dustyp90 (~Dustin@216.7.225.222) has quit (Max SendQ exceeded)
+2016-10-20 05:54:19	<--	alex1a (~alex1a@a81-84-38-221.cpe.netcabo.pt) has quit (Ping timeout: 244 seconds)
+2016-10-20 05:54:37	-->	Learath2 (~learath2@unaffiliated/learath2) has joined ##C
+2016-10-20 05:54:56	latch	jj96, copies 'l' # of data from space pointed to by 'd' into space at b->p[b->len] and increments b->len
+2016-10-20 05:55:01	latch	hell if I know why
+2016-10-20 05:55:44	latch	looks like its just serializing some data into a stream
+2016-10-20 05:56:32	eiku	latch: that’s brilliant :D
+2016-10-20 05:56:39	eiku	even though I don’t know java
+2016-10-20 05:56:53	-->	dustyp90 (~Dustin@216.7.225.222) has joined ##C
+2016-10-20 05:57:20	-->	re1_ (~reiser@178.220.1.2) has joined ##C
+2016-10-20 05:57:30	-->	saunind (~saunind@pppoe.81.9.57.174.lanport.ru) has joined ##C
+2016-10-20 05:57:56	<--	re1 (~reiser@178.220.1.2) has quit (Ping timeout: 250 seconds)
+2016-10-20 05:59:12	<--	rtkt (~rtkt@194.230.159.94) has quit (Ping timeout: 256 seconds)
+2016-10-20 06:00:20	-->	guesst456 (63f88dd1@gateway/web/freenode/ip.99.248.141.209) has joined ##C
+2016-10-20 06:00:45	<--	c170 (8f5800de@gateway/web/freenode/ip.143.88.0.222) has quit (Ping timeout: 260 seconds)
+2016-10-20 06:00:58	-->	shookees (~Paulius@unaffiliated/doublestring) has joined ##C
+2016-10-20 06:01:34	latch	lol the preprocessed output is just as bad
+2016-10-20 06:01:37	latch	dont know what I expected
+2016-10-20 06:01:45	<--	X-Scale (~ARM@2001:0:53aa:64c:0:f2bd:b176:2199) has quit (Quit:  HydraIRC -> http://www.hydrairc.com <- The alternative IRC client)
+2016-10-20 06:02:03	<--	Blondie (~Blondie@p5DDC469B.dip0.t-ipconnect.de) has quit (Quit: Blondie)
+2016-10-20 06:02:08	latch	int N=0,_,O=328,l=192,y=4,Y[80][64]={0},I;struct LameJavaApp
+2016-10-20 06:02:09	latch	{
+2016-10-20 06:02:09	latch	 short c;}c;typedef int BufferedReader;char*F="JF>:>FB;;BII"; f(x){N=(N+x)%6,y--?f(0),f(1),f(4),f(1):++Y[(I=O+N[F]-66) /16][(_=l+N[6+F]-66)/16]?O/=16,l/=32,O<I/16?b("C"):O>I/16?b("D"):1,O=I,I/=16,l<_/32?b("B"):l>_/32?b("A"):2,l=_,_/=16,Y[I][_^1]?a(":" "\b"):_&1?a("." "\b"):a("`" "\b"):8;++y;} b(char*x){write(1,"\033[",2),a(x);}a(char*x){write(1,x,strlen(x));for(;--c.c;);for(;--c.c;);for(;--c.c;);for(;--c.c;);}
+2016-10-20 06:02:19	-->	mazeto (~maz@177.81.215.97) has joined ##C
+2016-10-20 06:02:25	<--	dreamon (~dreamon@unaffiliated/dreamon) has quit (Ping timeout: 265 seconds)
+2016-10-20 06:02:29	<--	lsk (~lsk@enucs/member/lsk) has quit (Read error: Connection reset by peer)
+2016-10-20 06:02:30	eiku	:D
+2016-10-20 06:02:54	<--	jlf (~user@pdpc/supporter/active/jlf) has quit (Remote host closed the connection)
+2016-10-20 06:03:01	-->	redpill (~redpill@unaffiliated/redpill) has joined ##C
+2016-10-20 06:03:13	<--	niekniek (~niekniek@164-205-145-85.ftth.glasoperator.nl) has quit (Quit: niekniek)
+2016-10-20 06:03:23	<--	lotherk (~lotherk@office.corpex-net.de) has quit (Ping timeout: 245 seconds)
+2016-10-20 06:04:45	-->	EvilPenguin (~EvilPengu@bur-inet-pa-3.disney.com) has joined ##C
+2016-10-20 06:05:32	<--	dustyp90 (~Dustin@216.7.225.222) has quit (Ping timeout: 260 seconds)
+2016-10-20 06:05:32		[06:05]
+2016-10-20 06:05:47	<--	_jd (~john@bba141706.alshamil.net.ae) has quit (Quit: leaving)
+2016-10-20 06:05:51	-->	jlf (~user@pdpc/supporter/active/jlf) has joined ##C
+2016-10-20 06:06:02	-->	protoCall7 (~protoCall@174-24-229-204.tukw.qwest.net) has joined ##C
+2016-10-20 06:06:21	<--	pthreat (~pthreat@unaffiliated/lpthread) has quit (Ping timeout: 260 seconds)
+2016-10-20 06:06:41	-->	pthreat (~pthreat@unaffiliated/lpthread) has joined ##C
+2016-10-20 06:08:17	-->	dave0x6d (uid190567@gateway/web/irccloud.com/x-osjkiidgxpmejmko) has joined ##C
+2016-10-20 06:09:16	<--	snyp (~Snyp@nas4.meghbelabroadband.in) has quit (Ping timeout: 260 seconds)
+2016-10-20 06:10:11	<--	raycoll (~raycoll@c-50-181-214-8.hsd1.wa.comcast.net) has quit (Read error: Connection reset by peer)
+2016-10-20 06:10:44	<--	ss (~~@gateway/tor-sasl/ss) has quit (Remote host closed the connection)
+2016-10-20 06:10:49	<--	tlaxkit (~Thunderbi@92.185.154.236) has quit (Quit: tlaxkit)
+2016-10-20 06:10:56	<--	shakalaka (~shakalaka@ec2-52-52-27-0.us-west-1.compute.amazonaws.com) has quit (Quit: bye.)
+2016-10-20 06:11:02	<--	miklcct (michael@server.miklcct.csproject.org) has quit (Read error: Connection reset by peer)
+2016-10-20 06:11:21	-->	ss (~~@gateway/tor-sasl/ss) has joined ##C

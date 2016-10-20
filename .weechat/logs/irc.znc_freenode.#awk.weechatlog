@@ -1482,3 +1482,250 @@
 2016-10-19 20:33:04	-->	Raimondi (~israelcha@c-73-244-170-150.hsd1.fl.comcast.net) has joined #awk
 2016-10-19 20:34:13	<--	geggam (~geggam@ec2-107-20-130-165.compute-1.amazonaws.com) has quit (Ping timeout: 245 seconds)
 2016-10-19 20:34:43	--	irc: disconnected from server
+2016-10-19 20:40:04	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined #awk
+2016-10-19 20:40:04		[20:40]
+2016-10-19 20:40:04	--	Topic for #awk is ""Paste at: http://gist.github.com or http://sprunge.us | Wiki: http://awk.freeshell.org/ | Reference: http://xrl.us/gnuref | FAQ: http://xrl.us/4wkf4q | POSIX: http://xrl.us/awk1p | Regex: #regex | e36freak's libs: https://github.com/e36freak/awk-libs | HTML input?  Use scrapy instead - http://scrapy.org | Please ask your question and be patient, someone will get to you."
+2016-10-19 20:40:04	--	Topic set by pr3d4t0r (~zhenya01@varenka.cime.net) on Wed, 27 Apr 2016 07:56:45
+2016-10-19 20:40:04	--	Channel #awk: 142 nicks (0 ops, 0 voices, 142 normals)
+2016-10-19 20:40:04	***	Buffer Playback...
+2016-10-19 20:40:04	jeffreylevesque	[20:24:03] have to double escape sometimes [20:24:03]
+2016-10-19 20:40:04	jeffreylevesque	[20:24:30] accidentally removed it bc -u xxx:xxx is generated from a variable [20:24:30]
+2016-10-19 20:40:04	jeffreylevesque	[20:27:22] now, i have:  awk -F\" '{if (/^OPTIONS[[:blank:]]?="/ && !/-u xxx:xxx/) sub(/-u[[:blank:]]*[a-zA-Z]{3}:[a-zA-Z]{3}/, "-u xxx:xxx", $1); print $1 "\"" $2"\""; else print $0}' some_file.txt [20:27:22]
+2016-10-19 20:40:04	jeffreylevesque	[20:42:55] geirha: i got it, i think - ` awk -F\" '{if (/^OPTIONS[[:blank:]]?="/ && !/-u xxx:xxx/) sub(/-u[[:blank:]]*[a-zA-Z]{3}:[a-zA-Z]{3}/, "-u xxx:xxx", $1); print $1 "\"" $2"\""; else print $0}' some_file.txt [20:42:55]
+2016-10-19 20:40:04	jeffreylevesque	[20:43:50] well almost [20:43:50]
+2016-10-19 20:40:04	jeffreylevesque	[20:43:52] getting there [20:43:52]
+2016-10-19 20:40:04	ritztech	[22:20:03] im trying to use awk instaed of sed in this case   sed -r 's/.*-- (.*)-0.*/\1/' [22:20:03]
+2016-10-19 20:40:04	ritztech	[22:20:51] Beacuse every line i need to extract  text Between each section   so awk '{print $1","$4","---MAGIC SED----}'  lol [22:20:51]
+2016-10-19 20:40:04	Riviera	[22:23:57] That's not English, that's gibberish (both the English and the code). [22:23:57]
+2016-10-19 20:40:04	ritztech	[22:25:40] this might work awk -F, '{sub(".*sent at:","",$1); print $1}' [22:25:40]
+2016-10-19 20:40:04	ritztech	[22:36:33] looking better but now i just need to  put print $1 and such lol almost there [22:36:33]
+2016-10-19 20:40:04	ritztech	[22:36:34] awk 'gsub(/.*at:|Observ.*/,"")' [22:36:34]
+2016-10-19 20:40:04	izalove	[22:40:50] nice [22:40:50]
+2016-10-19 20:40:04	izalove	[22:41:31] that's basically a portable   sed -nr 's/.*at:|Observ.*//' [22:41:31]
+2016-10-19 20:40:04	izalove	[22:41:55] never thought about using gsub like that [22:41:55]
+2016-10-19 20:40:04	Riviera	[22:42:10] you meant /p, non? [22:42:10]
+2016-10-19 20:40:04	izalove	[22:42:20] ah yes sure [22:42:20]
+2016-10-19 20:40:04	izalove	[22:42:25] sorry forgot about that [22:42:25]
+2016-10-19 20:40:04	izalove	[22:42:48] awk 'gsub(...)||1' [22:42:48]
+2016-10-19 20:40:04	Riviera	[22:43:11] now i am confused [22:43:11]
+2016-10-19 20:40:04	izalove	[22:43:41] it was just an idea for doing sed -r '...' [22:43:41]
+2016-10-19 20:40:04	izalove	[22:43:43] without -n [22:43:43]
+2016-10-19 20:40:04	Riviera	[22:44:08] ritztech's problem is solved, right? [22:44:08]
+2016-10-19 20:40:04	ritztech	[22:44:43] well i had to working in sed  but i have fields to extract from 1 [22:44:43]
+2016-10-19 20:40:04	ritztech	[22:44:47] print $1 [22:44:47]
+2016-10-19 20:40:04	ritztech	[22:44:53] and that was part of $2 [22:44:53]
+2016-10-19 20:40:04	ritztech	[22:52:12] awk -F ',' '{ print $1"," gsub(/.*at:| -.*/,""); print $1}' [22:52:12]
+2016-10-19 20:40:04	ritztech	[22:52:45] but its throwing a newline [22:52:45]
+2016-10-19 20:40:04	Riviera	[22:54:25] I don't know if that's a "no" or a "yes" [22:54:25]
+2016-10-19 20:40:04	Riviera	[22:54:27] :) [22:54:27]
+2016-10-19 20:40:04	ritztech	[22:55:20] ha pretty much a no almost there trying to figure it out [22:55:20]
+2016-10-19 20:40:04	ritztech	[22:58:03] OKay finally got it. [22:58:03]
+2016-10-19 20:40:04	ritztech	[22:58:06] awk -F ',' '{print $1"," gsub(/.*at:| -.*/,"") $1}' [22:58:06]
+2016-10-19 20:40:04	izalove	[23:38:59] o.o [23:38:59]
+2016-10-19 20:40:04	izalove	[23:39:56] # nawk '{ print $1 gsub(/xyz/,"") }' <<< xyz [23:39:56]
+2016-10-19 20:40:04	shbot	[23:39:58] izalove: 1 [23:39:58]
+2016-10-19 20:40:04	izalove	[23:40:00] # gawk '{ print $1 gsub(/xyz/,"") }' <<< xyz [23:40:00]
+2016-10-19 20:40:04	shbot	[23:40:01] izalove: xyz1 [23:40:01]
+2016-10-19 20:40:04	izalove	[23:40:03] # mawk '{ print $1 gsub(/xyz/,"") }' <<< xyz [23:40:03]
+2016-10-19 20:40:04	shbot	[23:40:05] izalove: xyz1 [23:40:05]
+2016-10-19 20:40:04	izalove	[23:41:02] i've never seen any code that uses print gsub like ritztech did [23:41:02]
+2016-10-19 20:40:04	Riviera	[00:02:24] izalove: There's this xkcd about the command line with the most punctuation characters, [00:02:24]
+2016-10-19 20:40:04	Riviera	[00:03:42] izalove: https://xkcd.com/1638/ [00:03:42]
+2016-10-19 20:40:04	Riviera	[00:04:01] izalove: (the img's title text) [00:04:01]
+2016-10-19 20:40:04	izalove	[00:04:15] uuoc [00:04:15]
+2016-10-19 20:40:04	Riviera	[00:05:56] izalove: i used print gsub(/[[:punct:]]/, "&"), $0  (not really, i used a quotient of punctuation and length) [00:05:56]
+2016-10-19 20:40:04	Riviera	[00:06:14] izalove: not quite what ritztech did, but that's the closed i came in the last weeks 8) [00:06:14]
+2016-10-19 20:40:04	izalove	[00:06:30] nice [00:06:30]
+2016-10-19 20:40:04	izalove	[00:06:46] that's pretty clever [00:06:46]
+2016-10-19 20:40:04	Riviera	[00:07:15] closest* [00:07:15]
+2016-10-19 20:40:04	***	Playback Complete.
+2016-10-19 20:40:18	--	irc: disconnected from server
+2016-10-20 00:25:33	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined #awk
+2016-10-20 00:25:33		[00:25]
+2016-10-20 00:25:33	--	Topic for #awk is ""Paste at: http://gist.github.com or http://sprunge.us | Wiki: http://awk.freeshell.org/ | Reference: http://xrl.us/gnuref | FAQ: http://xrl.us/4wkf4q | POSIX: http://xrl.us/awk1p | Regex: #regex | e36freak's libs: https://github.com/e36freak/awk-libs | HTML input?  Use scrapy instead - http://scrapy.org | Please ask your question and be patient, someone will get to you."
+2016-10-20 00:25:33	--	Topic set by pr3d4t0r (~zhenya01@varenka.cime.net) on Wed, 27 Apr 2016 07:56:45
+2016-10-20 00:25:33	--	Channel #awk: 144 nicks (0 ops, 0 voices, 144 normals)
+2016-10-20 00:25:33	***	Buffer Playback...
+2016-10-20 00:25:33	jeffreylevesque	[20:27:22] now, i have:  awk -F\" '{if (/^OPTIONS[[:blank:]]?="/ && !/-u xxx:xxx/) sub(/-u[[:blank:]]*[a-zA-Z]{3}:[a-zA-Z]{3}/, "-u xxx:xxx", $1); print $1 "\"" $2"\""; else print $0}' some_file.txt [20:27:22]
+2016-10-20 00:25:33	jeffreylevesque	[20:42:55] geirha: i got it, i think - ` awk -F\" '{if (/^OPTIONS[[:blank:]]?="/ && !/-u xxx:xxx/) sub(/-u[[:blank:]]*[a-zA-Z]{3}:[a-zA-Z]{3}/, "-u xxx:xxx", $1); print $1 "\"" $2"\""; else print $0}' some_file.txt [20:42:55]
+2016-10-20 00:25:33	jeffreylevesque	[20:43:50] well almost [20:43:50]
+2016-10-20 00:25:33	jeffreylevesque	[20:43:52] getting there [20:43:52]
+2016-10-20 00:25:33	ritztech	[22:20:03] im trying to use awk instaed of sed in this case   sed -r 's/.*-- (.*)-0.*/\1/' [22:20:03]
+2016-10-20 00:25:33	ritztech	[22:20:51] Beacuse every line i need to extract  text Between each section   so awk '{print $1","$4","---MAGIC SED----}'  lol [22:20:51]
+2016-10-20 00:25:33	Riviera	[22:23:57] That's not English, that's gibberish (both the English and the code). [22:23:57]
+2016-10-20 00:25:33	ritztech	[22:25:40] this might work awk -F, '{sub(".*sent at:","",$1); print $1}' [22:25:40]
+2016-10-20 00:25:33	ritztech	[22:36:33] looking better but now i just need to  put print $1 and such lol almost there [22:36:33]
+2016-10-20 00:25:33	ritztech	[22:36:34] awk 'gsub(/.*at:|Observ.*/,"")' [22:36:34]
+2016-10-20 00:25:33	izalove	[22:40:50] nice [22:40:50]
+2016-10-20 00:25:33	izalove	[22:41:31] that's basically a portable   sed -nr 's/.*at:|Observ.*//' [22:41:31]
+2016-10-20 00:25:33	izalove	[22:41:55] never thought about using gsub like that [22:41:55]
+2016-10-20 00:25:33	Riviera	[22:42:10] you meant /p, non? [22:42:10]
+2016-10-20 00:25:33	izalove	[22:42:20] ah yes sure [22:42:20]
+2016-10-20 00:25:33	izalove	[22:42:25] sorry forgot about that [22:42:25]
+2016-10-20 00:25:33	izalove	[22:42:48] awk 'gsub(...)||1' [22:42:48]
+2016-10-20 00:25:33	Riviera	[22:43:11] now i am confused [22:43:11]
+2016-10-20 00:25:33	izalove	[22:43:41] it was just an idea for doing sed -r '...' [22:43:41]
+2016-10-20 00:25:33	izalove	[22:43:43] without -n [22:43:43]
+2016-10-20 00:25:33	Riviera	[22:44:08] ritztech's problem is solved, right? [22:44:08]
+2016-10-20 00:25:33	ritztech	[22:44:43] well i had to working in sed  but i have fields to extract from 1 [22:44:43]
+2016-10-20 00:25:33	ritztech	[22:44:47] print $1 [22:44:47]
+2016-10-20 00:25:33	ritztech	[22:44:53] and that was part of $2 [22:44:53]
+2016-10-20 00:25:33	ritztech	[22:52:12] awk -F ',' '{ print $1"," gsub(/.*at:| -.*/,""); print $1}' [22:52:12]
+2016-10-20 00:25:33	ritztech	[22:52:45] but its throwing a newline [22:52:45]
+2016-10-20 00:25:33	Riviera	[22:54:25] I don't know if that's a "no" or a "yes" [22:54:25]
+2016-10-20 00:25:33	Riviera	[22:54:27] :) [22:54:27]
+2016-10-20 00:25:33	ritztech	[22:55:20] ha pretty much a no almost there trying to figure it out [22:55:20]
+2016-10-20 00:25:34	ritztech	[22:58:03] OKay finally got it. [22:58:03]
+2016-10-20 00:25:34	ritztech	[22:58:06] awk -F ',' '{print $1"," gsub(/.*at:| -.*/,"") $1}' [22:58:06]
+2016-10-20 00:25:34	izalove	[23:38:59] o.o [23:38:59]
+2016-10-20 00:25:34	izalove	[23:39:56] # nawk '{ print $1 gsub(/xyz/,"") }' <<< xyz [23:39:56]
+2016-10-20 00:25:34	shbot	[23:39:58] izalove: 1 [23:39:58]
+2016-10-20 00:25:34	izalove	[23:40:00] # gawk '{ print $1 gsub(/xyz/,"") }' <<< xyz [23:40:00]
+2016-10-20 00:25:34	shbot	[23:40:01] izalove: xyz1 [23:40:01]
+2016-10-20 00:25:34	izalove	[23:40:03] # mawk '{ print $1 gsub(/xyz/,"") }' <<< xyz [23:40:03]
+2016-10-20 00:25:34	shbot	[23:40:05] izalove: xyz1 [23:40:05]
+2016-10-20 00:25:34	izalove	[23:41:02] i've never seen any code that uses print gsub like ritztech did [23:41:02]
+2016-10-20 00:25:34	Riviera	[00:02:24] izalove: There's this xkcd about the command line with the most punctuation characters, [00:02:24]
+2016-10-20 00:25:34	Riviera	[00:03:42] izalove: https://xkcd.com/1638/ [00:03:42]
+2016-10-20 00:25:34	Riviera	[00:04:01] izalove: (the img's title text) [00:04:01]
+2016-10-20 00:25:34	izalove	[00:04:15] uuoc [00:04:15]
+2016-10-20 00:25:34	Riviera	[00:05:56] izalove: i used print gsub(/[[:punct:]]/, "&"), $0  (not really, i used a quotient of punctuation and length) [00:05:56]
+2016-10-20 00:25:34	Riviera	[00:06:14] izalove: not quite what ritztech did, but that's the closed i came in the last weeks 8) [00:06:14]
+2016-10-20 00:25:34	izalove	[00:06:30] nice [00:06:30]
+2016-10-20 00:25:34	izalove	[00:06:46] that's pretty clever [00:06:46]
+2016-10-20 00:25:34	Riviera	[00:07:15] closest* [00:07:15]
+2016-10-20 00:25:34	Iridos	[09:59:30] Riviera, if you use m.xkcd.com the title text becomes something that opens on a click… and is actually readable [09:59:30]
+2016-10-20 00:25:34	Iridos	[10:00:20] … not that that's _usually_ relevant here, but… [10:00:20]
+2016-10-20 00:25:34	***	Playback Complete.
+2016-10-20 00:26:28	--	Channel created on Sat, 25 Nov 2006 20:42:48
+2016-10-20 00:32:00		[00:26]
+2016-10-20 00:32:48	<--	gniourf (~gniourf@pdm-l03.insa-lyon.fr) has quit (Ping timeout: 256 seconds)
+2016-10-20 00:33:55	-->	corsibu (~corsibu@171.20.68.68) has joined #awk
+2016-10-20 00:39:00		[00:33]
+2016-10-20 00:46:54	-->	gniourf (~gniourf@pdm-l03.insa-lyon.fr) has joined #awk
+2016-10-20 00:52:00		[00:46]
+2016-10-20 00:53:06	<--	Raimondi (~israelcha@c-73-244-170-150.hsd1.fl.comcast.net) has quit (Ping timeout: 244 seconds)
+2016-10-20 00:59:00		[00:53]
+2016-10-20 01:09:49	-->	irco (~irco@HSI-KBW-134-3-111-4.hsi14.kabel-badenwuerttemberg.de) has joined #awk
+2016-10-20 01:15:00		[01:09]
+2016-10-20 01:24:39	-->	Raimondi (~israelcha@c-73-244-170-150.hsd1.fl.comcast.net) has joined #awk
+2016-10-20 01:29:16	<--	Raimondi (~israelcha@c-73-244-170-150.hsd1.fl.comcast.net) has quit (Ping timeout: 244 seconds)
+2016-10-20 01:35:00		[01:29]
+2016-10-20 01:45:29	<--	johnmilton (~johnmilto@192.206.23.197) has quit (Ping timeout: 260 seconds)
+2016-10-20 01:46:49	<--	corsibu (~corsibu@171.20.68.68) has quit (Remote host closed the connection)
+2016-10-20 01:47:24	-->	corsibu (~corsibu@171.20.68.68) has joined #awk
+2016-10-20 01:51:33	<--	corsibu (~corsibu@171.20.68.68) has quit (Ping timeout: 252 seconds)
+2016-10-20 01:51:33		[01:51]
+2016-10-20 01:56:45	-->	corsibu (~corsibu@171.20.68.68) has joined #awk
+2016-10-20 01:59:57	<--	paul_ (~paul@stoner.jakma.org) has quit (Ping timeout: 260 seconds)
+2016-10-20 02:00:31	-->	paul_ (~paul@stoner.jakma.org) has joined #awk
+2016-10-20 02:03:14	-->	Raimondi (~israelcha@c-73-244-170-150.hsd1.fl.comcast.net) has joined #awk
+2016-10-20 02:06:14	-->	johnmilton (~johnmilto@192.206.23.197) has joined #awk
+2016-10-20 02:08:32	<--	Raimondi (~israelcha@c-73-244-170-150.hsd1.fl.comcast.net) has quit (Ping timeout: 244 seconds)
+2016-10-20 02:08:32		[02:08]
+2016-10-20 02:10:54	Riviera	Iridos: :)
+2016-10-20 02:16:00		[02:10]
+2016-10-20 03:07:06	-->	dking_desktop (~danielk@vbo1.inmotionhosting.com) has joined #awk
+2016-10-20 03:07:06		[03:07]
+2016-10-20 03:08:08	-->	cdg (~cdg@157.166.173.5) has joined #awk
+2016-10-20 03:09:01	<--	dking_desktop (~danielk@vbo1.inmotionhosting.com) has left #awk
+2016-10-20 03:15:00		[03:09]
+2016-10-20 03:17:45	-->	alextb (~alxtb@185.65.109.249) has joined #awk
+2016-10-20 03:20:12	-->	marky1991 (~marky1991@unaffiliated/marky1991) has joined #awk
+2016-10-20 03:20:21	<--	alxtb (~alxtb@185.65.109.249) has quit (Ping timeout: 244 seconds)
+2016-10-20 03:20:59	-->	alxtb (~alxtb@185.65.109.249) has joined #awk
+2016-10-20 03:22:21	<--	alextb (~alxtb@185.65.109.249) has quit (Ping timeout: 252 seconds)
+2016-10-20 03:28:00		[03:22]
+2016-10-20 03:37:55	<--	corsibu (~corsibu@171.20.68.68) has quit (Remote host closed the connection)
+2016-10-20 03:38:28	-->	corsibu (~corsibu@171.20.68.68) has joined #awk
+2016-10-20 03:42:42	-->	dking (~dking@vps7150.inmotionhosting.com) has joined #awk
+2016-10-20 03:43:13	<--	corsibu (~corsibu@171.20.68.68) has quit (Ping timeout: 265 seconds)
+2016-10-20 03:43:13		[03:43]
+2016-10-20 03:44:38	-->	navidr (uid112413@gateway/web/irccloud.com/x-qrsnbqcbfqnafkff) has joined #awk
+2016-10-20 03:50:00		[03:44]
+2016-10-20 03:51:27	-->	Raimondi (~israelcha@c-73-244-170-150.hsd1.fl.comcast.net) has joined #awk
+2016-10-20 03:57:00		[03:51]
+2016-10-20 03:57:02	<--	Raimondi (~israelcha@c-73-244-170-150.hsd1.fl.comcast.net) has quit (Ping timeout: 244 seconds)
+2016-10-20 03:57:57	-->	jeffreylevesque (~chatzilla@129.6.45.20) has joined #awk
+2016-10-20 04:01:21	jeffreylevesque	can someone help me with `awk -F\" '{if (/^OPTIONS[[:blank:]]?="/ && !/-u xxx:xxx/) sub(/-u[[:blank:]]*[a-zA-Z]{3}:[a-zA-Z]{3}/, "-u xxx:xxx", $1); print $1 "\"" $2"\""; else print $0}' some_file.txt
+2016-10-20 04:02:40	jeffreylevesque	there's a syntax error in `ub(/-u[[:blank:]]*[a-zA-Z]{3}:[a-zA-Z]{3}/, \"${ntp_options}\", \$1); `
+2016-10-20 04:03:03	jeffreylevesque	*sub
+2016-10-20 04:05:05	-->	Raimondi (~israelcha@c-73-244-170-150.hsd1.fl.comcast.net) has joined #awk
+2016-10-20 04:05:24	go|dfish	jeffreylevesque: what.
+2016-10-20 04:05:48	go|dfish	there is no `sub(/-u[[:blank:]]*[a-zA-Z]{3}:[a-zA-Z]{3}/, \"${ntp_options}\", \$1);`
+2016-10-20 04:06:24	Riviera	Yeah, the error message is a lie.
+2016-10-20 04:06:25	jeffreylevesque	sorry
+2016-10-20 04:06:32	Riviera	The actual mistake is that you have a construct like
+2016-10-20 04:06:46	Riviera	if (...) statement 1; statement 2; else statement 3
+2016-10-20 04:07:00	Riviera	You need { .. } for grouping the "then branch"
+2016-10-20 04:07:18	jeffreylevesque	sub(/-u[[:blank:]]*[a-zA-Z]{3}:[a-zA-Z]{3}/, "-u xxx:xxx", $1)
+2016-10-20 04:07:32	jeffreylevesque	ok
+2016-10-20 04:07:34	Riviera	{ sub(...); print ... }
+2016-10-20 04:08:28	jeffreylevesque	awk -F\" '{if (/^OPTIONS[[:blank:]]?="/ && !/-u xxx:xxx/) {sub(/-u[[:blank:]]*[a-zA-Z]{3}:[a-zA-Z]{3}/, "-u xxx:xxx", $1); print $1 "\"" $2"\"";} else print $0}' some_file.txt
+2016-10-20 04:08:33	jeffreylevesque	something like that
+2016-10-20 04:14:00		[04:08]
+2016-10-20 04:14:07	jeffreylevesque	Riviera: I'm trying to replace any instance of `sub(/-u[[:blank:]]*[a-zA-Z]{3}:[a-zA-Z]{3}` in the first column with `-u xxx:xxx`
+2016-10-20 04:14:21	jeffreylevesque	but it seems `print $` still prints the original first column from the awk
+2016-10-20 04:15:27	Riviera	Try with a simpler regex first.
+2016-10-20 04:15:34	Riviera	For example with /^/
+2016-10-20 04:15:39	Riviera	And see if it works at all.
+2016-10-20 04:15:40	Riviera	Etc.
+2016-10-20 04:21:00		[04:15]
+2016-10-20 04:42:08	-->	vuoto (~vuoto@80-71-135-9.u.parknet.dk) has joined #awk
+2016-10-20 04:42:08		[04:42]
+2016-10-20 04:59:15	jeffreylevesque	Riviera: `awk -F\" '{if (/^OPTIONS[[:blank:]]?="/ && !/-u xxx:xxx/)` the IF is wrong, no matter what the else always runs
+2016-10-20 04:59:15		[04:59]
+2016-10-20 04:59:20	<--	rods-tab3 (~rods-tab3@172.56.38.127) has quit (Ping timeout: 260 seconds)
+2016-10-20 04:59:41	jeffreylevesque	 i simplified it to `if (/OPTIONS/)`, and still only the else runs
+2016-10-20 05:00:03	jeffreylevesque	also tried `if (/*OPTIONS*/)`
+2016-10-20 05:00:57	-->	larryv (~larryv@wikipedia/larryv) has joined #awk
+2016-10-20 05:01:38	<--	cdg (~cdg@157.166.173.5) has quit (Remote host closed the connection)
+2016-10-20 05:07:00		[05:01]
+2016-10-20 05:10:13	Riviera	# echo OPTIONS | awk '{ if (/OPTIONS/) { print "camel" } else print "dromedar" }'
+2016-10-20 05:10:15	shbot	Riviera: camel
+2016-10-20 05:10:20	Riviera	Well. :)
+2016-10-20 05:12:30	-->	Raimondii (~israelcha@73.85.200.157) has joined #awk
+2016-10-20 05:12:38	jeffreylevesque	that worked
+2016-10-20 05:13:17	jeffreylevesque	is it my -F in awk
+2016-10-20 05:13:24	jeffreylevesque	or my concatenation of prints
+2016-10-20 05:13:37	-->	PryMar56 (~prymar@cpe-107-185-144-55.socal.res.rr.com) has joined #awk
+2016-10-20 05:13:47	<--	PryMar56 (~prymar@cpe-107-185-144-55.socal.res.rr.com) has quit (Changing host)
+2016-10-20 05:13:47	-->	PryMar56 (~prymar@unaffiliated/prymar56) has joined #awk
+2016-10-20 05:14:55	jeffreylevesque	this worked `echo OPTIONS | awk -F\" '{if (/OPTIONS/) {print $1 "\"" "cool" $2"\""} else {print $0 "jeff"}}'`
+2016-10-20 05:15:34	<--	Raimondi (~israelcha@c-73-244-170-150.hsd1.fl.comcast.net) has quit (Ping timeout: 244 seconds)
+2016-10-20 05:15:36	--	Raimondii is now known as Raimondi
+2016-10-20 05:16:10	jeffreylevesque	Riviera: but, this doesn't work `awk -F\" '{if (/OPTIONS/) {print $1 "\"" "cool" $2"\""} else {print $0 "jeff"}}' my_file.txt`
+2016-10-20 05:16:36	jeffreylevesque	that always appends "jeff" even though the file contains "OPTIONS"
+2016-10-20 05:19:38	-->	al-damiri (uid142631@gateway/web/irccloud.com/x-vifhsdpyskgooklb) has joined #awk
+2016-10-20 05:25:00		[05:19]
+2016-10-20 05:32:41	alxtb	Hi, I'm trying to remove all white space and any instances of 27.0.0.1
+2016-10-20 05:32:47	alxtb	awk '!a[$0]++' $ipFileLocation | gsub("127.0.0.1""") > /home/recon/$Domain/Unique_IPs.txt
+2016-10-20 05:33:02	alxtb	I'm using gsub wrong, what should I be doing instead?
+2016-10-20 05:39:00		[05:33]
+2016-10-20 05:41:04	<--	vuoto (~vuoto@80-71-135-9.u.parknet.dk) has quit (Remote host closed the connection)
+2016-10-20 05:43:23	-->	rods-tab3 (~rods-tab3@172.56.39.23) has joined #awk
+2016-10-20 05:49:00		[05:43]
+2016-10-20 05:51:12	-->	oskarkv (~oskar@c213-89-225-149.bredband.comhem.se) has joined #awk
+2016-10-20 05:55:53	mute	you're using awk wrongly.
+2016-10-20 05:56:13	mute	you're using the shell wrongly too...
+2016-10-20 05:57:24	izalove	yeah stop with these computers
+2016-10-20 05:57:26	mute	alxtb: try: awk '!index($0,"127.0.0.1") && !a[$0]++' "$ipFileLocation" > /home/recon/"$Domain"/Unique_IPs.txt
+2016-10-20 05:57:27	izalove	it's not your thing
+2016-10-20 05:57:47	izalove	mute: too late, they stopped computing
+2016-10-20 05:58:05	mute	drats
+2016-10-20 06:01:45	<--	X-Scale (~ARM@2001:0:53aa:64c:0:f2bd:b176:2199) has quit (Quit:  HydraIRC -> http://www.hydrairc.com <- The alternative IRC client)
+2016-10-20 06:03:22	jeffreylevesque	i tried `awk -F\" '{if(/OPTIONS/) print "cool"; else print $0 "jeff"}' my_file`
+2016-10-20 06:03:26	jeffreylevesque	it always prints jeff
+2016-10-20 06:03:36	<--	rods-tab3 (~rods-tab3@172.56.39.23) has quit (Remote host closed the connection)
+2016-10-20 06:03:48	jeffreylevesque	so, i manually created my_file2 containing "OPTIONS"
+2016-10-20 06:03:51	jeffreylevesque	and it prints cools
+2016-10-20 06:03:58	jeffreylevesque	why would the first file not work?
+2016-10-20 06:04:20	-->	rods-tab3 (~rods-tab3@172.56.39.23) has joined #awk
+2016-10-20 06:04:20		[06:04]
+2016-10-20 06:04:21	jeffreylevesque	it's not permissions
+2016-10-20 06:06:39	mute	i've no idea what you're doing
+2016-10-20 06:07:11	mute	sounds like there's no OPTIONS in it .. obviously
+2016-10-20 06:07:55	<--	rods-tab3 (~rods-tab3@172.56.39.23) has quit (Client Quit)
+2016-10-20 06:09:32	jeffreylevesque	there is
+2016-10-20 06:09:54	jeffreylevesque	the first of the line "# contains a comment"
+2016-10-20 06:10:13	jeffreylevesque	the second is a line that begins with a "OPTIONS blah"
