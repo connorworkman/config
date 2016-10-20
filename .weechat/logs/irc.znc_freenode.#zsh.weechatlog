@@ -1923,3 +1923,81 @@
 2016-10-19 14:08:39	<--	lexinator (~Adium@17.45.117.9) has quit (Ping timeout: 252 seconds)
 2016-10-19 14:10:41	-->	donkeybox (~david@c-24-62-35-73.hsd1.ma.comcast.net) has joined #zsh
 2016-10-19 14:11:33	--	irc: disconnected from server
+2016-10-19 14:34:41	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined #zsh
+2016-10-19 14:34:41		[14:34]
+2016-10-19 14:34:41	--	Topic for #zsh is "v5.2 | http://zsh.sf.net/ | http://zshwiki.org/ | http://zsh.sf.net/FAQ/ | http://zshwiki.org/home/docs/wikifaq | http://tinyurl.com/zsh-refcard-pdf | Just ask. | Nobody here or everybody clueless? try the zsh-users mailinglist: http://www.zsh.org/mla"
+2016-10-19 14:34:41	--	Topic set by Mikachu (~Mikachu@gimp/developer/Mikachu) on Wed, 02 Dec 2015 11:54:14
+2016-10-19 14:34:41	--	Channel #zsh: 411 nicks (0 ops, 0 voices, 411 normals)
+2016-10-19 14:34:41	***	Buffer Playback...
+2016-10-19 14:34:41	danielsh	[20:12:59] didn't you strace it earlier ? [20:12:59]
+2016-10-19 14:34:41	havelock	[20:20:31] I straced it forever ago, yes, I want to strace it as soon as I can get it to run without hanging strangely at startup [20:20:31]
+2016-10-19 14:34:41	danielsh	[20:22:52] run 'zsh -f' [20:22:52]
+2016-10-19 14:34:41	havelock	[20:27:28] danielsh: yay, that removed that hang at startup. [20:27:28]
+2016-10-19 14:34:41	psprint_	[21:11:11] BrainDamage: haha cool [21:11:11]
+2016-10-19 14:34:41	psprint_	[21:11:20] danielsh: all of them (know three) [21:11:20]
+2016-10-19 14:34:41	danielsh	[21:11:39] you completely missed the joke :) [21:11:39]
+2016-10-19 14:34:41	psprint_	[21:12:06] yes suspected that [21:12:06]
+2016-10-19 14:34:41	danielsh	[21:12:16] http://invisible-island.net/xterm/ctlseqs/ctlseqs.html [21:12:16]
+2016-10-19 14:34:41	danielsh	[21:12:22] ESC [ [21:12:22]
+2016-10-19 14:34:41	danielsh	[21:12:22]      Control Sequence Introducer (CSI  is 0x9b). [21:12:22]
+2016-10-19 14:34:41	psprint_	[21:12:43] hehe [21:12:43]
+2016-10-19 14:34:41	ZeroKnight	[21:23:05] So I noticed a bug--or at the least a discrepancy with the manual--with the _expand completer, in that the all-expansions tag does not expand %o in the format style like the expansions tag does. Line 1515 of zshcompsys(1) mentions that %o will be expanded in both tags, but in practice all-expansions does not expand %o [21:23:05]
+2016-10-19 14:34:41	danielsh	[21:23:49] (line number in man pages depend on version number, terminal width, and the phase of the moon) [21:23:49]
+2016-10-19 14:34:41	ZeroKnight	[21:24:56] true, sorry [21:24:56]
+2016-10-19 14:34:41	ZeroKnight	[21:25:30] it's under the description for the _expand completer, specifically: The format string for all-expansions and for expansions may contain the sequence `%o' which will be replaced by the original string from the line. [21:25:30]
+2016-10-19 14:34:41	danielsh	[21:25:45] found it, thanks [21:25:45]
+2016-10-19 14:34:41	danielsh	[21:26:04] I can't get %o to trigger in either case, though... I don't suppose you have a minimal example? [21:26:04]
+2016-10-19 14:34:41	danielsh	[21:26:22] zsh -f \n autoload compinit \n compinit \n bindkey $'\t' complete-word \n zstyle ... completer ... \n etc [21:26:22]
+2016-10-19 14:34:41	ZeroKnight	[21:28:15] assuming _expand is in your completers, and TAB is bound to complete-word, zstyle ':completion:*:*expansions' format '%d for %o', and the command line: % print $PWD<TAB> [21:28:15]
+2016-10-19 14:34:41	danielsh	[21:28:45] My bad, I tested _match :( [21:28:45]
+2016-10-19 14:34:41	ZeroKnight	[21:28:47] you would get: expansions for $PWD [results], and: all-expansions for <nothing here> [results] [21:28:47]
+2016-10-19 14:34:41	ZeroKnight	[21:29:45] forgot to mention, I'm using zsh 5.2 [21:29:45]
+2016-10-19 14:34:41	ZeroKnight	[21:29:54] but this bug is present upstream as well [21:29:54]
+2016-10-19 14:34:41	danielsh	[21:29:54] http://sprunge.us/SUOS - latest master [21:29:54]
+2016-10-19 14:34:41	danielsh	[21:30:18] in the paste, the : is the command, so $HOME is in argv[1] position [21:30:18]
+2016-10-19 14:34:41	danielsh	[21:31:59] ah, repro'd: http://sprunge.us/ATeA [21:31:59]
+2016-10-19 14:34:41	danielsh	[21:32:41] ZeroKnight, I agree it's a bug, could you please report it to zsh-workers@zsh.org ? [21:32:41]
+2016-10-19 14:34:41	ZeroKnight	[21:33:03] danielsh: Sure thing, thank you for helping confirm [21:33:03]
+2016-10-19 14:34:41	danielsh	[21:34:26] cheers [21:34:26]
+2016-10-19 14:34:41	ZeroKnight	[21:34:34] danielsh: This is a bit embrassing, but I've not submitted a bug via mailing list before. Do I subscribe to the mailing list before submitting? [21:34:34]
+2016-10-19 14:34:41	danielsh	[21:35:38] ZeroKnight, the answer varies by project.  In zsh's case, if you don't subscribe then just ask to be CC'd on replies. [21:35:38]
+2016-10-19 14:34:42	ZeroKnight	[21:37:56] danielsh: okay, thanks. I found a page explaining the basics. Will report back after submitting [21:37:56]
+2016-10-19 14:34:42	danielsh	[21:38:59] ZeroKnight, cool. [21:38:59]
+2016-10-19 14:34:42	hugdru	[21:55:09] Hi, I am using zplug and the pure theme. On some actions the screen does not refresh. I disabled the theme and the glitches stop. Anyone know what might be causing this? [21:55:09]
+2016-10-19 14:34:42	KasperTheHost	[22:20:16] Hello, is it safe to keep variable $SSH_CONNECTION to root? [22:20:16]
+2016-10-19 14:34:42	ZeroKnight	[22:21:12] danielsh: Okay, I sent an email to the zsh-workers list. I attempted to subscribe but have yet to get a confirmation; I'm assuming it takes a while? [22:21:12]
+2016-10-19 14:34:42	danielsh	[22:22:15] it does in Oct 2016 when sending from gmail [22:22:15]
+2016-10-19 14:34:42	danielsh	[22:22:31] ZeroKnight, ^ [22:22:31]
+2016-10-19 14:34:42	danielsh	[22:22:36] KasperTheHost, what's "keep a variable"? [22:22:36]
+2016-10-19 14:34:42	ZeroKnight	[22:26:25] danielsh: ah okay, thank you. I have been meaning to set up a proper email client but have yet to get around to it. [22:26:25]
+2016-10-19 14:34:42	ZeroKnight	[22:26:56] forgive me, I have yet to interact with a project as mature as zsh :) [22:26:56]
+2016-10-19 14:34:42	danielsh	[22:27:34] ZeroKnight, welcome aboard :-) [22:27:34]
+2016-10-19 14:34:42	KasperTheHost	[22:29:08] danielsh: adding "Defaults env_keep += "SSH_CONNECTION"" to sudoers [22:29:08]
+2016-10-19 14:34:42	KasperTheHost	[22:29:32] after the "Defaults env_reset" [22:29:32]
+2016-10-19 14:34:42	danielsh	[22:29:36] KasperTheHost, The question is now clear. [22:29:36]
+2016-10-19 14:34:42	danielsh	[22:29:43] I don't know of anything that consumes that variable. [22:29:43]
+2016-10-19 14:34:42	KasperTheHost	[22:30:29] openssh used it, thats all i know [22:30:29]
+2016-10-19 14:34:42	ZeroKnight	[22:31:13] danielsh: thanks! happy to help whenever I can [22:31:13]
+2016-10-19 14:34:42	danielsh	[22:31:51] cheers [22:31:51]
+2016-10-19 14:34:42	***	Playback Complete.
+2016-10-19 14:35:42	<--	ZyX-I (~ZyX-I@broadband-77-37-230-77.nationalcablenetworks.ru) has quit (Ping timeout: 244 seconds)
+2016-10-19 14:35:55	--	Channel created on Tue, 02 Sep 2003 05:34:53
+2016-10-19 14:40:50	<--	hahuang65 (~hahuang65@2601:647:4000:d7:3005:1642:9919:53b8) has quit (Ping timeout: 250 seconds)
+2016-10-19 14:42:04	-->	hahuang65 (~hahuang65@2601:647:4000:d7:88e4:af1e:5fae:624c) has joined #zsh
+2016-10-19 14:48:00		[14:42]
+2016-10-19 14:48:58	-->	thebope (~thebope@pdpc/supporter/student/thebope) has joined #zsh
+2016-10-19 14:53:25	<--	thebope (~thebope@pdpc/supporter/student/thebope) has quit (Ping timeout: 250 seconds)
+2016-10-19 14:59:00		[14:53]
+2016-10-19 15:00:16	<--	strull (~strull@pD9F4A5A0.dip0.t-ipconnect.de) has quit (Remote host closed the connection)
+2016-10-19 15:03:48	<--	blackmesa (~blackmesa@aftr-37-201-227-42.unity-media.net) has quit (Ping timeout: 250 seconds)
+2016-10-19 15:08:24	<--	kbdkode (~kbdkode@unaffiliated/kbdkode) has quit (Ping timeout: 256 seconds)
+2016-10-19 15:08:34	<--	Craniumguy (~Gloria@cpe-76-84-100-35.neb.res.rr.com) has quit (Ping timeout: 250 seconds)
+2016-10-19 15:13:28	-->	krs93 (~krs93@rlc-wifi-guest-lcet-pat-213.dcccd.edu) has joined #zsh
+2016-10-19 15:14:12	<--	hahuang65 (~hahuang65@2601:647:4000:d7:88e4:af1e:5fae:624c) has quit (Ping timeout: 250 seconds)
+2016-10-19 15:14:12		[15:14]
+2016-10-19 15:15:33	-->	Craniumguy (~Gloria@cpe-76-84-100-35.neb.res.rr.com) has joined #zsh
+2016-10-19 15:15:59	<--	Kryptron_ (~Kryptron@unaffiliated/kryptron) has quit (Ping timeout: 265 seconds)
+2016-10-19 15:16:28	<--	cloudhead (~cloudhead@ip5f5af305.dynamic.kabel-deutschland.de) has quit (Ping timeout: 265 seconds)
+2016-10-19 15:17:13	<--	krs93 (~krs93@rlc-wifi-guest-lcet-pat-213.dcccd.edu) has quit (Max SendQ exceeded)
+2016-10-19 15:17:44	-->	krs93 (~krs93@rlc-wifi-guest-lcet-pat-213.dcccd.edu) has joined #zsh
+2016-10-19 15:20:42	<--	TinkerTyper (~TinkerTyp@71.69.172.245) has left #zsh ("Textual IRC Client: www.textualapp.com")

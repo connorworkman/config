@@ -16184,3 +16184,198 @@
 2016-10-19 14:10:12	-->	Oatmeal (~Suzeanne@99-103-96-198.lightspeed.iplsin.sbcglobal.net) has joined ##linux
 2016-10-19 14:10:46	-->	mrbinaer (~mrbinaer@37.120.83.39) has joined ##linux
 2016-10-19 14:11:32	--	irc: disconnected from server
+2016-10-19 14:34:37	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined ##linux
+2016-10-19 14:34:37		[14:34]
+2016-10-19 14:34:37	--	Topic for ##linux is "Channel website: https://freenode.linux.community | Pastebin: https://paste.linux.community | Spammers or trolls? use !ops <troll's nick> <reason>". | For op assistance, join ##linux-ops | Feel at home and enjoy your stay!"
+2016-10-19 14:34:37	--	Topic set by WildPikachu on Sun, 07 Aug 2016 09:25:07
+2016-10-19 14:34:38	--	Channel ##linux: 2436 nicks (0 ops, 0 voices, 2436 normals)
+2016-10-19 14:34:38	***	Buffer Playback...
+2016-10-19 14:34:38	jim	[23:43:15] one point 21 jiggawattz? [23:43:15]
+2016-10-19 14:34:38	hdon	[23:43:18] kerframil, thanks. i thought the kernel would map the memory immediately though, even if it didn't read all its pages from disk and put them in physical RAM [23:43:18]
+2016-10-19 14:34:38	master_j	[23:44:03] alkino: probably [23:44:03]
+2016-10-19 14:34:38	kerframil	[23:45:27] hdon: for that matter, linux doesn't even map anonymous memory that is requested up front (malloc), due to its default overcommit behaviour. [23:45:27]
+2016-10-19 14:34:38	alkino	[23:45:30] I run a binary with perf record, and when I perf report, the main task is __memcpy_ssse3 but tree is empty. So I can't know where does it comes from [23:45:30]
+2016-10-19 14:34:38	fa0	[23:49:26] If I want to cover any range in my router, to make sure any device assigned, from like 192.168.1.100 onwards for an iptables rule, I'm not sure what numbers I'd use?  192.168.1.0/? [23:49:26]
+2016-10-19 14:34:38	hdon	[23:49:29] i just wrote a quick program to mmap the largest file in my /bin dir and promptly sleep http://ix.io/1xIn [23:49:29]
+2016-10-19 14:34:38	hdon	[23:49:32] kerframil, ^ [23:49:32]
+2016-10-19 14:34:38	alkino	[23:50:05] fa0: the second number is the number of bits [23:50:05]
+2016-10-19 14:34:38	alkino	[23:50:10] fa0: ok ? [23:50:10]
+2016-10-19 14:34:38	hdon	[23:50:22] kerframil, here is the result running it: http://ix.io/1xIo [23:50:22]
+2016-10-19 14:34:38	fa0	[23:50:25] I'm not so great with networking [23:50:25]
+2016-10-19 14:34:38	fa0	[23:50:36] Guess need to read some more... [23:50:36]
+2016-10-19 14:34:38	MrElendig	[23:50:46] #netfilter [23:50:46]
+2016-10-19 14:34:38	hdon	[23:51:08] kerframil, so at least on my system, my proc maps file immediately reflects a mapped address space equal to or larger than the mapped file [23:51:08]
+2016-10-19 14:34:38	MrElendig	[23:51:10] nftables is nicer than iptables btw, but if you want to use iptables: don't forget ipv6..... [23:51:10]
+2016-10-19 14:34:38	MrElendig	[23:51:20] might go really bad for you if you do [23:51:20]
+2016-10-19 14:34:38	alkino	[23:51:23] fa0: 8 bits .8 bits .8 bits .8 bits = the second number is how many bits count [23:51:23]
+2016-10-19 14:34:38	MrElendig	[23:51:31] as in, the firewall you think you have might not actually exist at all [23:51:31]
+2016-10-19 14:34:38	hdon	[23:51:45] kerframil, i don't think the kernel has to physically allocate memory to map memory in the process' address space [23:51:45]
+2016-10-19 14:34:38	hdon	[23:52:15] kerframil, what memory would it even be allocating in the case of memory mapping a file? it certainly doesn't read the whole file just because you opened it and mapped it [23:52:15]
+2016-10-19 14:34:38	fa0	[23:52:40] Not sure if I get this right, if I follow subnet 255.255.255.0 with 256 subnets, then I'd use 192.168.1.0/25? [23:52:40]
+2016-10-19 14:34:38	MrElendig	[23:52:41] hdon: not to mention that it might decide to map more than your physical ram [23:52:41]
+2016-10-19 14:34:38	fa0	[23:52:50] errr I meant 192.168.1.0/24 [23:52:50]
+2016-10-19 14:34:38	MrElendig	[23:52:54] if overallocation is not forbidden [23:52:54]
+2016-10-19 14:34:38	norotartagen	[23:52:59] my coordination in the terminal is absolutely terrible [23:52:59]
+2016-10-19 14:34:38	fa0	[23:55:53] alkino: would this be correct? 192.168.1.0/24 [23:55:53]
+2016-10-19 14:34:38	fa0	[23:58:44] My understanding 192.168.1.0/24 means 192.168.0.1-192.168.1.255, so that seems to cover a pretty standard network... [23:58:44]
+2016-10-19 14:34:38	kerframil	[23:58:55] hdon: indeed. nor does it for malloc(). applications can ask for quantities of memory beyond that which could be satisfied, and the call to malloc() will never fail. this is in contrast to some other unix-like operating systems. [23:58:55]
+2016-10-19 14:34:38	kerframil	[23:59:34] hdon: of course, it can fail later when it turns out that there is not enough ram+swap to fulfil the demands of the application [23:59:34]
+2016-10-19 14:34:38	Emil	[00:00:16] Alrighty [00:00:16]
+2016-10-19 14:34:38	Emil	[00:00:17] it works [00:00:17]
+2016-10-19 14:34:38	fa0	[00:00:36] I'm assuming this is pretty standard on a home based router then; [00:00:36]
+2016-10-19 14:34:38	fa0	[00:00:44] iptables -I INPUT -i br0 -s 192.168.1.0/24 -p tcp --dport 53 -j DROP [00:00:44]
+2016-10-19 14:34:38	fa0	[00:00:53] iptables -I INPUT -i br0 -s 192.168.1.0/24 -p udp --dport 53 -j DROP [00:00:53]
+2016-10-19 14:34:38	Bray90820	[00:16:06] Can someone help me get my Marvell 88W8897 wifi card working on my surface 3 I am using ubuntu 16.10 and the system completely freezes when I use a browser [00:16:06]
+2016-10-19 14:34:38	Bray90820	[00:16:08] Also once in a blue moon when I start my tablet wifi tries to connect then disconnects and my screen goes black [00:16:08]
+2016-10-19 14:34:38	gsaul	[00:16:37] that shouldn't be a wireless card issue [00:16:37]
+2016-10-19 14:34:38	gsaul	[00:17:06] don't know what it is but I can pretty much rule that out unless you have an error message telling you that [00:17:06]
+2016-10-19 14:34:38	gsaul	[00:17:12] any error messages you can find? [00:17:12]
+2016-10-19 14:34:38	Demon_Fox	[00:19:48] Is the "BLKGETSIZE64" request for ioctl given in bytes? [00:19:48]
+2016-10-19 14:34:38	green57	[00:23:21] Demon_Fox, according to include/uapi/linux/fs.h:211,  size in bytes u64 *arg [00:23:21]
+2016-10-19 14:34:38	Demon_Fox	[00:24:21] Something I was reading said it was in 512 byte blocks [00:24:21]
+2016-10-19 14:34:38	Demon_Fox	[00:24:24] Thanks for clearing that up [00:24:24]
+2016-10-19 14:34:38	jim	[00:24:27] Demon_Fox, not sure... a google result shows that a different ioctl request (BLKGETSIZE) returns the size as the number of 512 byte blocks [00:24:27]
+2016-10-19 14:34:38	Demon_Fox	[00:24:31] I really need to just fork the Linux source [00:24:31]
+2016-10-19 14:34:38	Demon_Fox	[00:24:50] jim, You probably found the same link i did [00:24:50]
+2016-10-19 14:34:38	jim	[00:25:06] http://www.microhowto.info/howto/get_the_size_of_a_linux_block_special_device_in_c.html [00:25:06]
+2016-10-19 14:34:38	green57	[00:26:29] i guess flip a coin? [00:26:29]
+2016-10-19 14:34:38	green57	[00:29:54] if the kernel comment is wrong someone ought to patch it ;) [00:29:54]
+2016-10-19 14:34:38	***	Playback Complete.
+2016-10-19 14:34:42	<--	javashin (~javashin@unaffiliated/javashin) has quit (Ping timeout: 244 seconds)
+2016-10-19 14:35:05	<--	sk2 (~sk222@104.238.45.100) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-10-19 14:35:15	--	Channel created on Fri, 09 Feb 2001 13:16:24
+2016-10-19 14:35:49	<--	lapnect (~empty@acum43.neoplus.adsl.tpnet.pl) has quit (Quit: bang)
+2016-10-19 14:36:18	-->	sk2 (~sk222@104.238.45.100) has joined ##linux
+2016-10-19 14:36:32	<--	communicator (~sysop@113.209.115.89.rev.vodafone.pt) has quit (Quit: Leaving)
+2016-10-19 14:36:38	<--	sk2 (~sk222@104.238.45.100) has quit (Client Quit)
+2016-10-19 14:37:03	-->	sk2 (~sk222@104.238.45.100) has joined ##linux
+2016-10-19 14:37:26	<--	sk2 (~sk222@104.238.45.100) has quit (Client Quit)
+2016-10-19 14:38:21	-->	egoista_mobile (~androirc@2607:fb90:216e:e330:c262:7584:cadb:ed1a) has joined ##linux
+2016-10-19 14:38:39	-->	AkshayG (~akshayg@125.16.200.50) has joined ##linux
+2016-10-19 14:38:40	<--	AkshayG (~akshayg@125.16.200.50) has quit (Max SendQ exceeded)
+2016-10-19 14:38:48	egoista_mobile	Could anyone tell me what error 254 is in make?
+2016-10-19 14:39:02	-->	AkshayG (~akshayg@125.16.200.50) has joined ##linux
+2016-10-19 14:39:03	<--	AkshayG (~akshayg@125.16.200.50) has quit (Max SendQ exceeded)
+2016-10-19 14:39:14	ananke	egoista_mobile: man make
+2016-10-19 14:39:25	-->	AkshayG (~akshayg@125.16.200.50) has joined ##linux
+2016-10-19 14:39:26	<--	AkshayG (~akshayg@125.16.200.50) has quit (Max SendQ exceeded)
+2016-10-19 14:39:27	<--	Oatmeal (~Suzeanne@99-103-96-198.lightspeed.iplsin.sbcglobal.net) has quit (Ping timeout: 252 seconds)
+2016-10-19 14:39:53	-->	AkshayG (~akshayg@125.16.200.50) has joined ##linux
+2016-10-19 14:39:54	<--	AkshayG (~akshayg@125.16.200.50) has quit (Max SendQ exceeded)
+2016-10-19 14:40:03	<--	notadeveloper (~notadevel@2602:306:bd2a:a160:9392:fcfb:225f:729) has quit (Ping timeout: 245 seconds)
+2016-10-19 14:40:19	-->	AkshayG (~akshayg@125.16.200.50) has joined ##linux
+2016-10-19 14:40:21	<--	AkshayG (~akshayg@125.16.200.50) has quit (Max SendQ exceeded)
+2016-10-19 14:40:30	-->	ap0c (~ap0c@unaffiliated/ap0c) has joined ##linux
+2016-10-19 14:40:47	-->	AkshayG (~akshayg@125.16.200.50) has joined ##linux
+2016-10-19 14:40:48	<--	AkshayG (~akshayg@125.16.200.50) has quit (Max SendQ exceeded)
+2016-10-19 14:40:49	<--	AnilV4 (~AnilV@125.16.200.50) has quit (K-Lined)
+2016-10-19 14:41:32	<--	daltonx (~daltonx@r179-25-243-202.dialup.adsl.anteldata.net.uy) has quit (Ping timeout: 260 seconds)
+2016-10-19 14:41:50	-->	notadeveloper (~notadevel@2602:306:bd2a:a160:9392:fcfb:225f:729) has joined ##linux
+2016-10-19 14:42:31	<--	d1z (~gt@unaffiliated/grullizzle) has quit (Read error: Connection reset by peer)
+2016-10-19 14:44:16	<--	pokalyis (~nerium@banan.olf.sgsnet.se) has quit (Quit: Textual IRC Client: www.textualapp.com)
+2016-10-19 14:45:47	-->	anonymuse (~anonymuse@cpe-66-108-150-242.nyc.res.rr.com) has joined ##linux
+2016-10-19 14:45:50	<--	publio (~publio@unaffiliated/publio) has quit (Quit: Bye.)
+2016-10-19 14:46:01	<--	shub15 (~shubhnik@210.56.96.100) has quit (Read error: Connection reset by peer)
+2016-10-19 14:46:06	<--	pingfloyd (~pingfloyd@unaffiliated/pingfloyd) has quit (Quit: ☮ out)
+2016-10-19 14:46:14	-->	anunnaki (~chris@unaffiliated/anunnaki) has joined ##linux
+2016-10-19 14:46:19	<--	drockwood94 (~ethan@2601:245:0:de2b::fb7f) has quit (Quit: Konversation terminated!)
+2016-10-19 14:46:33	<--	mrbinaer (~mrbinaer@37.120.83.39) has quit
+2016-10-19 14:47:20	-->	RoBo_V (~robo@27.255.171.125) has joined ##linux
+2016-10-19 14:48:07	RoBo_V	if anyone can help, I have installed samba all good but when I try to set security it says cant acess location but when guest ok all good.
+2016-10-19 14:49:07	-->	Caplain (~shayne@d14-69-32-57.try.wideopenwest.com) has joined ##linux
+2016-10-19 14:49:39	<--	Caplain (~shayne@d14-69-32-57.try.wideopenwest.com) has quit (Read error: Connection reset by peer)
+2016-10-19 14:49:39		[14:49]
+2016-10-19 14:50:02	-->	Caplain (~shayne@d14-69-32-57.try.wideopenwest.com) has joined ##linux
+2016-10-19 14:50:03	-->	swift110 (~swift110@173-10-136-209-BusName-washingtonDC.hfc.comcastbusiness.net) has joined ##linux
+2016-10-19 14:50:06	-->	AReverser (~dev@CPE602ad0897db5-CM602ad0897db2.cpe.net.cable.rogers.com) has joined ##linux
+2016-10-19 14:50:12	-->	alex____ (~alex@c-98-220-239-96.hsd1.il.comcast.net) has joined ##linux
+2016-10-19 14:50:31	-->	craftbeer (~craft___b@2602:306:363a:de40:29cd:e73c:4664:74f5) has joined ##linux
+2016-10-19 14:51:53	-->	d1z (~gt@unaffiliated/grullizzle) has joined ##linux
+2016-10-19 14:52:02	<--	NilsonC_ (~Nilson@23-25-182-161-static.hfc.comcastbusiness.net) has quit (Remote host closed the connection)
+2016-10-19 14:52:20	-->	jorgelg (~jorgelg@186-95-206-71.genericrev.cantv.net) has joined ##linux
+2016-10-19 14:53:15	<--	swift110 (~swift110@173-10-136-209-BusName-washingtonDC.hfc.comcastbusiness.net) has quit (Max SendQ exceeded)
+2016-10-19 14:53:31	<--	notafed (~realname@185.21.216.185) has quit (Remote host closed the connection)
+2016-10-19 14:53:31	-->	tsuusifros (~kirsis@dsl-hkibrasgw5-58c04a-98.dhcp.inet.fi) has joined ##linux
+2016-10-19 14:54:05	<--	starsailor (~starsailo@gateway/tor-sasl/starsailor) has quit (Quit: Leaving)
+2016-10-19 14:54:38	<--	Sonolin (~michael@wsip-184-178-115-131.sd.sd.cox.net) has quit (Quit: Lost terminal)
+2016-10-19 14:54:45	<--	tbsf (~tbsf@8.37.96.39) has quit (Remote host closed the connection)
+2016-10-19 14:54:56	-->	SpaceAce (~SpaceAce@124-150-78-133.dyn.iinet.net.au) has joined ##linux
+2016-10-19 14:55:11	<--	Batze (~sad@p549F9493.dip0.t-ipconnect.de) has quit (Read error: Connection reset by peer)
+2016-10-19 14:55:27	-->	htmldrum_ (~htmldrum@14-203-105-58.static.tpgi.com.au) has joined ##linux
+2016-10-19 14:56:23	<--	fa0 (~fa0@unaffiliated/fa0) has quit (Quit: fa0)
+2016-10-19 14:56:30	<--	e14 (~e14@73.114.35.219) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-10-19 14:57:38	<--	htmldrum (~htmldrum@14-203-105-58.static.tpgi.com.au) has quit (Ping timeout: 256 seconds)
+2016-10-19 14:58:00	-->	fireball``` (~fireball`@n175-34-76-77.sun1.vic.optusnet.com.au) has joined ##linux
+2016-10-19 14:58:07	-->	coolmadmax (~fireball`@n175-34-76-77.sun1.vic.optusnet.com.au) has joined ##linux
+2016-10-19 14:58:13	<--	alex____ (~alex@c-98-220-239-96.hsd1.il.comcast.net) has quit (Ping timeout: 260 seconds)
+2016-10-19 14:58:31	-->	fstd_ (~fstd@unaffiliated/fisted) has joined ##linux
+2016-10-19 14:58:40	<--	fstd (~fstd@unaffiliated/fisted) has quit (Read error: Connection reset by peer)
+2016-10-19 14:59:04	--	fstd_ is now known as fstd
+2016-10-19 14:59:13	-->	fev3r101 (~fev3r101@5.134.116.205) has joined ##linux
+2016-10-19 14:59:54	-->	rguz10 (~rguz10@irc.rguz10.com) has joined ##linux
+2016-10-19 15:00:31	-->	D-rex (~derek@c-73-195-178-75.hsd1.nj.comcast.net) has joined ##linux
+2016-10-19 15:00:43	<--	master_j (~user@173-12-221-206-Fresno.hfc.comcastbusiness.net) has quit (Quit: WeeChat 1.6)
+2016-10-19 15:00:57	<--	felixn (~felixn@173.240.241.91) has quit (Ping timeout: 252 seconds)
+2016-10-19 15:01:17	-->	SpaceDanceCJ (~Sasha@178.121.127.235) has joined ##linux
+2016-10-19 15:01:36	-->	dataangel (~user@c-50-165-224-148.hsd1.il.comcast.net) has joined ##linux
+2016-10-19 15:01:51	-->	swift110 (~swift110@173-10-136-209-BusName-washingtonDC.hfc.comcastbusiness.net) has joined ##linux
+2016-10-19 15:03:20	-->	FLHerne (~flh@unaffiliated/flherne) has joined ##linux
+2016-10-19 15:03:24	<--	AlowinZ (~androirc@31.4.221.227) has quit (Quit: AndroIRC - Android IRC Client ( http://www.androirc.com ))
+2016-10-19 15:03:32	<--	ap0c (~ap0c@unaffiliated/ap0c) has quit (Ping timeout: 260 seconds)
+2016-10-19 15:03:36	-->	_beast_ (~beast@pool-173-75-63-201.pitbpa.fios.verizon.net) has joined ##linux
+2016-10-19 15:04:41	-->	murfjr (~realname@185.21.216.185) has joined ##linux
+2016-10-19 15:04:41		[15:04]
+2016-10-19 15:04:50	-->	Jameser (~textual@114.111.166.88) has joined ##linux
+2016-10-19 15:05:07	-->	shdeng (~shaohui@220.249.11.58) has joined ##linux
+2016-10-19 15:05:13	<--	rocktop_ (~rocktop@41.141.17.89) has quit (Ping timeout: 260 seconds)
+2016-10-19 15:06:09	<--	heurist__ (heurist@unaffiliated/heurist) has quit (Ping timeout: 260 seconds)
+2016-10-19 15:06:23	<--	mattallmill (~mattallmi@ip68-103-129-112.ks.ok.cox.net) has quit (Quit: Konversation terminated!)
+2016-10-19 15:06:30	-->	Oatmeal (~Suzeanne@99-103-96-198.lightspeed.iplsin.sbcglobal.net) has joined ##linux
+2016-10-19 15:06:51	<--	arlen (~arlen@unaffiliated/arlen) has quit (Quit: exit)
+2016-10-19 15:07:04	<--	BadboyKAS (~pap00se@2a01:258:f000:6:216:3eff:fef2:7a42) has quit (Remote host closed the connection)
+2016-10-19 15:07:27	-->	zencognito (~bushido@2601:600:8a00:df::2dc7) has joined ##linux
+2016-10-19 15:07:33	<--	fev3r101 (~fev3r101@5.134.116.205) has quit (Ping timeout: 260 seconds)
+2016-10-19 15:07:34	-->	Jetsunami (~Jetsunami@72-44-114-177.spartan-net.net) has joined ##linux
+2016-10-19 15:07:42	-->	piggah (~nick@dt0c0n96.tampabay.res.rr.com) has joined ##linux
+2016-10-19 15:07:48	<--	jorgelg (~jorgelg@186-95-206-71.genericrev.cantv.net) has quit (Quit: Leaving.)
+2016-10-19 15:08:00	-->	guardianL_ (~guardian@120.29.5.222) has joined ##linux
+2016-10-19 15:08:08	<--	allizom (~Thunderbi@95.239.167.162) has quit (Quit: allizom)
+2016-10-19 15:08:11	kerframil	egoista_mobile: are you sure make is what's yielding that? the documentation states that make always returns an exit status of between 0 and 2.
+2016-10-19 15:08:24	<--	kbdkode (~kbdkode@unaffiliated/kbdkode) has quit (Ping timeout: 256 seconds)
+2016-10-19 15:08:55	<--	eric_lagergren (~eric_lage@c-73-225-199-152.hsd1.wa.comcast.net) has quit (Remote host closed the connection)
+2016-10-19 15:09:10	<--	nando293921 (~Nando15@173.224.88.1) has quit (Ping timeout: 250 seconds)
+2016-10-19 15:09:45	-->	heurist__ (heurist@unaffiliated/heurist) has joined ##linux
+2016-10-19 15:10:19	-->	IBM (~root@40.79.227.87.static.sdt.siw.siwnet.net) has joined ##linux
+2016-10-19 15:10:43	--	IBM is now known as Guest29092
+2016-10-19 15:12:08	<--	Jetsunami (~Jetsunami@72-44-114-177.spartan-net.net) has left ##linux
+2016-10-19 15:12:45	-->	al-damiri (uid142631@gateway/web/irccloud.com/x-bgymnsuonvdrhwac) has joined ##linux
+2016-10-19 15:13:01	-->	BirdyTheMighty (~at0msk@node-1w7jr9y4uxn863gv8oehjxaxm.ipv6.telus.net) has joined ##linux
+2016-10-19 15:13:29	-->	krs93 (~krs93@rlc-wifi-guest-lcet-pat-213.dcccd.edu) has joined ##linux
+2016-10-19 15:13:42	-->	fgunnnz (~quassel@p5DDB21BE.dip0.t-ipconnect.de) has joined ##linux
+2016-10-19 15:13:46	<--	plos (~los@180.166.188.6) has quit (Ping timeout: 250 seconds)
+2016-10-19 15:14:21	<--	skunkz (~skunkz@eth-east-parth2-46-193-65-193.wb.wifirst.net) has quit (Quit: WeeChat 1.6)
+2016-10-19 15:14:51	-->	hyacinth (~yhyacinth@61.111.255.109) has joined ##linux
+2016-10-19 15:15:51	<--	piggah (~nick@dt0c0n96.tampabay.res.rr.com) has quit (Quit: Konversation terminated!)
+2016-10-19 15:16:19	-->	anonymous (~anonymous@unaffiliated/anonymous) has joined ##linux
+2016-10-19 15:16:23	-->	milktea (~kaka@103.14.60.125) has joined ##linux
+2016-10-19 15:16:32	<--	milktea (~kaka@103.14.60.125) has left ##linux
+2016-10-19 15:16:35	-->	taskene (~taskene@CPE-124-190-161-178.snzm1.lon.bigpond.net.au) has joined ##linux
+2016-10-19 15:16:49	-->	qlixed (~qlixed@191.84.171.68) has joined ##linux
+2016-10-19 15:17:09	-->	skrb_ (~skrb@p5B0F1124.dip0.t-ipconnect.de) has joined ##linux
+2016-10-19 15:17:13	<--	krs93 (~krs93@rlc-wifi-guest-lcet-pat-213.dcccd.edu) has quit (Max SendQ exceeded)
+2016-10-19 15:17:27	<--	_beast_ (~beast@pool-173-75-63-201.pitbpa.fios.verizon.net) has quit (Quit: Leaving)
+2016-10-19 15:17:44	-->	krs93 (~krs93@rlc-wifi-guest-lcet-pat-213.dcccd.edu) has joined ##linux
+2016-10-19 15:17:56	-->	guardianL (~guardian@pa49-197-187-49.pa.qld.optusnet.com.au) has joined ##linux
+2016-10-19 15:18:13	<--	tsuusifros (~kirsis@dsl-hkibrasgw5-58c04a-98.dhcp.inet.fi) has quit (Changing host)
+2016-10-19 15:18:13	-->	tsuusifros (~kirsis@unaffiliated/tsuusifros) has joined ##linux
+2016-10-19 15:18:55	-->	piggah (~nick@dt0c0n96.tampabay.res.rr.com) has joined ##linux
+2016-10-19 15:19:25	<--	xangua (uid19036@gateway/web/irccloud.com/x-auhjnxwodvmxkgeb) has quit (Quit: Connection closed for inactivity)
+2016-10-19 15:20:15	-->	cooro (~cooro@2602:302:d115:bf80:21b:2fff:fe37:41f) has joined ##linux
+2016-10-19 15:20:15		[15:20]
+2016-10-19 15:20:25	<--	skrb (~skrb@p5B0F0852.dip0.t-ipconnect.de) has quit (Ping timeout: 256 seconds)
+2016-10-19 15:20:35	anonymous	Hello humans, robots, and other... things...
+2016-10-19 15:21:13	<--	xcor_ (~xcor@2a02:c7d:c07:7f00:8d7:9722:cffb:6044) has quit (Quit: No Ping reply in 180 seconds.)
+2016-10-19 15:21:47	-->	plos (~los@180.166.188.6) has joined ##linux
+2016-10-19 15:22:03	<--	kerframil (~kerframil@gentoo/user/kerframil) has quit (Quit: Leaving)
+2016-10-19 15:22:07	<--	guardianL_ (~guardian@120.29.5.222) has quit (Ping timeout: 256 seconds)
+2016-10-19 15:22:10	-->	kbdkode (~kbdkode@unaffiliated/kbdkode) has joined ##linux

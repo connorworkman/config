@@ -7056,3 +7056,119 @@
 2016-10-19 14:10:33	Gorian	yitz: yes
 2016-10-19 14:11:11	yitz	Gorian: Can you come up with a complete working example that shows what you're doing that doesn't work?
 2016-10-19 14:11:33	--	irc: disconnected from server
+2016-10-19 14:34:39	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined #bash
+2016-10-19 14:34:39		[14:34]
+2016-10-19 14:34:39	--	Topic for #bash is "FAQ: http://mywiki.wooledge.org/BashFAQ | Guide: http://mywiki.wooledge.org/BashGuide | Ref: http://gnu.org/s/bash/manual | http://wiki.bash-hackers.org/ | http://mywiki.wooledge.org/Quotes | Check your script: http://www.shellcheck.net/ | Mailing list: https://lists.gnu.org/mailman/listinfo/help-bash | Devel: http://xrl.us/bmodjy"
+2016-10-19 14:34:39	--	Topic set by geirha on Tue, 18 Oct 2016 10:18:38
+2016-10-19 14:34:40	--	Channel #bash: 1042 nicks (1 op, 0 voices, 1041 normals)
+2016-10-19 14:34:40	***	Buffer Playback...
+2016-10-19 14:34:40	yitz	[00:07:17] Are you sure your array got what you think it has? [00:07:17]
+2016-10-19 14:34:40	yitz	[00:07:49] # a=('a"b' "c'd"); declare -p a [00:07:49]
+2016-10-19 14:34:40	shbot	[00:07:51] yitz: declare -a a=([0]="a\"b" [1]="c'd") [00:07:51]
+2016-10-19 14:34:40	Riviera	[00:09:49] Gorian: How did you create the argument array? [00:09:49]
+2016-10-19 14:34:40	Gorian	[00:10:33] yitz: yes [00:10:33]
+2016-10-19 14:34:40	yitz	[00:11:11] Gorian: Can you come up with a complete working example that shows what you're doing that doesn't work? [00:11:11]
+2016-10-19 14:34:40	Gorian	[00:11:40] it contains an array of <double-quote>ad-name<backslash><backslash>world<dot>group<double-quote> [00:11:40]
+2016-10-19 14:34:40	Riviera	[00:12:35] An array contains elements. [00:12:35]
+2016-10-19 14:34:40	Riviera	[00:12:50] Is that description supposed to descibe one element or what? [00:12:50]
+2016-10-19 14:34:40	Riviera	[00:12:53] describe* [00:12:53]
+2016-10-19 14:34:40	yitz	[00:12:56] # a=( foo   '"ad-name\\world.group"' Gorian ); printf '[%s] ' "${a[@]}" [00:12:56]
+2016-10-19 14:34:40	shbot	[00:12:57] yitz: [foo] ["ad-name\\world.group"] [Gorian] [00:12:57]
+2016-10-19 14:34:40	yitz	[00:13:20] Gorian: Again, got a working example that isn't doing as expected? Everything's working here so far. [00:13:20]
+2016-10-19 14:34:40	Riviera	[00:14:17] Gorian: Also, yitz knows what he's talking about.  Quoting is the answer to your question of "passing as-is." [00:14:17]
+2016-10-19 14:34:40	Gorian	[00:15:01] yitz: yeah, sorry. At work and busy on a number of things. Had to make sure script didn't contain anything i can't share [00:15:01]
+2016-10-19 14:34:40	Gorian	[00:15:16] it's after 5pm, I should just go home... [00:15:16]
+2016-10-19 14:34:40	yitz	[00:15:39] We'll be here tomorrow :P [00:15:39]
+2016-10-19 14:34:40	yitz	[00:15:42] * :) [00:15:42]
+2016-10-19 14:34:40	Gorian	[00:15:54] http://pastebin.com/raw/VCHdR4BV [00:15:54]
+2016-10-19 14:34:40	Gorian	[00:16:25] I swear, working with quotes is also one of the biggest pains in the ass.... [00:16:25]
+2016-10-19 14:34:40	Gorian	[00:16:31] *always [00:16:31]
+2016-10-19 14:34:40	kerframil	[00:16:35] are $pbgroups $new_groups supposed to be passed as two distinct arguments to the application in question? [00:16:35]
+2016-10-19 14:34:40	yitz	[00:16:41] new_groups=$(echo "${new_groups} ${oldg}"); arguments=("${new_groups}") [00:16:41]
+2016-10-19 14:34:40	Gorian	[00:16:49] so [00:16:49]
+2016-10-19 14:34:40	yitz	[00:16:51] ^ that's your bug [00:16:51]
+2016-10-19 14:34:40	Gorian	[00:16:58] powerbroke doesn't have a config file, it has a command [00:16:58]
+2016-10-19 14:34:40	Gorian	[00:17:13] and you have to pass ALL AD groups to be given access, and it just overwrites them [00:17:13]
+2016-10-19 14:34:40	yitz	[00:17:33] new_groups+=( "$oldg" ); ... ${PB_BIN_CONFIG} RequireMembershipOf "${new_groups[@]}" [00:17:33]
+2016-10-19 14:34:40	Gorian	[00:17:44] so, it's taking the existing groups, adding the new groups you passed in an argument, and then passing all of them as distinct quoted arguments to the configuration binary [00:17:44]
+2016-10-19 14:34:40	yitz	[00:17:54] !quotewhen > Also Gorian [00:17:54]
+2016-10-19 14:34:40	greybot	[00:17:54] Also Gorian: "Double quote" every literal that contains spaces/metacharacters and _every_ expansion: "$var", "$(command "$var")", "${array[@]}", "a & b". Use 'single quotes' for code or literal $'s: 'Costs $5 US', ssh host 'echo "$HOSTNAME"'. See http://mywiki.wooledge.org/Quotes , http://mywiki.wooledge.org/Arguments and http://wiki.bash-hackers.org/syntax/words . [00:17:54]
+2016-10-19 14:34:40	Gorian	[00:18:27] yitz: didn't know about the += in bash, thanks :) [00:18:27]
+2016-10-19 14:34:40	yitz	[00:18:50] Gorian: alternatively:  new_groups=( "${new_groups[@]}" "$oldg" ); ... ${PB_BIN_CONFIG} RequireMembershipOf "${new_groups[@]}" [00:18:50]
+2016-10-19 14:34:40	Gorian	[00:26:19] yitz: http://pastebin.com/raw/ryvLzSG3 [00:26:19]
+2016-10-19 14:34:40	yitz	[00:27:49] So your input is wrapped in quotes which you want to drop? [00:27:49]
+2016-10-19 14:34:40	yitz	[00:29:01] echo "$@" | sed 's/\\/\\\\/g'   ===>    sed 's/\\/\\\\/g' <<< "$*" [00:29:01]
+2016-10-19 14:34:40	yitz	[00:30:09] Gorian: If you're running it through sed already, you can drop "s. Or you can use a PE [00:30:09]
+2016-10-19 14:34:40	Gorian	[00:31:41] yeah, I sed'd off the quotes, but it still quotes the backslashes [00:31:41]
+2016-10-19 14:34:40	Gorian	[00:31:56] so it actuall passes "corp\\\\world.<group>" [00:31:56]
+2016-10-19 14:34:40	yitz	[00:33:01] You also got a sed expression altering the number of \s in there [00:33:01]
+2016-10-19 14:34:40	yitz	[00:33:16] sed 's/\\/\\\\/g' [00:33:16]
+2016-10-19 14:34:40	Gorian	[00:33:18] bah, I'm getting tired to do this, but i want to get it working before i go home *sigh* [00:33:18]
+2016-10-19 14:34:40	yitz	[00:33:28] Are you adding more than you need than having issues with the extras? [00:33:28]
+2016-10-19 14:34:40	Gorian	[00:33:35] but, not in add [00:33:35]
+2016-10-19 14:34:40	Gorian	[00:33:39] not for pbgroups [00:33:39]
+2016-10-19 14:34:40	yitz	[00:33:48] new_groups=$(echo "$@" | sed 's/\\/\\\\/g'); [00:33:48]
+2016-10-19 14:34:40	Gorian	[00:34:08] yes, but the problem in the existing grops [00:34:08]
+2016-10-19 14:34:40	Gorian	[00:34:12] *groups [00:34:12]
+2016-10-19 14:34:40	Gorian	[00:34:29] which is gets as "corp\\world.<group>" [00:34:29]
+2016-10-19 14:34:40	yitz	[00:34:30] Sure? I don't know what's happening in there. You may need to tweak the output of $PB_BIN_CONFIG [00:34:30]
+2016-10-19 14:34:40	***	Playback Complete.
+2016-10-19 14:34:42	yitz	Ideally via flags to the command
+2016-10-19 14:34:42	-->	e14 (~e14@73.114.35.219) has joined #bash
+2016-10-19 14:34:42	Gorian	ha
+2016-10-19 14:34:42	IT2W	with inotify, can i trigger the script only when a file with a specific file extension is created?
+2016-10-19 14:34:43	<--	pennTeller (~pennTelle@200.66.28.200) has quit (Max SendQ exceeded)
+2016-10-19 14:34:54	Gorian	the whole point of writing the script is how much the command sucks
+2016-10-19 14:35:12	yitz	Gorian: Go home, resume tomorrow?
+2016-10-19 14:35:17	Gorian	yeah, I think I should
+2016-10-19 14:35:19	Gorian	thanks for help
+2016-10-19 14:35:37	--	Channel created on Sat, 25 Nov 2006 20:42:44
+2016-10-19 14:35:42	<--	ZyX-I (~ZyX-I@broadband-77-37-230-77.nationalcablenetworks.ru) has quit (Ping timeout: 244 seconds)
+2016-10-19 14:35:49	yitz	np
+2016-10-19 14:36:09	yitz	IT2W: incrontab takes a path. You can run a script which checks the extension and exits unless it matches something
+2016-10-19 14:37:23	IT2W	ok, so i have to do it like that, gotcha. thanks!
+2016-10-19 14:37:39	<--	logan_e__ (uid164592@gateway/web/irccloud.com/x-dioxieecsfqdqkrr) has quit (Quit: Connection closed for inactivity)
+2016-10-19 14:38:11	<--	heiner (~heiner@dslb-178-005-128-118.178.005.pools.vodafone-ip.de) has quit (Disconnected by services)
+2016-10-19 14:38:29	-->	heiner (~heiner@dslb-178-000-020-203.178.000.pools.vodafone-ip.de) has joined #bash
+2016-10-19 14:38:35	-->	ritztech (~ritztech@199.36.244.14) has joined #bash
+2016-10-19 14:40:48	<--	Rupesh (~rupesh@125.16.200.50) has quit (K-Lined)
+2016-10-19 14:40:50	<--	hahuang65 (~hahuang65@2601:647:4000:d7:3005:1642:9919:53b8) has quit (Ping timeout: 250 seconds)
+2016-10-19 14:41:48	-->	hahuang65 (~hahuang65@2601:647:4000:d7:88e4:af1e:5fae:624c) has joined #bash
+2016-10-19 14:44:16	<--	pokalyis (~nerium@banan.olf.sgsnet.se) has quit (Quit: Textual IRC Client: www.textualapp.com)
+2016-10-19 14:44:43	-->	pennTeller (~pennTelle@200.66.28.200) has joined #bash
+2016-10-19 14:45:48	-->	anonymuse (~anonymuse@cpe-66-108-150-242.nyc.res.rr.com) has joined #bash
+2016-10-19 14:46:06	-->	anunnaki (~chris@unaffiliated/anunnaki) has joined #bash
+2016-10-19 14:48:57	-->	thebope (~thebope@pdpc/supporter/student/thebope) has joined #bash
+2016-10-19 14:49:07	-->	Caplain (~shayne@d14-69-32-57.try.wideopenwest.com) has joined #bash
+2016-10-19 14:49:39	<--	Caplain (~shayne@d14-69-32-57.try.wideopenwest.com) has quit (Read error: Connection reset by peer)
+2016-10-19 14:49:39		[14:49]
+2016-10-19 14:50:02	-->	Caplain (~shayne@d14-69-32-57.try.wideopenwest.com) has joined #bash
+2016-10-19 14:53:25	<--	thebope (~thebope@pdpc/supporter/student/thebope) has quit (Ping timeout: 250 seconds)
+2016-10-19 14:54:08	-->	jlf (~user@pdpc/supporter/active/jlf) has joined #bash
+2016-10-19 14:56:30	<--	e14 (~e14@73.114.35.219) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-10-19 14:58:31	-->	fstd_ (~fstd@unaffiliated/fisted) has joined #bash
+2016-10-19 14:58:40	<--	fstd (~fstd@unaffiliated/fisted) has quit (Read error: Connection reset by peer)
+2016-10-19 14:58:54	<--	axisys (~axisys@unaffiliated/axisys) has quit (Ping timeout: 252 seconds)
+2016-10-19 14:59:04	--	fstd_ is now known as fstd
+2016-10-19 14:59:13	-->	fev3r101 (~fev3r101@5.134.116.205) has joined #bash
+2016-10-19 15:00:16	<--	strull (~strull@pD9F4A5A0.dip0.t-ipconnect.de) has quit (Remote host closed the connection)
+2016-10-19 15:00:57	<--	felixn (~felixn@173.240.241.91) has quit (Ping timeout: 252 seconds)
+2016-10-19 15:01:17	-->	SpaceDanceCJ (~Sasha@178.121.127.235) has joined #bash
+2016-10-19 15:04:41	-->	Jameser (~textual@114.111.166.88) has joined #bash
+2016-10-19 15:04:41		[15:04]
+2016-10-19 15:05:13	<--	rocktop_ (~rocktop@41.141.17.89) has quit (Ping timeout: 260 seconds)
+2016-10-19 15:06:09	<--	heurist__ (heurist@unaffiliated/heurist) has quit (Ping timeout: 260 seconds)
+2016-10-19 15:07:33	<--	fev3r101 (~fev3r101@5.134.116.205) has quit (Ping timeout: 260 seconds)
+2016-10-19 15:07:57	<--	thermalengineer (~Android@2600:1:c594:3e3d:407d:5b7:7578:9903) has quit (Ping timeout: 256 seconds)
+2016-10-19 15:08:24	<--	kbdkode (~kbdkode@unaffiliated/kbdkode) has quit (Ping timeout: 256 seconds)
+2016-10-19 15:08:34	<--	Craniumguy (~Gloria@cpe-76-84-100-35.neb.res.rr.com) has quit (Ping timeout: 250 seconds)
+2016-10-19 15:09:47	-->	heurist__ (heurist@unaffiliated/heurist) has joined #bash
+2016-10-19 15:10:28	<--	h1t3sh (~h1t3sh@43.229.26.250) has quit (Ping timeout: 260 seconds)
+2016-10-19 15:11:38	<--	JeanCarloMachado (~jean@179.147.35.158) has quit (Ping timeout: 265 seconds)
+2016-10-19 15:11:57	-->	h1t3sh (~h1t3sh@43.229.26.250) has joined #bash
+2016-10-19 15:14:12	<--	hahuang65 (~hahuang65@2601:647:4000:d7:88e4:af1e:5fae:624c) has quit (Ping timeout: 250 seconds)
+2016-10-19 15:15:33	-->	Craniumguy (~Gloria@cpe-76-84-100-35.neb.res.rr.com) has joined #bash
+2016-10-19 15:20:00	-->	nolang (~nolang@gwd022.southnet.co.nz) has joined #bash
+2016-10-19 15:20:00		[15:20]
+2016-10-19 15:21:12	-->	jroc78 (~jroc78@38.140.30.202) has joined #bash
+2016-10-19 15:22:03	<--	kerframil (~kerframil@gentoo/user/kerframil) has quit (Quit: Leaving)
