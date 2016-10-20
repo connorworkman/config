@@ -17785,3 +17785,81 @@
 2016-10-20 06:11:11	-->	desophos (~desophos@71-83-197-83.dhcp.hspr.ca.charter.com) has joined #python
 2016-10-20 06:11:14	Yhg1s	morenoh149: FYI, this code is badly wrong.
 2016-10-20 06:11:22	<--	django_ (~django_@unaffiliated/django-/x-8345756) has quit (Ping timeout: 250 seconds)
+2016-10-20 06:11:32	<--	nazarewk (~nazarewk@1d23810ffe137.rev.snt.net.pl) has quit (Ping timeout: 252 seconds)
+2016-10-20 06:11:41	Random832	Yhg1s: wait, why not?
+2016-10-20 06:11:49	Yhg1s	Random832: why not what?
+2016-10-20 06:12:02	Random832	why doesn't it make sense to call getlocale with multiple locales?
+2016-10-20 06:12:14	Yhg1s	Random832: that's not what I said.
+2016-10-20 06:12:15	-->	Mizar (~benjamin@91.252.53.168) has joined #python
+2016-10-20 06:12:20	-->	vayl (92b92190@gateway/web/freenode/ip.146.185.33.144) has joined #python
+2016-10-20 06:12:25	vayl	hey guys
+2016-10-20 06:12:29	vayl	what's wrong with this code: https://paste.pound-python.org/show/qLaLy3XCh3UwY2keXaPw/
+2016-10-20 06:12:32	vayl	?
+2016-10-20 06:12:36	morenoh149	Yhg1s: plz fix https://github.com/adambard/learnxinyminutes-docs I too submitted a fix for something I noticed
+2016-10-20 06:12:38	Random832	<Yhg1s> phz_: ChrisWarrick is in fact right. It doesn't make sense to call locale.getlocale with locale.LC_ALL
+2016-10-20 06:12:43	Yhg1s	morenoh149: no thanks.
+2016-10-20 06:13:06	morenoh149	Yhg1s: k
+2016-10-20 06:13:10	ChrisWarrick	Random832: On Linux, LC_ALL is always empty
+2016-10-20 06:13:12	Yhg1s	Random832: yes. locale.LC_ALL is not "multiple locales". It's "all categories combined". locale.getlocale() can only return one locale, not multiple ones.
+2016-10-20 06:13:14	-->	shakalaka (~shakalaka@ec2-52-52-27-0.us-west-1.compute.amazonaws.com) has joined #python
+2016-10-20 06:13:20	ChrisWarrick	Random832: On macOS, it returns nonsense
+2016-10-20 06:13:20	Random832	why can't it just return the same value that setlocale did?
+2016-10-20 06:13:28	ChrisWarrick	because it might not even exist
+2016-10-20 06:13:30	Yhg1s	Random832: so it will fail when you have different categories set to different locales.
+2016-10-20 06:13:37	Tiberium	Guys, how to split twisted protocol definition into multiple files?
+2016-10-20 06:13:39	Random832	the LC_CTYPE=foo;LC_NUMERIC=bar;etc string
+2016-10-20 06:13:44	Random832	why can't it return that
+2016-10-20 06:13:46	<--	HoloIRCUser (~holoirc@host55-42-dynamic.3-87-r.retail.telecomitalia.it) has quit (Quit: HoloIRCUser)
+2016-10-20 06:13:48	Yhg1s	Random832: it could. It doesn't.
+2016-10-20 06:14:05	-->	akach1 (~akach1@38.140.212.19) has joined #python
+2016-10-20 06:14:10	Yhg1s	(Note how it doesn't return a string at all.)
+2016-10-20 06:14:27	<--	hualet (~hualet@183.94.122.192) has quit (Ping timeout: 252 seconds)
+2016-10-20 06:14:27		[06:14]
+2016-10-20 06:14:33	rweir	Tiberium, #twisted, unless you mean "how do I split a class" in which case you probably don't want to
+2016-10-20 06:14:54	-->	Romme (sid69432@gateway/web/irccloud.com/x-drryybtxeabhvxrj) has joined #python
+2016-10-20 06:14:55	<--	ThomasWaldmann (~twaldmann@moinmoin/coreteam/thomas) has quit (Remote host closed the connection)
+2016-10-20 06:14:55	--	Deusdeorum is now known as Deusdeorum|away
+2016-10-20 06:14:55	Yhg1s	vayl: what makes you say anything is wrong with it?
+2016-10-20 06:15:04	Romme	is there a way to log caught exceptions?
+2016-10-20 06:15:20	Yhg1s	Romme: only explicitly at the point at which they are caught.
+2016-10-20 06:15:21	<--	groklinux (423cf530@gateway/web/freenode/ip.66.60.245.48) has quit (Ping timeout: 260 seconds)
+2016-10-20 06:15:36	<--	Fr4n (~Fr4n@unaffiliated/fr4n) has quit (Ping timeout: 252 seconds)
+2016-10-20 06:15:41	Random832	i just noticed something else weird
+2016-10-20 06:15:41	-->	faldridge (~faldridge@72-48-156-244.static.grandenetworks.net) has joined #python
+2016-10-20 06:15:58	vayl	Well, it's supposed to take out the vowels... that's what I was trying to achieve at least. When I run it through my interpreter though Yhg1sh, it prints the list as it is.
+2016-10-20 06:16:10	Random832	if i have LANG=en_US.UTF-8 in the environment (and no other relevant variables), and I call locale.setlocale(LC_ALL), it sets only LC_CTYPE to this value and sets all other categories to C
+2016-10-20 06:16:12	-->	Masterphi (~Masterphi@199.192.105.248) has joined #python
+2016-10-20 06:16:16	<--	tom__ (~tom@x4e373461.dyn.telefonica.de) has quit (Quit: Konversation terminated!)
+2016-10-20 06:16:30	<--	faldridge (~faldridge@72-48-156-244.static.grandenetworks.net) has quit (Remote host closed the connection)
+2016-10-20 06:16:37	<--	eshlox (uid44222@gateway/web/irccloud.com/x-saqtelmhrofbsupk) has quit (Quit: Connection closed for inactivity)
+2016-10-20 06:16:54	Yhg1s	vayl: well, you're removing a list of vowels from a list of characters. A list of characters won't contain a *list* of vowels, so nothing is removed. You probably mean to use 'v', not 'vowels', on line 11.
+2016-10-20 06:17:10	-->	faldridge (~faldridge@72-48-156-244.static.grandenetworks.net) has joined #python
+2016-10-20 06:17:12	-->	brsc2909 (~Thunderbi@2601:645:c000:a516:7dfb:96f6:12e3:965f) has joined #python
+2016-10-20 06:17:17	Random832	..wtf, it's doing it even if i have LC_COLLATE in the environment and set LC_COLLATE
+2016-10-20 06:17:32	-->	howlymowly (~tom@x4e373461.dyn.telefonica.de) has joined #python
+2016-10-20 06:17:47	Random832	oh, i forgot to pass ""
+2016-10-20 06:17:56	vayl	thanks Yhg1s
+2016-10-20 06:18:01	vayl	fixed.
+2016-10-20 06:18:21	-->	DrEntropy (~DrEntropy@98.172.75.158) has joined #python
+2016-10-20 06:18:29	-->	dennisw (~dennis@128.42.233.187) has joined #python
+2016-10-20 06:18:43	<--	JayFK (~textual@p4FFA2432.dip0.t-ipconnect.de) has quit (Quit: My MacBook Pro has gone to sleep. ZZZzzz…)
+2016-10-20 06:18:58	phz_	thank you for help! \o
+2016-10-20 06:19:13	<--	faldridge (~faldridge@72-48-156-244.static.grandenetworks.net) has quit (Read error: Connection reset by peer)
+2016-10-20 06:19:16	<--	albel727 (~albel727@unaffiliated/albel727) has quit (Quit: KVIrc 4.9.2 Aria http://www.kvirc.net/)
+2016-10-20 06:19:22	-->	tornade_ (~Yossi@bzq-79-180-124-67.red.bezeqint.net) has joined #python
+2016-10-20 06:19:27	-->	albel727 (~albel727@unaffiliated/albel727) has joined #python
+2016-10-20 06:19:33	-->	faldridge (~faldridge@72-48-156-244.static.grandenetworks.net) has joined #python
+2016-10-20 06:19:50	-->	Ir1s (6881c473@gateway/web/cgi-irc/kiwiirc.com/ip.104.129.196.115) has joined #python
+2016-10-20 06:19:52	-->	shahinism (~shahinism@unaffiliated/shahinism) has joined #python
+2016-10-20 06:20:10	<--	shiriru (~shiriru@213.91.236.225) has quit (Quit: Leaving)
+2016-10-20 06:20:18	<--	Muppens1 (~Thunderbi@h-79-115.a163.priv.bahnhof.se) has quit (Quit: Muppens1)
+2016-10-20 06:20:21	-->	orlok (~orlok@112.209.172.36) has joined #python
+2016-10-20 06:20:35	jwhisnant	vayl: or ... for s in states: some =''; for char in s: if char not in vowels: some=some+char ...
+2016-10-20 06:20:36	-->	Suedish (~Suedish@46-227-67-186.pool.ovpn.se) has joined #python
+2016-10-20 06:20:49	-->	GNUmad (~Thunderbi@179.108.56.82) has joined #python
+2016-10-20 06:21:03	<--	svm_invictvs (~patrick@unaffiliated/svminvictvs/x-938456) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-10-20 06:21:03	-->	TraceEv (~TraceEv@d4-50-58-23.try.wideopenwest.com) has joined #python
+2016-10-20 06:21:17	-->	Muppens1 (~Thunderbi@h-79-115.a163.priv.bahnhof.se) has joined #python
+2016-10-20 06:21:52	<--	mahdiiiix_ (~mahdi@5.239.11.83) has quit (Ping timeout: 260 seconds)
+2016-10-20 06:22:14	-->	snyp (~Snyp@nas4.meghbelabroadband.in) has joined #python
+2016-10-20 06:23:20	<--	lbalhar (~lbalhar@93.185.13.26) has quit (Ping timeout: 260 seconds)
