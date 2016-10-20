@@ -1844,3 +1844,90 @@
 2016-10-19 16:10:33	badloop	trying to set up openvpn over tcp and i'm getting the following error when connecting:  "TCP_SIZE_ERROR"
 2016-10-19 16:11:01	badloop	"TCP packet extract error: embedded_packet_size_error"
 2016-10-19 16:11:01		[16:11]
+2016-10-19 16:16:23	@danhunsaker	!whatis speed 5
+2016-10-19 16:16:23	@vpnHelper	less likely are issues with bad TCP window scaling or the sliding window; generally, don't 2nd guess TCP (in openvpn or your OS knobs)
+2016-10-19 16:16:51	@danhunsaker	!tcp
+2016-10-19 16:16:52	@vpnHelper	"tcp" is (#1) Sometimes you cannot avoid tunneling over tcp, but if you can avoid it, DO. http://sites.inka.de/~bigred/devel/tcp-tcp.html Why TCP Over TCP Is A Bad Idea., or (#2) http://www.openvpn.net/papers/BLUG-talk/14.html for a presentation by James Yonan (OpenVPN lead developer), or (#3) if you must use tcp, you likely want --tcp-nodelay
+2016-10-19 16:17:34	badloop	danhunsaker: fair enough... this was more of a last resort.  any good solutions for reverse proxying udp traffic?
+2016-10-19 16:17:56	@danhunsaker	!goal
+2016-10-19 16:17:58	@vpnHelper	"goal" is Please clearly state your goal for your vpn: example, I would like to access the lan behind the server , I would like to access the internet over my vpn , I just want a secure connection between 2 computers , etc
+2016-10-19 16:19:26	badloop	i want to run my openvpn in a VM behind my firewall, but i dont want to completely sacrifice the ports necessary for running openvpn, so I have a reverse proxy set up to forward the https traffic to my openvpn server
+2016-10-19 16:19:36	badloop	i'd like a similar solution for the udp traffic to the server
+2016-10-19 16:19:57	badloop	although i suppose i could just configure the port to be natted through my firewall directly to the openvpn server
+2016-10-19 16:25:00		[16:19]
+2016-10-19 16:26:55	@danhunsaker	That tends to be the preferred configuration, yes - port forwarding.
+2016-10-19 16:27:12	@danhunsaker	Which is why OpenVPN UDP has a predefined port.
+2016-10-19 16:27:25	@danhunsaker	That isn't used by anything else, by default.
+2016-10-19 16:29:26	badloop	yeah, its just not quite as elegant as proxying it via the dns name, but it works, so i'll just deal with it.  ;-)
+2016-10-19 16:29:32	badloop	thanks for the help
+2016-10-19 16:30:45	@danhunsaker	It's ... not exactly supported to do name-based proxying of a VPN ...
+2016-10-19 16:31:23	@danhunsaker	Not even sure where you'd get the name to do the proxying with in the first place...  Especially with UDP, being stateless as it is.
+2016-10-19 16:32:21	badloop	well really all thats required is being able to proxy the udp packets based on the dns name.... same as tcp... udp just isn't as easy to deal with as udp stream.  nginx supports it in their pro version, so hopefully it will come to the free version in early 2017
+2016-10-19 16:32:31	<--	whfsdude (~whfsdude@Zenoss/Support/whfsdude) has quit (Excess Flood)
+2016-10-19 16:32:32	badloop	https://www.nginx.com/blog/announcing-udp-load-balancing/
+2016-10-19 16:32:33	-->	whfsdude (~whfsdude@Zenoss/Support/whfsdude) has joined #openvpn
+2016-10-19 16:32:47	badloop	wow brain fart, i meant to say that a udp stream isn't as easy to deal with as a TCP stream
+2016-10-19 16:33:07	@danhunsaker	Right, but where does the load balancer even get the DNS name from?
+2016-10-19 16:36:19	badloop	from the client?
+2016-10-19 16:37:15	badloop	example, i have web.host.com and vpn.host.com, both can connect to my firewall via port 80 .. my load balancer/proxy understands the dns name and can send the traffic to the correct server based on that name
+2016-10-19 16:37:48	badloop	a great example of why this is needed is if i had multiple vlans that i wanted to offer separate vpns for
+2016-10-19 16:38:02	@danhunsaker	And when does the client send that information, over the encrypted link, in a way that an HTTPS load balancer could understand it and forward the request to a non-HTTP backend?
+2016-10-19 16:38:37	badloop	the secure communication from the client is with the proxy, not the backend
+2016-10-19 16:38:47	@danhunsaker	Not in the case of a VPN.
+2016-10-19 16:39:00	badloop	fair point
+2016-10-19 16:39:14	@danhunsaker	And in fact, not in the case of most HTTPS proxies, either.
+2016-10-19 16:39:37	@danhunsaker	s/most/some/
+2016-10-19 16:40:05	<--	krs93 (~krs93@rlc-wifi-guest-lcet-pat-213.dcccd.edu) has quit (Ping timeout: 252 seconds)
+2016-10-19 16:40:05		[16:40]
+2016-10-19 16:40:30	@danhunsaker	If the backend is responsible for providing its own certs, then the proxy just uses SNI to forward the request, still encrypted, to the correct backend server.
+2016-10-19 16:40:41	@danhunsaker	It doesn't have to, of course.
+2016-10-19 16:42:27	@danhunsaker	Theoretically, SNI could be used for VPN connections as well, but VPNs aren't generally tied to specific hostnames, as they generally aren't provided from shared servers, and even when they are, ports are specified manually either way, so changing ports is far simpler.  The VPN doesn't typically have any reason to care what hostname led a user to it.
+2016-10-19 16:42:50	@danhunsaker	So VPN clients don't actually send the SNI info in the first place.
+2016-10-19 16:44:43	@danhunsaker	To be clear, you do have a valid use case.  But.  Since you have to provide a configuration file for clients to connect anyway, it's generally preferred to put such customizations there or in a server-side client configuration directory (CCD).
+2016-10-19 16:45:16	<--	chachasmooth (~chachasmo@unaffiliated/chachasmooth) has quit (Ping timeout: 260 seconds)
+2016-10-19 16:45:21	-->	Tenhi (~tenhi@static.177.80.201.138.clients.your-server.de) has joined #openvpn
+2016-10-19 16:49:00	-->	chachasmooth (~chachasmo@unaffiliated/chachasmooth) has joined #openvpn
+2016-10-19 16:52:09	badloop	fair enough
+2016-10-19 16:52:11	--	ots is now known as oats
+2016-10-19 16:58:00		[16:52]
+2016-10-19 17:26:48	-->	mrpops2ko (~mrpops2ko@46.28.49.141.adsl.inet-telecom.org) has joined #openvpn
+2016-10-19 17:26:48		[17:26]
+2016-10-19 17:28:31	<--	caliculk (~caliculk@unaffiliated/caliculk) has quit (Ping timeout: 260 seconds)
+2016-10-19 17:34:00		[17:28]
+2016-10-19 17:34:16	-->	caliculk (~caliculk@unaffiliated/caliculk) has joined #openvpn
+2016-10-19 17:40:00		[17:34]
+2016-10-19 17:40:47	-->	krs93 (~krs93@2605:6000:8b03:da00:a5b1:b7cf:f4f0:aba3) has joined #openvpn
+2016-10-19 17:46:00		[17:40]
+2016-10-19 17:51:00	<--	mrpops2ko (~mrpops2ko@46.28.49.141.adsl.inet-telecom.org) has quit (Ping timeout: 260 seconds)
+2016-10-19 17:51:47	<--	monsterco (~monsterco@70.50.209.133) has quit (Quit: Going offline, see ya! (www.adiirc.com))
+2016-10-19 17:57:00		[17:51]
+2016-10-19 18:03:06	-->	cornfeedhobo (~cornfeedh@unaffiliated/cornfeed) has joined #openvpn
+2016-10-19 18:09:00		[18:03]
+2016-10-19 18:11:26	<--	ShadniX (dagger@p5DDFFE6B.dip0.t-ipconnect.de) has quit (Ping timeout: 256 seconds)
+2016-10-19 18:11:34	-->	ShadniX (dagger@p5DDFD98A.dip0.t-ipconnect.de) has joined #openvpn
+2016-10-19 18:15:17	-->	klow (~textual@c-98-247-49-57.hsd1.wa.comcast.net) has joined #openvpn
+2016-10-19 18:21:00		[18:15]
+2016-10-19 18:26:17	<--	mgorbach (~mgorbach@pool-100-0-240-30.bstnma.fios.verizon.net) has quit (Ping timeout: 256 seconds)
+2016-10-19 18:27:56	-->	mgorbach (~mgorbach@pool-100-0-240-30.bstnma.fios.verizon.net) has joined #openvpn
+2016-10-19 18:33:00		[18:27]
+2016-10-19 18:35:21	<--	mgorbach (~mgorbach@pool-100-0-240-30.bstnma.fios.verizon.net) has quit (Ping timeout: 256 seconds)
+2016-10-19 18:35:36	<--	natarej_ (~natarej@101.188.54.14) has quit (Read error: Connection reset by peer)
+2016-10-19 18:36:26	-->	natarej_ (~natarej@101.188.54.14) has joined #openvpn
+2016-10-19 18:36:48	<--	shootbird (~quassel@beepbeep.serverpit.com) has quit (Ping timeout: 260 seconds)
+2016-10-19 18:42:00		[18:36]
+2016-10-19 18:47:09	-->	shootbird (~quassel@beepbeep.serverpit.com) has joined #openvpn
+2016-10-19 18:53:00		[18:47]
+2016-10-19 18:56:54	<--	AlexRussia (~Alex@unaffiliated/alexrussia) has quit (Ping timeout: 252 seconds)
+2016-10-19 18:58:36	<--	klow (~textual@c-98-247-49-57.hsd1.wa.comcast.net) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-10-19 18:58:53	<--	shabius (~shaburov1@broadband-46-188-78-140.2com.net) has quit (Quit: C20H25N3O)
+2016-10-19 19:01:57	-->	klow (~textual@c-98-247-49-57.hsd1.wa.comcast.net) has joined #openvpn
+2016-10-19 19:05:57	<--	Ryushin (chris@2001:470:4b:38f:a634:d9ff:feed:eb30) has quit (Ping timeout: 256 seconds)
+2016-10-19 19:11:00		[19:05]
+2016-10-19 19:12:07	-->	Ryushin (chris@2001:470:4b:38f:a634:d9ff:feed:eb30) has joined #openvpn
+2016-10-19 19:18:00		[19:12]
+2016-10-19 19:20:53	<--	klow (~textual@c-98-247-49-57.hsd1.wa.comcast.net) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-10-19 19:26:00		[19:20]
+2016-10-19 19:31:28	-->	mgorbach (~mgorbach@pool-96-237-153-152.bstnma.ftas.verizon.net) has joined #openvpn
+2016-10-19 19:37:00		[19:31]
+2016-10-19 20:11:00	-->	Naeil (~nzoueidi@ubuntu/member/na3il) has joined #openvpn
+2016-10-19 20:11:00		[20:11]

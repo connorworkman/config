@@ -14930,3 +14930,910 @@
 2016-10-19 16:10:23	-->	xtrntr (~Thunderbi@2401:7400:4000:53f:4c66:75ef:733c:4101) has joined #python
 2016-10-19 16:11:26	-->	illmatix-wrk (~test@S0106bcd16566ac94.cg.shawcable.net) has joined #python
 2016-10-19 16:11:51	<--	i5um41ru (~Thunderbi@180.251.173.8) has quit (Ping timeout: 252 seconds)
+2016-10-19 16:12:39	Mariatta	schilling: by global terminal, do you mean a terminal shell that is not activated with virtualenv?
+2016-10-19 16:13:00	<--	illmatix (~test@S0106bcd16566ac94.cg.shawcable.net) has quit (Ping timeout: 260 seconds)
+2016-10-19 16:13:32	-->	Aliks (~aliks@96-90-197-139-static.hfc.comcastbusiness.net) has joined #python
+2016-10-19 16:14:07	-->	ericchu (~ericchu@S0106789684bf8e0d.vc.shawcable.net) has joined #python
+2016-10-19 16:14:16	-->	michaelhx (~michaelhx@unaffiliated/kaosu) has joined #python
+2016-10-19 16:14:57	<--	idwaker (~idwaker@202.166.217.102) has quit (Remote host closed the connection)
+2016-10-19 16:15:42	-->	idwaker (~idwaker@202.166.217.102) has joined #python
+2016-10-19 16:15:42	-->	nesoi (~nesoi@50-1-62-247.dsl.dynamic.fusionbroadband.com) has joined #python
+2016-10-19 16:16:10	<--	JesseH (~JesseH@oftn/oswg-member/JesseH) has quit (Ping timeout: 250 seconds)
+2016-10-19 16:16:56	maroloccio	hi guys. help please. i am using inspect to iterate over class members. i need to check if they are defined on the current class or somewhere else (e.g. up the inheritance chain). if member_name in clazz.__dict__ works wonders BUT........ doesn't help with wrapped attrs, like cases in which I have __metaclass__ = abc.ABCMeta
+2016-10-19 16:16:58	schilling	nedbat: meaning the terminal in my main user env, not in the VENV (in this case, python 3.5).
+2016-10-19 16:17:04	-->	i5um41ru (~Thunderbi@36.83.80.5) has joined #python
+2016-10-19 16:17:06	<--	mekhami (~vlarrva@2602:306:bcad:c820:fd63:759f:2dfa:942f) has quit (Ping timeout: 256 seconds)
+2016-10-19 16:17:10	schilling	Mariatta: Yes.
+2016-10-19 16:17:29	maroloccio	i want to filter _out_ attrs from metaclasses _as well as_ those who just aren't on .__dict__. how can i do that please?
+2016-10-19 16:17:52	schilling	nedbat: I have no idea how or if it would actually effect file access.
+2016-10-19 16:18:00	<--	idwaker (~idwaker@202.166.217.102) has quit (Remote host closed the connection)
+2016-10-19 16:18:06	<--	flavius (~flavius@unaffiliated/flavius) has quit (Quit: WeeChat 1.6)
+2016-10-19 16:18:30	-->	idwaker (~idwaker@202.166.217.102) has joined #python
+2016-10-19 16:18:36	_habnabit	maroloccio, i suggest not using metaclasses or inheritance at all
+2016-10-19 16:18:48	-->	plutoniix (~q@175.176.220.2) has joined #python
+2016-10-19 16:19:00	nedbat	maroloccio: this sounds really intricate. what's the big picture?
+2016-10-19 16:19:27	maroloccio	i have to output an object model for a very complex piece of software
+2016-10-19 16:20:01	maroloccio	in particular, using plantuml i need to highlight which attrs are defined ON objects at a particular layer of the abstraction hierarchy or... just inherited
+2016-10-19 16:20:07	<--	andrew9183 (~greenfree@38.88.246.186) has quit (Quit: andrew9183)
+2016-10-19 16:20:18	-->	Rodya_ (~Rodya_@173.152.74.11) has joined #python
+2016-10-19 16:20:57	Vgr	func_name in cls.__dict__ ?
+2016-10-19 16:20:59	nedbat	maroloccio: you're going to have to basically re-interpret the obejct inheritance to figure this out
+2016-10-19 16:21:06	maroloccio	filtering by "found by name in .__dict__" does a superb job at only showing object _methods_ on the superclasses defining them.. .but with plain "variable" attributes.. it's not proving that easy
+2016-10-19 16:21:07	<--	idwaker (~idwaker@202.166.217.102) has quit (Remote host closed the connection)
+2016-10-19 16:21:11	maroloccio	nedbat: you mean reason about the MRO?
+2016-10-19 16:21:15	<--	adityakonarde (~adityakon@116.72.91.158) has quit (Ping timeout: 265 seconds)
+2016-10-19 16:21:26	Vgr	maroloccio: do you mean instance attributes?
+2016-10-19 16:21:44	Vgr	(as opposed to class attributes)
+2016-10-19 16:21:44		[16:21]
+2016-10-19 16:21:46	nedbat	maroloccio: yes, and/or metaclasses
+2016-10-19 16:22:00	_habnabit	maroloccio, perhaps it would be better to model this with simple objects than trying to wedge it into python's semantics
+2016-10-19 16:22:37	<--	borodin (~interopco@2605:6000:8bdf:3000:5cff:139:e2e6:dc91) has quit (Quit: Textual IRC Client: www.textualapp.com)
+2016-10-19 16:22:46	-->	bilb_ono (~alex@207.71.224.128) has joined #python
+2016-10-19 16:22:50	_habnabit	maroloccio, make a list of objects, where each object is a level in your hierarchy
+2016-10-19 16:23:01	maroloccio	can anybody code up a minimalistic example where, by using inpect.getmembers on an object having a metaclass i can spliterator members in "on this class" and "coming from somewhere else"
+2016-10-19 16:23:08	_habnabit	maroloccio, you can have a dict on each, and it'll ve easy to reason about
+2016-10-19 16:23:20	-->	svm_invictvs (~patrick@unaffiliated/svminvictvs/x-938456) has joined #python
+2016-10-19 16:23:31	Vgr	maroloccio: are you trying to figure out in which __init__ some instance attributes are assigned?
+2016-10-19 16:23:31	-->	idwaker (~idwaker@202.166.217.102) has joined #python
+2016-10-19 16:23:40	maroloccio	i cant add stuff to this object model. just treat the code as an object, using inspect, import a module and then look at the members returned by getmembers
+2016-10-19 16:23:47	<--	Oatmeal (~Suzeanne@99-103-96-198.lightspeed.iplsin.sbcglobal.net) has quit (Read error: Connection reset by peer)
+2016-10-19 16:23:47	maroloccio	Vgr: no, i am not
+2016-10-19 16:23:54	<--	Rodya_ (~Rodya_@173.152.74.11) has quit (Remote host closed the connection)
+2016-10-19 16:24:04	Vgr	alright, then I'm afraid I don't know what you're trying to do
+2016-10-19 16:24:18	-->	Rodya_ (~Rodya_@173.152.74.11) has joined #python
+2016-10-19 16:24:18	_habnabit	maroloccio, seriously, why try to mangle it into this shape? it's much easier to not involve any actual inheritance
+2016-10-19 16:24:20	maroloccio	Vgr: i am trying to figure out that if i see .foo on an object with a __metaclass__ that .foo comes from the metaclass
+2016-10-19 16:24:33	bilb_ono	anyone knowlegable about strftime I am trying to match the date 11/22/1992 with '%m/%d/%Y   . Is this the right way to do this?
+2016-10-19 16:24:33	<--	hexagoxel (~hexagoxel@p4FCCC605.dip0.t-ipconnect.de) has quit (Ping timeout: 252 seconds)
+2016-10-19 16:24:49	bilb_ono	do I have to escape the slashes?
+2016-10-19 16:24:57	<--	idwaker (~idwaker@202.166.217.102) has quit (Remote host closed the connection)
+2016-10-19 16:25:02	_habnabit	bilb_ono, no. did you try arrow.get?
+2016-10-19 16:25:29	maroloccio	_habnabit: inheritance is external to this problem. the classes in the modules i inspect.. use inheritance. a bit. and metaclasses too. i just need to put the attributes in the object model in relationship to the entities they are defined ON rather than seeing the same attr coming from a metaclass aaaaaaall the way down descendants
+2016-10-19 16:25:31	-->	adityakonarde (~adityakon@116.72.91.158) has joined #python
+2016-10-19 16:25:35	bilb_ono	_habnabit: nope. thanks for the tip
+2016-10-19 16:25:48	-->	safe (~safe@unaffiliated/safe) has joined #python
+2016-10-19 16:26:05	_habnabit	maroloccio, you are fighting against inheritance. how is it 'external'?
+2016-10-19 16:26:09	<--	xtrntr (~Thunderbi@2401:7400:4000:53f:4c66:75ef:733c:4101) has quit (Ping timeout: 256 seconds)
+2016-10-19 16:26:10	-->	idwaker (~idwaker@202.166.217.102) has joined #python
+2016-10-19 16:26:24	_habnabit	maroloccio, if you're trying to introspect these things, inheritance is not a good model
+2016-10-19 16:26:25	-->	hexagoxel (~hexagoxel@p200300798F1E9E00021E33FFFE2231E9.dip0.t-ipconnect.de) has joined #python
+2016-10-19 16:26:30	<--	shakalaka (~shakalaka@ec2-52-52-27-0.us-west-1.compute.amazonaws.com) has quit (Quit: bye.)
+2016-10-19 16:26:38	-->	KevinMarks (~yaaic@2607:fb90:42a:efc6:c1bc:ee64:d087:dfb1) has joined #python
+2016-10-19 16:26:50	<--	yohnnyjoe (~yohnnyjoe@2601:143:8203:bfa0:4164:6730:45be:d691) has quit (Quit: WeeChat 1.1.1)
+2016-10-19 16:27:08	maroloccio	inheritance is not what i do. i what the classes use themselves. let me write a code example
+2016-10-19 16:27:12	<--	svm_invictvs (~patrick@unaffiliated/svminvictvs/x-938456) has quit (Client Quit)
+2016-10-19 16:27:19	TML	_habnabit: maybe it doesn't change the point you're trying to make, but I *think* maroloccio is saying that they have an EXISTING piece of software with inheritance, et al., and they are trying to inspect it and generate documentation from it.
+2016-10-19 16:27:29	_habnabit	TML, oh, that sucks
+2016-10-19 16:27:38	maroloccio	TML: you got me exactly right
+2016-10-19 16:27:43	-->	jfisk87 (~textual@50-1-126-237.dsl.static.fusionbroadband.com) has joined #python
+2016-10-19 16:27:46	maroloccio	TML: that's exactly it
+2016-10-19 16:27:58	-->	rickmak_ (~rickmak@203186221114.ctinets.com) has joined #python
+2016-10-19 16:28:02	<--	idwaker (~idwaker@202.166.217.102) has quit (Remote host closed the connection)
+2016-10-19 16:28:18	<--	yumaokao (~yumaokao@218-161-54-18.HINET-IP.hinet.net) has quit (Ping timeout: 250 seconds)
+2016-10-19 16:28:22	-->	shakalaka (~shakalaka@ec2-52-52-27-0.us-west-1.compute.amazonaws.com) has joined #python
+2016-10-19 16:28:33	-->	idwaker (~idwaker@202.166.217.102) has joined #python
+2016-10-19 16:28:52	<--	pdtpatrick (~Patrick@199.201.64.2) has quit (Ping timeout: 260 seconds)
+2016-10-19 16:29:13	_habnabit	it's easier to generate documentation from source analysis anyway
+2016-10-19 16:29:16	<--	jfisk87 (~textual@50-1-126-237.dsl.static.fusionbroadband.com) has quit (Client Quit)
+2016-10-19 16:29:41	<--	gronke (~gronke@2602:306:bda1:8820:8067:2a84:f9bd:deca) has quit (Quit: Leaving)
+2016-10-19 16:29:48	_habnabit	inspecting after the fact is difficult, as you're finding
+2016-10-19 16:30:03	<--	idwaker (~idwaker@202.166.217.102) has quit (Remote host closed the connection)
+2016-10-19 16:30:50	-->	jroc78 (~jroc78@38.140.30.202) has joined #python
+2016-10-19 16:31:08	<--	Anja (~Anja@49.50.252.82) has quit (Ping timeout: 260 seconds)
+2016-10-19 16:31:17	-->	JesseH (~JesseH@oftn/oswg-member/JesseH) has joined #python
+2016-10-19 16:31:33	<--	jroc78 (~jroc78@38.140.30.202) has quit (Remote host closed the connection)
+2016-10-19 16:31:53	omiday	mekhami: a bit late but if it helps: https://paste.fedoraproject.org/455964/30551147/
+2016-10-19 16:32:18	-->	jroc78 (~jroc78@38.140.30.202) has joined #python
+2016-10-19 16:32:22	nedbat	maroloccio: _habnabit has a point about source analysis: looking at the ast might be easier
+2016-10-19 16:32:31	nesoi	are there breaking changes in C++ integration between 2.7 and 3.4? If so, what's the best way to deal with them?
+2016-10-19 16:32:31	maroloccio	nedbat: thanks for that thought but i never heard of ast in the context of py
+2016-10-19 16:32:34	<--	orly_owl (~david@unaffiliated/orly-owl/x-3167833) has quit (Ping timeout: 265 seconds)
+2016-10-19 16:32:34	maroloccio	what's "the thing" to share code with #python friends? url?
+2016-10-19 16:32:37	<--	cgfbee (~bot@oc1.itim-cj.ro) has quit (Excess Flood)
+2016-10-19 16:32:51	<--	heimlich (~chrome@cpe-23-243-23-4.socal.res.rr.com) has quit (Remote host closed the connection)
+2016-10-19 16:33:35	<--	michaelhx (~michaelhx@unaffiliated/kaosu) has quit (Quit: Leaving)
+2016-10-19 16:33:42	bilb_ono	if I have a try except loop, is there a way to try 2 things. Like try this and if that has an exception, then try something else, then finally, the except
+2016-10-19 16:33:46	bilb_ono	like an elif
+2016-10-19 16:33:49	bilb_ono	but for try
+2016-10-19 16:33:53	TML	maroloccio: see topic
+2016-10-19 16:33:53	-->	cgfbee (~bot@oc1.itim-cj.ro) has joined #python
+2016-10-19 16:34:00	nedbat	nesoi: there are many breaking changes between 2.7 and 3.4, including in the C API
+2016-10-19 16:34:11	_habnabit	bilb_ono, nope. you'd need nested trys
+2016-10-19 16:34:35	nesoi	nedbat:  so what's the best way to deal with that, or just rewrite all your C++ routines?
+2016-10-19 16:34:50	bilb_ono	_habnabit: is there a better way to do that than try except then?
+2016-10-19 16:34:53	nedbat	nesoi: you can probably get away with a small number of #ifdef's
+2016-10-19 16:35:11	nedbat	nesoi: it's mostly the same, but there are differences, especially in how modules are initialized.
+2016-10-19 16:35:12	nesoi	nedbat:  anyone have a guide or anything that you know of?
+2016-10-19 16:35:15	<--	veek (~veek@unaffiliated/veek) has quit (Quit: Leaving)
+2016-10-19 16:35:21	nedbat	nesoi: nothing comes to mind
+2016-10-19 16:35:52	<--	jroc78 (~jroc78@38.140.30.202) has quit (Ping timeout: 260 seconds)
+2016-10-19 16:35:55	maroloccio	voila. here's a minimalistic code example. as you can see.. i can weed out all things but stuff coming from abc __metaclass__'es: https://paste.pound-python.org/show/usKcgYLzY7tpjGXCgufx/
+2016-10-19 16:36:05	maroloccio	can anyone make that code only output 'foo'? :)
+2016-10-19 16:36:24	<--	JesseH (~JesseH@oftn/oswg-member/JesseH) has quit (Ping timeout: 260 seconds)
+2016-10-19 16:36:33	nesoi	nedbat:  so the C++ modules need to be refactored?
+2016-10-19 16:36:36	-->	jroc78 (~jroc78@38.140.30.202) has joined #python
+2016-10-19 16:36:43	nedbat	nesoi: it's probably not that big a deal.
+2016-10-19 16:36:49	_habnabit	nesoi, a good solution is often cffi
+2016-10-19 16:36:49		[16:36]
+2016-10-19 16:36:57	nedbat	nesoi: are you coding against the C API?
+2016-10-19 16:36:58	<--	jroc78 (~jroc78@38.140.30.202) has quit (Read error: Connection reset by peer)
+2016-10-19 16:37:20	-->	jroc78 (~jroc78@38.140.30.202) has joined #python
+2016-10-19 16:37:26	maroloccio	with output: http://ideone.com/lS7aDy
+2016-10-19 16:37:34	_habnabit	maroloccio, inspect the ast
+2016-10-19 16:38:50	-->	italorossi (~italoross@177.35.7.111) has joined #python
+2016-10-19 16:38:52	-->	orly_owl (~david@unaffiliated/orly-owl/x-3167833) has joined #python
+2016-10-19 16:39:24	<--	saschpe (~saschpe@opensuse/member/saschpe) has quit (Ping timeout: 252 seconds)
+2016-10-19 16:39:39	nesoi	currently using swig
+2016-10-19 16:39:52	-->	xtrntr (~Thunderbi@2401:7400:4000:53f:7d95:466:ac5e:15c9) has joined #python
+2016-10-19 16:40:04	_habnabit	nesoi, then what would you need ifdefs for?
+2016-10-19 16:40:05	<--	krs93 (~krs93@rlc-wifi-guest-lcet-pat-213.dcccd.edu) has quit (Ping timeout: 252 seconds)
+2016-10-19 16:40:13	maroloccio	_habnabit: could you give me a bit more of a hint please? i found this site has nicer output btw: https://eval.in/663413
+2016-10-19 16:40:31	bilb_ono	_habnabit: is there a way to add date formats to arrow?
+2016-10-19 16:40:31	-->	jroc78_ (~jroc78@38.140.30.202) has joined #python
+2016-10-19 16:40:36	<--	Astroid (~Astroid@h-155-4-133-26.na.cust.bahnhof.se) has quit (Ping timeout: 250 seconds)
+2016-10-19 16:40:41	bilb_ono	its missing a lot of common date formats
+2016-10-19 16:40:46	-->	Astroid (~Astroid@h-155-4-133-26.na.cust.bahnhof.se) has joined #python
+2016-10-19 16:40:56	<--	jroc78 (~jroc78@38.140.30.202) has quit (Read error: Connection reset by peer)
+2016-10-19 16:41:18	<--	SteveHolt (~awbriggs@cpe-70-121-52-204.tx.res.rr.com) has quit (Ping timeout: 245 seconds)
+2016-10-19 16:41:21	_habnabit	bilb_ono, dunno offhand
+2016-10-19 16:41:22	<--	kerrick (~kerrick@4.14.106.3) has quit (Quit: This computer has gone to sleep)
+2016-10-19 16:41:23	-->	saschpe (~saschpe@opensuse/member/saschpe) has joined #python
+2016-10-19 16:41:35	-->	ap0c (~ap0c@unaffiliated/ap0c) has joined #python
+2016-10-19 16:41:43	_habnabit	maroloccio, i don't know what else to say. don't run the code. use the ast module
+2016-10-19 16:42:50	<--	Motoko (~maoyama@simplemachines/serverteam/Motoko) has quit (Remote host closed the connection)
+2016-10-19 16:43:12	-->	Anja (~Anja@49.50.252.82) has joined #python
+2016-10-19 16:43:23	<--	italorossi (~italoross@177.35.7.111) has quit (Ping timeout: 252 seconds)
+2016-10-19 16:43:24	<--	nurulwai (~goat@about/goats/billygoat/Nurulwai) has quit (Ping timeout: 260 seconds)
+2016-10-19 16:43:32	<--	Hoffman (~Hoffman@unaffiliated/hoffman) has quit (Read error: Connection reset by peer)
+2016-10-19 16:43:45	nesoi	why would you use CFFI rather than SWIG or vice versa?
+2016-10-19 16:44:17	<--	govg (~govg@unaffiliated/govg) has quit (Ping timeout: 256 seconds)
+2016-10-19 16:44:18	offby1	I seem to recall SWIG was a complex mess
+2016-10-19 16:44:42	-->	nurulwai (~goat@about/goats/billygoat/Nurulwai) has joined #python
+2016-10-19 16:44:43	-->	Hoffman (~Hoffman@unaffiliated/hoffman) has joined #python
+2016-10-19 16:44:45	_habnabit	nesoi, cffi has the most logical API shape/surface and minimal boilerplate
+2016-10-19 16:45:00	maroloccio	_habnabit, nedbat: ok, recursive ast walk does allow me to pick out only the Assign -> AssName parts. that's brutal though. can't be done in any other way?
+2016-10-19 16:45:16	<--	chachasmooth (~chachasmo@unaffiliated/chachasmooth) has quit (Ping timeout: 260 seconds)
+2016-10-19 16:45:26	-->	PhsShft (~Derek@128.135.100.106) has joined #python
+2016-10-19 16:45:27	_habnabit	maroloccio, anything is possible, but this is by far the simplest way
+2016-10-19 16:45:44	maroloccio	_habnabit: thank you. you _did_ gave me a *solution*
+2016-10-19 16:46:09	maroloccio	i am not sure i am gonna go nuclear like that.. but i can't deny it's a solution to the problem posed
+2016-10-19 16:46:24	_habnabit	maroloccio, not sure why you think it's so complex
+2016-10-19 16:47:01	_habnabit	maroloccio, lib2to3 does make it easier to pattern-match the syntax
+2016-10-19 16:47:15	<--	thinkt4nk (~thinkt4nk@estatus.olaninfo.com) has quit (Quit: My Mac has gone to sleep. ZZZzzz…)
+2016-10-19 16:47:21	maroloccio	for example, maybe i could read the __metaclass__ (can there be multiple metaclasses) and check if the name is defined on there? (what would happen if i i was overriding the name in the actual class though?)
+2016-10-19 16:49:00	-->	chachasmooth (~chachasmo@unaffiliated/chachasmooth) has joined #python
+2016-10-19 16:49:15	-->	howdoi (uid224@gateway/web/irccloud.com/x-huqqwidlouxpgvfu) has joined #python
+2016-10-19 16:49:22	jwhisnant	bilb_ono: (not having used arrow before), which common ones are missing?
+2016-10-19 16:50:01	bilb_ono	jwhisnant: November 22, 1992
+2016-10-19 16:50:02	_habnabit	maroloccio, sure, all of this is possible, but as i've said several times, just very complex
+2016-10-19 16:50:06	bilb_ono	is one I was looking at
+2016-10-19 16:50:22	<--	Seppy (~SilentPen@unaffiliated/silentpenguin) has quit (Remote host closed the connection)
+2016-10-19 16:50:26	-->	lagothri1 (~lagothrix@unaffiliated/lagothrix) has joined #python
+2016-10-19 16:51:07	maroloccio	_habnabit: do you have an object model visualiser of your preference?
+2016-10-19 16:51:30	_habnabit	maroloccio, i don't know what you mean by object model here
+2016-10-19 16:51:35	-->	zamro (~zamro@c-73-151-187-126.hsd1.ca.comcast.net) has joined #python
+2016-10-19 16:52:05	<--	Mariatta (18566d71@gateway/web/freenode/ip.24.86.109.113) has quit (Ping timeout: 260 seconds)
+2016-10-19 16:52:05		[16:52]
+2016-10-19 16:52:27	-->	Oatmeal (~Suzeanne@99-103-96-198.lightspeed.iplsin.sbcglobal.net) has joined #python
+2016-10-19 16:52:30	-->	chartractegg (~chartract@ip72-208-61-212.ph.ph.cox.net) has joined #python
+2016-10-19 16:52:36	<--	decontamin4t0R (~decontami@unaffiliated/decontamin4t0r) has quit (Ping timeout: 252 seconds)
+2016-10-19 16:52:36	TML	_habnabit: I think he means the class heirarchy, their objects and methods.
+2016-10-19 16:52:57	maroloccio	_habnabit: like.. it can spit a UML class diagram with at least generalisation links
+2016-10-19 16:53:27	<--	lagothrix (~lagothrix@unaffiliated/lagothrix) has quit (Ping timeout: 250 seconds)
+2016-10-19 16:53:55	<--	chucky_z (uid135747@gateway/web/irccloud.com/x-zabapttxoczrtwqr) has quit (Quit: Connection closed for inactivity)
+2016-10-19 16:54:01	-->	fission6 (~fission6@174.51.82.31) has joined #python
+2016-10-19 16:54:22	deniska	(ew, uml)
+2016-10-19 16:54:22	_habnabit	maroloccio, i've never really needed this outside of databases. might be a bad sign about the complexity of the software
+2016-10-19 16:55:07	-->	decontamin4t0R (~decontami@unaffiliated/decontamin4t0r) has joined #python
+2016-10-19 16:55:12	-->	riclima_ (~riclima@185.143.230.236) has joined #python
+2016-10-19 16:55:39	jwhisnant	bilb_ono: I think you will have to do your own formatting, like arrow.utcnow().format('B w, YYYY') - although I may have the format incorrect
+2016-10-19 16:55:49	-->	yumaokao (~yumaokao@218-161-54-18.HINET-IP.hinet.net) has joined #python
+2016-10-19 16:56:06	jwhisnant	bilb_ono: http://arrow.readthedocs.io/en/latest/#format
+2016-10-19 16:56:07	bilb_ono	jwhisnant: why would it be utcnow?
+2016-10-19 16:56:20	<--	riclima (~riclima@69-165-201-218.cable.teksavvy.com) has quit (Read error: Connection reset by peer)
+2016-10-19 16:56:22	<--	clarjon1 (~clarjon1@unaffiliated/clarjon1) has quit (Quit: clarjon1)
+2016-10-19 16:56:26	-->	riclima__ (~riclima@69-165-201-218.cable.teksavvy.com) has joined #python
+2016-10-19 16:56:28	<--	CaptainPi (~edx@dslb-188-099-192-006.188.099.pools.vodafone-ip.de) has quit (Ping timeout: 250 seconds)
+2016-10-19 16:56:37	jwhisnant	bilb_ono: it might not be. you did not specify what timezone you wanted. I just copied the example in their docs.
+2016-10-19 16:57:22	-->	CaptainPi (~edx@dslb-188-098-048-205.188.098.pools.vodafone-ip.de) has joined #python
+2016-10-19 16:57:34	<--	jroc78_ (~jroc78@38.140.30.202) has quit (Remote host closed the connection)
+2016-10-19 16:57:46	<--	aw1 (~aw1@unaffiliated/aw1) has quit (Ping timeout: 244 seconds)
+2016-10-19 16:58:27	<--	KevinMarks (~yaaic@2607:fb90:42a:efc6:c1bc:ee64:d087:dfb1) has quit (Ping timeout: 256 seconds)
+2016-10-19 16:59:08	maroloccio	_habnabit: you are probably right. thanks for your help
+2016-10-19 16:59:34	<--	N0Lif3 (~N0Lif3@2602:306:335f:690:9582:53dd:632:1d2e) has quit (Quit: Leaving)
+2016-10-19 16:59:48	-->	N0Lif3 (~N0Lif3@2602:306:335f:690:9582:53dd:632:1d2e) has joined #python
+2016-10-19 16:59:51	<--	riclima_ (~riclima@185.143.230.236) has quit (Ping timeout: 244 seconds)
+2016-10-19 17:00:20	-->	addcn (~addcn@c-50-152-165-241.hsd1.ca.comcast.net) has joined #python
+2016-10-19 17:00:37	<--	noisykeyboard (~noisykeyb@MTRLPQ5031W-LP140-06-1176233125.dsl.bell.ca) has quit (Quit: Leaving)
+2016-10-19 17:00:37	-->	jfisk87 (~textual@50-1-126-237.dsl.static.fusionbroadband.com) has joined #python
+2016-10-19 17:01:04	<--	hashpuppy (uid43164@gateway/web/irccloud.com/x-aycromukuepcxebs) has quit (Quit: Connection closed for inactivity)
+2016-10-19 17:01:08	<--	sharpfive (~sharpfive@38.75.3.196) has quit (Quit: Leaving)
+2016-10-19 17:01:50	<--	jfisk87 (~textual@50-1-126-237.dsl.static.fusionbroadband.com) has quit (Client Quit)
+2016-10-19 17:02:07	-->	jroc78 (~jroc78@38.140.30.202) has joined #python
+2016-10-19 17:02:12	jwhisnant	maroloccio: you might try pyreverse which is part of pylint ...
+2016-10-19 17:02:15	-->	therue (~therue@1-162-82-18.dynamic.hinet.net) has joined #python
+2016-10-19 17:02:18	<--	kylls (~kylls_@unaffiliated/kylls) has quit (Ping timeout: 256 seconds)
+2016-10-19 17:02:25	<--	blackwind_123 (~IceChat9@117.192.138.190) has quit (Ping timeout: 256 seconds)
+2016-10-19 17:02:28	<--	ironfroggy (~ironfrogg@python/site-packages/ironfroggy) has quit (Remote host closed the connection)
+2016-10-19 17:02:35	-->	edug (~edug@191.179.109.221) has joined #python
+2016-10-19 17:02:37	-->	KindOne_ (kindone@freenude/topless/kindone) has joined #python
+2016-10-19 17:03:03	-->	ironfroggy (~ironfrogg@python/site-packages/ironfroggy) has joined #python
+2016-10-19 17:03:14	maroloccio	jwhisnant: you know what.. can i safely make the assumption that stuff coming from the __metaclass__ is prefixed by some str thing? like _abc_cache, _abc_registry, _abc_negative_cache.. i guess not for "everything".. :(
+2016-10-19 17:03:30	maroloccio	jwhisnant: anything thanks for that pointer.. i'll investigate that avenue too
+2016-10-19 17:03:49	-->	blackwind_123 (~IceChat9@117.192.138.190) has joined #python
+2016-10-19 17:03:57	-->	jky_ (~jky@198-48-219-213.cpe.pppoe.ca) has joined #python
+2016-10-19 17:04:13	-->	rcowie (5ac757c3@gateway/web/cgi-irc/kiwiirc.com/ip.90.199.87.195) has joined #python
+2016-10-19 17:05:11	<--	KindOne (kindone@freenude/topless/kindone) has quit (Ping timeout: 260 seconds)
+2016-10-19 17:06:03	<--	pyios (~andy@111.63.44.14) has quit (Quit: pyios)
+2016-10-19 17:06:03	-->	JesseH (~JesseH@oftn/oswg-member/JesseH) has joined #python
+2016-10-19 17:06:03	-->	e14 (~e14@2601:184:4100:1ea6:f8ac:e0fe:cf7a:602b) has joined #python
+2016-10-19 17:06:03	<--	rcowie (5ac757c3@gateway/web/cgi-irc/kiwiirc.com/ip.90.199.87.195) has quit (Client Quit)
+2016-10-19 17:06:03	<--	nesoi (~nesoi@50-1-62-247.dsl.dynamic.fusionbroadband.com) has quit (Quit: Leaving.)
+2016-10-19 17:06:27	<--	jroc78 (~jroc78@38.140.30.202) has quit (Remote host closed the connection)
+2016-10-19 17:06:28	<--	braincrash (~braincras@bl4-148-250.dsl.telepac.pt) has quit (Quit: bye bye)
+2016-10-19 17:06:55	--	KindOne_ is now known as KindOne
+2016-10-19 17:07:04	-->	jroc78 (~jroc78@38.140.30.202) has joined #python
+2016-10-19 17:07:19	<--	donkeybox (~david@c-24-62-35-73.hsd1.ma.comcast.net) has quit (Remote host closed the connection)
+2016-10-19 17:07:19		[17:07]
+2016-10-19 17:07:38	<--	ironfroggy (~ironfrogg@python/site-packages/ironfroggy) has quit (Ping timeout: 265 seconds)
+2016-10-19 17:07:53	-->	clarjon1 (~clarjon1@unaffiliated/clarjon1) has joined #python
+2016-10-19 17:08:56	<--	e14 (~e14@2601:184:4100:1ea6:f8ac:e0fe:cf7a:602b) has quit (Client Quit)
+2016-10-19 17:09:32	<--	edug (~edug@191.179.109.221) has quit (Ping timeout: 260 seconds)
+2016-10-19 17:09:40	-->	chartrac_ (~chartract@104.200.151.15) has joined #python
+2016-10-19 17:09:45	-->	e14 (~e14@2601:184:4100:1ea6:f8ac:e0fe:cf7a:602b) has joined #python
+2016-10-19 17:10:17	<--	popsu (popsu@89-27-88-219.bb.dnainternet.fi) has quit (Read error: Connection reset by peer)
+2016-10-19 17:10:32	-->	malinoff (~Adium@unaffiliated/malinoff) has joined #python
+2016-10-19 17:10:55	-->	pdtpatrick (~Patrick@199.201.64.2) has joined #python
+2016-10-19 17:10:56	<--	chartractegg (~chartract@ip72-208-61-212.ph.ph.cox.net) has quit (Ping timeout: 260 seconds)
+2016-10-19 17:11:20	<--	jroc78 (~jroc78@38.140.30.202) has quit (Ping timeout: 260 seconds)
+2016-10-19 17:11:24	<--	JesseH (~JesseH@oftn/oswg-member/JesseH) has quit (Ping timeout: 260 seconds)
+2016-10-19 17:12:03	-->	virengos3 (~Thunderbi@dslb-092-074-078-061.092.074.pools.vodafone-ip.de) has joined #python
+2016-10-19 17:12:18	-->	jfisk87 (~textual@50-1-126-237.dsl.static.fusionbroadband.com) has joined #python
+2016-10-19 17:13:55	<--	pikaroo- (~pikaroo@23.92.93.231) has quit (Quit: Lost terminal)
+2016-10-19 17:14:02	<--	jfisk87 (~textual@50-1-126-237.dsl.static.fusionbroadband.com) has quit (Client Quit)
+2016-10-19 17:14:23	<--	seeit (~seeit@2605:6000:6308:2000:48aa:1aa6:9ce1:d5f3) has quit (Remote host closed the connection)
+2016-10-19 17:15:00	-->	jeyraof (~jeyraof@125.131.130.213) has joined #python
+2016-10-19 17:15:01	-->	seeit (~seeit@2605:6000:6308:2000:48aa:1aa6:9ce1:d5f3) has joined #python
+2016-10-19 17:15:05	<--	Oatmeal (~Suzeanne@99-103-96-198.lightspeed.iplsin.sbcglobal.net) has quit (Read error: Connection reset by peer)
+2016-10-19 17:15:38	<--	rusmik (266acdf4@gateway/web/freenode/ip.38.106.205.244) has quit (Quit: Page closed)
+2016-10-19 17:15:45	-->	pyios (~andy@111.63.44.14) has joined #python
+2016-10-19 17:15:51	<--	cryo_ (~cryo@2601:601:8903:4a30:14fb:2158:3d0:428b) has quit (Remote host closed the connection)
+2016-10-19 17:16:26	<--	pdtpatrick (~Patrick@199.201.64.2) has quit (Remote host closed the connection)
+2016-10-19 17:17:03	-->	the_rat (~the_rat@2a02:8109:8380:3e8c:8cfd:7d25:506a:542c) has joined #python
+2016-10-19 17:17:24	<--	brendel (~brice@LAubervilliers-656-1-215-246.w217-128.abo.wanadoo.fr) has quit (Ping timeout: 260 seconds)
+2016-10-19 17:17:31	<--	zeeshan (~kvirc64@CPE84948c379051-CM84948c379050.cpe.net.cable.rogers.com) has quit (Ping timeout: 252 seconds)
+2016-10-19 17:18:16	-->	aw1 (~aw1@unaffiliated/aw1) has joined #python
+2016-10-19 17:18:36	-->	braincras (~braincras@bl4-148-250.dsl.telepac.pt) has joined #python
+2016-10-19 17:18:48	<--	pyios (~andy@111.63.44.14) has quit (Client Quit)
+2016-10-19 17:19:11	-->	pyios (~andy@111.63.44.14) has joined #python
+2016-10-19 17:19:13	<--	seeit (~seeit@2605:6000:6308:2000:48aa:1aa6:9ce1:d5f3) has quit (Ping timeout: 245 seconds)
+2016-10-19 17:20:06	<--	ebsen (~ebsene@66-6-5-186.d2.itctel.com) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-10-19 17:20:43	-->	ponyrider (~cf2iqx@unaffiliated/ponyrider) has joined #python
+2016-10-19 17:20:50	-->	chartractegg (~chartract@ip72-208-61-212.ph.ph.cox.net) has joined #python
+2016-10-19 17:21:01	<--	akach1 (~akach1@c-64-30-187-207.hx.gigamonster.net) has quit (Remote host closed the connection)
+2016-10-19 17:21:03	-->	vcn (~vcn@1.55.245.82) has joined #python
+2016-10-19 17:21:37	<--	the_rat (~the_rat@2a02:8109:8380:3e8c:8cfd:7d25:506a:542c) has quit (Ping timeout: 250 seconds)
+2016-10-19 17:21:43	<--	xtrntr (~Thunderbi@2401:7400:4000:53f:7d95:466:ac5e:15c9) has quit (Ping timeout: 245 seconds)
+2016-10-19 17:21:57	<--	chartrac_ (~chartract@104.200.151.15) has quit (Ping timeout: 260 seconds)
+2016-10-19 17:22:53	<--	energizer (~energizer@unaffiliated/energizer) has quit (Ping timeout: 260 seconds)
+2016-10-19 17:22:53		[17:22]
+2016-10-19 17:23:19	<--	ap0c (~ap0c@unaffiliated/ap0c) has quit (Quit: Leaving)
+2016-10-19 17:23:23	-->	tbsf (~tbsf@c-71-205-108-77.hsd1.co.comcast.net) has joined #python
+2016-10-19 17:23:24	-->	ebsen (~ebsene@66-6-5-186.d2.itctel.com) has joined #python
+2016-10-19 17:23:36	-->	govg (~govg@unaffiliated/govg) has joined #python
+2016-10-19 17:23:36	<--	tbsf (~tbsf@c-71-205-108-77.hsd1.co.comcast.net) has quit (Remote host closed the connection)
+2016-10-19 17:23:43	<--	pyios (~andy@111.63.44.14) has quit (Ping timeout: 252 seconds)
+2016-10-19 17:23:56	<--	WungFu (~WungFu@unaffiliated/wungfu) has quit (Ping timeout: 250 seconds)
+2016-10-19 17:24:27	<--	ArchDebian (~Thunderbi@c-24-0-144-183.hsd1.nj.comcast.net) has left #python
+2016-10-19 17:24:42	-->	JesseH (~JesseH@oftn/oswg-member/JesseH) has joined #python
+2016-10-19 17:25:03	-->	bsamorim (~bernardo@201-68-87-56.dsl.telesp.net.br) has joined #python
+2016-10-19 17:25:04	vite	did you guys watch the reality tv show  on fox?
+2016-10-19 17:25:50	nullfxn	uh oh focus group time.
+2016-10-19 17:26:38	vite	lol
+2016-10-19 17:26:47	bsamorim	guys, is there any way to easily convert the html links accent syntax to unicode on python3? e.g. Input: %C3%81gua
+2016-10-19 17:26:48	bsamorim	 Output: �gua
+2016-10-19 17:27:03	nullfxn	11 hillary 10 trump 11 neither.   In the end 11 votes to hillary, 5 to Trump.  the rest undecided.
+2016-10-19 17:27:29	<--	Burrito (~Burrito@unaffiliated/burrito) has quit (Quit: Leaving)
+2016-10-19 17:27:29	vite	ken bone all the way
+2016-10-19 17:27:55	vite	48 hpurs running my irc client still working
+2016-10-19 17:28:08	<--	jky_ (~jky@198-48-219-213.cpe.pppoe.ca) has quit (Ping timeout: 260 seconds)
+2016-10-19 17:28:31	Vainglory	nullfxn: don't bring politics here
+2016-10-19 17:28:51	mandeep	#python-offtopic or something
+2016-10-19 17:29:10	vite	ok time to netflix and chill
+2016-10-19 17:29:13	<--	adityakonarde (~adityakon@116.72.91.158) has quit (Quit: Leaving)
+2016-10-19 17:29:33	-->	WungFu (~WungFu@unaffiliated/wungfu) has joined #python
+2016-10-19 17:29:35	nullfxn	Vainglory: I am SOOOO sorry. Srsly.  I thought I was in a different channel.  My fault entirely.  I am so sorry.
+2016-10-19 17:29:38	<--	e14 (~e14@2601:184:4100:1ea6:f8ac:e0fe:cf7a:602b) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-10-19 17:29:48	Vainglory	nullfxn: no reason for the sarcasm
+2016-10-19 17:30:19	<--	obskyr (~obskyr@c83-251-182-216.bredband.comhem.se) has quit (Quit: If it hadn't been for Cotton Eye Joe, I'd be sleeping a long time ago.)
+2016-10-19 17:30:30	<--	codepython777 (~xyz@c-68-35-250-254.hsd1.fl.comcast.net) has quit (Quit: Leaving.)
+2016-10-19 17:30:36	<--	ebsen (~ebsene@66-6-5-186.d2.itctel.com) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-10-19 17:30:43	nullfxn	Vainglory: no sarcasm.  I am actually very sorry. #python should not be political.  It was my mistake and I take credit for it.  No sarcasm intended.  I am VERY VERY sorry.
+2016-10-19 17:30:57	<--	Rialynn (~Rialynn@unaffiliated/rialynn) has quit (Quit: ZZZzzz…)
+2016-10-19 17:31:17	vite	actually opensource projects are all about politics. programmers vote by coding for wat they like.
+2016-10-19 17:32:04	vite	for what●
+2016-10-19 17:32:30	<--	al-damiri (uid142631@gateway/web/irccloud.com/x-bgymnsuonvdrhwac) has quit (Quit: Connection closed for inactivity)
+2016-10-19 17:32:48	Vainglory	vite: that's not really a vote
+2016-10-19 17:33:05	Vainglory	it's creating what they want. if anything programming is an anarchy
+2016-10-19 17:33:53	<--	krobzaur (~kyle@CPEbc1401ea7263-CMbc1401ea7260.cpe.net.cable.rogers.com) has quit (Quit: WeeChat 1.4)
+2016-10-19 17:33:54	-->	pyios (~andy@111.63.44.14) has joined #python
+2016-10-19 17:34:02	<--	amogorkon_ (~amogorkon@piratenpartei/bw/amogorkon) has quit (Ping timeout: 256 seconds)
+2016-10-19 17:34:12	-->	cibs (~cibs@118-163-170-73.hinet-ip.hinet.net) has joined #python
+2016-10-19 17:34:16	nullfxn	vite: Thanks for your input, but please don't inject politics into this channel.  THis was my mistake.  I take responsiblity.  I would like to close this now as an honest mistake and move on, keeping #python as apolitical as possible.
+2016-10-19 17:34:29	-->	Oatmeal (~Suzeanne@99-103-96-198.lightspeed.iplsin.sbcglobal.net) has joined #python
+2016-10-19 17:34:36	-->	haso2 (~Thunderbi@162.79-160-5.customer.lyse.net) has joined #python
+2016-10-19 17:34:40	Vainglory	does anyone have any actual python questions/issues?
+2016-10-19 17:35:01	bsamorim	I have
+2016-10-19 17:35:06	bsamorim	the one I asked just now
+2016-10-19 17:35:26	<--	Neville (~Neville@mail.gradientfx.com) has quit (Remote host closed the connection)
+2016-10-19 17:35:56	-->	tbsf (~tbsf@8.37.96.39) has joined #python
+2016-10-19 17:35:59	bsamorim	I remember seeing something about it on SOverflow, but for the heaven of me, I couldn't find the question again
+2016-10-19 17:36:21	Vainglory	bsamorim: "accent characters"?
+2016-10-19 17:36:28	-->	lobius (~Thunderbi@2602:30a:2e45:2ba0:9976:2a8:3e39:2ce5) has joined #python
+2016-10-19 17:36:37	bsamorim	yeah, the ones containing an accent, such as �
+2016-10-19 17:36:47	<--	lel (~lel@unaffiliated/lel) has quit (Remote host closed the connection)
+2016-10-19 17:37:08	<--	zamro (~zamro@c-73-151-187-126.hsd1.ca.comcast.net) has quit (Remote host closed the connection)
+2016-10-19 17:37:14	bsamorim	html encodes links with them into some pure ascii form
+2016-10-19 17:37:36	<--	malinoff (~Adium@unaffiliated/malinoff) has quit (Quit: Leaving.)
+2016-10-19 17:37:50	bsamorim	not just accents, but spaces as well (in this particular case it encodes it as %20 iirc)
+2016-10-19 17:38:28	-->	django_ (~django_@unaffiliated/django-/x-8345756) has joined #python
+2016-10-19 17:38:28		[17:38]
+2016-10-19 17:38:37	<--	lobius (~Thunderbi@2602:30a:2e45:2ba0:9976:2a8:3e39:2ce5) has quit (Client Quit)
+2016-10-19 17:38:38	bsamorim	I was looking for something that would decode it
+2016-10-19 17:38:51	FLHerne	bsamorim: urllib.parse.unquote()
+2016-10-19 17:38:52	<--	haso2 (~Thunderbi@162.79-160-5.customer.lyse.net) has quit (Ping timeout: 260 seconds)
+2016-10-19 17:39:01	bsamorim	FLHerne: Thanks a lot!
+2016-10-19 17:39:01	Vainglory	bsamorim: https://stackoverflow.com/a/3565460
+2016-10-19 17:39:16	-->	roflmyeggo (~carl@S0106002129a63685.vw.shawcable.net) has joined #python
+2016-10-19 17:39:33	FLHerne	https://docs.python.org/3/library/urllib.parse.html#url-quoting
+2016-10-19 17:39:37	bsamorim	Vainglory: thanks! I'll check it out
+2016-10-19 17:39:51	<--	fission6 (~fission6@174.51.82.31) has quit (Quit: fission6)
+2016-10-19 17:39:52	<--	franzer (~franzer@162.216.46.107) has quit (Quit: Leaving)
+2016-10-19 17:40:42	-->	krs93 (~krs93@2605:6000:8b03:da00:a5b1:b7cf:f4f0:aba3) has joined #python
+2016-10-19 17:40:55	-->	Rialynn (~Rialynn@unaffiliated/rialynn) has joined #python
+2016-10-19 17:41:51	-->	askhader (fogartaigh@taurine.csclub.uwaterloo.ca) has joined #python
+2016-10-19 17:41:55	<--	moppy (6c3d7b54@gateway/web/freenode/ip.108.61.123.84) has quit (Quit: Page closed)
+2016-10-19 17:41:56	askhader	How do you match an ampersand in a regex?
+2016-10-19 17:42:15	askhader	re.match(r"&", "A&W") isn't working.
+2016-10-19 17:43:01	askhader	Hmm seems I need to do r"&?"
+2016-10-19 17:43:11	-->	fleshtheworld (~fleshthew@2602:306:cf0f:4c20:b879:3cc4:86a6:1592) has joined #python
+2016-10-19 17:43:30	askhader	Scratch that
+2016-10-19 17:44:02	<--	akzy (~Mikhail@host-80-95-39-15.dsl.sura.ru) has quit (Ping timeout: 260 seconds)
+2016-10-19 17:45:47	<--	arescorpio (~arescorpi@178-205-17-190.fibertel.com.ar) has quit (Quit: Leaving.)
+2016-10-19 17:46:52	<--	johefernan (~joheferna@187.153.177.27) has quit (Ping timeout: 260 seconds)
+2016-10-19 17:47:13	<--	bsamorim (~bernardo@201-68-87-56.dsl.telesp.net.br) has quit (Quit: Leaving)
+2016-10-19 17:47:39	-->	johefernan (~joheferna@187.153.179.174) has joined #python
+2016-10-19 17:48:09	<--	addcn (~addcn@c-50-152-165-241.hsd1.ca.comcast.net) has quit (Ping timeout: 252 seconds)
+2016-10-19 17:49:38	TML	askhader: re.match(r'(.*?)&(.*?)', 'A&W')
+2016-10-19 17:50:06	TML	although, strictly speaking, that last '?' doesn't do anything, and you may or may not actually want capturing
+2016-10-19 17:51:23	<--	safe (~safe@unaffiliated/safe) has quit (Read error: Connection reset by peer)
+2016-10-19 17:51:37	TML	askhader: If that's the actual match you're trying to perform, "if '&' in 'A&W':" is probably a better way to do it
+2016-10-19 17:52:52	askhader	Thanks for your regex advice, it helped. I need to match an ampersand followed by any character followed by a space
+2016-10-19 17:53:04	askhader	Would you use index() instead?
+2016-10-19 17:54:21	TML	askhader: re.search might be a better fit?
+2016-10-19 17:54:21		[17:54]
+2016-10-19 17:54:53	askhader	I think I'll go with index. Simpler than regex imo.
+2016-10-19 17:55:40	askhader	aStr[aStr.index('&') + 2] while catching IndexError
+2016-10-19 17:55:44	<--	govg (~govg@unaffiliated/govg) has quit (Ping timeout: 260 seconds)
+2016-10-19 17:56:08	<--	kmnt (~zgest@cpe-70-121-21-205.tx.res.rr.com) has quit (Ping timeout: 256 seconds)
+2016-10-19 17:56:15	convergence	When you use a variable in a for loop, is it created and then destroyed?'
+2016-10-19 17:56:37	convergence	and will someone look at this code and tell me if this is one variable or two?  https://paste.pound-python.org/show/O8PlZITfdfNFlbDzIbvL/
+2016-10-19 17:57:00	convergence	Not much code there, so it won't take long.
+2016-10-19 17:57:04	TML	convergence: No, the variable won't be destroyed at the end of the loop
+2016-10-19 17:57:07	-->	tumble4ya (4426d906@gateway/web/freenode/ip.68.38.217.6) has joined #python
+2016-10-19 17:57:35	TML	convergence: https://glot.io/snippets/ejj2yofodw
+2016-10-19 17:57:35	convergence	TML:  so then the variable in my code is just reassigned, no new variable is created?
+2016-10-19 17:57:41	-->	idwaker (~idwaker@182.93.83.51) has joined #python
+2016-10-19 17:57:45	TML	I haven't looked at your code
+2016-10-19 17:57:53	tumble4ya	i just downloaded the window installer and looks like its stuck at the initialize screen. is it supposed to take awhile?
+2016-10-19 17:58:11	tumble4ya	*windows
+2016-10-19 17:58:12	convergence	I see
+2016-10-19 17:58:17	TML	tumble4ya: when I do it on a Windows VM, it seems to take forever
+2016-10-19 17:58:26	convergence	I think you answered the question though.
+2016-10-19 17:58:29	convergence	thanks
+2016-10-19 17:58:33	-->	milesrout (~milesrout@unaffiliated/milesrout) has joined #python
+2016-10-19 17:58:34	TML	Never actually used Windows as a host OS
+2016-10-19 17:58:40	TML	Well, not since Windows ME, anyway
+2016-10-19 17:58:51	Igel	you're not missing much
+2016-10-19 17:59:01	TML	'tis why I never bothered
+2016-10-19 17:59:03	convergence	wow, you must be my age.
+2016-10-19 17:59:36	TML	I'm not much for the GUIs. They will pry my terminal session out of my cold, dead hands.
+2016-10-19 17:59:39	vite	whats a good starting point for encryotion, getting bash responses or using a library? if library which encryption?
+2016-10-19 17:59:40	milesrout	(3.x) I want to run a Python web service that's extremely simple: it has a single endpoint and just needs to send a message to an IRC connection on every request. Is Django overkill?
+2016-10-19 18:00:22	TML	vite: cryptography.readthedocs.org is the answer I've historically been given here
+2016-10-19 18:00:43	-->	corsaere (~corsaere@unaffiliated/corsaere) has joined #python
+2016-10-19 18:00:46	<--	FLHerne (~flh@unaffiliated/flherne) has quit (Ping timeout: 252 seconds)
+2016-10-19 18:00:47	<--	DLSteve (~DLSteve@c-73-239-22-33.hsd1.wa.comcast.net) has quit (Quit: All rise, the honorable DLSteve has left the channel.)
+2016-10-19 18:01:04	Vainglory	vite: what are you using it for?
+2016-10-19 18:01:29	<--	tbsf (~tbsf@8.37.96.39) has quit (Remote host closed the connection)
+2016-10-19 18:01:37	-->	akach1 (~akach1@c-64-30-187-207.hx.gigamonster.net) has joined #python
+2016-10-19 18:01:52	-->	tbsf (~tbsf@8.37.96.39) has joined #python
+2016-10-19 18:01:54	vite	p2p encryptiom, sorta want to test whatsapp proof of concept, in oython
+2016-10-19 18:02:05	<--	akach1 (~akach1@c-64-30-187-207.hx.gigamonster.net) has quit (Remote host closed the connection)
+2016-10-19 18:02:22	-->	akach1 (~akach1@c-64-30-187-207.hx.gigamonster.net) has joined #python
+2016-10-19 18:02:25	<--	akach1 (~akach1@c-64-30-187-207.hx.gigamonster.net) has quit (Remote host closed the connection)
+2016-10-19 18:02:30	milesrout	flask seems simple enough
+2016-10-19 18:02:46	_habnabit	milesrout, flask sux. django is fine
+2016-10-19 18:03:08	milesrout	yeah I don't think I'm going to listen to someone that says something 'sux'
+2016-10-19 18:03:09	<--	milesrout (~milesrout@unaffiliated/milesrout) has left #python ("Leaving")
+2016-10-19 18:03:11	_habnabit	milesrout, but with flask or django, there's not really any way to have a persistent irc connection
+2016-10-19 18:03:11	-->	Motoko (~maoyama@simplemachines/serverteam/Motoko) has joined #python
+2016-10-19 18:03:22	_habnabit	ok bye?
+2016-10-19 18:03:23	<--	jaziz (~jaziz@ip70-187-187-1.oc.oc.cox.net) has quit (Ping timeout: 244 seconds)
+2016-10-19 18:03:33	-->	zaherdirkey (~zaherdirk@37.48.152.17) has joined #python
+2016-10-19 18:03:39	<--	pyios (~andy@111.63.44.14) has quit (Quit: pyios)
+2016-10-19 18:03:45	Vainglory	¯\_(ツ)_/¯
+2016-10-19 18:03:49	mandeep	hahaha
+2016-10-19 18:04:01	Vainglory	shoulda said it blows
+2016-10-19 18:04:11	<--	bilb_ono (~alex@207.71.224.128) has quit (Ping timeout: 256 seconds)
+2016-10-19 18:04:15	Vainglory	like an air conditioner
+2016-10-19 18:04:19	-->	Darkman802 (~Darkman80@unaffiliated/darkman802) has joined #python
+2016-10-19 18:04:29	mandeep	air condition is a good thing
+2016-10-19 18:04:46	TML	depends on the air
+2016-10-19 18:04:47	Vainglory	mandeep: not in the Antarctic
+2016-10-19 18:04:58	jwhisnant	and its condition.
+2016-10-19 18:05:02	mandeep	Vainglory: yeah forgot about all those people living there
+2016-10-19 18:05:03	-->	rcowie (5ac757c3@gateway/web/cgi-irc/kiwiirc.com/ip.90.199.87.195) has joined #python
+2016-10-19 18:05:10	mandeep	;)
+2016-10-19 18:05:18	TML	there are people
+2016-10-19 18:05:24	mandeep	TML: scientists
+2016-10-19 18:05:25	Vainglory	mandeep: that's very inconsiderate of you. those poor penguins ;___;
+2016-10-19 18:05:34	mandeep	and i guess tourists
+2016-10-19 18:05:38	TML	mandeep: Scientists are people too.
+2016-10-19 18:05:46	mandeep	not sure about that
+2016-10-19 18:06:07	TML	Tourists, on the other hand, clearly are *not* people
+2016-10-19 18:06:31	<--	Rodya_ (~Rodya_@173.152.74.11) has quit (Remote host closed the connection)
+2016-10-19 18:06:40	<--	tbsf (~tbsf@8.37.96.39) has quit (Ping timeout: 250 seconds)
+2016-10-19 18:06:53	Vainglory	vite: libsignal comes to mind https://github.com/WhisperSystems/ or otr https://otr.cypherpunks.ca/index.php
+2016-10-19 18:07:02	-->	grizzlyb (3e9ba7ef@gateway/web/cgi-irc/kiwiirc.com/ip.62.155.167.239) has joined #python
+2016-10-19 18:07:22	Vainglory	a "whatsapp like" program in python seems very.. unnecessary. last thing the world needs is more centralization ¯\_(ツ)_/¯
+2016-10-19 18:08:01	<--	rcowie (5ac757c3@gateway/web/cgi-irc/kiwiirc.com/ip.90.199.87.195) has quit (Client Quit)
+2016-10-19 18:08:26	-->	eric_lagergren (~eric_lage@c-76-121-113-163.hsd1.wa.comcast.net) has joined #python
+2016-10-19 18:08:27	<--	Croves (~Croves@189.35.108.131) has quit (Quit: My MacBook Pro has gone to sleep. ZZZzzz…)
+2016-10-19 18:08:30	-->	ArchDebian (~Thunderbi@c-24-0-144-183.hsd1.nj.comcast.net) has joined #python
+2016-10-19 18:09:08	mandeep	Vainglory: what do you mean by centralization
+2016-10-19 18:09:23	grizzlyb	im trying to run a python program from another python program using os.system("python api_extract.py url_query") and i need to pass a variable, in this case url_Query - but when i try to assign a = url_query in the program in calling - it says its not defined. Is there something wrong with my syntax?
+2016-10-19 18:09:23		[18:09]
+2016-10-19 18:09:24	vite	whatsapp whitepaper encryption, the data transfer method can be any
+2016-10-19 18:09:25	<--	Jellypuff (~Jellypuff@c-94-255-244-122.cust.bredband2.com) has quit (Quit: Jellypuff)
+2016-10-19 18:09:31	-->	pyios (~andy@111.63.44.14) has joined #python
+2016-10-19 18:09:33	Vainglory	mandeep: one point of failure
+2016-10-19 18:09:57	Vainglory	vite: "the data transfer method can be any". I don't think you know anything about encryption.
+2016-10-19 18:10:09	-->	Rodya_ (~Rodya_@173-120-73-103.pools.spcsdns.net) has joined #python
+2016-10-19 18:10:13	mandeep	grizzlyb: you should be using subprocess
+2016-10-19 18:10:15	_habnabit	grizzlyb, subprocess.check_call with a list. variables don't just get dumped into that string
+2016-10-19 18:10:17	<--	inddwtsn (~yama@186.153.45.109) has quit (Ping timeout: 252 seconds)
+2016-10-19 18:10:48	vite	if the data leave pount a encrypted and can only be decrypted by point b, howmit arrives is irrelevent
+2016-10-19 18:11:17	vite	android and ssh chatting is hard
+2016-10-19 18:11:19	-->	liothe (~liothe@155.4.14.37) has joined #python
+2016-10-19 18:11:29	Vainglory	"ssh chatting".... ?
+2016-10-19 18:11:42	TML	vite: Never heard of "whatsapp", but I suspect if you're trying to implement a specific application protocol, you'll need to find a library that is aware of that protocol, rahter than some arbitrary encryption library
+2016-10-19 18:11:49	Vainglory	how exactly are you going to encrypt user information?
+2016-10-19 18:11:51	-->	akach1 (~akach1@c-64-30-187-207.hx.gigamonster.net) has joined #python
+2016-10-19 18:12:03	-->	dxiri (~dxiri@a23-79-232-10.deploy.static.akamaitechnologies.com) has joined #python
+2016-10-19 18:12:05	-->	LeBlaaanc (~LeBlaaanc@47.188.236.163) has joined #python
+2016-10-19 18:12:18	Vainglory	where are people going to "login"?
+2016-10-19 18:12:37	vite	irc client is on a small instance, im using ssh from my droid to access is atm, thatbway I can switch devices yet keep the same irc sessjon going
+2016-10-19 18:12:50	<--	LeBlaaanc (~LeBlaaanc@47.188.236.163) has quit (Client Quit)
+2016-10-19 18:12:53	<--	Aliks (~aliks@96-90-197-139-static.hfc.comcastbusiness.net) has quit (Remote host closed the connection)
+2016-10-19 18:13:09	Vainglory	vite: why are we talking about irc clients now? i thought you were making some p2p thing
+2016-10-19 18:13:29	-->	Aliks (~aliks@96-90-197-139-static.hfc.comcastbusiness.net) has joined #python
+2016-10-19 18:13:34	vite	you ask ssh,,,?
+2016-10-19 18:13:48	<--	Xiti (~Xiti-@unaffiliated/xiti) has quit (Ping timeout: 245 seconds)
+2016-10-19 18:14:06	TML	vite: Sorry, I'm unable to construct a meaningful English sentence out of those fragments.
+2016-10-19 18:14:18	Vainglory	because i questioned as to why you brought up "ssh chatting" in regards to a p2p application
+2016-10-19 18:14:25	<--	FreedomFighter (~anonymous@cpe-24-194-59-253.nycap.res.rr.com) has quit (Quit: FreedomFighter)
+2016-10-19 18:14:31	vite	p2p hownthe message is delivered doesnt matter, as long as it leave encrypted. if a message is endrypted and travels in cleartext, you would still need a key to decryptmit.
+2016-10-19 18:14:39	<--	calq (~calq@c-71-205-14-244.hsd1.co.comcast.net) has quit (Read error: Connection reset by peer)
+2016-10-19 18:14:52	Vainglory	and again, how are you encrypting the message
+2016-10-19 18:14:54	<--	Rodya_ (~Rodya_@173-120-73-103.pools.spcsdns.net) has quit (Ping timeout: 250 seconds)
+2016-10-19 18:15:14	vite	gpg seems to be a good standard
+2016-10-19 18:15:29	Vainglory	yeah, don't do that
+2016-10-19 18:15:32	-->	calq (~calq@c-71-205-14-244.hsd1.co.comcast.net) has joined #python
+2016-10-19 18:15:45	vite	and keyserver network seems to be distributed
+2016-10-19 18:16:11	Vainglory	i've already brought up two better solutions. OTR and LibSignal
+2016-10-19 18:16:48	TML	speaking of keyserver - anyone interested in keybase.io invites?
+2016-10-19 18:16:53	<--	idwaker (~idwaker@182.93.83.51) has quit (Remote host closed the connection)
+2016-10-19 18:17:02	Vainglory	vite: are you aware what perfect forward secrecy is?
+2016-10-19 18:17:04	vite	but ideally it have to be a node to node until the recipient is found.
+2016-10-19 18:17:09	Igel	how does the new keybase fuse filesystem work
+2016-10-19 18:17:16	TML	they gave me more invites than I have friends
+2016-10-19 18:17:25	Vainglory	TML: not sure if that was meant to be a joke
+2016-10-19 18:17:28	-->	idwaker (~idwaker@202.166.206.8) has joined #python
+2016-10-19 18:17:29	Vainglory	TML: :P
+2016-10-19 18:17:30	vite	nope, but please elaborate
+2016-10-19 18:17:33	<--	Aliks (~aliks@96-90-197-139-static.hfc.comcastbusiness.net) has quit (Ping timeout: 245 seconds)
+2016-10-19 18:17:47	-->	notnola (~notnola@unaffiliated/notnola) has joined #python
+2016-10-19 18:17:49	Vainglory	vite: https://en.wikipedia.org/wiki/Perfect_forward_secrecy
+2016-10-19 18:17:50	TML	Vainglory: no joke
+2016-10-19 18:18:17	-->	pdtpatrick (~Patrick@199.201.64.2) has joined #python
+2016-10-19 18:18:28	-->	Fr4n (~Fr4n@unaffiliated/fr4n) has joined #python
+2016-10-19 18:18:28	vite	let me read brb
+2016-10-19 18:18:50	TML	Igel: I'm not an expert - probably best to read their docs at https://keybase.io/docs/kbfs
+2016-10-19 18:19:40	grizzlyb	_habnabit: do you think you could explain the syntax at a little higher level?
+2016-10-19 18:19:44	vite	so a new key every new session.
+2016-10-19 18:19:51	Vainglory	vite: more or less, yes
+2016-10-19 18:20:06	<--	Vexis (~vexis@172.58.217.22) has left #python
+2016-10-19 18:20:13	Vainglory	vite: and you can see gpg/pgp would be far weaker than OTR/LibSignal
+2016-10-19 18:20:13	grizzlyb	_habnabit: im still somewhat newish - so i import subprocess, but then how would i run the othr python program and pass a variable from the parent?
+2016-10-19 18:20:19	-->	Rodya_ (~Rodya_@173.120.114.144) has joined #python
+2016-10-19 18:20:22	vite	 whatsapp p2p encryption whitepaper talk about that.
+2016-10-19 18:20:43	_habnabit	grizzlyb, check_call([sys.executable, 'api_extract.py', url_query])
+2016-10-19 18:20:49	Vainglory	vite: is your project tied to whatsapp in any way?
+2016-10-19 18:20:50	Fr4n	random's documentation says you should use the secrets library if cryptographically secure numbers are required, what if I need to shuffle an array, is random.SystemRandom().shuffle(l) secure? It looks like the secrets library uses SystemRandom internally
+2016-10-19 18:21:12	<--	chartractegg (~chartract@ip72-208-61-212.ph.ph.cox.net) has quit (Quit: Textual IRC Client: www.textualapp.com)
+2016-10-19 18:21:17	<--	magz (~magz@68-168-184-223.fttp.usinternet.com) has quit (Quit: Leaving)
+2016-10-19 18:21:44	vite	no ties, just want to leanr by coding
+2016-10-19 18:21:59	Vainglory	vite: if this is just some "let's see if i can do it" project, then do whatever you'd like. but you're reinventing the wheel. OTR is over 10 years ahead of you, and LibSignal has been backed by some top people in the security community.
+2016-10-19 18:22:11	<--	node9 (~node9@CPE0c473dd24701-CM0c473dd24700.cpe.net.cable.rogers.com) has quit (Quit: ZZZzzz…)
+2016-10-19 18:22:24	-->	Itkovian (~Itkovian@178-117-76-63.access.telenet.be) has joined #python
+2016-10-19 18:22:33	_habnabit	Fr4n, that is secure yes
+2016-10-19 18:22:41	Vainglory	now, are they python? not even remotely close. but i'm giving you my honest opinion
+2016-10-19 18:23:20	vite	actually for this I would use libraries, im not gonna try to remake crypto anything, just understand p2p sessions
+2016-10-19 18:23:20	<--	dude-x (~Dude-X@pool-100-38-159-55.nycmny.fios.verizon.net) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-10-19 18:23:22	-->	d4rkmatter (~d4rkmatte@S01060008a209c6e6.vc.shawcable.net) has joined #python
+2016-10-19 18:23:23	<--	foist (uid64483@gateway/web/irccloud.com/x-sjmergktonjuyqfl) has quit (Quit: Connection closed for inactivity)
+2016-10-19 18:23:30	d4rkmatter	does anyone have experience with the pyowm module
+2016-10-19 18:23:31	<--	johefernan (~joheferna@187.153.179.174) has quit (Ping timeout: 265 seconds)
+2016-10-19 18:23:43	Vainglory	d4rkmatter: ask your actual question
+2016-10-19 18:23:54	<--	WungFu (~WungFu@unaffiliated/wungfu) has quit (Ping timeout: 252 seconds)
+2016-10-19 18:23:54	-->	svm_invictvs (~patrick@unaffiliated/svminvictvs/x-938456) has joined #python
+2016-10-19 18:24:07	-->	johefernan (~joheferna@187.153.7.210) has joined #python
+2016-10-19 18:24:22	Vainglory	vite: i would just use something else to be honest
+2016-10-19 18:24:36	<--	roflmyeggo (~carl@S0106002129a63685.vw.shawcable.net) has quit (Ping timeout: 250 seconds)
+2016-10-19 18:24:36		[18:24]
+2016-10-19 18:25:21	-->	eshlox (uid44222@gateway/web/irccloud.com/x-saqtelmhrofbsupk) has joined #python
+2016-10-19 18:25:38	-->	roflmyeggo (~carl@S0106002129a63685.vw.shawcable.net) has joined #python
+2016-10-19 18:25:39	Vainglory	The Signal Protocol uses the Double Ratchet Algorithm to provide forward secrecy.[12] The protocol was developed by Open Whisper Systems in 2013[13] and was first introduced in the Signal app in February 2014.
+2016-10-19 18:25:42	Vainglory	[14] It has since been implemented into WhatsApp, Facebook Messenger, and Google Allo, encrypting the conversations of "more than a billion people worldwide".[15]
+2016-10-19 18:25:51	Vainglory	vite: https://en.wikipedia.org/wiki/Signal_Protocol
+2016-10-19 18:26:34	grizzlyb	_habnabit: so just this line 'subprocess.check_call([sys.executable, 'api_extract.py', url_query])' would call api_extract.py - run it in a subprocess as a python value and pass with it the url_query which api_extract can use?
+2016-10-19 18:26:44	<--	Itkovian (~Itkovian@178-117-76-63.access.telenet.be) has quit (Ping timeout: 256 seconds)
+2016-10-19 18:27:10	<--	SpeakerToMeat (~SpeakerTo@prgmr/customer/SpeakerToMeat) has quit (Ping timeout: 244 seconds)
+2016-10-19 18:27:13	_habnabit	grizzlyb, yes
+2016-10-19 18:27:22	-->	addcn (~addcn@c-50-152-165-241.hsd1.ca.comcast.net) has joined #python
+2016-10-19 18:27:30	grizzlyb	_habnabit: thanks so much - ill give it a shot and do more reading on the library docs
+2016-10-19 18:28:11	-->	chartractegg (~chartract@ip72-208-61-212.ph.ph.cox.net) has joined #python
+2016-10-19 18:28:58	teprrr	I installed pyowm module and tried it out
+2016-10-19 18:29:05	grizzlyb	_habnabit: can you tell me what sys.executable means? do i also need to from os import sys?
+2016-10-19 18:29:06	teprrr	seems to be working
+2016-10-19 18:29:12	<--	czart (~czart@dra131.neoplus.adsl.tpnet.pl) has quit (Ping timeout: 250 seconds)
+2016-10-19 18:29:16	_habnabit	grizzlyb, 'import sys'
+2016-10-19 18:29:25	<--	rolig (~rolig@unaffiliated/rollig) has quit (Ping timeout: 248 seconds)
+2016-10-19 18:29:34	_habnabit	grizzlyb, it's the current python interpreter
+2016-10-19 18:29:48	<--	django_ (~django_@unaffiliated/django-/x-8345756) has quit (Ping timeout: 260 seconds)
+2016-10-19 18:29:52	-->	Xiti (~Xiti-@unaffiliated/xiti) has joined #python
+2016-10-19 18:30:29	-->	P1RATEZ (~piratez@unaffiliated/p1ratez) has joined #python
+2016-10-19 18:30:31	-->	Itkovian (~Itkovian@178-117-76-63.access.telenet.be) has joined #python
+2016-10-19 18:31:05	<--	Anja (~Anja@49.50.252.82) has quit (Quit: Leaving)
+2016-10-19 18:31:14	<--	schilling (~Schilling@24-116-122-136.cpe.cableone.net) has quit (Remote host closed the connection)
+2016-10-19 18:31:20	<--	mguillech (~mguillech@181.95.48.249) has quit (Remote host closed the connection)
+2016-10-19 18:31:26	-->	Anja (~Anja@49.50.252.82) has joined #python
+2016-10-19 18:31:39	-->	mguillech (~mguillech@181.95.48.249) has joined #python
+2016-10-19 18:32:05	<--	mguillech (~mguillech@181.95.48.249) has quit (Remote host closed the connection)
+2016-10-19 18:32:11	-->	ccmcdee-sfc (~OS13@unaffiliated/ccmcdee-sfc) has joined #python
+2016-10-19 18:32:25	<--	xameada (~xameada@ip98-165-190-88.ph.ph.cox.net) has quit (Ping timeout: 260 seconds)
+2016-10-19 18:32:27	-->	mguillech (~mguillech@181.95.48.249) has joined #python
+2016-10-19 18:32:31	-->	SteveHolt (~awbriggs@2605:6000:8b50:f700:a48d:b508:9da4:e8d8) has joined #python
+2016-10-19 18:32:54	<--	mguillech (~mguillech@181.95.48.249) has quit (Remote host closed the connection)
+2016-10-19 18:33:13	-->	mguillech (~mguillech@181.95.48.249) has joined #python
+2016-10-19 18:33:42	<--	mguillech (~mguillech@181.95.48.249) has quit (Remote host closed the connection)
+2016-10-19 18:33:47	-->	veek (~veek@unaffiliated/veek) has joined #python
+2016-10-19 18:34:01	-->	mguillech (~mguillech@181.95.48.249) has joined #python
+2016-10-19 18:34:15	<--	urodna (~urodna@unaffiliated/urodna) has quit (Quit: urodna)
+2016-10-19 18:34:30	<--	mguillech (~mguillech@181.95.48.249) has quit (Remote host closed the connection)
+2016-10-19 18:34:32	-->	clinth (~clint@unaffiliated/clinth) has joined #python
+2016-10-19 18:34:41	<--	chartractegg (~chartract@ip72-208-61-212.ph.ph.cox.net) has quit (Quit: Textual IRC Client: www.textualapp.com)
+2016-10-19 18:34:47	-->	mguillech (~mguillech@181.95.48.249) has joined #python
+2016-10-19 18:34:51	<--	pyios (~andy@111.63.44.14) has quit (Quit: pyios)
+2016-10-19 18:34:53	-->	compow (~compow@1.55.231.24) has joined #python
+2016-10-19 18:34:55	<--	Itkovian (~Itkovian@178-117-76-63.access.telenet.be) has quit (Ping timeout: 244 seconds)
+2016-10-19 18:35:03	<--	TraceEv (~TraceEv@d118-75-160-251.clv.wideopenwest.com) has quit (Ping timeout: 245 seconds)
+2016-10-19 18:35:18	<--	mguillech (~mguillech@181.95.48.249) has quit (Remote host closed the connection)
+2016-10-19 18:35:22	<--	Cabanossi (~Cabanossi@p5DD7B73E.dip0.t-ipconnect.de) has quit (Ping timeout: 256 seconds)
+2016-10-19 18:36:14	<--	CaptainPi (~edx@dslb-188-098-048-205.188.098.pools.vodafone-ip.de) has quit (Quit: Konversation terminated!)
+2016-10-19 18:36:16	compow	heyho
+2016-10-19 18:36:23	-->	italorossi (~italoross@177.35.7.111) has joined #python
+2016-10-19 18:36:36	compow	any pycharm + django users around?
+2016-10-19 18:37:36	-->	Cabanossi (~Cabanossi@p5DD7B666.dip0.t-ipconnect.de) has joined #python
+2016-10-19 18:37:42	-->	ironfroggy (~ironfrogg@python/site-packages/ironfroggy) has joined #python
+2016-10-19 18:38:11	teprrr	no
+2016-10-19 18:38:16	teprrr	no one uses pycharm nor django
+2016-10-19 18:38:30	teprrr	(how about trying to ask your question directly, maybe someone knows something about the topic)
+2016-10-19 18:38:45	-->	TraceEv (~TraceEv@d118-75-160-251.clv.wideopenwest.com) has joined #python
+2016-10-19 18:39:32	-->	KindOne_ (kindone@freenude/topless/kindone) has joined #python
+2016-10-19 18:40:00	<--	iArthur (~iArthur@109.201.138.235) has quit (Ping timeout: 260 seconds)
+2016-10-19 18:40:00		[18:40]
+2016-10-19 18:40:17	<--	KindOne (kindone@freenude/topless/kindone) has quit (Ping timeout: 240 seconds)
+2016-10-19 18:40:28	<--	cacts|works (~textual@c-174-51-80-218.hsd1.co.comcast.net) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-10-19 18:41:24	<--	italorossi (~italoross@177.35.7.111) has quit (Ping timeout: 260 seconds)
+2016-10-19 18:41:39	-->	yardenbar (~yardenbar@bzq-79-182-62-26.red.bezeqint.net) has joined #python
+2016-10-19 18:41:45	<--	Rialynn (~Rialynn@unaffiliated/rialynn) has quit (Ping timeout: 260 seconds)
+2016-10-19 18:42:14	-->	ToBeCloud (uid51591@wikimedia/ToBeFree) has joined #python
+2016-10-19 18:42:41	<--	ironfroggy (~ironfrogg@python/site-packages/ironfroggy) has quit (Ping timeout: 260 seconds)
+2016-10-19 18:43:12	compow	okay
+2016-10-19 18:43:37	compow	so i downloaded django through pycharm and i tried to start a new project
+2016-10-19 18:44:12	compow	but for some reason django does not pop up on the left side
+2016-10-19 18:44:18	compow	wait
+2016-10-19 18:44:49	compow	https://www.jetbrains.com/help/img/idea/py_choose_project_type.png
+2016-10-19 18:44:51	<--	svm_invictvs (~patrick@unaffiliated/svminvictvs/x-938456) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-10-19 18:45:05	compow	i only see pure python
+2016-10-19 18:46:07	<--	yardenbar (~yardenbar@bzq-79-182-62-26.red.bezeqint.net) has quit (Max SendQ exceeded)
+2016-10-19 18:46:36	-->	yardenbar (~yardenbar@bzq-79-182-62-26.red.bezeqint.net) has joined #python
+2016-10-19 18:47:15	-->	orlok (~orlok@112.198.78.201) has joined #python
+2016-10-19 18:47:23	<--	ccmcdee-sfc (~OS13@unaffiliated/ccmcdee-sfc) has left #python ("WeeChat")
+2016-10-19 18:47:33	grizzlyb	_habnabit: im still having problems using that syntax exactly - am i allowed to use this within a flask app?
+2016-10-19 18:48:06	<--	addcn (~addcn@c-50-152-165-241.hsd1.ca.comcast.net) has quit (Quit: leaving)
+2016-10-19 18:48:45	<--	KindOne_ (kindone@freenude/topless/kindone) has quit (Ping timeout: 260 seconds)
+2016-10-19 18:50:17	_habnabit	grizzlyb, 'allowed' sure. i'd have to see the error
+2016-10-19 18:51:10	<--	Leeds (~Leeds@42-3-157-207.static.netvigator.com) has quit (Quit: Leaving)
+2016-10-19 18:51:58	<--	akach1 (~akach1@c-64-30-187-207.hx.gigamonster.net) has quit (Remote host closed the connection)
+2016-10-19 18:52:15	foo	I'm looking to write a function that iterates through a dict, regardless of how deep, and changes the key from str to int. I'm still working my creativity with such a function that calls itself. This seems fairly straightforward, any two cents? I'm thinking I check whatever arg is passed and if it's passed a dict or a list, then iterate and update keys accordingly
+2016-10-19 18:52:31	-->	ap0c (~ap0c@unaffiliated/ap0c) has joined #python
+2016-10-19 18:52:35	-->	xameada (~xameada@ip98-165-190-88.ph.ph.cox.net) has joined #python
+2016-10-19 18:53:47	grizzlyb	_habnabit: CalledProcessError: Command '['/usr/bin/python2', 'api_extract.py', u'testingone']' returned non-zero exit status 1
+2016-10-19 18:53:47	grizzlyb	10.240.1.45 - - [20/Oct/2016 04:53:33] "POST /result HTTP/1.1" 500 -
+2016-10-19 18:53:52	grizzlyb	whoops
+2016-10-19 18:53:57	grizzlyb	wait no thats it
+2016-10-19 18:54:04	<--	parsnip (~parsnip@unaffiliated/parsnip) has quit (Ping timeout: 260 seconds)
+2016-10-19 18:54:05	foo	But then I have to remove the string based keys... hm. This gets me because I can't think of it conceptually
+2016-10-19 18:54:09	<--	yardenbar (~yardenbar@bzq-79-182-62-26.red.bezeqint.net) has quit (Ping timeout: 252 seconds)
+2016-10-19 18:54:18	_habnabit	grizzlyb, then your process failed
+2016-10-19 18:54:30	TML	foo: what's the point of changing the keys from string to int?
+2016-10-19 18:54:42	-->	shangxiao (~shangxiao@103.224.86.17) has joined #python
+2016-10-19 18:54:53	-->	rigel3 (~rigel3@c-24-18-45-253.hsd1.wa.comcast.net) has joined #python
+2016-10-19 18:55:01	grizzlyb	it was working fine - just when i pass the result into that method it fails
+2016-10-19 18:55:01		[18:55]
+2016-10-19 18:55:06	<--	shyn (~shyn@unaffiliated/shyn) has quit (Quit: WeeChat 1.6)
+2016-10-19 18:55:17	-->	FreedomFighter (~anonymous@cpe-24-194-59-253.nycap.res.rr.com) has joined #python
+2016-10-19 18:55:21	compow	how do i add django to the new project window in pycharm
+2016-10-19 18:55:23	compow	?
+2016-10-19 18:55:28	_habnabit	grizzlyb, ok, well, is the output in the log?
+2016-10-19 18:55:36	grizzlyb	the request was saved as a result - and i want to pass the result onto another script
+2016-10-19 18:55:42	compow	i installed it but its not showing up
+2016-10-19 18:55:49	-->	sani (~chau@cpe-107-185-147-68.socal.res.rr.com) has joined #python
+2016-10-19 18:56:08	foo	TML: Thank you. I have a large file in Yaml that takes too long to process, much quicker to cache in postgres in JSONB type. The problem: my keys get switched from int to str which is breaking my code. It's a big dict, with some lists, and some dicts. The keys for lists always have numerical keys since that carries over from JSON, but for anything that's a dict, that doesn't get carried over.
+2016-10-19 18:56:23	<--	ponyrider (~cf2iqx@unaffiliated/ponyrider) has quit (Ping timeout: 265 seconds)
+2016-10-19 18:56:55	-->	akach1 (~akach1@c-64-30-187-207.hx.gigamonster.net) has joined #python
+2016-10-19 18:57:14	TML	foo: Why does it break your code if they're strings?
+2016-10-19 18:57:15	<--	akach1 (~akach1@c-64-30-187-207.hx.gigamonster.net) has quit (Remote host closed the connection)
+2016-10-19 18:57:20	<--	Rodya_ (~Rodya_@173.120.114.144) has quit (Remote host closed the connection)
+2016-10-19 18:57:35	grizzlyb	_habnabit: no the output is not on the html log
+2016-10-19 18:57:45	-->	Aliks (~aliks@c-50-161-64-217.hsd1.ca.comcast.net) has joined #python
+2016-10-19 18:57:48	_habnabit	grizzlyb, what http server is this?
+2016-10-19 18:58:08	-->	shyn (~shyn@unaffiliated/shyn) has joined #python
+2016-10-19 18:58:08	grizzlyb	im just using a very simple flask app
+2016-10-19 18:58:53	<--	shabius (~shaburov1@broadband-46-188-78-140.2com.net) has quit (Quit: C20H25N3O)
+2016-10-19 18:58:54	<--	samfalkner (~samfalkne@inet-hqmc06-o.oracle.com) has quit (Remote host closed the connection)
+2016-10-19 18:59:05	grizzlyb	if the request method is post  i take the post result and save some of the data as a variable in python
+2016-10-19 18:59:14	-->	samfalkner (~samfalkne@inet-hqmc06-o.oracle.com) has joined #python
+2016-10-19 18:59:18	grizzlyb	now im just trying to give another script that variable and run it
+2016-10-19 18:59:25	foo	TML: code references something like this: language['intro']['hi'][3] ... my code looks for it as such, but due to JSONB pulling it out, it's language['intro']['hi']['3']. My options: A) Don't use JSONB (although the performance is much much better and I've already finished implementation), B) iterate through dict and change all keys from string to int where applicable, or C) just change to int on stuff that's referenced ... C) may actually make the most ...
+2016-10-19 18:59:31	foo	... sense now that I'm vocalizing it
+2016-10-19 18:59:47	_habnabit	grizzlyb, yes, i understand
+2016-10-19 18:59:57	_habnabit	grizzlyb, how did you start the app?
+2016-10-19 19:00:18	grizzlyb	by running app.py
+2016-10-19 19:00:26	grizzlyb	it has a simple web server
+2016-10-19 19:00:26	-->	xzork (~Thunderbi@213.153.251.228) has joined #python
+2016-10-19 19:00:28	grizzlyb	flask
+2016-10-19 19:00:42	_habnabit	grizzlyb, can you pastebin the full output in your terminal?
+2016-10-19 19:00:46	<--	compow (~compow@1.55.231.24) has quit
+2016-10-19 19:00:48	<--	xzork (~Thunderbi@213.153.251.228) has quit (Client Quit)
+2016-10-19 19:00:50	-->	KindOne (~KindOne@freenude/topless/kindone) has joined #python
+2016-10-19 19:00:59	grizzlyb	yes, of course - 1 sec
+2016-10-19 19:01:06	-->	xzork (~Thunderbi@213.153.251.228) has joined #python
+2016-10-19 19:02:15	-->	govg (~govg@unaffiliated/govg) has joined #python
+2016-10-19 19:02:28	grizzlyb	_habnabit:     https://thepb.in/p/mwh1VM4zZ0ji5
+2016-10-19 19:02:34	<--	allen29 (~all@unaffiliated/allen29) has quit (Quit: Leaving)
+2016-10-19 19:03:13	-->	yardenbar (~yardenbar@bzq-79-182-62-26.red.bezeqint.net) has joined #python
+2016-10-19 19:03:39	_habnabit	grizzlyb, well there was sure a lot there you didn't show before
+2016-10-19 19:03:41	<--	Holzhaus (~jan@lak-39-112.wohnheime.ruhr-uni-bochum.de) has quit (Ping timeout: 256 seconds)
+2016-10-19 19:03:55	_habnabit	grizzlyb, the error in your script is right there: lines 6-9
+2016-10-19 19:03:57	-->	cherrysuckle (~panina@c-52eedb54.07-342-6d6c6d5.cust.bredbandsbolaget.se) has joined #python
+2016-10-19 19:03:59	-->	xtrntr (~Thunderbi@138.75.199.236) has joined #python
+2016-10-19 19:04:02	-->	panina (~panina@c-52eedb54.07-342-6d6c6d5.cust.bredbandsbolaget.se) has joined #python
+2016-10-19 19:04:33	-->	Chizz8l (~Den@92.242.103.226) has joined #python
+2016-10-19 19:04:38	-->	minlite (~minlite@97-93-126-241.static.mtpk.ca.charter.com) has joined #python
+2016-10-19 19:04:52	Fr4n	is there any reason why random.sample (or why there isn't another function that does in the stdlib) doesn't works on iterators? it's possible with the reservoir sampling algorithm, and it looks IMO like an useful enough function to include
+2016-10-19 19:05:09	Fr4n	I mean iterators where the length is not known
+2016-10-19 19:05:20	grizzlyb	_habnabit: subprocess.check_call([sys.executable, 'api_extract.py', url_query]) but im passing url_query
+2016-10-19 19:05:37	-->	romerocesar (~cesar@c-50-159-44-90.hsd1.wa.comcast.net) has joined #python
+2016-10-19 19:05:38	-->	Holzhaus (~jan@lak-29-227.wohnheime.ruhr-uni-bochum.de) has joined #python
+2016-10-19 19:05:53	grizzlyb	_habnabit: how do i save what i pass using subprocess.check_call([sys.executable, 'api_extract.py', url_query])  as a variable in api_extract.py
+2016-10-19 19:06:31	_habnabit	grizzlyb, it's in sys.argv. that's where it always goes when calling a python program like that
+2016-10-19 19:06:35	-->	Ficapy (~Adium@206.253.165.11) has joined #python
+2016-10-19 19:06:57	<--	sdothum (~sdothum@108.63.186.29) has quit (Quit: ZNC - 1.6.0 - http://znc.in)
+2016-10-19 19:07:26	-->	SkyRocknRoll (~SkyRocknR@unaffiliated/skyrocknroll) has joined #python
+2016-10-19 19:07:47	-->	robattila256 (~robattila@S0106f0f24908d2a3.vf.shawcable.net) has joined #python
+2016-10-19 19:07:49	grizzlyb	so i can say x = sys.argv?
+2016-10-19 19:07:59	<--	xzork (~Thunderbi@213.153.251.228) has quit (Ping timeout: 265 seconds)
+2016-10-19 19:08:18	_habnabit	grizzlyb, look at what's in it first
+2016-10-19 19:08:48	<--	yardenbar (~yardenbar@bzq-79-182-62-26.red.bezeqint.net) has quit (Ping timeout: 245 seconds)
+2016-10-19 19:08:52	-->	compow (~compow@1.55.231.24) has joined #python
+2016-10-19 19:08:56	compow	so
+2016-10-19 19:09:07	compow	what ide should i use with django on mac
+2016-10-19 19:09:17	compow	seems wierd with pycharm
+2016-10-19 19:09:25	compow	what do you guys use?
+2016-10-19 19:09:36	rigel3	I just use sublime text editor
+2016-10-19 19:09:36	_habnabit	emacs
+2016-10-19 19:09:41	salparadise	vim
+2016-10-19 19:09:53	<--	rpkilby (~rpkilby@cpe-76-182-45-76.nc.res.rr.com) has quit (Remote host closed the connection)
+2016-10-19 19:09:59	compow	for django projects?
+2016-10-19 19:10:00	<--	ap0c (~ap0c@unaffiliated/ap0c) has quit (Quit: Leaving)
+2016-10-19 19:10:03	_habnabit	yes
+2016-10-19 19:10:03		[19:10]
+2016-10-19 19:10:07	rigel3	for any python project
+2016-10-19 19:10:17	-->	svm_invictvs (~patrick@unaffiliated/svminvictvs/x-938456) has joined #python
+2016-10-19 19:10:29	compow	okay
+2016-10-19 19:10:34	-->	Jellypuff (~Jellypuff@c-94-255-244-122.cust.bredband2.com) has joined #python
+2016-10-19 19:10:49	-->	LambdaInsaan (~lambainsa@2405:205:1209:81bd:ab3:13e3:7022:b57) has joined #python
+2016-10-19 19:11:21	-->	KindOne_ (~KindOne@freenude/topless/kindone) has joined #python
+2016-10-19 19:11:26	<--	TraceEv (~TraceEv@d118-75-160-251.clv.wideopenwest.com) has quit (Remote host closed the connection)
+2016-10-19 19:11:41	-->	ponyrider (~cf2iqx@unaffiliated/ponyrider) has joined #python
+2016-10-19 19:12:06	-->	ap0c (~ap0c@unaffiliated/ap0c) has joined #python
+2016-10-19 19:12:16	<--	SkyRocknRoll (~SkyRocknR@unaffiliated/skyrocknroll) has quit (Ping timeout: 260 seconds)
+2016-10-19 19:12:17	-->	SmokeyD (~SmokeyD@130.105.139.196) has joined #python
+2016-10-19 19:12:19	TML	foo: another option would be to perform your fixup at decoder time, maybe something like: https://glot.io/snippets/ejj50igzb9
+2016-10-19 19:13:01	<--	dqi (~dqi@165-218-045-062.dynamic.caiway.nl) has quit (Ping timeout: 260 seconds)
+2016-10-19 19:13:18	TML	foo: That's just a rough outline - you'd probably want a more robust object_hook() than that
+2016-10-19 19:13:41	<--	KindOne (~KindOne@freenude/topless/kindone) has quit (Ping timeout: 260 seconds)
+2016-10-19 19:15:00	<--	xtrntr (~Thunderbi@138.75.199.236) has quit (Quit: xtrntr)
+2016-10-19 19:15:40	--	KindOne_ is now known as KindOne
+2016-10-19 19:15:52	-->	ToApolytoXaos (~stephen@46.21.62.128) has joined #python
+2016-10-19 19:17:12	foo	TML: Thank you. Didn't realize I could write a decoder like that. This data is being pulled via sqlalchemy ORM, from postgres that stores in JSONB. I imagine sqlalchemy ORM does the decoding somewhere here.
+2016-10-19 19:17:15	<--	PhsShft (~Derek@128.135.100.106) has quit (Quit: PhsShft)
+2016-10-19 19:17:30	Random832	https://twitter.com/UdellGames/status/788690145822306304
+2016-10-19 19:17:56	-->	the_rat (~the_rat@2a02:8109:8380:3e8c:1d5c:1996:13e6:c567) has joined #python
+2016-10-19 19:18:06	<--	ap0c (~ap0c@unaffiliated/ap0c) has quit (Quit: Leaving)
+2016-10-19 19:18:23	<--	Ficapy (~Adium@206.253.165.11) has quit (Quit: Leaving.)
+2016-10-19 19:18:30	-->	Ficapy (~Adium@206.253.165.11) has joined #python
+2016-10-19 19:19:10	<--	Ficapy (~Adium@206.253.165.11) has quit (Remote host closed the connection)
+2016-10-19 19:19:42	<--	miz- (~miz-@unaffiliated/miz-) has quit (Remote host closed the connection)
+2016-10-19 19:20:40	-->	figs (~figs@c-67-164-64-73.hsd1.ca.comcast.net) has joined #python
+2016-10-19 19:21:24	<--	cherrysuckle (~panina@c-52eedb54.07-342-6d6c6d5.cust.bredbandsbolaget.se) has quit (Ping timeout: 244 seconds)
+2016-10-19 19:21:32	<--	panina (~panina@c-52eedb54.07-342-6d6c6d5.cust.bredbandsbolaget.se) has quit (Ping timeout: 260 seconds)
+2016-10-19 19:21:49	d4rkmatter	i have a variable "status" which contains "Rain>',)" im looking to strip the >',) off all in one go, how would i accomplish this
+2016-10-19 19:22:37	<--	Kazuto (uid43749@gateway/web/irccloud.com/x-nmczcmecpfkzqijy) has quit (Quit: Connection closed for inactivity)
+2016-10-19 19:22:38	--	Deusdeorum|away is now known as Deusdeorum
+2016-10-19 19:22:49	<--	the_rat (~the_rat@2a02:8109:8380:3e8c:1d5c:1996:13e6:c567) has quit (Ping timeout: 260 seconds)
+2016-10-19 19:22:57	minlite	var[:-3]
+2016-10-19 19:23:12	minlite	I mean status[:-3]
+2016-10-19 19:23:24	foo	TML: Yup: http://docs.sqlalchemy.org/en/latest/dialects/postgresql.html#sqlalchemy.dialects.postgresql.JSON - I think I can inject what you put, here. Or, at least work with some of what you did. Appreciate it!
+2016-10-19 19:23:29	-->	spacebar_ (~spacebar@c-50-150-148-246.hsd1.fl.comcast.net) has joined #python
+2016-10-19 19:24:30	<--	grizzlyb (3e9ba7ef@gateway/web/cgi-irc/kiwiirc.com/ip.62.155.167.239) has quit (Quit: http://www.kiwiirc.com/ - A hand crafted IRC client)
+2016-10-19 19:24:39	-->	baiyang (~baiyang@dl213.dinaserver.com) has joined #python
+2016-10-19 19:24:42	-->	grizzlyb (3e9ba7ef@gateway/web/cgi-irc/kiwiirc.com/ip.62.155.167.239) has joined #python
+2016-10-19 19:24:52	<--	pdtpatrick (~Patrick@199.201.64.2) has quit (Ping timeout: 260 seconds)
+2016-10-19 19:25:05	-->	Leeds (~Leeds@118.140.198.62) has joined #python
+2016-10-19 19:25:05		[19:25]
+2016-10-19 19:25:14	d4rkmatter	minlite: does the -3 indicate to take the last 3 characters from the end off?
+2016-10-19 19:25:25	<--	rickmak_ (~rickmak@203186221114.ctinets.com) has quit (Read error: No route to host)
+2016-10-19 19:25:26	minlite	Yes.
+2016-10-19 19:25:35	d4rkmatter	neat, is that known as splicing?
+2016-10-19 19:25:48	minlite	Or 4 actually in your case.
+2016-10-19 19:25:58	-->	rickmak_ (~rickmak@42-200-192-29.static.imsbiz.com) has joined #python
+2016-10-19 19:26:03	grizzlyb	_habnabit: you're great - thanks for teaching me about sys.argv
+2016-10-19 19:26:07	minlite	Yeah slicing
+2016-10-19 19:26:14	d4rkmatter	thx!
+2016-10-19 19:26:28	grizzlyb	_habnabit: and everything else - working fine now
+2016-10-19 19:26:30	<--	Duality (~duality@ip4da2c95a.direct-adsl.nl) has quit (Ping timeout: 268 seconds)
+2016-10-19 19:26:48	<--	roflmyeggo (~carl@S0106002129a63685.vw.shawcable.net) has quit (Ping timeout: 256 seconds)
+2016-10-19 19:27:05	<--	compow (~compow@1.55.231.24) has quit
+2016-10-19 19:27:17	-->	SkyRocknRoll (~SkyRocknR@unaffiliated/skyrocknroll) has joined #python
+2016-10-19 19:27:47	minlite	d4rkmatter you'll need to use -4 actually, sorry I miscounted lol
+2016-10-19 19:28:04	d4rkmatter	no worries i tried it out with -3 and tried with -4 and it worked out
+2016-10-19 19:30:22	-->	peoliye (88b30a8f@gateway/web/freenode/ip.136.179.10.143) has joined #python
+2016-10-19 19:31:03	<--	ycon_ (~ycon_@115-64-47-49.static.tpgi.com.au) has quit (Remote host closed the connection)
+2016-10-19 19:31:11	-->	ironfroggy (~ironfrogg@python/site-packages/ironfroggy) has joined #python
+2016-10-19 19:31:41	-->	Muppens1 (~Thunderbi@h-79-115.a163.priv.bahnhof.se) has joined #python
+2016-10-19 19:31:56	<--	N0Lif3 (~N0Lif3@2602:306:335f:690:9582:53dd:632:1d2e) has quit (Read error: Connection reset by peer)
+2016-10-19 19:32:25	-->	mcsontos (mcsontos@nat/redhat/x-mbgmalmemwdyisxn) has joined #python
+2016-10-19 19:32:35	peoliye	http://ideone.com/Tl9GB3 why is this not working?
+2016-10-19 19:32:58	<--	ponyrider (~cf2iqx@unaffiliated/ponyrider) has quit (Ping timeout: 245 seconds)
+2016-10-19 19:33:17	<--	dxiri (~dxiri@a23-79-232-10.deploy.static.akamaitechnologies.com) has quit (Ping timeout: 244 seconds)
+2016-10-19 19:33:58	-->	gopar (~gopar@2601:642:c000:3190:cd8b:2e2c:c704:2ff2) has joined #python
+2016-10-19 19:34:15	-->	parsnip (~parsnip@unaffiliated/parsnip) has joined #python
+2016-10-19 19:35:04	--	baweaver is now known as baweaver_away
+2016-10-19 19:37:26	<--	baiyang (~baiyang@dl213.dinaserver.com) has quit (Quit: Yaaic - Yet another Android IRC client - http://www.yaaic.org)
+2016-10-19 19:37:33	<--	ironfroggy (~ironfrogg@python/site-packages/ironfroggy) has quit (Ping timeout: 252 seconds)
+2016-10-19 19:37:37	-->	buglessdr (~buglessdr@ip72-208-109-38.ph.ph.cox.net) has joined #python
+2016-10-19 19:37:43	minlite	peoliye: What's your desired output?
+2016-10-19 19:37:51	<--	robvdl (~quassel@2404:130:0:1000:68f9:69d7:96f5:4ea) has quit (Remote host closed the connection)
+2016-10-19 19:38:07	-->	jaziz (~jaziz@ip70-187-187-1.oc.oc.cox.net) has joined #python
+2016-10-19 19:38:11	peoliye	minlite: whatever is inside <>
+2016-10-19 19:38:50	<--	tumble4ya (4426d906@gateway/web/freenode/ip.68.38.217.6) has quit (Quit: Page closed)
+2016-10-19 19:39:05	jaziz	hmm
+2016-10-19 19:39:13	jaziz	Is there much to learn in making a game like chess?
+2016-10-19 19:39:24	<--	Anja (~Anja@49.50.252.82) has quit (Ping timeout: 265 seconds)
+2016-10-19 19:39:45	<--	romerocesar (~cesar@c-50-159-44-90.hsd1.wa.comcast.net) has quit (Remote host closed the connection)
+2016-10-19 19:39:47	SteveHolt	Is anyone familiar with pyramid by chance? I'm having issues trying to get @notfound_view_config to render a custom template. The documentation doesn't seem to indicate that I have to do anything outside of setting that view somewhere and having the scan pick it up, but that doesn't seem to be working. Any ideas?
+2016-10-19 19:39:47	<--	NomadJim (~NomadJim@pdpc/supporter/active/nomadjim) has quit (Read error: Connection reset by peer)
+2016-10-19 19:39:57	-->	tdy1 (~tdy@unaffiliated/tdy) has joined #python
+2016-10-19 19:40:07	salparadise	peoliye: re.search
+2016-10-19 19:40:07		[19:40]
+2016-10-19 19:40:36	--	fcw is now known as fwilson
+2016-10-19 19:40:50	-->	NomadJim (~NomadJim@pdpc/supporter/active/nomadjim) has joined #python
+2016-10-19 19:41:41	<--	Hoffman (~Hoffman@unaffiliated/hoffman) has quit (Disconnected by services)
+2016-10-19 19:41:52	-->	Hoffman (~Hoffman@unaffiliated/hoffman) has joined #python
+2016-10-19 19:42:53	<--	grizzlyb (3e9ba7ef@gateway/web/cgi-irc/kiwiirc.com/ip.62.155.167.239) has quit (Quit: http://www.kiwiirc.com/ - A hand crafted IRC client)
+2016-10-19 19:43:05	-->	grizzlyb (3e9ba7ef@gateway/web/cgi-irc/kiwiirc.com/ip.62.155.167.239) has joined #python
+2016-10-19 19:44:18	-->	xzork (~Thunderbi@81.215.229.142) has joined #python
+2016-10-19 19:44:46	<--	nolash (~nolash@ip5f5bf7bd.dynamic.kabel-deutschland.de) has quit (Remote host closed the connection)
+2016-10-19 19:45:03	-->	pyios (~andy@111.63.44.14) has joined #python
+2016-10-19 19:45:28	-->	KindOne_ (kindone@freenude/topless/kindone) has joined #python
+2016-10-19 19:46:19	-->	diogenese (diogenese@diogenese.velotech.net) has joined #python
+2016-10-19 19:46:41	-->	akach1 (~akach1@c-64-30-187-207.hx.gigamonster.net) has joined #python
+2016-10-19 19:47:03	<--	diogenese (diogenese@diogenese.velotech.net) has quit (Max SendQ exceeded)
+2016-10-19 19:47:05	<--	Oatmeal (~Suzeanne@99-103-96-198.lightspeed.iplsin.sbcglobal.net) has quit (Quit: Oatmeal)
+2016-10-19 19:47:24	<--	robert_ (~hellspawn@objectx/robert) has quit (Read error: Connection reset by peer)
+2016-10-19 19:47:58	<--	KindOne (~KindOne@freenude/topless/kindone) has quit (Ping timeout: 245 seconds)
+2016-10-19 19:48:54	<--	Hoffman (~Hoffman@unaffiliated/hoffman) has quit (Ping timeout: 256 seconds)
+2016-10-19 19:48:57	<--	bluezone (uid104970@gateway/web/irccloud.com/x-xbtcmdopogjhyxpg) has quit (Quit: Connection closed for inactivity)
+2016-10-19 19:49:37	-->	mreznik (~mreznik@ip4-46-39-178-82.cust.nbox.cz) has joined #python
+2016-10-19 19:49:42	--	KindOne_ is now known as KindOne
+2016-10-19 19:50:16	<--	akach1 (~akach1@c-64-30-187-207.hx.gigamonster.net) has quit (Remote host closed the connection)
+2016-10-19 19:50:22	-->	kaffeetrauma (~Thunderbi@n37.informatik.fh-dortmund.de) has joined #python
+2016-10-19 19:51:15	-->	kosh (~kosh@ip-109-90-78-198.hsi11.unitymediagroup.de) has joined #python
+2016-10-19 19:51:40	<--	Chizz8l (~Den@92.242.103.226) has quit (Quit: Leaving)
+2016-10-19 19:51:45	<--	mdel (uid25573@gateway/web/irccloud.com/x-llakhtjgbauemtxr) has quit (Quit: Connection closed for inactivity)
+2016-10-19 19:51:50	-->	nolash (~nolash@ip5f5bf7bd.dynamic.kabel-deutschland.de) has joined #python
+2016-10-19 19:51:51	-->	Hoffman (~Hoffman@unaffiliated/hoffman) has joined #python
+2016-10-19 19:52:05	-->	pdtpatrick (~Patrick@2620:10d:c090:180::9509) has joined #python
+2016-10-19 19:52:26	-->	ponyrider (~cf2iqx@unaffiliated/ponyrider) has joined #python
+2016-10-19 19:52:27	<--	ArchDebian (~Thunderbi@c-24-0-144-183.hsd1.nj.comcast.net) has quit (Ping timeout: 265 seconds)
+2016-10-19 19:52:33	<--	idwaker (~idwaker@202.166.206.8) has quit (Ping timeout: 245 seconds)
+2016-10-19 19:52:55	-->	yardenbar (~yardenbar@bzq-79-182-62-26.red.bezeqint.net) has joined #python
+2016-10-19 19:53:32	peoliye	salparadise: http://ideone.com/yzsrhF this is returning only one email id. How can i search for all?
+2016-10-19 19:53:38	-->	martyix (~quassel@2001:af0:8000:1c01:293a:442b:75a0:257) has joined #python
+2016-10-19 19:54:26	-->	diogenese (diogenese@diogenese.velotech.net) has joined #python
+2016-10-19 19:55:25	<--	Dohplay (~Dohplay@2601:246:4400:f10c:f1a1:a1d:7811:38c8) has quit (Read error: Connection reset by peer)
+2016-10-19 19:55:25		[19:55]
+2016-10-19 19:55:49	-->	Anja (~Anja@49.50.252.82) has joined #python
+2016-10-19 19:56:26	-->	baiyang (~baiyang@dl213.dinaserver.com) has joined #python
+2016-10-19 19:57:06	-->	blz37 (6056adba@gateway/web/freenode/ip.96.86.173.186) has joined #python
+2016-10-19 20:00:24	salparadise	peoliye: you just want to matching things in '<>' ?
+2016-10-19 20:01:02	peoliye	salparadise: got it. I was looking for findall
+2016-10-19 20:01:37	-->	LeBlaaanc (~LeBlaaanc@47.188.236.163) has joined #python
+2016-10-19 20:02:12	<--	SpaceAce (~SpaceAce@124-150-78-133.dyn.iinet.net.au) has quit (Ping timeout: 260 seconds)
+2016-10-19 20:02:15	-->	fub (~fub@88.128.80.223) has joined #python
+2016-10-19 20:02:39	-->	SpaceAce (~SpaceAce@124-170-189-152.dyn.iinet.net.au) has joined #python
+2016-10-19 20:03:27	-->	dega (~dega@169-0-106-44.ip.afrihost.co.za) has joined #python
+2016-10-19 20:03:57	<--	LeBlaaanc (~LeBlaaanc@47.188.236.163) has quit (Client Quit)
+2016-10-19 20:04:07	-->	broono (~broono@183.14.60.78) has joined #python
+2016-10-19 20:04:28	<--	nidr0x (~z4.30i@nidr0x.ddns.jazztel.es) has quit (Ping timeout: 260 seconds)
+2016-10-19 20:04:32	<--	SmokeyD (~SmokeyD@130.105.139.196) has quit (Ping timeout: 265 seconds)
+2016-10-19 20:04:39	-->	eroper (~eroper@tortuga.wanfear.com) has joined #python
+2016-10-19 20:04:42	-->	cdown (~cdown@82-132-232-176.dab.02.net) has joined #python
+2016-10-19 20:04:43	-->	greg_f (~greg@altlinux/developer/greg) has joined #python
+2016-10-19 20:04:55	-->	neuraload (~Thunderbi@5.2.152.160) has joined #python
+2016-10-19 20:05:04	<--	eroper (~eroper@tortuga.wanfear.com) has left #python
+2016-10-19 20:05:43	<--	dega (~dega@169-0-106-44.ip.afrihost.co.za) has quit (Remote host closed the connection)
+2016-10-19 20:06:26	<--	Muppens1 (~Thunderbi@h-79-115.a163.priv.bahnhof.se) has quit (Ping timeout: 250 seconds)
+2016-10-19 20:06:43	<--	broono (~broono@183.14.60.78) has left #python
+2016-10-19 20:07:00	-->	rcowie (5ac757c3@gateway/web/cgi-irc/kiwiirc.com/ip.90.199.87.195) has joined #python
+2016-10-19 20:07:02	-->	italorossi (~italoross@179.127.166.132) has joined #python
+2016-10-19 20:07:08	<--	pdtpatrick (~Patrick@2620:10d:c090:180::9509) has quit (Ping timeout: 245 seconds)
+2016-10-19 20:07:10	-->	Ficapy (~Adium@206.253.165.11) has joined #python
+2016-10-19 20:07:13	-->	resurtm (~resurtm@95.56.212.179) has joined #python
+2016-10-19 20:08:04	<--	Ficapy (~Adium@206.253.165.11) has quit (Remote host closed the connection)
+2016-10-19 20:08:20	-->	ner0x652 (5bc768f2@gateway/web/freenode/ip.91.199.104.242) has joined #python
+2016-10-19 20:08:26	-->	Ficapy (~Adium@206.253.165.11) has joined #python
+2016-10-19 20:08:38	-->	ap0c (~ap0c@unaffiliated/ap0c) has joined #python
+2016-10-19 20:08:40	-->	lb1c (~lb1c@pd95bc5db.dip0.t-ipconnect.de) has joined #python
+2016-10-19 20:08:42	<--	rcowie (5ac757c3@gateway/web/cgi-irc/kiwiirc.com/ip.90.199.87.195) has quit (Client Quit)
+2016-10-19 20:09:47	-->	cdown_ (~cdown@199.201.66.3) has joined #python
+2016-10-19 20:09:58	<--	rigel3 (~rigel3@c-24-18-45-253.hsd1.wa.comcast.net) has quit (Ping timeout: 244 seconds)
+2016-10-19 20:10:23	-->	rpkilby (~rpkilby@cpe-76-182-45-76.nc.res.rr.com) has joined #python
+2016-10-19 20:10:58	<--	ollien (~ollien@104.236.120.124) has quit (Quit: ZNC - http://znc.in)
+2016-10-19 20:10:58		[20:10]
+2016-10-19 20:11:32	-->	itsech0 (~ech0@ool-ad03a062.dyn.optonline.net) has joined #python
+2016-10-19 20:11:41	<--	italorossi (~italoross@179.127.166.132) has quit (Ping timeout: 256 seconds)
+2016-10-19 20:12:00	-->	dxiri (~dxiri@186.176.74.22) has joined #python
+2016-10-19 20:12:15	<--	resurtm (~resurtm@95.56.212.179) has quit (Ping timeout: 252 seconds)
+2016-10-19 20:12:15	<--	cdown (~cdown@82-132-232-176.dab.02.net) has quit (Ping timeout: 252 seconds)
+2016-10-19 20:12:26	--	cdown_ is now known as cdown
+2016-10-19 20:12:39	-->	ServalSpots (~hamilton@c-67-181-198-50.hsd1.ca.comcast.net) has joined #python
+2016-10-19 20:12:50	-->	chele (~chele@ip5b40c1c7.dynamic.kabel-deutschland.de) has joined #python
+2016-10-19 20:13:07	<--	aw1 (~aw1@unaffiliated/aw1) has quit (Ping timeout: 252 seconds)
+2016-10-19 20:14:08	<--	grizzlyb (3e9ba7ef@gateway/web/cgi-irc/kiwiirc.com/ip.62.155.167.239) has quit (Quit: http://www.kiwiirc.com/ - A hand crafted IRC client)
+2016-10-19 20:14:20	-->	grizzlyb (3e9ba7ef@gateway/web/cgi-irc/kiwiirc.com/ip.62.155.167.239) has joined #python
