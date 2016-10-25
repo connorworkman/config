@@ -5016,3 +5016,703 @@
 2016-10-24 18:19:14	<--	luckman212 (~luckman21@unaffiliated/luckman212) has quit (Ping timeout: 250 seconds)
 2016-10-24 18:25:00		[18:19]
 2016-10-24 18:27:31	-->	luckman212 (~luckman21@unaffiliated/luckman212) has joined #openvpn
+2016-10-24 18:33:00		[18:27]
+2016-10-24 18:36:42	<--	ipx (~ipx@gateway/tor-sasl/ipx) has quit (Quit: ipx)
+2016-10-24 18:42:00		[18:36]
+2016-10-24 18:44:55	--	berglh_ is now known as berglh
+2016-10-24 18:46:44	<--	luckman212 (~luckman21@unaffiliated/luckman212) has quit (Ping timeout: 260 seconds)
+2016-10-24 18:52:00		[18:46]
+2016-10-24 18:52:13	-->	luckman212 (~luckman21@unaffiliated/luckman212) has joined #openvpn
+2016-10-24 18:58:00		[18:52]
+2016-10-24 18:59:10	<--	Geom (~Geom@122.52.77.109) has quit (Read error: Connection reset by peer)
+2016-10-24 19:00:15	-->	klow (~textual@c-67-161-106-89.hsd1.wa.comcast.net) has joined #openvpn
+2016-10-24 19:06:00		[19:00]
+2016-10-24 19:18:46	-->	toli (~toli@ip-83-134-64-223.dsl.scarlet.be) has joined #openvpn
+2016-10-24 19:24:00		[19:18]
+2016-10-24 19:34:29	-->	chamunks- (znc@zeus.entityreborn.com) has joined #openvpn
+2016-10-24 19:40:00		[19:34]
+2016-10-24 19:55:01	-->	Geom (~Geom@122.52.77.109) has joined #openvpn
+2016-10-24 19:55:01		[19:55]
+2016-10-24 20:03:20	--	irc: disconnected from server
+2016-10-24 22:59:41	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined #openvpn
+2016-10-24 22:59:41		[22:59]
+2016-10-24 22:59:41	--	Topic for #openvpn is "OpenVPN Community Support Channel || PLEASE read entire /topic || Current Release: 2.3.12 (23 Aug 2016) || First time? Use !welcome and !goal || Access-Server? /join #openvpn-as || Your problem is probably firewall. Really || TAP/bridging is almost always a bad idea || Vulninfo: !heartbleed !poodle !ovpnuke !sweet32 || Patience is a virtue"
+2016-10-24 22:59:41	--	Topic set by danhunsaker (sid145261@openvpn/corp/danhunsaker) on Sun, 09 Oct 2016 21:20:15
+2016-10-24 22:59:41	--	Channel #openvpn: 224 nicks (7 ops, 2 voices, 215 normals)
+2016-10-24 22:59:41	***	Buffer Playback...
+2016-10-24 22:59:41	daemon	[23:33:24] images are already compressed [23:33:24]
+2016-10-24 22:59:41	daemon	[23:33:33] music is [23:33:33]
+2016-10-24 22:59:41	daemon	[23:33:34] video is [23:33:34]
+2016-10-24 22:59:41	SviMik	[23:33:34] IRC traffic is not compressed :) [23:33:34]
+2016-10-24 22:59:41	daemon	[23:33:54] SviMik, my 14.4 modem will be so happy :P [23:33:54]
+2016-10-24 22:59:41	SviMik	[23:36:57] yes, today I would turn the compression off. if only the server could autodetect it... [23:36:57]
+2016-10-24 22:59:41	SviMik	[23:36:59] cause I can't change the existing clients configuration... [23:36:59]
+2016-10-24 22:59:41	daemon	[23:37:10] I imagine if you disable it on the server [23:37:10]
+2016-10-24 22:59:41	daemon	[23:37:16] the clients would not use it either [23:37:16]
+2016-10-24 22:59:41	daemon	[23:37:27] I imagine its an 'if availible' type option [23:37:27]
+2016-10-24 22:59:41	SviMik	[23:38:34] I would let clients to choose. I just need a server which could accept both [23:38:34]
+2016-10-24 22:59:41	SviMik	[23:43:00] if I need both tcp and udp, tap and tun, and both lzo on and off, how many openvpn servers I need to start?... [23:43:00]
+2016-10-24 22:59:41	law	[23:59:03] unless you're serving VERY technical clients, I'd say pick 1 and enforce it across all the clients [23:59:03]
+2016-10-24 22:59:41	law	[23:59:15] giving clients choices like that is going to lead to many, many support tickets [23:59:15]
+2016-10-24 22:59:41	SviMik	[00:18:48] law some clients can't connect via tcp, but udp works (common problem in China), but some clients need tcp because of proxy. some devices just doesn't support udp and compression (mikrotik routers)... [00:18:48]
+2016-10-24 22:59:41	SviMik	[00:19:12] and that way one configuration just can't work for all clients [00:19:12]
+2016-10-24 22:59:41	@danhunsaker	[00:24:41] SviMik: That's where you set up a config with both protocols, and disable compression entirely. [00:24:41]
+2016-10-24 22:59:41	@danhunsaker	[00:25:11] Or refuse to support broken implementations (such as Mikrotik). [00:25:11]
+2016-10-24 22:59:41	SviMik	[00:25:44] some devices just can't run openvpn - they need l2tp or pptp. pptp isn't secure, but l2tp is blocked in China... [00:25:44]
+2016-10-24 22:59:41	SviMik	[00:25:53] so imagine what I have now... [00:25:53]
+2016-10-24 22:59:41	SviMik	[00:27:05] to support all the clients with all their microwaves and refrigerators with internet connection :) [00:27:05]
+2016-10-24 22:59:41	@danhunsaker	[00:27:38] I'd offer a relay server inside The Great Firewall. [00:27:38]
+2016-10-24 22:59:41	@danhunsaker	[00:28:26] I get that refusal to support broken implementations isn't something everyone can do, though. [00:28:26]
+2016-10-24 22:59:41	@danhunsaker	[00:28:52] Chinanet is a broken implementation in itself. [00:28:52]
+2016-10-24 22:59:41	SviMik	[00:30:57] we are looking for different ways to have a server in China, but that's not easy [00:30:57]
+2016-10-24 22:59:41	@danhunsaker	[00:31:41] Yeah, I don't doubt that. [00:31:41]
+2016-10-24 22:59:41	SviMik	[00:31:47] in short, by their recent law change - we can't. [00:31:47]
+2016-10-24 22:59:41	SviMik	[00:34:12] every website running there must have a permission [00:34:12]
+2016-10-24 22:59:41	SviMik	[00:36:21] and even their youtube alternative doesn't allow to upload videos anonymously. they will ask your documents for registration :) [00:36:21]
+2016-10-24 22:59:41	SviMik	[00:37:06] imagine if youtube would ask your passport scan to allow video uploading :D [00:37:06]
+2016-10-24 22:59:41	daemon	[00:37:47] yeah but you not need to send them our passport ;D [00:37:47]
+2016-10-24 22:59:41	daemon	[00:37:49] oh :D [00:37:49]
+2016-10-24 22:59:41	SviMik	[00:39:45] that's very interesting country [00:39:45]
+2016-10-24 22:59:41	SviMik	[00:40:01] things like vpn aren't forbidden there. it just doesn't work properly :) [00:40:01]
+2016-10-24 22:59:41	SviMik	[00:49:42] (sleep mode activated) [00:49:42]
+2016-10-24 22:59:41	Oldn0rse	[02:02:33] having an interesting issue with our OpenVPN server that has been functional for 6 months [02:02:33]
+2016-10-24 22:59:41	Oldn0rse	[02:03:16] zero clients can connect and am having a TLS error: TLS Error: TLS key negotiation failed to occur within 60 seconds (check your network connectivity) [02:03:16]
+2016-10-24 22:59:41	Oldn0rse	[02:03:47] certs haven't expired, validated connectivity, tested from multiple external network locations [02:03:47]
+2016-10-24 22:59:41	Oldn0rse	[02:03:50] any ideas? [02:03:50]
+2016-10-24 22:59:41	sunrunner20	[02:04:39] tried rebooting? [02:04:39]
+2016-10-24 22:59:41	Oldn0rse	[02:04:51] the openvpn server? [02:04:51]
+2016-10-24 22:59:41	Oldn0rse	[02:04:59] I suppose I haven't, I restarted the service [02:04:59]
+2016-10-24 22:59:41	sunrunner20	[02:05:00] da [02:05:00]
+2016-10-24 22:59:41	sunrunner20	[02:06:01] anybody around that can help me troubleshoot why packets for a TUN tunnel will arrive at a machine on the LAN (for a route that should be PUSHED) but never come back, but only for some clients? [02:06:01]
+2016-10-24 22:59:41	wallbroken	[02:32:39] is better push "dhcp-option DNS 192.168.1.1" on server? [02:32:39]
+2016-10-24 22:59:41	wallbroken	[02:32:46] or "dhcp-option DNS 192.168.1.1" on client? [02:32:46]
+2016-10-24 22:59:41	@dazo	[07:28:49] sunrunner20: sounds like you have issues with either firewalling or the return route .... [07:28:49]
+2016-10-24 22:59:41	@dazo	[07:28:52] !serverlan [07:28:52]
+2016-10-24 22:59:41	@vpnHelper	[07:28:53] "serverlan" is (#1) for a lan behind a server, the server must have ip forwarding enabled (!ipforward), the server needs to push a route for its lan to clients, and the router of the lan the server is on needs a route added to it (!route_outside_openvpn), or (#2) see !route for a better explanation, or (#3) Handy troubleshooting flowchart: http://pekster.sdf.org/misc/serverlan.png [07:28:53]
+2016-10-24 22:59:41	@dazo	[07:28:55] sunrunner20: ^^^ [07:28:55]
+2016-10-24 22:59:41	***	Playback Complete.
+2016-10-24 23:00:48	--	Channel created on Sat, 25 Nov 2006 20:42:40
+2016-10-24 23:06:00		[23:00]
+2016-10-24 23:19:18	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined #openvpn
+2016-10-24 23:19:18		[23:19]
+2016-10-24 23:19:18	--	Topic for #openvpn is "OpenVPN Community Support Channel || PLEASE read entire /topic || Current Release: 2.3.12 (23 Aug 2016) || First time? Use !welcome and !goal || Access-Server? /join #openvpn-as || Your problem is probably firewall. Really || TAP/bridging is almost always a bad idea || Vulninfo: !heartbleed !poodle !ovpnuke !sweet32 || Patience is a virtue"
+2016-10-24 23:19:18	--	Topic set by danhunsaker (sid145261@openvpn/corp/danhunsaker) on Sun, 09 Oct 2016 21:20:15
+2016-10-24 23:19:18	--	Channel #openvpn: 225 nicks (7 ops, 2 voices, 216 normals)
+2016-10-24 23:19:18	***	Buffer Playback...
+2016-10-24 23:19:18	daemon	[23:33:24] images are already compressed [23:33:24]
+2016-10-24 23:19:18	daemon	[23:33:33] music is [23:33:33]
+2016-10-24 23:19:18	daemon	[23:33:34] video is [23:33:34]
+2016-10-24 23:19:18	SviMik	[23:33:34] IRC traffic is not compressed :) [23:33:34]
+2016-10-24 23:19:18	daemon	[23:33:54] SviMik, my 14.4 modem will be so happy :P [23:33:54]
+2016-10-24 23:19:18	SviMik	[23:36:57] yes, today I would turn the compression off. if only the server could autodetect it... [23:36:57]
+2016-10-24 23:19:18	SviMik	[23:36:59] cause I can't change the existing clients configuration... [23:36:59]
+2016-10-24 23:19:18	daemon	[23:37:10] I imagine if you disable it on the server [23:37:10]
+2016-10-24 23:19:18	daemon	[23:37:16] the clients would not use it either [23:37:16]
+2016-10-24 23:19:18	daemon	[23:37:27] I imagine its an 'if availible' type option [23:37:27]
+2016-10-24 23:19:18	SviMik	[23:38:34] I would let clients to choose. I just need a server which could accept both [23:38:34]
+2016-10-24 23:19:18	SviMik	[23:43:00] if I need both tcp and udp, tap and tun, and both lzo on and off, how many openvpn servers I need to start?... [23:43:00]
+2016-10-24 23:19:18	law	[23:59:03] unless you're serving VERY technical clients, I'd say pick 1 and enforce it across all the clients [23:59:03]
+2016-10-24 23:19:18	law	[23:59:15] giving clients choices like that is going to lead to many, many support tickets [23:59:15]
+2016-10-24 23:19:18	SviMik	[00:18:48] law some clients can't connect via tcp, but udp works (common problem in China), but some clients need tcp because of proxy. some devices just doesn't support udp and compression (mikrotik routers)... [00:18:48]
+2016-10-24 23:19:18	SviMik	[00:19:12] and that way one configuration just can't work for all clients [00:19:12]
+2016-10-24 23:19:18	@danhunsaker	[00:24:41] SviMik: That's where you set up a config with both protocols, and disable compression entirely. [00:24:41]
+2016-10-24 23:19:18	@danhunsaker	[00:25:11] Or refuse to support broken implementations (such as Mikrotik). [00:25:11]
+2016-10-24 23:19:18	SviMik	[00:25:44] some devices just can't run openvpn - they need l2tp or pptp. pptp isn't secure, but l2tp is blocked in China... [00:25:44]
+2016-10-24 23:19:18	SviMik	[00:25:53] so imagine what I have now... [00:25:53]
+2016-10-24 23:19:18	SviMik	[00:27:05] to support all the clients with all their microwaves and refrigerators with internet connection :) [00:27:05]
+2016-10-24 23:19:18	@danhunsaker	[00:27:38] I'd offer a relay server inside The Great Firewall. [00:27:38]
+2016-10-24 23:19:18	@danhunsaker	[00:28:26] I get that refusal to support broken implementations isn't something everyone can do, though. [00:28:26]
+2016-10-24 23:19:18	@danhunsaker	[00:28:52] Chinanet is a broken implementation in itself. [00:28:52]
+2016-10-24 23:19:18	SviMik	[00:30:57] we are looking for different ways to have a server in China, but that's not easy [00:30:57]
+2016-10-24 23:19:18	@danhunsaker	[00:31:41] Yeah, I don't doubt that. [00:31:41]
+2016-10-24 23:19:18	SviMik	[00:31:47] in short, by their recent law change - we can't. [00:31:47]
+2016-10-24 23:19:18	SviMik	[00:34:12] every website running there must have a permission [00:34:12]
+2016-10-24 23:19:18	SviMik	[00:36:21] and even their youtube alternative doesn't allow to upload videos anonymously. they will ask your documents for registration :) [00:36:21]
+2016-10-24 23:19:18	SviMik	[00:37:06] imagine if youtube would ask your passport scan to allow video uploading :D [00:37:06]
+2016-10-24 23:19:18	daemon	[00:37:47] yeah but you not need to send them our passport ;D [00:37:47]
+2016-10-24 23:19:18	daemon	[00:37:49] oh :D [00:37:49]
+2016-10-24 23:19:18	SviMik	[00:39:45] that's very interesting country [00:39:45]
+2016-10-24 23:19:18	SviMik	[00:40:01] things like vpn aren't forbidden there. it just doesn't work properly :) [00:40:01]
+2016-10-24 23:19:18	SviMik	[00:49:42] (sleep mode activated) [00:49:42]
+2016-10-24 23:19:18	Oldn0rse	[02:02:33] having an interesting issue with our OpenVPN server that has been functional for 6 months [02:02:33]
+2016-10-24 23:19:18	Oldn0rse	[02:03:16] zero clients can connect and am having a TLS error: TLS Error: TLS key negotiation failed to occur within 60 seconds (check your network connectivity) [02:03:16]
+2016-10-24 23:19:18	Oldn0rse	[02:03:47] certs haven't expired, validated connectivity, tested from multiple external network locations [02:03:47]
+2016-10-24 23:19:18	Oldn0rse	[02:03:50] any ideas? [02:03:50]
+2016-10-24 23:19:18	sunrunner20	[02:04:39] tried rebooting? [02:04:39]
+2016-10-24 23:19:18	Oldn0rse	[02:04:51] the openvpn server? [02:04:51]
+2016-10-24 23:19:18	Oldn0rse	[02:04:59] I suppose I haven't, I restarted the service [02:04:59]
+2016-10-24 23:19:18	sunrunner20	[02:05:00] da [02:05:00]
+2016-10-24 23:19:18	sunrunner20	[02:06:01] anybody around that can help me troubleshoot why packets for a TUN tunnel will arrive at a machine on the LAN (for a route that should be PUSHED) but never come back, but only for some clients? [02:06:01]
+2016-10-24 23:19:18	wallbroken	[02:32:39] is better push "dhcp-option DNS 192.168.1.1" on server? [02:32:39]
+2016-10-24 23:19:18	wallbroken	[02:32:46] or "dhcp-option DNS 192.168.1.1" on client? [02:32:46]
+2016-10-24 23:19:18	@dazo	[07:28:49] sunrunner20: sounds like you have issues with either firewalling or the return route .... [07:28:49]
+2016-10-24 23:19:19	@dazo	[07:28:52] !serverlan [07:28:52]
+2016-10-24 23:19:19	@vpnHelper	[07:28:53] "serverlan" is (#1) for a lan behind a server, the server must have ip forwarding enabled (!ipforward), the server needs to push a route for its lan to clients, and the router of the lan the server is on needs a route added to it (!route_outside_openvpn), or (#2) see !route for a better explanation, or (#3) Handy troubleshooting flowchart: http://pekster.sdf.org/misc/serverlan.png [07:28:53]
+2016-10-24 23:19:19	@dazo	[07:28:55] sunrunner20: ^^^ [07:28:55]
+2016-10-24 23:19:19	***	Playback Complete.
+2016-10-24 23:20:24	--	Channel created on Sat, 25 Nov 2006 20:42:40
+2016-10-24 23:26:00		[23:20]
+2016-10-24 23:28:37	-->	SCHAAP137 (~SCHAAP137@unaffiliated/schaap137) has joined #openvpn
+2016-10-24 23:29:05	-->	Countess_Bathory (~Tess@unaffiliated/bloodcountess) has joined #openvpn
+2016-10-24 23:31:10	-->	flugger (~flugger@46.166.190.149) has joined #openvpn
+2016-10-24 23:31:16	<--	OS-16517 (OS-16517@unaffiliated/os-16517) has quit (Remote host closed the connection)
+2016-10-24 23:37:00		[23:31]
+2016-10-24 23:38:51	-->	Mocramis (~mocramis@shattrath.sceen.net) has joined #openvpn
+2016-10-24 23:39:48	@krzee	also the "only for some clients" makes me think sunrunner20 may have a conflicting subnet issue
+2016-10-24 23:40:00	<--	klow (~textual@c-98-247-49-57.hsd1.wa.comcast.net) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-10-24 23:40:14	@krzee	sunrunner20: do the subnets match between any of: server lan, client lan, vpn subnet?
+2016-10-24 23:46:00		[23:40]
+2016-10-25 00:19:25	<--	Geom (~Geom@122.52.77.109) has quit (Read error: Connection reset by peer)
+2016-10-25 00:19:25		[00:19]
+2016-10-25 00:23:04	<--	skot (~skot@ns527876.ip-149-56-106.net) has quit (Quit: later!)
+2016-10-25 00:29:00		[00:23]
+2016-10-25 00:30:29	<--	troulouliou_div2 (~troulouli@unaffiliated/troulouliou-div2/x-0271439) has quit (Quit: Leaving)
+2016-10-25 00:34:45	-->	skot (~skot@207.244.67.21) has joined #openvpn
+2016-10-25 00:40:00		[00:34]
+2016-10-25 00:49:23	<--	ahadi (~ahadi@static.151.64.243.136.clients.your-server.de) has quit (Quit: leaving)
+2016-10-25 00:55:00		[00:49]
+2016-10-25 01:00:26	<--	Nik05 (~Nik05@unaffiliated/nik05) has quit (Remote host closed the connection)
+2016-10-25 01:03:01	-->	Nik05 (~Nik05@unaffiliated/nik05) has joined #openvpn
+2016-10-25 01:03:31	-->	ade_b (~Ade@redhat/adeb) has joined #openvpn
+2016-10-25 01:09:00		[01:03]
+2016-10-25 01:29:39	<--	Ryushin (chris@2001:470:4b:38f:a634:d9ff:feed:eb30) has quit (Ping timeout: 256 seconds)
+2016-10-25 01:29:39		[01:29]
+2016-10-25 01:30:24	<--	zulutango (~zulutango@d27-99-34-168.bla1.nsw.optusnet.com.au) has quit (Ping timeout: 250 seconds)
+2016-10-25 01:36:00		[01:30]
+2016-10-25 01:39:54	-->	r00t^2_ (~bts@g.rainwreck.com) has joined #openvpn
+2016-10-25 01:43:00	<--	r00t^2 (~bts@g.rainwreck.com) has quit (Ping timeout: 252 seconds)
+2016-10-25 01:44:01	<--	flugger (~flugger@46.166.190.149) has quit (Ping timeout: 260 seconds)
+2016-10-25 01:50:00		[01:44]
+2016-10-25 01:50:15	-->	sunta (~cw@217.111.43.58) has joined #openvpn
+2016-10-25 01:56:00		[01:50]
+2016-10-25 02:00:25	-->	francoisk (~francoisk@154.66.250.11) has joined #openvpn
+2016-10-25 02:06:00		[02:00]
+2016-10-25 02:07:38	-->	jphoglund (~hoeg@hetty.hoeg.net) has joined #openvpn
+2016-10-25 02:08:09	jphoglund	!welcome
+2016-10-25 02:08:10	@vpnHelper	"welcome" is (#1) Start by stating your !goal, such as 'I would like to access the internet over my vpn' (*not* '!goal <whatever>' - the bot doesn't understand that - just '!goal' [without the quotes]), or (#2) New to IRC? see the link in !ask, or (#3) We may need you to !paste your !logs and !configs and maybe !interface to help you, or (#4) See !howto for beginners, or (#5) See !route for lans
+2016-10-25 02:08:11	@vpnHelper	behind openvpn, or (#6) !redirect for sending inet traffic through the server, or (#7) Also interesting: !man !/30 !topology !iporder !sample !forum !wiki !mitm, or (#8) Don't use 192.168.1.0/24 or 192.168.0.0/24 (too much potential for conflict), or (#9) And again, if you think you need !tap, you're probably wrong
+2016-10-25 02:13:07	jphoglund	!redirect
+2016-10-25 02:13:09	@vpnHelper	"redirect" is (#1) to make all inet traffic flow through the vpn, you will need --redirect-gateway (see !def1), as well as IP forwarding (see !ipforward) and NAT (see !nat) enabled on the server., or (#2) you may need to use a different dns server when redirecting gateway, see !dns or !pushdns, or (#3) if using ipv6 try: route-ipv6 2000::/3, or (#4) Handy troubleshooting flowchart:
+2016-10-25 02:13:10	@vpnHelper	http://pekster.sdf.org/misc/redirect.png
+2016-10-25 02:17:19	<--	sunta (~cw@217.111.43.58) has quit (Quit: Ex-Chat)
+2016-10-25 02:23:00		[02:17]
+2016-10-25 02:23:09	-->	MikeDebian (~ML@a81-84-80-8.cpe.netcabo.pt) has joined #openvpn
+2016-10-25 02:23:56	-->	genesislubrigas (~androirc@172.82.187.148) has joined #openvpn
+2016-10-25 02:28:33	-->	allizom (~Thunderbi@host240-174-dynamic.36-79-r.retail.telecomitalia.it) has joined #openvpn
+2016-10-25 02:31:03	-->	Noldorin (~noldorin@unaffiliated/noldorin) has joined #openvpn
+2016-10-25 02:32:15	genesislubrigas	Greetings.  I have this situation in office wherein i am on wired connection and i have actual dsl speed on 9 mbps download.  Now i installed openvpn server on office also tcp port 443, no compression with certs, keys, blowfish cipher and sha1 auth. I run vpn client on office also with same config.  Then i do speedtest, and my client only got 3mbps download speed. Both uses tun mtu at 1500 extra 32 and mssfix 1450. I tried to determine mtu by pin
+2016-10-25 02:33:55	<--	francoisk (~francoisk@154.66.250.11) has left #openvpn ("Leaving")
+2016-10-25 02:37:14	-->	NoSleeves (uid180082@gateway/web/irccloud.com/x-uikkwbuqmhaqzaae) has joined #openvpn
+2016-10-25 02:43:00		[02:37]
+2016-10-25 02:55:14	<--	allizom (~Thunderbi@host240-174-dynamic.36-79-r.retail.telecomitalia.it) has quit (Quit: allizom)
+2016-10-25 02:55:43	-->	allizom (~Thunderbi@host240-174-dynamic.36-79-r.retail.telecomitalia.it) has joined #openvpn
+2016-10-25 03:00:15	-->	totus (~totus@2605:6000:66c0:8800:e16b:5a0:59ef:4f32) has joined #openvpn
+2016-10-25 03:00:15		[03:00]
+2016-10-25 03:01:32	@dazo	!tcp
+2016-10-25 03:01:34	@vpnHelper	"tcp" is (#1) Sometimes you cannot avoid tunneling over tcp, but if you can avoid it, DO. http://sites.inka.de/~bigred/devel/tcp-tcp.html Why TCP Over TCP Is A Bad Idea., or (#2) http://www.openvpn.net/papers/BLUG-talk/14.html for a presentation by James Yonan (OpenVPN lead developer), or (#3) if you must use tcp, you likely want --tcp-nodelay
+2016-10-25 03:01:38	@dazo	genesislubrigas: ^^^
+2016-10-25 03:01:38	<--	genesislubrigas (~androirc@172.82.187.148) has quit (Remote host closed the connection)
+2016-10-25 03:01:43	@dazo	meh
+2016-10-25 03:02:38	 *	skyroveRR pats dazo
+2016-10-25 03:04:46	<--	allizom (~Thunderbi@host240-174-dynamic.36-79-r.retail.telecomitalia.it) has quit (Quit: allizom)
+2016-10-25 03:06:04	-->	[0xAA] (~zenified@unaffiliated/thisiszenified) has joined #openvpn
+2016-10-25 03:07:01	<--	[0xAA] (~zenified@unaffiliated/thisiszenified) has quit (Max SendQ exceeded)
+2016-10-25 03:08:30	-->	gffa (~unknown@unaffiliated/gffa) has joined #openvpn
+2016-10-25 03:10:14	-->	[0xAA] (~zenified@unaffiliated/thisiszenified) has joined #openvpn
+2016-10-25 03:10:24	<--	shootbird (~quassel@beepbeep.serverpit.com) has quit (Ping timeout: 256 seconds)
+2016-10-25 03:11:06	<--	[0xAA] (~zenified@unaffiliated/thisiszenified) has quit (Max SendQ exceeded)
+2016-10-25 03:11:45	-->	[0xAA] (~zenified@unaffiliated/thisiszenified) has joined #openvpn
+2016-10-25 03:12:49	-->	genesislubrigas (~androirc@172.82.187.148) has joined #openvpn
+2016-10-25 03:13:13	genesislubrigas	Greetings.  I have this situation in office wherein i am on wired connection and i have actual dsl speed on 9 mbps download.  Now i installed openvpn server on office also tcp port 443, no compression with certs, keys, blowfish cipher and sha1 auth. I run vpn client on office also with same config.  Then i do speedtest, and my client only got 3mbps download speed. Both uses tun mtu at 1500 extra 32 and mssfix 1450. I tried to determine mtu by pin
+2016-10-25 03:16:04	-->	shootbird (~quassel@beepbeep.serverpit.com) has joined #openvpn
+2016-10-25 03:16:04		[03:16]
+2016-10-25 03:18:33	<--	[0xAA] (~zenified@unaffiliated/thisiszenified) has quit (Ping timeout: 260 seconds)
+2016-10-25 03:19:41	@dazo	!tcp
+2016-10-25 03:19:42	@vpnHelper	"tcp" is (#1) Sometimes you cannot avoid tunneling over tcp, but if you can avoid it, DO. http://sites.inka.de/~bigred/devel/tcp-tcp.html Why TCP Over TCP Is A Bad Idea., or (#2) http://www.openvpn.net/papers/BLUG-talk/14.html for a presentation by James Yonan (OpenVPN lead developer), or (#3) if you must use tcp, you likely want --tcp-nodelay
+2016-10-25 03:19:44	@dazo	genesislubrigas: ^^^
+2016-10-25 03:19:55	@dazo	!gigabit
+2016-10-25 03:19:55	@vpnHelper	"gigabit" is https://community.openvpn.net/openvpn/wiki/Gigabit_Networks_Linux for JJK's writeup on getting the most out of openvpn over gigabit
+2016-10-25 03:20:08	@dazo	genesislubrigas: there's a bit of tuning tips here too ^^^
+2016-10-25 03:21:10	-->	[0xAA] (~zenified@unaffiliated/thisiszenified) has joined #openvpn
+2016-10-25 03:21:11	genesislubrigas	Yes i also use tcp no delay and sndbuf and rcvbuf fir gigabit issues but still same problem
+2016-10-25 03:21:48	genesislubrigas	Set sndbuf abd rcvbuf to zero at server and 300000 push to clients
+2016-10-25 03:22:01	-->	SkinnyMelon (~SkinnyMel@gw.jak-szfvar.sulinet.hu) has joined #openvpn
+2016-10-25 03:23:26	<--	[0xAA] (~zenified@unaffiliated/thisiszenified) has quit (Max SendQ exceeded)
+2016-10-25 03:24:40	<--	BrianBlaze420 (~blaze@unaffiliated/brianblaze) has quit (Ping timeout: 276 seconds)
+2016-10-25 03:25:53	-->	uictamale (4016a001@gateway/web/cgi-irc/kiwiirc.com/ip.64.22.160.1) has joined #openvpn
+2016-10-25 03:26:03	@dazo	genesislubrigas: you missed one important detail .... do you have to use TCP?
+2016-10-25 03:26:13	uictamale	Good morning everyone.  I'm trying to set up openvpn on an aws instance and I've gotten pretty close to having it all working, but I think something's up with my nat configuration.
+2016-10-25 03:26:14	@dazo	TCP is not as efficient as UDP for VPN
+2016-10-25 03:26:31	genesislubrigas	Yes. I need to later on for http proxy
+2016-10-25 03:26:56	@ecrist	dazo: are you aware of a way to push multiple domains in a DNS search string?
+2016-10-25 03:26:57	uictamale	When I check my instance's ifconfig, I see 4 as0t[0,1,2,3] interfaces
+2016-10-25 03:27:18	@dazo	ecrist: I think I'm doing that somewhere ... let me check
+2016-10-25 03:27:32	uictamale	but they're .1 addresses in each of their respective subnets when I'm pretty sure I need to make them .5 since .0-.4 are reserved IPs in AWS subnets
+2016-10-25 03:28:08	@dazo	uictamale: as0t[0123] interfaces doesn't make much sense for VPN
+2016-10-25 03:28:14	-->	[0xAA] (~zenified@unaffiliated/thisiszenified) has joined #openvpn
+2016-10-25 03:28:51	@dazo	uictamale: unless you use --dev as0t[0123] and separate ones in each VPN config ... but that is really not common, hence it looks odd
+2016-10-25 03:29:01	-->	allizom (~Thunderbi@host240-174-dynamic.36-79-r.retail.telecomitalia.it) has joined #openvpn
+2016-10-25 03:29:22	uictamale	OK any idea where these came from then?
+2016-10-25 03:29:26	@dazo	nope
+2016-10-25 03:29:52	uictamale	and I don't need to attach any extra ENIs to my instance ?
+2016-10-25 03:29:57	@dazo	ecrist: I push multiple dhcp-option DOMAIN x.x   to my clients
+2016-10-25 03:30:09	uictamale	the private IP in its respective subnet should be fine?
+2016-10-25 03:30:46	@dazo	ecrist: but I vaguely recall we had some updates to the update-resolv-conf contributed script fixing this issue
+2016-10-25 03:30:58	-->	BrianBlaze420 (~blaze@unaffiliated/brianblaze) has joined #openvpn
+2016-10-25 03:31:11	@ecrist	I'll have to check.
+2016-10-25 03:31:11		[03:31]
+2016-10-25 03:31:24	@ecrist	when I push more than one, tunnelblick only takes the last one
+2016-10-25 03:31:26	@dazo	uictamale: nope, you don't need additional ENIs on your instance .... OpenVPN will create tun/tap adapters on the fly, which are virtual interfaces which OpenVPN can use for VPN
+2016-10-25 03:31:43	@dazo	ecrist: sounds like a bug in tunnelblick, tbh
+2016-10-25 03:32:00	uictamale	dazo: OK thanks, then I wonder where these as interfaces came from
+2016-10-25 03:32:04	uictamale	should I try to remove them?
+2016-10-25 03:32:16	@ecrist	yeah, theres' a few options, I'll keep poking
+2016-10-25 03:32:33	genesislubrigas	Up for my problem guys
+2016-10-25 03:32:59	@dazo	ecrist: commit 5c9f1d2e703d0c8aaaf7254e9f3bd1bf0dddb120 (from 2010), that fixed the client.up to tackle multiple domains
+2016-10-25 03:36:45	<--	allizom (~Thunderbi@host240-174-dynamic.36-79-r.retail.telecomitalia.it) has quit (Quit: allizom)
+2016-10-25 03:40:48	@dazo	genesislubrigas: just for testing, do test with UDP and see how that changes thing ... if you don't see any changes, that is at least good to know for your test case further ... otherwise, look through !gigabit, it got several suggestions how to test and tune
+2016-10-25 03:41:59	genesislubrigas	Alright. May i ask further then after the test if the result still the same?
+2016-10-25 03:43:32	-->	designbybeck_ (~designbyb@x169y027.angelo.edu) has joined #openvpn
+2016-10-25 03:44:47	@dazo	genesislubrigas: you may ask ... and people will respond here if they have something clever to say
+2016-10-25 03:44:57	@dazo	(if they don't, they mostly stay silent)
+2016-10-25 03:45:08	 *	dazo need to run in 10 minutes
+2016-10-25 03:45:22	genesislubrigas	Thank you
+2016-10-25 03:45:40	<--	genesislubrigas (~androirc@172.82.187.148) has quit (Quit: AndroIRC - Android IRC Client ( http://www.androirc.com ))
+2016-10-25 03:47:35	<--	CaBa (~Diu7saig@unaffiliated/caba) has left #openvpn
+2016-10-25 03:47:35		[03:47]
+2016-10-25 03:48:34	-->	Ryushin (~Ryushin@50-203-182-130-static.hfc.comcastbusiness.net) has joined #openvpn
+2016-10-25 03:50:04	<--	guampa (~guampa@unaffiliated/guampa) has quit (Ping timeout: 244 seconds)
+2016-10-25 03:53:14	-->	guampa (~guampa@unaffiliated/guampa) has joined #openvpn
+2016-10-25 03:53:41	<--	freekevin (freekevin@gateway/shell/xshellz/x-jojylhgjykdgzeku) has quit (Ping timeout: 250 seconds)
+2016-10-25 03:56:47	<--	caliculk (~caliculk@unaffiliated/caliculk) has quit (Ping timeout: 244 seconds)
+2016-10-25 03:57:56	-->	SviMik (~pIRCuser8@131-250-35-213.dyn.estpak.ee) has joined #openvpn
+2016-10-25 04:03:00		[03:57]
+2016-10-25 04:03:18	SviMik	since openvpn is single-threaded, is there any reasonable max-clients value for tcp server?
+2016-10-25 04:04:10	SviMik	I use 100 right now, and it already hit the limit on some servers
+2016-10-25 04:05:58	-->	caliculk (~caliculk@unaffiliated/caliculk) has joined #openvpn
+2016-10-25 04:06:43	SviMik	how can I understand whenever I shall increase it, or leave as is to not impair the experience of already connected users?
+2016-10-25 04:06:46	-->	genesislubrigas (~androirc@172.82.187.148) has joined #openvpn
+2016-10-25 04:08:05	<--	SkinnyMelon (~SkinnyMel@gw.jak-szfvar.sulinet.hu) has quit (Ping timeout: 265 seconds)
+2016-10-25 04:08:50	genesislubrigas	Greetings.  I read that http proxy option can only be allowed to set agent and version.  Is there a way or openvpn version that can set all http options?
+2016-10-25 04:09:15	@plaisthos	genesislubrigas: yes
+2016-10-25 04:09:25	@plaisthos	if you mean the headers
+2016-10-25 04:09:54	<--	uiyice (~uiyice@c-69-250-37-152.hsd1.md.comcast.net) has quit (Ping timeout: 256 seconds)
+2016-10-25 04:10:02	genesislubrigas	Yes. I just read only two. How can we set other header options?
+2016-10-25 04:10:17	-->	SkinnyMelon (~SkinnyMel@gw.jak.sulinet.hu) has joined #openvpn
+2016-10-25 04:10:19	@plaisthos	only two?!
+2016-10-25 04:10:32	@plaisthos	genesislubrigas: whatever information you are reading is outdated
+2016-10-25 04:11:04	@plaisthos	I implemented custom http header in 2013
+2016-10-25 04:11:12	genesislubrigas	Yes, agent and version. That is what i read.
+2016-10-25 04:11:12	genesislubrigas	May i ask where can i read?
+2016-10-25 04:11:12	@plaisthos	!manual
+2016-10-25 04:11:12	@plaisthos	!man
+2016-10-25 04:11:13	@vpnHelper	"man" is (#1) For man pages, see http://openvpn.net/index.php/open-source/documentation/manuals/, or (#2) the man pages are your friend!, or (#3) Protip: you can search the manpage for a specific --option (with dashes) to find it quicker
+2016-10-25 04:11:25	genesislubrigas	What version?
+2016-10-25 04:11:45	@plaisthos	!spoonfeed
+2016-10-25 04:12:08	genesislubrigas	Alright. I will check one by one.
+2016-10-25 04:12:08	@plaisthos	genesislubrigas: a version that is newer than 2013
+2016-10-25 04:12:12	@plaisthos	2.3 or 2.4
+2016-10-25 04:13:09	genesislubrigas	Thanks for informing me that there is new manual. Guesd i was stuck at old manual.
+2016-10-25 04:15:09	genesislubrigas	Oh version 2.4 that is. Thanks
+2016-10-25 04:15:18	@plaisthos	genesislubrigas: it should be also in 2.3
+2016-10-25 04:15:54	genesislubrigas	Nope i read 2.3 but i dont read option there.
+2016-10-25 04:16:19	@plaisthos	Then you will have to use 2.4 :)
+2016-10-25 04:16:49	<--	SkinnyMelon (~SkinnyMel@gw.jak.sulinet.hu) has quit (Ping timeout: 256 seconds)
+2016-10-25 04:16:50	genesislubrigas	But  i guess that manual is outdated if you really know that it is included.
+2016-10-25 04:18:06	-->	SkinnyMelon (~SkinnyMel@jak-gw.datatrans.hu) has joined #openvpn
+2016-10-25 04:18:06		[04:18]
+2016-10-25 04:18:09	@plaisthos	Thought so but that patch is from 2013, so meh
+2016-10-25 04:19:30	<--	sz0 (uid110435@gateway/web/irccloud.com/x-siondccasbwfbwlf) has quit (Quit: Connection closed for inactivity)
+2016-10-25 04:19:44	-->	ExoUNX (~textual@unaffiliated/exounx) has joined #openvpn
+2016-10-25 04:23:49	<--	SkinnyMelon (~SkinnyMel@jak-gw.datatrans.hu) has quit (Ping timeout: 276 seconds)
+2016-10-25 04:29:00		[04:23]
+2016-10-25 04:30:22	uictamale	dazo: Thanks for the help, not sure what happened the first time around, but I just re-ran the setup wizard and gave it mostly defaults and now it works.  I do still see as0t[0-3] instances they're all within the VPN cidr block now.
+2016-10-25 04:32:56	<--	skot (~skot@207.244.67.21) has quit (Ping timeout: 260 seconds)
+2016-10-25 04:33:09	--	chamunks- is now known as chamunks
+2016-10-25 04:35:14	-->	SkinnyMelon (~SkinnyMel@gw.jak.sulinet.hu) has joined #openvpn
+2016-10-25 04:38:38	<--	shootbird (~quassel@beepbeep.serverpit.com) has quit (Ping timeout: 244 seconds)
+2016-10-25 04:41:29	genesislubrigas	Hi. My latest openvpn server is version 2.3 on centos 7. May I ask how can i install openvpn 2.4 on centos? I dont see any setup on google.
+2016-10-25 04:43:40	<--	SkinnyMelon (~SkinnyMel@gw.jak.sulinet.hu) has quit (Ping timeout: 250 seconds)
+2016-10-25 04:44:41	-->	shootbird (~quassel@beepbeep.serverpit.com) has joined #openvpn
+2016-10-25 04:44:41		[04:44]
+2016-10-25 04:49:14	<--	fengshaun_ (~fengshaun@unaffiliated/fengshaun) has quit (Ping timeout: 276 seconds)
+2016-10-25 04:50:36	-->	SkinnyMelon (~SkinnyMel@gw.jak-szfvar.sulinet.hu) has joined #openvpn
+2016-10-25 04:51:00	-->	fengshaun (~fengshaun@unaffiliated/fengshaun) has joined #openvpn
+2016-10-25 04:51:42	<--	genesislubrigas (~androirc@172.82.187.148) has left #openvpn ("Quit")
+2016-10-25 04:52:40	-->	bluenemo (~bluenemo@unaffiliated/bluenemo) has joined #openvpn
+2016-10-25 04:56:04	[0xAA]	sudo yum update
+2016-10-25 04:56:06	[0xAA]	this is basic
+2016-10-25 05:02:00		[04:56]
+2016-10-25 05:14:05	<--	SkinnyMelon (~SkinnyMel@gw.jak-szfvar.sulinet.hu) has quit (Remote host closed the connection)
+2016-10-25 05:17:15	-->	SkinnyMelon (~SkinnyMel@gw.jak-szfvar.sulinet.hu) has joined #openvpn
+2016-10-25 05:17:15		[05:17]
+2016-10-25 05:28:14	-->	wuseman (~wuziduzi@unaffiliated/wuseman) has joined #openvpn
+2016-10-25 05:34:00		[05:28]
+2016-10-25 05:38:07	<--	Noldorin (~noldorin@unaffiliated/noldorin) has quit (Ping timeout: 250 seconds)
+2016-10-25 05:44:00		[05:38]
+2016-10-25 05:44:51	<--	u0m3 (~u0m3@86.120.85.26) has quit (Quit: Leaving)
+2016-10-25 05:44:54	-->	mrpops2ko (~mrpops2ko@88.202.224.88.adsl.inet-telecom.org) has joined #openvpn
+2016-10-25 05:50:00		[05:44]
+2016-10-25 05:53:39	-->	plum (~plum@unaffiliated/plum) has joined #openvpn
+2016-10-25 05:54:16	-->	u0m3 (~u0m3@86.120.85.26) has joined #openvpn
+2016-10-25 05:55:01	<--	u0m3 (~u0m3@86.120.85.26) has quit (Remote host closed the connection)
+2016-10-25 05:56:03	-->	u0m3 (~u0m3@86.120.85.26) has joined #openvpn
+2016-10-25 05:56:04	-->	Envil (~envil@x55b5beb5.dyn.telefonica.de) has joined #openvpn
+2016-10-25 06:01:16	plum	hi
+2016-10-25 06:01:35	plum	I have configured openvpn to work, it connects and I can access my local network well
+2016-10-25 06:01:48	plum	I can't seem to get DNS to work though... would someone be able to help me?
+2016-10-25 06:01:56	plum	my configs are here: http://pastebin.com/EbBEPDcm
+2016-10-25 06:02:30	<--	norkle (~norkle@unaffiliated/norkle) has quit (Remote host closed the connection)
+2016-10-25 06:04:31	<--	ade_b (~Ade@redhat/adeb) has quit (Quit: Too sexy for his shirt)
+2016-10-25 06:10:00		[06:04]
+2016-10-25 06:16:16	<--	shootbird (~quassel@beepbeep.serverpit.com) has quit (Ping timeout: 256 seconds)
+2016-10-25 06:18:32	-->	Noldorin (~noldorin@unaffiliated/noldorin) has joined #openvpn
+2016-10-25 06:20:55	<--	wuseman (~wuziduzi@unaffiliated/wuseman) has quit (Ping timeout: 256 seconds)
+2016-10-25 06:22:21	-->	fearnothing (~nothing@unaffiliated/fearnothing) has joined #openvpn
+2016-10-25 06:22:35	-->	shootbird (~quassel@beepbeep.serverpit.com) has joined #openvpn
+2016-10-25 06:26:03	@krzee	plum: you need the up/down scripts, and script-security 2
+2016-10-25 06:26:03		[06:26]
+2016-10-25 06:27:06	@krzee	so uncomment lines 53,55,56
+2016-10-25 06:27:22	plum	thank you krzee, I have update-resolv-conf on the server
+2016-10-25 06:27:30	plum	will try uncommenting them
+2016-10-25 06:27:48	@krzee	assuming whatever apps the update-resolv-conf script uses are installed, id expect that to work
+2016-10-25 06:28:32	plum	do you know if there are some dependencies I may be missing?
+2016-10-25 06:28:39	@krzee	nah i dont use that script
+2016-10-25 06:28:45	plum	ahh gotcha
+2016-10-25 06:28:47	@krzee	but i mean, should be easy enough to see
+2016-10-25 06:28:59	@krzee	look at the script, see if it uses commands you dont have
+2016-10-25 06:29:08	plum	I know I've gotten openvpn working before and had the same issues with dns... I should've written down the fix that worked
+2016-10-25 06:29:12	@krzee	well or just watch the logfile for errors
+2016-10-25 06:29:28	plum	I'll check the log file too, thank you
+2016-10-25 06:29:44	plum	I thought redirect-gateway on client end fixed it for me last time
+2016-10-25 06:29:46	@krzee	i believe the script uses some sort of wrapper app that modifies resolv.conf
+2016-10-25 06:29:53	@krzee	no, thats totally unrelated
+2016-10-25 06:32:54	plum	my server conf uses my router's IP address as the DNS
+2016-10-25 06:33:03	plum	do you think I should change it to Google's?
+2016-10-25 06:33:33	plum	my host gets DNS from my router though so I had thought it would work to push to the client
+2016-10-25 06:34:40	<--	SkinnyMelon (~SkinnyMel@gw.jak-szfvar.sulinet.hu) has quit (Ping timeout: 260 seconds)
+2016-10-25 06:37:55	<--	[0xAA] (~zenified@unaffiliated/thisiszenified) has quit (Ping timeout: 250 seconds)
+2016-10-25 06:43:00		[06:37]
+2016-10-25 06:43:42	<--	Ryushin (~Ryushin@50-203-182-130-static.hfc.comcastbusiness.net) has quit (Ping timeout: 250 seconds)
+2016-10-25 06:47:38	-->	iq (~iq@47.185.67.13) has joined #openvpn
+2016-10-25 06:53:00		[06:47]
+2016-10-25 07:01:07	<--	Naeil (~nzoueidi@ubuntu/member/na3il) has quit (Ping timeout: 276 seconds)
+2016-10-25 07:01:37	<--	iq (~iq@47.185.67.13) has quit (Ping timeout: 265 seconds)
+2016-10-25 07:03:26	<--	weaksauc_ (~weaksauce@ip72-194-65-47.oc.oc.cox.net) has quit (Quit: My MacBook Pro has gone to sleep. ZZZzzz…)
+2016-10-25 07:09:00		[07:03]
+2016-10-25 07:11:02	-->	SkinnyMelon (~SkinnyMel@gw.jak-szfvar.sulinet.hu) has joined #openvpn
+2016-10-25 07:17:00		[07:11]
+2016-10-25 07:25:37	wallbroken	krzee, are you an openvpn developer?
+2016-10-25 07:31:00		[07:25]
+2016-10-25 07:31:08	-->	klow (~textual@c-98-247-49-57.hsd1.wa.comcast.net) has joined #openvpn
+2016-10-25 07:37:00		[07:31]
+2016-10-25 07:41:00	<--	whfsdude (~whfsdude@Zenoss/Support/whfsdude) has quit (Excess Flood)
+2016-10-25 07:41:18	-->	flugger (~flugger@gateway/vpn/privateinternetaccess/flugger) has joined #openvpn
+2016-10-25 07:41:58	-->	whfsdude (~whfsdude@Zenoss/Support/whfsdude) has joined #openvpn
+2016-10-25 07:47:00		[07:41]
+2016-10-25 07:47:15	-->	zoredache (~zoredache@pdpc/supporter/professional/zoredache) has joined #openvpn
+2016-10-25 07:47:57	-->	DWWagner (~dwagner@216.194.27.10) has joined #openvpn
+2016-10-25 07:48:12	@krzee	plum, that wont work unless you also set a route for that dns server and NAT it in the server, which is maybe why redirect-gateway fixed it for you before
+2016-10-25 07:48:54	@krzee	plum, but if you used 8.8.8.8 like your config said you did, then it should be fine
+2016-10-25 07:49:13	<--	klow (~textual@c-98-247-49-57.hsd1.wa.comcast.net) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-10-25 07:49:24	@krzee	wallbroken: no i dont code the required languages, i just write scripts
+2016-10-25 07:49:51	wallbroken	krzee, there is a problem about client-connect and client-disconnect
+2016-10-25 07:49:58	@krzee	whats the problem?
+2016-10-25 07:50:02	wallbroken	if you do a script in bash: sleep 100
+2016-10-25 07:50:14	<--	DWWagner (~dwagner@216.194.27.10) has quit (Client Quit)
+2016-10-25 07:50:15	wallbroken	openwrt waits until the script is terminated
+2016-10-25 07:50:41	wallbroken	so if there is a problem on script, openvpn won't start the connection
+2016-10-25 07:50:54	<--	flugger (~flugger@gateway/vpn/privateinternetaccess/flugger) has quit (Ping timeout: 256 seconds)
+2016-10-25 07:51:51	-->	allizom (~Thunderbi@host240-174-dynamic.36-79-r.retail.telecomitalia.it) has joined #openvpn
+2016-10-25 07:54:21	<--	l0ngest (~l0ngest@welcome.onmy.network) has quit (Changing host)
+2016-10-25 07:54:21	-->	l0ngest (~l0ngest@unaffiliated/l0ngest) has joined #openvpn
+2016-10-25 08:00:00		[07:54]
+2016-10-25 08:01:14	slypknot	wallbroken: computers are meant to be fast not slow .. sleep 100
+2016-10-25 08:04:33	@krzee	wallbroken: openvpn is single threaded, the script interface will cause openvpn to block, make your scripts reasonably fast or use the plugin interface instead
+2016-10-25 08:04:45	@krzee	the plugin interface uses its own thread
+2016-10-25 08:10:00		[08:04]
+2016-10-25 08:11:56	-->	defsdoor (~andy@cpc35-sutt4-2-0-cust184.19-1.cable.virginm.net) has joined #openvpn
+2016-10-25 08:13:40	-->	Haris (~haris@unaffiliated/haris) has joined #openvpn
+2016-10-25 08:13:42	Haris	hello all
+2016-10-25 08:13:50	Haris	can openvpn client do cisco ipsec vpn ?
+2016-10-25 08:13:57	@krzee	no
+2016-10-25 08:14:00	@krzee	!notcompat
+2016-10-25 08:14:01	@vpnHelper	"notcompat" is (#1) IPsec, PPTP, & L2TP are _not_ compatible with OpenVPN. OpenVPN uses SSL whereas PPTP and IPSEC use their own protocols and therefore cannot be compatible., or (#2) OpenVPN connects only to OpenVPN
+2016-10-25 08:14:33	Haris	ah
+2016-10-25 08:16:33	wallbroken	krzee
+2016-10-25 08:16:34	wallbroken	wait
+2016-10-25 08:16:44	wallbroken	i used & on the bottom of the script
+2016-10-25 08:17:01	wallbroken	and looks like the script does not block the openvpn execution anymore
+2016-10-25 08:18:29	Haris	is openvpn an open source option for having low cost (ssl) VPNs ?
+2016-10-25 08:18:42	Haris	or is it a commercial product
+2016-10-25 08:18:57	Haris	I'v seen commercial part of it. not sure about open source part
+2016-10-25 08:19:38	@krzee	on the website you need to click community to get to the opensource site
+2016-10-25 08:19:53	-->	uiyice (~uiyice@c-68-33-17-232.hsd1.md.comcast.net) has joined #openvpn
+2016-10-25 08:19:56	@krzee	or just head over to community.openvpn.net
+2016-10-25 08:20:01	Haris	how many clients does the community version do
+2016-10-25 08:20:29	@krzee	til your hardware or network connection become the issue, while keeping in mind that its single threaded so it runs on 1 cpu core
+2016-10-25 08:21:08	Haris	hmm
+2016-10-25 08:21:11	Haris	I need 6 atm
+2016-10-25 08:21:16	@krzee	client licensing and stuff is the commercial product, AS
+2016-10-25 08:21:18	@krzee	!as
+2016-10-25 08:21:19	@vpnHelper	"as" is Please go to #OpenVPN-AS for help with commercial products from OpenVPN Technologies, including Access Server, OpenVPN Connect for iOS/Android, etc. Access Server is a commercial product, different from open source OpenVPN
+2016-10-25 08:21:34	@krzee	but the opensource openvpn, which we support here
+2016-10-25 08:21:40	<--	AlexRussia (~Alex@unaffiliated/alexrussia) has quit (Read error: error:1408F119:SSL routines:SSL3_GET_RECORD:decryption failed or bad record mac)
+2016-10-25 08:21:41	@krzee	doesnt care about how many clients
+2016-10-25 08:21:49	Haris	noted
+2016-10-25 08:21:56	@krzee	you manage your own pki and it allows whatever cryptographically is allowed
+2016-10-25 08:22:10	@krzee	or logins/passes, or combination of both
+2016-10-25 08:22:14	Haris	is there a front end for configuring openvpn or do I configure it all in config files ?
+2016-10-25 08:22:42	@krzee	you configure it all in config files by hand, using the manual and howto and lots of reading and some prior networking understanding
+2016-10-25 08:22:53	@krzee	otherwise you want AS, which comes with a pretty GUI
+2016-10-25 08:23:00	Haris	well, networking I undertand. but configuring it has illuded me thus far
+2016-10-25 08:23:07	Haris	understand+
+2016-10-25 08:23:14	<--	l0ngest (~l0ngest@unaffiliated/l0ngest) has left #openvpn ("Textual IRC Client: www.textualapp.com")
+2016-10-25 08:23:31	@krzee	!howto
+2016-10-25 08:23:32	@vpnHelper	"howto" is (#1) OpenVPN comes with a great howto, http://openvpn.net/howto PLEASE READ IT!, or (#2) http://www.secure-computing.net/openvpn/howto.php for a mirror, or (#3) Getting started with OpenVPN: https://community.openvpn.net/openvpn/wiki/GettingStartedwithOVPN
+2016-10-25 08:28:46	-->	AlexRussia (~Alex@unaffiliated/alexrussia) has joined #openvpn
+2016-10-25 08:28:46		[08:28]
+2016-10-25 08:32:35	-->	thib (~thib@wikimedia/Thibaut120094) has joined #openvpn
+2016-10-25 08:32:47	wallbroken	krzee, so?
+2016-10-25 08:32:51	wallbroken	mine is a good solution?
+2016-10-25 08:32:58	wallbroken	put & on the bottom of the script
+2016-10-25 08:33:16	@krzee	if it works for you it sounds good to me, if it does not then no
+2016-10-25 08:33:18	@krzee	:-p
+2016-10-25 08:33:37	wallbroken	but if there is some simple solution like this
+2016-10-25 08:33:41	wallbroken	why you suggest a module?
+2016-10-25 08:33:43	<--	AlexRussia (~Alex@unaffiliated/alexrussia) has quit (Ping timeout: 244 seconds)
+2016-10-25 08:34:14	@krzee	cause i dont write scripts that sleep and call them from openvpn, i dont need to figure out a hack to support it
+2016-10-25 08:34:16	@krzee	if you did, cool
+2016-10-25 08:34:36	wallbroken	krzee, it's just a testcase
+2016-10-25 08:34:43	wallbroken	i don't need a sleep script
+2016-10-25 08:35:02	wallbroken	but can you link to "interface" module you mentioned?
+2016-10-25 08:35:09	@krzee	!man
+2016-10-25 08:35:10	@vpnHelper	"man" is (#1) For man pages, see http://openvpn.net/index.php/open-source/documentation/manuals/, or (#2) the man pages are your friend!, or (#3) Protip: you can search the manpage for a specific --option (with dashes) to find it quicker
+2016-10-25 08:35:14	@krzee	look for the word plugin
+2016-10-25 08:37:58	wallbroken	i know how to load a plugin
+2016-10-25 08:38:11	wallbroken	but i want some other information about that specified plugin
+2016-10-25 08:38:49	@krzee	about what specified plugin?
+2016-10-25 08:39:08	slypknot	^^
+2016-10-25 08:41:09	wallbroken	so: --plugin /path/to/script.sh ?
+2016-10-25 08:42:50	slypknot	that specified plugin is your own script ?
+2016-10-25 08:43:34	<--	Haris (~haris@unaffiliated/haris) has left #openvpn
+2016-10-25 08:45:25	<--	uiyice (~uiyice@c-68-33-17-232.hsd1.md.comcast.net) has quit (Ping timeout: 256 seconds)
+2016-10-25 08:45:25		[08:45]
+2016-10-25 08:45:29	<--	plum (~plum@unaffiliated/plum) has quit (Remote host closed the connection)
+2016-10-25 08:46:14	@krzee	you must not have read the manual
+2016-10-25 08:46:28	@krzee	For more information and examples on how to build OpenVPN plug-in modules, see the README file in the plugin folder of the OpenVPN source distribution.
+2016-10-25 08:46:42	-->	AlexRussia (~Alex@unaffiliated/alexrussia) has joined #openvpn
+2016-10-25 08:46:54	@krzee	if you need to build openvpn plugin modules, then its probably not your shell script :-p
+2016-10-25 08:47:13	wallbroken	slypknot, yes
+2016-10-25 08:47:20	slypknot	^^
+2016-10-25 08:47:27	slypknot	bash / sh ?
+2016-10-25 08:47:31	wallbroken	yes
+2016-10-25 08:47:33	@krzee	no
+2016-10-25 08:47:38	slypknot	:)
+2016-10-25 08:47:39	@krzee	now go read!
+2016-10-25 08:49:38	-->	davimore__ (~davimore@253-148-045-062.dynamic.caiway.nl) has joined #openvpn
+2016-10-25 08:49:47	wallbroken	"For more information and examples on how to build OpenVPN plug-in modules, see the README file in the plugin folder"
+2016-10-25 08:49:51	wallbroken	where is that folder?
+2016-10-25 08:52:41	<--	davimore_ (~davimore@185.143.230.225) has quit (Ping timeout: 260 seconds)
+2016-10-25 08:53:06	<--	SkinnyMelon (~SkinnyMel@gw.jak-szfvar.sulinet.hu) has quit (Ping timeout: 250 seconds)
+2016-10-25 08:53:45	-->	SkinnyMelon (~SkinnyMel@gw.jak-szfvar.sulinet.hu) has joined #openvpn
+2016-10-25 08:54:20	@krzee	!download
+2016-10-25 08:54:21	@vpnHelper	"download" is (#1) http://openvpn.net/index.php/download/community-downloads.html to download openvpn, or (#2) in the community version of openvpn (only thing supported here) there is no separate download for client/server, it is the same install with different configs
+2016-10-25 08:54:27	@krzee	in the source of course
+2016-10-25 08:54:43	-->	Heraclmene (~Heraclmen@unaffiliated/heraclmene) has joined #openvpn
+2016-10-25 08:55:00	@krzee	--plugin module-pathname [init-string]
+2016-10-25 08:55:02	@krzee	Load plug-in module from the file module-pathname, passing init-string as an argument to the module initialization function. Multiple plugin modules may be loaded into one OpenVPN process.
+2016-10-25 08:55:03	@krzee	For more information and examples on how to build OpenVPN plug-in modules, see the README file in the plugin folder of the OpenVPN source distribution.
+2016-10-25 08:55:16	@krzee	it was LITERALLY where i told you to read
+2016-10-25 08:55:23	@krzee	!vampire
+2016-10-25 08:55:25	@vpnHelper	"vampire" is Please don't be a help vampire - we're here to point you in the right direction, not type out the commands verbatim for you. http://slash7.com/2006/12/22/vampires/
+2016-10-25 08:55:28	Heraclmene	Hiya, was wondering if anyone could help me - I'm using Pritunl (which in turn uses OpenVPN) and can't seem to route only private subnet traffic through the VPN - does anyone have any ideas?
+2016-10-25 08:55:47	Heraclmene	I have the option of adding routes (which I assume is like 'push' with OpenVPN) but it doesn't seem to work :<
+2016-10-25 08:56:32	wallbroken	krzee, it's not very clear
+2016-10-25 08:56:41	wallbroken	what in this contest a "plugin" is ?
+2016-10-25 08:56:59	@krzee	it says you must build it, and tells you where to see examples and docs
+2016-10-25 08:57:06	@krzee	and where to find them
+2016-10-25 08:57:41	@krzee	if you had read --plugin instead of saying "i know how to load a plugin" you would have seen that
+2016-10-25 08:58:05	@krzee	because after i told you to, and you didnt, i answered you by doing it myself
+2016-10-25 08:58:30	@krzee	Heraclmene: what is pritunl? a vpn service?
+2016-10-25 08:58:39	wallbroken	and what the "plugin" should do?
+2016-10-25 08:58:45	Heraclmene	krzee, It's basically a GUI on top of OpenVPN.
+2016-10-25 08:58:47	wallbroken	it's not explained very well
+2016-10-25 08:58:54	Heraclmene	krzee, Pretty nice - except it doesn't work how I want :P
+2016-10-25 08:58:58	@krzee	Heraclmene: oh ok, so you are trying to route a lan over openvpn?
+2016-10-25 08:59:07	slypknot	Heraclmene: pushing routes works unless you do it wrong
+2016-10-25 08:59:23	Heraclmene	krzee, I have created a VPN of subnet 10.0.1.0/24
+2016-10-25 08:59:31	 *	slypknot takes a breath
+2016-10-25 08:59:32	Heraclmene	krzee, I literally want only that traffic to go over VPN
+2016-10-25 08:59:41	@krzee	then you dont need the route command
+2016-10-25 08:59:50	@krzee	!configs
+2016-10-25 08:59:50	@vpnHelper	"configs" is (#1) please !paste your client and server configs (with comments removed, you can use `grep -vE '^#|^;|^$' server.conf`), also include which OS and ovpn version, or (#2) dont forget to include any ccd entries, or (#3) pfSense, see http://www.secure-computing.net/wiki/index.php/OpenVPN/pfSense to obtain your config, or (#4) remove inline private key or tls-auth key before posting
+2016-10-25 08:59:59	@krzee	if you use --server it'll take care of that route
+2016-10-25 09:00:20	<--	SCHAAP137 (~SCHAAP137@unaffiliated/schaap137) has quit (Ping timeout: 260 seconds)
+2016-10-25 09:01:11	@dazo	wallbroken: plugins extends openvpn in various ways, mostly related to dynamic config management, authentication, access control and account auditing
+2016-10-25 09:01:11		[09:01]
+2016-10-25 09:02:03	@dazo	wallbroken: You can find a few plugins in the source tree under  ... sample/sample-plugins/ ... src/plugins/
+2016-10-25 09:02:48	wallbroken	so, i need to recompile the whole openvpn when i build my own script?
+2016-10-25 09:02:53	-->	vy (~vy@2604:180:0:76e:1ced:c0:ff:ee) has joined #openvpn
+2016-10-25 09:02:54	@dazo	no
+2016-10-25 09:03:18	@dazo	plugins are loaded dynamically at run time ... you need to compile plugins, if they are not compiled already
+2016-10-25 09:03:45	slypknot	scripts are not ..
+2016-10-25 09:04:03	wallbroken	and in that plugin, what i need to put? a caller to bash script?
+2016-10-25 09:04:13	@dazo	true ... some !xy issues now .... thx, slypknot
+2016-10-25 09:04:31	@dazo	wallbroken: that completely depends on what kind of plugin you want to use
+2016-10-25 09:05:09	@dazo	wallbroken: plugins are C code, written in a certain way to add a specific behaviour
+2016-10-25 09:05:13	wallbroken	we said that i don't "USE" a plugin, but i need to "BUILD" my own plugin
+2016-10-25 09:05:28	slypknot	dazo: it appears that wallbroken is trying to load a bash script as a plugin
+2016-10-25 09:05:43	@dazo	wallbroken: *sigh* ... that does not make not make sense
+2016-10-25 09:05:48	wallbroken	dazo, do you remember the yesterday problem?
+2016-10-25 09:05:54	@dazo	no, I don
+2016-10-25 09:05:54	@krzee	wallbroken: building is the process of compiling code
+2016-10-25 09:06:07	wallbroken	client-connect script.sh
+2016-10-25 09:06:15	wallbroken	where script.sh does "sleep 100"
+2016-10-25 09:06:16	@dazo	ahh ... the counter stuff
+2016-10-25 09:06:21	@dazo	don't do that
+2016-10-25 09:06:24	@krzee	lol
+2016-10-25 09:06:34	wallbroken	then openvpn needs to wait 100 seconds before establishing a connection
+2016-10-25 09:06:39	@dazo	don't do that
+2016-10-25 09:06:42	wallbroken	and it's not a wanted behaviour
+2016-10-25 09:06:46	@krzee	pete and repeat were on a boat, pete fell off, who was left on the boat?
+2016-10-25 09:06:56	@dazo	because you should not sleep 100 seconds
+2016-10-25 09:07:09	wallbroken	repeat with me "it's just a testcase"
+2016-10-25 09:07:12	@dazo	wallbroken: you try to solve a non-issue
+2016-10-25 09:07:16	wallbroken	i already told you
+2016-10-25 09:07:20	 *	dazo ignores wallbroken 
+2016-10-25 09:07:33	@krzee	nice dazo! i havent seen you do that before
+2016-10-25 09:07:39	@krzee	ill join you in the ignorefest
+2016-10-25 09:07:55	wallbroken	it's just to rapresent the problem "if a script fails" what we do?
+2016-10-25 09:08:06	slypknot	fix the script
+2016-10-25 09:08:11	wallbroken	if somebody does not understand that, repeating "don't sleep"
+2016-10-25 09:08:16	wallbroken	that's not my fault
+2016-10-25 09:08:19	@dazo	That nonsense yesterday where wallbroken were concerned about a f**king counter script stalling ... gee, I can do more useful things with my life
+2016-10-25 09:08:59	@dazo	I'll have to say, I'm not skilled enough to make an 'i=$(($i +1))' script fail that badly
+2016-10-25 09:09:02	@krzee	dazo, even if we had a writeup about the single threaded nature of openvpn and how scripts block etc etc readily available, he wouldnt read it
+2016-10-25 09:09:13	@dazo	exactly
+2016-10-25 09:09:18	wallbroken	<@dazo> I'll have to say, I'm not skilled enough to make an 'i=$(($i +1))' script fail that badly
+2016-10-25 09:09:22	wallbroken	that happened
+2016-10-25 09:09:29	wallbroken	this morning the script failed something
+2016-10-25 09:09:36	wallbroken	and the LED keeped on
+2016-10-25 09:09:47	wallbroken	and it was in my prevision
+2016-10-25 09:10:45	@krzee	oh dazo i went out for beers with syzzer a couple nights ago :D
+2016-10-25 09:10:52	@dazo	cool!
+2016-10-25 09:10:53	slypknot	wallbroken: basically, you want a client-connect & disconnect script that turns a light on when there is a client and turns it off when there are no more clients
+2016-10-25 09:11:05	wallbroken	sure
+2016-10-25 09:11:20	slypknot	in bash , right ?
+2016-10-25 09:11:21	wallbroken	simple thing, but it's looking so hard to do
+2016-10-25 09:11:23	wallbroken	yes
+2016-10-25 09:11:26	wallbroken	i did that
+2016-10-25 09:11:34	slypknot	slash join hash bash
+2016-10-25 09:11:35	wallbroken	but "sometimes" fails
+2016-10-25 09:11:47	@dazo	slypknot: just give in and /ignore .... wallbroken would insist on building a rocket engine and mount it on his bike before going to his local grocery store to buy milk and beer
+2016-10-25 09:11:58	wallbroken	i already did that, and they fucked openvpn staff
+2016-10-25 09:12:02	@krzee	lol i may unignore him if he joins #bash, they are fun when dealing with vampires sometimes
+2016-10-25 09:12:11	@dazo	hehe
+2016-10-25 09:12:29	 *	slypknot lifts my glass to #bash :)
+2016-10-25 09:12:38	Heraclmene	krzee, This is the openvpn.conf it generates: http://pastie.org/10949848
+2016-10-25 09:12:40	-->	babout (~babout@50-204-10-90-static.hfc.comcastbusiness.net) has joined #openvpn
+2016-10-25 09:12:43	@dazo	heh
+2016-10-25 09:13:25	Heraclmene	krzee, Is it the push "route 10.0.0.0 255.0.0.0" that's doing it
+2016-10-25 09:13:28	Heraclmene	I've tried removing that before
+2016-10-25 09:13:40	slypknot	wallbroken: man bash is a great source of useful tips as well
+2016-10-25 09:13:58	wallbroken	the script works
+2016-10-25 09:14:14	wallbroken	i did that
+2016-10-25 09:14:27	wallbroken	but there could be some unwanted behaviour
+2016-10-25 09:14:35	wallbroken	and i don't want that openvpn stucks on it
+2016-10-25 09:14:39	slypknot	wallbroken: and this: http://mywiki.wooledge.org/BashFAQ
+2016-10-25 09:14:41	wallbroken	just to make a led blink
+2016-10-25 09:14:46	@vpnHelper	Title: BashFAQ - Greg's Wiki (at mywiki.wooledge.org)
+2016-10-25 09:15:14	-->	iq (~iq@47.185.67.13) has joined #openvpn
+2016-10-25 09:15:30	iq	!goal
+2016-10-25 09:15:31	@vpnHelper	"goal" is Please clearly state your goal for your vpn: example, I would like to access the lan behind the server , I would like to access the internet over my vpn , I just want a secure connection between 2 computers , etc
+2016-10-25 09:16:01	--	r00t^2_ is now known as r00t^2
+2016-10-25 09:16:22	iq	!goal I would like to know more about DNS Leaks and OpenVPN
+2016-10-25 09:16:22		[09:16]
+2016-10-25 09:17:02	@krzee	Heraclmene: why would you add push "route 10.0.0.0 255.0.0.0" ?
+2016-10-25 09:17:11	Heraclmene	krzee, I was testing - I removed it tho
+2016-10-25 09:17:21	@krzee	Heraclmene: i strongly suggest testing with just openvpn first
+2016-10-25 09:17:42	@krzee	then use whatever 3rd party frontends you want after, with your known working config
+2016-10-25 09:17:49	@krzee	surely it can accept an imported config
+2016-10-25 09:17:51	wallbroken	slypknot, the problem is that the openvpn tutorial is not very exaustive
+2016-10-25 09:18:06	wallbroken	for example which is the path from where the proces has launced?
+2016-10-25 09:18:46	slypknot	wallbroken: there is one single peice of actual advice i can offer: when the connect/disconnect script executes it does so as the openvpn --user [name] or root that you have configured .. it does not execute as your login tty or whatexver.  that means you need to use FULL paths to other bin/scripts you call
+2016-10-25 09:19:57	slypknot	wallbroken: as for actual shell syntax itself .. you need to learn that language
+2016-10-25 09:20:34	-->	SCHAAP137 (~SCHAAP137@unaffiliated/schaap137) has joined #openvpn
+2016-10-25 09:23:37	Heraclmene	krzee, Fixed it - had to push my local network's subnet (192.168.1.0/24) as a 'net_gateway' - otherwise it was trying to route the DNS and what not through the VPN
+2016-10-25 09:23:40	Heraclmene	No workerino
+2016-10-25 09:24:46	Heraclmene	Or just my router's IP address (192.168.1.1) :-)
+2016-10-25 09:25:15	slypknot	192.168.1.0/24 both ends ?
+2016-10-25 09:25:18	Heraclmene	Nah
+2016-10-25 09:25:24	Heraclmene	10.0.1.0/24 on the other end
+2016-10-25 09:25:30	slypknot	ok
+2016-10-25 09:26:27	<--	wallbroken (~wallbroke@unaffiliated/wallbroken) has quit (Read error: Connection reset by peer)
+2016-10-25 09:26:50	slypknot	his router crashed :)
+2016-10-25 09:27:15	slypknot	wallbroken's router
+2016-10-25 09:27:25	-->	wallbroken (~wallbroke@unaffiliated/wallbroken) has joined #openvpn
+2016-10-25 09:27:29	-->	uiyice (~uiyice@c-68-33-17-232.hsd1.md.comcast.net) has joined #openvpn
+2016-10-25 09:27:37	slypknot	i still see parts/joins
+2016-10-25 09:31:42	<--	allizom (~Thunderbi@host240-174-dynamic.36-79-r.retail.telecomitalia.it) has quit (Quit: allizom)
+2016-10-25 09:31:42		[09:31]
+2016-10-25 09:33:39	<--	uiyice (~uiyice@c-68-33-17-232.hsd1.md.comcast.net) has quit (Ping timeout: 244 seconds)
+2016-10-25 09:33:43	wallbroken	ok, the problem was about path
+2016-10-25 09:33:53	-->	klow (~textual@96-81-150-137-static.hfc.comcastbusiness.net) has joined #openvpn
+2016-10-25 09:33:57	wallbroken	i used echo 1 > counter in the script
+2016-10-25 09:34:04	wallbroken	and it was an issue
+2016-10-25 09:34:18	wallbroken	because openvpn created the file in different random places
+2016-10-25 09:34:30	-->	uiyice (~uiyice@c-68-33-17-232.hsd1.md.comcast.net) has joined #openvpn
+2016-10-25 09:34:58	--	thib is now known as thiba
+2016-10-25 09:35:53	iq	Hi, Got my OpenVPN server up and running on Raspberry Pi with user-id/password authentication. I am pushing Google and OpenDNS DNS from the server config file. I ran a "DNS Leak" test online and it seems to be complaining about DNS servers. I got same results on MacBook and iOS clients. Is this something to be concerned about?
+2016-10-25 09:36:00	slypknot	wallbroken: like i explained :D
+2016-10-25 09:36:32	--	thiba is now known as thib
+2016-10-25 09:42:00		[09:36]
+2016-10-25 09:46:38	SviMik	iq yes, unix machines need a special script for updating dns settings on client side
+2016-10-25 09:46:46	SviMik	!dns
+2016-10-25 09:46:47	@vpnHelper	"dns" is (#1) Level3 open recursive DNS server at 4.2.2.[1-6], or (#2) Google open recursive DNS server at 8.8.8.8 / 8.8.4.4, or (#3) you might be looking for !pushdns
+2016-10-25 09:46:54	SviMik	!pushdns
+2016-10-25 09:46:55	@vpnHelper	"pushdns" is (#1) push dhcp-option DNS a.b.c.d to push dns to the client, or (#2) For pushing DNS to a Windows client, see: !windns, or (#3) Unix-alikes are required to process the env-var in an --up script; read about --dhcp-option in the manpage, or (#4) For distros that use resolvconf(8) you can try the pull-resolv-conf script under the contrib/ source dir, or (#5) Mobile Client like OpenVPN for
+2016-10-25 09:46:56	@vpnHelper	Android and OpenVPN Connect will happily accept push dhcp-option
+2016-10-25 09:52:00		[09:46]
+2016-10-25 09:54:38	<--	MrAlexandr0 (~MrAlexand@43.232.251.212.customer.cdi.no) has quit (Ping timeout: 265 seconds)
+2016-10-25 09:55:33	-->	MrAlexandr0 (~MrAlexand@43.232.251.212.customer.cdi.no) has joined #openvpn
+2016-10-25 10:01:00		[09:55]
+2016-10-25 10:04:45	<--	Heraclmene (~Heraclmen@unaffiliated/heraclmene) has quit (Ping timeout: 256 seconds)
+2016-10-25 10:10:00		[10:04]
+2016-10-25 10:14:49	-->	pixel6692 (~pixel6692@host13.net208.golemtech.sk) has joined #openvpn
+2016-10-25 10:16:05	pixel6692	Hello I have .ovpn file which works fine, but it creates routes on my system, is there way to modify config file so it would not add them?
+2016-10-25 10:16:53	pixel6692	it creates 2 /1 routes so it routes all traffic through this tun, but I don't want this behaviour and would like routing by myself
+2016-10-25 10:20:03	<--	chachasmooth (~chachasmo@unaffiliated/chachasmooth) has quit (Ping timeout: 245 seconds)
+2016-10-25 10:20:52	-->	chachasmooth (~chachasmo@unaffiliated/chachasmooth) has joined #openvpn
+2016-10-25 10:22:57	zoredache	pixel6692:  `--route-nopull`
+2016-10-25 10:23:07	zoredache	in the client config.
+2016-10-25 10:25:10	pixel6692	thank you very much
+2016-10-25 10:25:10		[10:25]
+2016-10-25 10:26:38	iq	SviMik, I will do more research on "recursive DNS". Currently I am pushing 8.8.8.8 and 8.8.4.4 from OpenVPN server config and the client is accepting that change. It is just the DNSLeak test that is failing.
+2016-10-25 10:27:52	<--	DrCode (~DrCode@5.28.134.3) has quit (Ping timeout: 256 seconds)
+2016-10-25 10:30:16	wallbroken	is there a way to set a dns ip directly from client config?
+2016-10-25 10:30:34	<--	defsdoor (~andy@cpc35-sutt4-2-0-cust184.19-1.cable.virginm.net) has quit (Remote host closed the connection)
+2016-10-25 10:32:15	<--	vy (~vy@2604:180:0:76e:1ced:c0:ff:ee) has left #openvpn
+2016-10-25 10:33:12	SviMik	wallbroken sure. add "dhcp-option DNS 8.8.8.8" to the client config
+2016-10-25 10:33:43	wallbroken	SviMik, on the manual it said that it must be used with --push
+2016-10-25 10:34:12	-->	DrCode (~DrCode@5.28.134.3) has joined #openvpn
+2016-10-25 10:34:27	SviMik	iq https://airvpn.org/topic/9608-how-to-accept-dns-push-on-linux-systems-with-resolvconf/
+2016-10-25 10:34:28	@vpnHelper	Title: How to accept DNS push on Linux systems with resolvconf - How-To - AirVPN (at airvpn.org)
+2016-10-25 10:34:59	SviMik	wallbroken --push is server command
+2016-10-25 10:35:24	wallbroken	ok, so i can directly use it client side
+2016-10-25 10:38:42	iq	SviMik, Thank you. I'll give it a try. DNS Leak results on my iPhone  also failed :)
+2016-10-25 10:39:57	SviMik	I doubt you can do something on iphone, unless you jailbreaked it
+2016-10-25 10:42:16	SviMik	iq also, you can just set 8.8.8.8 and 8.8.4.4 as your default DNS. it will be used both with and without vpn then.
+2016-10-25 10:42:16		[10:42]
+2016-10-25 10:44:06	<--	klow (~textual@96-81-150-137-static.hfc.comcastbusiness.net) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-10-25 10:44:09	-->	OS-16517 (OS-16517@unaffiliated/os-16517) has joined #openvpn
+2016-10-25 10:45:03	<--	MikeDebian (~ML@a81-84-80-8.cpe.netcabo.pt) has quit (Ping timeout: 245 seconds)
+2016-10-25 10:45:56	iq	SviMik, Here are my test results - http://pastebin.com/ud0zeTcX
+2016-10-25 10:46:09	iq	It seems their website is complaining about using Google and OpenDNS DNS servers.
+2016-10-25 10:50:53	SviMik	iq it says "might be". don't be paranoid.
+2016-10-25 10:51:18	SviMik	and yes, it shows opendns.
+2016-10-25 10:52:05	iq	SviMik, I knew it was me. Thanks much for taking a look :)
+2016-10-25 10:56:01	<--	SkinnyMelon (~SkinnyMel@gw.jak-szfvar.sulinet.hu) has quit (Ping timeout: 265 seconds)
+2016-10-25 11:02:00		[10:56]
+2016-10-25 11:08:49	<--	Envil (~envil@x55b5beb5.dyn.telefonica.de) has quit (Remote host closed the connection)
+2016-10-25 11:09:33	<--	ExoUNX (~textual@unaffiliated/exounx) has quit (Ping timeout: 265 seconds)

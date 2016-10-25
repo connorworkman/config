@@ -160,6 +160,8 @@ nnoremap <silent> ,/ :execute 'vimgrep /'.@/.'/g %'<CR>:copen<CR>
 
 "nnoremap <Leader>. V"+y<Esc>:call system("xclip -i -selection clipboard", getreg("\""))
 "\<CR>:call system("xclip -i", getreg("\""))<CR>
+
+" Correctly parse F-keys in tmux
 map [1;5Q <C-F2>
 map [1;5R <C-F3>
 map [1;5S <C-F4>
@@ -177,6 +179,7 @@ map <Esc><F7> <M-F7>
 map <Esc><F8> <M-F8>
 map <Esc><F9> <M-F9>
 nnoremap <F2> <Esc>:tabp<CR>
+
 nnoremap <C-F2> ^
 nnoremap <M-F2> 0dw
 nnoremap <F3> <Esc>:tabn<CR>

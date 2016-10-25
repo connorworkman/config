@@ -2512,3 +2512,300 @@
 2016-10-24 18:10:00	-->	navidr (uid112413@gateway/web/irccloud.com/x-ourozdmocepipvrw) has joined ##sed
 2016-10-24 18:12:40	<--	almostworking (~almostwor@unaffiliated/almostworking) has quit (Ping timeout: 260 seconds)
 2016-10-24 18:18:00		[18:12]
+2016-10-24 18:52:53	<--	Vorpal (~Vorpal@unaffiliated/vorpal) has quit (Ping timeout: 248 seconds)
+2016-10-24 18:52:53		[18:52]
+2016-10-24 18:57:45	-->	Vorpal (~Vorpal@cl-394.sto-01.se.sixxs.net) has joined ##sed
+2016-10-24 18:57:45	<--	Vorpal (~Vorpal@cl-394.sto-01.se.sixxs.net) has quit (Changing host)
+2016-10-24 18:57:45	-->	Vorpal (~Vorpal@unaffiliated/vorpal) has joined ##sed
+2016-10-24 19:03:00		[18:57]
+2016-10-24 19:08:51	<--	shbot2 (~shbot@37.139.2.101) has quit (Remote host closed the connection)
+2016-10-24 19:09:00	-->	shbot (~shbot@37.139.2.101) has joined ##sed
+2016-10-24 19:14:00		[19:09]
+2016-10-24 20:00:30	<--	zacts (~zacts@dragora/developer/zacts) has quit (Quit: leaving)
+2016-10-24 20:00:30		[20:00]
+2016-10-24 20:03:20	--	irc: disconnected from server
+2016-10-24 22:59:38	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined ##sed
+2016-10-24 22:59:38		[22:59]
+2016-10-24 22:59:38	--	Topic for ##sed is "The Stream EDitor | Paste at: http://sprunge.us (/msg greybot sprunge) | FAQ: http://sed.sf.net/sedfaq.html | Intro/Tutorial: http://xrl.us/sedintro#uh-0 | POSIX: http://xrl.us/sedstd | Reference: http://xrl.us/gnused | Regex: #regex | Do NOT try to parse markup (html, xml, etc) with sed! /msg greybot html | Please ask your question and be patient, someone will get to you soon"
+2016-10-24 22:59:38	--	Topic set by e36freak (~daniel.mi@auriga.kiwilight.com) on Wed, 21 Aug 2013 16:29:09
+2016-10-24 22:59:38	--	Channel ##sed: 123 nicks (0 ops, 0 voices, 123 normals)
+2016-10-24 22:59:38	***	Buffer Playback...
+2016-10-24 22:59:38	go|dfish	[09:38:27] perhaps it's simpler if you show your data and what you're trying to extract [09:38:27]
+2016-10-24 22:59:38	tsakos	[09:38:48] it's a wikipedia page xD [09:38:48]
+2016-10-24 22:59:38	go|dfish	[09:38:58] {terz} [09:38:58]
+2016-10-24 22:59:38	tsakos	[09:39:21] well, maybe I have some problem with UTF? [09:39:21]
+2016-10-24 22:59:38	go|dfish	[09:39:24] perhaps there are multiple instances of pattern1 and pattern2 - so your range is matching multiple times [09:39:24]
+2016-10-24 22:59:38	tsakos	[09:39:31] ah [09:39:31]
+2016-10-24 22:59:38	tsakos	[09:39:39] yeah, that would be a possibility [09:39:39]
+2016-10-24 22:59:38	tsakos	[09:40:01] so, I can do /pattern1/,/pattern2/pq ? [09:40:01]
+2016-10-24 22:59:38	tsakos	[09:40:08] and just print the first match? [09:40:08]
+2016-10-24 22:59:38	go|dfish	[09:40:41] well one way would be to write it as /pattern1/,/pattern2/{ /pattern2/q; p; } [09:40:41]
+2016-10-24 22:59:38	go|dfish	[09:41:08] well, the p first if you want to print the pattern2 line [09:41:08]
+2016-10-24 22:59:38	tsakos	[09:41:38] aha, cool [09:41:38]
+2016-10-24 22:59:38	tsakos	[09:41:45] thanks a lot! [09:41:45]
+2016-10-24 22:59:38	tsakos	[09:47:59] well, looks like there is a problem with sed and UTF [09:47:59]
+2016-10-24 22:59:38	tsakos	[09:48:25] it prints non-sense characters like ^M and stuff [09:48:25]
+2016-10-24 22:59:38	tsakos	[09:48:49] but if you pipe sed's output into tee, it works on terminal screen + file [09:48:49]
+2016-10-24 22:59:38	tsakos	[09:49:19] that's why I had problems greping some content also -_- [09:49:19]
+2016-10-24 22:59:38	Soliton	[09:53:18] ^M is a carriage return. not really non-sense. presumably you're working with files with windows line endings. [09:53:18]
+2016-10-24 22:59:38	tsakos	[10:04:15] No, there is not carriage return characters [10:04:15]
+2016-10-24 22:59:38	tsakos	[10:04:51] sed just interprets the stream wrong, I don't know if there is a problem with my UTF setup... locale reports everything UTF-8 [10:04:51]
+2016-10-24 22:59:38	tsakos	[10:05:25] grep prints matched lines ok [10:05:25]
+2016-10-24 22:59:38	tsakos	[10:05:39] if I do sed | grep, grep does not print anything [10:05:39]
+2016-10-24 22:59:38	tsakos	[10:05:46] I also verified that with cat -v - [10:05:46]
+2016-10-24 22:59:38	tsakos	[10:06:09] the stream is not the same with the original source file [10:06:09]
+2016-10-24 22:59:38	Soliton	[10:07:13] # printf 'abc\r\n'; printf 'abc\r\n' | cat -v [10:07:13]
+2016-10-24 22:59:38	shbot	[10:07:15] Soliton: abc [10:07:15]
+2016-10-24 22:59:38	shbot	[10:07:15] Soliton: abc^M [10:07:15]
+2016-10-24 22:59:38	tsakos	[10:07:23] Soliton: I know [10:07:23]
+2016-10-24 22:59:38	tsakos	[10:07:41] I have done many many scripts :) [10:07:41]
+2016-10-24 22:59:38	tsakos	[10:07:55] maybe too many haha [10:07:55]
+2016-10-24 22:59:38	Soliton	[10:08:45] well, impossible to say anything as long as you're just making weird claims about bogus ^M characters and utf8 issues without showing anything. [10:08:45]
+2016-10-24 22:59:38	tsakos	[10:09:10] Well, I can show misintrepreted characters [10:09:10]
+2016-10-24 22:59:38	tsakos	[10:09:19] I don't think that makes any sense at all [10:09:19]
+2016-10-24 22:59:38	tsakos	[10:11:11] hmm, ok, I was wrong [10:11:11]
+2016-10-24 22:59:38	tsakos	[10:11:21] cat -v was reporting weird characters [10:11:21]
+2016-10-24 22:59:38	tsakos	[10:11:50] but still, I cannot match something with grep after sed has processed the stream [10:11:50]
+2016-10-24 22:59:38	Soliton	[10:12:45] show your actual input and maybe someone can help. [10:12:45]
+2016-10-24 22:59:38	tsakos	[10:16:15] Ok, found where the problem is lying [10:16:15]
+2016-10-24 22:59:38	tsakos	[10:16:35] thanks for your time anyway :) [10:16:35]
+2016-10-24 22:59:38	tsakos	[10:17:58] sometimes you have re-think what you are doing before making assumptions xD [10:17:58]
+2016-10-24 22:59:38	Soliton	[10:29:15] that's why it is always better to show what you're actually doing because then other people are actually able to verify your assumptions. [10:29:15]
+2016-10-24 22:59:38	tsakos	[11:01:03] forgetting -n in cat (first command) was enough for grep to not match '^<ul>' ;) [11:01:03]
+2016-10-24 22:59:38	tsakos	[11:01:28] that was my problem, didn't fixed yet... gone for a break as it was needed xD [11:01:28]
+2016-10-24 22:59:38	tsakos	[11:01:37] fixed it* [11:01:37]
+2016-10-24 22:59:38	watmm	[16:20:02] I'd like to print three lines from a file that are right after each other, and each line contains a different specific word. [16:20:02]
+2016-10-24 22:59:38	Soliton	[16:28:15] ok. [16:28:15]
+2016-10-24 22:59:38	Petter	[16:28:54] Hehe. [16:28:54]
+2016-10-24 22:59:38	Petter	[16:52:49] watmm: Is this something you are working on currently? Is it going alright? [16:52:49]
+2016-10-24 22:59:38	Nimitz14	[15:18:15] #awk [15:18:15]
+2016-10-24 22:59:38	izalove	[15:34:04] yeah [15:34:04]
+2016-10-24 22:59:38	***	Playback Complete.
+2016-10-24 23:00:22	--	Channel created on Wed, 09 Sep 2009 05:53:00
+2016-10-24 23:06:00		[23:00]
+2016-10-24 23:19:15	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined ##sed
+2016-10-24 23:19:15		[23:19]
+2016-10-24 23:19:15	--	Topic for ##sed is "The Stream EDitor | Paste at: http://sprunge.us (/msg greybot sprunge) | FAQ: http://sed.sf.net/sedfaq.html | Intro/Tutorial: http://xrl.us/sedintro#uh-0 | POSIX: http://xrl.us/sedstd | Reference: http://xrl.us/gnused | Regex: #regex | Do NOT try to parse markup (html, xml, etc) with sed! /msg greybot html | Please ask your question and be patient, someone will get to you soon"
+2016-10-24 23:19:15	--	Topic set by e36freak (~daniel.mi@auriga.kiwilight.com) on Wed, 21 Aug 2013 16:29:09
+2016-10-24 23:19:15	--	Channel ##sed: 124 nicks (0 ops, 0 voices, 124 normals)
+2016-10-24 23:19:15	***	Buffer Playback...
+2016-10-24 23:19:15	go|dfish	[09:38:27] perhaps it's simpler if you show your data and what you're trying to extract [09:38:27]
+2016-10-24 23:19:15	tsakos	[09:38:48] it's a wikipedia page xD [09:38:48]
+2016-10-24 23:19:15	go|dfish	[09:38:58] {terz} [09:38:58]
+2016-10-24 23:19:15	tsakos	[09:39:21] well, maybe I have some problem with UTF? [09:39:21]
+2016-10-24 23:19:15	go|dfish	[09:39:24] perhaps there are multiple instances of pattern1 and pattern2 - so your range is matching multiple times [09:39:24]
+2016-10-24 23:19:15	tsakos	[09:39:31] ah [09:39:31]
+2016-10-24 23:19:15	tsakos	[09:39:39] yeah, that would be a possibility [09:39:39]
+2016-10-24 23:19:15	tsakos	[09:40:01] so, I can do /pattern1/,/pattern2/pq ? [09:40:01]
+2016-10-24 23:19:15	tsakos	[09:40:08] and just print the first match? [09:40:08]
+2016-10-24 23:19:15	go|dfish	[09:40:41] well one way would be to write it as /pattern1/,/pattern2/{ /pattern2/q; p; } [09:40:41]
+2016-10-24 23:19:15	go|dfish	[09:41:08] well, the p first if you want to print the pattern2 line [09:41:08]
+2016-10-24 23:19:15	tsakos	[09:41:38] aha, cool [09:41:38]
+2016-10-24 23:19:15	tsakos	[09:41:45] thanks a lot! [09:41:45]
+2016-10-24 23:19:15	tsakos	[09:47:59] well, looks like there is a problem with sed and UTF [09:47:59]
+2016-10-24 23:19:15	tsakos	[09:48:25] it prints non-sense characters like ^M and stuff [09:48:25]
+2016-10-24 23:19:15	tsakos	[09:48:49] but if you pipe sed's output into tee, it works on terminal screen + file [09:48:49]
+2016-10-24 23:19:15	tsakos	[09:49:19] that's why I had problems greping some content also -_- [09:49:19]
+2016-10-24 23:19:15	Soliton	[09:53:18] ^M is a carriage return. not really non-sense. presumably you're working with files with windows line endings. [09:53:18]
+2016-10-24 23:19:15	tsakos	[10:04:15] No, there is not carriage return characters [10:04:15]
+2016-10-24 23:19:15	tsakos	[10:04:51] sed just interprets the stream wrong, I don't know if there is a problem with my UTF setup... locale reports everything UTF-8 [10:04:51]
+2016-10-24 23:19:15	tsakos	[10:05:25] grep prints matched lines ok [10:05:25]
+2016-10-24 23:19:15	tsakos	[10:05:39] if I do sed | grep, grep does not print anything [10:05:39]
+2016-10-24 23:19:15	tsakos	[10:05:46] I also verified that with cat -v - [10:05:46]
+2016-10-24 23:19:15	tsakos	[10:06:09] the stream is not the same with the original source file [10:06:09]
+2016-10-24 23:19:15	Soliton	[10:07:13] # printf 'abc\r\n'; printf 'abc\r\n' | cat -v [10:07:13]
+2016-10-24 23:19:15	shbot	[10:07:15] Soliton: abc [10:07:15]
+2016-10-24 23:19:15	shbot	[10:07:15] Soliton: abc^M [10:07:15]
+2016-10-24 23:19:15	tsakos	[10:07:23] Soliton: I know [10:07:23]
+2016-10-24 23:19:15	tsakos	[10:07:41] I have done many many scripts :) [10:07:41]
+2016-10-24 23:19:15	tsakos	[10:07:55] maybe too many haha [10:07:55]
+2016-10-24 23:19:15	Soliton	[10:08:45] well, impossible to say anything as long as you're just making weird claims about bogus ^M characters and utf8 issues without showing anything. [10:08:45]
+2016-10-24 23:19:15	tsakos	[10:09:10] Well, I can show misintrepreted characters [10:09:10]
+2016-10-24 23:19:15	tsakos	[10:09:19] I don't think that makes any sense at all [10:09:19]
+2016-10-24 23:19:15	tsakos	[10:11:11] hmm, ok, I was wrong [10:11:11]
+2016-10-24 23:19:15	tsakos	[10:11:21] cat -v was reporting weird characters [10:11:21]
+2016-10-24 23:19:15	tsakos	[10:11:50] but still, I cannot match something with grep after sed has processed the stream [10:11:50]
+2016-10-24 23:19:15	Soliton	[10:12:45] show your actual input and maybe someone can help. [10:12:45]
+2016-10-24 23:19:15	tsakos	[10:16:15] Ok, found where the problem is lying [10:16:15]
+2016-10-24 23:19:15	tsakos	[10:16:35] thanks for your time anyway :) [10:16:35]
+2016-10-24 23:19:15	tsakos	[10:17:58] sometimes you have re-think what you are doing before making assumptions xD [10:17:58]
+2016-10-24 23:19:15	Soliton	[10:29:15] that's why it is always better to show what you're actually doing because then other people are actually able to verify your assumptions. [10:29:15]
+2016-10-24 23:19:15	tsakos	[11:01:03] forgetting -n in cat (first command) was enough for grep to not match '^<ul>' ;) [11:01:03]
+2016-10-24 23:19:15	tsakos	[11:01:28] that was my problem, didn't fixed yet... gone for a break as it was needed xD [11:01:28]
+2016-10-24 23:19:15	tsakos	[11:01:37] fixed it* [11:01:37]
+2016-10-24 23:19:15	watmm	[16:20:02] I'd like to print three lines from a file that are right after each other, and each line contains a different specific word. [16:20:02]
+2016-10-24 23:19:15	Soliton	[16:28:15] ok. [16:28:15]
+2016-10-24 23:19:15	Petter	[16:28:54] Hehe. [16:28:54]
+2016-10-24 23:19:15	Petter	[16:52:49] watmm: Is this something you are working on currently? Is it going alright? [16:52:49]
+2016-10-24 23:19:15	Nimitz14	[15:18:15] #awk [15:18:15]
+2016-10-24 23:19:15	izalove	[15:34:04] yeah [15:34:04]
+2016-10-24 23:19:15	***	Playback Complete.
+2016-10-24 23:19:58	--	Channel created on Wed, 09 Sep 2009 05:53:00
+2016-10-24 23:20:08	-->	riemann (~riemann@84-10-11-234.static.chello.pl) has joined ##sed
+2016-10-24 23:26:00		[23:20]
+2016-10-24 23:31:21	--	k__ is now known as Iridos
+2016-10-24 23:37:00		[23:31]
+2016-10-24 23:43:09	<--	boubou (boubou@unaffiliated/boubou) has quit (Ping timeout: 268 seconds)
+2016-10-24 23:49:00		[23:43]
+2016-10-24 23:52:14	<--	corsibu (~corsibu@171.20.68.68) has quit (Remote host closed the connection)
+2016-10-24 23:52:46	-->	corsibu (~corsibu@171.20.68.68) has joined ##sed
+2016-10-24 23:56:57	-->	geggam (~geggam@ec2-107-20-130-165.compute-1.amazonaws.com) has joined ##sed
+2016-10-24 23:57:03	<--	corsibu (~corsibu@171.20.68.68) has quit (Ping timeout: 244 seconds)
+2016-10-25 00:03:00		[23:57]
+2016-10-25 00:05:07	<--	cyborg-one (~cyborg-on@188-115-191-178.broadband.tenet.odessa.ua) has quit (Ping timeout: 276 seconds)
+2016-10-25 00:11:00		[00:05]
+2016-10-25 00:24:44	-->	boubou (boubou@unaffiliated/boubou) has joined ##sed
+2016-10-25 00:29:36	-->	corsibu (~corsibu@171.20.68.68) has joined ##sed
+2016-10-25 00:29:36		[00:29]
+2016-10-25 00:31:40	-->	RaiNerTs- (~RaiNerTsu@akita.vtlx.cn) has joined ##sed
+2016-10-25 00:31:57	<--	RaiNerTsuFal (~RaiNerTsu@akita.vtlx.cn) has quit (Ping timeout: 260 seconds)
+2016-10-25 00:34:56	<--	boubou (boubou@unaffiliated/boubou) has quit (Ping timeout: 265 seconds)
+2016-10-25 00:40:00		[00:34]
+2016-10-25 00:56:06	<--	aw1 (~aw1@unaffiliated/aw1) has quit (Ping timeout: 256 seconds)
+2016-10-25 00:56:06		[00:56]
+2016-10-25 01:06:47	-->	boubou (boubou@unaffiliated/boubou) has joined ##sed
+2016-10-25 01:08:19	-->	aw1 (~aw1@unaffiliated/aw1) has joined ##sed
+2016-10-25 01:14:00		[01:08]
+2016-10-25 01:27:08	<--	geggam (~geggam@ec2-107-20-130-165.compute-1.amazonaws.com) has quit (Ping timeout: 245 seconds)
+2016-10-25 01:29:01	<--	Al3xG0 (~unix@unaffiliated/al3xg0) has quit (Read error: Connection reset by peer)
+2016-10-25 01:29:01		[01:29]
+2016-10-25 01:31:08	-->	Al3xG0 (~unix@179.176.100.210.dynamic.adsl.gvt.net.br) has joined ##sed
+2016-10-25 01:31:08	<--	Al3xG0 (~unix@179.176.100.210.dynamic.adsl.gvt.net.br) has quit (Changing host)
+2016-10-25 01:31:08	-->	Al3xG0 (~unix@unaffiliated/al3xg0) has joined ##sed
+2016-10-25 01:32:48	<--	johnmilton (~johnmilto@192.206.23.197) has quit (Remote host closed the connection)
+2016-10-25 01:38:00		[01:32]
+2016-10-25 01:39:36	<--	corsibu (~corsibu@171.20.68.68) has quit (Remote host closed the connection)
+2016-10-25 01:40:07	-->	corsibu (~corsibu@171.20.68.68) has joined ##sed
+2016-10-25 01:44:33	<--	corsibu (~corsibu@171.20.68.68) has quit (Ping timeout: 265 seconds)
+2016-10-25 01:48:50	--	folivora_ is now known as folivora
+2016-10-25 01:49:22	-->	tinkersh (~TinkerSh@103.10.28.8) has joined ##sed
+2016-10-25 01:55:00		[01:49]
+2016-10-25 01:59:30	-->	johnmilton (~johnmilto@47.206.47.42) has joined ##sed
+2016-10-25 02:04:47	<--	johnmilton (~johnmilto@47.206.47.42) has quit (Ping timeout: 256 seconds)
+2016-10-25 02:05:05	-->	johnmilton (~johnmilto@192.206.23.197) has joined ##sed
+2016-10-25 02:07:34	-->	corsibu (~corsibu@171.20.68.68) has joined ##sed
+2016-10-25 02:13:00		[02:07]
+2016-10-25 02:35:46	<--	Guest96135 (~ARM@2001:0:53aa:64c:0:fbf5:b176:2199) has quit (Quit:  HydraIRC -> http://www.hydrairc.com <- \o/)
+2016-10-25 02:35:46		[02:35]
+2016-10-25 02:37:14	-->	X-Scale (~ARM@2001:0:53aa:64c:0:fbf5:b176:2199) has joined ##sed
+2016-10-25 02:43:00		[02:37]
+2016-10-25 02:47:11	<--	tinkersh (~TinkerSh@103.10.28.8) has quit (Ping timeout: 256 seconds)
+2016-10-25 02:49:09	<--	aw1 (~aw1@unaffiliated/aw1) has quit (Ping timeout: 260 seconds)
+2016-10-25 02:55:00		[02:49]
+2016-10-25 02:58:24	-->	tinkersh (~TinkerSh@103.10.28.8) has joined ##sed
+2016-10-25 03:01:08	-->	aw1 (~aw1@unaffiliated/aw1) has joined ##sed
+2016-10-25 03:03:18	<--	boubou (boubou@unaffiliated/boubou) has quit (Ping timeout: 252 seconds)
+2016-10-25 03:08:38	<--	tinkersh (~TinkerSh@103.10.28.8) has quit (Ping timeout: 265 seconds)
+2016-10-25 03:14:00		[03:08]
+2016-10-25 03:17:26	-->	tinkersh (~TinkerSh@103.10.28.8) has joined ##sed
+2016-10-25 03:19:32	-->	boubou (boubou@unaffiliated/boubou) has joined ##sed
+2016-10-25 03:21:21	--	zumbi_ is now known as zumbi
+2016-10-25 03:23:36	-->	geggam (~geggam@ec2-107-20-130-165.compute-1.amazonaws.com) has joined ##sed
+2016-10-25 03:29:00		[03:23]
+2016-10-25 03:36:40	<--	aw1 (~aw1@unaffiliated/aw1) has quit (Ping timeout: 265 seconds)
+2016-10-25 03:38:25	<--	corsibu (~corsibu@171.20.68.68) has quit (Remote host closed the connection)
+2016-10-25 03:39:01	-->	corsibu (~corsibu@171.20.68.68) has joined ##sed
+2016-10-25 03:43:17	<--	corsibu (~corsibu@171.20.68.68) has quit (Ping timeout: 250 seconds)
+2016-10-25 03:49:00		[03:43]
+2016-10-25 03:50:27	<--	anton02_ (~quassel@lal1651212.lnk.telstra.net) has quit (Remote host closed the connection)
+2016-10-25 03:52:50	-->	aw1 (~aw1@unaffiliated/aw1) has joined ##sed
+2016-10-25 03:58:00		[03:52]
+2016-10-25 04:09:38	-->	m4n (noname@gateway/shell/elitebnc/x-lgsnlgxoqpheodpo) has joined ##sed
+2016-10-25 04:15:00		[04:09]
+2016-10-25 04:23:02	-->	larryv (~larryv@wikipedia/larryv) has joined ##sed
+2016-10-25 04:25:19	<--	larryv (~larryv@wikipedia/larryv) has left ##sed
+2016-10-25 04:31:00		[04:25]
+2016-10-25 04:35:08	-->	al-damiri (uid142631@gateway/web/irccloud.com/x-bbqxxcqwdgmvcwzz) has joined ##sed
+2016-10-25 04:36:33	-->	nixvin (~nixvin@197.232.18.245) has joined ##sed
+2016-10-25 04:42:00		[04:36]
+2016-10-25 04:54:45	-->	saml (~saml@nat.employees.ny01.shutterstock.com) has joined ##sed
+2016-10-25 04:55:18	saml	how can I delete lines between a line that matches a pattern  and another line that matches different pattern?
+2016-10-25 04:59:32	<--	riemann (~riemann@84-10-11-234.static.chello.pl) has quit (Quit: Leaving)
+2016-10-25 04:59:32		[04:59]
+2016-10-25 05:02:29	gnomon	saml, like so: printf '%s\n' {1..20} | sed -e '/^7$/,/^12$/d'
+2016-10-25 05:06:11	saml	thanks.  looks like the end line pattern, ^12$ is repeating twice in the input stream.. so I want to delete from first match of ^7$  to last match of ^12$
+2016-10-25 05:09:32	-->	[0x1a] (uid7337@gateway/web/irccloud.com/x-gxraciwflzejgjfc) has joined ##sed
+2016-10-25 05:15:00		[05:09]
+2016-10-25 05:22:05	<--	[0x1a] (uid7337@gateway/web/irccloud.com/x-gxraciwflzejgjfc) has quit (Changing host)
+2016-10-25 05:22:05	-->	[0x1a] (uid7337@unaffiliated/as0ka) has joined ##sed
+2016-10-25 05:22:05	<--	[0x1a] (uid7337@unaffiliated/as0ka) has quit (Changing host)
+2016-10-25 05:22:05	-->	[0x1a] (uid7337@gateway/web/irccloud.com/x-gxraciwflzejgjfc) has joined ##sed
+2016-10-25 05:26:52	<--	nixvin (~nixvin@197.232.18.245) has quit (Ping timeout: 276 seconds)
+2016-10-25 05:28:06	-->	utanapischti (~username@p4FC12B6E.dip0.t-ipconnect.de) has joined ##sed
+2016-10-25 05:28:44	<--	drawkula (~username@p4FC10572.dip0.t-ipconnect.de) has quit (Ping timeout: 250 seconds)
+2016-10-25 05:34:00		[05:28]
+2016-10-25 05:44:48	Petter	Hm, for literally delete from one pattern to the last of another pattern. Here's what I came up with:
+2016-10-25 05:44:57	Petter	# printf '%s\n' normal1 del-start del-stop1 normal2 del-stop2 normal3  |  sed -n '/del-start/{ :a; n; /del-stop/!ba; n; :b; N; $!bb; s/.*\n[^\n]*del-stop[^\n]*\n//; }; p;'
+2016-10-25 05:44:59	shbot	Petter: normal1
+2016-10-25 05:44:59	shbot	Petter: normal3
+2016-10-25 05:45:26	Petter	Note though, that at some point it buffers of the rest of the input stream.
+2016-10-25 05:47:00	Petter	If the task is rather to delete to the second end pattern it's not necessary to buffer up.
+2016-10-25 05:47:09	Petter	# printf '%s\n' normal1 del-start del-stop1 normal2 del-stop2 normal3  | sed -n '/del-start/{ :a; n; /del-stop/!ba; :b; n; //!bb; d; }; p;'
+2016-10-25 05:47:10	shbot	Petter: normal1
+2016-10-25 05:47:10	shbot	Petter: normal3
+2016-10-25 05:48:31	Petter	The first one is GNU sed only because of [^\n]* (at least).
+2016-10-25 05:54:00		[05:48]
+2016-10-25 06:02:04	-->	oskarkv (~oskar@c213-89-225-149.bredband.comhem.se) has joined ##sed
+2016-10-25 06:08:00		[06:02]
+2016-10-25 06:16:27	<--	m4n (noname@gateway/shell/elitebnc/x-lgsnlgxoqpheodpo) has quit (Quit: time for hibernation....)
+2016-10-25 06:16:58	<--	blindbox (~blindbox@175.142.163.100) has quit (Ping timeout: 256 seconds)
+2016-10-25 06:19:53	-->	zoeurk (~thomas@abo-82-241-68.guy.modulonet.fr) has joined ##sed
+2016-10-25 06:20:09	 *	zoeurk salut
+2016-10-25 06:20:38	zoeurk	alors vous tripez bien vous aussi?
+2016-10-25 06:20:40	-->	blindbox (~blindbox@175.142.163.100) has joined ##sed
+2016-10-25 06:21:15	zoeurk	ça déchire i3-msg -t get_workspaces | sed 's/.*,"name":"\([^,]*\)",[^:]*:true.*/\1/g'
+2016-10-25 06:27:00		[06:21]
+2016-10-25 06:29:01	--	Vorpal is now known as Vorpal_
+2016-10-25 06:29:06	--	Vorpal_ is now known as Vorpal
+2016-10-25 06:30:52	dualbus	zoeurk: english please
+2016-10-25 06:31:26	zoeurk	ok
+2016-10-25 06:31:49	zoeurk	but i don't now who do this.
+2016-10-25 06:31:51	zoeurk	:)
+2016-10-25 06:35:43	<--	flying (~flying@90.216.134.194) has quit
+2016-10-25 06:37:38	<--	emg (~emg@74-123-189-254.static.wiline.com) has quit (Ping timeout: 250 seconds)
+2016-10-25 06:42:19	zoeurk	are you working?
+2016-10-25 06:42:19		[06:42]
+2016-10-25 06:52:41	dualbus	zoeurk: no, I simply do not understand french
+2016-10-25 06:58:00		[06:52]
+2016-10-25 07:04:46	-->	cyborg-one (~cyborg-on@188-115-191-178.broadband.tenet.odessa.ua) has joined ##sed
+2016-10-25 07:07:19	zoeurk	what are you doing?
+2016-10-25 07:13:00		[07:07]
+2016-10-25 07:14:20	<--	zoeurk (~thomas@abo-82-241-68.guy.modulonet.fr) has quit (Quit: WeeChat 1.6)
+2016-10-25 07:15:12	dualbus	yes
+2016-10-25 07:15:35	izalove	are you really?
+2016-10-25 07:16:41	dualbus	sometimes
+2016-10-25 07:22:00		[07:16]
+2016-10-25 07:36:52	<--	tinkersh (~TinkerSh@103.10.28.8) has quit (Ping timeout: 276 seconds)
+2016-10-25 07:37:39	-->	tinkersh (~TinkerSh@103.10.28.8) has joined ##sed
+2016-10-25 07:37:39		[07:37]
+2016-10-25 07:40:09	<--	TomyWork (~tomy@85.199.84.100) has quit (Ping timeout: 256 seconds)
+2016-10-25 07:41:08	-->	shbot1 (~shbot@37.139.2.101) has joined ##sed
+2016-10-25 07:41:15	<--	shbot (~shbot@37.139.2.101) has quit (Write error: Broken pipe)
+2016-10-25 07:47:00		[07:41]
+2016-10-25 07:52:02	<--	cyborg-one (~cyborg-on@188-115-191-178.broadband.tenet.odessa.ua) has quit (Quit: cyborg-one)
+2016-10-25 07:57:10	-->	njs126 (~njs126@rrcs-67-79-116-98.se.biz.rr.com) has joined ##sed
+2016-10-25 08:03:00		[07:57]
+2016-10-25 08:18:20	-->	emg (~emg@74-123-189-254.static.wiline.com) has joined ##sed
+2016-10-25 08:18:20		[08:18]
+2016-10-25 08:50:59	<--	[0x1a] (uid7337@gateway/web/irccloud.com/x-gxraciwflzejgjfc) has quit (Quit: Connection closed for inactivity)
+2016-10-25 08:50:59		[08:50]
+2016-10-25 08:59:35	<--	X-Scale (~ARM@2001:0:53aa:64c:0:fbf5:b176:2199) has quit (Ping timeout: 256 seconds)
+2016-10-25 09:02:18	-->	X-Scale (~ARM@2001:0:53aa:64c:0:fbf5:b176:2199) has joined ##sed
+2016-10-25 09:07:05	<--	X-Scale (~ARM@2001:0:53aa:64c:0:fbf5:b176:2199) has quit (Read error: Connection reset by peer)
+2016-10-25 09:07:05		[09:07]
+2016-10-25 09:38:23	<--	johnmilton (~johnmilto@192.206.23.197) has quit (Remote host closed the connection)
+2016-10-25 09:38:23		[09:38]
+2016-10-25 09:52:44	<--	oskarkv (~oskar@c213-89-225-149.bredband.comhem.se) has quit (Remote host closed the connection)
+2016-10-25 09:56:01	-->	johnmilton (~johnmilto@192.206.23.197) has joined ##sed
+2016-10-25 09:56:01		[09:56]
+2016-10-25 10:04:11	<--	Al3xG0 (~unix@unaffiliated/al3xg0) has quit (Ping timeout: 256 seconds)
+2016-10-25 10:04:27	-->	Al3xG0 (~unix@177.159.131.169) has joined ##sed
+2016-10-25 10:04:28	<--	Al3xG0 (~unix@177.159.131.169) has quit (Changing host)
+2016-10-25 10:04:28	-->	Al3xG0 (~unix@unaffiliated/al3xg0) has joined ##sed
+2016-10-25 10:10:00		[10:04]
+2016-10-25 10:22:14	-->	X-Scale (~ARM@2001:0:53aa:64c:0:fbf5:b176:2199) has joined ##sed
+2016-10-25 10:28:00		[10:22]
+2016-10-25 10:42:04	-->	revere (~revere@unaffiliated/revere) has joined ##sed
+2016-10-25 10:48:00		[10:42]
+2016-10-25 11:05:57	<--	aw1 (~aw1@unaffiliated/aw1) has quit (Ping timeout: 256 seconds)
+2016-10-25 11:05:57		[11:05]
