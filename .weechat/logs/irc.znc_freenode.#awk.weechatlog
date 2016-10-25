@@ -1730,3 +1730,1687 @@
 2016-10-20 06:09:54	jeffreylevesque	the first of the line "# contains a comment"
 2016-10-20 06:10:13	jeffreylevesque	the second is a line that begins with a "OPTIONS blah"
 2016-10-20 06:16:00		[06:10]
+2016-10-20 06:23:47	mute	maybe cool gets over written by \r in the file
+2016-10-20 06:24:17	mute	does "jeff" end up at the end of the line or does it seem to start on the first column
+2016-10-20 06:25:01	jeffreylevesque	i just created temp.txt
+2016-10-20 06:25:09	jeffreylevesque	it has first line: # a comment
+2016-10-20 06:25:19	jeffreylevesque	second line: OPTIONS=blah
+2016-10-20 06:26:22	jeffreylevesque	awk -F\" '{if(/OPTIONS/) print "cool"; else print $0 "jeff"}' temp.txt works
+2016-10-20 06:26:34	mute	then my job here is done
+2016-10-20 06:26:56	jeffreylevesque	mute, i don't know why it's working now
+2016-10-20 06:27:10	mute	check for \r in that file
+2016-10-20 06:27:14	mute	that doesn't seem to work
+2016-10-20 06:27:22	mute	dos2unix it or something. i got to go
+2016-10-20 06:27:26	mute	good luck
+2016-10-20 06:27:30	jeffreylevesque	mute, actually
+2016-10-20 06:27:52	jeffreylevesque	on the line containing OPTIONS=something else
+2016-10-20 06:27:59	jeffreylevesque	it appends "jeff"
+2016-10-20 06:28:03	jeffreylevesque	i have a newline in the same file
+2016-10-20 06:28:06	jeffreylevesque	and it prints cool
+2016-10-20 06:28:31	jeffreylevesque	so, there is something funny on the line "OPTIONS=something else"
+2016-10-20 06:29:06	jeffreylevesque	mute: how do i check if there is something unexpected on the line: OPTIONS=something els
+2016-10-20 06:29:07	-->	cdg (~cdg@157.166.173.5) has joined #awk
+2016-10-20 06:30:59	dualbus	jeffreylevesque: cat -v file
+2016-10-20 06:31:09	dualbus	that'll show non-printing characters
+2016-10-20 06:31:09		[06:31]
+2016-10-20 06:31:22	dualbus	look for ^M
+2016-10-20 06:31:30	jeffreylevesque	nothing there
+2016-10-20 06:31:37	jeffreylevesque	this is weird
+2016-10-20 06:32:18	jeffreylevesque	awk -F\" '{if(/OPTIONS/) print "cool"; else print $0 "jeff"}' file.txt
+2016-10-20 06:32:37	jeffreylevesque	it's doing the opposite of what i ant
+2016-10-20 06:32:37	jeffreylevesque	*want
+2016-10-20 06:32:37	jeffreylevesque	well
+2016-10-20 06:32:37	jeffreylevesque	it appends jeff on all lines
+2016-10-20 06:32:40	jeffreylevesque	except newline, it prints cool
+2016-10-20 06:33:41	jeffreylevesque	this is the file - https://bpaste.net/show/b5efc9e71487
+2016-10-20 06:34:00	jeffreylevesque	line 3 is empty
+2016-10-20 06:34:13	jeffreylevesque	so, jeff is appended to each line, except the third
+2016-10-20 06:35:52	-->	rods-tab3 (~rods-tab3@172.56.39.23) has joined #awk
+2016-10-20 06:41:00		[06:35]
+2016-10-20 06:42:13	jeffreylevesque	maybe bc i changed awk to delimit on "
+2016-10-20 06:42:21	jeffreylevesque	but the first line doesn't contain a double quote?
+2016-10-20 06:42:56	jeffreylevesque	could that be a problem?
+2016-10-20 06:45:16	-->	Raimondii (~israelcha@c-73-244-170-150.hsd1.fl.comcast.net) has joined #awk
+2016-10-20 06:48:03	<--	Raimondi (~israelcha@73.85.200.157) has quit (Ping timeout: 244 seconds)
+2016-10-20 06:48:05	--	Raimondii is now known as Raimondi
+2016-10-20 06:54:00		[06:48]
+2016-10-20 06:54:21	<--	gniourf (~gniourf@pdm-l03.insa-lyon.fr) has quit (Quit: Leaving)
+2016-10-20 06:54:29	geirha	The problem is 0PTIONS vs OPTIONS
+2016-10-20 07:00:00		[06:54]
+2016-10-20 07:03:56	<--	jeffreylevesque (~chatzilla@129.6.45.20) has quit (Ping timeout: 260 seconds)
+2016-10-20 07:05:16	izalove	vs OPTI0NS
+2016-10-20 07:10:34	<--	alxtb (~alxtb@185.65.109.249) has quit (Ping timeout: 250 seconds)
+2016-10-20 07:16:00		[07:10]
+2016-10-20 07:18:18	<--	rods-tab3 (~rods-tab3@172.56.39.23) has quit (Ping timeout: 252 seconds)
+2016-10-20 07:23:09	-->	rods-tab3 (~rods-tab3@172.56.39.23) has joined #awk
+2016-10-20 07:29:00		[07:23]
+2016-10-20 07:37:17	-->	nal (~nal@adsl-64-237-237-52.prtc.net) has joined #awk
+2016-10-20 07:43:00		[07:37]
+2016-10-20 07:55:12	<--	rods-tab3 (~rods-tab3@172.56.39.23) has quit (Ping timeout: 260 seconds)
+2016-10-20 08:01:00		[07:55]
+2016-10-20 08:01:07	<--	navidr (uid112413@gateway/web/irccloud.com/x-qrsnbqcbfqnafkff) has quit (Quit: Connection closed for inactivity)
+2016-10-20 08:02:02	-->	Neville (~Neville@mail.gradientfx.com) has joined #awk
+2016-10-20 08:02:05	-->	rods-tab3 (~rods-tab3@172.56.39.221) has joined #awk
+2016-10-20 08:08:00		[08:02]
+2016-10-20 08:26:38	-->	vuoto (~vuoto@80-71-135-9.u.parknet.dk) has joined #awk
+2016-10-20 08:26:38		[08:26]
+2016-10-20 08:31:38	<--	}ls{ (~kalle@unaffiliated/ls/x-8089558) has quit (Ping timeout: 256 seconds)
+2016-10-20 08:37:00		[08:31]
+2016-10-20 08:40:11	<--	cdg (~cdg@157.166.173.5) has quit (Remote host closed the connection)
+2016-10-20 08:40:55	<--	vuoto (~vuoto@80-71-135-9.u.parknet.dk) has quit (Remote host closed the connection)
+2016-10-20 08:44:53	-->	topon (~harukomot@93-41-20-73.ip79.fastwebnet.it) has joined #awk
+2016-10-20 08:45:47	<--	harukomoto (~harukomot@93-41-20-73.ip79.fastwebnet.it) has quit (Ping timeout: 265 seconds)
+2016-10-20 08:51:00		[08:45]
+2016-10-20 09:07:19	<--	Neville (~Neville@mail.gradientfx.com) has quit (Remote host closed the connection)
+2016-10-20 09:07:19		[09:07]
+2016-10-20 09:21:52	<--	johnmilton (~johnmilto@192.206.23.197) has quit (Remote host closed the connection)
+2016-10-20 09:27:00		[09:21]
+2016-10-20 09:37:17	<--	rods-tab3 (~rods-tab3@172.56.39.221) has quit (Ping timeout: 260 seconds)
+2016-10-20 09:39:18	-->	johnmilton (~johnmilto@192.206.23.197) has joined #awk
+2016-10-20 09:44:46	-->	elastix (~elastix@151.70.15.62) has joined #awk
+2016-10-20 09:44:46		[09:44]
+2016-10-20 09:58:23	<--	topon (~harukomot@93-41-20-73.ip79.fastwebnet.it) has quit (Ping timeout: 245 seconds)
+2016-10-20 09:59:05	-->	cdg (~cdg@157.166.173.5) has joined #awk
+2016-10-20 10:00:22	-->	harukomoto (~harukomot@93-41-20-73.ip79.fastwebnet.it) has joined #awk
+2016-10-20 10:00:22		[10:00]
+2016-10-20 10:03:08	<--	nal (~nal@adsl-64-237-237-52.prtc.net) has quit (Ping timeout: 260 seconds)
+2016-10-20 10:09:00		[10:03]
+2016-10-20 10:10:31	-->	nal (~nal@adsl-64-237-237-52.prtc.net) has joined #awk
+2016-10-20 10:16:00		[10:10]
+2016-10-20 10:30:28	<--	elastix (~elastix@151.70.15.62) has quit (Quit: Leaving)
+2016-10-20 10:35:30	-->	D630 (~D630@unaffiliated/d630) has joined #awk
+2016-10-20 10:35:30		[10:35]
+2016-10-20 10:42:18	<--	oskarkv (~oskar@c213-89-225-149.bredband.comhem.se) has quit (Remote host closed the connection)
+2016-10-20 10:46:41	-->	X-Scale (~ARM@2001:0:53aa:64c:0:fbf5:b176:2199) has joined #awk
+2016-10-20 10:52:00		[10:46]
+2016-10-20 11:07:14	-->	jetchisel (~jetchisel@opensuse/member/jetchisel) has joined #awk
+2016-10-20 11:07:14		[11:07]
+2016-10-20 11:33:27	<--	irco (~irco@HSI-KBW-134-3-111-4.hsi14.kabel-badenwuerttemberg.de) has quit (Ping timeout: 252 seconds)
+2016-10-20 11:33:27		[11:33]
+2016-10-20 11:46:42	<--	harukomoto (~harukomot@93-41-20-73.ip79.fastwebnet.it) has quit (Ping timeout: 252 seconds)
+2016-10-20 11:52:00		[11:46]
+2016-10-20 12:37:27	<--	jetchisel (~jetchisel@opensuse/member/jetchisel) has quit (Quit: "Unfortunately time is always against us" -- *Morpheus*)
+2016-10-20 12:37:27		[12:37]
+2016-10-20 12:40:37	<--	marky1991 (~marky1991@unaffiliated/marky1991) has quit (Remote host closed the connection)
+2016-10-20 12:46:00		[12:40]
+2016-10-20 12:57:42	-->	Awd (53874a03@gateway/web/freenode/ip.83.135.74.3) has joined #awk
+2016-10-20 13:01:33	<--	Awd (53874a03@gateway/web/freenode/ip.83.135.74.3) has quit (Client Quit)
+2016-10-20 13:01:33		[13:01]
+2016-10-20 13:12:05	<--	talsamon (~talsamon@193.83.242.166) has quit (Ping timeout: 252 seconds)
+2016-10-20 13:12:27	-->	talsamon (~talsamon@193-80-185-56.adsl.highway.telekom.at) has joined #awk
+2016-10-20 13:18:00		[13:12]
+2016-10-20 13:53:34	<--	cdg (~cdg@157.166.173.5) has quit (Remote host closed the connection)
+2016-10-20 13:53:34		[13:53]
+2016-10-20 14:04:22	<--	almostworking (~almostwor@unaffiliated/almostworking) has quit (Quit: Textual IRC Client: www.textualapp.com)
+2016-10-20 14:10:00		[14:04]
+2016-10-20 14:11:57	-->	almostworking (~almostwor@unaffiliated/almostworking) has joined #awk
+2016-10-20 14:17:00		[14:11]
+2016-10-20 14:28:57	<--	jasonwryan (~jasonwrya@fsf/member/jasonwryan) has quit (Ping timeout: 252 seconds)
+2016-10-20 14:34:00		[14:28]
+2016-10-20 14:35:48	<--	D630 (~D630@unaffiliated/d630) has quit (Quit: WeeChat 1.6)
+2016-10-20 14:41:00		[14:35]
+2016-10-20 14:45:30	-->	anewuser (~anewuser@unaffiliated/anewuser) has joined #awk
+2016-10-20 14:51:00		[14:45]
+2016-10-20 15:05:37	-->	hpt (~hpt@61.149.224.251) has joined #awk
+2016-10-20 15:11:00		[15:05]
+2016-10-20 15:12:57	<--	anewuser (~anewuser@unaffiliated/anewuser) has quit (Ping timeout: 252 seconds)
+2016-10-20 15:18:00		[15:12]
+2016-10-20 15:27:11	<--	rod-yolo (~rod-yolo@2607:fb90:2764:4f9f:b36f:e5fa:57a7:2101) has quit (Quit: AndroIRC - Android IRC Client ( http://www.androirc.com ))
+2016-10-20 15:32:26	<--	al-damiri (uid142631@gateway/web/irccloud.com/x-vifhsdpyskgooklb) has quit (Quit: Connection closed for inactivity)
+2016-10-20 15:32:58	-->	rods-tab3 (~rods-tab3@172.56.39.30) has joined #awk
+2016-10-20 15:38:00		[15:32]
+2016-10-20 15:41:25	-->	rod-yolo (~rod-yolo@2607:fb90:a778:a2d0:1af8:f3d9:ee2b:601) has joined #awk
+2016-10-20 15:47:00		[15:41]
+2016-10-20 16:29:37	<--	Raimondi (~israelcha@c-73-244-170-150.hsd1.fl.comcast.net) has quit (Remote host closed the connection)
+2016-10-20 16:29:37		[16:29]
+2016-10-20 16:34:08	-->	Raimondi (~israelcha@c-73-244-170-150.hsd1.fl.comcast.net) has joined #awk
+2016-10-20 16:40:00		[16:34]
+2016-10-20 16:47:54	<--	Raimondi (~israelcha@c-73-244-170-150.hsd1.fl.comcast.net) has quit (Ping timeout: 244 seconds)
+2016-10-20 16:48:49	-->	Raimondi (~israelcha@c-73-244-170-150.hsd1.fl.comcast.net) has joined #awk
+2016-10-20 16:54:00		[16:48]
+2016-10-20 17:07:01	<--	Raimondi (~israelcha@c-73-244-170-150.hsd1.fl.comcast.net) has quit (Ping timeout: 244 seconds)
+2016-10-20 17:07:55	-->	Raimondi (~israelcha@c-73-244-170-150.hsd1.fl.comcast.net) has joined #awk
+2016-10-20 17:13:00		[17:07]
+2016-10-20 17:17:23	<--	Raimondi (~israelcha@c-73-244-170-150.hsd1.fl.comcast.net) has quit (Remote host closed the connection)
+2016-10-20 17:21:52	-->	Raimondi (~israelcha@c-73-244-170-150.hsd1.fl.comcast.net) has joined #awk
+2016-10-20 17:24:27	-->	Al3xG0 (~unix@unaffiliated/al3xg0) has joined #awk
+2016-10-20 17:30:00		[17:24]
+2016-10-20 17:45:15	<--	Raimondi (~israelcha@c-73-244-170-150.hsd1.fl.comcast.net) has quit (Ping timeout: 244 seconds)
+2016-10-20 17:45:15		[17:45]
+2016-10-20 17:46:05	-->	Raimondi (~israelcha@c-73-244-170-150.hsd1.fl.comcast.net) has joined #awk
+2016-10-20 17:52:00		[17:46]
+2016-10-20 18:00:25	<--	Raimondi (~israelcha@c-73-244-170-150.hsd1.fl.comcast.net) has quit (Remote host closed the connection)
+2016-10-20 18:01:12	<--	larryv (~larryv@wikipedia/larryv) has quit (Quit: larryv)
+2016-10-20 18:03:15	-->	harukomoto (~harukomot@93-41-21-101.ip79.fastwebnet.it) has joined #awk
+2016-10-20 18:05:34	<--	RadoQ (~cheater@unaffiliated/radoq) has quit (Remote host closed the connection)
+2016-10-20 18:11:00		[18:05]
+2016-10-20 18:11:09	<--	Braven (~Braven36@75.77.31.11.nw.nuvox.net) has quit (Ping timeout: 252 seconds)
+2016-10-20 18:15:01	-->	elonden (~erwin@4.66.240.116.sta.dodo.net.au) has joined #awk
+2016-10-20 18:16:06	<--	elonden (~erwin@4.66.240.116.sta.dodo.net.au) has left #awk
+2016-10-20 18:22:00		[18:16]
+2016-10-20 18:22:30	-->	Braven (~Braven36@75.77.31.11.nw.nuvox.net) has joined #awk
+2016-10-20 18:23:44	-->	Raimondi (~israelcha@c-73-244-170-150.hsd1.fl.comcast.net) has joined #awk
+2016-10-20 18:24:13	<--	Raimondi (~israelcha@c-73-244-170-150.hsd1.fl.comcast.net) has quit (Remote host closed the connection)
+2016-10-20 18:28:43	-->	Raimondi (~israelcha@c-73-244-170-150.hsd1.fl.comcast.net) has joined #awk
+2016-10-20 18:33:45	<--	Raimondi (~israelcha@c-73-244-170-150.hsd1.fl.comcast.net) has quit (Remote host closed the connection)
+2016-10-20 18:35:25	-->	jasonwryan (~jasonwrya@fsf/member/jasonwryan) has joined #awk
+2016-10-20 18:38:14	-->	Raimondi (~israelcha@c-73-244-170-150.hsd1.fl.comcast.net) has joined #awk
+2016-10-20 18:38:14		[18:38]
+2016-10-20 18:39:41	-->	navidr (uid112413@gateway/web/irccloud.com/x-yqoqbwmjkhybbygl) has joined #awk
+2016-10-20 18:43:18	<--	Raimondi (~israelcha@c-73-244-170-150.hsd1.fl.comcast.net) has quit (Remote host closed the connection)
+2016-10-20 18:49:00		[18:43]
+2016-10-20 18:52:21	-->	Raimondi (~israelcha@c-73-244-170-150.hsd1.fl.comcast.net) has joined #awk
+2016-10-20 18:54:15	<--	c00kiemon5ter (~c00kiemon@foss-aueb/coder/c00kiemon5ter) has left #awk
+2016-10-20 19:00:00		[18:54]
+2016-10-20 19:01:43	<--	Raimondi (~israelcha@c-73-244-170-150.hsd1.fl.comcast.net) has quit (Ping timeout: 244 seconds)
+2016-10-20 19:02:25	-->	Raimondi (~israelcha@c-73-244-170-150.hsd1.fl.comcast.net) has joined #awk
+2016-10-20 19:08:00		[19:02]
+2016-10-20 19:11:55	<--	Raimondi (~israelcha@c-73-244-170-150.hsd1.fl.comcast.net) has quit (Remote host closed the connection)
+2016-10-20 19:16:22	-->	Raimondi (~israelcha@c-73-244-170-150.hsd1.fl.comcast.net) has joined #awk
+2016-10-20 19:22:00		[19:16]
+2016-10-20 19:25:29	<--	Raimondi (~israelcha@c-73-244-170-150.hsd1.fl.comcast.net) has quit (Ping timeout: 244 seconds)
+2016-10-20 19:26:24	-->	Raimondi (~israelcha@c-73-244-170-150.hsd1.fl.comcast.net) has joined #awk
+2016-10-20 19:27:09	<--	nal (~nal@adsl-64-237-237-52.prtc.net) has quit (Quit: WeeChat 1.4)
+2016-10-20 19:30:39	<--	Raimondi (~israelcha@c-73-244-170-150.hsd1.fl.comcast.net) has quit (Ping timeout: 244 seconds)
+2016-10-20 19:36:00		[19:30]
+2016-10-20 19:51:28	-->	tfrangio (~tfrangio@24-183-151-70.dhcp.oxfr.ma.charter.com) has joined #awk
+2016-10-20 19:51:28		[19:51]
+2016-10-20 19:57:29	<--	harukomoto (~harukomot@93-41-21-101.ip79.fastwebnet.it) has quit (Ping timeout: 260 seconds)
+2016-10-20 20:03:00		[19:57]
+2016-10-20 20:03:45	-->	harukomoto (~harukomot@93-41-21-101.ip79.fastwebnet.it) has joined #awk
+2016-10-20 20:09:00		[20:03]
+2016-10-20 20:29:25	<--	PryMar56 (~prymar@unaffiliated/prymar56) has quit (Quit: Leaving)
+2016-10-20 20:29:25		[20:29]
+2016-10-20 20:36:21	<--	nesthib (~nesthib@unaffiliated/nesthib) has quit (Ping timeout: 248 seconds)
+2016-10-20 20:41:41	-->	nesthib (~nesthib@unaffiliated/nesthib) has joined #awk
+2016-10-20 20:47:00		[20:41]
+2016-10-20 21:03:26	-->	corsibu (~corsibu@171.20.68.68) has joined #awk
+2016-10-20 21:03:26		[21:03]
+2016-10-20 21:14:34	-->	Raimondi (~israelcha@c-73-244-170-150.hsd1.fl.comcast.net) has joined #awk
+2016-10-20 21:19:09	<--	Raimondi (~israelcha@c-73-244-170-150.hsd1.fl.comcast.net) has quit (Ping timeout: 244 seconds)
+2016-10-20 21:19:09		[21:19]
+2016-10-20 22:03:21	-->	alxtb (~alxtb@185.65.109.249) has joined #awk
+2016-10-20 22:03:21		[22:03]
+2016-10-20 22:12:28	-->	_spk_ (U2FsdGVkX1@ma.sdf.org) has joined #awk
+2016-10-20 22:13:59	<--	pr3d4t0r (~zhenya01@2601:646:4000:4b00:e269:95ff:fed7:b2e2) has quit (Ping timeout: 256 seconds)
+2016-10-20 22:14:30	_spk_	I am having a hard time getting awk to print a literal "<" and ">" - has anyone solved this? Quoting and escaping don't seem to work...
+2016-10-20 22:17:15	ttmrichter	I'm not having any problem, _spk_.  What are you trying?  http://vpaste.net/OTDl4
+2016-10-20 22:18:55	ttmrichter	Works fine from the command line too with: awk 'BEGIN { print "<" ; print ">" }'
+2016-10-20 22:18:55		[22:18]
+2016-10-20 22:19:04	<--	corsibu (~corsibu@171.20.68.68) has quit (Remote host closed the connection)
+2016-10-20 22:19:40	-->	corsibu (~corsibu@171.20.68.68) has joined #awk
+2016-10-20 22:21:11	ttmrichter	_spk_: ^^
+2016-10-20 22:24:11	<--	corsibu (~corsibu@171.20.68.68) has quit (Ping timeout: 256 seconds)
+2016-10-20 22:28:45	Riviera	Yeah but that's cheating.
+2016-10-20 22:29:49	-->	corsibu (~corsibu@171.20.68.68) has joined #awk
+2016-10-20 22:35:00		[22:29]
+2016-10-20 22:38:23	-->	pr3d4t0r (~zhenya01@2601:646:4000:4b00:e269:95ff:fed7:b2e2) has joined #awk
+2016-10-20 22:38:46	xpt	If it's not prohibited, it's allowed
+2016-10-20 22:40:33	ttmrichter	How is it cheating?  It's printing literal > and < as requested.
+2016-10-20 22:41:53	-->	winem_ (~quassel@213.61.103.130) has joined #awk
+2016-10-20 22:47:00		[22:41]
+2016-10-20 22:51:33	<--	feliks (EXFjEOf7Ab@2a00:d0c0:200:0:b9:1a:9c17:380) has quit (Ping timeout: 260 seconds)
+2016-10-20 22:57:00		[22:51]
+2016-10-20 22:57:58	_spk_	hello, thanks ttmrichter :)
+2016-10-20 22:58:11	_spk_	..interesting to see the wiki is hosted on SDF :)
+2016-10-20 22:59:07	_spk_	essentially I have a comma-separated list of firstname,lastname,emailaddress - I though it'd be very simple to process this in awk into the format that mailman wants it
+2016-10-20 22:59:31	_spk_	which is firstname lastname <emailadress>
+2016-10-20 23:02:41	-->	Raimondi (~israelcha@c-73-244-170-150.hsd1.fl.comcast.net) has joined #awk
+2016-10-20 23:04:30	_spk_	Ah! I think there must be something strange in the source data!
+2016-10-20 23:07:08	<--	Raimondi (~israelcha@c-73-244-170-150.hsd1.fl.comcast.net) has quit (Ping timeout: 244 seconds)
+2016-10-20 23:07:12	geirha	if the > ends up at the start of the line, then it's because CR
+2016-10-20 23:08:18	geirha	awk -F, '{sub(/\r$/,""); print $1, $2, "<" $3 ">"}'
+2016-10-20 23:11:54	_spk_	geirha: yeah, that's what is happening. I'm sorta confused how the source data ended up in that state but then again, I guess you never quite know what you're going to get supplied with...
+2016-10-20 23:12:05	geirha	(shameless plug) With my loadable csv builtin for bash, it would be: while csv first last email; do printf '%s %s <%s>\n' "$first" "$last" "$email"; done < file.csv
+2016-10-20 23:12:05		[23:12]
+2016-10-20 23:12:53	geirha	csv files are supposed to have windows line endings, so whatever created the csv, just followed the rfc
+2016-10-20 23:12:54	<--	sze_ (~sze@103.41.132.69) has quit (Read error: Connection reset by peer)
+2016-10-20 23:13:02	-->	sze (~sze@unaffiliated/sze) has joined #awk
+2016-10-20 23:14:28	_spk_	oh, I did not know that! :) This is not something I normally do, as you can probably tell!
+2016-10-20 23:14:31	<--	hpt (~hpt@61.149.224.251) has quit (Quit: Lost terminal)
+2016-10-20 23:14:50	_spk_	my part is usually more the mailman/postfix etc. side
+2016-10-20 23:16:15	-->	RadoQ (~cheater@unaffiliated/radoq) has joined #awk
+2016-10-20 23:22:00		[23:16]
+2016-10-20 23:24:15	<--	rods-tab3 (~rods-tab3@172.56.39.30) has quit (Ping timeout: 256 seconds)
+2016-10-20 23:25:13	_spk_	geirha: thanks for the help
+2016-10-20 23:25:28	-->	Ridout (~coffee@unaffiliated/ridout) has joined #awk
+2016-10-20 23:29:10	-->	rods-tab3 (~rods-tab3@172.56.39.30) has joined #awk
+2016-10-20 23:35:00		[23:29]
+2016-10-20 23:46:21	<--	rod-yolo (~rod-yolo@2607:fb90:a778:a2d0:1af8:f3d9:ee2b:601) has quit (Ping timeout: 256 seconds)
+2016-10-20 23:46:37	<--	rods-tab3 (~rods-tab3@172.56.39.30) has quit (Ping timeout: 260 seconds)
+2016-10-20 23:52:00		[23:46]
+2016-10-21 00:00:52	<--	jasonwryan (~jasonwrya@fsf/member/jasonwryan) has quit (Ping timeout: 244 seconds)
+2016-10-21 00:06:00		[00:00]
+2016-10-21 00:16:11	<--	hpotter (~intlnsde@83.172.43.62) has quit (Quit: leaving)
+2016-10-21 00:17:58	<--	go|dfish (goldfish@nat/dcunetworkingsociety/x-nyfxlankzafqjgyl) has quit (Quit: SIGQUIT)
+2016-10-21 00:23:00		[00:17]
+2016-10-21 00:30:40	<--	DANtheBEASTman (~DANtheBEA@bananabo.xyz) has quit (Quit: I hate quit messages.)
+2016-10-21 00:33:05	-->	jasonwryan (~jasonwrya@fsf/member/jasonwryan) has joined #awk
+2016-10-21 00:37:22	-->	hpotter (~intlnsde@83.172.43.62) has joined #awk
+2016-10-21 00:41:52	-->	mrtrump (~g@209-6-150-53.c3-0.bkl-ubr1.sbo-bkl.ma.cable.rcn.com) has joined #awk
+2016-10-21 00:41:52		[00:41]
+2016-10-21 00:42:17	mrtrump	what is the best online tutor to learn awk?
+2016-10-21 00:48:00		[00:42]
+2016-10-21 00:50:49	-->	Raimondi (~israelcha@c-73-244-170-150.hsd1.fl.comcast.net) has joined #awk
+2016-10-21 00:55:38	<--	Raimondi (~israelcha@c-73-244-170-150.hsd1.fl.comcast.net) has quit (Ping timeout: 244 seconds)
+2016-10-21 01:01:00		[00:55]
+2016-10-21 01:02:44	-->	irco (~irco@HSI-KBW-134-3-111-4.hsi14.kabel-badenwuerttemberg.de) has joined #awk
+2016-10-21 01:08:00		[01:02]
+2016-10-21 01:08:30	<--	corsibu (~corsibu@171.20.68.68) has quit (Remote host closed the connection)
+2016-10-21 01:09:12	-->	corsibu (~corsibu@171.20.68.68) has joined #awk
+2016-10-21 01:10:01	-->	go|dfish (goldfish@nat/dcunetworkingsociety/x-rfyuiryscmeakydz) has joined #awk
+2016-10-21 01:13:23	<--	corsibu (~corsibu@171.20.68.68) has quit (Ping timeout: 245 seconds)
+2016-10-21 01:19:00		[01:13]
+2016-10-21 01:20:59	-->	Raimondi (~israelcha@c-73-244-170-150.hsd1.fl.comcast.net) has joined #awk
+2016-10-21 01:22:35	-->	corsibu (~corsibu@171.20.68.68) has joined #awk
+2016-10-21 01:25:36	<--	Raimondi (~israelcha@c-73-244-170-150.hsd1.fl.comcast.net) has quit (Ping timeout: 244 seconds)
+2016-10-21 01:30:04	<--	Al3xG0 (~unix@unaffiliated/al3xg0) has quit (Ping timeout: 245 seconds)
+2016-10-21 01:30:51	-->	Al3xG0 (~unix@177.205.121.183.dynamic.adsl.gvt.net.br) has joined #awk
+2016-10-21 01:30:52	<--	Al3xG0 (~unix@177.205.121.183.dynamic.adsl.gvt.net.br) has quit (Changing host)
+2016-10-21 01:30:52	-->	Al3xG0 (~unix@unaffiliated/al3xg0) has joined #awk
+2016-10-21 01:31:04	mute	!concise mrtrump
+2016-10-21 01:31:04	hawkbot	mrtrump:  concise:  http://cs.princeton.edu/courses/archive/spr15/cos333/awk.help
+2016-10-21 01:37:00		[01:31]
+2016-10-21 01:40:28	-->	D630 (~D630@unaffiliated/d630) has joined #awk
+2016-10-21 01:41:53	<--	relaxed (~relaxed@unaffiliated/relaxed) has quit (Quit: ⠠⠵)
+2016-10-21 01:47:00		[01:41]
+2016-10-21 01:50:56	<--	johnmilton (~johnmilto@192.206.23.197) has quit (Remote host closed the connection)
+2016-10-21 01:51:07	<--	navidr (uid112413@gateway/web/irccloud.com/x-yqoqbwmjkhybbygl) has quit (Quit: Connection closed for inactivity)
+2016-10-21 01:57:00		[01:51]
+2016-10-21 01:57:05	<--	Ridout (~coffee@unaffiliated/ridout) has quit (Quit: Lost terminal)
+2016-10-21 02:03:00		[01:57]
+2016-10-21 02:18:55	-->	johnmilton (~johnmilto@192.206.23.197) has joined #awk
+2016-10-21 02:18:55		[02:18]
+2016-10-21 02:29:13	-->	jeffreylevesque (~chatzilla@129.6.45.20) has joined #awk
+2016-10-21 02:32:34	-->	}ls{ (~kalle@unaffiliated/ls/x-8089558) has joined #awk
+2016-10-21 02:37:58	-->	anewuser (~anewuser@unaffiliated/anewuser) has joined #awk
+2016-10-21 02:37:58		[02:37]
+2016-10-21 02:56:15	<--	anewuser (~anewuser@unaffiliated/anewuser) has quit (Read error: Connection reset by peer)
+2016-10-21 02:56:15		[02:56]
+2016-10-21 02:56:21	<--	D630 (~D630@unaffiliated/d630) has quit (Quit: WeeChat 1.6)
+2016-10-21 02:56:45	-->	anewuser (~anewuser@unaffiliated/anewuser) has joined #awk
+2016-10-21 02:59:41	<--	corsibu (~corsibu@171.20.68.68) has quit (Remote host closed the connection)
+2016-10-21 03:00:12	-->	vuoto (~vuoto@n9pl7d.static.netgroup.dk) has joined #awk
+2016-10-21 03:00:15	-->	corsibu (~corsibu@171.20.68.68) has joined #awk
+2016-10-21 03:00:17	<--	djinni (~djinni@68.ip-149-56-14.net) has quit (Remote host closed the connection)
+2016-10-21 03:04:24	<--	corsibu (~corsibu@171.20.68.68) has quit (Ping timeout: 250 seconds)
+2016-10-21 03:04:53	<--	vuoto (~vuoto@n9pl7d.static.netgroup.dk) has quit (Client Quit)
+2016-10-21 03:04:55	-->	cdg (~cdg@157.166.173.5) has joined #awk
+2016-10-21 03:06:20	-->	corsibu (~corsibu@171.20.68.68) has joined #awk
+2016-10-21 03:06:47	-->	vuoto (~vuoto@n9pl7d.static.netgroup.dk) has joined #awk
+2016-10-21 03:07:52	<--	vuoto (~vuoto@n9pl7d.static.netgroup.dk) has quit (Remote host closed the connection)
+2016-10-21 03:08:14	-->	lunaphyte (~lunaphyte@unaffiliated/lunaphyte) has joined #awk
+2016-10-21 03:08:16	-->	dking_desktop (~danielk@vbo1.inmotionhosting.com) has joined #awk
+2016-10-21 03:08:53	-->	vuoto (~vuoto@n9pl7d.static.netgroup.dk) has joined #awk
+2016-10-21 03:09:10	-->	Raimondi (~israelcha@c-73-244-170-150.hsd1.fl.comcast.net) has joined #awk
+2016-10-21 03:09:14	<--	vuoto (~vuoto@n9pl7d.static.netgroup.dk) has quit (Remote host closed the connection)
+2016-10-21 03:09:38	-->	vuoto (~vuoto@n9pl7d.static.netgroup.dk) has joined #awk
+2016-10-21 03:13:35	<--	Raimondi (~israelcha@c-73-244-170-150.hsd1.fl.comcast.net) has quit (Ping timeout: 244 seconds)
+2016-10-21 03:13:35		[03:13]
+2016-10-21 03:16:07	lunaphyte	hi.  i got some help here the other day with matching/filtering some input, and i've of course now found that the criteria has changed.  http://dpaste.com/049RJH6.txt
+2016-10-21 03:16:50	lunaphyte	the first section was the original input, the second is the additional input
+2016-10-21 03:17:49	lunaphyte	initially i was using this: $1 ~ /^[A-L][0-9]+$/
+2016-10-21 03:18:49	lunaphyte	but of course it doesn't match numbers only, or fields with characters after the numbers [e.g. B23-Trk50]
+2016-10-21 03:19:30	gnomon	lunaphyte, hmm.  What are the new criteria?
+2016-10-21 03:19:59	lunaphyte	now i'm using NF==0{p=0} p{print} $1=="------"{p=1} - which seems to do ok, but it doens't feel terribly elegant, and it also requires a way to stop matching at the first blank line
+2016-10-21 03:20:56	lunaphyte	gnomon: the criteria are to show just the rows in the "tables" - e.g. just show the port details
+2016-10-21 03:21:36	lunaphyte	where a port can now be more than just ^[A-L][0-9]+$
+2016-10-21 03:23:56	-->	djinni (~djinni@68.ip-149-56-14.net) has joined #awk
+2016-10-21 03:27:05	<--	fford (~fnord@p2003004C6F642300CE6D2D04010A06D1.dip0.t-ipconnect.de) has quit (Quit: WeeChat 1.5)
+2016-10-21 03:30:41	-->	marky1991 (~marky1991@unaffiliated/marky1991) has joined #awk
+2016-10-21 03:30:41		[03:30]
+2016-10-21 03:33:13	-->	Raimondi (~israelcha@c-73-244-170-150.hsd1.fl.comcast.net) has joined #awk
+2016-10-21 03:37:00	-->	nal (~nal@adsl-64-237-238-180.prtc.net) has joined #awk
+2016-10-21 03:39:15	-->	Raimondii (~israelcha@73.85.202.189) has joined #awk
+2016-10-21 03:39:56	<--	Raimondi (~israelcha@c-73-244-170-150.hsd1.fl.comcast.net) has quit (Ping timeout: 244 seconds)
+2016-10-21 03:39:59	--	Raimondii is now known as Raimondi
+2016-10-21 03:42:07	lunaphyte	in short, i can [at least for now] condense my question down to this: so far i've got http://dpaste.com/3ZWA5J5.txt - how can i stop matching at the first blank line?
+2016-10-21 03:42:30	lunaphyte	i'd also welcome better methods for this
+2016-10-21 03:45:04	<--	uranellus (~alexander@unaffiliated/uranellus) has quit (Quit: ZNC 1.6.1 - http://znc.in)
+2016-10-21 03:45:28	nal	i missed your question
+2016-10-21 03:45:58	nal	/^$/ {exit} ?
+2016-10-21 03:45:58		[03:45]
+2016-10-21 03:46:47	lunaphyte	how do i combine that with what i have currently?
+2016-10-21 03:47:36	nal	get-data | awk '/^$/ {exit} $1=="------"'
+2016-10-21 03:48:47	nal	so, you just prepend it
+2016-10-21 03:50:56	lunaphyte	like so? http://dpaste.com/0G6DZMT.txt
+2016-10-21 03:51:07	lunaphyte	it doesn't seem to work
+2016-10-21 03:51:39	lunaphyte	let me share original input - there are many blank lines earlier
+2016-10-21 03:51:46	nal	ah
+2016-10-21 03:51:51	<--	corsibu (~corsibu@171.20.68.68) has quit (Remote host closed the connection)
+2016-10-21 03:51:52	nal	that will complicate things
+2016-10-21 03:52:26	-->	corsibu (~corsibu@171.20.68.68) has joined #awk
+2016-10-21 03:52:30	nal	you also dont need p { print }, replace with just p
+2016-10-21 03:53:30	lunaphyte	oh, ok
+2016-10-21 03:54:01	lunaphyte	here's the original input: http://dpaste.com/09QG8AX.txt
+2016-10-21 03:54:05	lunaphyte	it's pretty awful :)
+2016-10-21 03:55:33	lunaphyte	i wanted to exit at the first blank line that followed after matching for "------" began [if that makes sense]
+2016-10-21 03:55:56	nal	oh, then p==1 && /^$/ { exit }
+2016-10-21 03:56:56	<--	corsibu (~corsibu@171.20.68.68) has quit (Ping timeout: 260 seconds)
+2016-10-21 03:57:10	nal	p && /^$/ would be cleaner
+2016-10-21 03:58:39	lunaphyte	replacing p { print } with just p didn't seem to work
+2016-10-21 03:58:44	lunaphyte	it returned no output
+2016-10-21 03:59:47	lunaphyte	if i remember right from past help here, there are different awks?  mine appears to be mawk - if that's of relevance
+2016-10-21 03:59:56	nal	get-data | awk 'p && /^$/ {exit};p; $1=="------" {p=1}'
+2016-10-21 03:59:58	nal	does that work?
+2016-10-21 04:00:21	lunaphyte	no
+2016-10-21 04:00:31	lunaphyte	the lines at the end are still there
+2016-10-21 04:00:36	lunaphyte	the rest looks good though
+2016-10-21 04:05:12	nal	oh, its not empty
+2016-10-21 04:05:12		[04:05]
+2016-10-21 04:05:15	nal	it has a friggin space
+2016-10-21 04:05:26	lunaphyte	oh!  grrr.
+2016-10-21 04:05:53	nal	i also had to run dos2unix, (remove \r's)
+2016-10-21 04:05:53	lunaphyte	my mistake, i should have known better than to assume that
+2016-10-21 04:06:00	lunaphyte	ah
+2016-10-21 04:06:13	nal	so, p && NF==0 {exit} works
+2016-10-21 04:10:40	nal	so, try    get-data | tr -d '\r' | awk 'p && NF==0 {exit};p; $1=="------" {p=1}' ?
+2016-10-21 04:10:43	lunaphyte	like this? get-data | dos2unix | awk 'p && NF==0 {exit}'
+2016-10-21 04:10:47	lunaphyte	oh, ok
+2016-10-21 04:11:14	lunaphyte	aha!
+2016-10-21 04:11:31	nal	works?
+2016-10-21 04:11:39	lunaphyte	works :)
+2016-10-21 04:11:48	<--	anewuser (~anewuser@unaffiliated/anewuser) has quit (Quit: anewuser)
+2016-10-21 04:11:53	nal	yay :)
+2016-10-21 04:12:19	lunaphyte	what a wonderful nasty hack to deal with crappy switch output :)  thanks
+2016-10-21 04:13:46	nal	you're welcome. good luck
+2016-10-21 04:13:48	<--	nal (~nal@adsl-64-237-238-180.prtc.net) has quit (Quit: WeeChat 1.4)
+2016-10-21 04:16:20	<--	vuoto (~vuoto@n9pl7d.static.netgroup.dk) has quit (Quit: Lost terminal)
+2016-10-21 04:20:06	-->	relaxed (~relaxed@unaffiliated/relaxed) has joined #awk
+2016-10-21 04:22:26	lunaphyte	looking at this, it's now occurring to me that including the header would probably be good
+2016-10-21 04:22:26		[04:22]
+2016-10-21 04:23:02	lunaphyte	p && NF==0 {exit};p; $1=="Port" {p=1} almost works - how can i print the line that matching starts on?
+2016-10-21 04:29:00		[04:23]
+2016-10-21 04:31:35	-->	jeffreylevesque_ (~chatzilla@129.6.45.20) has joined #awk
+2016-10-21 04:32:21	-->	al-damiri (uid142631@gateway/web/irccloud.com/x-vieublvpclwdeyvk) has joined #awk
+2016-10-21 04:33:39	<--	jeffreylevesque (~chatzilla@129.6.45.20) has quit (Ping timeout: 256 seconds)
+2016-10-21 04:35:13	-->	larryv (~larryv@wikipedia/larryv) has joined #awk
+2016-10-21 04:41:00		[04:35]
+2016-10-21 04:45:52	go|dfish	lunaphyte: 'p' is what's controlling the print, so move it after $1 == "Port" e.g. p && NF==0 {exit}; $1=="Port" {p=1}; p
+2016-10-21 04:47:19	lunaphyte	ah, thanks
+2016-10-21 04:47:21	-->	rods-tab3 (~rods-tab3@172.56.39.35) has joined #awk
+2016-10-21 04:50:54	-->	PryMar56 (~prymar@unaffiliated/prymar56) has joined #awk
+2016-10-21 04:56:00		[04:50]
+2016-10-21 05:23:26	-->	vuoto (~vuoto@n9pl7d.static.netgroup.dk) has joined #awk
+2016-10-21 05:23:26		[05:23]
+2016-10-21 05:32:59	<--	waldner (waldner@openvpn/user/waldner) has quit (Quit: leaving)
+2016-10-21 05:35:35	-->	waldner (waldner@2a01:7e00::f03c:91ff:fe96:96f3) has joined #awk
+2016-10-21 05:35:35	<--	waldner (waldner@2a01:7e00::f03c:91ff:fe96:96f3) has quit (Changing host)
+2016-10-21 05:35:35	-->	waldner (waldner@openvpn/user/waldner) has joined #awk
+2016-10-21 05:41:00		[05:35]
+2016-10-21 05:43:24	-->	Coldblackice (~anonz@unaffiliated/coldblackice) has joined #awk
+2016-10-21 05:49:00		[05:43]
+2016-10-21 05:53:14	<--	harukomoto (~harukomot@93-41-21-101.ip79.fastwebnet.it) has quit (Ping timeout: 244 seconds)
+2016-10-21 05:55:29	-->	harukomoto (~harukomot@93-41-21-101.ip79.fastwebnet.it) has joined #awk
+2016-10-21 05:55:58	-->	rod-yolo (~rod-yolo@2607:fb90:a515:351:41bc:10ce:c671:3e12) has joined #awk
+2016-10-21 06:01:00		[05:55]
+2016-10-21 06:04:25	-->	alextb (~alxtb@185.65.109.249) has joined #awk
+2016-10-21 06:07:15	<--	alxtb (~alxtb@185.65.109.249) has quit (Ping timeout: 252 seconds)
+2016-10-21 06:07:15	-->	oskarkv (~oskar@c213-89-225-149.bredband.comhem.se) has joined #awk
+2016-10-21 06:10:39	-->	nal (~nal@adsl-64-237-238-180.prtc.net) has joined #awk
+2016-10-21 06:15:52	-->	corsibu (~corsibu@83-91-127-117-dynamic.dk.customer.tdc.net) has joined #awk
+2016-10-21 06:18:41	-->	d10n-work (uid37161@gateway/web/irccloud.com/x-rkxtfrcdwbwhtbzs) has joined #awk
+2016-10-21 06:18:41		[06:18]
+2016-10-21 06:20:13	-->	watmm (~nmurphy@post.dp-media.de) has joined #awk
+2016-10-21 06:20:17	watmm	 I'd like to print three lines from a file that are right after each other, and each line contains a different specific word.
+2016-10-21 06:22:35	<--	corsibu (~corsibu@83-91-127-117-dynamic.dk.customer.tdc.net) has quit (Remote host closed the connection)
+2016-10-21 06:23:13	-->	corsibu (~corsibu@83-91-127-117-dynamic.dk.customer.tdc.net) has joined #awk
+2016-10-21 06:26:33	-->	corsibu_ (~corsibu@83-91-127-117-dynamic.dk.customer.tdc.net) has joined #awk
+2016-10-21 06:26:33	<--	corsibu_ (~corsibu@83-91-127-117-dynamic.dk.customer.tdc.net) has quit (Read error: Connection reset by peer)
+2016-10-21 06:27:13	-->	corsibu_ (~corsibu@83-91-127-117-dynamic.dk.customer.tdc.net) has joined #awk
+2016-10-21 06:27:36	<--	corsibu (~corsibu@83-91-127-117-dynamic.dk.customer.tdc.net) has quit (Ping timeout: 252 seconds)
+2016-10-21 06:28:01	<--	corsibu_ (~corsibu@83-91-127-117-dynamic.dk.customer.tdc.net) has quit (Remote host closed the connection)
+2016-10-21 06:32:50	nal	did i miss something?
+2016-10-21 06:33:48	nal	watmm: well, how do you which position it is? is it a field? can you use a regex?
+2016-10-21 06:33:48		[06:33]
+2016-10-21 06:34:16	watmm	Sorry, it seems like a waste of time because the pattern is changing
+2016-10-21 06:34:30	watmm	it's json output from an aws cli tool
+2016-10-21 06:34:33	nal	{print;getline;print;getline;print}
+2016-10-21 06:34:45	nal	that would get you three concurrent lines
+2016-10-21 06:35:37	<--	irco (~irco@HSI-KBW-134-3-111-4.hsi14.kabel-badenwuerttemberg.de) has quit (Remote host closed the connection)
+2016-10-21 06:35:38	nal	theres usually a pattern
+2016-10-21 06:39:20	<--	alextb (~alxtb@185.65.109.249) has quit (Ping timeout: 260 seconds)
+2016-10-21 06:45:00		[06:39]
+2016-10-21 07:04:02	<--	llua (~llua@zsh/developer/llua) has quit (Ping timeout: 250 seconds)
+2016-10-21 07:04:02		[07:04]
+2016-10-21 07:08:10	<--	Al3xG0 (~unix@unaffiliated/al3xg0) has quit (Read error: Connection reset by peer)
+2016-10-21 07:08:22	-->	llua (~llua@zsh/developer/llua) has joined #awk
+2016-10-21 07:09:09	-->	Al3xG0 (~unix@177.205.121.183.dynamic.adsl.gvt.net.br) has joined #awk
+2016-10-21 07:09:09	<--	Al3xG0 (~unix@177.205.121.183.dynamic.adsl.gvt.net.br) has quit (Changing host)
+2016-10-21 07:09:09	-->	Al3xG0 (~unix@unaffiliated/al3xg0) has joined #awk
+2016-10-21 07:09:23	<--	jeffreylevesque_ (~chatzilla@129.6.45.20) has quit (Remote host closed the connection)
+2016-10-21 07:15:00		[07:09]
+2016-10-21 07:25:31	-->	jeffreylevesque (~chatzilla@129.6.45.20) has joined #awk
+2016-10-21 07:26:46	<--	winem_ (~quassel@213.61.103.130) has quit (Read error: Connection reset by peer)
+2016-10-21 07:32:00		[07:26]
+2016-10-21 07:36:05	go|dfish	watmm: you probably want to use jq to parse the json
+2016-10-21 07:41:40	-->	gareppa (~gareppa@151.31.43.18) has joined #awk
+2016-10-21 07:47:00		[07:41]
+2016-10-21 07:47:49	-->	skylite_ (~skylite@91EC75F7.dsl.pool.telekom.hu) has joined #awk
+2016-10-21 07:47:59	<--	skylite (~skylite@91EC3D91.dsl.pool.telekom.hu) has quit (Ping timeout: 250 seconds)
+2016-10-21 07:53:00		[07:47]
+2016-10-21 08:30:19	<--	d10n-work (uid37161@gateway/web/irccloud.com/x-rkxtfrcdwbwhtbzs) has quit (Quit: Connection closed for inactivity)
+2016-10-21 08:30:19		[08:30]
+2016-10-21 08:32:37	<--	cdg (~cdg@157.166.173.5) has quit (Remote host closed the connection)
+2016-10-21 08:38:00		[08:32]
+2016-10-21 08:38:01	<--	vuoto (~vuoto@n9pl7d.static.netgroup.dk) has quit (Remote host closed the connection)
+2016-10-21 08:44:00		[08:38]
+2016-10-21 08:47:43	-->	vuoto (~vuoto@n9pl7d.static.netgroup.dk) has joined #awk
+2016-10-21 08:53:00		[08:47]
+2016-10-21 09:04:55	<--	vuoto (~vuoto@n9pl7d.static.netgroup.dk) has quit (Remote host closed the connection)
+2016-10-21 09:05:32	<--	johnmilton (~johnmilto@192.206.23.197) has quit (Remote host closed the connection)
+2016-10-21 09:06:40	<--	harukomoto (~harukomot@93-41-21-101.ip79.fastwebnet.it) has quit (Ping timeout: 250 seconds)
+2016-10-21 09:12:00		[09:06]
+2016-10-21 09:21:18	-->	harukomoto (~harukomot@93-41-21-101.ip79.fastwebnet.it) has joined #awk
+2016-10-21 09:27:00		[09:21]
+2016-10-21 09:49:28	<--	gareppa (~gareppa@151.31.43.18) has quit (Quit: Leaving)
+2016-10-21 09:49:28		[09:49]
+2016-10-21 10:01:20	-->	fford (~fnord@p2003004C6F642300CE6D2D04010A06D1.dip0.t-ipconnect.de) has joined #awk
+2016-10-21 10:06:38	<--	Coldblackice (~anonz@unaffiliated/coldblackice) has quit
+2016-10-21 10:06:38		[10:06]
+2016-10-21 10:10:00	-->	cdg (~cdg@157.166.173.5) has joined #awk
+2016-10-21 10:12:23	<--	lunaphyte (~lunaphyte@unaffiliated/lunaphyte) has left #awk ("leaving")
+2016-10-21 10:14:40	-->	skylite (~skylite@91EC3DC1.dsl.pool.telekom.hu) has joined #awk
+2016-10-21 10:17:47	<--	skylite_ (~skylite@91EC75F7.dsl.pool.telekom.hu) has quit (Ping timeout: 244 seconds)
+2016-10-21 10:23:00		[10:17]
+2016-10-21 10:39:13	<--	muteki (~muteki@unaffiliated/muteki) has quit (Remote host closed the connection)
+2016-10-21 10:39:13		[10:39]
+2016-10-21 10:45:33	-->	D630 (~D630@unaffiliated/d630) has joined #awk
+2016-10-21 10:46:50	<--	Raimondi (~israelcha@73.85.202.189) has quit (Quit: WeeChat 1.6-dev)
+2016-10-21 10:52:00		[10:46]
+2016-10-21 10:52:37	<--	dking_desktop (~danielk@vbo1.inmotionhosting.com) has left #awk
+2016-10-21 10:58:00		[10:52]
+2016-10-21 11:06:19	<--	marky1991 (~marky1991@unaffiliated/marky1991) has quit (Read error: Connection reset by peer)
+2016-10-21 11:07:09	<--	D630 (~D630@unaffiliated/d630) has quit (Quit: WeeChat 1.6)
+2016-10-21 11:07:24	-->	Raimondi (~israelcha@c-73-244-170-150.hsd1.fl.comcast.net) has joined #awk
+2016-10-21 11:13:00		[11:07]
+2016-10-21 11:30:09	<--	jeffreylevesque (~chatzilla@129.6.45.20) has quit (Ping timeout: 256 seconds)
+2016-10-21 11:30:09		[11:30]
+2016-10-21 11:30:43	<--	rods-tab3 (~rods-tab3@172.56.39.35) has quit (Ping timeout: 256 seconds)
+2016-10-21 11:32:09	-->	rods-tab3 (~rods-tab3@172.56.39.35) has joined #awk
+2016-10-21 11:38:00		[11:32]
+2016-10-21 11:46:58	-->	nal1 (~nal@adsl-64-237-233-123.prtc.net) has joined #awk
+2016-10-21 11:49:18	<--	nal (~nal@adsl-64-237-238-180.prtc.net) has quit (Ping timeout: 256 seconds)
+2016-10-21 11:55:00		[11:49]
+2016-10-21 11:57:20	<--	LoRe (danielt@banjo.rbfh.de) has quit (Remote host closed the connection)
+2016-10-21 12:03:00		[11:57]
+2016-10-21 12:04:34	--	vin-ivar is now known as sassy_subcontine
+2016-10-21 12:04:46	--	sassy_subcontine is now known as vin-ivar
+2016-10-21 12:06:46	-->	Ridout (~coffee@unaffiliated/ridout) has joined #awk
+2016-10-21 12:12:00		[12:06]
+2016-10-21 12:27:25	-->	LoRe (danielt@banjo.rbfh.de) has joined #awk
+2016-10-21 12:27:25		[12:27]
+2016-10-21 12:47:30	<--	Nahra (~user@unaffiliated/nahra) has quit (Read error: Connection reset by peer)
+2016-10-21 12:47:30		[12:47]
+2016-10-21 12:49:08	-->	Nahra (~user@unaffiliated/nahra) has joined #awk
+2016-10-21 12:50:13	<--	sumark (~sumark@apache2-kant.caprisun.dreamhost.com) has quit (Remote host closed the connection)
+2016-10-21 12:55:21	-->	sumark (~sumark@apache2-kant.caprisun.dreamhost.com) has joined #awk
+2016-10-21 12:55:53	<--	oskarkv (~oskar@c213-89-225-149.bredband.comhem.se) has quit (Remote host closed the connection)
+2016-10-21 13:01:00		[12:55]
+2016-10-21 13:14:08	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined #awk
+2016-10-21 13:14:08	--	Topic for #awk is ""Paste at: http://gist.github.com or http://sprunge.us | Wiki: http://awk.freeshell.org/ | Reference: http://xrl.us/gnuref | FAQ: http://xrl.us/4wkf4q | POSIX: http://xrl.us/awk1p | Regex: #regex | e36freak's libs: https://github.com/e36freak/awk-libs | HTML input?  Use scrapy instead - http://scrapy.org | Please ask your question and be patient, someone will get to you."
+2016-10-21 13:14:08	--	Topic set by pr3d4t0r (~zhenya01@varenka.cime.net) on Wed, 27 Apr 2016 07:56:45
+2016-10-21 13:14:08	--	Channel #awk: 142 nicks (0 ops, 0 voices, 142 normals)
+2016-10-21 13:14:12	--	PvNotice(ChanServ): Welcome to #awk.  Please ask your question clearly, and someone will help you out as soon as possible.  This is not an extremely active channel, so please be patient. You WILL be helped, though.  In the meantime, feel free to run '/topic' and look through the available information, your question may be answered there
+2016-10-21 13:14:12	-->	tapout (~tapout@unaffiliated/tapout) has joined #awk
+2016-10-21 13:14:20	-->	talsamon (~talsamon@193-80-186-182.adsl.highway.telekom.at) has joined #awk
+2016-10-21 13:14:35	-->	akkad (akkad@dns.mauthesis.com) has joined #awk
+2016-10-21 13:14:36	--	Channel created on Sat, 25 Nov 2006 20:42:48
+2016-10-21 13:14:51	--	Mode #awk [+Ccgnptz]
+2016-10-21 13:14:51	--	Channel created on Sat, 25 Nov 2006 20:42:48
+2016-10-21 13:15:19	<--	Guest19064 (~sbine@tra78-6-88-186-13-233.fbx.proxad.net) has quit (Quit: Guest19064)
+2016-10-21 13:16:09	-->	sbine (~sbine@unaffiliated/sbine) has joined #awk
+2016-10-21 13:16:09		[13:16]
+2016-10-21 13:21:17	<--	n-st (~n-st@unaffiliated/n-st) has quit (Quit: ␄)
+2016-10-21 13:21:29	-->	n-st (~n-st@unaffiliated/n-st) has joined #awk
+2016-10-21 13:23:02	<--	n-st (~n-st@unaffiliated/n-st) has quit (Remote host closed the connection)
+2016-10-21 13:23:22	-->	n-st (~n-st@unaffiliated/n-st) has joined #awk
+2016-10-21 13:26:15	-->	ljharb (sid43720@oftn/oswg-member/ljharb) has joined #awk
+2016-10-21 13:30:53	-->	YP-Cloud____ (sid130155@gateway/web/irccloud.com/x-zerhlkiqqzhxjvuj) has joined #awk
+2016-10-21 13:33:01	-->	maedox (sid2021@gateway/web/irccloud.com/x-ojnuemikoerhsyot) has joined #awk
+2016-10-21 13:33:01		[13:33]
+2016-10-21 13:35:27	-->	ec (sid1544@gateway/web/irccloud.com/x-byygfyundbvykijw) has joined #awk
+2016-10-21 13:41:00		[13:35]
+2016-10-21 13:45:19	-->	marky1991 (~marky1991@unaffiliated/marky1991) has joined #awk
+2016-10-21 13:51:00		[13:45]
+2016-10-21 13:57:24	<--	Guest96135 (~ARM@2001:0:53aa:64c:0:fbf5:b176:2199) has quit (Quit:  Want to be different? Try HydraIRC -> http://www.hydrairc.com <-)
+2016-10-21 13:58:24	-->	X-Scale (~ARM@2001:0:53aa:64c:0:fbf5:b176:2199) has joined #awk
+2016-10-21 14:00:22	<--	cdg (~cdg@157.166.173.5) has quit (Remote host closed the connection)
+2016-10-21 14:04:57	-->	DANtheBEASTman (~DANtheBEA@bananabo.xyz) has joined #awk
+2016-10-21 14:10:00		[14:04]
+2016-10-21 14:29:30	<--	xshuiniu (~goirc@150-241-47-212.rev.cloud.scaleway.com) has quit (Max SendQ exceeded)
+2016-10-21 14:29:30		[14:29]
+2016-10-21 14:36:41	-->	regain (~moby@177-177-183-251.user.veloxzone.com.br) has joined #awk
+2016-10-21 14:41:59	<--	regain (~moby@177-177-183-251.user.veloxzone.com.br) has left #awk ("Leaving")
+2016-10-21 14:47:00		[14:41]
+2016-10-21 14:49:09	-->	anewuser (~anewuser@unaffiliated/anewuser) has joined #awk
+2016-10-21 14:55:00		[14:49]
+2016-10-21 16:02:24	<--	oliverio (~oliverio@unaffiliated/oliverio) has left #awk ("Leaving")
+2016-10-21 16:02:24		[16:02]
+2016-10-21 16:18:36	-->	Coldblackice (~anonz@unaffiliated/coldblackice) has joined #awk
+2016-10-21 16:18:36		[16:18]
+2016-10-21 16:33:38	<--	Coldblackice (~anonz@unaffiliated/coldblackice) has quit
+2016-10-21 16:33:38		[16:33]
+2016-10-21 17:04:13	<--	anewuser (~anewuser@unaffiliated/anewuser) has quit (Quit: anewuser)
+2016-10-21 17:04:13		[17:04]
+2016-10-21 17:13:21	<--	marky1991 (~marky1991@unaffiliated/marky1991) has quit (Ping timeout: 260 seconds)
+2016-10-21 17:13:56	<--	Al3xG0 (~unix@unaffiliated/al3xg0) has quit (Ping timeout: 260 seconds)
+2016-10-21 17:14:27	-->	Al3xG0 (~unix@191.33.192.252) has joined #awk
+2016-10-21 17:14:27	<--	Al3xG0 (~unix@191.33.192.252) has quit (Changing host)
+2016-10-21 17:14:27	-->	Al3xG0 (~unix@unaffiliated/al3xg0) has joined #awk
+2016-10-21 17:20:00		[17:14]
+2016-10-21 17:26:08	<--	PryMar56 (~prymar@unaffiliated/prymar56) has quit (Quit: Leaving)
+2016-10-21 17:32:00		[17:26]
+2016-10-21 17:33:24	<--	}ls{ (~kalle@unaffiliated/ls/x-8089558) has quit (Quit: real life interrupt)
+2016-10-21 17:39:00		[17:33]
+2016-10-21 17:39:20	<--	nal1 (~nal@adsl-64-237-233-123.prtc.net) has quit (Quit: WeeChat 1.4)
+2016-10-21 17:45:00		[17:39]
+2016-10-21 18:21:58	<--	larryv (~larryv@wikipedia/larryv) has quit (Quit: larryv)
+2016-10-21 18:21:58		[18:21]
+2016-10-21 18:53:10	<--	Guest92219 (~c00kiemon@cslab178.cs.aueb.gr) has quit (Quit: Guest92219)
+2016-10-21 18:53:10		[18:53]
+2016-10-21 18:53:27	-->	c00kiemon5ter (~c00kiemon@foss-aueb/coder/c00kiemon5ter) has joined #awk
+2016-10-21 18:59:00		[18:53]
+2016-10-21 19:32:00	<--	rods-tab3 (~rods-tab3@172.56.39.35) has quit (Remote host closed the connection)
+2016-10-21 19:32:00		[19:32]
+2016-10-21 19:34:30	-->	rods-tab3 (~rods-tab3@172.56.39.35) has joined #awk
+2016-10-21 19:40:00		[19:34]
+2016-10-21 20:40:24	<--	rods-tab3 (~rods-tab3@172.56.39.35) has quit (Remote host closed the connection)
+2016-10-21 20:40:24		[20:40]
+2016-10-21 20:51:24	-->	rods-tab3 (~rods-tab3@172.56.39.35) has joined #awk
+2016-10-21 20:57:00		[20:51]
+2016-10-21 21:03:13	-->	oskarkv (~oskar@c213-89-225-149.bredband.comhem.se) has joined #awk
+2016-10-21 21:04:43	<--	rods-tab3 (~rods-tab3@172.56.39.35) has quit (Ping timeout: 250 seconds)
+2016-10-21 21:09:24	-->	rods-tab3 (~rods-tab3@172.56.39.35) has joined #awk
+2016-10-21 21:15:00		[21:09]
+2016-10-21 21:31:19	-->	Nahra (~user@unaffiliated/nahra) has joined #awk
+2016-10-21 21:31:19		[21:31]
+2016-10-21 21:42:20	<--	rods-tab3 (~rods-tab3@172.56.39.35) has quit (Remote host closed the connection)
+2016-10-21 21:48:00		[21:42]
+2016-10-21 22:00:40	-->	rods-tab3 (~rods-tab3@172.56.39.35) has joined #awk
+2016-10-21 22:01:17	-->	hpt (~hpt@123.114.120.154) has joined #awk
+2016-10-21 22:02:45	-->	elastix (~elastix@151.70.15.62) has joined #awk
+2016-10-21 22:08:00		[22:02]
+2016-10-21 22:22:11	<--	hpt (~hpt@123.114.120.154) has quit (Quit: Lost terminal)
+2016-10-21 22:28:00		[22:22]
+2016-10-21 22:35:27	-->	vuoto (~vuoto@n9pl7d.static.netgroup.dk) has joined #awk
+2016-10-21 22:41:00		[22:35]
+2016-10-21 22:45:35	<--	elastix (~elastix@151.70.15.62) has quit (Quit: Leaving)
+2016-10-21 22:51:00		[22:45]
+2016-10-21 23:11:49	<--	Ridout (~coffee@unaffiliated/ridout) has quit (Quit: Lost terminal)
+2016-10-21 23:11:49		[23:11]
+2016-10-21 23:23:38	<--	vuoto (~vuoto@n9pl7d.static.netgroup.dk) has quit (Remote host closed the connection)
+2016-10-21 23:29:00		[23:23]
+2016-10-21 23:48:19	-->	vuoto (~vuoto@n9pl7d.static.netgroup.dk) has joined #awk
+2016-10-21 23:48:19		[23:48]
+2016-10-22 00:01:04	-->	corsibu (~corsibu@83-91-127-117-dynamic.dk.customer.tdc.net) has joined #awk
+2016-10-22 00:07:00		[00:01]
+2016-10-22 00:07:45	<--	corsibu (~corsibu@83-91-127-117-dynamic.dk.customer.tdc.net) has quit (Remote host closed the connection)
+2016-10-22 00:08:22	-->	corsibu (~corsibu@83-91-127-117-dynamic.dk.customer.tdc.net) has joined #awk
+2016-10-22 00:13:09	<--	corsibu (~corsibu@83-91-127-117-dynamic.dk.customer.tdc.net) has quit (Ping timeout: 265 seconds)
+2016-10-22 00:16:45	<--	bolt (r00t@unaffiliated/bolt) has quit (Remote host closed the connection)
+2016-10-22 00:21:21	-->	bolt (r00t@unaffiliated/bolt) has joined #awk
+2016-10-22 00:27:00		[00:21]
+2016-10-22 00:31:25	-->	gniourf (~gniourf@pdm-l03.insa-lyon.fr) has joined #awk
+2016-10-22 00:33:23	-->	alad (~alad@unaffiliated/alad) has joined #awk
+2016-10-22 00:39:00		[00:33]
+2016-10-22 00:58:37	-->	corsibu (~corsibu@83-91-127-117-dynamic.dk.customer.tdc.net) has joined #awk
+2016-10-22 00:58:38		[00:58]
+2016-10-22 01:03:12	<--	corsibu (~corsibu@83-91-127-117-dynamic.dk.customer.tdc.net) has quit (Ping timeout: 256 seconds)
+2016-10-22 01:09:00		[01:03]
+2016-10-22 01:21:40	-->	}ls{ (~kalle@unaffiliated/ls/x-8089558) has joined #awk
+2016-10-22 01:27:00		[01:21]
+2016-10-22 02:00:31	-->	b (~coffee@unaffiliated/ridout) has joined #awk
+2016-10-22 02:00:31		[02:00]
+2016-10-22 02:10:15	-->	johnmilton (~johnmilto@96-58-242-186.res.bhn.net) has joined #awk
+2016-10-22 02:10:22	<--	johnmilton (~johnmilto@96-58-242-186.res.bhn.net) has quit (Read error: Connection reset by peer)
+2016-10-22 02:16:00		[02:10]
+2016-10-22 02:28:35	<--	vuoto (~vuoto@n9pl7d.static.netgroup.dk) has quit (Remote host closed the connection)
+2016-10-22 02:28:57	-->	cdg (~cdg@2602:30a:2e2d:b980:e8b3:37c5:ca49:d927) has joined #awk
+2016-10-22 02:34:00		[02:28]
+2016-10-22 02:41:25	-->	johnmilton (~johnmilto@192.206.23.197) has joined #awk
+2016-10-22 02:43:00	-->	corsibu (~corsibu@83-91-127-117-dynamic.dk.customer.tdc.net) has joined #awk
+2016-10-22 02:48:00		[02:43]
+2016-10-22 03:31:34	<--	oskarkv (~oskar@c213-89-225-149.bredband.comhem.se) has quit (Remote host closed the connection)
+2016-10-22 03:31:34		[03:31]
+2016-10-22 03:32:28	-->	oskarkv (~oskar@c213-89-225-149.bredband.comhem.se) has joined #awk
+2016-10-22 03:38:00		[03:32]
+2016-10-22 03:52:05	-->	vuoto (~vuoto@n9pl7d.static.netgroup.dk) has joined #awk
+2016-10-22 03:58:00		[03:52]
+2016-10-22 04:12:30	-->	jetchisel (~jetchisel@opensuse/member/jetchisel) has joined #awk
+2016-10-22 04:15:49	<--	jetchisel (~jetchisel@opensuse/member/jetchisel) has quit (Client Quit)
+2016-10-22 04:15:49		[04:15]
+2016-10-22 04:20:28	<--	alad (~alad@unaffiliated/alad) has quit (Quit: WeeChat 1.6)
+2016-10-22 04:26:00		[04:20]
+2016-10-22 04:32:36	<--	corsibu (~corsibu@83-91-127-117-dynamic.dk.customer.tdc.net) has quit (Remote host closed the connection)
+2016-10-22 04:38:00		[04:32]
+2016-10-22 04:40:27	-->	polemic (~polemic@185.86.151.164) has joined #awk
+2016-10-22 04:46:00		[04:40]
+2016-10-22 05:00:49	<--	cdg (~cdg@2602:30a:2e2d:b980:e8b3:37c5:ca49:d927) has quit (Remote host closed the connection)
+2016-10-22 05:05:51	<--	polemic (~polemic@185.86.151.164) has quit (Ping timeout: 256 seconds)
+2016-10-22 05:05:51		[05:05]
+2016-10-22 05:14:22	-->	elastix (~elastix@151.70.15.62) has joined #awk
+2016-10-22 05:20:00		[05:14]
+2016-10-22 05:27:30	<--	_val_ (~val@freebsd/user/val) has quit (Read error: No route to host)
+2016-10-22 05:33:00		[05:27]
+2016-10-22 05:53:05	-->	polemic (~polemic@185.86.151.164) has joined #awk
+2016-10-22 05:53:05		[05:53]
+2016-10-22 06:05:24	-->	isleif (~isleif@2a01:e35:2eb1:3820:dd59:9e16:a7db:8cce) has joined #awk
+2016-10-22 06:08:53	<--	elastix (~elastix@151.70.15.62) has quit (Ping timeout: 265 seconds)
+2016-10-22 06:08:53		[06:08]
+2016-10-22 06:09:50	isleif	Hi, I have trouble to make this code working : http://pastebin.com/y8Yz6QVQ My directory (extract) contains file named with High numbers
+2016-10-22 06:10:31	-->	marky1991 (~marky1991@c-71-56-74-125.hsd1.ga.comcast.net) has joined #awk
+2016-10-22 06:10:42	<--	marky1991 (~marky1991@c-71-56-74-125.hsd1.ga.comcast.net) has quit (Changing host)
+2016-10-22 06:10:42	-->	marky1991 (~marky1991@unaffiliated/marky1991) has joined #awk
+2016-10-22 06:12:12	izalove	and the problem is?
+2016-10-22 06:12:28	isleif	Files is not sorted
+2016-10-22 06:14:04	geirha	you have to iterate from 1 to n
+2016-10-22 06:16:24	isleif	Thanks it's seems working :)
+2016-10-22 06:18:15	isleif	Yup that's Ok, thanks a lot
+2016-10-22 06:18:21	geirha	though ls already sorts the files, so using the original array would work too; just from 0 to n-1 in that case
+2016-10-22 06:19:24	geirha	though parsing ls output at all is generally bad
+2016-10-22 06:20:10	-->	elastix (~elastix@151.70.15.62) has joined #awk
+2016-10-22 06:22:23	<--	elastix (~elastix@151.70.15.62) has quit (Client Quit)
+2016-10-22 06:22:49	-->	elastix (~elastix@151.70.15.62) has joined #awk
+2016-10-22 06:27:30	<--	vuoto (~vuoto@n9pl7d.static.netgroup.dk) has quit (Remote host closed the connection)
+2016-10-22 06:27:30		[06:27]
+2016-10-22 06:34:00	<--	b (~coffee@unaffiliated/ridout) has quit (Ping timeout: 244 seconds)
+2016-10-22 06:39:00		[06:34]
+2016-10-22 06:46:29	<--	elastix (~elastix@151.70.15.62) has quit (Ping timeout: 260 seconds)
+2016-10-22 06:52:00		[06:46]
+2016-10-22 07:02:38	-->	corsibu (~corsibu@83-91-127-117-dynamic.dk.customer.tdc.net) has joined #awk
+2016-10-22 07:04:21	-->	elastix (~elastix@151.70.46.48) has joined #awk
+2016-10-22 07:04:30	<--	marky1991 (~marky1991@unaffiliated/marky1991) has quit (Ping timeout: 252 seconds)
+2016-10-22 07:10:00		[07:04]
+2016-10-22 07:15:04	-->	ormaaj (~ormaaj@97-127-79-136.mpls.qwest.net) has joined #awk
+2016-10-22 07:21:00		[07:15]
+2016-10-22 07:21:01	-->	vuoto (~vuoto@n9pl7d.static.netgroup.dk) has joined #awk
+2016-10-22 07:27:00		[07:21]
+2016-10-22 07:30:07	-->	b (~coffee@unaffiliated/ridout) has joined #awk
+2016-10-22 07:31:13	-->	nal (~nal@adsl-64-237-234-251.prtc.net) has joined #awk
+2016-10-22 07:37:00		[07:31]
+2016-10-22 07:41:24	<--	vuoto (~vuoto@n9pl7d.static.netgroup.dk) has quit (Remote host closed the connection)
+2016-10-22 07:47:00		[07:41]
+2016-10-22 07:54:19	-->	PryMar56 (~prymar@unaffiliated/prymar56) has joined #awk
+2016-10-22 08:00:00		[07:54]
+2016-10-22 08:04:48	<--	rods-tab3 (~rods-tab3@172.56.39.35) has quit (Ping timeout: 256 seconds)
+2016-10-22 08:10:00		[08:04]
+2016-10-22 08:22:59	<--	axisys (~axisys@unaffiliated/axisys) has quit (Read error: Connection reset by peer)
+2016-10-22 08:28:00		[08:22]
+2016-10-22 08:30:05	-->	navidr (uid112413@gateway/web/irccloud.com/x-pwuftfhgwlunhcxo) has joined #awk
+2016-10-22 08:36:00		[08:30]
+2016-10-22 08:46:53	<--	navidr (uid112413@gateway/web/irccloud.com/x-pwuftfhgwlunhcxo) has quit (Ping timeout: 260 seconds)
+2016-10-22 08:48:04	-->	navidr (uid112413@gateway/web/irccloud.com/x-jiuzbhitrrmxkisz) has joined #awk
+2016-10-22 08:48:48	-->	rods-tab3 (~rods-tab3@172.56.38.92) has joined #awk
+2016-10-22 08:54:00		[08:48]
+2016-10-22 08:57:41	-->	anewuser (~anewuser@unaffiliated/anewuser) has joined #awk
+2016-10-22 08:59:46	-->	D630 (~D630@unaffiliated/d630) has joined #awk
+2016-10-22 09:05:00		[08:59]
+2016-10-22 09:06:22	-->	Miner_48er (~Miner_48e@68.67.255.139) has joined #awk
+2016-10-22 09:12:00		[09:06]
+2016-10-22 09:13:18	<--	anewuser (~anewuser@unaffiliated/anewuser) has quit (Read error: Connection reset by peer)
+2016-10-22 09:13:31	<--	D630 (~D630@unaffiliated/d630) has quit (Quit: WeeChat 1.6)
+2016-10-22 09:13:50	-->	anewuser (~anewuser@unaffiliated/anewuser) has joined #awk
+2016-10-22 09:13:59	-->	D630 (~D630@unaffiliated/d630) has joined #awk
+2016-10-22 09:19:00		[09:13]
+2016-10-22 09:35:13	<--	isleif (~isleif@2a01:e35:2eb1:3820:dd59:9e16:a7db:8cce) has quit (Ping timeout: 260 seconds)
+2016-10-22 09:35:13		[09:35]
+2016-10-22 09:45:56	-->	vuoto (~vuoto@80-71-135-9.u.parknet.dk) has joined #awk
+2016-10-22 09:51:00		[09:45]
+2016-10-22 10:08:08	<--	elastix (~elastix@151.70.46.48) has quit (Quit: Leaving)
+2016-10-22 10:08:08		[10:08]
+2016-10-22 10:19:47	<--	Miner_48er (~Miner_48e@68.67.255.139) has quit (Quit: Leaving)
+2016-10-22 10:25:00		[10:19]
+2016-10-22 10:30:12	<--	anewuser (~anewuser@unaffiliated/anewuser) has quit (Quit: anewuser)
+2016-10-22 10:36:00		[10:30]
+2016-10-22 10:41:18	<--	vuoto (~vuoto@80-71-135-9.u.parknet.dk) has quit (Remote host closed the connection)
+2016-10-22 10:47:00		[10:41]
+2016-10-22 10:55:23	-->	mustapha (~a@89.238.166.235) has joined #awk
+2016-10-22 11:01:00		[10:55]
+2016-10-22 11:02:23	<--	D630 (~D630@unaffiliated/d630) has quit (Quit: WeeChat 1.6)
+2016-10-22 11:08:00		[11:02]
+2016-10-22 11:16:40	-->	jetchisel (~jetchisel@opensuse/member/jetchisel) has joined #awk
+2016-10-22 11:21:07	<--	navidr (uid112413@gateway/web/irccloud.com/x-jiuzbhitrrmxkisz) has quit (Quit: Connection closed for inactivity)
+2016-10-22 11:27:00		[11:21]
+2016-10-22 11:51:06	<--	corsibu (~corsibu@83-91-127-117-dynamic.dk.customer.tdc.net) has quit (Remote host closed the connection)
+2016-10-22 11:51:06		[11:51]
+2016-10-22 11:51:44	-->	corsibu (~corsibu@83-91-127-117-dynamic.dk.customer.tdc.net) has joined #awk
+2016-10-22 11:54:12	-->	lel (~lel@unaffiliated/lel) has joined #awk
+2016-10-22 11:56:05	<--	corsibu (~corsibu@83-91-127-117-dynamic.dk.customer.tdc.net) has quit (Ping timeout: 250 seconds)
+2016-10-22 12:00:42	<--	lel (~lel@unaffiliated/lel) has quit (Quit: leaving)
+2016-10-22 12:02:33	-->	shbot1 (~shbot@37.139.2.101) has joined #awk
+2016-10-22 12:04:14	<--	Raimondi (~israelcha@c-73-244-170-150.hsd1.fl.comcast.net) has quit (Write error: Broken pipe)
+2016-10-22 12:05:03	<--	shbot (~shbot@37.139.2.101) has quit (Write error: Broken pipe)
+2016-10-22 12:05:52	nal	break; next or next;break?
+2016-10-22 12:06:01	nal	or just next?
+2016-10-22 12:06:20	<--	harukomoto (~harukomot@93-41-21-101.ip79.fastwebnet.it) has quit (Ping timeout: 244 seconds)
+2016-10-22 12:06:20		[12:06]
+2016-10-22 12:06:59	-->	Raimondi (~israelcha@c-73-244-170-150.hsd1.fl.comcast.net) has joined #awk
+2016-10-22 12:08:30	-->	harukomoto (~harukomot@93-41-21-101.ip79.fastwebnet.it) has joined #awk
+2016-10-22 12:09:49	<--	devster31 (~devsterkn@2001:41d0:1:a3af::1) has quit (Excess Flood)
+2016-10-22 12:10:04	-->	devster31 (~devsterkn@ns348877.ip-91-121-108.eu) has joined #awk
+2016-10-22 12:14:40	nal	nvm
+2016-10-22 12:17:41	<--	fbsd (~fbsd@a89-154-153-39.cpe.netcabo.pt) has quit (Ping timeout: 248 seconds)
+2016-10-22 12:23:00		[12:17]
+2016-10-22 12:39:15	-->	fbsd (~fbsd@a89-154-153-39.cpe.netcabo.pt) has joined #awk
+2016-10-22 12:39:15		[12:39]
+2016-10-22 12:40:03	-->	lemonpepper24 (~jack@2601:646:8c01:3b70:ae7b:a1ff:fee4:ea26) has joined #awk
+2016-10-22 12:46:00		[12:40]
+2016-10-22 12:46:28	-->	amjam (~f@pool-173-66-92-181.washdc.fios.verizon.net) has joined #awk
+2016-10-22 12:52:00		[12:46]
+2016-10-22 12:59:12	-->	corsibu (~corsibu@83-91-127-117-dynamic.dk.customer.tdc.net) has joined #awk
+2016-10-22 13:05:00		[12:59]
+2016-10-22 13:05:03	<--	corsibu (~corsibu@83-91-127-117-dynamic.dk.customer.tdc.net) has quit (Ping timeout: 245 seconds)
+2016-10-22 13:06:41	<--	jetchisel (~jetchisel@opensuse/member/jetchisel) has quit (Quit: "Unfortunately time is always against us" -- *Morpheus*)
+2016-10-22 13:12:00		[13:06]
+2016-10-22 13:12:21	<--	talsamon (~talsamon@193-80-186-182.adsl.highway.telekom.at) has quit (Ping timeout: 244 seconds)
+2016-10-22 13:12:56	-->	talsamon (~talsamon@188-23-11-125.adsl.highway.telekom.at) has joined #awk
+2016-10-22 13:18:00		[13:12]
+2016-10-22 13:39:07	Camusensei	just next
+2016-10-22 13:39:07		[13:39]
+2016-10-22 13:57:53	nal	so next breaks?
+2016-10-22 13:57:53		[13:57]
+2016-10-22 13:59:50	nal	oh, it does
+2016-10-22 13:59:52	nal	thanks camu
+2016-10-22 14:00:05	Camusensei	nal: np.
+2016-10-22 14:02:07	<--	polemic (~polemic@185.86.151.164) has quit (Ping timeout: 252 seconds)
+2016-10-22 14:08:00		[14:02]
+2016-10-22 14:39:44	nal	i cant believe it took me the entire day to make one script
+2016-10-22 14:39:44		[14:39]
+2016-10-22 14:40:01	yitz	heh
+2016-10-22 14:43:57	-->	larryv (~larryv@wikipedia/larryv) has joined #awk
+2016-10-22 14:49:00		[14:43]
+2016-10-22 15:02:07	-->	corsibu (~corsibu@83-91-127-117-dynamic.dk.customer.tdc.net) has joined #awk
+2016-10-22 15:06:48	<--	oskarkv (~oskar@c213-89-225-149.bredband.comhem.se) has quit (Remote host closed the connection)
+2016-10-22 15:06:48		[15:06]
+2016-10-22 15:06:54	<--	corsibu (~corsibu@83-91-127-117-dynamic.dk.customer.tdc.net) has quit (Ping timeout: 250 seconds)
+2016-10-22 15:12:00		[15:06]
+2016-10-22 15:18:45	nal	and im still not done...
+2016-10-22 15:19:10	nal	any tips on making this faster? http://dpaste.com/11FK6AB.txt with the file being this http://www.gutenberg.org/ebooks/29765
+2016-10-22 15:20:23	nal	i may need to split the file alphabetically i guess
+2016-10-22 15:20:58	nal	or maybe make each word into its own file! yeah thats brililant!
+2016-10-22 15:24:14	<--	mustapha (~a@89.238.166.235) has quit (Ping timeout: 265 seconds)
+2016-10-22 15:30:00		[15:24]
+2016-10-22 15:31:57	<--	rods-tab3 (~rods-tab3@172.56.38.92) has quit (Remote host closed the connection)
+2016-10-22 15:37:00		[15:31]
+2016-10-22 15:37:21	-->	rods-tab3 (~rods-tab3@172.56.38.92) has joined #awk
+2016-10-22 15:43:00		[15:37]
+2016-10-22 15:58:46	-->	jeffreylevesque (~chatzilla@pool-100-15-106-25.washdc.fios.verizon.net) has joined #awk
+2016-10-22 15:58:46		[15:58]
+2016-10-22 16:04:19	-->	anewuser (~anewuser@unaffiliated/anewuser) has joined #awk
+2016-10-22 16:10:00		[16:04]
+2016-10-22 16:14:25	<--	hpotter (~intlnsde@83.172.43.62) has quit (Ping timeout: 260 seconds)
+2016-10-22 16:20:00		[16:14]
+2016-10-22 16:37:49	<--	Al3xG0 (~unix@unaffiliated/al3xg0) has quit (Read error: Connection reset by peer)
+2016-10-22 16:37:49		[16:37]
+2016-10-22 16:38:02	-->	Al3xG0 (~unix@177.205.121.183.dynamic.adsl.gvt.net.br) has joined #awk
+2016-10-22 16:38:03	<--	Al3xG0 (~unix@177.205.121.183.dynamic.adsl.gvt.net.br) has quit (Changing host)
+2016-10-22 16:38:03	-->	Al3xG0 (~unix@unaffiliated/al3xg0) has joined #awk
+2016-10-22 16:44:00		[16:38]
+2016-10-22 17:06:22	-->	hpotter (~intlnsde@83.172.43.62) has joined #awk
+2016-10-22 17:06:22		[17:06]
+2016-10-22 17:29:24	<--	anewuser (~anewuser@unaffiliated/anewuser) has quit (Quit: anewuser)
+2016-10-22 17:29:24		[17:29]
+2016-10-22 17:31:22	<--	rods-tab3 (~rods-tab3@172.56.38.92) has quit (Remote host closed the connection)
+2016-10-22 17:35:22	-->	rods-tab3 (~rods-tab3@172.56.38.92) has joined #awk
+2016-10-22 17:41:00		[17:35]
+2016-10-22 17:43:18	<--	ormaaj (~ormaaj@97-127-79-136.mpls.qwest.net) has quit (Quit: WeeChat 1.6-rc1)
+2016-10-22 17:47:56	<--	larryv (~larryv@wikipedia/larryv) has quit (Quit: larryv)
+2016-10-22 17:53:00		[17:47]
+2016-10-22 17:57:40	Camusensei	nal: your script syntax is wrong
+2016-10-22 17:57:47	Camusensei	awk -v w'='$"* '
+2016-10-22 17:57:54	Camusensei	I see a missing "
+2016-10-22 17:57:58	nal	hahaha
+2016-10-22 17:58:12	nal	nope, it's right
+2016-10-22 17:58:24	Camusensei	so how should I understand it?
+2016-10-22 17:58:32	nal	$"* means flatten the list
+2016-10-22 17:59:47	Camusensei	oooh, that's dirty, you use the fact that " is not a valid character in shell variable names so that it doesn't get expanded? no, even if that were the case, the " would still require an ending quote
+2016-10-22 17:59:54	Camusensei	I'm still puzzled
+2016-10-22 18:00:32	Camusensei	I would understand if it were  awk -v 'w=$"*' '
+2016-10-22 18:00:49	nal	http://man.cat-v.org/plan_9/1/rc
+2016-10-22 18:01:33	Camusensei	oh. you are using something I don't know :/
+2016-10-22 18:03:11	nal	not that hard to learn
+2016-10-22 18:03:31	nal	unlike the bash manpage, this thing is legible and short
+2016-10-22 18:05:21	Camusensei	I won't argue on this :p
+2016-10-22 18:05:45	nal	anyway, it cant be made much faster, the dictionary is 30mb... so i'm gonna have to use another dictionary or cut this one up
+2016-10-22 18:05:55	Camusensei	you should precompute your limit in your for loops,    for (i=1;i<=split($0,words,";" FS);i++)
+2016-10-22 18:06:07	Camusensei	get the split($0,words,";" FS) in a var
+2016-10-22 18:06:52	Camusensei	same thing, don't do toupper(w) for every word, store it in a var
+2016-10-22 18:06:53	nal	ah right right
+2016-10-22 18:08:13	Camusensei	for the rest of the code, I must be too tired, I don't understand it at all ^^' you're on your own there, sorry
+2016-10-22 18:08:13		[18:08]
+2016-10-22 18:08:29	nal	I'm gonna use ARGV[1] anyway
+2016-10-22 18:08:49	nal	but still
+2016-10-22 18:12:02	nal	thanks though, this might speed it up
+2016-10-22 18:18:00		[18:12]
+2016-10-22 18:36:14	-->	gcw (~gcw@64-53-243-126.static.nap.wideopenwest.com) has joined #awk
+2016-10-22 18:36:14		[18:36]
+2016-10-22 18:58:23	nal	 if ( (x && found++) < (!x && found>0) ) would this operate from left to right?
+2016-10-22 18:58:23		[18:58]
+2016-10-22 18:59:16	nal	oh, it worked. yay
+2016-10-22 19:02:35	<--	rods-tab3 (~rods-tab3@172.56.38.92) has quit (Remote host closed the connection)
+2016-10-22 19:08:00		[19:02]
+2016-10-22 19:19:22	<--	amjam (~f@pool-173-66-92-181.washdc.fios.verizon.net) has quit (Quit: leaving)
+2016-10-22 19:20:49	-->	rods-tab3 (~rods-tab3@172.56.38.92) has joined #awk
+2016-10-22 19:22:07	<--	}ls{ (~kalle@unaffiliated/ls/x-8089558) has quit (Quit: real life interrupt)
+2016-10-22 19:24:25	<--	rods-tab3 (~rods-tab3@172.56.38.92) has quit (Remote host closed the connection)
+2016-10-22 19:24:25		[19:24]
+2016-10-22 19:48:20	<--	PryMar56 (~prymar@unaffiliated/prymar56) has quit (Quit: Leaving)
+2016-10-22 19:48:20		[19:48]
+2016-10-22 19:54:59	<--	nal (~nal@adsl-64-237-234-251.prtc.net) has quit (Quit: WeeChat 1.4)
+2016-10-22 20:00:00		[19:54]
+2016-10-22 20:33:43	-->	topon (~harukomot@93-41-21-101.ip79.fastwebnet.it) has joined #awk
+2016-10-22 20:33:43		[20:33]
+2016-10-22 20:35:59	<--	harukomoto (~harukomot@93-41-21-101.ip79.fastwebnet.it) has quit (Ping timeout: 265 seconds)
+2016-10-22 20:41:00		[20:35]
+2016-10-22 22:27:27	-->	isleif (~isleif@2a01:e35:2eb1:3820:dd59:9e16:a7db:8cce) has joined #awk
+2016-10-22 22:27:27		[22:27]
+2016-10-22 22:34:57	-->	gcw|rMBP01 (~gcw@64-53-243-126.static.nap.wideopenwest.com) has joined #awk
+2016-10-22 22:35:24	<--	gcw (~gcw@64-53-243-126.static.nap.wideopenwest.com) has quit (Ping timeout: 250 seconds)
+2016-10-22 22:41:00		[22:35]
+2016-10-22 22:42:14	<--	gcw|rMBP01 (~gcw@64-53-243-126.static.nap.wideopenwest.com) has quit (Ping timeout: 244 seconds)
+2016-10-22 22:42:26	-->	gcw (~gcw@64-53-243-126.static.nap.wideopenwest.com) has joined #awk
+2016-10-22 22:48:00		[22:42]
+2016-10-22 22:51:26	-->	geggam (~geggam@ec2-107-20-130-165.compute-1.amazonaws.com) has joined #awk
+2016-10-22 22:54:25	-->	leo2007 (~leo2007@139.59.241.182) has joined #awk
+2016-10-22 22:54:57	leo2007	I need to strip the first char of a string, how to do that portably?
+2016-10-22 23:00:00		[22:54]
+2016-10-22 23:01:14	<--	chasmo77 (~chas77@158.183-62-69.ftth.swbr.surewest.net) has quit (Quit: It's just that easy)
+2016-10-22 23:07:00		[23:01]
+2016-10-22 23:14:22	<--	b (~coffee@unaffiliated/ridout) has quit (Remote host closed the connection)
+2016-10-22 23:20:00		[23:14]
+2016-10-22 23:24:16	-->	corsibu (~corsibu@83-91-127-117-dynamic.dk.customer.tdc.net) has joined #awk
+2016-10-22 23:29:47	leo2007	substr seems to work.
+2016-10-22 23:29:50	<--	leo2007 (~leo2007@139.59.241.182) has left #awk ("rcirc on GNU Emacs 25.1.1")
+2016-10-22 23:35:00		[23:29]
+2016-10-22 23:39:03	<--	isleif (~isleif@2a01:e35:2eb1:3820:dd59:9e16:a7db:8cce) has quit (Quit: Quitte)
+2016-10-22 23:45:00		[23:39]
+2016-10-22 23:54:40	-->	oskarkv (~oskar@c213-89-225-149.bredband.comhem.se) has joined #awk
+2016-10-22 23:56:35	-->	navidr (uid112413@gateway/web/irccloud.com/x-rudsmzmmamizanbm) has joined #awk
+2016-10-23 00:02:00		[23:56]
+2016-10-23 00:37:06	<--	corsibu (~corsibu@83-91-127-117-dynamic.dk.customer.tdc.net) has quit (Remote host closed the connection)
+2016-10-23 00:37:06		[00:37]
+2016-10-23 00:37:24	-->	corsibu (~corsibu@83-91-127-117-dynamic.dk.customer.tdc.net) has joined #awk
+2016-10-23 00:43:00		[00:37]
+2016-10-23 00:51:29	-->	polemic (~polemic@185.86.151.164) has joined #awk
+2016-10-23 00:57:00		[00:51]
+2016-10-23 01:32:21	<--	Al3xG0 (~unix@unaffiliated/al3xg0) has quit (Ping timeout: 260 seconds)
+2016-10-23 01:32:21		[01:32]
+2016-10-23 01:32:49	-->	Al3xG0 (~unix@200.140.70.254) has joined #awk
+2016-10-23 01:32:49	<--	Al3xG0 (~unix@200.140.70.254) has quit (Changing host)
+2016-10-23 01:32:49	-->	Al3xG0 (~unix@unaffiliated/al3xg0) has joined #awk
+2016-10-23 01:38:00		[01:32]
+2016-10-23 01:40:26	-->	vuoto (~vuoto@80-71-135-9.u.parknet.dk) has joined #awk
+2016-10-23 01:41:01	-->	b (~coffee@unaffiliated/ridout) has joined #awk
+2016-10-23 01:47:00		[01:41]
+2016-10-23 02:20:21	-->	rods-tab3 (~rods-tab3@172.56.38.92) has joined #awk
+2016-10-23 02:20:21		[02:20]
+2016-10-23 02:24:09	<--	rods-tab3 (~rods-tab3@172.56.38.92) has quit (Remote host closed the connection)
+2016-10-23 02:30:00		[02:24]
+2016-10-23 02:34:01	<--	shbot1 (~shbot@37.139.2.101) has quit (Remote host closed the connection)
+2016-10-23 02:34:20	-->	shbot (~shbot@37.139.2.101) has joined #awk
+2016-10-23 02:40:00		[02:34]
+2016-10-23 02:46:15	-->	rods-tab3 (~rods-tab3@172.56.38.92) has joined #awk
+2016-10-23 02:52:00		[02:46]
+2016-10-23 02:59:50	<--	bibibi (~bibibi@unaffiliated/bibibi) has quit (Ping timeout: 256 seconds)
+2016-10-23 03:00:21	<--	jj- (juutiju@hilla.kapsi.fi) has quit (Read error: Connection reset by peer)
+2016-10-23 03:02:59	-->	}ls{ (~kalle@p5DCEDD84.dip0.t-ipconnect.de) has joined #awk
+2016-10-23 03:02:59	<--	}ls{ (~kalle@p5DCEDD84.dip0.t-ipconnect.de) has quit (Changing host)
+2016-10-23 03:02:59	-->	}ls{ (~kalle@unaffiliated/ls/x-8089558) has joined #awk
+2016-10-23 03:08:00		[03:02]
+2016-10-23 03:16:24	<--	vuoto (~vuoto@80-71-135-9.u.parknet.dk) has quit (Remote host closed the connection)
+2016-10-23 03:22:00		[03:16]
+2016-10-23 03:42:00	<--	b (~coffee@unaffiliated/ridout) has quit (Ping timeout: 252 seconds)
+2016-10-23 03:42:00		[03:42]
+2016-10-23 03:50:29	-->	larryv (~larryv@wikipedia/larryv) has joined #awk
+2016-10-23 03:50:57	<--	polemic (~polemic@185.86.151.164) has quit (Ping timeout: 260 seconds)
+2016-10-23 03:56:00		[03:50]
+2016-10-23 04:31:14	-->	b (~coffee@unaffiliated/ridout) has joined #awk
+2016-10-23 04:31:14		[04:31]
+2016-10-23 04:47:16	-->	bibibi (~bibibi@unaffiliated/bibibi) has joined #awk
+2016-10-23 04:47:16		[04:47]
+2016-10-23 04:47:17	<--	bibibi (~bibibi@unaffiliated/bibibi) has quit (Read error: Connection reset by peer)
+2016-10-23 04:47:35	-->	bibibi (~bibibi@unaffiliated/bibibi) has joined #awk
+2016-10-23 04:53:00		[04:47]
+2016-10-23 04:57:03	-->	polemic (~polemic@185.86.151.164) has joined #awk
+2016-10-23 05:03:00		[04:57]
+2016-10-23 05:04:57	-->	regain (~moby@177-177-183-251.user.veloxzone.com.br) has joined #awk
+2016-10-23 05:10:00		[05:04]
+2016-10-23 05:14:57	-->	vuoto (~vuoto@80-71-135-9.u.parknet.dk) has joined #awk
+2016-10-23 05:18:21	-->	Nimitz14 (~Nimitz14@cpc91218-cmbg18-2-0-cust107.5-4.cable.virginm.net) has joined #awk
+2016-10-23 05:24:00		[05:18]
+2016-10-23 05:25:52	<--	vuoto (~vuoto@80-71-135-9.u.parknet.dk) has quit (Remote host closed the connection)
+2016-10-23 05:31:00		[05:25]
+2016-10-23 06:08:34	<--	polemic (~polemic@185.86.151.164) has quit (Remote host closed the connection)
+2016-10-23 06:08:34		[06:08]
+2016-10-23 06:20:44	-->	vuoto (~vuoto@80-71-135-9.u.parknet.dk) has joined #awk
+2016-10-23 06:26:00		[06:20]
+2016-10-23 06:29:50	<--	vuoto (~vuoto@80-71-135-9.u.parknet.dk) has quit (Remote host closed the connection)
+2016-10-23 06:35:00		[06:29]
+2016-10-23 06:43:49	<--	rods-tab3 (~rods-tab3@172.56.38.92) has quit (Remote host closed the connection)
+2016-10-23 06:49:00		[06:43]
+2016-10-23 06:51:41	<--	b (~coffee@unaffiliated/ridout) has quit (Remote host closed the connection)
+2016-10-23 06:57:00		[06:51]
+2016-10-23 07:27:10	-->	chasmo77 (~chas77@158.183-62-69.ftth.swbr.surewest.net) has joined #awk
+2016-10-23 07:27:10		[07:27]
+2016-10-23 07:43:30	<--	corsibu (~corsibu@83-91-127-117-dynamic.dk.customer.tdc.net) has quit (Remote host closed the connection)
+2016-10-23 07:43:30		[07:43]
+2016-10-23 07:49:54	<--	jeffreylevesque (~chatzilla@pool-100-15-106-25.washdc.fios.verizon.net) has quit (Ping timeout: 250 seconds)
+2016-10-23 07:55:00		[07:49]
+2016-10-23 08:14:58	-->	b (~coffee@unaffiliated/ridout) has joined #awk
+2016-10-23 08:14:58		[08:14]
+2016-10-23 08:16:44	<--	lemonpepper24 (~jack@2601:646:8c01:3b70:ae7b:a1ff:fee4:ea26) has quit (Ping timeout: 256 seconds)
+2016-10-23 08:22:00		[08:16]
+2016-10-23 08:27:13	-->	nal (~nal@adsl-64-237-235-187.prtc.net) has joined #awk
+2016-10-23 08:27:43	-->	larryv_ (~larryv@wikipedia/larryv) has joined #awk
+2016-10-23 08:30:46	<--	larryv (~larryv@wikipedia/larryv) has quit (Ping timeout: 256 seconds)
+2016-10-23 08:36:00		[08:30]
+2016-10-23 08:52:56	<--	regain (~moby@177-177-183-251.user.veloxzone.com.br) has quit (Quit: dc)
+2016-10-23 08:52:56		[08:52]
+2016-10-23 09:04:03	<--	larryv_ (~larryv@wikipedia/larryv) has quit (Read error: Connection reset by peer)
+2016-10-23 09:04:33	-->	larryv (~larryv@wikipedia/larryv) has joined #awk
+2016-10-23 09:10:00		[09:04]
+2016-10-23 09:12:01	<--	almostworking (~almostwor@unaffiliated/almostworking) has quit (Ping timeout: 260 seconds)
+2016-10-23 09:18:00		[09:12]
+2016-10-23 09:44:02	-->	rods-tab3 (~rods-tab3@172.56.38.92) has joined #awk
+2016-10-23 09:44:02		[09:44]
+2016-10-23 09:46:49	-->	PryMar56 (~prymar@unaffiliated/prymar56) has joined #awk
+2016-10-23 09:52:00		[09:46]
+2016-10-23 10:16:47	-->	vuoto (~vuoto@80-71-135-9.u.parknet.dk) has joined #awk
+2016-10-23 10:16:47		[10:16]
+2016-10-23 10:38:40	<--	vuoto (~vuoto@80-71-135-9.u.parknet.dk) has quit (Remote host closed the connection)
+2016-10-23 10:38:40		[10:38]
+2016-10-23 10:41:22	-->	jeffreylevesque (~chatzilla@tenable.nga.gov) has joined #awk
+2016-10-23 10:47:00		[10:41]
+2016-10-23 10:49:58	-->	John[Lisbeth] (~user@52.165.40.155) has joined #awk
+2016-10-23 10:50:02	John[Lisbeth]	Okay
+2016-10-23 10:50:17	John[Lisbeth]	So recently I am studying micro languages
+2016-10-23 10:51:00	John[Lisbeth]	I use something called forth which is a language as well as a rpn calculator. Some versions of gnu dc give you a similar experience.
+2016-10-23 10:51:29	John[Lisbeth]	The idea behind rpn is everything in the lang is a word
+2016-10-23 10:51:41	John[Lisbeth]	words are separated by spaces
+2016-10-23 10:52:07	John[Lisbeth]	so I might have a word called ?#!!677 but the symbols do not matter
+2016-10-23 10:52:24	John[Lisbeth]	Each word is like a function or a method
+2016-10-23 10:52:46	John[Lisbeth]	2 + 2 is written as 2 2 +
+2016-10-23 10:55:30	John[Lisbeth]	Sorry typing on a phone and at work.
+2016-10-23 10:56:33	John[Lisbeth]	2 adds 2 to a linked list. We write 2 again and now we have two 2s on a linked list. + Takes two things off a linked list and returns their sum
+2016-10-23 10:57:10	John[Lisbeth]	This rpn language has a very short algorithm and so you can embed it in tiny environments
+2016-10-23 10:59:58	John[Lisbeth]	I am thinking about using awk to interpret it because awk is available in most shells, busybox most importantly
+2016-10-23 11:01:07	Riviera	John[Lisbeth]: Okay.
+2016-10-23 11:01:58	izalove	you know what else is available in most shells?  shells
+2016-10-23 11:02:07	John[Lisbeth]	what?
+2016-10-23 11:02:07		[11:02]
+2016-10-23 11:03:23	izalove	do it in shell
+2016-10-23 11:03:29	John[Lisbeth]	O I see
+2016-10-23 11:03:38	izalove	go big or go home
+2016-10-23 11:03:50	John[Lisbeth]	not all env use same shell though
+2016-10-23 11:04:05	John[Lisbeth]	many shell env besides windows have awk
+2016-10-23 11:08:58	<--	jasonwryan (~jasonwrya@fsf/member/jasonwryan) has quit (Ping timeout: 250 seconds)
+2016-10-23 11:11:06	-->	jasonwryan (~jasonwrya@fsf/member/jasonwryan) has joined #awk
+2016-10-23 11:16:52	-->	Coldblackice (~anonz@unaffiliated/coldblackice) has joined #awk
+2016-10-23 11:17:58	<--	Coldblackice (~anonz@unaffiliated/coldblackice) has quit (Max SendQ exceeded)
+2016-10-23 11:17:58		[11:17]
+2016-10-23 11:20:19	-->	Coldblackice (~anonz@unaffiliated/coldblackice) has joined #awk
+2016-10-23 11:24:07	rods-tab3	!awk_wiki_info
+2016-10-23 11:24:07	hawkbot	 awk_wiki_info:  http://awk.freeshell.org/?action=index  http://web.archive.org/web/20160323045835/http://awk.info/?Sitemap  try also:  !concise  !TAPL  !gawkbook
+2016-10-23 11:24:50	rods-tab3	try the awk.info - lists many ie assembler in awk
+2016-10-23 11:27:20	-->	marky1991 (~marky1991@unaffiliated/marky1991) has joined #awk
+2016-10-23 11:29:29	<--	jeffreylevesque (~chatzilla@tenable.nga.gov) has quit (Ping timeout: 244 seconds)
+2016-10-23 11:31:08	<--	navidr (uid112413@gateway/web/irccloud.com/x-rudsmzmmamizanbm) has quit (Quit: Connection closed for inactivity)
+2016-10-23 11:31:19	rods-tab3	asm in awk http://web.archive.org/web/20160322125707/http://awk.info/?doc/awk100/aaa.html
+2016-10-23 11:31:39	<--	oskarkv (~oskar@c213-89-225-149.bredband.comhem.se) has quit (Remote host closed the connection)
+2016-10-23 11:32:41	rods-tab3	many http://web.archive.org/web/20160331100159/http://awk.info/?Interpreters
+2016-10-23 11:35:43	-->	jetchisel (~jetchisel@opensuse/member/jetchisel) has joined #awk
+2016-10-23 11:35:43		[11:35]
+2016-10-23 11:40:21	rods-tab3	!paddlin izalove
+2016-10-23 11:40:21	hawkbot	izalove: Using grep/sed/bash instead of awk --> http://images.firstcovers.com/covers/flash/t/that's_a_paddlin'-647307.jpg
+2016-10-23 11:40:40	izalove	ouch
+2016-10-23 11:46:00		[11:40]
+2016-10-23 11:58:57	-->	lemonpepper24 (~jack@73.93.141.183) has joined #awk
+2016-10-23 11:59:35	-->	jack_ (~jack@c-73-222-153-68.hsd1.ca.comcast.net) has joined #awk
+2016-10-23 12:03:17	<--	lemonpepper24 (~jack@73.93.141.183) has quit (Ping timeout: 260 seconds)
+2016-10-23 12:03:17		[12:03]
+2016-10-23 12:20:38	-->	anewuser (~anewuser@unaffiliated/anewuser) has joined #awk
+2016-10-23 12:20:38		[12:20]
+2016-10-23 12:33:42	<--	Coldblackice (~anonz@unaffiliated/coldblackice) has quit
+2016-10-23 12:37:59	John[Lisbeth]	Sorry I was just spending some time fashioning a little popup stand for my phone out of cardboard and getting out of cardboard
+2016-10-23 12:37:59		[12:37]
+2016-10-23 12:38:18	John[Lisbeth]	Now I've got a bluetooth keyboard going on so I can type ok and not have to shuffle as hard between work and irc
+2016-10-23 12:38:57	-->	regain (~moby@177-177-183-251.user.veloxzone.com.br) has joined #awk
+2016-10-23 12:38:57	John[Lisbeth]	I can see using a shell for scripting sure
+2016-10-23 12:39:05	John[Lisbeth]	most systems that have awk come with shells
+2016-10-23 12:39:20	John[Lisbeth]	but I see awk as a more universal platform because they all have approximately the same awk whereas they will have different shells
+2016-10-23 12:39:47	John[Lisbeth]	There is also sed which I have not loked into as well as curl
+2016-10-23 12:40:07	jetchisel	well, there is gawk and awk plus more :)
+2016-10-23 12:40:21	John[Lisbeth]	My target is going to be busybox environments which do not have package managers
+2016-10-23 12:40:50	John[Lisbeth]	I think I can get most compute tasks done with http so like wget
+2016-10-23 12:41:23	John[Lisbeth]	My goal is to get a nice unix going on my phone. I have got this really nice shell called termux which gives me a shell on my phone as well as a basic busybox
+2016-10-23 12:42:00	John[Lisbeth]	But I really need to get a forth in there because forth allows me to do alot of lispy type things like redefine anything in the language
+2016-10-23 12:42:32	regain	John[Lisbeth]: POSIX cares, when talking about "universal"... busybox is not posix-conformant. busybox-awk has lot of bugs. busy-box programs has too little -options
+2016-10-23 12:43:02	John[Lisbeth]	that causes potential problems
+2016-10-23 12:43:25	regain	John[Lisbeth]: http://pubs.opengroup.org/onlinepubs/9699919799/
+2016-10-23 12:44:03	regain	John[Lisbeth]: click at "shell&utilities", then at "utilities". now: 2016 edition.
+2016-10-23 12:44:31	John[Lisbeth]	perhaps I could work around the bugs
+2016-10-23 12:44:40	John[Lisbeth]	but that would get tedious
+2016-10-23 12:49:10	John[Lisbeth]	The reason I am doing this is I want to try to create a botnet of android phones for my service
+2016-10-23 12:49:38	John[Lisbeth]	I want to use torrent and store small chunks of files on people's phones and pass them around
+2016-10-23 12:52:04	regain	John[Lisbeth]: you can take .c source files, and cross-compile into arm. i do use arm-linux-androideabi-gcc... but people use --target option...
+2016-10-23 12:52:58	<--	melvin (~melvin@c-73-154-77-46.hsd1.pa.comcast.net) has quit (Ping timeout: 245 seconds)
+2016-10-23 12:53:48	regain	John[Lisbeth]: its easy to crosscompile original-awk, and mawk... I've tried gawk, but I've failed.
+2016-10-23 12:53:48		[12:53]
+2016-10-23 12:56:09	regain	John[Lisbeth]: original-awk depends on locale to take the "decimal point" (its a non-posix behavior: at posix, dot(.) its always supported as decimal point)
+2016-10-23 12:58:45	John[Lisbeth]	I neeed to make it easily deployable on android
+2016-10-23 12:58:49	<--	marky1991 (~marky1991@unaffiliated/marky1991) has quit (Ping timeout: 256 seconds)
+2016-10-23 12:58:53	John[Lisbeth]	but that could work
+2016-10-23 12:59:24	rods-tab3	busybox awk based on gawk 3.1.8  http://wiki.alpinelinux.org/wiki/Awk
+2016-10-23 13:05:00		[12:59]
+2016-10-23 13:08:55	John[Lisbeth]	If I compile it for one arm device will it run on all phones?
+2016-10-23 13:09:02	John[Lisbeth]	like say if I compile it on my rpi
+2016-10-23 13:13:05	<--	talsamon (~talsamon@188-23-11-125.adsl.highway.telekom.at) has quit (Ping timeout: 256 seconds)
+2016-10-23 13:14:06	-->	talsamon (~talsamon@188-23-13-7.adsl.highway.telekom.at) has joined #awk
+2016-10-23 13:15:48	<--	anewuser (~anewuser@unaffiliated/anewuser) has quit (Ping timeout: 256 seconds)
+2016-10-23 13:18:21	rods-tab3	that termux comes with busybox eg awk !!  Thanks Much
+2016-10-23 13:24:00		[13:18]
+2016-10-23 13:27:10	-->	hpt (~hpt@219.142.87.53) has joined #awk
+2016-10-23 13:33:00		[13:27]
+2016-10-23 13:34:56	<--	Nimitz14 (~Nimitz14@cpc91218-cmbg18-2-0-cust107.5-4.cable.virginm.net) has quit (Quit: Leaving)
+2016-10-23 13:37:00	<--	m4n (noname@gateway/shell/elitebnc/x-mscslafdcyjeskil) has quit (Ping timeout: 250 seconds)
+2016-10-23 13:42:00		[13:37]
+2016-10-23 13:55:47	-->	anewuser (~anewuser@unaffiliated/anewuser) has joined #awk
+2016-10-23 14:01:00		[13:55]
+2016-10-23 14:08:14	-->	m4n (noname@gateway/shell/elitebnc/x-nxtudqbmcpxltilm) has joined #awk
+2016-10-23 14:14:00		[14:08]
+2016-10-23 14:30:24	<--	jetchisel (~jetchisel@opensuse/member/jetchisel) has quit (Ping timeout: 260 seconds)
+2016-10-23 14:30:24		[14:30]
+2016-10-23 14:37:20	<--	shbot (~shbot@37.139.2.101) has quit (Remote host closed the connection)
+2016-10-23 14:37:44	-->	shbot (~shbot@37.139.2.101) has joined #awk
+2016-10-23 14:41:38	<--	jack_ (~jack@c-73-222-153-68.hsd1.ca.comcast.net) has quit (Excess Flood)
+2016-10-23 14:41:55	-->	jack_ (~jack@c-73-222-153-68.hsd1.ca.comcast.net) has joined #awk
+2016-10-23 14:42:12	-->	Otis (~coffee@unaffiliated/ridout) has joined #awk
+2016-10-23 14:42:15	-->	icelesst1a (~icelesste@marjakori.lahem.in) has joined #awk
+2016-10-23 14:42:20	-->	ghoti_ (~paul@hq.experiencepoint.com) has joined #awk
+2016-10-23 14:42:32	-->	muteki_ (~muteki@kirkland-vpn.arrisi.com) has joined #awk
+2016-10-23 14:42:40	-->	LostSoul_ (~LostSoul@78-11-189-153.static.ip.netia.com.pl) has joined #awk
+2016-10-23 14:43:38	<--	icelesstea (~icelesste@marjakori.lahem.in) has quit (Write error: Broken pipe)
+2016-10-23 14:43:38	<--	waldner (waldner@openvpn/user/waldner) has quit (Write error: Broken pipe)
+2016-10-23 14:43:38	<--	muteki (~muteki@unaffiliated/muteki) has quit (Write error: Broken pipe)
+2016-10-23 14:43:39	<--	LostSoul (~LostSoul@78-11-189-153.static.ip.netia.com.pl) has quit (Write error: Broken pipe)
+2016-10-23 14:43:39	<--	ghoti (~paul@hq.experiencepoint.com) has quit (Write error: Broken pipe)
+2016-10-23 14:43:39	<--	bwe (~bwe@unaffiliated/bwe) has quit (Write error: Broken pipe)
+2016-10-23 14:43:39	<--	ttmrichter (~ttmrichte@2a00:f10:121:400:418:90ff:fe00:148a) has quit (Excess Flood)
+2016-10-23 14:43:40	<--	b (~coffee@unaffiliated/ridout) has quit (Remote host closed the connection)
+2016-10-23 14:43:45	-->	ttmricht- (~ttmrichte@2a00:f10:121:400:418:90ff:fe00:148a) has joined #awk
+2016-10-23 14:47:17	-->	waldner (waldner@2a01:7e00::f03c:91ff:fe96:96f3) has joined #awk
+2016-10-23 14:47:17		[14:47]
+2016-10-23 14:47:17	<--	waldner (waldner@2a01:7e00::f03c:91ff:fe96:96f3) has quit (Changing host)
+2016-10-23 14:47:17	-->	waldner (waldner@openvpn/user/waldner) has joined #awk
+2016-10-23 14:47:21	<--	relaxed (~relaxed@unaffiliated/relaxed) has quit (Quit: ⠠⠵)
+2016-10-23 14:49:23	-->	bwe (~bwe@unaffiliated/bwe) has joined #awk
+2016-10-23 14:49:57	-->	zacts (~zacts@dragora/developer/zacts) has joined #awk
+2016-10-23 14:51:01	-->	iaj_ (~iaj@static.136.47.47.78.clients.your-server.de) has joined #awk
+2016-10-23 14:51:18	-->	ghoti (~paul@hq.experiencepoint.com) has joined #awk
+2016-10-23 14:53:11	<--	Guest60265 (~nesthib@unaffiliated/nesthib) has quit (Ping timeout: 265 seconds)
+2016-10-23 14:53:12	<--	ghoti_ (~paul@hq.experiencepoint.com) has quit (Ping timeout: 265 seconds)
+2016-10-23 14:53:12	<--	iaj (~iaj@static.136.47.47.78.clients.your-server.de) has quit (Read error: Connection reset by peer)
+2016-10-23 14:55:44	-->	nesthib (~nesthib@unaffiliated/nesthib) has joined #awk
+2016-10-23 15:01:00		[14:55]
+2016-10-23 15:06:10	<--	delarge (~v@charquican.linuxers.cl) has quit (Ping timeout: 265 seconds)
+2016-10-23 15:06:10	<--	sbine (~sbine@unaffiliated/sbine) has quit (Ping timeout: 265 seconds)
+2016-10-23 15:06:10	<--	ramok (~komar@max.bionik.tu-berlin.de) has quit (Ping timeout: 265 seconds)
+2016-10-23 15:06:10	-->	sbine_ (~sbine@unaffiliated/sbine) has joined #awk
+2016-10-23 15:06:31	-->	ramok (~komar@max.bionik.tu-berlin.de) has joined #awk
+2016-10-23 15:09:29	-->	delarge (~v@charquican.linuxers.cl) has joined #awk
+2016-10-23 15:13:16	<--	anewuser (~anewuser@unaffiliated/anewuser) has quit (Quit: anewuser)
+2016-10-23 15:17:59	<--	muteki_ (~muteki@kirkland-vpn.arrisi.com) has quit (Ping timeout: 245 seconds)
+2016-10-23 15:17:59		[15:17]
+2016-10-23 15:18:20	<--	skered (~dereks@unaffiliated/skered) has quit (Ping timeout: 256 seconds)
+2016-10-23 15:19:28	<--	regain (~moby@177-177-183-251.user.veloxzone.com.br) has quit (Ping timeout: 260 seconds)
+2016-10-23 15:19:56	-->	muteki (~muteki@unaffiliated/muteki) has joined #awk
+2016-10-23 15:21:05	-->	skered (~dereks@unaffiliated/skered) has joined #awk
+2016-10-23 15:27:00		[15:21]
+2016-10-23 15:31:13	<--	rideh (~rideh@archangel.csw.io) has quit (Ping timeout: 268 seconds)
+2016-10-23 15:31:51	<--	likewhoa (~likewhoa@s2.maserver.com) has quit (Ping timeout: 268 seconds)
+2016-10-23 15:32:27	<--	gigetoo (~gigetoo@c83-250-44-242.bredband.comhem.se) has quit (Ping timeout: 268 seconds)
+2016-10-23 15:32:27	<--	fl3sh (~fl3sh@unaffiliated/fl4sh) has quit (Ping timeout: 268 seconds)
+2016-10-23 15:32:27	<--	gnomon (~gnomon@CPE1c872c7063d0-CM00fc8d8fbe70.cpe.net.cable.rogers.com) has quit (Ping timeout: 268 seconds)
+2016-10-23 15:32:27	<--	blind_ (~blind@unaffiliated/blind) has quit (Ping timeout: 268 seconds)
+2016-10-23 15:32:28	<--	isomorph1smes (~ubuntu@ec2-54-243-213-161.compute-1.amazonaws.com) has quit (Ping timeout: 268 seconds)
+2016-10-23 15:32:28	<--	arturasl (~arturasla@lapinskas.net) has quit (Ping timeout: 268 seconds)
+2016-10-23 15:32:28	<--	weylin (~weylin@unaffiliated/weylin) has quit (Ping timeout: 268 seconds)
+2016-10-23 15:32:28	<--	survietamine (~vnvu@mxfr2-m1.mcra.iliadgroupe.fr) has quit (Ping timeout: 268 seconds)
+2016-10-23 15:33:23	-->	likewhoa (~likewhoa@s2.maserver.com) has joined #awk
+2016-10-23 15:33:32	-->	blind (~blind@unaffiliated/blind) has joined #awk
+2016-10-23 15:33:38	-->	gnomon (~gnomon@CPE1c872c7063d0-CM00fc8d8fbe70.cpe.net.cable.rogers.com) has joined #awk
+2016-10-23 15:34:01	-->	isomorphismes (~ubuntu@ec2-54-243-213-161.compute-1.amazonaws.com) has joined #awk
+2016-10-23 15:34:05	-->	gigetoo (~gigetoo@c83-250-44-242.bredband.comhem.se) has joined #awk
+2016-10-23 15:38:05	-->	rideh (rideh@2600:3c00::f03c:91ff:fe93:4dd8) has joined #awk
+2016-10-23 15:38:05	-->	weylin (~weylin@unaffiliated/weylin) has joined #awk
+2016-10-23 15:38:52	-->	survietamine (~vnvu@mxfr2-m1.mcra.iliadgroupe.fr) has joined #awk
+2016-10-23 15:41:48	<--	jasonwryan (~jasonwrya@fsf/member/jasonwryan) has quit (Ping timeout: 260 seconds)
+2016-10-23 15:45:27	-->	arturasl (~arturasla@lapinskas.net) has joined #awk
+2016-10-23 15:45:27		[15:45]
+2016-10-23 15:45:46	-->	fl3sh (~fl3sh@53.245.forpsi.net) has joined #awk
+2016-10-23 15:51:00		[15:45]
+2016-10-23 15:51:14	-->	relaxed (~relaxed@unaffiliated/relaxed) has joined #awk
+2016-10-23 15:55:44	-->	jasonwryan (~jasonwrya@fsf/member/jasonwryan) has joined #awk
+2016-10-23 15:58:46	-->	regain (~moby@177-177-183-251.user.veloxzone.com.br) has joined #awk
+2016-10-23 16:04:00		[15:58]
+2016-10-23 16:13:29	-->	gcw|rMBP01 (~gcw@64-53-243-126.static.nap.wideopenwest.com) has joined #awk
+2016-10-23 16:14:38	<--	gcw (~gcw@64-53-243-126.static.nap.wideopenwest.com) has quit (Ping timeout: 245 seconds)
+2016-10-23 16:20:00		[16:14]
+2016-10-23 16:47:31	<--	geggam (~geggam@ec2-107-20-130-165.compute-1.amazonaws.com) has quit (Remote host closed the connection)
+2016-10-23 16:47:31		[16:47]
+2016-10-23 17:16:19	-->	navidr (uid112413@gateway/web/irccloud.com/x-nphhbygzbsylhmgc) has joined #awk
+2016-10-23 17:16:19		[17:16]
+2016-10-23 17:16:38	-->	al-damiri (uid142631@gateway/web/irccloud.com/x-vlpfdlsghyaznkpv) has joined #awk
+2016-10-23 17:22:00		[17:16]
+2016-10-23 17:34:16	<--	PryMar56 (~prymar@unaffiliated/prymar56) has quit (Quit: Leaving)
+2016-10-23 17:40:00		[17:34]
+2016-10-23 17:53:01	<--	al-damiri (uid142631@gateway/web/irccloud.com/x-vlpfdlsghyaznkpv) has quit (Ping timeout: 260 seconds)
+2016-10-23 17:54:25	<--	larryv (~larryv@wikipedia/larryv) has quit (Quit: larryv)
+2016-10-23 17:56:22	-->	al-damiri (uid142631@gateway/web/irccloud.com/x-xetuacvcqsmbfnwx) has joined #awk
+2016-10-23 17:56:22		[17:56]
+2016-10-23 18:10:44	<--	al-damiri (uid142631@gateway/web/irccloud.com/x-xetuacvcqsmbfnwx) has quit (Ping timeout: 260 seconds)
+2016-10-23 18:13:22	-->	al-damiri (uid142631@gateway/web/irccloud.com/x-ednlelcjcwxavtjp) has joined #awk
+2016-10-23 18:13:22		[18:13]
+2016-10-23 18:20:04	--	ttmricht- is now known as ttmrichter
+2016-10-23 18:26:00		[18:20]
+2016-10-23 18:49:01	-->	tww (~tww@222.18.167.202) has joined #awk
+2016-10-23 18:49:01		[18:49]
+2016-10-23 19:01:01	<--	fford (~fnord@p2003004C6F642300CE6D2D04010A06D1.dip0.t-ipconnect.de) has quit (Quit: WeeChat 1.5)
+2016-10-23 19:04:54	<--	Otis (~coffee@unaffiliated/ridout) has quit (Quit: Lost terminal)
+2016-10-23 19:04:54		[19:04]
+2016-10-23 19:08:25	<--	jack_ (~jack@c-73-222-153-68.hsd1.ca.comcast.net) has quit (Ping timeout: 260 seconds)
+2016-10-23 19:12:14	<--	hpt (~hpt@219.142.87.53) has quit (Ping timeout: 256 seconds)
+2016-10-23 19:18:00		[19:12]
+2016-10-23 19:19:39	<--	nal (~nal@adsl-64-237-235-187.prtc.net) has quit (Quit: WeeChat 1.4)
+2016-10-23 19:25:00		[19:19]
+2016-10-23 19:37:18	-->	gcw (~gcw@64-53-243-126.static.nap.wideopenwest.com) has joined #awk
+2016-10-23 19:38:52	<--	gcw|rMBP01 (~gcw@64-53-243-126.static.nap.wideopenwest.com) has quit (Ping timeout: 260 seconds)
+2016-10-23 19:41:08	<--	navidr (uid112413@gateway/web/irccloud.com/x-nphhbygzbsylhmgc) has quit (Quit: Connection closed for inactivity)
+2016-10-23 19:41:08		[19:41]
+2016-10-23 20:02:31	<--	al-damiri (uid142631@gateway/web/irccloud.com/x-ednlelcjcwxavtjp) has quit (Quit: Connection closed for inactivity)
+2016-10-23 20:02:31		[20:02]
+2016-10-23 20:19:09	<--	geirha (geirha@gina.it.ntnu.no) has quit (Ping timeout: 250 seconds)
+2016-10-23 20:19:09		[20:19]
+2016-10-23 20:20:23	-->	geirha (geirha@gina.it.ntnu.no) has joined #awk
+2016-10-23 20:21:00	rods-tab3	better yet - if you do:  apt install gawk    u get gawk 4.1.4 w mpfr
+2016-10-23 20:26:00		[20:21]
+2016-10-23 20:31:08	-->	hpt (~hpt@219.142.87.53) has joined #awk
+2016-10-23 20:31:29	<--	}ls{ (~kalle@unaffiliated/ls/x-8089558) has quit (Quit: real life interrupt)
+2016-10-23 20:37:00		[20:31]
+2016-10-23 20:37:01	-->	corsibu (~corsibu@171.20.68.68) has joined #awk
+2016-10-23 20:42:25	<--	geirha (geirha@gina.it.ntnu.no) has quit (Ping timeout: 260 seconds)
+2016-10-23 20:48:00		[20:42]
+2016-10-23 20:54:14	-->	navidr (uid112413@gateway/web/irccloud.com/x-xoxqmfltyqwmtctb) has joined #awk
+2016-10-23 21:00:00		[20:54]
+2016-10-23 21:02:12	-->	_val_ (~val@freebsd/user/val) has joined #awk
+2016-10-23 21:06:45	<--	rods-tab3 (~rods-tab3@172.56.38.92) has quit (Remote host closed the connection)
+2016-10-23 21:09:23	-->	geirha (geirha@gina.it.ntnu.no) has joined #awk
+2016-10-23 21:15:00		[21:09]
+2016-10-23 21:21:09	<--	hpt (~hpt@219.142.87.53) has quit (Ping timeout: 260 seconds)
+2016-10-23 21:24:44	<--	regain (~moby@177-177-183-251.user.veloxzone.com.br) has quit (Ping timeout: 250 seconds)
+2016-10-23 21:24:53	-->	rods-tab3 (~rods-tab3@172.56.38.92) has joined #awk
+2016-10-23 21:26:45	<--	m4n (noname@gateway/shell/elitebnc/x-nxtudqbmcpxltilm) has quit (Ping timeout: 250 seconds)
+2016-10-23 21:32:00		[21:26]
+2016-10-23 21:32:35	<--	fl3sh (~fl3sh@53.245.forpsi.net) has quit (Changing host)
+2016-10-23 21:32:35	-->	fl3sh (~fl3sh@unaffiliated/fl4sh) has joined #awk
+2016-10-23 21:38:00		[21:32]
+2016-10-23 21:40:23	-->	geggam (~geggam@ec2-107-20-130-165.compute-1.amazonaws.com) has joined #awk
+2016-10-23 21:46:00		[21:40]
+2016-10-23 22:07:25	-->	alxtb (~alxtb@185.65.109.249) has joined #awk
+2016-10-23 22:07:25		[22:07]
+2016-10-23 22:14:08	<--	alxtb (~alxtb@185.65.109.249) has quit
+2016-10-23 22:20:00		[22:14]
+2016-10-23 22:21:28	--	icelesst1a is now known as icelesstea
+2016-10-23 22:21:35	<--	watmm (~nmurphy@post.dp-media.de) has quit (Quit: Leaving.)
+2016-10-23 22:21:51	-->	watmm (~nmurphy@post.dp-media.de) has joined #awk
+2016-10-23 22:22:05	<--	watmm (~nmurphy@post.dp-media.de) has quit (Max SendQ exceeded)
+2016-10-23 22:23:18	-->	watmm (~nmurphy@post.dp-media.de) has joined #awk
+2016-10-23 22:23:31	<--	watmm (~nmurphy@post.dp-media.de) has quit (Max SendQ exceeded)
+2016-10-23 22:24:54	-->	watmm (~nmurphy@post.dp-media.de) has joined #awk
+2016-10-23 22:25:08	<--	watmm (~nmurphy@post.dp-media.de) has quit (Max SendQ exceeded)
+2016-10-23 22:25:50	-->	watmm (~nmurphy@post.dp-media.de) has joined #awk
+2016-10-23 22:26:01	-->	flying (~flying@90.216.134.194) has joined #awk
+2016-10-23 22:26:02	<--	watmm (~nmurphy@post.dp-media.de) has quit (Max SendQ exceeded)
+2016-10-23 22:27:25	-->	watmm (~nmurphy@post.dp-media.de) has joined #awk
+2016-10-23 22:27:39	<--	watmm (~nmurphy@post.dp-media.de) has quit (Max SendQ exceeded)
+2016-10-23 22:29:53	-->	watmm (~nmurphy@post.dp-media.de) has joined #awk
+2016-10-23 22:30:08	<--	watmm (~nmurphy@post.dp-media.de) has quit (Max SendQ exceeded)
+2016-10-23 22:31:36	-->	watmm (~nmurphy@post.dp-media.de) has joined #awk
+2016-10-23 22:31:49	<--	watmm (~nmurphy@post.dp-media.de) has quit (Max SendQ exceeded)
+2016-10-23 22:37:00		[22:31]
+2016-10-23 22:58:12	-->	jetchisel (~jetchisel@opensuse/member/jetchisel) has joined #awk
+2016-10-23 22:58:12		[22:58]
+2016-10-23 23:05:22	<--	rods-tab3 (~rods-tab3@172.56.38.92) has quit (Remote host closed the connection)
+2016-10-23 23:06:53	-->	gcw|rMBP01 (~gcw@64-53-243-126.static.nap.wideopenwest.com) has joined #awk
+2016-10-23 23:09:48	<--	gcw (~gcw@64-53-243-126.static.nap.wideopenwest.com) has quit (Ping timeout: 260 seconds)
+2016-10-23 23:15:00		[23:09]
+2016-10-23 23:15:34	-->	rods-tab3 (~rods-tab3@172.56.38.92) has joined #awk
+2016-10-23 23:16:19	-->	gcw (~gcw@64-53-243-126.static.nap.wideopenwest.com) has joined #awk
+2016-10-23 23:18:18	<--	gcw|rMBP01 (~gcw@64-53-243-126.static.nap.wideopenwest.com) has quit (Ping timeout: 256 seconds)
+2016-10-23 23:21:48	-->	D630 (~D630@unaffiliated/d630) has joined #awk
+2016-10-23 23:27:00		[23:21]
+2016-10-23 23:45:27	<--	iaglium (~i@45.63.97.181) has quit (Quit: Bed Time)
+2016-10-23 23:45:27		[23:45]
+2016-10-23 23:58:09	<--	Guest22490 (~cheater@rzssh1.informatik.uni-hamburg.de) has quit (Changing host)
+2016-10-23 23:58:09	-->	Guest22490 (~cheater@unaffiliated/radoq) has joined #awk
+2016-10-23 23:58:50	<--	Guest22490 (~cheater@unaffiliated/radoq) has quit (Quit: not planned disconnect)
+2016-10-23 23:59:23	-->	RadoQ (~cheater@unaffiliated/radoq) has joined #awk
+2016-10-24 00:05:00		[23:59]
+2016-10-24 00:05:49	<--	corsibu (~corsibu@171.20.68.68) has quit (Remote host closed the connection)
+2016-10-24 00:06:22	-->	corsibu (~corsibu@171.20.68.68) has joined #awk
+2016-10-24 00:10:49	<--	corsibu (~corsibu@171.20.68.68) has quit (Ping timeout: 260 seconds)
+2016-10-24 00:11:24	<--	_val_ (~val@freebsd/user/val) has quit (Ping timeout: 250 seconds)
+2016-10-24 00:13:11	-->	_val_ (~val@fw1.astro.rug.nl) has joined #awk
+2016-10-24 00:13:11	<--	_val_ (~val@fw1.astro.rug.nl) has quit (Changing host)
+2016-10-24 00:13:11	-->	_val_ (~val@freebsd/user/val) has joined #awk
+2016-10-24 00:13:51	-->	Aussie_matt (~quassel@2001:8003:a4f1:d000:222:15ff:fe99:bafd) has joined #awk
+2016-10-24 00:15:30	<--	jetchisel (~jetchisel@opensuse/member/jetchisel) has quit (Quit: "Unfortunately time is always against us" -- *Morpheus*)
+2016-10-24 00:17:22	-->	jeffreylevesque (~chatzilla@pool-100-15-106-25.washdc.fios.verizon.net) has joined #awk
+2016-10-24 00:23:00		[00:17]
+2016-10-24 00:54:45	-->	corsibu (~corsibu@171.20.68.68) has joined #awk
+2016-10-24 00:54:45		[00:54]
+2016-10-24 00:58:05	-->	iaglium (~i@45.63.76.107) has joined #awk
+2016-10-24 00:58:23	-->	fford (~fnord@p2003004C6F642300CE6D2D04010A06D1.dip0.t-ipconnect.de) has joined #awk
+2016-10-24 01:04:00		[00:58]
+2016-10-24 01:27:41	<--	johnmilton (~johnmilto@192.206.23.197) has quit (Remote host closed the connection)
+2016-10-24 01:27:41		[01:27]
+2016-10-24 01:31:44	<--	Al3xG0 (~unix@unaffiliated/al3xg0) has quit (Ping timeout: 252 seconds)
+2016-10-24 01:32:15	-->	Al3xG0 (~unix@179.176.100.210.dynamic.adsl.gvt.net.br) has joined #awk
+2016-10-24 01:32:16	<--	Al3xG0 (~unix@179.176.100.210.dynamic.adsl.gvt.net.br) has quit (Changing host)
+2016-10-24 01:32:16	-->	Al3xG0 (~unix@unaffiliated/al3xg0) has joined #awk
+2016-10-24 01:38:00		[01:32]
+2016-10-24 01:44:43	-->	al-damiri (uid142631@gateway/web/irccloud.com/x-hejpmjwcsfesfind) has joined #awk
+2016-10-24 01:50:00		[01:44]
+2016-10-24 01:55:56	-->	johnmilton (~johnmilto@47.206.47.42) has joined #awk
+2016-10-24 01:56:12	<--	johnmilton (~johnmilto@47.206.47.42) has quit (Remote host closed the connection)
+2016-10-24 01:57:37	-->	johnmilton (~johnmilto@192.206.23.197) has joined #awk
+2016-10-24 02:03:00		[01:57]
+2016-10-24 02:14:10	<--	jeffreylevesque (~chatzilla@pool-100-15-106-25.washdc.fios.verizon.net) has quit (Ping timeout: 265 seconds)
+2016-10-24 02:19:14	-->	gcw|rMBP01 (~gcw@108-197-6-119.lightspeed.cicril.sbcglobal.net) has joined #awk
+2016-10-24 02:19:14		[02:19]
+2016-10-24 02:20:52	<--	gcw (~gcw@64-53-243-126.static.nap.wideopenwest.com) has quit (Ping timeout: 252 seconds)
+2016-10-24 02:26:00		[02:20]
+2016-10-24 02:29:39	<--	Aussie_matt (~quassel@2001:8003:a4f1:d000:222:15ff:fe99:bafd) has quit (Remote host closed the connection)
+2016-10-24 02:35:00		[02:29]
+2016-10-24 02:35:59	-->	flyingX (~flying@90.216.134.194) has joined #awk
+2016-10-24 02:36:07	-->	slon_ (slon@ip-78-45-105-131.net.upcbroadband.cz) has joined #awk
+2016-10-24 02:36:19	-->	CutMeOwnThroat (~iridos@unaffiliated/iridos) has joined #awk
+2016-10-24 02:36:53	<--	corsibu (~corsibu@171.20.68.68) has quit (Remote host closed the connection)
+2016-10-24 02:37:25	-->	corsibu (~corsibu@171.20.68.68) has joined #awk
+2016-10-24 02:37:29	-->	yitz_ (~yitz@unaffiliated/yitz-/x-6738568) has joined #awk
+2016-10-24 02:37:54	-->	djinni_ (~djinni@68.ip-149-56-14.net) has joined #awk
+2016-10-24 02:40:06	-->	ema_ (~ema@debian/developer/ema) has joined #awk
+2016-10-24 02:40:16	-->	paul____ (~paul@stoner.jakma.org) has joined #awk
+2016-10-24 02:40:30	-->	jeffreylevesque (~chatzilla@129.6.45.20) has joined #awk
+2016-10-24 02:41:59	-->	sysanthrope_ (~quassel@188.166.86.152) has joined #awk
+2016-10-24 02:42:01	<--	corsibu (~corsibu@171.20.68.68) has quit (Ping timeout: 260 seconds)
+2016-10-24 02:43:21	-->	LoRe_ (danielt@banjo.rbfh.de) has joined #awk
+2016-10-24 02:43:36	-->	llua` (~llua@macha.mac-anu.org) has joined #awk
+2016-10-24 02:43:36	-->	iaglium_ (~i@45.63.76.107) has joined #awk
+2016-10-24 02:44:30	-->	mattcen_ (~mattcen@c122-108-68-124.sunsh1.vic.optusnet.com.au) has joined #awk
+2016-10-24 02:45:20	<--	iaglium (~i@45.63.76.107) has quit (*.net *.split)
+2016-10-24 02:45:20	<--	flying (~flying@90.216.134.194) has quit (*.net *.split)
+2016-10-24 02:45:20	<--	jasonwryan (~jasonwrya@fsf/member/jasonwryan) has quit (*.net *.split)
+2016-10-24 02:45:21	<--	tapout (~tapout@unaffiliated/tapout) has quit (*.net *.split)
+2016-10-24 02:45:21	<--	djinni (~djinni@68.ip-149-56-14.net) has quit (*.net *.split)
+2016-10-24 02:45:21	<--	LoRe (danielt@banjo.rbfh.de) has quit (*.net *.split)
+2016-10-24 02:45:21	<--	llua (~llua@zsh/developer/llua) has quit (*.net *.split)
+2016-10-24 02:45:21	<--	dking (~dking@vps7150.inmotionhosting.com) has quit (*.net *.split)
+2016-10-24 02:45:21	<--	paul_ (~paul@stoner.jakma.org) has quit (*.net *.split)
+2016-10-24 02:45:21	<--	yitz (~yitz@unaffiliated/yitz-/x-6738568) has quit (*.net *.split)
+2016-10-24 02:45:21	<--	mattcen (~mattcen@c122-108-68-124.sunsh1.vic.optusnet.com.au) has quit (*.net *.split)
+2016-10-24 02:45:21	<--	sysanthrope (~quassel@188.166.86.152) has quit (*.net *.split)
+2016-10-24 02:45:22	<--	slon (slon@ip-78-45-105-131.net.upcbroadband.cz) has quit (*.net *.split)
+2016-10-24 02:45:22	<--	Iridos (~iridos@unaffiliated/iridos) has quit (*.net *.split)
+2016-10-24 02:45:22	<--	ema (~ema@debian/developer/ema) has quit (*.net *.split)
+2016-10-24 02:45:22	<--	Tristitia (~tristitia@static-ip-69-64-50-196.inaddr.ip-pool.com) has quit (*.net *.split)
+2016-10-24 02:45:22	<--	dualbus (U2FsdGVkX1@ma.sdf.org) has quit (*.net *.split)
+2016-10-24 02:45:23	<--	vin-ivar (~vin-ivar@unaffiliated/vin-ivar) has quit (*.net *.split)
+2016-10-24 02:45:26	--	mattcen_ is now known as mattcen
+2016-10-24 02:46:08	-->	Tristit1a (~tristitia@static-ip-69-64-50-196.inaddr.ip-pool.com) has joined #awk
+2016-10-24 02:47:38	--	ema_ is now known as ema
+2016-10-24 02:49:18	<--	devster31 (~devsterkn@ns348877.ip-91-121-108.eu) has quit (Ping timeout: 250 seconds)
+2016-10-24 02:52:37	-->	dualbus (U2FsdGVkX1@ma.sdf.org) has joined #awk
+2016-10-24 02:52:37		[02:52]
+2016-10-24 02:54:42	<--	johnmilton (~johnmilto@192.206.23.197) has quit (Remote host closed the connection)
+2016-10-24 02:55:21	-->	gcw (~gcw@108-197-6-119.lightspeed.cicril.sbcglobal.net) has joined #awk
+2016-10-24 02:55:44	-->	devster31 (~devsterkn@2001:41d0:1:a3af::1) has joined #awk
+2016-10-24 02:57:00	-->	corsibu (~corsibu@171.20.68.68) has joined #awk
+2016-10-24 02:57:05	<--	corsibu (~corsibu@171.20.68.68) has quit (Max SendQ exceeded)
+2016-10-24 02:57:21	-->	tapout (~tapout@unaffiliated/tapout) has joined #awk
+2016-10-24 02:57:33	-->	dking (~dking@vps7150.inmotionhosting.com) has joined #awk
+2016-10-24 02:57:35	<--	gcw|rMBP01 (~gcw@108-197-6-119.lightspeed.cicril.sbcglobal.net) has quit (Ping timeout: 256 seconds)
+2016-10-24 02:57:41	-->	corsibu (~corsibu@171.20.68.68) has joined #awk
+2016-10-24 02:57:56	-->	vin-ivar (~vin-ivar@unaffiliated/vin-ivar) has joined #awk
+2016-10-24 02:58:11	-->	johnmilton (~johnmilto@192.206.23.197) has joined #awk
+2016-10-24 03:00:16	--	llua` is now known as llua
+2016-10-24 03:00:16	<--	llua (~llua@macha.mac-anu.org) has quit (Changing host)
+2016-10-24 03:00:16	-->	llua (~llua@zsh/developer/llua) has joined #awk
+2016-10-24 03:02:30	--	Tristit1a is now known as Tristitia
+2016-10-24 03:03:39	-->	cdg (~cdg@157.166.173.5) has joined #awk
+2016-10-24 03:04:32	<--	cdg (~cdg@157.166.173.5) has quit (Remote host closed the connection)
+2016-10-24 03:04:33	<--	vin-ivar (~vin-ivar@unaffiliated/vin-ivar) has left #awk ("WeeChat 1.6")
+2016-10-24 03:04:46	-->	cdg (~cdg@157.166.173.5) has joined #awk
+2016-10-24 03:07:08	-->	marky1991 (~marky1991@unaffiliated/marky1991) has joined #awk
+2016-10-24 03:07:45	-->	dking_desktop (~danielk@vbo1.inmotionhosting.com) has joined #awk
+2016-10-24 03:07:45		[03:07]
+2016-10-24 03:07:58	<--	dking_desktop (~danielk@vbo1.inmotionhosting.com) has left #awk
+2016-10-24 03:09:08	-->	}ls{ (~kalle@p5DC9B2A1.dip0.t-ipconnect.de) has joined #awk
+2016-10-24 03:09:08	<--	}ls{ (~kalle@p5DC9B2A1.dip0.t-ipconnect.de) has quit (Changing host)
+2016-10-24 03:09:08	-->	}ls{ (~kalle@unaffiliated/ls/x-8089558) has joined #awk
+2016-10-24 03:12:38	<--	slon_ (slon@ip-78-45-105-131.net.upcbroadband.cz) has quit (Quit: leaving)
+2016-10-24 03:12:49	-->	slon (slon@ip-78-45-105-131.net.upcbroadband.cz) has joined #awk
+2016-10-24 03:18:00		[03:12]
+2016-10-24 03:22:58	<--	geggam (~geggam@ec2-107-20-130-165.compute-1.amazonaws.com) has quit (Ping timeout: 256 seconds)
+2016-10-24 03:28:00		[03:22]
+2016-10-24 03:29:49	-->	hpt (~hpt@221.219.75.125) has joined #awk
+2016-10-24 03:35:00		[03:29]
+2016-10-24 03:35:19	-->	anewuser (~anewuser@unaffiliated/anewuser) has joined #awk
+2016-10-24 03:41:00		[03:35]
+2016-10-24 03:43:36	<--	D630 (~D630@unaffiliated/d630) has quit (Quit: WeeChat 1.6)
+2016-10-24 03:49:00		[03:43]
+2016-10-24 03:56:39	<--	hpt (~hpt@221.219.75.125) has quit (Quit: Lost terminal)
+2016-10-24 04:02:00		[03:56]
+2016-10-24 04:02:27	-->	colab (~moby@177-177-183-251.user.veloxzone.com.br) has joined #awk
+2016-10-24 04:07:47	-->	somaReverse (~amos@124.16.128.66) has joined #awk
+2016-10-24 04:08:02	somaReverse	hello, does awk use relational model just like SQL?
+2016-10-24 04:11:17	izalove	awk reads a line, checks if it matches a pattern, and in case of a match it executes an action
+2016-10-24 04:11:22	izalove	that's all it does
+2016-10-24 04:14:03	-->	corsibu_ (~corsibu@171.20.68.68) has joined #awk
+2016-10-24 04:16:43	<--	corsibu (~corsibu@171.20.68.68) has quit (Ping timeout: 245 seconds)
+2016-10-24 04:19:31	<--	corsibu_ (~corsibu@171.20.68.68) has quit (Ping timeout: 276 seconds)
+2016-10-24 04:19:31		[04:19]
+2016-10-24 04:23:23	<--	anewuser (~anewuser@unaffiliated/anewuser) has quit (Quit: anewuser)
+2016-10-24 04:29:00		[04:23]
+2016-10-24 04:31:08	<--	navidr (uid112413@gateway/web/irccloud.com/x-xoxqmfltyqwmtctb) has quit (Quit: Connection closed for inactivity)
+2016-10-24 04:33:49	-->	gareppa (~gareppa@151.31.43.18) has joined #awk
+2016-10-24 04:35:53	-->	geggam (~geggam@ec2-107-20-130-165.compute-1.amazonaws.com) has joined #awk
+2016-10-24 04:40:11	<--	r00twrh (~r00tWears@73.44.33.86) has quit (Quit: Leaving)
+2016-10-24 04:42:03	-->	r00twrh (~r00tWears@73.44.33.86) has joined #awk
+2016-10-24 04:48:00		[04:42]
+2016-10-24 05:00:46	<--	cdg (~cdg@157.166.173.5) has quit (Remote host closed the connection)
+2016-10-24 05:02:13	pr3d4t0r	somaReverse: You can make associative arrays in awk :) That's about it.
+2016-10-24 05:08:00		[05:02]
+2016-10-24 05:41:39	<--	Tahvok (~Tahvok@unaffiliated/tahvok) has left #awk ("WeeChat 1.6")
+2016-10-24 05:41:39		[05:41]
+2016-10-24 05:58:53	-->	larryv (~larryv@wikipedia/larryv) has joined #awk
+2016-10-24 05:58:53		[05:58]
+2016-10-24 05:59:02	-->	oskarkv (~oskar@c213-89-225-149.bredband.comhem.se) has joined #awk
+2016-10-24 05:59:33	-->	navidr (uid112413@gateway/web/irccloud.com/x-ykhkfgzulqezjqne) has joined #awk
+2016-10-24 06:00:29	-->	vuoto (~vuoto@80-71-135-9.u.parknet.dk) has joined #awk
+2016-10-24 06:06:00		[06:00]
+2016-10-24 06:07:05	-->	cdg (~cdg@157.166.173.5) has joined #awk
+2016-10-24 06:09:18	--	LostSoul_ is now known as LostSoul
+2016-10-24 06:09:30	-->	Coldblackice (~anonz@unaffiliated/coldblackice) has joined #awk
+2016-10-24 06:15:00		[06:09]
+2016-10-24 06:38:24	<--	larryv (~larryv@wikipedia/larryv) has left #awk
+2016-10-24 06:38:24		[06:38]
+2016-10-24 06:48:28	<--	rods-tab3 (~rods-tab3@172.56.38.92) has quit (Remote host closed the connection)
+2016-10-24 06:51:33	<--	flyingX (~flying@90.216.134.194) has quit
+2016-10-24 06:57:00		[06:51]
+2016-10-24 06:59:33	<--	vuoto (~vuoto@80-71-135-9.u.parknet.dk) has quit (Ping timeout: 256 seconds)
+2016-10-24 06:59:37	-->	rods-tab3 (~rods-tab3@172.56.38.92) has joined #awk
+2016-10-24 07:00:14	-->	vuoto (~vuoto@80-71-135-9.u.parknet.dk) has joined #awk
+2016-10-24 07:03:25	<--	gareppa (~gareppa@151.31.43.18) has quit (Quit: Leaving)
+2016-10-24 07:05:41	<--	vuoto (~vuoto@80-71-135-9.u.parknet.dk) has quit (Remote host closed the connection)
+2016-10-24 07:08:31	<--	}ls{ (~kalle@unaffiliated/ls/x-8089558) has quit (Ping timeout: 265 seconds)
+2016-10-24 07:14:00		[07:08]
+2016-10-24 07:48:09	<--	johnmilton (~johnmilto@192.206.23.197) has quit (Remote host closed the connection)
+2016-10-24 07:48:09		[07:48]
+2016-10-24 07:55:36	-->	johnmilton (~johnmilto@47.206.47.42) has joined #awk
+2016-10-24 07:55:36	<--	johnmilton (~johnmilto@47.206.47.42) has quit (Client Quit)
+2016-10-24 07:56:57	-->	johnmilton (~johnmilto@192.206.23.197) has joined #awk
+2016-10-24 08:02:00		[07:56]
+2016-10-24 08:12:59	<--	mrtrump (~g@209-6-150-53.c3-0.bkl-ubr1.sbo-bkl.ma.cable.rcn.com) has quit (Quit: leaving)
+2016-10-24 08:18:00		[08:12]
+2016-10-24 08:33:50	<--	colab (~moby@177-177-183-251.user.veloxzone.com.br) has quit (Quit: Leaving)
+2016-10-24 08:33:50		[08:33]
+2016-10-24 08:34:04	<--	cdg (~cdg@157.166.173.5) has quit (Remote host closed the connection)
+2016-10-24 08:38:12	<--	Raimondi (~israelcha@c-73-244-170-150.hsd1.fl.comcast.net) has quit (Ping timeout: 260 seconds)
+2016-10-24 08:44:00		[08:38]
+2016-10-24 08:44:39	-->	Raimondi (~israelcha@c-73-244-170-150.hsd1.fl.comcast.net) has joined #awk
+2016-10-24 08:45:50	-->	PryMar56 (~prymar@unaffiliated/prymar56) has joined #awk
+2016-10-24 08:48:53	-->	larryv (~larryv@wikipedia/larryv) has joined #awk
+2016-10-24 08:51:25	<--	larryv (~larryv@wikipedia/larryv) has quit (Client Quit)
+2016-10-24 08:53:40	<--	CutMeOwnThroat (~iridos@unaffiliated/iridos) has quit (Remote host closed the connection)
+2016-10-24 08:53:56	-->	CutMeOwnThroat (~iridos@unaffiliated/iridos) has joined #awk
+2016-10-24 08:59:00		[08:53]
+2016-10-24 09:08:07	-->	jack_ (~jack@c-73-222-153-68.hsd1.ca.comcast.net) has joined #awk
+2016-10-24 09:08:11	<--	jack_ (~jack@c-73-222-153-68.hsd1.ca.comcast.net) has quit (Client Quit)
+2016-10-24 09:14:00		[09:08]
+2016-10-24 09:23:48	<--	johnmilton (~johnmilto@192.206.23.197) has quit (Remote host closed the connection)
+2016-10-24 09:24:40	<--	oskarkv (~oskar@c213-89-225-149.bredband.comhem.se) has quit (Remote host closed the connection)
+2016-10-24 09:30:00		[09:24]
+2016-10-24 09:44:10	xpt	actually awk reads a record not a line (it's line by default)
+2016-10-24 09:44:28	izalove	it was a simpilified explanation
+2016-10-24 09:44:58	xpt	don oversimplify simple tool because it's seems too simple
+2016-10-24 09:47:39	xpt	wasn't there awk+shell database engine that predates oracle RDBMS?
+2016-10-24 09:47:39		[09:47]
+2016-10-24 10:01:16	-->	quesker (~jon@c-73-151-65-89.hsd1.ca.comcast.net) has joined #awk
+2016-10-24 10:02:22	quesker	I need to add a line to a [foo] section.  I know how to change lines but not how to add one
+2016-10-24 10:02:52	-->	jasonwryan (~jasonwrya@fsf/member/jasonwryan) has joined #awk
+2016-10-24 10:02:52		[10:02]
+2016-10-24 10:03:16	izalove	awk '{ print } /foo/ { print "add this thing" }'
+2016-10-24 10:03:25	quesker	thanks
+2016-10-24 10:04:21	-->	cdg (~cdg@157.166.173.5) has joined #awk
+2016-10-24 10:04:32	_val_	exit
+2016-10-24 10:04:34	<--	_val_ (~val@freebsd/user/val) has quit (Quit: leaving)
+2016-10-24 10:08:47	<--	rod-yolo (~rod-yolo@2607:fb90:a515:351:41bc:10ce:c671:3e12) has quit (Quit: AndroIRC - Android IRC Client ( http://www.androirc.com ))
+2016-10-24 10:08:52	-->	nal (~nal@adsl-64-237-235-251.prtc.net) has joined #awk
+2016-10-24 10:09:10	-->	rod-yolo (~rod-yolo@2607:fb90:a515:351:41bc:10ce:c671:3e12) has joined #awk
+2016-10-24 10:09:58	<--	Coldblackice (~anonz@unaffiliated/coldblackice) has quit
+2016-10-24 10:11:01	<--	rod-yolo (~rod-yolo@2607:fb90:a515:351:41bc:10ce:c671:3e12) has quit (Client Quit)
+2016-10-24 10:11:17	-->	rod-yolo (~rod-yolo@2607:fb90:a515:351:41bc:10ce:c671:3e12) has joined #awk
+2016-10-24 10:17:00		[10:11]
+2016-10-24 10:29:32	-->	larryv (~larryv@wikipedia/larryv) has joined #awk
+2016-10-24 10:30:22	<--	larryv (~larryv@wikipedia/larryv) has left #awk
+2016-10-24 10:35:52	<--	gcw (~gcw@108-197-6-119.lightspeed.cicril.sbcglobal.net) has quit (Ping timeout: 276 seconds)
+2016-10-24 10:35:52		[10:35]
+2016-10-24 10:43:50	<--	emg (~emg@74-123-189-254.static.wiline.com) has quit (Ping timeout: 256 seconds)
+2016-10-24 10:46:46	-->	gcw (~gcw@108-197-6-119.lightspeed.cicril.sbcglobal.net) has joined #awk
+2016-10-24 10:52:00		[10:46]
+2016-10-24 10:53:46	-->	vuoto (~vuoto@80-71-135-9.u.parknet.dk) has joined #awk
+2016-10-24 10:56:54	-->	almostworking (~almostwor@unaffiliated/almostworking) has joined #awk
+2016-10-24 11:02:00		[10:56]
+2016-10-24 11:02:39	<--	marky1991 (~marky1991@unaffiliated/marky1991) has quit (Remote host closed the connection)
+2016-10-24 11:08:00		[11:02]
+2016-10-24 11:30:03	quesker	I need to pass in foo so I changed it to awk -vfoo="$foo" '{print} $0 ~ foo { print "added line" }'    but since foo is [foo/bar] I think maybe the [] are being treated as a character class or something, it is matching a lot of stuff
+2016-10-24 11:30:03		[11:30]
+2016-10-24 11:30:36	quesker	if I escape them I get  warning: escape sequence `\[' treated as plain `['
+2016-10-24 11:31:27	<--	gcw (~gcw@108-197-6-119.lightspeed.cicril.sbcglobal.net) has quit (Ping timeout: 265 seconds)
+2016-10-24 11:33:12	Riviera	quesker: so foo is not a regular expression but a literal string?
+2016-10-24 11:33:18	quesker	right
+2016-10-24 11:33:40	quesker	oh just use ==?
+2016-10-24 11:33:44	Riviera	quesker: would you not agree that it's then pretty stupid to use the regex operator ~ ?
+2016-10-24 11:33:54	quesker	I agree heh
+2016-10-24 11:34:11	Riviera	quesker: == would test for equality, index for substringity 8(
+2016-10-24 11:34:14	Riviera	err 8)
+2016-10-24 11:34:15	Riviera	:)
+2016-10-24 11:34:23	quesker	ok thanks
+2016-10-24 11:37:45	quesker	do I need to check > 0?  this seems to work   awk -vfoo="$foo" '{print}  index($0, foo)  { print "added line" }'
+2016-10-24 11:38:16	quesker	umm nevermind
+2016-10-24 11:44:00		[11:38]
+2016-10-24 11:47:52	-->	gcw (~gcw@108-197-6-119.lightspeed.cicril.sbcglobal.net) has joined #awk
+2016-10-24 11:48:42	<--	vuoto (~vuoto@80-71-135-9.u.parknet.dk) has quit (Quit: Lost terminal)
+2016-10-24 11:50:31	<--	sbine_ (~sbine@unaffiliated/sbine) has quit (Quit: sbine_)
+2016-10-24 11:51:12	-->	sbine (~sbine@unaffiliated/sbine) has joined #awk
+2016-10-24 11:57:00		[11:51]
+2016-10-24 12:08:37	<--	zacts (~zacts@dragora/developer/zacts) has quit (Quit: WeeChat 1.6)
+2016-10-24 12:11:10	John[Lisbeth]	is there a way to use awk as my /usr/bin/read ?
+2016-10-24 12:11:14	John[Lisbeth]	basically getline
+2016-10-24 12:14:12	yitz_	...huh?
+2016-10-24 12:14:12		[12:14]
+2016-10-24 12:17:23	John[Lisbeth]	I'm making a repl
+2016-10-24 12:17:25	<--	jeffreylevesque (~chatzilla@129.6.45.20) has quit (Ping timeout: 260 seconds)
+2016-10-24 12:17:27	John[Lisbeth]	read eval print loop
+2016-10-24 12:17:30	John[Lisbeth]	I need read
+2016-10-24 12:18:24	yitz_	So ... call 'read'?
+2016-10-24 12:18:51	yitz_	There's no /usr/bin/read on my machine ... or most?
+2016-10-24 12:19:33	<--	nal (~nal@adsl-64-237-235-251.prtc.net) has quit (Ping timeout: 244 seconds)
+2016-10-24 12:21:01	--	yitz_ is now known as yitz
+2016-10-24 12:21:14	John[Lisbeth]	mine is /usr/local/bin/read
+2016-10-24 12:21:31	John[Lisbeth]	your path may vary
+2016-10-24 12:21:43	-->	zacts (~zacts@dragora/developer/zacts) has joined #awk
+2016-10-24 12:22:28	rods-tab3	here
+2016-10-24 12:22:48	rods-tab3	here:  read is a shell builtin
+2016-10-24 12:24:00	John[Lisbeth]	which shell?
+2016-10-24 12:24:59	-->	}ls{ (~kalle@p5DC9B2A1.dip0.t-ipconnect.de) has joined #awk
+2016-10-24 12:24:59	<--	}ls{ (~kalle@p5DC9B2A1.dip0.t-ipconnect.de) has quit (Changing host)
+2016-10-24 12:24:59	-->	}ls{ (~kalle@unaffiliated/ls/x-8089558) has joined #awk
+2016-10-24 12:25:01	<--	zacts (~zacts@dragora/developer/zacts) has quit (Client Quit)
+2016-10-24 12:25:55	-->	zacts (~zacts@dragora/developer/zacts) has joined #awk
+2016-10-24 12:26:18	yitz	Any POSIX complient shell
+2016-10-24 12:26:35	<--	zacts (~zacts@dragora/developer/zacts) has quit (Client Quit)
+2016-10-24 12:26:37	yitz	The 'read' command modifies a local shell var which cannot be done with a child process
+2016-10-24 12:27:44	-->	zacts (~zacts@dragora/developer/zacts) has joined #awk
+2016-10-24 12:29:08	-->	johnmilton (~johnmilto@192.206.23.197) has joined #awk
+2016-10-24 12:35:00		[12:29]
+2016-10-24 12:37:50	-->	emg (~emg@74-123-189-254.static.wiline.com) has joined #awk
+2016-10-24 12:41:05	-->	jeffreylevesque (~chatzilla@pool-100-15-106-25.washdc.fios.verizon.net) has joined #awk
+2016-10-24 12:42:02	rods-tab3	posx says can be separate executable:  man 1p read
+2016-10-24 12:44:12	yitz	"The setting of variables specified by the var operands shall affect the current shell execution environment"
+2016-10-24 12:44:51	yitz	The current shell env cannot be affected by a child process ergo it cannot be a binary that's called via a fork() and exec()
+2016-10-24 12:50:00		[12:44]
+2016-10-24 12:51:48	rods-tab3	!paddlin  rods-tab3
+2016-10-24 12:51:48	hawkbot	rods-tab3: Using grep/sed/bash instead of awk --> http://images.firstcovers.com/covers/flash/t/that's_a_paddlin'-647307.jpg
+2016-10-24 12:57:00		[12:51]
+2016-10-24 12:58:43	<--	krzee (~k@openvpn/community/support/krzee) has quit (Ping timeout: 258 seconds)
+2016-10-24 12:58:48	<--	CcxWrk (~ccx@213.29.225.26) has quit (Ping timeout: 245 seconds)
+2016-10-24 12:59:24	-->	krzee (~k@openvpn/community/support/krzee) has joined #awk
+2016-10-24 13:05:00		[12:59]
+2016-10-24 13:05:09	emg	yitz: in most current implementations no, a child process cannot affect the environment of the parent, but it's not hard to think of a system on which that would be possible, e.g. a process can edit /proc/$PPID/env or something like that, in which case things like alias, read, etc. could indeed be separate programs/processes
+2016-10-24 13:05:40	emg	also POSIX has this weird thing where some special builtins also have to be available as executables in path, like cd, why?! not entirely sure but it's there
+2016-10-24 13:07:35	yitz	That's a ... weird requirement
+2016-10-24 13:11:01	-->	Guest96135 (~ARM@2001:0:53aa:64c:0:fbf5:b176:2199) has joined #awk
+2016-10-24 13:11:08	<--	navidr (uid112413@gateway/web/irccloud.com/x-ykhkfgzulqezjqne) has quit (Quit: Connection closed for inactivity)
+2016-10-24 13:12:59	Riviera	emg: cd can be used for testing cdability, e.g. as an -exec primary for find.
+2016-10-24 13:13:04	<--	talsamon (~talsamon@188-23-13-7.adsl.highway.telekom.at) has quit (Ping timeout: 260 seconds)
+2016-10-24 13:13:16	<--	X-Scale (~ARM@2001:0:53aa:64c:0:fbf5:b176:2199) has quit (Ping timeout: 256 seconds)
+2016-10-24 13:13:55	-->	talsamon (~talsamon@91-115-93-211.adsl.highway.telekom.at) has joined #awk
+2016-10-24 13:14:15	emg	Riviera: interesting
+2016-10-24 13:15:52	yitz	vs test -d and text -x
+2016-10-24 13:20:21	emg	or -exec sh -c 'cd ... || ...'
+2016-10-24 13:20:21		[13:20]
+2016-10-24 13:20:33	emg	but I can see how it would be useful now
+2016-10-24 13:20:45	emg	trying to think about how others would be
+2016-10-24 13:26:00		[13:20]
+2016-10-24 13:37:50	<--	rods-tab3 (~rods-tab3@172.56.38.92) has quit (Remote host closed the connection)
+2016-10-24 13:39:42	-->	anewuser (~anewuser@unaffiliated/anewuser) has joined #awk
+2016-10-24 13:41:12	<--	shbot (~shbot@37.139.2.101) has quit (Write error: Broken pipe)
+2016-10-24 13:41:12		[13:41]
+2016-10-24 13:41:19	-->	shbot2 (~shbot@37.139.2.101) has joined #awk
+2016-10-24 13:43:32	<--	talsamon (~talsamon@91-115-93-211.adsl.highway.telekom.at) has quit (*.net *.split)
+2016-10-24 13:43:32	<--	johnmilton (~johnmilto@192.206.23.197) has quit (*.net *.split)
+2016-10-24 13:43:32	<--	r00twrh (~r00tWears@73.44.33.86) has quit (*.net *.split)
+2016-10-24 13:43:32	<--	devster31 (~devsterkn@2001:41d0:1:a3af::1) has quit (*.net *.split)
+2016-10-24 13:43:32	<--	dualbus (U2FsdGVkX1@ma.sdf.org) has quit (*.net *.split)
+2016-10-24 13:43:33	<--	Al3xG0 (~unix@unaffiliated/al3xg0) has quit (*.net *.split)
+2016-10-24 13:43:33	<--	fford (~fnord@p2003004C6F642300CE6D2D04010A06D1.dip0.t-ipconnect.de) has quit (*.net *.split)
+2016-10-24 13:43:33	<--	gigetoo (~gigetoo@c83-250-44-242.bredband.comhem.se) has quit (*.net *.split)
+2016-10-24 13:43:33	<--	skered (~dereks@unaffiliated/skered) has quit (*.net *.split)
+2016-10-24 13:43:33	<--	bwe (~bwe@unaffiliated/bwe) has quit (*.net *.split)
+2016-10-24 13:43:33	<--	ttmrichter (~ttmrichte@2a00:f10:121:400:418:90ff:fe00:148a) has quit (*.net *.split)
+2016-10-24 13:43:35	<--	DANtheBEASTman (~DANtheBEA@bananabo.xyz) has quit (*.net *.split)
+2016-10-24 13:43:36	<--	maedox (sid2021@gateway/web/irccloud.com/x-ojnuemikoerhsyot) has quit (*.net *.split)
+2016-10-24 13:43:36	<--	akkad (akkad@dns.mauthesis.com) has quit (*.net *.split)
+2016-10-24 13:43:36	<--	skylite (~skylite@91EC3DC1.dsl.pool.telekom.hu) has quit (*.net *.split)
+2016-10-24 13:43:36	<--	tfrangio (~tfrangio@24-183-151-70.dhcp.oxfr.ma.charter.com) has quit (*.net *.split)
+2016-10-24 13:43:36	<--	Pennth (~penth@rcb-fwall-00.pmacs.upenn.edu) has quit (*.net *.split)
+2016-10-24 13:43:36	<--	scriptiee (~scriptiee@unaffiliated/scriptiee) has quit (*.net *.split)
+2016-10-24 13:43:36	<--	ujjain- (~ujjain@static.10.147.9.5.clients.your-server.de) has quit (*.net *.split)
+2016-10-24 13:43:36	<--	trn (jhj@prone.ws) has quit (*.net *.split)
+2016-10-24 13:43:37	<--	RadoQ (~cheater@unaffiliated/radoq) has quit (*.net *.split)
+2016-10-24 13:43:37	<--	Tsutsukakushi (~Tsutsukak@163.172.151.191) has quit (*.net *.split)
+2016-10-24 13:44:14	-->	RadoQ (~cheater@unaffiliated/radoq) has joined #awk
+2016-10-24 13:44:14	-->	Tsutsukakushi (~Tsutsukak@163.172.151.191) has joined #awk
+2016-10-24 13:44:34	-->	talsamon (~talsamon@91-115-93-211.adsl.highway.telekom.at) has joined #awk
+2016-10-24 13:44:34	-->	johnmilton (~johnmilto@192.206.23.197) has joined #awk
+2016-10-24 13:44:34	-->	r00twrh (~r00tWears@73.44.33.86) has joined #awk
+2016-10-24 13:44:34	-->	devster31 (~devsterkn@2001:41d0:1:a3af::1) has joined #awk
+2016-10-24 13:44:34	-->	dualbus (U2FsdGVkX1@ma.sdf.org) has joined #awk
+2016-10-24 13:44:34	-->	Al3xG0 (~unix@unaffiliated/al3xg0) has joined #awk
+2016-10-24 13:44:34	-->	fford (~fnord@p2003004C6F642300CE6D2D04010A06D1.dip0.t-ipconnect.de) has joined #awk
+2016-10-24 13:44:34	-->	gigetoo (~gigetoo@c83-250-44-242.bredband.comhem.se) has joined #awk
+2016-10-24 13:44:34	-->	skered (~dereks@unaffiliated/skered) has joined #awk
+2016-10-24 13:44:34	-->	bwe (~bwe@unaffiliated/bwe) has joined #awk
+2016-10-24 13:44:34	-->	ttmrichter (~ttmrichte@2a00:f10:121:400:418:90ff:fe00:148a) has joined #awk
+2016-10-24 13:44:34	-->	DANtheBEASTman (~DANtheBEA@bananabo.xyz) has joined #awk
+2016-10-24 13:44:34	-->	maedox (sid2021@gateway/web/irccloud.com/x-ojnuemikoerhsyot) has joined #awk
+2016-10-24 13:44:34	-->	akkad (akkad@dns.mauthesis.com) has joined #awk
+2016-10-24 13:44:34	-->	skylite (~skylite@91EC3DC1.dsl.pool.telekom.hu) has joined #awk
+2016-10-24 13:44:34	-->	tfrangio (~tfrangio@24-183-151-70.dhcp.oxfr.ma.charter.com) has joined #awk
+2016-10-24 13:44:34	-->	Pennth (~penth@rcb-fwall-00.pmacs.upenn.edu) has joined #awk
+2016-10-24 13:44:34	-->	scriptiee (~scriptiee@unaffiliated/scriptiee) has joined #awk
+2016-10-24 13:44:34	-->	ujjain- (~ujjain@static.10.147.9.5.clients.your-server.de) has joined #awk
+2016-10-24 13:44:34	-->	trn (jhj@prone.ws) has joined #awk
+2016-10-24 13:45:03	<--	maedox (sid2021@gateway/web/irccloud.com/x-ojnuemikoerhsyot) has quit (Max SendQ exceeded)
+2016-10-24 13:45:03	<--	akkad (akkad@dns.mauthesis.com) has quit (Max SendQ exceeded)
+2016-10-24 13:46:05	<--	ec (sid1544@gateway/web/irccloud.com/x-byygfyundbvykijw) has quit (Ping timeout: 250 seconds)
+2016-10-24 13:47:01	<--	al-damiri (uid142631@gateway/web/irccloud.com/x-hejpmjwcsfesfind) has quit (Ping timeout: 260 seconds)
+2016-10-24 13:47:49	<--	YP-Cloud____ (sid130155@gateway/web/irccloud.com/x-zerhlkiqqzhxjvuj) has quit (Ping timeout: 247 seconds)
+2016-10-24 13:48:56	<--	jeffreylevesque (~chatzilla@pool-100-15-106-25.washdc.fios.verizon.net) has quit (Ping timeout: 244 seconds)
+2016-10-24 13:52:13	-->	YP-Cloud____ (sid130155@gateway/web/irccloud.com/x-pudskyvbgpntyqww) has joined #awk
+2016-10-24 13:52:15	-->	maedox (sid2021@gateway/web/irccloud.com/x-bjxvcouigngaljmr) has joined #awk
+2016-10-24 13:52:34	-->	akkad (akkad@166.84.6.60) has joined #awk
+2016-10-24 13:52:57	-->	ec (sid1544@gateway/web/irccloud.com/x-weyjbmihmqzrqvmj) has joined #awk
+2016-10-24 13:58:00		[13:52]
+2016-10-24 13:58:06	-->	al-damiri (uid142631@gateway/web/irccloud.com/x-lnnvwujdkjaaamez) has joined #awk
+2016-10-24 14:01:53	-->	k__ (~iridos@unaffiliated/iridos) has joined #awk
+2016-10-24 14:01:57	<--	CutMeOwnThroat (~iridos@unaffiliated/iridos) has quit (Remote host closed the connection)
+2016-10-24 14:02:14	<--	Raimondi (~israelcha@c-73-244-170-150.hsd1.fl.comcast.net) has quit (Remote host closed the connection)
+2016-10-24 14:02:21	-->	hpt (~hpt@106.38.0.69) has joined #awk
+2016-10-24 14:04:32	-->	Raimondi (~israelcha@c-73-244-170-150.hsd1.fl.comcast.net) has joined #awk
+2016-10-24 14:06:44	<--	cdg (~cdg@157.166.173.5) has quit (Remote host closed the connection)
+2016-10-24 14:12:00		[14:06]
+2016-10-24 14:18:04	<--	mactimes (~mactimes@unaffiliated/mactimes) has quit (Ping timeout: 258 seconds)
+2016-10-24 14:20:04	<--	ujjain- (~ujjain@static.10.147.9.5.clients.your-server.de) has quit (Ping timeout: 245 seconds)
+2016-10-24 14:21:34	-->	ujjain (~ujjain@static.10.147.9.5.clients.your-server.de) has joined #awk
+2016-10-24 14:21:34	<--	ujjain (~ujjain@static.10.147.9.5.clients.your-server.de) has quit (Changing host)
+2016-10-24 14:21:34	-->	ujjain (~ujjain@unaffiliated/ujjain) has joined #awk
+2016-10-24 14:23:42	-->	mactimes_ (~mactimes@unaffiliated/mactimes) has joined #awk
+2016-10-24 14:24:04	--	mactimes_ is now known as mactimes
+2016-10-24 14:30:00		[14:24]
+2016-10-24 14:33:35	-->	CcxWrk (~ccx@asterix.te2000.cz) has joined #awk
+2016-10-24 14:36:40	-->	jeffreylevesque (~chatzilla@pool-100-15-106-25.washdc.fios.verizon.net) has joined #awk
+2016-10-24 14:38:35	-->	nal (~nal@adsl-64-237-235-251.prtc.net) has joined #awk
+2016-10-24 14:41:55	-->	rods-tab3 (~rods-tab3@172.56.38.92) has joined #awk
+2016-10-24 14:47:00		[14:41]
+2016-10-24 15:19:49	<--	John[Lisbeth] (~user@52.165.40.155) has quit (Remote host closed the connection)
+2016-10-24 15:19:49		[15:19]
+2016-10-24 15:51:10	<--	mattcen (~mattcen@c122-108-68-124.sunsh1.vic.optusnet.com.au) has quit (Read error: Connection reset by peer)
+2016-10-24 15:51:10		[15:51]
+2016-10-24 16:00:00	-->	mattcen (~mattcen@c122-108-68-124.sunsh1.vic.optusnet.com.au) has joined #awk
+2016-10-24 16:05:00		[16:00]
+2016-10-24 16:06:02	<--	anewuser (~anewuser@unaffiliated/anewuser) has quit (Quit: anewuser)
+2016-10-24 16:10:04	<--	arturasl (~arturasla@lapinskas.net) has quit (Quit: WeeChat 0.4.2)
+2016-10-24 16:16:00		[16:10]
+2016-10-24 16:29:03	-->	john51 (~john@15255.s.t4vps.eu) has joined #awk
+2016-10-24 16:30:34	<--	john51 (~john@15255.s.t4vps.eu) has quit (Read error: Connection reset by peer)
+2016-10-24 16:33:52	-->	john51 (~john@15255.s.t4vps.eu) has joined #awk
+2016-10-24 16:33:52		[16:33]
+2016-10-24 16:35:31	<--	john51 (~john@15255.s.t4vps.eu) has quit (Read error: Connection reset by peer)
+2016-10-24 16:38:53	-->	john51 (~john@15255.s.t4vps.eu) has joined #awk
+2016-10-24 16:40:17	<--	john51 (~john@15255.s.t4vps.eu) has quit (Read error: Connection reset by peer)
+2016-10-24 16:41:32	<--	arcsky (arcsky@87.117.231.108) has quit (Ping timeout: 244 seconds)
+2016-10-24 16:43:53	-->	john51 (~john@15255.s.t4vps.eu) has joined #awk
+2016-10-24 16:48:12	<--	mattcen (~mattcen@c122-108-68-124.sunsh1.vic.optusnet.com.au) has quit (Read error: Connection reset by peer)
+2016-10-24 16:51:03	<--	topon (~harukomot@93-41-21-101.ip79.fastwebnet.it) has quit (Ping timeout: 256 seconds)
+2016-10-24 16:51:03		[16:51]
+2016-10-24 16:51:04	-->	harukomoto (~harukomot@93-41-21-101.ip79.fastwebnet.it) has joined #awk
+2016-10-24 16:57:00		[16:51]
+2016-10-24 17:19:41	-->	marky1991 (~marky1991@unaffiliated/marky1991) has joined #awk
+2016-10-24 17:19:41		[17:19]
+2016-10-24 17:22:33	<--	al-damiri (uid142631@gateway/web/irccloud.com/x-lnnvwujdkjaaamez) has quit (Quit: Connection closed for inactivity)
+2016-10-24 17:28:00		[17:22]
+2016-10-24 17:39:20	<--	geggam (~geggam@ec2-107-20-130-165.compute-1.amazonaws.com) has quit (Remote host closed the connection)
+2016-10-24 17:45:00		[17:39]
+2016-10-24 17:49:48	<--	marky1991 (~marky1991@unaffiliated/marky1991) has quit (Ping timeout: 260 seconds)
+2016-10-24 17:55:00		[17:49]
+2016-10-24 17:57:15	<--	nal (~nal@adsl-64-237-235-251.prtc.net) has quit (Quit: WeeChat 1.4)
+2016-10-24 18:03:00		[17:57]
+2016-10-24 18:04:25	--	ec is now known as ELLIOTTCABLE
+2016-10-24 18:10:00		[18:04]
+2016-10-24 18:10:04	-->	navidr (uid112413@gateway/web/irccloud.com/x-ourozdmocepipvrw) has joined #awk
+2016-10-24 18:12:40	<--	almostworking (~almostwor@unaffiliated/almostworking) has quit (Ping timeout: 260 seconds)
+2016-10-24 18:18:00		[18:12]
