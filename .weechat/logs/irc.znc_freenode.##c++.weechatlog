@@ -26942,3 +26942,268 @@
 2016-10-25 11:12:19	thinlizzy	!give nejni-marji general
 2016-10-25 11:12:20	nolyc	nejni-marji: ##c++-general for algorithms, libraries, practices, projects, tools etc. yes two #s.
 2016-10-25 11:12:53	<--	skweek (~skweek@2607:fe50:0:810b:68c5:9f1f:5708:2de1) has quit (Ping timeout: 260 seconds)
+2016-10-25 11:14:23	<--	emPi (~emPi@unaffiliated/empi) has quit (Ping timeout: 265 seconds)
+2016-10-25 11:14:40	-->	pigeon (82539456@gateway/web/freenode/ip.130.83.148.86) has joined ##c++
+2016-10-25 11:15:00	-->	harold1 (~harold@62-235-17-190.fibertel.com.ar) has joined ##c++
+2016-10-25 11:15:01	<--	Jackneill_ (~Jackneill@unaffiliated/jackneill) has quit (Remote host closed the connection)
+2016-10-25 11:15:02	--	pigeon is now known as Guest16843
+2016-10-25 11:15:08	-->	Birchy (~Birchy@178-164-108.52.3p.ntebredband.no) has joined ##c++
+2016-10-25 11:15:12	<--	snyp (~Snyp@nas4.meghbelabroadband.in) has quit (Quit: WeeChat 1.6)
+2016-10-25 11:15:26	<--	bjz (~bjz@104.222.140.126) has quit (Ping timeout: 244 seconds)
+2016-10-25 11:15:28	-->	bjz_ (~bjz@14-201-215-168.tpgi.com.au) has joined ##c++
+2016-10-25 11:17:13	<--	RebelCoder (~Yuriy@cpc74579-lewi13-2-0-cust201.2-4.cable.virginm.net) has quit (Ping timeout: 276 seconds)
+2016-10-25 11:17:13		[11:17]
+2016-10-25 11:17:52	-->	ReverseBlade (~user@213.74.212.180) has joined ##c++
+2016-10-25 11:18:02	<--	Sirrol_ (~Sirrol@37.165.100.198) has quit (Quit: Leaving)
+2016-10-25 11:18:05	<--	KingsQuest (~ident@unaffiliated/kingsquest) has quit (Quit: linux unhackable correct code http://pastebin.ca/3732832)
+2016-10-25 11:19:21	-->	firstdayonthejob (~firstdayo@cpc99346-croy26-2-0-cust153.19-2.cable.virginm.net) has joined ##c++
+2016-10-25 11:24:06	<--	sh00p (~sh00p@84-216-39-31.customers.ownit.se) has quit
+2016-10-25 11:25:06	-->	biglama (~Day_dream@ram31-1-82-234-77-18.fbx.proxad.net) has joined ##c++
+2016-10-25 11:25:28	halc	if I have a function returning a structure, should I do "return std::move(retval)"? or will RVO always kick in
+2016-10-25 11:25:39	halc	I definitely want to avoid copying the structure on return
+2016-10-25 11:25:50	thinlizzy	avoid returning std::move
+2016-10-25 11:25:55	thinlizzy	just return by value
+2016-10-25 11:26:06	halc	it will not copy?
+2016-10-25 11:26:18	thinlizzy	I don't know. how is your structure defined?
+2016-10-25 11:26:36	-->	thesha (~thesha@124.40.246.86) has joined ##c++
+2016-10-25 11:26:39	<--	Guest16843 (82539456@gateway/web/freenode/ip.130.83.148.86) has left ##c++
+2016-10-25 11:26:40	halc	it's a complicated structure that has wstrings and vectors
+2016-10-25 11:26:42	-->	snover (~Adium@unaffiliated/snover) has joined ##c++
+2016-10-25 11:26:46	thinlizzy	passing / returning by value will kick move semantics if you have your class configured to be moved
+2016-10-25 11:26:48	<--	hoshi (~hoshi@drf150.neoplus.adsl.tpnet.pl) has quit (Ping timeout: 244 seconds)
+2016-10-25 11:27:03	halc	a vector of more wstrings and vectors
+2016-10-25 11:27:19	-->	pige212 (82539456@gateway/web/freenode/ip.130.83.148.86) has joined ##c++
+2016-10-25 11:27:19	halc	I don't use any custom object types inside of it, just c-style data structs
+2016-10-25 11:27:38	thinlizzy	hard to tell w/o looking at it. you can try to make a testcase
+2016-10-25 11:27:49	thinlizzy	also you should read more about move semantics
+2016-10-25 11:27:52	thinlizzy	there is no magic on that
+2016-10-25 11:27:59	halc	yeah, I'm definitely hazy on it
+2016-10-25 11:28:21	halc	an output parameter will guarantee that I don't move; should I use that instead?
+2016-10-25 11:28:24	thinlizzy	for example: struct rgb { char r,g,b; };    rgb objects will never be moved
+2016-10-25 11:28:24	<--	pige212 (82539456@gateway/web/freenode/ip.130.83.148.86) has quit (Client Quit)
+2016-10-25 11:28:56	-->	pigeon8819 (82539456@gateway/web/freenode/ip.130.83.148.86) has joined ##c++
+2016-10-25 11:28:58	-->	xaxxon (~xaxxon@c-24-18-184-142.hsd1.wa.comcast.net) has joined ##c++
+2016-10-25 11:29:03	halc	well sure, but struct rgb { std::string r, g, b; } will, right?
+2016-10-25 11:29:13	thinlizzy	only the string part
+2016-10-25 11:29:32	<--	hz (~username@unaffiliated/hz) has quit (Read error: Connection reset by peer)
+2016-10-25 11:29:37	thinlizzy	halc, rule of thumb - prefer returning by value. do other crazy stuff after profiling/analyzing the results if you aren't satisfied
+2016-10-25 11:30:05	<--	thesha (~thesha@124.40.246.86) has quit (Client Quit)
+2016-10-25 11:30:09	halc	fair enough
+2016-10-25 11:30:25	-->	RebelCoder (~Yuriy@cpc74579-lewi13-2-0-cust201.2-4.cable.virginm.net) has joined ##c++
+2016-10-25 11:31:47	<--	bjz_ (~bjz@14-201-215-168.tpgi.com.au) has quit (Quit: My MacBook Pro has gone to sleep. ZZZzzz…)
+2016-10-25 11:33:12	<--	atod (~atod@cpe-74-73-129-35.nyc.res.rr.com) has quit (Quit: Lost terminal)
+2016-10-25 11:33:12		[11:33]
+2016-10-25 11:33:57	-->	hz (~username@unaffiliated/hz) has joined ##c++
+2016-10-25 11:34:52	<--	pigeon8819 (82539456@gateway/web/freenode/ip.130.83.148.86) has quit (Quit: Page closed)
+2016-10-25 11:35:10	<--	Blue_Hat (~TwinKam20@104.238.32.44) has quit (Ping timeout: 265 seconds)
+2016-10-25 11:35:20	-->	ru03ydak (82539456@gateway/web/freenode/ip.130.83.148.86) has joined ##c++
+2016-10-25 11:42:04	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined ##c++
+2016-10-25 11:42:04		[11:42]
+2016-10-25 11:42:04	--	Topic for ##c++ is "##C++ is a topical channel for discussing standard C++ specifications and code. || Current standard: ISO/IEC 14882:2014 (a.k.a. C++14) || https://isocpp.org/faq || pastes: http://melpon.org/wandbox"
+2016-10-25 11:42:04	--	Topic set by V-ille (~ville@81-175-149-170.bb.dnainternet.fi) on Fri, 18 Sep 2015 07:13:01
+2016-10-25 11:42:04	--	Channel ##c++: 994 nicks (0 ops, 0 voices, 994 normals)
+2016-10-25 11:42:04	***	Buffer Playback...
+2016-10-25 11:42:04	Lenore	[20:35:05] in those years i learned a lot more math and came to truly appreciate operator overloading. [20:35:05]
+2016-10-25 11:42:04	Lenore	[20:35:47] but once i saw C++0x coming up... [20:35:47]
+2016-10-25 11:42:04	Lenore	[20:35:56] i gave C++ another chance. [20:35:56]
+2016-10-25 11:42:04	Lenore	[20:35:58] glad i did. :) [20:35:58]
+2016-10-25 11:42:04	thinlizzy	[20:36:22] :) [20:36:22]
+2016-10-25 11:42:04	thinlizzy	[20:36:31] I have to agree that C++11 saved C++ from total doom [20:36:31]
+2016-10-25 11:42:04	Lenore	[20:36:57] oh right... also, variadic templates.  how could i forget that one? [20:36:57]
+2016-10-25 11:42:04	jasondockers	[20:36:58] I was in elementary school in 03. [20:36:58]
+2016-10-25 11:42:04	Lenore	[20:37:02] C++11 made so much TMP useful. [20:37:02]
+2016-10-25 11:42:04	thinlizzy	[20:37:43] only move semantics and lambdas were enough for me already. my code got 10000000000000 times better :) [20:37:43]
+2016-10-25 11:42:04	Lenore	[20:37:49] i still see templates as the major difference between C and C++.  sure, we have some others (especially RAII), but templates are a different order of language.  :) [20:37:49]
+2016-10-25 11:42:04	 *	Lenore [20:37:51] nods. [20:37:51]
+2016-10-25 11:42:04	Lenore	[20:38:59] lacking variadic templates pre-11 was painful... especially if you wanted to do anything with function argument lists. [20:38:59]
+2016-10-25 11:42:04	jasondockers	[20:39:19] stdarg? [20:39:19]
+2016-10-25 11:42:04	Lenore	[20:39:40] like that, but useful. [20:39:40]
+2016-10-25 11:42:04	thinlizzy	[20:39:50] Lenore, nah! Loki library worked well  :) [20:39:50]
+2016-10-25 11:42:04	Lenore	[20:39:58] which library was that? [20:39:58]
+2016-10-25 11:42:04	thinlizzy	[20:40:13] the one that has shown the world that there was a need for variadics [20:40:13]
+2016-10-25 11:42:04	Lenore	[20:41:10] lots of hand-unrolled (or scripted-unrolled) templates for each different number of parameters? [20:41:10]
+2016-10-25 11:42:04	Lenore	[20:41:46] ah.  yes.  exactly that. [20:41:46]
+2016-10-25 11:42:04	Lenore	[20:46:11] any way you slice it, my reasons for disliking ancient pre-standardization C++ haven't been valid since C++11. [20:46:11]
+2016-10-25 11:42:04	Lenore	[20:46:16] and that's a fair while ago. [20:46:16]
+2016-10-25 11:42:04	nejni-marji	[21:08:22] I'm trying to compile this (https://github.com/tiehuis/HeborisC7EX ) but it's giving multiple similar warnings [21:08:22]
+2016-10-25 11:42:04	nejni-marji	[21:08:42] src/game/gamestart.cpp:15663:46: warning: ISO C++ forbids converting a string constant to ‘char*’ [-Wwrite-strings] [21:08:42]
+2016-10-25 11:42:04	chardan	[21:11:02] nejni-marji: Ok, and? [21:11:02]
+2016-10-25 11:42:04	nejni-marji	[21:11:11] I'm not sure how to fix it [21:11:11]
+2016-10-25 11:42:04	nejni-marji	[21:11:34] The code isn't mine, I don't know c++, and it hasn't been touched in over a year [21:11:34]
+2016-10-25 11:42:04	chardan	[21:11:58] nejni-marji: So, have a look at the line of code it's complaining about... look closely at the types. OK-- short answer: 1) you can ignore the warnings or 2) disable them with -Wno-write-strings [21:11:58]
+2016-10-25 11:42:04	thinlizzy	[21:12:19] !give nejni-marji general [21:12:19]
+2016-10-25 11:42:04	nolyc	[21:12:20] nejni-marji: ##c++-general for algorithms, libraries, practices, projects, tools etc. yes two #s. [21:12:20]
+2016-10-25 11:42:04	halc	[21:25:28] if I have a function returning a structure, should I do "return std::move(retval)"? or will RVO always kick in [21:25:28]
+2016-10-25 11:42:04	halc	[21:25:39] I definitely want to avoid copying the structure on return [21:25:39]
+2016-10-25 11:42:04	thinlizzy	[21:25:50] avoid returning std::move [21:25:50]
+2016-10-25 11:42:04	thinlizzy	[21:25:55] just return by value [21:25:55]
+2016-10-25 11:42:04	halc	[21:26:06] it will not copy? [21:26:06]
+2016-10-25 11:42:04	thinlizzy	[21:26:18] I don't know. how is your structure defined? [21:26:18]
+2016-10-25 11:42:04	halc	[21:26:40] it's a complicated structure that has wstrings and vectors [21:26:40]
+2016-10-25 11:42:04	thinlizzy	[21:26:46] passing / returning by value will kick move semantics if you have your class configured to be moved [21:26:46]
+2016-10-25 11:42:04	halc	[21:27:03] a vector of more wstrings and vectors [21:27:03]
+2016-10-25 11:42:04	halc	[21:27:19] I don't use any custom object types inside of it, just c-style data structs [21:27:19]
+2016-10-25 11:42:04	thinlizzy	[21:27:38] hard to tell w/o looking at it. you can try to make a testcase [21:27:38]
+2016-10-25 11:42:04	thinlizzy	[21:27:49] also you should read more about move semantics [21:27:49]
+2016-10-25 11:42:04	thinlizzy	[21:27:52] there is no magic on that [21:27:52]
+2016-10-25 11:42:04	halc	[21:27:59] yeah, I'm definitely hazy on it [21:27:59]
+2016-10-25 11:42:04	halc	[21:28:21] an output parameter will guarantee that I don't move; should I use that instead? [21:28:21]
+2016-10-25 11:42:04	thinlizzy	[21:28:24] for example: struct rgb { char r,g,b; };    rgb objects will never be moved [21:28:24]
+2016-10-25 11:42:04	halc	[21:29:03] well sure, but struct rgb { std::string r, g, b; } will, right? [21:29:03]
+2016-10-25 11:42:04	thinlizzy	[21:29:13] only the string part [21:29:13]
+2016-10-25 11:42:04	thinlizzy	[21:29:37] halc, rule of thumb - prefer returning by value. do other crazy stuff after profiling/analyzing the results if you aren't satisfied [21:29:37]
+2016-10-25 11:42:04	halc	[21:30:09] fair enough [21:30:09]
+2016-10-25 11:42:04	***	Playback Complete.
+2016-10-25 11:42:10	-->	metachr0n (~nobody@46.166.137.210) has joined ##c++
+2016-10-25 11:42:35	--	Channel created on Fri, 14 Sep 2001 17:15:35
+2016-10-25 11:42:37	-->	neuri8 (~neur@62.109.134.112) has joined ##c++
+2016-10-25 11:43:07	<--	ru03ydak (82539456@gateway/web/freenode/ip.130.83.148.86) has left ##c++
+2016-10-25 11:43:11	KrzaQ	!interview
+2016-10-25 11:43:13	-->	ru03ydak (82539456@gateway/web/freenode/ip.130.83.148.86) has joined ##c++
+2016-10-25 11:43:14	nolyc	Were you surprised when you first learned that access control is applied uniformly to all names, whether the names are referred to from declarations or expressions?
+2016-10-25 11:43:21	ru03ydak	hello
+2016-10-25 11:43:43	KrzaQ	not really, why would I be?
+2016-10-25 11:47:15	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined ##c++
+2016-10-25 11:47:15		[11:47]
+2016-10-25 11:47:15	--	Topic for ##c++ is "##C++ is a topical channel for discussing standard C++ specifications and code. || Current standard: ISO/IEC 14882:2014 (a.k.a. C++14) || https://isocpp.org/faq || pastes: http://melpon.org/wandbox"
+2016-10-25 11:47:15	--	Topic set by V-ille (~ville@81-175-149-170.bb.dnainternet.fi) on Fri, 18 Sep 2015 07:13:01
+2016-10-25 11:47:15	--	Channel ##c++: 995 nicks (0 ops, 0 voices, 995 normals)
+2016-10-25 11:47:15	***	Buffer Playback...
+2016-10-25 11:47:15	Lenore	[20:39:58] which library was that? [20:39:58]
+2016-10-25 11:47:15	thinlizzy	[20:40:13] the one that has shown the world that there was a need for variadics [20:40:13]
+2016-10-25 11:47:15	Lenore	[20:41:10] lots of hand-unrolled (or scripted-unrolled) templates for each different number of parameters? [20:41:10]
+2016-10-25 11:47:15	Lenore	[20:41:46] ah.  yes.  exactly that. [20:41:46]
+2016-10-25 11:47:15	Lenore	[20:46:11] any way you slice it, my reasons for disliking ancient pre-standardization C++ haven't been valid since C++11. [20:46:11]
+2016-10-25 11:47:15	Lenore	[20:46:16] and that's a fair while ago. [20:46:16]
+2016-10-25 11:47:15	nejni-marji	[21:08:22] I'm trying to compile this (https://github.com/tiehuis/HeborisC7EX ) but it's giving multiple similar warnings [21:08:22]
+2016-10-25 11:47:15	nejni-marji	[21:08:42] src/game/gamestart.cpp:15663:46: warning: ISO C++ forbids converting a string constant to ‘char*’ [-Wwrite-strings] [21:08:42]
+2016-10-25 11:47:15	chardan	[21:11:02] nejni-marji: Ok, and? [21:11:02]
+2016-10-25 11:47:15	nejni-marji	[21:11:11] I'm not sure how to fix it [21:11:11]
+2016-10-25 11:47:15	nejni-marji	[21:11:34] The code isn't mine, I don't know c++, and it hasn't been touched in over a year [21:11:34]
+2016-10-25 11:47:15	chardan	[21:11:58] nejni-marji: So, have a look at the line of code it's complaining about... look closely at the types. OK-- short answer: 1) you can ignore the warnings or 2) disable them with -Wno-write-strings [21:11:58]
+2016-10-25 11:47:15	thinlizzy	[21:12:19] !give nejni-marji general [21:12:19]
+2016-10-25 11:47:15	nolyc	[21:12:20] nejni-marji: ##c++-general for algorithms, libraries, practices, projects, tools etc. yes two #s. [21:12:20]
+2016-10-25 11:47:15	halc	[21:25:28] if I have a function returning a structure, should I do "return std::move(retval)"? or will RVO always kick in [21:25:28]
+2016-10-25 11:47:15	halc	[21:25:39] I definitely want to avoid copying the structure on return [21:25:39]
+2016-10-25 11:47:15	thinlizzy	[21:25:50] avoid returning std::move [21:25:50]
+2016-10-25 11:47:15	thinlizzy	[21:25:55] just return by value [21:25:55]
+2016-10-25 11:47:15	halc	[21:26:06] it will not copy? [21:26:06]
+2016-10-25 11:47:15	thinlizzy	[21:26:18] I don't know. how is your structure defined? [21:26:18]
+2016-10-25 11:47:15	halc	[21:26:40] it's a complicated structure that has wstrings and vectors [21:26:40]
+2016-10-25 11:47:15	thinlizzy	[21:26:46] passing / returning by value will kick move semantics if you have your class configured to be moved [21:26:46]
+2016-10-25 11:47:15	halc	[21:27:03] a vector of more wstrings and vectors [21:27:03]
+2016-10-25 11:47:15	halc	[21:27:19] I don't use any custom object types inside of it, just c-style data structs [21:27:19]
+2016-10-25 11:47:15	thinlizzy	[21:27:38] hard to tell w/o looking at it. you can try to make a testcase [21:27:38]
+2016-10-25 11:47:15	thinlizzy	[21:27:49] also you should read more about move semantics [21:27:49]
+2016-10-25 11:47:15	thinlizzy	[21:27:52] there is no magic on that [21:27:52]
+2016-10-25 11:47:15	halc	[21:27:59] yeah, I'm definitely hazy on it [21:27:59]
+2016-10-25 11:47:15	halc	[21:28:21] an output parameter will guarantee that I don't move; should I use that instead? [21:28:21]
+2016-10-25 11:47:15	thinlizzy	[21:28:24] for example: struct rgb { char r,g,b; };    rgb objects will never be moved [21:28:24]
+2016-10-25 11:47:15	halc	[21:29:03] well sure, but struct rgb { std::string r, g, b; } will, right? [21:29:03]
+2016-10-25 11:47:15	thinlizzy	[21:29:13] only the string part [21:29:13]
+2016-10-25 11:47:15	thinlizzy	[21:29:37] halc, rule of thumb - prefer returning by value. do other crazy stuff after profiling/analyzing the results if you aren't satisfied [21:29:37]
+2016-10-25 11:47:15	halc	[21:30:09] fair enough [21:30:09]
+2016-10-25 11:47:15	KrzaQ	[21:43:11] !interview [21:43:11]
+2016-10-25 11:47:15	nolyc	[21:43:14] Were you surprised when you first learned that access control is applied uniformly to all names, whether the names are referred to from declarations or expressions? [21:43:14]
+2016-10-25 11:47:15	ru03ydak	[21:43:21] hello [21:43:21]
+2016-10-25 11:47:15	KrzaQ	[21:43:43] not really, why would I be? [21:43:43]
+2016-10-25 11:47:15	thinlizzy	[21:44:01] " Were you surprised when you first learned that ...." [21:44:01]
+2016-10-25 11:47:15	ru03ydak	[21:44:05] I read today zero overhead principle [21:44:05]
+2016-10-25 11:47:15	ru03ydak	[21:44:10] who can explain it [21:44:10]
+2016-10-25 11:47:15	ru03ydak	[21:44:17] I could not understand it [21:44:17]
+2016-10-25 11:47:15	halvors	[21:44:47] Hi. [21:44:47]
+2016-10-25 11:47:15	thinlizzy	[21:44:52] !give halvors hi [21:44:52]
+2016-10-25 11:47:15	nolyc	[21:44:53] halvors: Hi and welcome to ##C++! This channel is for the discussion of standard C++. For algorithms, libraries, platforms and tools, go to ##C++-general. Beginner questions might get more appropriate responses in ##C++-basic. [21:44:53]
+2016-10-25 11:47:15	ru03ydak	[21:45:49] In general, C++ implementations obey the zero-overhead principle: What you don't use, you don't pay for [Stroustrup, 1994]. And further: What you do use, you couldn't hand code any better.  作者：很好 链接：http://www.zhihu.com/question/31645634/answer/58749873 来源：知乎 著作权归作者所有，转载请联系作者获得授权。 [21:45:49]
+2016-10-25 11:47:15	ru03ydak	[21:46:03] http://www.stroustrup.com/abstraction-and-machine.pdf [21:46:03]
+2016-10-25 11:47:15	thinlizzy	[21:46:15] wtf [21:46:15]
+2016-10-25 11:47:15	ru03ydak	[21:46:25] sorry, I paste too much [21:46:25]
+2016-10-25 11:47:15	ru03ydak	[21:46:37] I could not get point, what here mean/ [21:46:37]
+2016-10-25 11:47:15	***	Playback Complete.
+2016-10-25 11:47:23	<--	damme_ (~damme@2001:16d8:cc75::802) has quit (Ping timeout: 256 seconds)
+2016-10-25 11:47:23	<--	krunkpirate (~krunkpira@unaffiliated/krunkpirate) has quit (Ping timeout: 260 seconds)
+2016-10-25 11:47:23	--	Channel created on Fri, 14 Sep 2001 17:15:35
+2016-10-25 11:47:24	ru03ydak	What Stroustrup mean about "zero-overhead principle"
+2016-10-25 11:47:32	halvors	I got a variable of type "FrostbiteCommandHandler" in my class. I also got a class having "FrostbiteCommandHandler" as it's base class, this class is called "BF4CommandHandler".
+2016-10-25 11:47:43	ru03ydak	I google a lot, but not find the answer
+2016-10-25 11:48:00	thinlizzy	halvors, wow! you like verbosity
+2016-10-25 11:48:02	<--	qjid (~qjid@2.14.171.178) has quit (Remote host closed the connection)
+2016-10-25 11:48:08	halvors	Would it be possible to cast the value stored in the variable type of my class back to BF4CommandHandler?
+2016-10-25 11:48:09	<--	Jesin (~Jesin@pool-96-231-49-118.washdc.fios.verizon.net) has quit (Quit: Leaving)
+2016-10-25 11:48:31	thinlizzy	halvors, impossible to know. make a testcase
+2016-10-25 11:48:39	halvors	FrostbiteCommandHandler *f = new BF4CommandHandler();
+2016-10-25 11:48:51	thinlizzy	!give halvors testcase
+2016-10-25 11:48:53	nolyc	halvors: A testcase is the _least_ amount of code that replicates your problem, paste it to http://coliru.stacked-crooked.com and give us the link. Do _not_ paste code to the channel. See the testcase checklist at http://eel.is/iso-c++/testcase/
+2016-10-25 11:48:54	-->	ueoaa (~ueoaa@2.14.171.178) has joined ##c++
+2016-10-25 11:49:02	halvors	dynamic_cast<BF4CommandHandler*>(f);
+2016-10-25 11:49:02	halvors	Should work right?
+2016-10-25 11:49:11	thinlizzy	yeah! try it
+2016-10-25 11:49:16	thinlizzy	if that fails, make a test case
+2016-10-25 11:49:17	-->	krunkpirate (~krunkpira@unaffiliated/krunkpirate) has joined ##c++
+2016-10-25 11:49:19	<--	ueoaa (~ueoaa@2.14.171.178) has quit (Max SendQ exceeded)
+2016-10-25 11:49:40	-->	Jjidu (~Jjidu@2.14.171.178) has joined ##c++
+2016-10-25 11:50:01	<--	hatter (~hatter@213.80.106.150) has quit (Ping timeout: 260 seconds)
+2016-10-25 11:50:06	<--	Jjidu (~Jjidu@2.14.171.178) has quit (Max SendQ exceeded)
+2016-10-25 11:50:42	halvors	thinlizzy: Well, the problem is that it does fail.
+2016-10-25 11:50:45	-->	bixwc (~bixwc@2.14.171.178) has joined ##c++
+2016-10-25 11:50:57	halvors	I get a segfault.
+2016-10-25 11:51:05	<--	szulak_ (uid162164@gateway/web/irccloud.com/x-ebdxbtddmmongife) has quit (Quit: Connection closed for inactivity)
+2016-10-25 11:51:10	<--	bixwc (~bixwc@2.14.171.178) has quit (Max SendQ exceeded)
+2016-10-25 11:51:21	thinlizzy	you already know what to do
+2016-10-25 11:51:31	-->	Toema (~Toema@2.14.171.178) has joined ##c++
+2016-10-25 11:52:10	<--	Toema (~Toema@2.14.171.178) has quit (Max SendQ exceeded)
+2016-10-25 11:52:10	halvors	thinlizzy: Yeah, sort out why it's not working. The problem is that i'm really stuck here.
+2016-10-25 11:52:11	halvors	thinlizzy: This is my file: https://github.com/OpenRcon/OpenRcon/blob/feature/reorganize/src/common/game/frostbite/FrostbiteClient.h
+2016-10-25 11:52:11	halvors	Take a look at https://github.com/OpenRcon/OpenRcon/blob/feature/reorganize/src/common/game/frostbite/FrostbiteClient.cpp
+2016-10-25 11:52:14	thinlizzy	!give halvors not a testcase
+2016-10-25 11:52:14	nolyc	halvors: Stop! A testcase must 0) be short (<=50 lines) 1) be self-contained and 2) reproduce the problem. Don't paste another link here until: I) you've pasted your testcase to http://coliru.stacked-crooked.com II) there are no irrelevant compile errors and III) it reproduces the problem. See the testcase checklist at http://eel.is/c++/testcase/
+2016-10-25 11:52:25	-->	kouj (~kouj@2.14.171.178) has joined ##c++
+2016-10-25 11:52:43	<--	kouj (~kouj@2.14.171.178) has quit (Max SendQ exceeded)
+2016-10-25 11:53:17	-->	adu (~adu@AAubervilliers-151-1-13-113.w83-114.abo.wanadoo.fr) has joined ##c++
+2016-10-25 11:53:37	<--	adu (~adu@AAubervilliers-151-1-13-113.w83-114.abo.wanadoo.fr) has quit (Max SendQ exceeded)
+2016-10-25 11:53:40	<--	ReverseBlade (~user@213.74.212.180) has quit (Ping timeout: 244 seconds)
+2016-10-25 11:54:22	-->	Pvua (~Pvua@AAubervilliers-151-1-13-113.w83-114.abo.wanadoo.fr) has joined ##c++
+2016-10-25 11:54:42	<--	Pvua (~Pvua@AAubervilliers-151-1-13-113.w83-114.abo.wanadoo.fr) has quit (Max SendQ exceeded)
+2016-10-25 11:55:13	-->	Andrew8472 (~Andrew@host117.201-252-141.telecom.net.ar) has joined ##c++
+2016-10-25 11:55:27	<--	rebb (~rebb3@p54B803C5.dip0.t-ipconnect.de) has quit (Quit: Pong timeout)
+2016-10-25 11:55:40	<--	iwakura (~Shino@user-31-175-95-254.play-internet.pl) has quit (Quit: Leaving)
+2016-10-25 11:56:01	w3z	im not sure about that last interview question - uniformly - how about the case of explicit instantiation - or c casts ...
+2016-10-25 11:56:12	-->	pdtpatrick (~Patrick@2620:10d:c090:200::6:6b85) has joined ##c++
+2016-10-25 11:56:13	<--	pdtpatrick (~Patrick@2620:10d:c090:200::6:6b85) has quit (Remote host closed the connection)
+2016-10-25 11:56:27	-->	pdtpatrick (~Patrick@199.201.64.130) has joined ##c++
+2016-10-25 11:56:49	<--	nikki93 (~nikki93@2601:645:8104:cb10:4c52:fcc8:5707:89ea) has quit (Remote host closed the connection)
+2016-10-25 11:56:53	w3z	is it uniform when there are exceptions to the rule, eh
+2016-10-25 11:57:15	<--	kilbith (4ee51c3e@gateway/web/cgi-irc/kiwiirc.com/ip.78.229.28.62) has quit (Quit: http://www.kiwiirc.com/ - A hand crafted IRC client)
+2016-10-25 11:58:21	-->	nikki93 (~nikki93@2601:645:8104:cb10:647c:fe89:183c:74d7) has joined ##c++
+2016-10-25 11:58:55	<--	unK_ (~drunK@host-81-190-235-217.dynamic.mm.pl) has quit (Quit: KVIrc 4.9.2 Aria http://www.kvirc.net/)
+2016-10-25 11:59:03	-->	drockwood94 (~ethan@2601:245:0:de2b::f92a) has joined ##c++
+2016-10-25 12:00:05	halvors	thinlizzy: Ok, writing a testcase now, just give me a few minutes :)
+2016-10-25 12:00:18	<--	Andrew8472 (~Andrew@host117.201-252-141.telecom.net.ar) has quit (Quit: Konversation terminated!)
+2016-10-25 12:00:36	-->	Andrew8472 (~Andrew@host117.201-252-141.telecom.net.ar) has joined ##c++
+2016-10-25 12:00:36	-->	zwliew (uid161395@gateway/web/irccloud.com/x-ngdpweqaorumyjwi) has joined ##c++
+2016-10-25 12:01:25	<--	bkboggy (~bkboggy@cpe-172-250-147-60.socal.res.rr.com) has quit (Quit: Leaving)
+2016-10-25 12:01:57	<--	illerucis (~illerucis@2620:10d:c091:200::ab98) has quit (Remote host closed the connection)
+2016-10-25 12:02:31	-->	illerucis (~illerucis@2620:10d:c091:200::ab98) has joined ##c++
+2016-10-25 12:02:31		[12:02]
+2016-10-25 12:02:47	<--	illerucis (~illerucis@2620:10d:c091:200::ab98) has quit (Read error: Connection reset by peer)
+2016-10-25 12:03:28	-->	shaggycat (~quassel@broadband-46-242-42-147.nationalcablenetworks.ru) has joined ##c++
+2016-10-25 12:03:36	-->	illerucis (~illerucis@2620:10d:c091:200::ab98) has joined ##c++
+2016-10-25 12:04:01	<--	gagbo (~gagbo@unaffiliated/gagbo) has quit (Quit: I'm out !)
+2016-10-25 12:05:55	<--	plujon (~user@c-67-171-224-154.hsd1.or.comcast.net) has quit (Quit: ERC (IRC client for Emacs 25.1.1))
+2016-10-25 12:05:56	-->	jablo (~jablo@80-62-117-149-mobile.dk.customer.tdc.net) has joined ##c++
+2016-10-25 12:06:01	-->	anuxivm (~anuxi@92.177.99.40) has joined ##c++
+2016-10-25 12:06:26	<--	jablo (~jablo@80-62-117-149-mobile.dk.customer.tdc.net) has left ##c++
+2016-10-25 12:07:20	-->	k4rtik (~k4rtik@unaffiliated/k4rtik) has joined ##c++
+2016-10-25 12:08:24	<--	illerucis (~illerucis@2620:10d:c091:200::ab98) has quit (Ping timeout: 260 seconds)
+2016-10-25 12:12:30	-->	iwakura (~Shino@user-31-175-95-254.play-internet.pl) has joined ##c++
+2016-10-25 12:13:04	-->	Azusa762 (~roy@37.228.242.234) has joined ##c++
+2016-10-25 12:13:23	<--	blueness (~blueness@gentoo/developer/blueness) has quit (Excess Flood)
+2016-10-25 12:14:45	-->	Euston (~r1@cpc24-lewi14-2-0-cust589.2-4.cable.virginm.net) has joined ##c++
+2016-10-25 12:15:02	-->	KingsQuest (~ident@unaffiliated/kingsquest) has joined ##c++
+2016-10-25 12:15:05	<--	patadasAlHigado (~patadasAl@asavpn242241.vpn.mcgill.ca) has quit (Ping timeout: 256 seconds)
+2016-10-25 12:15:21	<--	justanotherdevel (2f1e9ba3@gateway/web/freenode/ip.47.30.155.163) has quit (Ping timeout: 260 seconds)
+2016-10-25 12:15:33	-->	Haliucinas (~Haliucina@data-101-117.cgates.lt) has joined ##c++
+2016-10-25 12:15:34	<--	Haliucinas (~Haliucina@data-101-117.cgates.lt) has quit (Max SendQ exceeded)
+2016-10-25 12:16:07	<--	nilof (~saolof@92-32-80-134.tn.glocalnet.net) has quit (Quit: Going offline, see ya! (www.adiirc.com))
+2016-10-25 12:16:39	-->	dlock23 (~deadlock2@231.red-88-3-139.dynamicip.rima-tde.net) has joined ##c++
+2016-10-25 12:16:56	<--	RebelCoder (~Yuriy@cpc74579-lewi13-2-0-cust201.2-4.cable.virginm.net) has quit (Ping timeout: 250 seconds)

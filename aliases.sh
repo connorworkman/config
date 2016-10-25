@@ -13,10 +13,14 @@ alias ohmyzsh='pushd ${ZSH} '
 
 # Unset previous function/alias iterations
 unset -f fc which define h wd bfg defrag src >/dev/null 2>&1 || true
-unalias {1..9} history c d h j s >/dev/null 2>&1 || true
+unalias {1..9} gg history c d h j s >/dev/null 2>&1 || true
 
 ## Custom aliases
 
+alias em='emerge '
+alias ems='emerge -s '
+alias eq='equery '
+alias gg='web_search_custom google '
 alias makepkg='eval "$(pump --startup)" && makepkg '
 alias j="jump"
 alias b="bookmark"
@@ -203,7 +207,7 @@ alias scommit='git commit -S '
 alias nmixxx='sudo renice -n -20 -p `pgrep mixxx | paste -s -d " "` '
 #alias nmixxx="mixxx >/dev/null 2>&1 & renice -n -20 -p $! && disown "
 alias kpulse='systemctl --user stop pulseaudio.socket && pulseaudio --kill || pulseaudio --kill '
-alias archchroot='sudo mount --rbind /sys /mnt/gentoo/sys/; sudo mount --make-rslave /mnt/gentoo/sys/; sudo mount --rbind /dev /mnt/gentoo/dev/; sudo mount --make-rslave /mnt/gentoo/dev/; sudo mount -t tmpfs tmp /mnt/gentoo/tmp/; sudo mount -t proc proc /mnt/gentoo/proc/; sudo chroot '
+alias archchroot='sudo mount --rbind /sys /mnt/gentoo/sys/; sudo mount --make-rslave /mnt/gentoo/sys/; sudo mount --rbind /dev /mnt/gentoo/dev/; sudo mount --make-rslave /mnt/gentoo/dev/; sudo mount -t tmpfs tmpfs /mnt/gentoo/tmp/; sudo mount -t proc proc /mnt/gentoo/proc/; sudo chroot '
 alias ws='web_search_custom '
 alias reddit='web_search_custom reddit '
 alias google='web_search_custom google '
