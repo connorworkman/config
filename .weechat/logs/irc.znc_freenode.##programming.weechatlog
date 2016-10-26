@@ -41060,3 +41060,824 @@
 2016-10-26 09:05:26	kadoban	Yeah you seem to have removed too much from the problem.
 2016-10-26 09:05:36	-->	zaherdirkey (~zaherdirk@37.48.155.144) has joined ##programming
 2016-10-26 09:06:13	Bilz	heh
+2016-10-26 09:06:59	Bilz	I'll have to type it up more clearly. I mean, can you ask questions?? I don't think they are problems accessible to everyone unfortunately
+2016-10-26 09:07:06	-->	Joanna2 (~Joanna345@ip68-111-72-145.oc.oc.cox.net) has joined ##programming
+2016-10-26 09:07:21	Guest72395	Bilz, aren't you cheating?
+2016-10-26 09:07:37	-->	Siegfried (~user@2607:f470:6:3003:fc8d:6ece:c349:b75b) has joined ##programming
+2016-10-26 09:07:41	<--	mvaenskae (~mvaenskae@unaffiliated/mvaenskae) has quit (Remote host closed the connection)
+2016-10-26 09:08:16	Bilz	Guest72395, not really? I mean, it has no purpose. I am doing it for fun. And I'm not going to get to a solution fi I don't ask for help
+2016-10-26 09:08:34	Guest72395	then just make it public :p-- screenshot
+2016-10-26 09:08:35	kadoban	Bilz: Well, what inputs are you given at least?
+2016-10-26 09:08:54	Bilz	kadoban, starting ID and length, that is all.
+2016-10-26 09:09:07	<--	_Rick (~textual@149.18.12.134) has quit (Quit: My Mac has gone to sleep. ZZZzzz…)
+2016-10-26 09:09:36	kadoban	Bilz: Are you given multiple queries, or just one?
+2016-10-26 09:09:43	kadoban	What's the range on the inputs, is it given?
+2016-10-26 09:10:25	kadoban	Oh it's at the end there
+2016-10-26 09:10:34	+nitrix	kadoban: I need your help to find the minimal primitives of an genetic programming experiment, if you're interested.
+2016-10-26 09:10:38	Bilz	ah, id can range from 0 to 2E8, minimum length of the "line" is one, i.e. length >= 1, 0 <= starting ID <= 2E8
+2016-10-26 09:10:48	-->	Heraclmene (~Heraclmen@unaffiliated/heraclmene) has joined ##programming
+2016-10-26 09:11:13	Bilz	kadoban, Guest72395, trust me, it took me a while to even figure out what the problem was saying and this a much clearer explanation haha
+2016-10-26 09:11:43	<--	hey2 (~hey2@c-71-193-232-55.hsd1.or.comcast.net) has quit (Ping timeout: 250 seconds)
+2016-10-26 09:11:43	Guest72395	Bilz, I just wanted a problem to solve :(
+2016-10-26 09:12:02	kadoban	Bilz: With numbers that small, can't you just brute-force it?
+2016-10-26 09:12:11	Bilz	kadoban, nope, i tried
+2016-10-26 09:12:14	kadoban	nitrix: Hmm, I can look, though no promises, I don't have a lot of experience there
+2016-10-26 09:12:29	<--	Heraclmene (~Heraclmen@unaffiliated/heraclmene) has left ##programming
+2016-10-26 09:12:48	kadoban	Bilz: How long can it take to to up to 256 xors ?
+2016-10-26 09:12:56	kadoban	to do*
+2016-10-26 09:13:00	Bilz	why do you think only 256?
+2016-10-26 09:13:04	Bilz	oh
+2016-10-26 09:13:05	kadoban	2^8
+2016-10-26 09:13:11	Bilz	2E8 = 2 * 10^8
+2016-10-26 09:13:17	kadoban	Oh, right.
+2016-10-26 09:13:19	Bilz	:D
+2016-10-26 09:13:30	+nitrix	kadoban: You'll do just fine. I'm essentially randomly generating programs in a given minimal language and seeing which programs perform the best to recombine them and hopefully get even better programs (it's an artificial intelligence technique).
+2016-10-26 09:13:41	Bilz	Guest72395, the challenge is there haha :)
+2016-10-26 09:14:02	+nitrix	kadoban: Since those programs have to be evaluated, I came up with the constraint that programs should probably be guaranteed to halt.
+2016-10-26 09:14:15	+nitrix	kadoban: So far so good?
+2016-10-26 09:14:23	-->	chindy (~julian@212-197-144-44.adsl.highway.telekom.at) has joined ##programming
+2016-10-26 09:14:23		[09:14]
+2016-10-26 09:14:25	kadoban	Sure
+2016-10-26 09:14:27	Guest72395	Bilz, you're being oddly tight-lipped about
+2016-10-26 09:14:36	+exio4	Bilz: I don't understand the problem
+2016-10-26 09:14:43	<--	Siegfried (~user@2607:f470:6:3003:fc8d:6ece:c349:b75b) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-10-26 09:14:57	kadoban	Bilz: And the length can be about that long or something?
+2016-10-26 09:15:01	-->	mvaenskae (~mvaenskae@unaffiliated/mvaenskae) has joined ##programming
+2016-10-26 09:15:12	<--	GenteelBen (~GenteelBe@cpc70133-lutn12-2-0-cust324.9-3.cable.virginm.net) has quit
+2016-10-26 09:15:15	Bilz	kadoban, length isn't specified. just says at least 1
+2016-10-26 09:15:52	+nitrix	kadoban: Since I want to easily recombine programs, I've decided to make the language stack or array based, and have it be one of those "concatenative" (RPN-style) language.
+2016-10-26 09:16:01	Bilz	exio4, can you tell me which part you don't follow? Guest72395, I don't know, apparently these challenges aren't open to everybody and hence why
+2016-10-26 09:16:04	+nitrix	kadoban: The question is, what operations should it have to be minimally complete?
+2016-10-26 09:16:18	kadoban	Anyway, first glance I would think there's a way to compute foldr xor 0 [n..m] without iterating through every number. For example you should be able to figure out the least bit of it by checking uhm ... n, m and if the difference between them is even or odd
+2016-10-26 09:16:21	<--	mizu_no_oto_work (~textual@104.207.209.180) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-10-26 09:16:39	kadoban	nitrix: Ah, heh. So you want something powerful, but not turing complete I guess?
+2016-10-26 09:16:46	<--	CameBach (~b3nszy@2601:580:c103:6150:81ba:b6fb:954d:988a) has quit (Remote host closed the connection)
+2016-10-26 09:17:00	-->	Siegfried (~user@levyvlan502.1342.wlan.wireless-resnet.upenn.edu) has joined ##programming
+2016-10-26 09:17:04	+nitrix	Yeah. Something where each terms have big implications.
+2016-10-26 09:17:19	+nitrix	Also, the input is known and loaded in memory before hand.
+2016-10-26 09:17:29	+exio4	Bilz: what's the input, what's the result, and what's the process (in the naive-st way you can think of)
+2016-10-26 09:17:41	<--	Tweth-U-PDS (~quassel@142.75.255.199) has quit (Read error: Connection reset by peer)
+2016-10-26 09:17:51	+exio4	Bilz: I just checked the pastebin though, maybe you posted something else I didn't check.
+2016-10-26 09:18:02	+nitrix	kadoban: I've written an OISC before which was some insane "reverse substract and jump if borrow" operation at its core, but here it wouldn't be useful, since programs have to evolve relatively fast, so I need a small set of operators, but those need to be impactful.
+2016-10-26 09:18:23	Bilz	exio4, the input is starting id and length, the result is the xor of all those numbers, and the process is essentially what ive tried to describe in the pastebin with two examples (as given in the problem)
+2016-10-26 09:18:39	kadoban	nitrix: You need more than just assurance that the things halt, I assume, right? You probably want them to halt quickly?
+2016-10-26 09:18:45	-->	Tweth-U-PDS (~quassel@142.75.255.199) has joined ##programming
+2016-10-26 09:18:52	+nitrix	I'm thinking, drop, dup, swap, add, sub, mul, and some form of "range" operator.
+2016-10-26 09:19:07	<--	Spookah123 (8a286dca@gateway/web/freenode/ip.138.40.109.202) has quit (Quit: Page closed)
+2016-10-26 09:19:35	Bilz	kadoban, what is foldr xor  0 [n..m]?
+2016-10-26 09:19:38	+nitrix	kadoban: Ideally yeah. I don't want to build some stupid "if you're past 10000 loops iterations, abort".
+2016-10-26 09:20:05	+nitrix	kadoban: Or running two simulation in parallel turtoise and hare to detect cycles.
+2016-10-26 09:20:07	kadoban	Bilz: The operation you're doing, xor of everything between two numbers. I don't know a symbol for that
+2016-10-26 09:20:10	<--	mvaenskae (~mvaenskae@unaffiliated/mvaenskae) has quit (Ping timeout: 244 seconds)
+2016-10-26 09:20:36	+exio4	Bilz: "all those numbers"?
+2016-10-26 09:20:40	Bilz	exio4, is it clear? ah
+2016-10-26 09:20:49	-->	Jesin (~Jesin@pool-96-231-49-118.washdc.fios.verizon.net) has joined ##programming
+2016-10-26 09:20:50	+exio4	Bilz: you mean [id..id+length] numbers? or what?
+2016-10-26 09:20:52	-->	whathapp_ (~whathappe@107-195-64-10.lightspeed.irvnca.sbcglobal.net) has joined ##programming
+2016-10-26 09:20:56	+nitrix	kadoban: If the final form looked like this, it could be nice: dup drop dup dup add [ drop dup add add [ add ] ]
+2016-10-26 09:21:22	+exio4	oh, wait, I think I see it now
+2016-10-26 09:21:23	kadoban	Bilz: If I ask you to compute the lowest bit of xor of everything between 0 and 1, what is it? What about between 0 and 100000000001? (note: you don't have to check every number)
+2016-10-26 09:21:26	-->	mvaenskae (~mvaenskae@unaffiliated/mvaenskae) has joined ##programming
+2016-10-26 09:21:32	krete777	How can i determine what type of filter to use when I want to filter a signal to keep that only keeps the frequencies of whhich the human ear can perceive? and how do I determine its cut off frequency?
+2016-10-26 09:21:38	Bilz	exio4, if you see all the numbers to the left of the backslash in the pastebin? thats what i mean by all those numbers, sorry. the starting id and the length defines "all those numbers". the backslash moves back one step after every line in the so called "matrix" as shown in the pastebin
+2016-10-26 09:21:42	--	irc: disconnected from server
+2016-10-26 09:43:39	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined ##programming
+2016-10-26 09:43:39		[09:43]
+2016-10-26 09:43:39	--	Topic for ##programming is "Community Chat & Programming/Computer Science Discussion | If you have a question, don't ask to ask, just ask! | Paste > 2 lines to a pastebin such as http://ideone.com | Channel rules: http://tinyurl.com/2lb-programming | Colour codes filtered again because idiets."
+2016-10-26 09:43:39	--	Topic set by unreal_ on Thu, 02 Jun 2016 00:53:27
+2016-10-26 09:43:39	--	Channel ##programming: 652 nicks (1 op, 9 voices, 642 normals)
+2016-10-26 09:43:39	***	Buffer Playback...
+2016-10-26 09:43:39	kadoban	[19:18:39] nitrix: You need more than just assurance that the things halt, I assume, right? You probably want them to halt quickly? [19:18:39]
+2016-10-26 09:43:39	+nitrix	[19:18:52] I'm thinking, drop, dup, swap, add, sub, mul, and some form of "range" operator. [19:18:52]
+2016-10-26 09:43:39	Bilz	[19:19:35] kadoban, what is foldr xor  0 [n..m]? [19:19:35]
+2016-10-26 09:43:39	+nitrix	[19:19:38] kadoban: Ideally yeah. I don't want to build some stupid "if you're past 10000 loops iterations, abort". [19:19:38]
+2016-10-26 09:43:39	+nitrix	[19:20:05] kadoban: Or running two simulation in parallel turtoise and hare to detect cycles. [19:20:05]
+2016-10-26 09:43:39	kadoban	[19:20:07] Bilz: The operation you're doing, xor of everything between two numbers. I don't know a symbol for that [19:20:07]
+2016-10-26 09:43:39	+exio4	[19:20:36] Bilz: "all those numbers"? [19:20:36]
+2016-10-26 09:43:39	Bilz	[19:20:40] exio4, is it clear? ah [19:20:40]
+2016-10-26 09:43:39	+exio4	[19:20:50] Bilz: you mean [id..id+length] numbers? or what? [19:20:50]
+2016-10-26 09:43:39	+nitrix	[19:20:56] kadoban: If the final form looked like this, it could be nice: dup drop dup dup add [ drop dup add add [ add ] ] [19:20:56]
+2016-10-26 09:43:39	+exio4	[19:21:22] oh, wait, I think I see it now [19:21:22]
+2016-10-26 09:43:39	kadoban	[19:21:23] Bilz: If I ask you to compute the lowest bit of xor of everything between 0 and 1, what is it? What about between 0 and 100000000001? (note: you don't have to check every number) [19:21:23]
+2016-10-26 09:43:39	krete777	[19:21:32] How can i determine what type of filter to use when I want to filter a signal to keep that only keeps the frequencies of whhich the human ear can perceive? and how do I determine its cut off frequency? [19:21:32]
+2016-10-26 09:43:39	Bilz	[19:21:38] exio4, if you see all the numbers to the left of the backslash in the pastebin? thats what i mean by all those numbers, sorry. the starting id and the length defines "all those numbers". the backslash moves back one step after every line in the so called "matrix" as shown in the pastebin [19:21:38]
+2016-10-26 09:43:39	+nitrix	[19:21:55] kadoban: Where [] takes a value and does what's between [ ] that many times. But even that doesn't convince me, it's though to evolve. [19:21:55]
+2016-10-26 09:43:39	kadoban	[19:21:55] nitrix: Reminds me of kinda bitcoin's script language, heh, but that's likely because I've been messing with that semi-recently. [19:21:55]
+2016-10-26 09:43:39	+nitrix	[19:21:56] kadoban: oh o: ?! Maybe I could check that. [19:21:56]
+2016-10-26 09:43:39	+exio4	[19:22:06] Bilz: I see it now, sowwy :p [19:22:06]
+2016-10-26 09:43:39	Bilz	[19:22:25] exio4, np, im not sure if i explained it clearly so im here to clarify heh :D [19:22:25]
+2016-10-26 09:43:39	kadoban	[19:22:28] nitrix: You could check, though ... it's kind of a messy language. But on the plus side it's not turing complete, and it's designed to do something at least semi-useful quickly. [19:22:28]
+2016-10-26 09:43:39	theShirbiny	[19:29:50] Q: How UUIDs are granted to be unique? https://en.wikipedia.org/wiki/Universally_unique_identifier [19:29:50]
+2016-10-26 09:43:39	theShirbiny	[19:29:50] by just how long they are? [19:29:50]
+2016-10-26 09:43:39	Bilz	[19:31:10] heh :) thanks [19:31:10]
+2016-10-26 09:43:39	kadoban	[19:31:19] Anytime [19:31:19]
+2016-10-26 09:43:39	+nitrix	[19:32:49] kadoban: Do you know why it's using two stacks? Apparently forth does the same. [19:32:49]
+2016-10-26 09:43:39	imode	[19:33:02] what uses two stacks? [19:33:02]
+2016-10-26 09:43:39	+Rounin	[19:33:10] A factory [19:33:10]
+2016-10-26 09:43:39	+Rounin	[19:33:23] I just made that up btw [19:33:23]
+2016-10-26 09:43:39	+Rounin	[19:33:33] Isn't there some sort of automaton that uses two stacks? [19:33:33]
+2016-10-26 09:43:39	imode	[19:33:34] Rounin gets one point for originality. [19:33:34]
+2016-10-26 09:43:39	imode	[19:36:54] gp is hard to do on something like forth. [19:36:54]
+2016-10-26 09:43:39	+nitrix	[19:36:59] sbrg: So the quicker it can come to the result, without having to do stupid stakc manipulation, probably the best it'll be. [19:36:59]
+2016-10-26 09:43:39	+GeDaMo	[19:37:05] imode: not necessarily [19:37:05]
+2016-10-26 09:43:39	+nitrix	[19:37:12] imode: Looks very concatenative (forth-like). [19:37:12]
+2016-10-26 09:43:39	imode	[19:40:47] nitrix: I have a language that's got 32 commands and is stack-based. single-char (i.e single-byte) commands! try designing something like that but for a less fragile paradigm. [19:40:47]
+2016-10-26 09:43:39	+nitrix	[19:40:47] vendu: HAPPY NEAR BIRTHDAY DAYS! [19:40:47]
+2016-10-26 09:43:39	+vendu	[19:40:55] it's a hash-table, one item per allocated page for pointer-to-buffer lookups [19:40:55]
+2016-10-26 09:43:39	+vendu	[19:41:00] nitrix, hehe thanks =) [19:41:00]
+2016-10-26 09:43:39	+vendu	[19:41:11] well, but it's based on smallish arrays of items instead of single ones :) [19:41:11]
+2016-10-26 09:43:39	imode	[19:41:17] a register-based lang may not be terrible. rather, a memory one... [19:41:17]
+2016-10-26 09:43:39	+vendu	[19:41:29] at the moment, 64-word arrays with 2 words of book-keeping and 62 2-word page entries :) [19:41:29]
+2016-10-26 09:43:39	imode	[19:41:47] GeDaMo: btw. I mirrored c2. [19:41:47]
+2016-10-26 09:43:39	+vendu	[19:41:51] this should leverage cpu prefetching much better :) [19:41:51]
+2016-10-26 09:43:39	+nitrix	[19:41:52] imode: https://github.com/nitrix/ni/blob/141ac557537feb20619909330da294d7a0022691/boot/hi.asm [19:41:52]
+2016-10-26 09:43:39	+nitrix	[19:41:58] imode: https://github.com/nitrix/ni/blob/141ac557537feb20619909330da294d7a0022691/boot/macros.def [19:41:58]
+2016-10-26 09:43:39	+nitrix	[19:42:06] imode: https://github.com/nitrix/ni/blob/141ac557537feb20619909330da294d7a0022691/boot/assembler.php [19:42:06]
+2016-10-26 09:43:39	imode	[19:42:22] nitrix: {,[,1:,1:=?[,:,3%,0=;][?,_"Fizz";][,:,5%,0=;][?,_"Buzz";],_"\n",1+]} [19:42:22]
+2016-10-26 09:43:39	imode	[19:42:26] nitrix: have a fizzbuzz. [19:42:26]
+2016-10-26 09:43:39	imode	[19:42:55] GeDaMo: https://imode.gitlab.io/projects/c2/index.html [19:42:55]
+2016-10-26 09:43:39	imode	[19:43:18] fun fact, this broke github for a couple hours. [19:43:18]
+2016-10-26 09:43:39	***	Playback Complete.
+2016-10-26 09:43:47	imode	s/github/gitlab. 36,000 files don't play well with gitlab's ci.
+2016-10-26 09:43:55	+nitrix	Do you see what I've done?
+2016-10-26 09:43:57	<--	flipchan (~flipchan@h-110-217.a392.priv.bahnhof.se) has quit (Ping timeout: 252 seconds)
+2016-10-26 09:43:59	+nitrix	Single instruction set computer.
+2016-10-26 09:44:01	-->	cyan__ (~cyan@217.170.162.68) has joined ##programming
+2016-10-26 09:44:04	imode	nitrix: it's an oisc, yeah.
+2016-10-26 09:44:06	+nitrix	And the assambler for it is written in PHP.
+2016-10-26 09:44:14	-->	fusta (~fusta@139.179.197.179) has joined ##programming
+2016-10-26 09:44:16	+nitrix	And I wrote a macro expansion system for it :P
+2016-10-26 09:44:22	--	Channel created on Sat, 03 Feb 2007 19:23:51
+2016-10-26 09:44:24	Dark_Fox	It's always funny when major sites/companies don't account for obvious edge cases
+2016-10-26 09:44:37	imode	Dark_Fox: it was weird because it's only, what, 262Mb.
+2016-10-26 09:44:41	<--	fusta (~fusta@139.179.197.179) has quit (Remote host closed the connection)
+2016-10-26 09:44:42	imode	I know repos that are larger.
+2016-10-26 09:44:46	+nitrix	imode: If that's not utterly stupid and crazy to use PHP, lol.
+2016-10-26 09:44:59	Dark_Fox	Isn't that issue more about the file count than file size?
+2016-10-26 09:45:05	<--	Tweth-U-PDS (~quassel@142.75.255.199) has quit (Read error: Connection reset by peer)
+2016-10-26 09:45:05	+nitrix	imode: https://github.com/nitrix/ni/tree/141ac557537feb20619909330da294d7a0022691
+2016-10-26 09:45:09	imode	nitrix: after seeing a text adventure written in brainfuck, stupidity isn't relevant.
+2016-10-26 09:45:17	+nitrix	imode: `ni` was supposed to be really neat, but I abandonned the project
+2016-10-26 09:45:19	<--	gitup (~gitup@124-170-233-161.dyn.iinet.net.au) has quit (Ping timeout: 276 seconds)
+2016-10-26 09:45:23	Dark_Fox	That'll cause the index to be bloated, and if you're just selecting all the values in a linear fashion...
+2016-10-26 09:45:28	Dark_Fox	Well, selecting + rendering
+2016-10-26 09:45:34	+nitrix	The OISC was just to bootstrap the language so it had absolutly no dependency whatsoever.
+2016-10-26 09:45:51	imode	oh wow.
+2016-10-26 09:45:53	imode	oh god.
+2016-10-26 09:46:08	-->	Tweth-U-PDS (~quassel@142.75.255.199) has joined ##programming
+2016-10-26 09:46:27	-->	HarveyPwca (~HarveyPwc@ip-64-134-38-232.public.wayport.net) has joined ##programming
+2016-10-26 09:46:38	imode	oh god gitlab what're you doing no stop please: https://imgur.com/a/lR1nW
+2016-10-26 09:46:45	Dark_Fox	I wonder how many folks in here have PhDs in CompSci
+2016-10-26 09:46:45	+nitrix	imode: https://github.com/nitrix/ni/blob/7ae03228b3d8a969e13c4c9482d1e3153c2606b4/src/main.ni
+2016-10-26 09:46:51	theShirbiny	What makes UUIDs unique? just how long they are?
+2016-10-26 09:47:07	+nitrix	imode: At some point I was able to compile hex digits.
+2016-10-26 09:47:17	+nitrix	And even had labels and stuff.
+2016-10-26 09:47:25	+nitrix	It compiled to an ELF file and everything :P
+2016-10-26 09:47:41	-->	_mirko_ (~mirko@unaffiliated/-mirko-/x-2946915) has joined ##programming
+2016-10-26 09:47:49	Dark_Fox	theShirbiny: https://en.wikipedia.org/wiki/Universally_unique_identifier#Random_UUID_probability_of_duplicates
+2016-10-26 09:48:00	imode	I have no idea how to stop this.
+2016-10-26 09:48:02	krete777	Dark fox: you think a lot of PHds in here?
+2016-10-26 09:48:03	-->	flipchan (~flipchan@h-110-217.a392.priv.bahnhof.se) has joined ##programming
+2016-10-26 09:48:22	-->	kingplusplus_ (~kingplusp@154.16.63.192) has joined ##programming
+2016-10-26 09:48:41	Dark_Fox	krete777: My assumption is that there's hardly any, if any at all
+2016-10-26 09:48:44	+nitrix	We have a couple PhDs indeed.
+2016-10-26 09:49:02	Dark_Fox	Considering the amount of CompSci PhDs in the world is relatively low compared to other PhDs
+2016-10-26 09:49:09	Dark_Fox	Though that's probably changed a bit in the past 10 years
+2016-10-26 09:49:17	-->	doomlord (~textual@host81-155-69-112.range81-155.btcentralplus.com) has joined ##programming
+2016-10-26 09:49:24	+nitrix	A lot of academic people around as well.
+2016-10-26 09:49:28	<--	freddieptf (~freddiept@105.230.224.169) has quit (Ping timeout: 252 seconds)
+2016-10-26 09:49:31	<--	`Eddie (~dedword@unaffiliated/eddie/x-2286721) has quit (Quit: the mac is asleep)
+2016-10-26 09:49:38	wrkrcoop	how does one open a port?
+2016-10-26 09:49:43	+nitrix	vendu: https://github.com/nitrix/ni/blob/7ae03228b3d8a969e13c4c9482d1e3153c2606b4/src/main.ni
+2016-10-26 09:49:44	<--	whathapp_ (~whathappe@107-195-64-10.lightspeed.irvnca.sbcglobal.net) has quit (Remote host closed the connection)
+2016-10-26 09:49:51	+nitrix	vendu: This is when I was autistic c:
+2016-10-26 09:49:54	theShirbiny	0.0000000000000004 (4 × 10−16) I don't like these odds
+2016-10-26 09:49:56	<--	kingplusplus (~kingplusp@41.58.113.5) has quit (Ping timeout: 260 seconds)
+2016-10-26 09:49:57	--	kingplusplus_ is now known as kingplusplus
+2016-10-26 09:50:04	Dark_Fox	wrkrcoop: In what way? You mean listening on a port, or opening the port on the firewall?
+2016-10-26 09:50:04	wrkrcoop	and if that port is open can one only do stuff if i have a server listening to that port that’s ready to handle requests?
+2016-10-26 09:50:18	Dark_Fox	wrkrcoop: More or less
+2016-10-26 09:50:19	wrkrcoop	Dark_Fox: mmmm both
+2016-10-26 09:50:31	-->	kyri (2efb7059@gateway/web/freenode/ip.46.251.112.89) has joined ##programming
+2016-10-26 09:50:39	kyri	Hey guys how are you?
+2016-10-26 09:50:41	<--	Bilz (~billy@unaffiliated/bilz) has quit (Ping timeout: 260 seconds)
+2016-10-26 09:51:04	+vendu	nitrix, hehe cool :)
+2016-10-26 09:51:16	Dark_Fox	wrkrcoop: Well, opening a port on a firewall depends on both your OS and your router
+2016-10-26 09:51:27	Dark_Fox	And listening on a port is dependent upon what language you use
+2016-10-26 09:51:33	kyri	i am desperate i need help on an ER model exersice (arts management sys) very simple one.. can someone help??? i would really appreciate it
+2016-10-26 09:52:12	wrkrcoop	Dark_Fox: interesting … can u explain it using any OS?
+2016-10-26 09:52:29	Dark_Fox	Er..
+2016-10-26 09:52:36	<--	Bernzel (~Benzel@c83-255-193-182.bredband.comhem.se) has quit (Quit: Long Live Hendrix)
+2016-10-26 09:52:37	Dark_Fox	It varies between OSe
+2016-10-26 09:52:38	Dark_Fox	s
+2016-10-26 09:52:49	kyri	anyone?:))
+2016-10-26 09:52:50	Dark_Fox	Windows has a "Windows Firewall", which you just navigate through the UI and unblock things
+2016-10-26 09:52:52	<--	Echo6_ (~Echo6@64.136.247.50) has quit (Quit: Leaving)
+2016-10-26 09:53:03	Dark_Fox	Linux has some config file somewhere, depending on which linux distro
+2016-10-26 09:53:11	-->	gmurop (~gmurop@187.157.155.220) has joined ##programming
+2016-10-26 09:53:12	Dark_Fox	It's all stuff that's easily googleabel
+2016-10-26 09:53:12	<--	montanonic (~nicholas@c-73-37-88-126.hsd1.or.comcast.net) has quit (Ping timeout: 256 seconds)
+2016-10-26 09:53:35	gde33	vendu: hi
+2016-10-26 09:53:35	Dark_Fox	Generally you unblock one port, or a small range of ports at a time
+2016-10-26 09:53:47	Dark_Fox	Usually to allow people to connect to a game server you're hosting
+2016-10-26 09:54:12	-->	sssilver (~sssilver@38.122.48.218) has joined ##programming
+2016-10-26 09:54:22	<--	cyan__ (~cyan@217.170.162.68) has quit (Remote host closed the connection)
+2016-10-26 09:54:28	-->	Tweth-V-PDS (~quassel@142.75.255.199) has joined ##programming
+2016-10-26 09:54:41	-->	WungFu (~WungFu@unaffiliated/wungfu) has joined ##programming
+2016-10-26 09:55:02	Dark_Fox	If you don't unblock the ports, if someone tries to connect to your server, they'll get a "connection refused" message, usually
+2016-10-26 09:55:23	<--	bitmalloc (~bitmalloc@c-98-207-107-190.hsd1.ca.comcast.net) has quit (Remote host closed the connection)
+2016-10-26 09:55:39	+vendu	hey gde33 :)
+2016-10-26 09:55:55	gde33	vendu: did you see my noob code review :P
+2016-10-26 09:56:04	kyri	nobody on ER models???:)
+2016-10-26 09:56:09	+vendu	gde33, nope, where? =)
+2016-10-26 09:56:18	gde33	vendu: https://github.com/vendu/OS-Zero/issues/5
+2016-10-26 09:56:24	<--	xxNamexx (~Name@unaffiliated/xxnamexx) has quit (Ping timeout: 260 seconds)
+2016-10-26 09:56:28	+vendu	ah hmm :)
+2016-10-26 09:56:35	-->	cyan__ (~cyan@217.170.162.68) has joined ##programming
+2016-10-26 09:56:36	-->	jashgala (~jashgala@202.12.83.41) has joined ##programming
+2016-10-26 09:56:41	-->	metachr0n (~nobody@gateway/vpn/privateinternetaccess/metachr0n) has joined ##programming
+2016-10-26 09:56:53	-->	xxNamexx (~Name@unaffiliated/xxnamexx) has joined ##programming
+2016-10-26 09:57:17	<--	Tweth-U-PDS (~quassel@142.75.255.199) has quit (Ping timeout: 256 seconds)
+2016-10-26 09:57:18	gde33	vendu: I assume the later is an optimization?
+2016-10-26 09:57:41	<--	sssilver (~sssilver@38.122.48.218) has quit (Client Quit)
+2016-10-26 09:57:53	<--	jak2000 (~jak2000@177.238.205.51) has quit (Ping timeout: 252 seconds)
+2016-10-26 09:58:02	-->	Atui (~Atui@111.242.6.84.rev.sfr.net) has joined ##programming
+2016-10-26 09:58:21	+vendu	gde33, hmm
+2016-10-26 09:58:25	<--	Atui (~Atui@111.242.6.84.rev.sfr.net) has quit (Max SendQ exceeded)
+2016-10-26 09:58:26	Dark_Fox	latter*
+2016-10-26 09:58:28	-->	whathappens (~whathappe@107-195-64-10.lightspeed.irvnca.sbcglobal.net) has joined ##programming
+2016-10-26 09:58:29	Towers	I am learning program
+2016-10-26 09:58:41	+vendu	gde33, the macros are in mem.h :)
+2016-10-26 09:58:41		[09:58]
+2016-10-26 09:58:55	-->	sssilver (~sssilver@38.122.48.218) has joined ##programming
+2016-10-26 09:59:01	-->	dzish0 (~dzish0@111.242.6.84.rev.sfr.net) has joined ##programming
+2016-10-26 09:59:15	+vendu	gde33, but i suppose i might be able to eliminate the else :)
+2016-10-26 09:59:16	<--	dzish0 (~dzish0@111.242.6.84.rev.sfr.net) has quit (Max SendQ exceeded)
+2016-10-26 09:59:25	-->	Gluesticky (~nobody@unaffiliated/gluesticky) has joined ##programming
+2016-10-26 09:59:25	Exagone313	Towers: join the channels talking about the languages you learn and try to answer questions (or learn what they are talking about)
+2016-10-26 09:59:39	-->	RumpledElf (~rumpledel@drupal.org/user/173054/view) has joined ##programming
+2016-10-26 10:00:01	-->	vbj (~vbj@111.242.6.84.rev.sfr.net) has joined ##programming
+2016-10-26 10:00:01	-->	pmercado (~pmercado@186-104-217-35.baf.movistar.cl) has joined ##programming
+2016-10-26 10:00:23	gde33	Dark_Fox: thanks, interesting bit of English
+2016-10-26 10:00:23	<--	vbj (~vbj@111.242.6.84.rev.sfr.net) has quit (Max SendQ exceeded)
+2016-10-26 10:00:27	<--	mu5t (~LadyG@189.152.164.148) has quit (Ping timeout: 252 seconds)
+2016-10-26 10:00:45	Dark_Fox	No worries, a lot of native English speakers get that messed up as well
+2016-10-26 10:01:18	Dark_Fox	Then again, native English speakers are probably the worst English speakers anyways
+2016-10-26 10:01:27	<--	wrkrcoop (~martee@adsk-nat-ip14.autodesk.com) has quit (Quit: wrkrcoop)
+2016-10-26 10:01:53	-->	rindolf (~rindolf@bzq-109-67-100-74.red.bezeqint.net) has joined ##programming
+2016-10-26 10:02:05	+vendu	gde33, btw, i've worked on the zero/mem.? stuff a lot lately :)
+2016-10-26 10:02:08	<--	werdfriek (~chatzilla@2601:602:c205:ac40:a15d:5d58:5be7:3738) has quit (Ping timeout: 245 seconds)
+2016-10-26 10:02:14	<--	yrter (~yrter@unaffiliated/yrter) has quit (Quit: quit)
+2016-10-26 10:02:25	-->	pleiadian (~pleiadian@2a02:2450:1010:14c:7edd:90ff:fea7:fb41) has joined ##programming
+2016-10-26 10:02:27	rindolf	Hi all! How are you?
+2016-10-26 10:02:28	+vendu	so the malloc is much better once again, but not stable for real-world use yet :)
+2016-10-26 10:02:31	+vendu	hey rindolf :)
+2016-10-26 10:02:41	<--	yoosi (~yoosi@unaffiliated/yoosi) has quit (Remote host closed the connection)
+2016-10-26 10:02:51	rindolf	vendu: hi, sup?
+2016-10-26 10:02:57	flipchan	just got the coolest domain name
+2016-10-26 10:03:01	-->	yoosi (~yoosi@unaffiliated/yoosi) has joined ##programming
+2016-10-26 10:03:06	+vendu	rindolf, just turned the sauna on, chilling and waiting :)
+2016-10-26 10:03:08	+vendu	rindolf, you?
+2016-10-26 10:03:12	rindolf	flipchan: which one?
+2016-10-26 10:03:12	<--	cyan__ (~cyan@217.170.162.68) has quit (Remote host closed the connection)
+2016-10-26 10:03:36	rindolf	vendu: I returned from a JavaScript-Israel meetup.
+2016-10-26 10:03:39	-->	nikitamog (~nikita@66.114.154.18) has joined ##programming
+2016-10-26 10:03:44	flipchan	tomuchmoney.club so my email is flipchan@tomuchmoney.club
+2016-10-26 10:03:50	+vendu	rindolf, cool :)
+2016-10-26 10:04:09	rindolf	flipchan: shouldn't it be toomuchmoney?
+2016-10-26 10:04:51	flipchan	fkn hell....
+2016-10-26 10:04:56	flipchan	well well
+2016-10-26 10:05:03	<--	umib0zu (~umib0zu@38.97.123.22) has quit (Quit: umib0zu)
+2016-10-26 10:05:03	<--	jashgala (~jashgala@202.12.83.41) has quit (Ping timeout: 245 seconds)
+2016-10-26 10:05:20	-->	Dr-G (~Dr-G@unaffiliated/dr-g) has joined ##programming
+2016-10-26 10:05:27	<--	user_corrupt (~user_corr@athedsl-4469139.home.otenet.gr) has quit (Remote host closed the connection)
+2016-10-26 10:05:29	-->	yrter (~yrter@unaffiliated/yrter) has joined ##programming
+2016-10-26 10:06:05	rindolf	"To much money" is valid grammatically too.
+2016-10-26 10:06:27	Dark_Fox	Hahaha
+2016-10-26 10:06:40	Dark_Fox	To: Much Money, Send help
+2016-10-26 10:06:46	flipchan	still i forward *@tomuchmoney.club to my real email so i think it will be alot of fun moments handing out my email
+2016-10-26 10:06:50	+GeDaMo	Sounds like you're making a toast
+2016-10-26 10:07:03	flipchan	hehe
+2016-10-26 10:07:22	Dark_Fox	Eh, I wouldn't hand it out to anyone you plan on doing business with
+2016-10-26 10:07:31	<--	Redfoxmoon (~Redfox@177.92-221-236.customer.lyse.net) has quit (Read error: Connection reset by peer)
+2016-10-26 10:07:40	rindolf	GeDaMo: :-)
+2016-10-26 10:07:49	flipchan	well ofc not business but if random ppl want my email
+2016-10-26 10:08:14	-->	TilakeTikka (~TilakeTik@105.112.37.84) has joined ##programming
+2016-10-26 10:08:24	flipchan	they closed down melt mail
+2016-10-26 10:08:24	Dark_Fox	Don't worry, no one's going to ask for your email
+2016-10-26 10:09:28	<--	nikivi (~nikivi@dhcp-077-250-172-150.chello.nl) has quit (Quit: irc)
+2016-10-26 10:10:17	<--	Tazz|Chrombook (~TazzChrom@cpe-74-70-208-104.nycap.res.rr.com) has quit (Ping timeout: 244 seconds)
+2016-10-26 10:10:20	-->	cachemoi (~cachemoi@2a02:c7f:a0d:4800:e121:5abb:1bce:e76) has joined ##programming
+2016-10-26 10:10:25	-->	symm-_ (~symm-@95.65.81.202) has joined ##programming
+2016-10-26 10:10:54	<--	sssilver (~sssilver@38.122.48.218) has quit (Quit: Textual IRC Client: www.textualapp.com)
+2016-10-26 10:10:56	<--	Proghodet (~Proghodet@23.109-247-219.customer.lyse.net) has quit (Read error: Connection reset by peer)
+2016-10-26 10:11:09	-->	Proghodet (~Proghodet@23.109-247-219.customer.lyse.net) has joined ##programming
+2016-10-26 10:11:19	<--	symm- (~symm-@95.65.81.202) has quit (Ping timeout: 276 seconds)
+2016-10-26 10:11:25	-->	Walkerdine (~Walkerdin@198.111.39.224) has joined ##programming
+2016-10-26 10:11:36	<--	Proghodet (~Proghodet@23.109-247-219.customer.lyse.net) has quit (Read error: Connection reset by peer)
+2016-10-26 10:11:39	-->	alex1a (~alex1a@a81-84-38-221.cpe.netcabo.pt) has joined ##programming
+2016-10-26 10:12:00	-->	Redfoxmoon (~Redfox@177.92-221-236.customer.lyse.net) has joined ##programming
+2016-10-26 10:12:16	<--	TilakeTikka (~TilakeTik@105.112.37.84) has quit (Read error: Connection reset by peer)
+2016-10-26 10:12:26	imode	so, gitlab's CI has been going for over a day now.
+2016-10-26 10:12:58	imode	I have no idea what's going on, I can't cancel any pipeline jobs because they're external operations.
+2016-10-26 10:13:01	rindolf	okuu: vendu: GeDaMo : [and all] I'm seeking advice for whether I should extract the headers in https://github.com/shlomif/fc-solve/blob/master/fc-solve/source/rinutils.h to their own library-of-sorts package (with cmake, pkg-config and a separate repo on GitHub/etc.) or whether I should keep copying them between projects as needed. They tend to be low-activity.
+2016-10-26 10:13:02	-->	Proghodet (~Proghodet@23.109-247-219.customer.lyse.net) has joined ##programming
+2016-10-26 10:13:10	-->	meth_ (~meth@unaffiliated/meth) has joined ##programming
+2016-10-26 10:13:22	rindolf	imode: is it the paid package?
+2016-10-26 10:13:30	imode	nope.
+2016-10-26 10:13:47	rindolf	imode: so how come they didn't terminate it yet?
+2016-10-26 10:13:47		[10:13]
+2016-10-26 10:13:49	okuu	rindolf: Across how many projects are these headers shared?
+2016-10-26 10:13:49	imode	https://imgur.com/a/lR1nW
+2016-10-26 10:13:57	imode	rindolf: I have no idea.
+2016-10-26 10:13:59	rindolf	okuu: let me see .
+2016-10-26 10:14:03	<--	flipchan (~flipchan@h-110-217.a392.priv.bahnhof.se) has quit (Remote host closed the connection)
+2016-10-26 10:14:09	imode	this broke github for like... a couple hours yesterday, and I think CI is still broken now.
+2016-10-26 10:14:18	imode	s/github/gitlab.
+2016-10-26 10:14:29	<--	Jarcode`` (~user@204.174.222.176) has quit (Ping timeout: 260 seconds)
+2016-10-26 10:14:29	-->	piou (~piou@unaffiliated/piou) has joined ##programming
+2016-10-26 10:14:41	-->	CHICKU (CHICKU@host-92-18-100-157.as13285.net) has joined ##programming
+2016-10-26 10:14:45	imode	what's fucked is the job finished. like, totally. my pages are already up.
+2016-10-26 10:14:45	<--	meth (~meth@unaffiliated/meth) has quit (Ping timeout: 252 seconds)
+2016-10-26 10:14:46	+vendu	rindolf, i have some of those in <zero/cdefs.h>
+2016-10-26 10:14:50	CHICKU	hey
+2016-10-26 10:14:57	<--	CHICKU (CHICKU@host-92-18-100-157.as13285.net) has left ##programming
+2016-10-26 10:15:02	+vendu	probably like inline, likely, unused
+2016-10-26 10:15:28	okuu	rindolf: Also, how fast does this header change?
+2016-10-26 10:15:31	<--	piou (~piou@unaffiliated/piou) has quit (Quit: >/dev/null)
+2016-10-26 10:16:15	Guest72395	fast
+2016-10-26 10:17:22	rindolf	okuu: these headers change very little.
+2016-10-26 10:17:22	-->	jak2000 (~jak2000@189.244.189.52) has joined ##programming
+2016-10-26 10:17:41	Guest72395	slow*
+2016-10-26 10:17:46	okuu	rindolf: Then maybe copying the header across projects is less hassle than creating a dependency.
+2016-10-26 10:18:00	rindolf	okuu: yes.
+2016-10-26 10:18:03	+vendu	rindolf, so basically, libzero is a catch-all of random stuff :P
+2016-10-26 10:18:12	+vendu	used both in the kernel and userland stuff =)
+2016-10-26 10:18:24	+vendu	hehe it's got some pseudo-random number generators, too =)
+2016-10-26 10:18:47	+vendu	rindolf, so i suppose you could have a librin or something =)
+2016-10-26 10:19:12	+vendu	rindolf, a single copy would be easier to keep up-to-date
+2016-10-26 10:19:48	rindolf	vendu: I suppose.
+2016-10-26 10:19:53	-->	_desnesn (~desnesn@201-92-189-62.dsl.telesp.net.br) has joined ##programming
+2016-10-26 10:20:19	rindolf	okuu: I already have a dependency on cmake, so...
+2016-10-26 10:20:37	<--	Wetmelon (~wetmelon@host-73-169.ncasgro.asheville.nc.us.clients.pavlovmedia.com) has quit (Ping timeout: 244 seconds)
+2016-10-26 10:20:40	<--	nikitamog (~nikita@66.114.154.18) has quit (Quit: Ex-Chat)
+2016-10-26 10:20:41	rindolf	vendu: I'd like to call it librinutils
+2016-10-26 10:21:01	-->	mrw0rm (~mrw0rm@185.79.102.81) has joined ##programming
+2016-10-26 10:21:05	<--	desnesn (~desnesn@179.110.145.240) has quit (Ping timeout: 256 seconds)
+2016-10-26 10:21:22	-->	esas (~esas@unaffiliated/esas) has joined ##programming
+2016-10-26 10:21:38	+vendu	rindolf, :)
+2016-10-26 10:21:54	-->	Chords (~Some_Chor@pool-100-11-189-69.phlapa.fios.verizon.net) has joined ##programming
+2016-10-26 10:21:55	+vendu	rindolf, i'd use the singular librinutil, but that's a matter of taste :)
+2016-10-26 10:22:13	Dark_Fox	So.. These surface computers are coming out where they want you to do drawing on the computer monitor itself
+2016-10-26 10:22:24	Dark_Fox	As someone who does digital art, I think that's ass backwards retarded
+2016-10-26 10:22:26	-->	Irev (251185dd@gateway/web/freenode/ip.37.17.133.221) has joined ##programming
+2016-10-26 10:22:52	Dark_Fox	That screen would be scratched up to hell within a week
+2016-10-26 10:22:56	Irev	Can I ask a personall question?
+2016-10-26 10:23:00	<--	nevodka (~nevodka@205.175.118.218) has quit (Ping timeout: 265 seconds)
+2016-10-26 10:23:07	+vendu	rindolf, btw, i got the sun blade 1500 :)
+2016-10-26 10:23:10	+vendu	haven't messed with it yet :P
+2016-10-26 10:23:24	Dark_Fox	Irev: To who, regarding what?
+2016-10-26 10:23:25	rindolf	vendu: nice.
+2016-10-26 10:23:31	+vendu	rindolf, :)
+2016-10-26 10:23:43	Irev	Dark_Fox, it is about teachers
+2016-10-26 10:23:56	Dark_Fox	Oh, well. If a teacher ever propositioned me, I'd go for it
+2016-10-26 10:24:13	rindolf	vendu: BTW, can you give me an ssh account there so I can try running the fc-solve's tests?
+2016-10-26 10:24:17	<--	WungFu (~WungFu@unaffiliated/wungfu) has quit (Ping timeout: 252 seconds)
+2016-10-26 10:24:22	<--	pragmaticus (~pragmatic@unaffiliated/pragmaticus) has quit (Quit: Leaving)
+2016-10-26 10:24:29	rindolf	vendu: assuming it is running Linux, though.
+2016-10-26 10:24:34	Irev	Dark_Fox, is it normal to marry your teacher?
+2016-10-26 10:24:47	Irev	Dark_Fox, is it okay?
+2016-10-26 10:24:51	Dark_Fox	Eh, depends how old you are
+2016-10-26 10:24:58	+vendu	rindolf, hmm i could try them for you :)
+2016-10-26 10:25:02	Dark_Fox	Obviously if you're an adult, you can do whatever you want
+2016-10-26 10:25:05	+vendu	rindolf, just tell me what you want me to do =)
+2016-10-26 10:25:15	+vendu	rindolf, it's an amd 8370 fx i'm using
+2016-10-26 10:25:20	+vendu	4 physical, 8 logical cores
+2016-10-26 10:25:25	Irev	Dark_Fox, ok
+2016-10-26 10:25:29	+vendu	4 GHz or so
+2016-10-26 10:25:40	rindolf	vendu: is it an x86-64 machine?
+2016-10-26 10:25:46	-->	`Eddie (~dedword@unaffiliated/eddie/x-2286721) has joined ##programming
+2016-10-26 10:25:47	+vendu	rindolf, yep
+2016-10-26 10:25:56	Dark_Fox	I mean, I dress up like an animal and draw porn of pokemon
+2016-10-26 10:26:02	rindolf	vendu: ah, then I don't need that.
+2016-10-26 10:26:03	Dark_Fox	So it's not like dating a teacher is "weird"
+2016-10-26 10:26:08	+vendu	rindolf, oh, i can try the stuff on sparc and/or mips later on =)
+2016-10-26 10:26:19	+vendu	rindolf, yep, just realized you'd want something more exotic :)
+2016-10-26 10:26:42	+vendu	rindolf, i need to fix my alpha workstation some, too =)
+2016-10-26 10:27:06	<--	Siegfried (~user@levyvlan502.1342.wlan.wireless-resnet.upenn.edu) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-10-26 10:27:31	<--	yrter (~yrter@unaffiliated/yrter) has quit (Quit: quit)
+2016-10-26 10:27:58	<--	mrw0rm (~mrw0rm@185.79.102.81) has quit (Ping timeout: 245 seconds)
+2016-10-26 10:28:03	Dark_Fox	Irev: And no one's even acknowledging the shit I just said is weird.  So go for it, dude
+2016-10-26 10:28:08	Dark_Fox	Or dudette, whichever
+2016-10-26 10:28:25	Irev	Dark_Fox, that is right
+2016-10-26 10:28:46	-->	Bilz (~billy@host-79-77-27-145.static.as9105.com) has joined ##programming
+2016-10-26 10:29:20	<--	Groscheri (~Dyonisos@unaffiliated/dyonisos) has quit (Read error: Connection reset by peer)
+2016-10-26 10:29:20		[10:29]
+2016-10-26 10:29:23	-->	yrter (~yrter@unaffiliated/yrter) has joined ##programming
+2016-10-26 10:30:11	<--	hatseflats (~hatseflat@hatsuseno.rootaccess.nl) has quit (Remote host closed the connection)
+2016-10-26 10:30:53	<--	symm-_ (~symm-@95.65.81.202) has quit (Ping timeout: 245 seconds)
+2016-10-26 10:32:14	<--	Denommus (~user@unaffiliated/denommus) has quit (Quit: going home)
+2016-10-26 10:33:25	<--	`Eddie (~dedword@unaffiliated/eddie/x-2286721) has quit (Quit: the mac is asleep)
+2016-10-26 10:33:54	-->	patadasAlHigado (~patadasAl@asavpn242231.vpn.mcgill.ca) has joined ##programming
+2016-10-26 10:33:57	<--	cachemoi (~cachemoi@2a02:c7f:a0d:4800:e121:5abb:1bce:e76) has quit (Quit: Ex-Chat)
+2016-10-26 10:34:03	+nitrix	vendu: I'm curious, what editor you use?
+2016-10-26 10:34:29	Irev	nitrix, I use Aporia IDE
+2016-10-26 10:34:50	<--	metachr0n (~nobody@gateway/vpn/privateinternetaccess/metachr0n) has quit (Quit: WeeChat 1.5)
+2016-10-26 10:35:14	rindolf	Irev: what's that?
+2016-10-26 10:35:23	rindolf	nitrix: he's using Emacs I think.
+2016-10-26 10:36:00	Irev	rindolf, it is a text editor (planned to be advanced text editor/IDE) specifically for Nim programming language
+2016-10-26 10:36:29	rindolf	Irev: I see,
+2016-10-26 10:36:41	rindolf	Irev: so you only write in Nim?
+2016-10-26 10:37:35	Irev	rindolf, code highlighting is available for many languages
+2016-10-26 10:37:47	rindolf	okuu: I see the headers are used in 3 of my projects.
+2016-10-26 10:37:56	Irev	rindolf, I use Nim for most of my tasks, both academic and industry
+2016-10-26 10:38:03	okuu	Ah...
+2016-10-26 10:38:11	rindolf	okuu: but most of my projects are not in C.
+2016-10-26 10:39:30	<--	pleiadian (~pleiadian@2a02:2450:1010:14c:7edd:90ff:fea7:fb41) has quit (Quit: WeeChat 1.6)
+2016-10-26 10:39:43	-->	pleiadian (~pleiadian@2a02:2450:1010:14c:7edd:90ff:fea7:fb41) has joined ##programming
+2016-10-26 10:39:58	<--	pleiadian (~pleiadian@2a02:2450:1010:14c:7edd:90ff:fea7:fb41) has quit (Client Quit)
+2016-10-26 10:40:06	-->	wrkrcoop (~martee@adsk-nat-ip14.autodesk.com) has joined ##programming
+2016-10-26 10:40:43	<--	Mithras (~mithras@121.128.27.34) has quit (Quit: Textual IRC Client: www.textualapp.com)
+2016-10-26 10:40:55	<--	slentzen (~slentzen@dhcp-5-103-234-61.seas-nve.net) has quit (Ping timeout: 256 seconds)
+2016-10-26 10:41:53	-->	ArGG (~argg@76.73.131.180) has joined ##programming
+2016-10-26 10:42:14	-->	tomine (~tomine@46.109.151.170) has joined ##programming
+2016-10-26 10:42:18	tomine	soop
+2016-10-26 10:42:55	rindolf	tomine: what?
+2016-10-26 10:43:04	<--	tdy (~tdy@unaffiliated/tdy) has quit (Ping timeout: 256 seconds)
+2016-10-26 10:43:10	-->	cyan__ (~cyan@217.170.162.68) has joined ##programming
+2016-10-26 10:43:18	tomine	scoop of soup
+2016-10-26 10:43:22	-->	panji (~Proghodet@23.109-247-219.customer.lyse.net) has joined ##programming
+2016-10-26 10:43:40	<--	Proghodet (~Proghodet@23.109-247-219.customer.lyse.net) has quit (Read error: Connection reset by peer)
+2016-10-26 10:43:41	tomine	could this be a viable inventory GUI for a game or is it too minimal? http://gameprogrammingpatterns.com/
+2016-10-26 10:43:45	tomine	whoops
+2016-10-26 10:43:46	--	panji is now known as Guest74419
+2016-10-26 10:43:47	tomine	wrong link XD
+2016-10-26 10:43:55	Irev	Guys, Qt or GTK+?
+2016-10-26 10:43:56	tomine	i mean this http://pasteboard.co/jJKOiZ2uj.png
+2016-10-26 10:44:24	rindolf	Irev: what for?
+2016-10-26 10:44:24		[10:44]
+2016-10-26 10:44:46	Irev	rindolf, GUI and Desktop Environment for my own OS project?
+2016-10-26 10:44:47	<--	Menche (~menche@gateway/tor-sasl/menche) has quit (Quit: Leaving)
+2016-10-26 10:44:49	tomine	Irev, the one which offers most native looking ui
+2016-10-26 10:45:01	tomine	Irev, boy do non-native uis look bad
+2016-10-26 10:45:10	-->	kst_ (~Mutter@dslb-088-067-250-009.088.067.pools.vodafone-ip.de) has joined ##programming
+2016-10-26 10:45:21	rindolf	Irev: you can run gtk+ and Qt apps on any desktop env or WM.
+2016-10-26 10:45:27	okuu	rindolf: Factoring out the headers into a separate repo and then importing them as a git submodule wouldn't require changing much code, would it?
+2016-10-26 10:45:47	Irev	rindolf, is GNOME and KDE window mangers?
+2016-10-26 10:45:48	rindolf	okuu: no, it won't.
+2016-10-26 10:46:12	-->	mrrhq (~mrrhq@unaffiliated/mrrhq) has joined ##programming
+2016-10-26 10:46:15	rindolf	okuu: I'd like to use pkg-config though.
+2016-10-26 10:46:19	okuu	Oh.
+2016-10-26 10:46:27	+vendu	nitrix, emacs :)
+2016-10-26 10:46:37	rindolf	Irev: they are not, but they maintain window managers as part of their projects.
+2016-10-26 10:46:37	+vendu	nitrix, http://vendu.twodots.nl/files/emacs_c-mode.png :)
+2016-10-26 10:47:04	<--	_mirko_ (~mirko@unaffiliated/-mirko-/x-2946915) has quit (Ping timeout: 276 seconds)
+2016-10-26 10:47:10	tomine	beep boop
+2016-10-26 10:47:34	<--	_desnesn (~desnesn@201-92-189-62.dsl.telesp.net.br) has quit (Quit: WeeChat 1.5)
+2016-10-26 10:48:04	-->	jsgrant (~jsgrant@71-11-142-172.dhcp.stls.mo.charter.com) has joined ##programming
+2016-10-26 10:48:06	-->	jak2013 (~jak2000@189.244.189.52) has joined ##programming
+2016-10-26 10:48:29	<--	Joanna345 (~Joanna345@ip68-111-72-145.oc.oc.cox.net) has quit (Ping timeout: 252 seconds)
+2016-10-26 10:48:37	<--	xxNamexx (~Name@unaffiliated/xxnamexx) has quit (Ping timeout: 265 seconds)
+2016-10-26 10:48:40	-->	ogradyd (~Thunderbi@HSI-KBW-109-193-043-181.hsi7.kabel-badenwuerttemberg.de) has joined ##programming
+2016-10-26 10:48:41	-->	desnesn (~desnesn@201-92-189-62.dsl.telesp.net.br) has joined ##programming
+2016-10-26 10:48:55	+vendu	whee, sauna time :)
+2016-10-26 10:49:10	tomine	anybudy look at what i made?
+2016-10-26 10:49:26	+vendu	tomine, what's that?
+2016-10-26 10:49:33	+vendu	i can take a look before sauna :)
+2016-10-26 10:49:33	<--	djhworld- (~djhworld@host86-184-71-126.range86-184.btcentralplus.com) has quit (Quit: All your IRC are belong to ZNC)
+2016-10-26 10:49:39	tomine	an inventory GUI http://pasteboard.co/jJKOiZ2uj.png
+2016-10-26 10:49:58	+vendu	Irev, fwiw, qt should work on even symbian os :)
+2016-10-26 10:50:02	+vendu	and, i think, on android :P
+2016-10-26 10:50:04	tomine	i was thinking i could use this for a game, but i'm thinking it's too minimal graphics-wise
+2016-10-26 10:50:04	<--	jak2000 (~jak2000@189.244.189.52) has quit (Ping timeout: 250 seconds)
+2016-10-26 10:50:16	-->	djhworld (~djhworld@host86-184-71-126.range86-184.btcentralplus.com) has joined ##programming
+2016-10-26 10:50:39	-->	xxNamexx (~Name@unaffiliated/xxnamexx) has joined ##programming
+2016-10-26 10:50:54	rindolf	tomine: GUI normally cannot be too minimal - it can be too cluttered.
+2016-10-26 10:51:00	+vendu	tomine, :)
+2016-10-26 10:51:05	tomine	heh
+2016-10-26 10:51:34	<--	jsgrant_ (~jsgrant@71-11-142-172.dhcp.stls.mo.charter.com) has quit (Ping timeout: 256 seconds)
+2016-10-26 10:51:45	tomine	but it's for a game, i think it's expected from a game to be more colourful, then again it would tie in with the setting...
+2016-10-26 10:52:08	+vendu	tomine, for a game, you could use/add object icons :)
+2016-10-26 10:52:32	tomine	like, where?
+2016-10-26 10:52:38	+vendu	tomine, what [language] did you do that with?
+2016-10-26 10:52:47	+vendu	tomine, for the "Item" stuff, i think
+2016-10-26 10:52:54	<--	mizu_no_oto_work (~textual@104.207.209.180) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-10-26 10:52:55	<--	Towers (~Towers@cpe-70-113-79-20.austin.res.rr.com) has quit (Ping timeout: 276 seconds)
+2016-10-26 10:52:56	tomine	it's called Inkscape XD
+2016-10-26 10:53:01	+vendu	ah hehe :)
+2016-10-26 10:53:12	tomine	i just made a graphical prototype
+2016-10-26 10:53:17	rindolf	vendu: enjoy!
+2016-10-26 10:53:23	<--	nwkj86 (~nwkj86@142.66.6.51.dyn.plus.net) has quit (Ping timeout: 245 seconds)
+2016-10-26 10:53:26	+vendu	rindolf, :)
+2016-10-26 10:53:36	tomine	i'm thinking to make it with python
+2016-10-26 10:53:49	<--	synthroid (~synthroid@gateway/vpn/privateinternetaccess/synthroid) has quit
+2016-10-26 10:53:57	<--	curtislagraff (~curtislag@12.165.188.169) has quit (Ping timeout: 256 seconds)
+2016-10-26 10:56:05	<--	kst_ (~Mutter@dslb-088-067-250-009.088.067.pools.vodafone-ip.de) has quit (Remote host closed the connection)
+2016-10-26 10:56:24	-->	uvatdesk (~uv@76.21.5.155) has joined ##programming
+2016-10-26 10:56:26	<--	uvatdesk (~uv@76.21.5.155) has quit (Max SendQ exceeded)
+2016-10-26 10:56:36	<--	wrkrcoop (~martee@adsk-nat-ip14.autodesk.com) has quit (Quit: wrkrcoop)
+2016-10-26 10:56:54	<--	IrishPrime (~IrishPrim@74.202.224.66) has quit (Quit: Leaving)
+2016-10-26 10:57:10	-->	uvatdesk (~uv@76.21.5.155) has joined ##programming
+2016-10-26 10:57:34	<--	GeDaMo (~GeDaMo@212.225.83.199) has quit (Remote host closed the connection)
+2016-10-26 10:57:48	<--	Bilz (~billy@host-79-77-27-145.static.as9105.com) has quit (Ping timeout: 265 seconds)
+2016-10-26 10:58:10	-->	wrkrcoop (~martee@adsk-nat-ip14.autodesk.com) has joined ##programming
+2016-10-26 10:58:51	<--	Tims_Tech (~Tims_Tech@unaffiliated/tims-tech) has quit (Quit: bye)
+2016-10-26 10:59:07	<--	TheGreekOwl (~GreekOwl@2a02:587:4828:9300:fc01:c4c3:a3d4:c193) has quit (Read error: Connection reset by peer)
+2016-10-26 10:59:18	<--	uvatdesk (~uv@76.21.5.155) has left ##programming
+2016-10-26 10:59:35	-->	Joanna345 (~Joanna345@ip68-111-72-145.oc.oc.cox.net) has joined ##programming
+2016-10-26 10:59:35		[10:59]
+2016-10-26 11:00:01	<--	ExoUNX (~textual@unaffiliated/exounx) has quit (Quit: I'm outta here)
+2016-10-26 11:00:12	-->	workmad3 (~workmad3@ruby/staff/workmad3) has joined ##programming
+2016-10-26 11:00:14	<--	RumpledElf (~rumpledel@drupal.org/user/173054/view) has quit (Quit: My iMac has gone to sleep. ZZZzzz…)
+2016-10-26 11:00:47	<--	cyan__ (~cyan@217.170.162.68) has quit (Remote host closed the connection)
+2016-10-26 11:00:49	-->	TheGreekOwl (~GreekOwl@2a02:587:4828:9300:8be:6c16:622c:1f5) has joined ##programming
+2016-10-26 11:01:11	<--	meoblast001 (~meoblast@cable-86-56-28-218.cust.telecolumbus.net) has quit (Quit: Leaving)
+2016-10-26 11:01:18	<--	Irev (251185dd@gateway/web/freenode/ip.37.17.133.221) has left ##programming
+2016-10-26 11:04:20	-->	kst_ (~Mutter@dslb-088-067-250-009.088.067.pools.vodafone-ip.de) has joined ##programming
+2016-10-26 11:05:46	<--	Pazzazour (~Pazzaz@c151-177-19-14.bredband.comhem.se) has quit (Read error: Connection reset by peer)
+2016-10-26 11:07:26	-->	mahiru (~mahiru@93-81-55-110.broadband.corbina.ru) has joined ##programming
+2016-10-26 11:07:41	<--	kst_ (~Mutter@dslb-088-067-250-009.088.067.pools.vodafone-ip.de) has quit (Remote host closed the connection)
+2016-10-26 11:08:26	<--	xxNamexx (~Name@unaffiliated/xxnamexx) has quit (Ping timeout: 265 seconds)
+2016-10-26 11:09:56	<--	funrep (~funrep@31.208.39.16) has quit (Quit: Lost terminal)
+2016-10-26 11:11:04	<--	apaz (~Esteban@host97.190-31-177.telecom.net.ar) has quit (Quit: Leaving)
+2016-10-26 11:11:29	-->	_mirko_ (~mirko@unaffiliated/-mirko-/x-2946915) has joined ##programming
+2016-10-26 11:11:54	<--	mahiru (~mahiru@93-81-55-110.broadband.corbina.ru) has quit (Ping timeout: 250 seconds)
+2016-10-26 11:12:55	--	meth_ is now known as meth
+2016-10-26 11:13:00	-->	speer12341234 (~speer1234@d24-141-173-133.home.cgocable.net) has joined ##programming
+2016-10-26 11:13:03	speer12341234	g
+2016-10-26 11:13:06	speer12341234	hello
+2016-10-26 11:13:24	speer12341234	can anyone explain why this wont work http://paste.ofcode.org/J4HbnJhssmeAkKp6RZvYPG
+2016-10-26 11:14:02	tomine	good gravy, which language is that?
+2016-10-26 11:14:06	imode	== should be =.
+2016-10-26 11:14:09	speer12341234	php
+2016-10-26 11:14:15	rindolf	speer12341234: L should be $L
+2016-10-26 11:14:16	speer12341234	with the dot on the end?
+2016-10-26 11:14:19	imode	no.
+2016-10-26 11:14:22	imode	just =
+2016-10-26 11:14:32	-->	flipchan (~flipchan@h-110-217.a392.priv.bahnhof.se) has joined ##programming
+2016-10-26 11:14:43	imode	(at least I think. it looks like you're just performing a comparison and discarding the result.)
+2016-10-26 11:14:43		[11:14]
+2016-10-26 11:15:07	-->	WungFu (~WungFu@unaffiliated/wungfu) has joined ##programming
+2016-10-26 11:15:36	speer12341234	http://imgur.com/a/C1Hi2
+2016-10-26 11:15:43	speer12341234	i get this error with the single =
+2016-10-26 11:16:00	speer12341234	Ohhhh you are right rindolf
+2016-10-26 11:16:01	speer12341234	im rusty
+2016-10-26 11:16:05	imode	prefix everything with $.
+2016-10-26 11:16:06	rindolf	speer12341234: you forgot a dollar sign.
+2016-10-26 11:16:07	imode	:P
+2016-10-26 11:16:24	speer12341234	it works! :
+2016-10-26 11:16:25	speer12341234	:)
+2016-10-26 11:16:31	rindolf	speer12341234: nice.
+2016-10-26 11:16:40	<--	pmercado (~pmercado@186-104-217-35.baf.movistar.cl) has quit (Ping timeout: 250 seconds)
+2016-10-26 11:17:28	-->	samlamamma (~user@h82-117-107-73.cust.se.alltele.net) has joined ##programming
+2016-10-26 11:17:29	Dark_Fox	I'm not sure that php is a good starter language
+2016-10-26 11:17:46	imode	everything sucks that isn't BASIC. 's my philosophy.
+2016-10-26 11:17:46	samlamamma	So if I wanna match a limited number of parens with regexes, do I use positive lookahead for that?
+2016-10-26 11:18:06	imode	if you wanna match parens, use a while loop and a counter.
+2016-10-26 11:18:27	samlamamma	Maybe like \((?= \( | \))
+2016-10-26 11:18:32	samlamamma	imode: No thank you!
+2016-10-26 11:18:40	imode	run through the string. increment the counter if you encounter a (. decrement it if you encounter a ). if by the end of the string your counter isn't 0, you've fucked up.
+2016-10-26 11:18:51	imode	you can't get simpler.
+2016-10-26 11:19:03	samlamamma	imode: Agreed, but I would like to do it with regexes
+2016-10-26 11:19:09	imode	dare I ask why.
+2016-10-26 11:19:17	samlamamma	Anyway, I think positive lookahead is the way to go
+2016-10-26 11:19:23	samlamamma	imode: Schoolwork lol
+2016-10-26 11:19:48	workmad3	samlamamma: you can't with standard regexps (which don't include lookaheads or lookbehinds)...
+2016-10-26 11:19:48	imode	have fun trying to pass that off as a valid solution.
+2016-10-26 11:19:54	imode	^
+2016-10-26 11:20:35	samlamamma	workmad3: Oh I didn't know that actually, then I would assume that lookaheads are indeed valid
+2016-10-26 11:20:50	<--	flipchan (~flipchan@h-110-217.a392.priv.bahnhof.se) has quit (Ping timeout: 250 seconds)
+2016-10-26 11:20:55	samlamamma	imode: The assignment is literally to match parens with regexes
+2016-10-26 11:21:06	rindolf	samlamamma: balanced parentheses are not a regular language.
+2016-10-26 11:21:18	imode	look at this way: regexes are FSMs. if you can't implement a FSM to match parens, you can't build a regex.
+2016-10-26 11:21:26	samlamamma	rindolf: Not even possible with a predetermined depth?
+2016-10-26 11:21:37	samlamamma	imode: Not even with a predetermined depth?
+2016-10-26 11:21:45	rindolf	samlamamma: that may be possible.
+2016-10-26 11:21:51	Dark_Fox	imode: Which BASIC?  Apple BASIC, QBI, Microsft BASIC...?
+2016-10-26 11:21:55	imode	Dark_Fox: ALL!
+2016-10-26 11:21:58	Dark_Fox	Visual BASIC.NET
+2016-10-26 11:22:02	jrslepak	samlamamma: depends what you're expected to do when there are more parens than your permitted depth
+2016-10-26 11:22:02	tomine	Python
+2016-10-26 11:22:11	imode	python is not BASIC!
+2016-10-26 11:22:11	-->	eivarv (~eivarv@cm-84.215.4.97.getinternet.no) has joined ##programming
+2016-10-26 11:22:16	rindolf	Dark_Fox: Microsoft had more than one dialect of basic.
+2016-10-26 11:22:17	tomine	Python is better
+2016-10-26 11:22:28	imode	you are a heretic!
+2016-10-26 11:22:30	<--	anonymuse (~anonymuse@65.209.61.114) has quit
+2016-10-26 11:22:32	samlamamma	jrslepak: Fall on its own face rindolf: Yeah, it is!
+2016-10-26 11:22:33	Dark_Fox	rindolf: I'm talking about their original BASIC
+2016-10-26 11:22:38	tomine	Python is our lord and saviour
+2016-10-26 11:22:40	Dark_Fox	For the Altair 8080
+2016-10-26 11:22:47	imode	how about... Apple ][ BASIC.
+2016-10-26 11:22:52	imode	yeah that'll work.
+2016-10-26 11:23:01	rindolf	Dark_Fox: ah.
+2016-10-26 11:23:11	jrslepak	samlamamma: for example, would you accept [az]*\([az]*\)[az]* as matching one level?
+2016-10-26 11:23:27	-->	still_dreaming_1 (635f7562@gateway/web/freenode/ip.99.95.117.98) has joined ##programming
+2016-10-26 11:23:34	<--	still_dreaming_1 (635f7562@gateway/web/freenode/ip.99.95.117.98) has left ##programming
+2016-10-26 11:23:43	samlamamma	jrslepak: Yes (at least just from a glance)
+2016-10-26 11:23:45	-->	still_dreaming_1 (635f7562@gateway/web/freenode/ip.99.95.117.98) has joined ##programming
+2016-10-26 11:23:48	<--	Rounin (~david@ti0169a400-0661.bb.online.no) has quit (Remote host closed the connection)
+2016-10-26 11:23:53	still_dreaming_1	hello
+2016-10-26 11:24:04	tomine	still_dreaming_1, allo
+2016-10-26 11:24:05	jrslepak	samlamamma: for deeper nesting, you might find it easier to write out the state machine and then turn that into a regex
+2016-10-26 11:24:11	still_dreaming_1	I have what I hope will be a simple question about http
+2016-10-26 11:24:21	still_dreaming_1	is there only GET and POST requests?
+2016-10-26 11:24:25	samlamamma	jrslepak: That's a great tip, I might just do that
+2016-10-26 11:24:26	<--	HarveyPwca (~HarveyPwc@ip-64-134-38-232.public.wayport.net) has quit (Ping timeout: 256 seconds)
+2016-10-26 11:24:31	still_dreaming_1	As in if I visit a website, is that a GET request?
+2016-10-26 11:24:43	samlamamma	still_dreaming_1: There are a few more possible request
+2016-10-26 11:24:46	samlamamma	s
+2016-10-26 11:24:48	samlamamma	types
+2016-10-26 11:24:58	still_dreaming_1	ok
+2016-10-26 11:25:06	still_dreaming_1	but if I just type in a website address
+2016-10-26 11:25:10	samlamamma	still_dreaming_1: https://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html
+2016-10-26 11:25:11	still_dreaming_1	is that typically GET?
+2016-10-26 11:25:14	samlamamma	still_dreaming_1: Yes
+2016-10-26 11:25:17	workmad3	still_dreaming_1: HEAD, OPTIONS, GET, POST, PUT, PATCH, DELETE
+2016-10-26 11:25:29	workmad3	(not counting WebDAV)
+2016-10-26 11:25:44	samlamamma	still_dreaming_1: I think GET is the only one that would do the "fetch website contents"-part of the protocol
+2016-10-26 11:26:07	still_dreaming_1	cool that helps
+2016-10-26 11:26:11	workmad3	still_dreaming_1: browsers will only do a GET request from entering a site in the address bar, and HTML forms only accept GET and POST as valid methods to submit form contents though...
+2016-10-26 11:26:15	still_dreaming_1	I'm surprised I didn't realize that until now
+2016-10-26 11:26:23	still_dreaming_1	I was looking at documentation for PhantomJS
+2016-10-26 11:26:29	-->	mahiru (~mahiru@93-81-55-110.broadband.corbina.ru) has joined ##programming
+2016-10-26 11:26:36	still_dreaming_1	and I saw how to do a GET request as the first thing they teach
+2016-10-26 11:26:53	still_dreaming_1	I thought GET was a special protocol used by webforms when they are submitted
+2016-10-26 11:27:10	still_dreaming_1	but then I was like... wait, maybe that is just the normal http way to visit a website
+2016-10-26 11:27:19	-->	shovel_boss (~shovel_bo@unaffiliated/shovel-boss/x-4881665) has joined ##programming
+2016-10-26 11:28:15	still_dreaming_1	well when I say PhantomJS documentation, I meant PHP Phantom JS
+2016-10-26 11:28:49	<--	Church- (~hatter@unaffiliated/church-) has quit (Ping timeout: 252 seconds)
+2016-10-26 11:29:25	<--	glad (~quassel@dynamic-vpdn-93-125-62-253.telecom.by) has quit (Remote host closed the connection)
+2016-10-26 11:29:54	<--	ogradyd (~Thunderbi@HSI-KBW-109-193-043-181.hsi7.kabel-badenwuerttemberg.de) has quit (Quit: ogradyd)
+2016-10-26 11:29:54		[11:29]
+2016-10-26 11:30:42	<--	still_dreaming_1 (635f7562@gateway/web/freenode/ip.99.95.117.98) has quit (Quit: Page closed)
+2016-10-26 11:31:21	<--	Joanna345 (~Joanna345@ip68-111-72-145.oc.oc.cox.net) has quit (Ping timeout: 256 seconds)
+2016-10-26 11:31:41	<--	mahiru (~mahiru@93-81-55-110.broadband.corbina.ru) has quit (Ping timeout: 260 seconds)
+2016-10-26 11:32:01	<--	eriksan (~eriksan@c213-89-158-45.bredband.comhem.se) has quit (Remote host closed the connection)
+2016-10-26 11:32:16	-->	curtislagraff (~curtislag@12.165.188.169) has joined ##programming
+2016-10-26 11:32:35	-->	eriksan (~eriksan@c213-89-158-45.bredband.comhem.se) has joined ##programming
+2016-10-26 11:32:55	<--	eivarv (~eivarv@cm-84.215.4.97.getinternet.no) has quit (Quit: Sleep)
+2016-10-26 11:34:36	<--	biberu (~biberu@c-f3d571d5.08-441-7570702.cust.bredbandsbolaget.se) has quit
+2016-10-26 11:35:34	xux	how much more watts is a i7 cpu under 100% usage consuming compared to being idle?
+2016-10-26 11:36:04	samlamamma	xux: Programmers don't know about that!
+2016-10-26 11:36:21	 *	bizarrefish checks sysfs for presence of such info
+2016-10-26 11:36:28	imode	don't know. you can probably measure current wattage using a tool or by working backwards from temp and some docs.
+2016-10-26 11:36:44	<--	curtislagraff (~curtislag@12.165.188.169) has quit (Ping timeout: 260 seconds)
+2016-10-26 11:37:35	<--	eriksan (~eriksan@c213-89-158-45.bredband.comhem.se) has quit (Ping timeout: 256 seconds)
+2016-10-26 11:37:48	<--	ihon (~we@212.13.23.9) has quit (Quit: Leaving)
+2016-10-26 11:37:58	-->	wadadli (~wadadli@unaffiliated/anu0) has joined ##programming
+2016-10-26 11:38:12	<--	Diyar (~Diyar@unaffiliated/diyar) has quit (Read error: Connection reset by peer)
+2016-10-26 11:38:21	+ackpacket	Hmm
+2016-10-26 11:38:22	bizarrefish	Hmm, 800mhz at idle is 994mA @ 12.4V
+2016-10-26 11:38:32	+ackpacket	Haven'
+2016-10-26 11:38:35	<--	lukaramu (~lukaramu@port-10690.pppoe.wtnet.de) has quit (Quit: Leaving)
+2016-10-26 11:38:51	bizarrefish	Same current for 2.4GHz, still at idle
+2016-10-26 11:38:54	-->	nevodka (~nevodka@205.175.118.218) has joined ##programming
+2016-10-26 11:39:15	-->	cyborg-one (~cyborg-on@188-115-191-178.broadband.tenet.odessa.ua) has joined ##programming
+2016-10-26 11:39:18	-->	BlackFish (BlackFish@cpc81297-enfi21-2-0-cust183.20-2.cable.virginm.net) has joined ##programming
+2016-10-26 11:39:31	<--	zaherdirkey (~zaherdirk@37.48.155.144) has quit (Read error: Connection reset by peer)
+2016-10-26 11:39:48	-->	zaherdirkey (~zaherdirk@37.48.155.144) has joined ##programming
+2016-10-26 11:40:00	bizarrefish	Full blast at 2.4GHz is 3650mA @ 11.6V
+2016-10-26 11:40:35	bizarrefish	So, lowest is 12.3W
+2016-10-26 11:40:55	+ackpacket	Haven't been doing much oop lately, especially in php.  I need to make a class, call it bar.  Much of the logic I need is in Foo.  A large %, actually.  Foo is a final class, can't be extended.  What are my options here?  A decorator?  Find out why Foo is final and if it can be changed?
+2016-10-26 11:41:02	bizarrefish	42.3W is highest
+2016-10-26 11:41:13	-->	Joanna345 (~Joanna345@ip68-111-72-145.oc.oc.cox.net) has joined ##programming
+2016-10-26 11:41:37	bizarrefish	xux: ^
+2016-10-26 11:41:43	xux	bizarrefish: are you actually meassuring or checking the docs? :p thanks
+2016-10-26 11:41:48	bizarrefish	Am measuring
+2016-10-26 11:42:10	bizarrefish	CPU is 2760QM
+2016-10-26 11:42:12	workmad3	ackpacket: I'd probably do a wrapper object that gets implemented in terms of Foo
+2016-10-26 11:42:17	<--	nevodka (~nevodka@205.175.118.218) has quit (Remote host closed the connection)
+2016-10-26 11:42:18	bizarrefish	So, not a brand new i7
+2016-10-26 11:42:22	xux	lol, cool, thanks?
+2016-10-26 11:42:23	-->	cagomez (~cagomez@209.129.115.57) has joined ##programming
+2016-10-26 11:42:24	xux	thas
+2016-10-26 11:42:30	xux	err... s/?/!
+2016-10-26 11:42:33	workmad3	ackpacket: but I tend to prefer composition/HAS-A relationships over inheritance/IS-A relationships
+2016-10-26 11:42:37	bizarrefish	s/.//
+2016-10-26 11:42:37	-->	_Rick (~textual@149.18.12.134) has joined ##programming
+2016-10-26 11:42:44	<--	Guest72395 (~cipher__@173.227.191.106) has quit (Changing host)
+2016-10-26 11:42:44	-->	Guest72395 (~cipher__@unaffiliated/jasondockers) has joined ##programming
+2016-10-26 11:42:44	bizarrefish	s/.//h
+2016-10-26 11:42:46	bizarrefish	s/.//g
+2016-10-26 11:42:47	bizarrefish	dammit
+2016-10-26 11:42:48	--	Guest72395 is now known as jasondockers
+2016-10-26 11:42:57	imode	https://youtu.be/6r65WwO1-uA
+2016-10-26 11:42:58	bizarrefish	All your . are belong to ''
+2016-10-26 11:43:02	imode	one of the greatest talks of all time.
+2016-10-26 11:43:03	okuu	bizarrefish: Replace any character with nothing, globally?
+2016-10-26 11:43:03	-->	curtislagraff (~curtislag@12.165.188.169) has joined ##programming
+2016-10-26 11:43:03	<--	curtislagraff (~curtislag@12.165.188.169) has quit (Client Quit)
+2016-10-26 11:43:03	+vendu	gde33, ping :)
+2016-10-26 11:43:18	-->	werdfriek (~chatzilla@2601:602:c205:ac40:a15d:5d58:5be7:3738) has joined ##programming
+2016-10-26 11:44:05	<--	Wizek (~Wizek@catv-89-132-132-110.catv.broadband.hu) has quit (Ping timeout: 260 seconds)
+2016-10-26 11:44:10	bizarrefish	okuu: precisely
+2016-10-26 11:44:32	<--	Rodya_ (~Rodya_@2601:46:4001:e0b4:441b:697c:799f:e3b8) has quit (Quit: Leaving...)
+2016-10-26 11:45:37	-->	mintograde (~nn@47.202.59.248) has joined ##programming
+2016-10-26 11:45:37		[11:45]
+2016-10-26 11:45:44	+vendu	rindolf, ping?
+2016-10-26 11:46:08	<--	sametsisartenep (~sametsisa@106.pool85-53-34.dynamic.orange.es) has quit (Quit: zZz)
+2016-10-26 11:47:25	-->	getzel (5139925c@gateway/web/freenode/ip.81.57.146.92) has joined ##programming
+2016-10-26 11:48:26	rindolf	vendu: pong
+2016-10-26 11:48:44	-->	julian_ (~julian@80-121-33-0.adsl.highway.telekom.at) has joined ##programming
+2016-10-26 11:49:30	+vendu	rindolf, i have something to share
+2016-10-26 11:49:34	+ackpacket	workmad3, I love oop.  But not when I
+2016-10-26 11:49:40	<--	shovel_boss (~shovel_bo@unaffiliated/shovel-boss/x-4881665) has quit (Quit: Leaving)
+2016-10-26 11:49:43	+ackpacket	*when I'm building on wet sand lol
+2016-10-26 11:49:58	+vendu	rindolf, i figured out a way to release blocks into a buffer owned by some other thread without need to ever lock the buffer :)
+2016-10-26 11:50:16	+vendu	rindolf, i just set a bit in the buffer's bitmap and let the owner thread deal with it later on =)
+2016-10-26 11:50:47	workmad3	ackpacket: heh :) yeah... I also like to use wrapper objects to hide away shitty interfaces
+2016-10-26 11:51:05	rindolf	vendu: nice.
+2016-10-26 11:51:38	+vendu	rindolf, and found my first need to use the hamming weight / population count stuff :)
+2016-10-26 11:51:46	+vendu	i.e., counting the number of 1-bits in a word :)
+2016-10-26 11:52:07	+vendu	rindolf, i do that for the release-bitmap words which are non-zero to update the number of free blocks in the buffer =)
+2016-10-26 11:52:35	rindolf	vendu: nice.
+2016-10-26 11:52:41	<--	chindy (~julian@212-197-144-44.adsl.highway.telekom.at) has quit (Ping timeout: 260 seconds)
+2016-10-26 11:53:15	--	Sjc_AFK is now known as sj1k
+2016-10-26 11:55:01	-->	mahiru (~mahiru@93-81-55-110.broadband.corbina.ru) has joined ##programming
+2016-10-26 11:55:04	-->	Church- (~hatter@unaffiliated/church-) has joined ##programming
+2016-10-26 11:55:13	-->	zylum_ (~zylum@unaffiliated/zylum) has joined ##programming
+2016-10-26 11:56:22	-->	Coldseeker (~Frosty@adsl-mel-4-177.ozonline.com.au) has joined ##programming
+2016-10-26 11:57:01	<--	cagomez (~cagomez@209.129.115.57) has quit (Remote host closed the connection)
+2016-10-26 11:57:36	-->	cagomez (~cagomez@209.129.115.57) has joined ##programming
+2016-10-26 11:57:44	-->	pimlu (~pimlu@128.172.245.3) has joined ##programming
+2016-10-26 11:57:54	-->	nikivi (~nikivi@dhcp-077-250-172-150.chello.nl) has joined ##programming
+2016-10-26 11:58:20	-->	smwangi (~wonderman@eduroam-int-pat-9-34.ucl.ac.uk) has joined ##programming
+2016-10-26 11:59:30	<--	BaneAliens (~BaneAlien@user-0c8ghk4.cable.mindspring.com) has quit (Quit: BaneAliens)
+2016-10-26 11:59:40	<--	mahiru (~mahiru@93-81-55-110.broadband.corbina.ru) has quit (Ping timeout: 265 seconds)
+2016-10-26 11:59:41	<--	krete777 (7GHAAJCSV@c-76-119-16-132.hsd1.ma.comcast.net) has quit (Ping timeout: 256 seconds)
+2016-10-26 11:59:53	<--	ezekielnoob (~ezekielno@120.28.121.179) has quit (Quit: ezekielnoob)
+2016-10-26 12:00:09	<--	Walkerdine (~Walkerdin@198.111.39.224) has quit (Ping timeout: 265 seconds)
+2016-10-26 12:01:12	<--	_Rick (~textual@149.18.12.134) has quit (Quit: My Mac has gone to sleep. ZZZzzz…)
+2016-10-26 12:01:12		[12:01]
+2016-10-26 12:01:15	<--	Derperperd (~anonymous@ool-4578ed66.dyn.optonline.net) has quit (Quit: Derperperd)
+2016-10-26 12:01:44	<--	cagomez (~cagomez@209.129.115.57) has quit (Ping timeout: 250 seconds)
+2016-10-26 12:02:13	-->	dry_ (~dry@24-212-168-21.cable.teksavvy.com) has joined ##programming
+2016-10-26 12:03:40	-->	cagomez (~cagomez@209.129.115.57) has joined ##programming
+2016-10-26 12:03:43	<--	cagomez (~cagomez@209.129.115.57) has quit (Remote host closed the connection)
+2016-10-26 12:04:34	-->	Chervilpaw (~KittenThe@h247.61.187.173.dynamic.ip.windstream.net) has joined ##programming
+2016-10-26 12:04:48	Chervilpaw	can anyone decode dis, down to text?: http://pastebin.com/nXkBGCEE
+2016-10-26 12:05:12	<--	frib (~dynorsau@host64-20-dynamic.53-79-r.retail.telecomitalia.it) has quit (Quit: Leaving)
+2016-10-26 12:05:18	<--	samlamamma (~user@h82-117-107-73.cust.se.alltele.net) has quit (Read error: Connection reset by peer)
+2016-10-26 12:05:43	<--	txdv (~bentkus@78-56-71-41.static.zebra.lt) has quit (Ping timeout: 276 seconds)
+2016-10-26 12:05:57	Dark_Fox	Why?
+2016-10-26 12:06:02	Dark_Fox	It's just spaces and meta characters
+2016-10-26 12:06:04	Chervilpaw	i dunno
+2016-10-26 12:06:12	getzel	i can for 50 $
+2016-10-26 12:06:23	-->	mindandsky (~mindandsk@2601:283:8000:4250:45c4:ebe:daf8:7431) has joined ##programming
+2016-10-26 12:06:29	Chervilpaw	. . . nu
+2016-10-26 12:06:35	getzel	lol
+2016-10-26 12:06:52	Dark_Fox	It's literally just spaces, dots, and dashes
+2016-10-26 12:06:52	-->	PiratePrentice (JN048844@128-193-154-98.ptpg.oregonstate.edu) has joined ##programming
+2016-10-26 12:06:57	Dark_Fox	Is this some sort of encoded morse code?
+2016-10-26 12:07:09	PiratePrentice	kinda regretting going to college out of state. All was well until I got here, now I'm freaking out
+2016-10-26 12:07:19	Dark_Fox	Over what?
+2016-10-26 12:07:31	Chervilpaw	i honestly forgot what the final text was
+2016-10-26 12:07:54	getzel	pirate> where r u
+2016-10-26 12:08:38	imode	uh.
+2016-10-26 12:09:43	<--	tbsf (~tbsf@8.37.102.31) has quit (Remote host closed the connection)
+2016-10-26 12:10:13	-->	tbsf (~tbsf@8.37.102.31) has joined ##programming
+2016-10-26 12:12:05	<--	dry_ (~dry@24-212-168-21.cable.teksavvy.com) has quit (Quit: Leaving)
+2016-10-26 12:12:06	imode	so, this is a bunch of junk morse.
+2016-10-26 12:12:20	Chervilpaw	at the end of the rabbit hole
+2016-10-26 12:12:24	Chervilpaw	is plain text
+2016-10-26 12:12:36	imode	yeah, no, there isn't any.
+2016-10-26 12:12:50	-->	tdy (~tdy@unaffiliated/tdy) has joined ##programming
+2016-10-26 12:13:09	<--	King_Hual (~failed@unaffiliated/king-hual/x-1207580) has quit (Read error: Connection reset by peer)
+2016-10-26 12:13:10	<--	WungFu (~WungFu@unaffiliated/wungfu) has quit (Ping timeout: 256 seconds)
+2016-10-26 12:13:42	Dark_Fox	Chervilpaw: 06006106006106106006006104006006106006006106106106104006006106006106006106006104006006006106006006006006004006006106006006006106006004006006106006006006106006104006006106006006006006106104006006106006006106106106104006006106006006006106006004006006106006006006106006104006006106006006006106006004006006006106006006006006004006006106006106006106006004006006106006006106006006004006006106006006006106006104006006006106006006006006004006006106006
+2016-10-26 12:13:42	Dark_Fox	00610610600610400600610600600600610600610400600610600610600600610610400600610600610600600610610400600610600600600600600610400600610600600600610610610400600610600600600610600610400600600610600600600600610400600600610600600600600600400600610600610610600600610400600610600600600600600610400600610600610610600600610400600600610600600600600610400600600610600600600600600400600610600600610600600600400600610600600600600600610400600610600610600610610600400600610
+2016-10-26 12:13:43	Dark_Fox	60060060061060061040060060061060060060060060040060061060060060060060061040060060061060060060060060040060061060060060060061061040060061060060061061061061040060061060060061061061061040060061060060061060061061040060061060060061060060061040060061060060060061060061
+2016-10-26 12:13:45	Chervilpaw	yes
+2016-10-26 12:13:49	Dark_Fox	Whoops, bigger than I thought it'd be
+2016-10-26 12:13:55	Dark_Fox	Sorry folks
+2016-10-26 12:14:00	imode	next time use a pastebin.
+2016-10-26 12:14:04	+vendu	Dark_Fox, what is that? :)
+2016-10-26 12:14:05	pimlu	OPS
+2016-10-26 12:14:07	pimlu	lol
+2016-10-26 12:14:16	Dark_Fox	imode: Yeah, I thought it was only a line long
+2016-10-26 12:14:30	-->	txdv (~bentkus@78-56-71-41.static.zebra.lt) has joined ##programming
+2016-10-26 12:14:34	<--	tbsf (~tbsf@8.37.102.31) has quit (Ping timeout: 250 seconds)
+2016-10-26 12:14:48	Dark_Fox	vendu: It's the decoded info from Chervilpaw's link
+2016-10-26 12:14:58	imode	run the "morse" through a brainfuck interpreter.
+2016-10-26 12:15:14	imode	it's at least pretty.
+2016-10-26 12:15:20	-->	Siegfried (~user@levyvlan502.1342.wlan.wireless-resnet.upenn.edu) has joined ##programming
+2016-10-26 12:15:37	+vendu	Dark_Fox, ah :)
+2016-10-26 12:15:56	<--	julian_ (~julian@80-121-33-0.adsl.highway.telekom.at) has quit (Remote host closed the connection)
+2016-10-26 12:16:29	-->	niksarto (~niksarto@151.62.1.145) has joined ##programming
+2016-10-26 12:16:29		[12:16]
+2016-10-26 12:17:08	<--	niksarto (~niksarto@151.62.1.145) has quit (Quit: AtomicIRC: The nuclear option.)
+2016-10-26 12:17:14	<--	patadasAlHigado (~patadasAl@asavpn242231.vpn.mcgill.ca) has quit (Ping timeout: 252 seconds)
+2016-10-26 12:17:37	<--	m4l3z (~m4l3z@2a01cb040226f200316c86b0ebe9e050.ipv6.abo.wanadoo.fr) has quit (Quit: Leaving)
+2016-10-26 12:17:48	Chervilpaw	you get a cookie if you decode it
+2016-10-26 12:17:54	<--	Joanna345 (~Joanna345@ip68-111-72-145.oc.oc.cox.net) has quit (Ping timeout: 244 seconds)
+2016-10-26 12:18:15	imode	you've posted identical symbols here that are decoded in the same pattern. there is no information here. try again later.
+2016-10-26 12:18:38	imode	we aren't that stupid.
+2016-10-26 12:19:39	Chervilpaw	fine
+2016-10-26 12:19:42	Chervilpaw	i'll post the chain
+2016-10-26 12:19:47	-->	Parvati_ (~chatzilla@172.56.31.31) has joined ##programming
+2016-10-26 12:19:56	Chervilpaw	text -> binary -> octa -> morse -> hex
+2016-10-26 12:20:02	<--	mac_ified (~mac_ified@66.192.139.82) has quit (Remote host closed the connection)
+2016-10-26 12:20:12	imode	thought it was octal.
+2016-10-26 12:20:29	Chervilpaw	whatever
+2016-10-26 12:21:50	<--	_mirko_ (~mirko@unaffiliated/-mirko-/x-2946915) has quit (Quit: WeeChat 1.6)

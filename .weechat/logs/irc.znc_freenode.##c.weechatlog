@@ -27288,3 +27288,889 @@
 2016-10-26 09:05:53	reDRub	i saw but i'm a beginner... an advice?
 2016-10-26 09:06:05	<--	lompik (~lompik@2001:19f0:6800:1522:5400:ff:fe21:fd3d) has quit (Ping timeout: 250 seconds)
 2016-10-26 09:06:23	<--	m4ho (~m4ho@unaffiliated/m4ho) has quit (Quit: WeeChat 1.4)
+2016-10-26 09:07:56	<--	Learath2 (~learath2@unaffiliated/learath2) has quit (Ping timeout: 260 seconds)
+2016-10-26 09:08:31	-->	m4ho (~m4ho@unaffiliated/m4ho) has joined ##C
+2016-10-26 09:08:58	BanHammor	Stragus, i'm doing that and...for some horrible, horrible reason, valgrind writes "0 errors".
+2016-10-26 09:10:18	megaTherion	woohohoh 0 errors
+2016-10-26 09:11:07	Random832	BanHammor: try electric fence then?
+2016-10-26 09:11:33	latch	BanHammor, many malloc implementations store the metadata describing the size of the malloc contiguous with the data. Corrupting it is as simple as overflowing from another malloc'd space
+2016-10-26 09:11:33		[09:11]
+2016-10-26 09:12:48	-->	johnmilton (~johnmilto@96-58-242-186.res.bhn.net) has joined ##C
+2016-10-26 09:13:37	-->	sjohnson (sjohnson@cow.sj.rfc1459.net) has joined ##C
+2016-10-26 09:14:12	BanHammor	latch, so...this would not be an error valgrind should catch?
+2016-10-26 09:14:46	latch	dunno
+2016-10-26 09:14:53	latch	probably not
+2016-10-26 09:15:12	<--	GenteelBen (~GenteelBe@cpc70133-lutn12-2-0-cust324.9-3.cable.virginm.net) has quit
+2016-10-26 09:15:32	-->	francis36012 (~francis@136.159.49.117) has joined ##C
+2016-10-26 09:16:21	<--	mizu_no_oto_work (~textual@104.207.209.180) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-10-26 09:18:48	<--	Vexyl (~Vexyl@unaffiliated/vexyl) has quit (Quit: Lost terminal)
+2016-10-26 09:19:55	-->	Pessimist (~Pessimist@78-57-189-147.static.zebra.lt) has joined ##C
+2016-10-26 09:19:55	<--	Pessimist (~Pessimist@78-57-189-147.static.zebra.lt) has quit (Changing host)
+2016-10-26 09:19:55	-->	Pessimist (~Pessimist@unaffiliated/pessimist) has joined ##C
+2016-10-26 09:20:06	<--	snyp (~Snyp@nas4.meghbelabroadband.in) has quit (Quit: WeeChat 1.6)
+2016-10-26 09:20:49	-->	Jesin (~Jesin@pool-96-231-49-118.washdc.fios.verizon.net) has joined ##C
+2016-10-26 09:21:27	-->	freakazoid0223 (~chatzilla@pool-108-52-4-128.phlapa.fios.verizon.net) has joined ##C
+2016-10-26 09:21:42	--	irc: disconnected from server
+2016-10-26 09:43:36	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined ##C
+2016-10-26 09:43:36		[09:43]
+2016-10-26 09:43:36	--	Topic for ##C is "The C Programming Language | C11 is the current C Standard | PASTE (>3 lines): http://ideone.com/ | WIKI: http://www.iso-9899.info/ | BOOKS: http://www.iso-9899.info/wiki/Books | Test your C knowledge in #cjeopardy!"
+2016-10-26 09:43:36	--	Topic set by pragma- on Sat, 28 Nov 2015 11:48:40
+2016-10-26 09:43:36	--	Channel ##C: 1007 nicks (1 op, 0 voices, 1006 normals)
+2016-10-26 09:43:36	***	Buffer Playback...
+2016-10-26 09:43:36	spew	[17:58:50] Chloe: what you are suggesting horrifies me deeply [17:58:50]
+2016-10-26 09:43:36	Chloe	[17:59:15] It's all in the name of good humour [17:59:15]
+2016-10-26 09:43:36	BanHammor	[17:59:41] (and presumably nasal demons) [17:59:41]
+2016-10-26 09:43:36	xian29f23	[18:09:21] can reading from a nonblocking socket return null ? [18:09:21]
+2016-10-26 09:43:36	papper_las	[18:09:34] xian29f23: what? [18:09:34]
+2016-10-26 09:43:36	xian29f23	[18:10:15] received = read(sock,....) printf(received) gives me segfault [18:10:15]
+2016-10-26 09:43:36	Random832	[18:10:20] xian29f23: read doesn't return a pointer [18:10:20]
+2016-10-26 09:43:36	Random832	[18:10:38] also you should be in ##posix [18:10:38]
+2016-10-26 09:43:36	Chloe	[18:11:25] xian29f23: it returns the number of bytes read (see man -s 2 read) [18:11:25]
+2016-10-26 09:43:36	xian29f23	[18:13:52] yea but when theres no data instead of 0 or -1 i get null [18:13:52]
+2016-10-26 09:43:36	Retr0id	[18:16:03] If NULL is defined as 0 in stdio.h, why does GCC complain if you try to set an int to NULL? [18:16:03]
+2016-10-26 09:43:36	Random832	[18:16:34] xian29f23: what is your actual code [18:16:34]
+2016-10-26 09:43:36	Random832	[18:16:41] i can't even tell if received is a pointer or an int [18:16:41]
+2016-10-26 09:43:36	Random832	[18:16:55] you're assigning it from read, which should be an int (or really a ssize_t), but passing it to printf which needs a char * [18:16:55]
+2016-10-26 09:43:36	xian29f23	[18:18:31] received is ssize_t [18:18:31]
+2016-10-26 09:43:36	Random832	[18:18:50] ok then why are you doing printf(received) [18:18:50]
+2016-10-26 09:43:36	Random832	[18:19:01] instead of printf("%zd\n", received) [18:19:01]
+2016-10-26 09:43:36	xian29f23	[18:19:02] printf("%s%n","received value :",received); [18:19:02]
+2016-10-26 09:43:36	xian29f23	[18:19:04] im doing ths [18:19:04]
+2016-10-26 09:43:36	BanHammor	[18:19:06] Retr0id, i dunno about your stdio.h, most of those usually go with (void*) 0 [18:19:06]
+2016-10-26 09:43:36	Random832	[18:19:20] %n is not an appropriate format to use with this value. [18:19:20]
+2016-10-26 09:43:36	Random832	[18:19:45] printf("%s%zd\n", "received value :", received) [18:19:45]
+2016-10-26 09:43:36	Retr0id	[18:23:56] BanHammor, In all my local libraries, I can only find it defined as 0 [18:23:56]
+2016-10-26 09:43:36	Retr0id	[18:26:50] It would appear that it is defined differently in different places. [18:26:50]
+2016-10-26 09:43:36	BanHammor	[18:30:16] Retr0id, it's internal in GCC. [18:30:16]
+2016-10-26 09:43:36	Retr0id	[18:45:39] I read just checked the C99 spec, and my interpretation is that conversion of a null pointer to an int is undefined/implementation-defined (so gcc is correct). Why didn't they define it though? I assume it helps make the language more portable [18:45:39]
+2016-10-26 09:43:36	Retr0id	[18:46:09] ^ ignore the second word... [18:46:09]
+2016-10-26 09:43:36	Stragus	[18:47:08] Converting a pointer to an int might imply dropping a bunch of bits, and you don't want that [18:47:08]
+2016-10-26 09:43:36	Stragus	[18:47:27] Use the intptr_t data type designed exactly for that [18:47:27]
+2016-10-26 09:43:36	BanHammor	[18:47:39] malloc()/free()/new()/delete() operations can't corrupt the heap, right? [18:47:39]
+2016-10-26 09:43:36	Stragus	[18:48:24] If you free a bad pointer, that could happen [18:48:24]
+2016-10-26 09:43:36	BanHammor	[18:49:02] is there any way i can check what corrupted the heap? [18:49:02]
+2016-10-26 09:43:36	reDRub	[18:49:07] Hi Bro! a good book to start learning C? [18:49:07]
+2016-10-26 09:43:36	latch	[18:49:32] ,books reDRub [18:49:32]
+2016-10-26 09:43:36	@candide	[18:49:32] reDRub: See http://www.iso-9899.info/wiki/Books for some useful book recommendations, including free online resources! [18:49:32]
+2016-10-26 09:43:37	Stragus	[18:49:33] BanHammor: valgrind [18:49:33]
+2016-10-26 09:43:37	reDRub	[19:05:53] i saw but i'm a beginner... an advice? [19:05:53]
+2016-10-26 09:43:37	BanHammor	[19:08:58] Stragus, i'm doing that and...for some horrible, horrible reason, valgrind writes "0 errors". [19:08:58]
+2016-10-26 09:43:37	megaTherion	[19:10:18] woohohoh 0 errors [19:10:18]
+2016-10-26 09:43:37	Random832	[19:11:07] BanHammor: try electric fence then? [19:11:07]
+2016-10-26 09:43:37	latch	[19:11:33] BanHammor, many malloc implementations store the metadata describing the size of the malloc contiguous with the data. Corrupting it is as simple as overflowing from another malloc'd space [19:11:33]
+2016-10-26 09:43:37	BanHammor	[19:14:12] latch, so...this would not be an error valgrind should catch? [19:14:12]
+2016-10-26 09:43:37	latch	[19:14:46] dunno [19:14:46]
+2016-10-26 09:43:37	latch	[19:14:53] probably not [19:14:53]
+2016-10-26 09:43:37	BanHammor	[19:22:31] latch, so...the function that crashed with electricfence was the shared object loader. Oh gods. [19:22:31]
+2016-10-26 09:43:37	BanHammor	[19:30:41] It's not my code, I just hook up to it. So I'm expecting to drag the person who wrote it into the room and find out together just what is wrong with it. [19:30:41]
+2016-10-26 09:43:37	_sfiguser	[19:40:51] ok Stragus but what is wrong with tutorialspoint ? https://www.tutorialspoint.com/cprogramming/index.htm [19:40:51]
+2016-10-26 09:43:37	@candide	[19:40:51] It had been 9 days and 20 hours since someone was following a online tutorial without realizing how terrible and inaccurate it was. [19:40:51]
+2016-10-26 09:43:37	@candide	[19:40:51] Title of _sfiguser's link: C Tutorial [19:40:51]
+2016-10-26 09:43:37	viju	[19:42:32] Hi, could explain why it gives me segmentation fault on the second gets - http://paste.ubuntu.com/23385154/ [19:42:32]
+2016-10-26 09:43:37	***	Playback Complete.
+2016-10-26 09:43:44	--	Channel created on Sat, 25 Nov 2006 20:42:39
+2016-10-26 09:44:10	-->	_rubik (~wpgriggs@137.146.138.50) has joined ##C
+2016-10-26 09:44:10	latch	_sfiguser, seems ok for the most part
+2016-10-26 09:44:46	<--	spew (~ben@38.98.151.67) has quit (Read error: Connection reset by peer)
+2016-10-26 09:45:38	_sfiguser	latch, you should not use gets... never
+2016-10-26 09:46:11	<--	UserOO7 (~UserOO7@73.114.33.106) has quit (Remote host closed the connection)
+2016-10-26 09:46:26	viju	Also, would you point me at some decent tutorial for c?
+2016-10-26 09:46:27	-->	HarveyPwca (~HarveyPwc@ip-64-134-38-232.public.wayport.net) has joined ##C
+2016-10-26 09:46:28	Stragus	_sfiguser: No idea, haven't reviewed any modern material myself, I learned C way too long ago
+2016-10-26 09:46:31	-->	TommyC (~TommyC@unaffiliated/sepulchralbloom) has joined ##C
+2016-10-26 09:46:47	_sfiguser	viju, K&R2 is not long
+2016-10-26 09:46:48	viju	_sfiguser, did you mean me?
+2016-10-26 09:46:52	_sfiguser	viju, yes
+2016-10-26 09:47:23	viju	Okay, why shouldn't I use gets and why it gives me segfault in the 2nd one
+2016-10-26 09:47:24	BanHammor	viju, gets() is not recommended for use, AND you should allocate arrays to put those strings in, since C doesn't do it automatically.
+2016-10-26 09:47:42	-->	_mirko_ (~mirko@unaffiliated/-mirko-/x-2946915) has joined ##C
+2016-10-26 09:47:50	<--	francis36012 (~francis@136.159.49.117) has quit (Ping timeout: 250 seconds)
+2016-10-26 09:48:16	latch	speaking of gets(), that tutorial _sfiguser linked uses gets()
+2016-10-26 09:48:33	<--	xocket (~xocket@unaffiliated/xocket) has quit (Remote host closed the connection)
+2016-10-26 09:48:43	<--	msh07 (~msh07@190.221.173.123) has quit (Remote host closed the connection)
+2016-10-26 09:48:49	<--	KingsQuest (~ident@unaffiliated/kingsquest) has quit (Quit: linux unhackable correct code http://pastebin.ca/3732832)
+2016-10-26 09:49:02	-->	xocket (~xocket@unaffiliated/xocket) has joined ##C
+2016-10-26 09:49:17	<--	jackbrown (~se@unaffiliated/jackbrown) has quit (Quit: Ex-Chat)
+2016-10-26 09:49:32	viju	I was following tutorialspoint as well
+2016-10-26 09:49:38	Stragus	viju: use fgets() on stdin so that you can limit the data read
+2016-10-26 09:49:45	-->	msh07 (~msh07@190.221.173.123) has joined ##C
+2016-10-26 09:49:52	Stragus	sounds like both of you should avoid that tutorial
+2016-10-26 09:49:59	barfod	gets() has no way of stopping the number of characters it recieves so it is a security flaw. all of its replacements have some field which passes the maximum iterations they allocate memory as they go.
+2016-10-26 09:50:33	viju	what you think of this? http://crasseux.com/books/ctutorial/gets.html
+2016-10-26 09:50:34	@candide	Title of viju's link: The GNU C Programming Tutorial
+2016-10-26 09:50:35	<--	msh07 (~msh07@190.221.173.123) has quit (Remote host closed the connection)
+2016-10-26 09:50:35	barfod	usually what noobs want for simple shell like things is POSIX getline, which allocates memory for the string as you go
+2016-10-26 09:51:27	barfod	for anything but the most niave user input though, pretty much all functions in stdio.h fall short of useful. hence readline libraries
+2016-10-26 09:51:31	barfod	and curses
+2016-10-26 09:52:55	-->	reslus (~quassel@S0106602ad08cbe1c.vc.shawcable.net) has joined ##C
+2016-10-26 09:52:59	-->	KingsQuest (~ident@unaffiliated/kingsquest) has joined ##C
+2016-10-26 09:53:12	<--	montanonic (~nicholas@c-73-37-88-126.hsd1.or.comcast.net) has quit (Ping timeout: 256 seconds)
+2016-10-26 09:53:36	barfod	GNU contributors write really good, some of the world's best. but a lot of that documentation / tutorial stuff is super old
+2016-10-26 09:53:54	<--	_sfiguser (~sfigguser@net-130-25-101-70.cust.vodafonedsl.it) has quit (Ping timeout: 250 seconds)
+2016-10-26 09:54:01	barfod	GNU stopped training their own devs long ago, people just volunteer code from experience.
+2016-10-26 09:54:20	-->	RebelCoder (~Yuriy@cpc74579-lewi13-2-0-cust201.2-4.cable.virginm.net) has joined ##C
+2016-10-26 09:54:41	dho	GNU code is awful, are you kidding me?
+2016-10-26 09:54:50	dho	have you tried reading glibc?
+2016-10-26 09:54:59	-->	sssilver (~sssilver@38.122.48.218) has joined ##C
+2016-10-26 09:55:03	Stragus	Uhh. What's awful about glibc?
+2016-10-26 09:55:15	Pessimist	Stragus, have you ever read glibc source?
+2016-10-26 09:55:20	-->	mohabaks (~mohabaks@105.230.155.12) has joined ##C
+2016-10-26 09:55:22	Stragus	Chunks of it, yes
+2016-10-26 09:55:29	barfod	dho: you are sadly mistaken, glibc is extremely performant. and musl and uclibc are becoming unreadable too as they approach a fraction of the portability across OS
+2016-10-26 09:55:49	dho	i didn't say that it performed poorly
+2016-10-26 09:55:52	dho	i said the code was awful
+2016-10-26 09:56:10	Stragus	It's very efficient and solid, which is what matters most
+2016-10-26 09:56:24	-->	_sfiguser (~sfigguser@net-130-25-101-70.cust.vodafonedsl.it) has joined ##C
+2016-10-26 09:56:41	-->	metachr0n (~nobody@gateway/vpn/privateinternetaccess/metachr0n) has joined ##C
+2016-10-26 09:56:58	barfod	anythig worth using is not going to be very readable. i can guarantee you that netbsd libc and curses will give you headache if glibc and ncurses do
+2016-10-26 09:57:12	barfod	and if you can't read one, i doubt you can read the other
+2016-10-26 09:57:12	viju	Considering the declaration char* stringPtr; how would I fgets() the input in stringPtr?
+2016-10-26 09:57:13	-->	fatalhalt (~fatalhalt@c-73-246-193-29.hsd1.il.comcast.net) has joined ##C
+2016-10-26 09:57:16	dho	i didn't find freebsd's libc horrible
+2016-10-26 09:57:29	dho	you don't know me, please save your assumptions.
+2016-10-26 09:57:34	viju	I am reading the man on fgets and I got no clue
+2016-10-26 09:57:36	Stragus	I found glibc's source neatly organized, well-optimized and quite readable
+2016-10-26 09:57:40	barfod	oh no, i recognize your banter dho
+2016-10-26 09:57:41	<--	sssilver (~sssilver@38.122.48.218) has quit (Client Quit)
+2016-10-26 09:57:43	barfod	i know you well enough
+2016-10-26 09:57:51	latch	me too Stragus
+2016-10-26 09:58:08	latch	theres just a lot there
+2016-10-26 09:58:21	dho	ok, well if you'd like to discuss C, we can do that here. if you'd like to mount attacks about my ability or experience, feel free to take that to a pm.
+2016-10-26 09:58:41	-->	sssilver (~sssilver@38.122.48.218) has joined ##C
+2016-10-26 09:58:41		[09:58]
+2016-10-26 09:59:00	dho	ptmalloc at least is garbage
+2016-10-26 09:59:15	<--	xocket (~xocket@unaffiliated/xocket) has quit (Remote host closed the connection)
+2016-10-26 09:59:27	<--	IntoxicatedHippo (~Intoxicat@124-168-246-145.dyn.iinet.net.au) has quit (Ping timeout: 256 seconds)
+2016-10-26 09:59:30	Stragus	Such libraries must be effiency and robustness, it's irrelevant if the code is hard to understand for some. About any optimized code is hard to follow
+2016-10-26 09:59:50	Stragus	must be designed* for efficiency and robustness
+2016-10-26 10:00:34	-->	IntoxicatedHippo (~Intoxicat@124-168-246-145.dyn.iinet.net.au) has joined ##C
+2016-10-26 10:00:34	<--	reev (~reev@123.63.166.181) has quit (Ping timeout: 256 seconds)
+2016-10-26 10:00:45	-->	xocket (~xocket@unaffiliated/xocket) has joined ##C
+2016-10-26 10:01:30	dho	i'm not suggesting someone with a year of experience should be able to contribute. but for organization / style / maintainability, i have always found at least freebsd's implementation superior.
+2016-10-26 10:01:56	dho	but that's an opinionated view.
+2016-10-26 10:02:14	<--	yrter (~yrter@unaffiliated/yrter) has quit (Quit: quit)
+2016-10-26 10:02:39	korans	"anythig worth using is not going to be very readable." not true at all, also to note ive seen glibc and while i do use glibc theyre readability is poor and not admirable what so ever. if you compared that to the linux kernel something which is readable you will understand there is no need to have such poor readability to have performant half decent code
+2016-10-26 10:02:46	-->	reev (~reev@123.63.166.181) has joined ##C
+2016-10-26 10:02:52	dho	(and ptmalloc is objectively garbage)
+2016-10-26 10:03:04	<--	LoneHerm_ (~lonehermi@199.231.245.197) has quit (Remote host closed the connection)
+2016-10-26 10:03:13	coebalt	So i'm trying to compile my hello.c program but it's throwing errors at me and I don't understand why, can anyone advise?
+2016-10-26 10:03:34	dho	coebalt: not without information about the code and the errors
+2016-10-26 10:03:36	<--	xocket (~xocket@unaffiliated/xocket) has quit (Remote host closed the connection)
+2016-10-26 10:03:37	Stragus	coebalt: Not until you tell us the error
+2016-10-26 10:03:39	-->	LoneHerm_ (~lonehermi@199.231.245.197) has joined ##C
+2016-10-26 10:03:58	coebalt	i wanted to check that people were availiable and willing to help first.
+2016-10-26 10:04:07	dho	"don't ask to ask, just ask"
+2016-10-26 10:04:24	coebalt	I paste my program into that one website and send you that link right?
+2016-10-26 10:04:49	dho	sure
+2016-10-26 10:04:53	Stragus	Just do it, no need to ask
+2016-10-26 10:05:28	-->	yrter (~yrter@unaffiliated/yrter) has joined ##C
+2016-10-26 10:05:30	coebalt	http://ideone.com/CK07Jt
+2016-10-26 10:05:48	coebalt	oh wait that's not right is it..
+2016-10-26 10:06:03	Stragus	It's "main", not "Main"
+2016-10-26 10:06:05	<--	RTFM[away] (~RTFMaway]@unaffiliated/rtfmaway/x-3892344) has quit (Ping timeout: 265 seconds)
+2016-10-26 10:06:07	-->	daniel-s (~daniel-s@91.160.41.30) has joined ##C
+2016-10-26 10:06:17	<--	polyrob (~rob@unaffiliated/mickn) has quit (Quit: ZNC - http://znc.in)
+2016-10-26 10:06:22	coebalt	http://ideone.com/kqjPkq
+2016-10-26 10:06:24	coebalt	there we go
+2016-10-26 10:06:44	coebalt	that first link was with the wrong language selected
+2016-10-26 10:06:49	Stragus	int main() {  ...stuff...  return 0; }
+2016-10-26 10:07:31	<--	Redfoxmoon (~Redfox@177.92-221-236.customer.lyse.net) has quit (Read error: Connection reset by peer)
+2016-10-26 10:07:54	korans	coebalt: as above the cpaitalization of main, but also you should specify a return value for main http://ideone.com/zFLSn5
+2016-10-26 10:08:04	<--	LoneHerm_ (~lonehermi@199.231.245.197) has quit (Ping timeout: 260 seconds)
+2016-10-26 10:08:22	coebalt	oh, capitalization is important? I assumed since it was all lower case that it didn't matter. i suppose that was silly
+2016-10-26 10:08:52	coebalt	And I'm working through K&R, and it didn't specify, so I don't know lol
+2016-10-26 10:08:54	<--	KingsQuest (~ident@unaffiliated/kingsquest) has quit (Ping timeout: 250 seconds)
+2016-10-26 10:09:07	-->	vigole (~Thunderbi@185.168.30.209) has joined ##C
+2016-10-26 10:09:28	<--	nikivi (~nikivi@dhcp-077-250-172-150.chello.nl) has quit (Quit: irc)
+2016-10-26 10:09:47	viju	Seems you just started.
+2016-10-26 10:09:58	coebalt	holy fuck it was literally just that main was capitalizaed.
+2016-10-26 10:10:02	korans	coebalt: im pretty sure k&R does mention that about function names
+2016-10-26 10:10:17	<--	Tazz|Chrombook (~TazzChrom@cpe-74-70-208-104.nycap.res.rr.com) has quit (Ping timeout: 244 seconds)
+2016-10-26 10:10:30	coebalt	but yeah, i fixed main and it works now
+2016-10-26 10:10:54	<--	sssilver (~sssilver@38.122.48.218) has quit (Quit: Textual IRC Client: www.textualapp.com)
+2016-10-26 10:11:07	coebalt	or not
+2016-10-26 10:11:10	coebalt	lol
+2016-10-26 10:11:16	coebalt	It works on the website but not in terminal
+2016-10-26 10:11:39	-->	alex1a (~alex1a@a81-84-38-221.cpe.netcabo.pt) has joined ##C
+2016-10-26 10:12:00	-->	Redfoxmoon (~Redfox@177.92-221-236.customer.lyse.net) has joined ##C
+2016-10-26 10:12:16	coebalt	hello.c:3:1: warning: return type defaults to ‘int’ [-Wimplicit-int]
+2016-10-26 10:12:16	coebalt	 main()
+2016-10-26 10:12:16	coebalt	 ^
+2016-10-26 10:12:21	coebalt	That's what it's giving now
+2016-10-26 10:12:39	korans	coebalt: please refer to my point eralier
+2016-10-26 10:12:49	korans	*earlier
+2016-10-26 10:13:06	korans	also it should compile without, that is only a warning
+2016-10-26 10:13:19	korans	are you sure your executable does not exist
+2016-10-26 10:13:57	korans	s/executable/object file/
+2016-10-26 10:13:57		[10:13]
+2016-10-26 10:14:04	viju	Add some return type, int preferably. In my college days, they used to write void main(void)
+2016-10-26 10:14:06	coebalt	At least up to page 19-20, it doesn't mention anything about functions. i entered the code as request, aside from the M beinng capital
+2016-10-26 10:14:06	viju	God knows why
+2016-10-26 10:14:23	viju	My instructors
+2016-10-26 10:14:30	Stragus	coebalt:  int main() {  ...stuff...  return 0; }
+2016-10-26 10:14:57	<--	sashapont (~sashapont@93.120.162.167) has quit (Quit: sashapont)
+2016-10-26 10:15:17	korans	coebalt: it would have compiled without the return type, as you can see gcc defaults to int
+2016-10-26 10:17:07	pragma-	e33wwq
+2016-10-26 10:18:14	-->	KingsQuest (~ident@unaffiliated/kingsquest) has joined ##C
+2016-10-26 10:18:15	<--	GinoManWorks (~GinoMan@50-251-53-110-static.hfc.comcastbusiness.net) has quit (Quit: Leaving)
+2016-10-26 10:18:38	<--	RajRajRaj (uid72176@gateway/web/irccloud.com/x-fsolsetczdfvnsgy) has quit (Quit: Connection closed for inactivity)
+2016-10-26 10:18:54	pragma-	1999 no int!
+2016-10-26 10:18:54	-->	masoudd (~masoudd@5.115.129.153) has joined ##C
+2016-10-26 10:18:57	coebalt	okay, so now it doesn't throw errors/warnings anymore
+2016-10-26 10:18:57	latch	,snack pragma-
+2016-10-26 10:18:57	 *	candide gives pragma- a teeny chicken burrito.
+2016-10-26 10:19:31	<--	vigole (~Thunderbi@185.168.30.209) has quit (Quit: 0xF4)
+2016-10-26 10:19:55	<--	florfoto (~florencia@190.19.60.193) has left ##C ("Leaving")
+2016-10-26 10:19:57	-->	Ghostbird1 (~Icedove@vpn105073.vpn.utwente.nl) has joined ##C
+2016-10-26 10:20:03	viju	Nothing improved for me
+2016-10-26 10:20:22	pragma-	check it again in one year
+2016-10-26 10:20:23	-->	spew (~ben@38.98.151.67) has joined ##C
+2016-10-26 10:20:31	<--	Ghostbird (~Icedove@s55966ea9.adsl.online.nl) has quit (Ping timeout: 256 seconds)
+2016-10-26 10:20:32	--	Ghostbird1 is now known as Ghostbird
+2016-10-26 10:20:33	viju	It's still the same, seg fault on second fgets
+2016-10-26 10:20:35	Pessimist	,cc -std=c89 int main = 0;
+2016-10-26 10:20:36	@candide	Pessimist: no output: main = 0
+2016-10-26 10:20:36	<--	SpinTensor (~SpinTenso@i53877B1A.versanet.de) has quit (Quit: WeeChat 1.6)
+2016-10-26 10:20:37	<--	Wetmelon (~wetmelon@host-73-169.ncasgro.asheville.nc.us.clients.pavlovmedia.com) has quit (Ping timeout: 244 seconds)
+2016-10-26 10:20:43	coebalt	Okay, so now when I moved on to try and enter a.out to get the "hello, world" output, it's saying that the command isn't found
+2016-10-26 10:20:57	Stragus	coebalt: Try ./a.out
+2016-10-26 10:21:04	<--	regreg (regreg@85.121.54.224) has quit (Ping timeout: 276 seconds)
+2016-10-26 10:21:15	coebalt	Yay!!
+2016-10-26 10:21:22	-->	esas (~esas@unaffiliated/esas) has joined ##C
+2016-10-26 10:21:29	coebalt	Why do things seem off from the book?
+2016-10-26 10:21:43	<--	_rubik (~wpgriggs@137.146.138.50) has quit (Ping timeout: 276 seconds)
+2016-10-26 10:21:48	coebalt	Is it cause of it's age?
+2016-10-26 10:22:12	viju	http://ideone.com/CKBai3
+2016-10-26 10:22:18	<--	Envil (~envil@x4db46659.dyn.telefonica.de) has quit (Remote host closed the connection)
+2016-10-26 10:22:29	_sfiguser	do you use Cmake, makefiles or all autotools  ?
+2016-10-26 10:22:30	<--	daniel-s (~daniel-s@91.160.41.30) has quit (Ping timeout: 250 seconds)
+2016-10-26 10:23:00	<--	nevodka (~nevodka@205.175.118.218) has quit (Ping timeout: 265 seconds)
+2016-10-26 10:23:06	viju	Me?
+2016-10-26 10:23:15	viju	I used gcc
+2016-10-26 10:23:58	Stragus	coebalt: C has evolved since C89, but don't worry, the changes aren't as big as you would think
+2016-10-26 10:24:26	-->	Pessimist- (Pessimist@gateway/shell/layerbnc/x-cfzdgbtmebmrmqab) has joined ##C
+2016-10-26 10:24:36	Stragus	viju: You are writing to a pointer that doesn't point anywhere, some random undefined address
+2016-10-26 10:24:39	-->	Gathis (~TheBlack@unaffiliated/gathis) has joined ##C
+2016-10-26 10:24:44	coebalt	enough that it's hindering my progress through the book xD
+2016-10-26 10:25:14	<--	Pessimist (~Pessimist@unaffiliated/pessimist) has quit (Quit: Leaving)
+2016-10-26 10:25:16	-->	jm0 (~jm0@0125200306.0.fullrate.ninja) has joined ##C
+2016-10-26 10:25:30	--	Pessimist- is now known as Pessimist
+2016-10-26 10:25:38	<--	Pessimist (Pessimist@gateway/shell/layerbnc/x-cfzdgbtmebmrmqab) has quit (Changing host)
+2016-10-26 10:25:38	-->	Pessimist (Pessimist@unaffiliated/pessimist) has joined ##C
+2016-10-26 10:25:38	<--	Pessimist (Pessimist@unaffiliated/pessimist) has quit (Changing host)
+2016-10-26 10:25:38	-->	Pessimist (Pessimist@gateway/shell/layerbnc/x-cfzdgbtmebmrmqab) has joined ##C
+2016-10-26 10:25:43	-->	szony (~szony@edv162.neoplus.adsl.tpnet.pl) has joined ##C
+2016-10-26 10:25:44	viju	Stragus, why would it store for the first one?
+2016-10-26 10:25:51	-->	UserOO7 (~UserOO7@73.114.33.106) has joined ##C
+2016-10-26 10:26:15	korans	viju: you never allocate space for your charater pointers to write too
+2016-10-26 10:26:20	korans	s/too/to/
+2016-10-26 10:26:56	-->	jimmynikk (~Unknown@117.195.255.219) has joined ##C
+2016-10-26 10:27:01	jimmynikk	hi
+2016-10-26 10:27:22	jimmynikk	is it possible to draw a graph of a simple equation in C?
+2016-10-26 10:27:26	jimmynikk	how?
+2016-10-26 10:27:31	<--	yrter (~yrter@unaffiliated/yrter) has quit (Quit: quit)
+2016-10-26 10:27:34	<--	umpc (~umpc@unaffiliated/umpc) has quit (Ping timeout: 276 seconds)
+2016-10-26 10:27:39	jimmynikk	say y=x^2
+2016-10-26 10:27:41	viju	I thought it's better to write char *str than char str[static_size]
+2016-10-26 10:27:45	Pessimist	jimmynikk, how do you draw a graph in real life?
+2016-10-26 10:27:57	korans	viju: it all depends its not nessisarily better
+2016-10-26 10:28:16	jimmynikk	Pessimist: no ,C book says nothing in it, as the o/p is in the terminal
+2016-10-26 10:28:56	jimmynikk	Pessimist: how could it be obvious to you?
+2016-10-26 10:29:20	<--	Groscheri (~Dyonisos@unaffiliated/dyonisos) has quit (Read error: Connection reset by peer)
+2016-10-26 10:29:20		[10:29]
+2016-10-26 10:29:23	-->	yrter (~yrter@unaffiliated/yrter) has joined ##C
+2016-10-26 10:29:36	Pessimist	jimmynikk, take some x values, calculate y and connect the dots. How is this hard?
+2016-10-26 10:29:47	jimmynikk	Pessimist: great
+2016-10-26 10:29:48	jimmynikk	ok
+2016-10-26 10:29:51	Pessimist	????????????
+2016-10-26 10:30:14	jimmynikk	but i need a screen ,a graph paper?
+2016-10-26 10:30:15	moris	jimmynikk, you can calculate the function and write the output to a textfile
+2016-10-26 10:30:21	moris	then plot with xmgrace or gnuplot
+2016-10-26 10:30:24	korans	viju: arrays have the ability to be faster than dynamically allocated memeory, they are always contigious and becasue the compiler knows the size before hand can perform additional optimiaztion, although for dynamically sized memeory or if the memeory needs a larger scope you can allocate memeory using tools such as malloc but dont forget to use free when your done with the memory
+2016-10-26 10:30:32	moris	that's how you'd probably do it in science
+2016-10-26 10:30:49	<--	RebelCoder (~Yuriy@cpc74579-lewi13-2-0-cust201.2-4.cable.virginm.net) has quit (Ping timeout: 276 seconds)
+2016-10-26 10:31:18	korans	by larger scope i mean it doesnt go out of scope at the point where automatic storage does
+2016-10-26 10:31:19	Pessimist	jimmynikk, only thing you need is some kind of library to draw it on your screen but libraries are offtopic here
+2016-10-26 10:31:27	--	DingoSaar_ is now known as DingoSaar
+2016-10-26 10:31:36	<--	scai (~scai@p4FF0FEB4.dip0.t-ipconnect.de) has left ##C ("[IRSSI]")
+2016-10-26 10:31:40	jimmynikk	so actually gnuplot lib too is build on C? can i do it without additional gnuplot,just on my own? i am excited to do it
+2016-10-26 10:31:44	-->	heiner (~heiner@ipservice-092-209-048-131.092.209.pools.vodafone-ip.de) has joined ##C
+2016-10-26 10:31:49	-->	concacid (~concacid@156.204.36.82) has joined ##C
+2016-10-26 10:31:51	-->	Ropeney (~Ropeney@101.103.8.51) has joined ##C
+2016-10-26 10:31:53	moris	ofc you can do it
+2016-10-26 10:32:06	moris	you'll need some graphic library then, but i have never tried that myself
+2016-10-26 10:32:19	moris	you'll easily manage to do it, no worries
+2016-10-26 10:32:22	moris	have fun
+2016-10-26 10:32:42	<--	snuffeluffegus (~snuffeluf@unaffiliated/snuffeluffegus) has quit (Quit: Lost terminal)
+2016-10-26 10:32:43	Stragus	jimmynikk: You could put values into some big 2D array, then put that on the screen as pixels, or save to some image file
+2016-10-26 10:32:49	jimmynikk	yeah,so i wanted to learn from scratch,like ...
+2016-10-26 10:33:08	-->	hyphenated (~hyphenate@mail.tw.co.nz) has joined ##C
+2016-10-26 10:33:14	korans	jimmynikk: its by all means possible to draw a graoph in C although imagine having to do everything your self i.e if it was in real life it would be analogous to you having to build the paper and the pen before hand in C have you head of gnuplot ?it should be what your looking for
+2016-10-26 10:33:17	jimmynikk	C permits pixels? it doesnt say any way to do it
+2016-10-26 10:33:30	-->	lukaramu (~lukaramu@port-10690.pppoe.wtnet.de) has joined ##C
+2016-10-26 10:33:34	-->	snuffeluffegus (~snuffeluf@unaffiliated/snuffeluffegus) has joined ##C
+2016-10-26 10:33:54	-->	patadasAlHigado (~patadasAl@asavpn242231.vpn.mcgill.ca) has joined ##C
+2016-10-26 10:34:01	Stragus	jimmynikk: Try SDL for simple 2D graphics, pixels are just a bunch of packed unsigned chars
+2016-10-26 10:34:29	<--	QbY (~QbY@96.89.90.225) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-10-26 10:34:35	jimmynikk	whats SDL, i have no graphics.h too
+2016-10-26 10:34:37	-->	eelster (~eelster@pool-108-52-209-253.phlapa.fios.verizon.net) has joined ##C
+2016-10-26 10:34:50	<--	metachr0n (~nobody@gateway/vpn/privateinternetaccess/metachr0n) has quit (Quit: WeeChat 1.5)
+2016-10-26 10:35:04	Stragus	korans: There's really nothing hard about plotting a few pixels. Heck, I just wrote code to produce these lines in two days: http://www.rayforce.net/drawgraph003.png
+2016-10-26 10:35:31	moris	Simple DirectMedia Layer is a cross-platform development library designed to provide low level access to audio, keyboard, mouse, joystick, and graphics hardware via OpenGL and Direct3D. It is used by video playback software, emulators, and popular games including Valve's award winning catalog and many Humble Bundle games
+2016-10-26 10:35:33	<--	KingsQuest (~ident@unaffiliated/kingsquest) has quit (Quit: linux unhackable correct code http://pastebin.ca/3732832)
+2016-10-26 10:35:34	moris	googled that for you
+2016-10-26 10:35:34	Stragus	(okay, two days because I optimized it fairly intensively, takes about 2ms)
+2016-10-26 10:35:35	moris	how nice am i?
+2016-10-26 10:35:48	izalove	7
+2016-10-26 10:37:17	jimmynikk	Stragus: but how can i learn?
+2016-10-26 10:37:31	jimmynikk	is there a book
+2016-10-26 10:37:35	Stragus	jimmynikk: Get started with SDL, you'll see pixels are just a bunch of unsigned chars to play with
+2016-10-26 10:37:41	Stragus	If you know how to put stuff in an array, you can write pixels
+2016-10-26 10:37:42	korans	Stragus: sure i understand theres nothing hard about it jbut i was trying to put the point across that maybe the problem would be more suitably handled in another way
+2016-10-26 10:38:04	<--	gagbo (~gagbo@unaffiliated/gagbo) has quit (Quit: I'm out !)
+2016-10-26 10:38:17	eelster	Have you guys every browsed through some of the c question on SO?
+2016-10-26 10:38:38	eelster	They're awful a lot of the time
+2016-10-26 10:39:08	Pessimist	eelster, I generally try to avoid crapoverflow
+2016-10-26 10:39:49	<--	UserOO7 (~UserOO7@73.114.33.106) has quit (Read error: Connection reset by peer)
+2016-10-26 10:39:49	<--	ozfan (~ozfan@89.180.154.88) has quit (Ping timeout: 260 seconds)
+2016-10-26 10:39:52	jimmynikk	whats SDL
+2016-10-26 10:39:54	pragma-	i generally try to avoid your mom but sometimes she takes up the whole street
+2016-10-26 10:40:20	<--	okra (~stephen@enlightenment/developer/okra) has quit (Ping timeout: 260 seconds)
+2016-10-26 10:40:24	moris	it's a library, jimmynikk
+2016-10-26 10:40:28	moris	i already googled it for you, ffs !
+2016-10-26 10:40:36	jimmynikk	where?
+2016-10-26 10:40:36	Retr0id	jimmynikk, Have you heard of google?
+2016-10-26 10:40:40	pragma-	what's SDL?
+2016-10-26 10:40:47	moris	Simple DirectMedia Layer is a cross-platform development library designed to provide low level access to audio, keyboard, mouse, joystick, and graphics hardware via OpenGL and Direct3D. It is used by video playback software, emulators, and popular games including Valve's award winning catalog and many Humble Bundle games
+2016-10-26 10:40:55	<--	slentzen (~slentzen@dhcp-5-103-234-61.seas-nve.net) has quit (Ping timeout: 256 seconds)
+2016-10-26 10:40:59	Pessimist	who is SDL?
+2016-10-26 10:41:02	pragma-	i'm asking about SDL not SDML
+2016-10-26 10:41:03	viju	code blocks is pathetic! I am switching back to nano
+2016-10-26 10:41:14	viju	Thanks korans I'll keep that in mind
+2016-10-26 10:41:14	eelster	Why not vim?
+2016-10-26 10:41:23	pragma-	idk why this guy keeps pasting about SDML
+2016-10-26 10:41:35	 *	Pessimist ate a SDL for lunch
+2016-10-26 10:41:35	viju	Because I can't learn commands, I just need a simple text editor
+2016-10-26 10:41:37	Stragus	Is SDL better than vim?
+2016-10-26 10:41:44	moris	rekt
+2016-10-26 10:41:54	jimmynikk	what SDL is a text editor?
+2016-10-26 10:42:03	moris	viju, try the vim tutorial .. you'll get hooked pretty quickly :D
+2016-10-26 10:42:07	Pessimist	Have fun, pragma-.
+2016-10-26 10:42:14	Retr0id	I use SDL for all my programming needs
+2016-10-26 10:42:33	moris	i forgot how to call the tutorial... hope someone can help you out
+2016-10-26 10:42:42	viju	vimtutorial I guess
+2016-10-26 10:42:44	Retr0id	vimtutor
+2016-10-26 10:42:47	viju	Ah
+2016-10-26 10:42:47	korans	Stragus: do you maintainer or somehow affiliate with rayorce ?
+2016-10-26 10:42:49	lowin	viju, I use geany. it's not half bad. for vim `vimtutor`
+2016-10-26 10:43:18	-->	RebelCoder (~Yuriy@cpc74579-lewi13-2-0-cust201.2-4.cable.virginm.net) has joined ##C
+2016-10-26 10:43:35	Retr0id	geany is good in my experience, although I use gedit if I don't need code folding
+2016-10-26 10:43:37	Stragus	korans: Wrote it many years ago, the open-source release was some kind of alpha that we were contractually obligated to release
+2016-10-26 10:43:47	-->	KingsQuest (~ident@184.75.214.42) has joined ##C
+2016-10-26 10:43:47	<--	KingsQuest (~ident@184.75.214.42) has quit (Changing host)
+2016-10-26 10:43:47	-->	KingsQuest (~ident@unaffiliated/kingsquest) has joined ##C
+2016-10-26 10:44:05	pragma-	is there a nanotutor command for nano too?
+2016-10-26 10:44:39	pragma-	i'm eager to learn how to unleash the power of nano
+2016-10-26 10:44:39		[10:44]
+2016-10-26 10:44:43	korans	Stragus: ohh cool, i must say that does look rather impressive.
+2016-10-26 10:44:54	eelster	Is nano modal/
+2016-10-26 10:44:57	lowin	My only complaint about geany is that it won't look into included headers for autocompletion keywords
+2016-10-26 10:45:07	<--	mohabaks (~mohabaks@105.230.155.12) has quit (Ping timeout: 276 seconds)
+2016-10-26 10:45:15	Stragus	korans: It was the fastest GPU raytracer in the world for a while. Not really sure nowadays
+2016-10-26 10:45:34	-->	polyrob (~rob@unaffiliated/mickn) has joined ##C
+2016-10-26 10:45:55	jimmynikk	So extra/sdl 1.2.15-7 [installed]
+2016-10-26 10:46:22	jimmynikk	multilib/lib32-sdl2 2.0.4-2
+2016-10-26 10:46:26	jimmynikk	is not installed
+2016-10-26 10:46:38	-->	Tazm (~Tazmain@197.88.45.234) has joined ##C
+2016-10-26 10:46:49	-->	s_kunk (~s_kunk@79.85.205.77.rev.sfr.net) has joined ##C
+2016-10-26 10:46:49	<--	s_kunk (~s_kunk@79.85.205.77.rev.sfr.net) has quit (Changing host)
+2016-10-26 10:46:49	-->	s_kunk (~s_kunk@unaffiliated/s-kunk/x-5139101) has joined ##C
+2016-10-26 10:46:56	Tazm	Hi all, what is the difference between using NULL or 0 to represent a null pointer ?
+2016-10-26 10:47:04	<--	_mirko_ (~mirko@unaffiliated/-mirko-/x-2946915) has quit (Ping timeout: 276 seconds)
+2016-10-26 10:47:33	jimmynikk	Tazm: 0 is 48 , NULL is \0
+2016-10-26 10:47:44	izalove	stupid
+2016-10-26 10:48:00	Tazm	0 is 48 0.o
+2016-10-26 10:48:05	eelster	'0' is 48 not 0.
+2016-10-26 10:48:09	-->	Synthead (~Synthead@98.99.251.254) has joined ##C
+2016-10-26 10:48:18	jimmynikk	thats what i meant
+2016-10-26 10:48:32	Stragus	And 48 is 13696
+2016-10-26 10:48:38	-->	kst_ (~Mutter@dslb-088-067-250-009.088.067.pools.vodafone-ip.de) has joined ##C
+2016-10-26 10:48:54	eelster	Wouldn't '48' be a multi-byte char?
+2016-10-26 10:48:58	Tazm	wait , that got me lost
+2016-10-26 10:49:04	jimmynikk	no &48 is 13696
+2016-10-26 10:49:15	Tazm	so which is better to use, return 0; or return NULL;?
+2016-10-26 10:49:21	jimmynikk	lol
+2016-10-26 10:49:29	jimmynikk	48 is a single byte char
+2016-10-26 10:49:32	barfod	you mean NUL not NULL
+2016-10-26 10:49:32	jimmynikk	0-255
+2016-10-26 10:49:44	eelster	Not 48, '48'.
+2016-10-26 10:49:45	barfod	NULL is a void.pointer
+2016-10-26 10:49:51	jimmynikk	yeah whatevre barford
+2016-10-26 10:49:53	eelster	Tazm: What's the return type?
+2016-10-26 10:49:54	-->	Ghostbird1 (~Icedove@s55966ea9.adsl.online.nl) has joined ##C
+2016-10-26 10:49:55	barfod	heh
+2016-10-26 10:49:59	Retr0id	Tazm, NULL can be 0 or (void*)0, but 0 is always 0
+2016-10-26 10:50:13	jimmynikk	Stragus: i have arch which is the best for SDL?
+2016-10-26 10:50:22	Tazm	eelster, say its return type int*
+2016-10-26 10:50:35	barfod	no it should not be 0. that's broken
+2016-10-26 10:50:36	<--	Ghostbird (~Icedove@vpn105073.vpn.utwente.nl) has quit (Ping timeout: 260 seconds)
+2016-10-26 10:50:37	--	Ghostbird1 is now known as Ghostbird
+2016-10-26 10:50:55	Retr0id	barford, read the c99 spec (or any other c spec)
+2016-10-26 10:51:01	Retr0id	its implementation defined
+2016-10-26 10:51:02	barfod	old stuff probably from bjarne shoestrap
+2016-10-26 10:51:04	eelster	Tazm: If the return type is (int *) then why are you returning an int? You need to return a pointer to an int array.
+2016-10-26 10:51:21	jimmynikk	sdl and sdl2 are installed by default on my OS
+2016-10-26 10:51:22	barfod	Retr0id: anyway it doesn't work
+2016-10-26 10:51:26	Tazm	eelster, if you had to return a null pointer for some reason
+2016-10-26 10:51:37	Retr0id	barford, what do you mean?
+2016-10-26 10:51:41	jimmynikk	is it different from lib32-sdl which is not installed and lib32-sdl2
+2016-10-26 10:51:42	jimmynikk	?
+2016-10-26 10:51:46	deadk	you mean return a pointer into an array of int
+2016-10-26 10:51:49	jimmynikk	Stragus: can u tell
+2016-10-26 10:51:57	eelster	Tazm: then return NULL.
+2016-10-26 10:52:16	Tazm	eelster, so use the macro over 0 ?
+2016-10-26 10:52:19	Tazm	I am so confused now
+2016-10-26 10:52:21	deadk	i'd return 0 in any case as i tend to avoid NULL
+2016-10-26 10:52:34	deadk	but NULL is not necessarily defined as 0
+2016-10-26 10:52:39	eelster	It's more idiomatic to return NULL. I tend to avoid magic numbers.
+2016-10-26 10:52:41	<--	szony (~szony@edv162.neoplus.adsl.tpnet.pl) has quit (Ping timeout: 250 seconds)
+2016-10-26 10:52:54	<--	mizu_no_oto_work (~textual@104.207.209.180) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-10-26 10:53:03	<--	Gathis (~TheBlack@unaffiliated/gathis) has quit (Remote host closed the connection)
+2016-10-26 10:53:07	deadk	0 is a bit of a special case
+2016-10-26 10:53:16	jimmynikk	no its not
+2016-10-26 10:53:23	jimmynikk	every char is 0-255
+2016-10-26 10:53:24	eelster	Also Tazm remember this: A one-L NUL, it ends a string. A two-L NULL points to a thing. A I will bet a golden bull, that there is no three-L NULLL.
+2016-10-26 10:53:31	deadk	we're not talking about chars
+2016-10-26 10:54:00	Tazm	"An  integer  constant  expression  with  the  value  0,  or  such  an  expression  cast  to  type
+2016-10-26 10:54:00	Tazm	void *
+2016-10-26 10:54:00	Tazm	, is called a
+2016-10-26 10:54:00	Tazm	null pointer constant " that is from the 2011 spec
+2016-10-26 10:54:00	--	Mode ##C [+b *!~Tazmain@197.88.45.*] by candide
+2016-10-26 10:54:02	deadk	also that isn't true, char can be signed
+2016-10-26 10:54:05	barfod	return a bit mask in a negative number if 0 has special meaning for you. or a.struct
+2016-10-26 10:54:13	eelster	Idiomatically, it is better to use something like NULL than 0 because NULL is more explicit.
+2016-10-26 10:54:18	<--	Prutheus (~XPS@WB21-0110.STUDFB.UniBw-Muenchen.de) has quit (Quit: leaving)
+2016-10-26 10:54:36	-->	KingsQuest- (~ident@se2.ibvpn.com) has joined ##C
+2016-10-26 10:54:51	Stragus	When using 0, you can implicitely do tricks such as  if( ( (uintptr_t)pointer0 | (uintptr_t)pointer1 ) )  to check if either is non-zero
+2016-10-26 10:55:01	--	Mode ##C [-b *!~Tazmain@197.88.45.*] by candide
+2016-10-26 10:55:14	barfod	return NULL not as a value but as a failure to allocate or find a string or pattern
+2016-10-26 10:55:17	Tazm	so the 2011 spec 6.3.2.3 says "An  integer  constant  expression  with  the  value  0,  or  such  an  expression  cast  to  type void *, is called anull pointer constant"
+2016-10-26 10:55:31	deadk	barfod: ...well yes, obviously
+2016-10-26 10:55:35	Retr0id	eelster, technically NULL is less explicit, but its definitely idiomatic
+2016-10-26 10:55:37	barfod	don't use it as a boolean value. that is.dumb
+2016-10-26 10:55:49	deadk	eelster: i disagree. it should be obvious that you're returning a pointer because the function definition includes that information
+2016-10-26 10:56:05	<--	kst_ (~Mutter@dslb-088-067-250-009.088.067.pools.vodafone-ip.de) has quit (Remote host closed the connection)
+2016-10-26 10:56:08	deadk	it should be obvious that 0 is a null pointer constant to anyone who knows C because it's defined as one
+2016-10-26 10:56:12	<--	KingsQuest (~ident@unaffiliated/kingsquest) has quit (Ping timeout: 260 seconds)
+2016-10-26 10:56:20	<--	vuoto (~vuoto@80-71-135-9.u.parknet.dk) has quit (Remote host closed the connection)
+2016-10-26 10:56:24	barfod	noooo!
+2016-10-26 10:56:30	Tazm	so from what I understand its better to return (void*)0 then
+2016-10-26 10:56:35	barfod	it is fucking mot. 0 is 0
+2016-10-26 10:56:47	eelster	In C++ true is defiend as 1 and false is defined as 0, that doesn't mean I should use 1 and 0 instead of true and false.
+2016-10-26 10:56:54	<--	IrishPrime (~IrishPrim@74.202.224.66) has quit (Quit: Leaving)
+2016-10-26 10:56:55	deadk	barfod: ... yes, which is a null pointer constant
+2016-10-26 10:56:58	-->	okra (~stephen@enlightenment/developer/okra) has joined ##C
+2016-10-26 10:57:00	Retr0id	barfod, (void*)0 is not 0
+2016-10-26 10:57:11	eelster	Don't use (void *)0.
+2016-10-26 10:57:29	Tazm	okay I am getting confused with what the ISO/IEC 9899 spec says to do
+2016-10-26 10:57:49	Retr0id	Tazm, I was reading it just before, I agree that its confusing
+2016-10-26 10:57:55	lowin	eelster, doesn't 0 equal to false and everything else true? what's wrong with replacing false with 0
+2016-10-26 10:58:16	Retr0id	My interpretation is that NULL is implementation defined as either 0 or (void*)0
+2016-10-26 10:58:17	-->	matp_ (~matp@80-110-89-237.cgn.dynamic.surfer.at) has joined ##C
+2016-10-26 10:58:34	Retr0id	And the conversion of a null pointer to an int is also implemention defined
+2016-10-26 10:58:44	deadk	Retr0id: yes, and both of those are guaranteed to be null pointer constants
+2016-10-26 10:58:46	eelster	lowin: There's nothing wrong with replacing false with 0, but if false is there to represent false, why add a layer of extraction for someone else reading your code by setting a boolean expression equal to 0 instead of false.
+2016-10-26 10:58:51	<--	Tims_Tech (~Tims_Tech@unaffiliated/tims-tech) has quit (Quit: bye)
+2016-10-26 10:59:02	Retr0id	but the behaviour can be different depending on which is chosen
+2016-10-26 10:59:08	deadk	eelster: i don't see that it's adding a layer
+2016-10-26 10:59:20	<--	Blue_Hat (~TwinKam20@206.214.26.146) has quit (Ping timeout: 250 seconds)
+2016-10-26 10:59:29	Stragus	It's only adding a layer if you mix 1/0 and true/false
+2016-10-26 10:59:31	Retr0id	Layers of abstraction are good
+2016-10-26 10:59:32	<--	Ropeney (~Ropeney@101.103.8.51) has quit (Quit: My Mac has gone to sleep. ZZZzzz…)
+2016-10-26 10:59:36	Retr0id	to an extent
+2016-10-26 10:59:41	deadk	some abstraction is good
+2016-10-26 10:59:41		[10:59]
+2016-10-26 10:59:54	eelster	It requires you to see the 0 and then think, that means false. Whereas, you can write 'false', and it is no more expensive but it makes the code clearer.
+2016-10-26 10:59:56	Retr0id	using true/false also conveys the fact that you don't expect any other values
+2016-10-26 11:00:01	<--	ExoUNX (~textual@unaffiliated/exounx) has quit (Quit: I'm outta here)
+2016-10-26 11:00:09	Tazm	Retr0id, I think I understand it as you can use 0 or (void*)'a' as long as its a constant expression casted to void*
+2016-10-26 11:00:17	deadk	eelster: does it make it clearer, though?
+2016-10-26 11:00:32	deadk	Tazm: except 'a' is not 0
+2016-10-26 11:00:32	latch	I prefer to let _Bool do my booleans for me
+2016-10-26 11:00:47	eelster	While NULL is 0, returning NULL indicates that you are, in fact, returning null.
+2016-10-26 11:00:51	Tazm	deadk, but its a constant expression
+2016-10-26 11:00:54	<--	matp (~matp@2a02:8388:8b00:2680:1c9d:325e:febb:d8cd) has quit (Ping timeout: 250 seconds)
+2016-10-26 11:00:55	eelster	It's tautological
+2016-10-26 11:01:01	barfod	NULL is not 0..
+2016-10-26 11:01:06	deadk	it requires just as much cognitive effort
+2016-10-26 11:01:21	<--	pajpax (~pajpax@bband-dyn159.178-41-166.t-com.sk) has quit (Quit: pajpax)
+2016-10-26 11:01:23	eelster	NULL is 0.
+2016-10-26 11:01:28	deadk	or (void *)0
+2016-10-26 11:01:28	latch	NULL is not 0
+2016-10-26 11:01:29	eelster	NUL is not 0.
+2016-10-26 11:01:33	latch	NULL compares equal to 0
+2016-10-26 11:01:35	deadk	NUL doesn't exist
+2016-10-26 11:01:39	Tazm	deadk, oh wait wait, integer constant expression so (void*)3 still works
+2016-10-26 11:01:40	latch	big difference
+2016-10-26 11:01:48	deadk	ascii's NUL is 0 though
+2016-10-26 11:01:52	eelster	latch is correct
+2016-10-26 11:01:56	latch	:p
+2016-10-26 11:01:56	Stragus	#undef NULL   #define NULL (void *)(~(uintptr_t)0)
+2016-10-26 11:01:57	deadk	Tazm: 'a' is an integer constant expression
+2016-10-26 11:02:06	Tazm	oh right
+2016-10-26 11:02:08	deadk	Tazm: it's not zero though
+2016-10-26 11:02:22	barfod	it's just not zero
+2016-10-26 11:02:23	Tazm	the spec says "An  integer  constant  expression  with  the  value  0,  or  such  an  expression  cast  to  type void *,"
+2016-10-26 11:02:29	Tazm	it doesn't say it has to be 0
+2016-10-26 11:02:33	Tazm	when casting to void*
+2016-10-26 11:02:36	deadk	did you read the "with the value 0" bit?
+2016-10-26 11:02:39	eelster	but NULL has to compare equal to 0.
+2016-10-26 11:02:53	Tazm	deadk, or such an expression
+2016-10-26 11:02:54	deadk	eelster: only as a consequence of that definition
+2016-10-26 11:02:57	latch	NULL could internally be 0x5A5A5A5A as long as it compares equal to 0
+2016-10-26 11:03:06	deadk	Tazm: "such an expression" meaning "An integer constant expression with the value 0"
+2016-10-26 11:03:06	fizzie	Tazm: The "such" refers to the whole "integer constant expression with the value 0" part.
+2016-10-26 11:03:19	eelster	http://c-faq.com/null/varieties.html
+2016-10-26 11:03:21	deadk	latch: well no, it couldn't, because 0x5a5a5a5a is an integer not a pointer
+2016-10-26 11:03:23	deadk	;)
+2016-10-26 11:03:27	Retr0id	latch, what if there was a variable at address 0x5A5A5A5A ?
+2016-10-26 11:03:29	latch	no u
+2016-10-26 11:03:41	latch	Retr0id, maybe the arch doesnt allow unaligned addresses
+2016-10-26 11:03:42	Tazm	okay now I am lost so do I need to use 0  , (void*)0 or NUL ?
+2016-10-26 11:03:45	eelster	Addresses != values
+2016-10-26 11:03:58	barfod	Tazm: return a struct
+2016-10-26 11:03:58	Retr0id	I guess, if we're talking hypothetically
+2016-10-26 11:04:02	<--	jm0 (~jm0@0125200306.0.fullrate.ninja) has quit (Read error: Connection reset by peer)
+2016-10-26 11:04:03	eelster	Definitely not NUL.
+2016-10-26 11:04:06	deadk	Tazm: forget about NUL. it's an ascii term and doesn't mean anything in this context
+2016-10-26 11:04:21	-->	kst_ (~Mutter@dslb-088-067-250-009.088.067.pools.vodafone-ip.de) has joined ##C
+2016-10-26 11:04:34	deadk	Tazm: if you're returning an integer, use 0. if you're returning a pointer, i'd use 0 but (void *)0 and NULL are also valid and it's largely a matter of taste which you use
+2016-10-26 11:04:40	lowin	Retr0id, when a platform defines an address as nullptr, they won't be putting any variable at that address
+2016-10-26 11:05:16	Retr0id	Ok, I agree. Are there any real examples of that though? I'm curious
+2016-10-26 11:05:23	latch	I think returning 0 for a pointer is only confusing in that returning 0 is usually a success condition
+2016-10-26 11:05:24	Stragus	There was some old Apple machine (without memory protection) that put some important interrupt table at address zero
+2016-10-26 11:05:30	Tazm	deadk, okay what is the cost of using a macro over (void*)0 ?
+2016-10-26 11:05:43	deadk	it's a question of what you think is clearer
+2016-10-26 11:05:44	lowin	,cc int* foo(){return 0} int main(){int* a = foo()};
+2016-10-26 11:05:45	@candide	lowin:  In function 'foo':  error: expected ';' before '}' token
+2016-10-26 11:05:47	<--	rkfb (~rkfb@185.83.14.12) has quit (Quit: Lost terminal)
+2016-10-26 11:05:51	latch	Stragus, lots of microcontrollers still do that
+2016-10-26 11:05:51	barfod	the point is that millions of people confuse NUL and NULL. only one of which is zero in any manner.
+2016-10-26 11:05:54	lowin	,cc int* foo(){return 0;} int main(){int* a = foo();};
+2016-10-26 11:05:55	@candide	lowin: Success (no output).
+2016-10-26 11:06:39	Tazm	barfod, I forgot about NUL to be honest only knew NULL as (void*)0
+2016-10-26 11:06:46	-->	Learath2 (~learath2@unaffiliated/learath2) has joined ##C
+2016-10-26 11:06:47	lowin	So returning int as a pointer value is not an error?
+2016-10-26 11:06:47	deadk	forget about NUL!
+2016-10-26 11:06:50	deadk	C has no NUL
+2016-10-26 11:06:55	eelster	,cc #include<stdio.h> int main(){printf("%d\t%c\n", NULL, NULL);}
+2016-10-26 11:06:57	@candide	eelster: [warning: format '%d' expects argument of type 'int', but argument 2 has type 'void *' [-Wformat=]  warning: format '%c' expects argument of type 'int', but argument 3 has type 'void *' [-Wformat=]] 0
+2016-10-26 11:06:58	deadk	lowin: that 0 isn't an int
+2016-10-26 11:07:22	eelster	,cc #include<stdio.h> int main(){printf("%d\t%c\n", (int) NULL, (char) NULL);}
+2016-10-26 11:07:23	@candide	eelster: [warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]  warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]] 0
+2016-10-26 11:07:24	deadk	null pointer constants are special
+2016-10-26 11:07:34	barfod	Tazm: good. you are better off with what you learned than what this NULL is zero nonsense
+2016-10-26 11:07:40	lowin	deadk, so if I return 24 in foo, it still is not an error?
+2016-10-26 11:07:41	<--	kst_ (~Mutter@dslb-088-067-250-009.088.067.pools.vodafone-ip.de) has quit (Remote host closed the connection)
+2016-10-26 11:07:45	-->	jm0 (~jm0@0125200306.0.fullrate.ninja) has joined ##C
+2016-10-26 11:07:46	deadk	barfod: please stop telling people lies
+2016-10-26 11:07:51	barfod	fortunately academia at least tries
+2016-10-26 11:07:55	deadk	lowin: 24 doesn't have the value zero so the special case wouldn't cover that
+2016-10-26 11:08:12	Tazm	,cc #include<stdio.h> int* foo(){return 0;} int main(){int* a = foo(); if(a == NULL) printf("True");}
+2016-10-26 11:08:13	@candide	Tazm: True
+2016-10-26 11:08:14	barfod	deadk: join cjeopardy and.feel the power of my c hand
+2016-10-26 11:08:15	lowin	I see.. learn new things every day..
+2016-10-26 11:08:41	Tazm	,cc #include<stdio.h> int* foo(){return (void*)0;} int main(){int* a = foo(); if(a == NULL) printf("True");}
+2016-10-26 11:08:42	@candide	Tazm: True
+2016-10-26 11:08:54	jimmynikk	yeah and keep on talking the same thing for 20minutes
+2016-10-26 11:08:54	Tazm	okay that is trippy
+2016-10-26 11:08:58	latch	btw you dont need to include most headers for candide
+2016-10-26 11:09:04	deadk	barfod: this isn't the middle ages, we are not going to decide the truth by duelling when you could just read the standard you are contradicting
+2016-10-26 11:09:08	@candide	latch, Definitely not.
+2016-10-26 11:09:10	latch	,sh cat prog.c
+2016-10-26 11:09:11	@candide	latch: #include<stdio.h>  #include <prelude.h>   int* foo() {     return (void*)0; }  int main() {     int* a = foo();      if (a == NULL) printf("True"); }
+2016-10-26 11:09:42	latch	,sh find /usr -name prelude.h -exec cat {} \;
+2016-10-26 11:09:48	latch	:o
+2016-10-26 11:09:52	@candide	latch: [Timed-out]
+2016-10-26 11:10:00	Random832	,sh echo what is this
+2016-10-26 11:10:00	@candide	Random832: what is this
+2016-10-26 11:10:12	lowin	lol it's a shell?
+2016-10-26 11:10:15	Random832	,sh ls
+2016-10-26 11:10:16	@candide	Random832: prog prog.c prog.class prog.cpp prog.java prog.sh
+2016-10-26 11:10:20	deadk	,query
+2016-10-26 11:10:20	@candide	Please stop spamming the channel. Use a /query
+2016-10-26 11:10:30	Tazm	.java !?
+2016-10-26 11:10:50	<--	okra (~stephen@enlightenment/developer/okra) has quit (Ping timeout: 256 seconds)
+2016-10-26 11:10:51	bone	zomg.
+2016-10-26 11:11:03	eelster	I thought people were coming to C Jeopardy
+2016-10-26 11:11:03	<--	renn0xtk9 (~max@2a02:8071:2e80:8f00:38a8:aa44:8a69:755e) has quit (Quit: Konversation terminated!)
+2016-10-26 11:11:09	barfod	deadk: i'm not contradicting anything. show me.the part of the standard that says #define NULL 0
+2016-10-26 11:11:16	barfod	poppycock
+2016-10-26 11:11:24	Tazm	okay so if I understand correctly NULL == (void*) == 0
+2016-10-26 11:11:33	-->	_mirko_ (~mirko@unaffiliated/-mirko-/x-2946915) has joined ##C
+2016-10-26 11:11:54	lowin	where is nullptr in all this?
+2016-10-26 11:11:59	Random832	lowin: C++
+2016-10-26 11:12:05	lowin	ah
+2016-10-26 11:12:12	jimmynikk	Stragus: actually i dont know C "properly"
+2016-10-26 11:12:25	deadk	barfod: NULL is at C11 §7.19 paragraph 3 and it refers to "null pointer constant" which is defined in C11 §6.3.2.3 paragraph 3
+2016-10-26 11:12:44	jimmynikk	i do know arrays , structures, upto there, but not "properly" as in the books
+2016-10-26 11:12:54	jm0	Ah candide has all the most common headers included here: http://sprunge.us/UQXA
+2016-10-26 11:13:00	-->	dcz (51d52b45@gateway/web/freenode/ip.81.213.43.69) has joined ##C
+2016-10-26 11:13:08	viju	Where can I read the c specification (looking for a free version)
+2016-10-26 11:13:12	jimmynikk	so even after 20minutes u are disussing NULL
+2016-10-26 11:13:20	Random832	i'm not sure what exactly you are each claiming about NULL
+2016-10-26 11:13:24	latch	,c11
+2016-10-26 11:13:24	@candide	C1X/C11 draft: http://www.open-std.org/jtc1/sc22/wg14/www/docs/n1570.pdf - C1X Charter: http://www.open-std.org/JTC1/SC22/wg14/www/docs/n1250.pdf - C1X Overview: http://en.wikipedia.org/wiki/C1X - Changes from C99: http://en.wikipedia.org/wiki/C1X#Changes_from_C99 - C Overview: http://en.wikipedia.org/wiki/C_programming - HTML version: http://port70.net/~nsz/c/c11/n1570.html
+2016-10-26 11:13:26	Retr0id	viju, google c99 spec, for example
+2016-10-26 11:13:31	Tazm	viju, this kinda works http://www.open-std.org/jtc1/sc22/wg14/www/docs/n1124.pdf
+2016-10-26 11:13:58	Tazm	Retr0id, isn't C11 the latest ?
+2016-10-26 11:14:01	Random832	It does not have to be defined to the exact token sequence 0. It does have to be defined in one of a relatively restricted number of ways, and 0 is a valid way to define it.
+2016-10-26 11:14:02	deadk	Tazm: that's very old and not even the latest draft of C99
+2016-10-26 11:14:17	latch	... see the c11 draft above
+2016-10-26 11:14:17	-->	rorro (~rorro@h-170-152-58.a163.priv.bahnhof.se) has joined ##C
+2016-10-26 11:14:20	<--	concacid (~concacid@156.204.36.82) has quit (Ping timeout: 260 seconds)
+2016-10-26 11:14:24	Random832	deadk: barfod: does either of you disagree with either of the statement I just said?
+2016-10-26 11:14:32	deadk	well, no?
+2016-10-26 11:14:36	Retr0id	Tazm, c99 isn't the latest by a long shot, but its quite widely supported
+2016-10-26 11:14:54	eelster	C99 is a widely used standard.
+2016-10-26 11:14:54		[11:14]
+2016-10-26 11:14:58	deadk	if you do want C99, http://open-std.org/JTC1/SC22/WG14/www/docs/n1256.pdf
+2016-10-26 11:15:01	-->	cbot (~cbot@dyn-209-2-226-16.dyn.columbia.edu) has joined ##C
+2016-10-26 11:15:07	Random832	going once
+2016-10-26 11:15:30	-->	rkfb (~rkfb@185.83.14.12) has joined ##C
+2016-10-26 11:15:50	<--	refx__ (~refx_@162.243.67.250) has quit (Quit: :q!)
+2016-10-26 11:15:56	Tazm	int * foo(){ return 0;} is the same as int * foo(){ return NULL;} and int * foo(){ return (void*)0;}
+2016-10-26 11:16:00	jimmynikk	that's a lot of shit to read
+2016-10-26 11:16:04	jimmynikk	fuck you
+2016-10-26 11:16:07	jimmynikk	i wont learn C
+2016-10-26 11:16:10	Random832	going twice
+2016-10-26 11:16:13	-->	refx_ (~refx_@162.243.67.250) has joined ##C
+2016-10-26 11:16:18	jimmynikk	Stragus: you heard me? or not?
+2016-10-26 11:16:24	deadk	Tazm: yes, those are all the same
+2016-10-26 11:16:28	-->	echie (~user@173.254.254.82) has joined ##C
+2016-10-26 11:16:38	Retr0id	jimmynikk, you don't have to read the entire spec to learn c
+2016-10-26 11:16:44	jimmynikk	Stragus: are you listening?
+2016-10-26 11:16:56	Tazm	deadk, huh okay, and it doesn't what you use, what is more generally accepted to use ?
+2016-10-26 11:17:05	eelster	I've never read the entire spec for any language.
+2016-10-26 11:17:08	deadk	i don't know that any of them are
+2016-10-26 11:17:09	Stragus	jimmynikk: I'm not responsible for you learning or not learning C
+2016-10-26 11:17:27	deadk	slightly more people seem to favour NULL here
+2016-10-26 11:17:33	jimmynikk	Stragus: good me neither, because i wont get any advantage anyway
+2016-10-26 11:17:35	latch	Tazm, return NULL. returning 0 is canonically a 'success' condition, so its just confusing
+2016-10-26 11:17:43	Retr0id	Use NULL where it's idiomatic and unambiguous.
+2016-10-26 11:17:49	Tazm	latch, depends
+2016-10-26 11:17:51	jimmynikk	instead just waste of lots of time, in masochism
+2016-10-26 11:17:52	Random832	latch: returning 0 is only ever success in main. it's false in any boolean function.
+2016-10-26 11:17:59	latch	rofl
+2016-10-26 11:18:06	barfod	jimmynikk: use awk instead
+2016-10-26 11:18:07	latch	all the unixen would disagree
+2016-10-26 11:18:08	jimmynikk	learning programming == masochism
+2016-10-26 11:18:12	-->	Bl4ck57rik3r (~Bl4ck57ri@199.254.238.208) has joined ##C
+2016-10-26 11:18:17	Random832	I do agree that you should use NULL because it makes it easy to understand what you're doing
+2016-10-26 11:18:30	deadk	jimmynikk: great. feel free to tell ##complainaboutprogramming
+2016-10-26 11:18:41	Stragus	Or perhaps #flippingburgers
+2016-10-26 11:18:56	<--	rkfb (~rkfb@185.83.14.12) has quit (Client Quit)
+2016-10-26 11:19:02	Retr0id	jimmynikk, is https://scratch.mit.edu more up your street?
+2016-10-26 11:19:18	hippybear	omg
+2016-10-26 11:19:27	hippybear	scratch lol
+2016-10-26 11:19:34	<--	swiipperi (~kimmo@87-93-143-162.bb.dnainternet.fi) has quit (Quit: leaving)
+2016-10-26 11:20:23	jimmynikk	Retr0id: i dont have time to create games, or stories
+2016-10-26 11:20:33	<--	echie (~user@173.254.254.82) has quit (Client Quit)
+2016-10-26 11:20:34	<--	rtkt (~rtkt@ptr-2hj4tbw74k45r08mt38vhofux.ip6.access.telenet.be) has quit (Quit: Leaving)
+2016-10-26 11:20:44	jimmynikk	otherwise it will consume my entire life in it
+2016-10-26 11:20:54	-->	xocket (~xocket@unaffiliated/xocket) has joined ##C
+2016-10-26 11:21:01	viju	Thanks all
+2016-10-26 11:21:03	Retr0id	If you don't have time for drag'n'drop "programming", I'm not sure what you're doing here
+2016-10-26 11:21:04	latch	Random832, true/false is not a success/failure condition anyways
+2016-10-26 11:21:16	barfod	Random832: not all things are well.defined in the standard. but if you try to write a c library with NULL as 0 it will only trivially work
+2016-10-26 11:21:30	Random832	barfod: what does that even mean
+2016-10-26 11:21:41	deadk	0 is a valid definition for NULL
+2016-10-26 11:21:42	Retr0id	barfod, look up the definition of trivially
+2016-10-26 11:21:53	Random832	the only place you can run into trouble with NULL as 0 is with passing it to variable argument functions
+2016-10-26 11:21:55	Retr0id	deadk, +1
+2016-10-26 11:21:59	coebalt	Okay, so I'm going through K&R, and one of the exercises says to experiment with putting \c in printf's string argument. But when I do that, all I get in the ./a.out is "hello, worldc"
+2016-10-26 11:22:00	Random832	and you should be casting it anyway
+2016-10-26 11:22:17	barfod	alright i will get the article
+2016-10-26 11:22:17	latch	,testcase coebalt
+2016-10-26 11:22:17	@candide	coebalt: A testcase is a minimal compilable example exhibiting your symptoms. "Minimal" means just the bare essentials required to illustrate your question. "Compilable" means that there is enough code to compile it on our machines, and therefore use our debuggers. Please paste a testcase at http://ideone.com or http://codepad.org to help us assist you.
+2016-10-26 11:22:19	eelster	coebalt: That's because \c isn't a valid esacpe and that's what they're trying to show you.
+2016-10-26 11:22:19	barfod	again
+2016-10-26 11:22:20	jimmynikk	*learning hurts Stragus
+2016-10-26 11:22:27	latch	ahh nvm
+2016-10-26 11:22:37	Random832	coebalt: you experimented, you got a result, what more do you want? (I think it means experiment with other characters and not just c in particular)
+2016-10-26 11:22:48	eelster	Random832: It does.
+2016-10-26 11:23:07	jimmynikk	Stragus: all are not as masochistic as you
+2016-10-26 11:23:13	coebalt	Hey, i'm just trying to make sure i'm understanding what it's trying to teach me.
+2016-10-26 11:23:14	jimmynikk	latch: what u mean nvm?
+2016-10-26 11:23:26	eelster	coebalt: The point of K&R is that you get a feel for the language yourself somewhat. It's not just for copying examples. A lot of it requires thinking about it.
+2016-10-26 11:23:30	jimmynikk	programming is masochistic
+2016-10-26 11:23:43	Retr0id	Can someone kick jimmynikk already?
+2016-10-26 11:23:48	deadk	it is tempting
+2016-10-26 11:23:51	Stragus	jimmynikk: Thinking is hard
+2016-10-26 11:23:54	barfod	https://ewontfix.com/11/ read.it and weep Random832 Retr0id and deadk
+2016-10-26 11:23:56	@candide	Title of barfod's link: EWONTFIX - NULL considered harmful
+2016-10-26 11:24:08	coebalt	Yeah. I was thinking that what you were saying was the thing. I just wanted to check my understanding
+2016-10-26 11:24:15	deadk	barfod: did you?
+2016-10-26 11:24:23	barfod	it's history now. all you need.to know is how it ends
+2016-10-26 11:24:26	<--	HarveyPwca (~HarveyPwc@ip-64-134-38-232.public.wayport.net) has quit (Ping timeout: 256 seconds)
+2016-10-26 11:24:33	Retr0id	"NULL used incorrectly considered harmful"
+2016-10-26 11:24:35	<--	fub (~fub@aftr-37-201-171-155.unity-media.net) has quit (Quit: sleep.)
+2016-10-26 11:24:36	barfod	which none.of you three sadly do
+2016-10-26 11:24:37	jimmynikk	Retr0id: i will kick your ass, you masochist
+2016-10-26 11:24:46	jimmynikk	shut the shit about NULL
+2016-10-26 11:24:56	Tazm	jimmynikk, calm down
+2016-10-26 11:24:58	-->	netj_ (~netj@c-50-174-63-93.hsd1.ca.comcast.net) has joined ##C
+2016-10-26 11:25:16	--	Mode ##C [+o deadk] by ChanServ
+2016-10-26 11:25:16	--	Mode ##C [+q jimmynikk!*@*] by deadk
+2016-10-26 11:25:22	Random832	barfod: that just says exactly what i just said about varargs. what if you have a function that needs an int *? you should *always* cast null when passing to vararg functions
+2016-10-26 11:25:29	eelster	What C style guide do you all use?
+2016-10-26 11:25:57	-->	ozfan (~ozfan@89.180.154.88) has joined ##C
+2016-10-26 11:26:00	<--	ozfan (~ozfan@89.180.154.88) has quit (Client Quit)
+2016-10-26 11:26:00	latch	kernel style
+2016-10-26 11:26:08	eelster	latch: Me too.
+2016-10-26 11:26:16	Random832	> Anywhere the type of the expression matters, you really need to use a cast, which you could apply to NULL, or simply to 0. -- exactly.
+2016-10-26 11:26:16	latch	its least annoying imho
+2016-10-26 11:26:23	@deadk	i don't use a style guide, but my style is more or less style(9) except for the parentheses around sizeof and return operands
+2016-10-26 11:26:29	<--	netj (~netj@c-50-174-63-93.hsd1.ca.comcast.net) has quit (Ping timeout: 250 seconds)
+2016-10-26 11:26:32	@deadk	oh, and i put a space between sizeof and its operand
+2016-10-26 11:26:43	eelster	Do you use OTB?
+2016-10-26 11:27:32	@deadk	well, i omit braces around single statements
+2016-10-26 11:27:35	<--	dcz (51d52b45@gateway/web/freenode/ip.81.213.43.69) has quit (Quit: Page closed)
+2016-10-26 11:27:43	latch	Random832, I'm not following. I dont see why thats a problem
+2016-10-26 11:27:53	@deadk	(unless they're in an if/else+ chain with braces elsewhere)
+2016-10-26 11:28:10	viju	That animation thing for kids is cool, the one on scratch.mit.edu
+2016-10-26 11:28:33	eelster	The worst style I've seen was the "I wish I was using python" style
+2016-10-26 11:28:52	<--	jimmynikk (~Unknown@117.195.255.219) has quit (Remote host closed the connection)
+2016-10-26 11:29:00	latch	why do python users have bad teeth
+2016-10-26 11:29:03	latch	no braces
+2016-10-26 11:29:07	@deadk	the worst style i've seen is probably gnu
+2016-10-26 11:29:09	viju	LOL
+2016-10-26 11:29:10	latch	,rimshot
+2016-10-26 11:29:11	@candide	ba-dum, tsss
+2016-10-26 11:29:13	@deadk	half indents! what the fuck
+2016-10-26 11:29:32	<--	lyindArk_ (~jzeiger@mail.talpidae.net) has quit (Ping timeout: 256 seconds)
+2016-10-26 11:29:37	eelster	GNU is awful too.
+2016-10-26 11:29:46	-->	Suchorski (regex@unaffiliated/suchorski) has joined ##C
+2016-10-26 11:30:01	-->	nilof (~saolof@92-32-80-134.tn.glocalnet.net) has joined ##C
+2016-10-26 11:30:01		[11:30]
+2016-10-26 11:30:13	eelster	The most inspiration line I've ever read is: "First off, I'd suggest printing out a copy of the GNU coding standards,
+2016-10-26 11:30:16	eelster	and NOT read it.  Burn them, it's a great symbolic gesture."
+2016-10-26 11:30:51	-->	lyindArk (~jzeiger@mail.talpidae.net) has joined ##C
+2016-10-26 11:31:03	@deadk	eelster: does "I wish I was using python" look something like this? https://en.wikipedia.org/wiki/Indent_style#Lisp_style
+2016-10-26 11:33:07	-->	okra (~stephen@enlightenment/developer/okra) has joined ##C
+2016-10-26 11:33:55	eelster	deadk: Close. It's more like this https://gist.github.com/snood1205/aab17c8838b033b582e2a1898c1e8fc0
+2016-10-26 11:34:09	@deadk	that's horrifying
+2016-10-26 11:34:14	eelster	It is
+2016-10-26 11:34:31	@deadk	are there people who really do that?
+2016-10-26 11:35:27	eelster	deadk: Very few. I see it mostly in JS from people who like to be "pythonic"
+2016-10-26 11:35:53	<--	mad_enz (~mad_enz@2607:f090:488d:2ab:ab:712c:1aac:c6a5) has quit (Ping timeout: 245 seconds)
+2016-10-26 11:36:05	Retr0id	eelster, do you have any links to such atrocities?
+2016-10-26 11:36:25	--	Mode ##C [-o Dan_au] by deadk
+2016-10-26 11:36:26	@deadk	oops
+2016-10-26 11:36:29	--	Mode ##C [-o deadk] by deadk
+2016-10-26 11:36:33	deadk	i am so unused to this nick
+2016-10-26 11:37:28	eelster	I'll try to find one or two. I try to avoid both python and j.
+2016-10-26 11:37:29	eelster	*js
+2016-10-26 11:38:12	<--	viju (~viju@183.87.229.18) has quit (Quit: Leaving)
+2016-10-26 11:38:31	<--	hippybear (~hippybear@172.58.105.117) has quit (Remote host closed the connection)
+2016-10-26 11:38:34	<--	lukaramu (~lukaramu@port-10690.pppoe.wtnet.de) has quit (Quit: Leaving)
+2016-10-26 11:38:54	-->	nevodka (~nevodka@205.175.118.218) has joined ##C
+2016-10-26 11:38:55	-->	hippybear (~hippybear@172.58.105.117) has joined ##C
+2016-10-26 11:40:51	-->	RTFM[away] (~RTFMaway]@unaffiliated/rtfmaway/x-3892344) has joined ##C
+2016-10-26 11:40:56	<--	Ghostbird (~Icedove@s55966ea9.adsl.online.nl) has quit (Ping timeout: 250 seconds)
+2016-10-26 11:42:10	<--	xian29f23 (~xian29f23@90.206.159.9) has quit (Quit: irc2go)
+2016-10-26 11:42:17	<--	nevodka (~nevodka@205.175.118.218) has quit (Remote host closed the connection)
+2016-10-26 11:42:34	<--	Guest72395 (~cipher__@173.227.191.106) has left ##C
+2016-10-26 11:42:53	-->	jasondockers (~cipher__@unaffiliated/jasondockers) has joined ##C
+2016-10-26 11:43:02	jasondockers	does realloc run in O(n) time at worst?
+2016-10-26 11:44:01	latch	realloc could run at O(n^100) and still be conforming
+2016-10-26 11:44:05	dho	that's not defined by teh standard
+2016-10-26 11:44:18	dho	and there are plany of ways for it to run in worse-than-linear time
+2016-10-26 11:44:19	jasondockers	okay, how about in practice. say it can't realloc in place.
+2016-10-26 11:44:28	jasondockers	okay
+2016-10-26 11:44:29	dho	it depends very heavily on your malloc implementation
+2016-10-26 11:45:02	jasondockers	I'm just trying to get an idea for how slowly some realloc heavy code might run over time.
+2016-10-26 11:45:02		[11:45]
+2016-10-26 11:45:43	lowin	unless you are on a weird platform/libc I think you can assume it to be o(n)
+2016-10-26 11:45:53	lowin	O(n)*
+2016-10-26 11:45:58	<--	xall_ (~xall@ip68-230-65-100.ph.ph.cox.net) has quit (Ping timeout: 250 seconds)
+2016-10-26 11:46:08	<--	sametsisartenep (~sametsisa@106.pool85-53-34.dynamic.orange.es) has quit (Quit: zZz)
+2016-10-26 11:46:13	dho	it depends on your approach. my experience with a piece of code that was growing a buffer by a few KB at a time for a thing that ended up being ~25MB was that it was worse than linear performance
+2016-10-26 11:46:19	barfod	realloc just frees the string, calls malloc and.then memmoves the stuff in. memmove and malloc are in theory potentially slow, but in practice very fast
+2016-10-26 11:46:34	kate	barfod: it does not always do that
+2016-10-26 11:46:38	barfod	er object, whatever
+2016-10-26 11:46:52	barfod	kate: more or less
+2016-10-26 11:46:58	kate	barfod: less gibberish please
+2016-10-26 11:47:11	kate	barfod: its interface abstracts whatever it might get up to. there are all sorts of ways to implement this
+2016-10-26 11:47:40	barfod	alright whem kate starts with the tea talk ot's ban time
+2016-10-26 11:47:51	dho	jasondockers: if you know roughly how large your data will be, it might make sense to grow by a constant size. other times, it might make sense to grow by a constant factor.
+2016-10-26 11:47:52	barfod	i'll leave
+2016-10-26 11:47:56	dho	thank you.
+2016-10-26 11:48:00	<--	barfod (~barfod@unaffiliated/barfod) has quit (Quit: leaving)
+2016-10-26 11:48:08	latch	,next
+2016-10-26 11:48:08	@candide	Another satisfied customer! NEXT!!
+2016-10-26 11:48:13	jasondockers	dho, well, I'm growing by a constant factor.
+2016-10-26 11:48:16	kate	oh dear
+2016-10-26 11:49:05	-->	mad_enz (~mad_enz@2607:f090:488d:2ab:fc4f:555f:9425:a08a) has joined ##C
+2016-10-26 11:49:44	dho	jasondockers: so theoretically you should be calling realloc at some logarithm of the total size
+2016-10-26 11:51:12	<--	okra (~stephen@enlightenment/developer/okra) has quit (Ping timeout: 260 seconds)
+2016-10-26 11:51:13	jasondockers	dho, I don't follow? say I have a 2^10 entries, why should I be calling it at, say, lg(2^10) = 10 times?
+2016-10-26 11:51:33	jasondockers	oh
+2016-10-26 11:51:34	jasondockers	it makes sense
+2016-10-26 11:51:39	jasondockers	dho, never mind
+2016-10-26 11:51:51	<--	kamog (~user@95.73.181.155) has quit (Remote host closed the connection)
+2016-10-26 11:51:59	jasondockers	If I start with 2 and grow it 10 times..
+2016-10-26 11:52:33	masoudd	Yes.
+2016-10-26 11:53:02	jasondockers	dho, okay, so log_(growth_factor)(total items) tells me how many times I will call it. But I'm not sure how long each realloc might take. Anyway, this is kind of OT.
+2016-10-26 11:53:14	<--	KingsQuest- (~ident@se2.ibvpn.com) has quit (Remote host closed the connection)
+2016-10-26 11:53:59	dho	yeah, you should look at your malloc implementation to understand that. ptmalloc/jemalloc/tcmalloc differ heavily for realloc iirc
+2016-10-26 11:55:00	<--	Tazm (~Tazmain@197.88.45.234) has quit (Ping timeout: 260 seconds)
+2016-10-26 11:57:21	<--	hippybear (~hippybear@172.58.105.117) has quit (Remote host closed the connection)
+2016-10-26 11:57:35	jasondockers	thanks, dho
+2016-10-26 11:57:50	-->	hippybear (~hippybear@172.58.105.117) has joined ##C
+2016-10-26 11:58:00	-->	nikivi (~nikivi@dhcp-077-250-172-150.chello.nl) has joined ##C
+2016-10-26 11:58:21	Stragus	jasondockers: doubling when running out of space is a typical strategy, although you can change when reaching 2-3 digits of megabytes
+2016-10-26 11:58:34	-->	zwliew (uid161395@gateway/web/irccloud.com/x-kijvuxdnmiqvsisy) has joined ##C
+2016-10-26 11:58:56	Stragus	For very large realloc() on good OSes, it should be able to remap the underlying virutal memory pages without actually copying data around
+2016-10-26 11:59:12	<--	Guest52242 (~GrayArea@cpc73846-dals21-2-0-cust384.20-2.cable.virginm.net) has quit (Quit: KVIrc 4.2.0 Equilibrium http://www.kvirc.net/)
+2016-10-26 12:00:42	-->	adolf_st_ (~adolf_sta@205.157.160.12) has joined ##C
+2016-10-26 12:00:42		[12:00]
+2016-10-26 12:01:53	-->	heurist (heurist@unaffiliated/heurist) has joined ##C
+2016-10-26 12:02:32	<--	shookees (~Paulius@unaffiliated/doublestring) has quit (Read error: Connection reset by peer)
+2016-10-26 12:03:02	<--	p3rs3us (~jduro@host86-132-96-22.range86-132.btcentralplus.com) has quit (Quit: Leaving)
+2016-10-26 12:03:28	<--	TommyC (~TommyC@unaffiliated/sepulchralbloom) has quit (Ping timeout: 250 seconds)
+2016-10-26 12:03:57	<--	adolf_stalin (~adolf_sta@205.157.178.141) has quit (Ping timeout: 244 seconds)
+2016-10-26 12:04:46	<--	heurist__ (heurist@unaffiliated/heurist) has quit (Ping timeout: 250 seconds)
+2016-10-26 12:04:47	<--	xocket (~xocket@unaffiliated/xocket) has quit (Remote host closed the connection)
+2016-10-26 12:05:16	<--	adolf_st_ (~adolf_sta@205.157.160.12) has quit (Ping timeout: 260 seconds)
+2016-10-26 12:05:38	<--	blackwind_123 (~IceChat9@117.192.139.22) has quit (Ping timeout: 250 seconds)
+2016-10-26 12:05:43	<--	txdv (~bentkus@78-56-71-41.static.zebra.lt) has quit (Ping timeout: 276 seconds)
+2016-10-26 12:06:31	<--	lankanmon (~LKNnet@2607:fea8:d20:239::2) has quit (Read error: No route to host)
+2016-10-26 12:06:33	 *	ayjay_t is undeclared
+2016-10-26 12:06:33	-->	f3r70rr35f (~fernando@186-105-82-75.baf.movistar.cl) has joined ##C
+2016-10-26 12:06:47	iwakura	declare ayjayt;
+2016-10-26 12:06:49	iwakura	declare ayjay_t;
+2016-10-26 12:07:16	iwakura	Exception: Out of memory.
+2016-10-26 12:07:31	<--	ghenry (~ghenry@pdpc/supporter/monthlybyte/ghenry) has quit (Read error: Connection reset by peer)
+2016-10-26 12:07:36	-->	shpew12 (~shpew12@24-151-28-56.dhcp.nwtn.ct.charter.com) has joined ##C
+2016-10-26 12:08:25	-->	blackwind_123 (~IceChat9@117.192.133.182) has joined ##C
+2016-10-26 12:10:10	<--	Moistmelon (~wetmelon@nat-123-235.secure.wireless.unca.edu) has quit (Ping timeout: 244 seconds)
+2016-10-26 12:13:09	<--	King_Hual (~failed@unaffiliated/king-hual/x-1207580) has quit (Read error: Connection reset by peer)
+2016-10-26 12:13:15	-->	lankanmon (~LKNnet@2607:fea8:d20:239:a716:895b:a779:7a9a) has joined ##C
+2016-10-26 12:13:17	<--	P6hjakonn (~Tinker@58b7-d543-1547-815d-2d80-8a2c-07d0-2001.dyn.estpak.ee) has quit (Ping timeout: 256 seconds)
+2016-10-26 12:13:37	-->	Vexyl (~Vexyl@unaffiliated/vexyl) has joined ##C
+2016-10-26 12:14:20	<--	lankanmon (~LKNnet@2607:fea8:d20:239:a716:895b:a779:7a9a) has quit (Client Quit)
+2016-10-26 12:14:52	-->	txdv (~bentkus@78-56-71-41.static.zebra.lt) has joined ##C
+2016-10-26 12:16:05	-->	glenfe (~glen@unaffiliated/glenfe) has joined ##C
+2016-10-26 12:16:05		[12:16]
+2016-10-26 12:16:58	-->	jabb (~jabb@108-248-27-198.lightspeed.renonv.sbcglobal.net) has joined ##C
+2016-10-26 12:17:14	<--	patadasAlHigado (~patadasAl@asavpn242231.vpn.mcgill.ca) has quit (Ping timeout: 252 seconds)
+2016-10-26 12:18:01	<--	rahtgaz (~rahtgaz@unaffiliated/rahtgaz) has quit (Quit: WeeChat 1.6)
+2016-10-26 12:18:09	<--	barmaley (~barmaley@94.228.207.169) has quit (Remote host closed the connection)
+2016-10-26 12:19:58	-->	lankanmon (~LKNnet@2607:fea8:d20:239:a716:895b:a779:7a9a) has joined ##C
+2016-10-26 12:21:19	-->	adolf_stalin (~adolf_sta@2600:8804:6000:283:b8e2:e8ab:d20f:c14b) has joined ##C
+2016-10-26 12:21:50	<--	_mirko_ (~mirko@unaffiliated/-mirko-/x-2946915) has quit (Quit: WeeChat 1.6)
+2016-10-26 12:21:53	<--	f3r70rr35f (~fernando@186-105-82-75.baf.movistar.cl) has quit (Ping timeout: 260 seconds)
+2016-10-26 12:22:17	<--	CapsAdmine (~CapsAdmin@ti0115a400-1989.bb.online.no) has quit (Read error: No route to host)
+2016-10-26 12:22:20	-->	CapsAdmin (~CapsAdmin@ti0115a400-1989.bb.online.no) has joined ##C
+2016-10-26 12:22:43	<--	RebelCoder (~Yuriy@cpc74579-lewi13-2-0-cust201.2-4.cable.virginm.net) has quit (Ping timeout: 252 seconds)

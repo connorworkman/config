@@ -3465,3 +3465,89 @@
 2016-10-26 08:56:25	<--	johnmilton (~johnmilto@192.206.23.197) has quit (Remote host closed the connection)
 2016-10-26 08:57:38	<--	d0nn1e (~d0nn1e@cpe-104-138-218-156.triad.res.rr.com) has quit (Quit: ZNC - http://znc.in)
 2016-10-26 09:03:00		[08:57]
+2016-10-26 09:12:48	-->	johnmilton (~johnmilto@96-58-242-186.res.bhn.net) has joined ##sed
+2016-10-26 09:18:00		[09:12]
+2016-10-26 09:21:42	--	irc: disconnected from server
+2016-10-26 09:43:39	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined ##sed
+2016-10-26 09:43:39		[09:43]
+2016-10-26 09:43:39	--	Topic for ##sed is "The Stream EDitor | Paste at: http://sprunge.us (/msg greybot sprunge) | FAQ: http://sed.sf.net/sedfaq.html | Intro/Tutorial: http://xrl.us/sedintro#uh-0 | POSIX: http://xrl.us/sedstd | Reference: http://xrl.us/gnused | Regex: #regex | Do NOT try to parse markup (html, xml, etc) with sed! /msg greybot html | Please ask your question and be patient, someone will get to you soon"
+2016-10-26 09:43:39	--	Topic set by e36freak (~daniel.mi@auriga.kiwilight.com) on Wed, 21 Aug 2013 16:29:09
+2016-10-26 09:43:39	--	Channel ##sed: 125 nicks (0 ops, 0 voices, 125 normals)
+2016-10-26 09:43:39	***	Buffer Playback...
+2016-10-26 09:43:39	_val_	[11:01:05] ifohancroft: but that will only display the result on your screen and won't write it to a file [11:01:05]
+2016-10-26 09:43:39	Petter	[11:01:29] _val_: with echo you should use the -e switch to make \r a carriage return. [11:01:29]
+2016-10-26 09:43:39	ifohancroft	[11:01:40] That's what I mean, I want the editing/replacing to be done in place [11:01:40]
+2016-10-26 09:43:39	_val_	[11:02:00] :/ [11:02:00]
+2016-10-26 09:43:39	han-solo	[11:02:02] use the '-i' option, not standard though [11:02:02]
+2016-10-26 09:43:39	_val_	[11:02:05] ifohancroft: just use -i [11:02:05]
+2016-10-26 09:43:39	ifohancroft	[11:02:41] thank you _val_ and han-solo (nice nickname btw) that seems to be working [11:02:41]
+2016-10-26 09:43:39	ifohancroft	[11:03:53] btw when doing sed -n l file I see \ is this sed breaking the line to be shorter? [11:03:53]
+2016-10-26 09:43:39	Petter	[11:06:00] Yes. [11:06:00]
+2016-10-26 09:43:39	Petter	[11:07:29] You could give it an argument as well, to wrap at different lengths. [11:07:29]
+2016-10-26 09:43:39	Petter	[11:08:19] # printf '%s\n' 'looooooooooooooooooooooooooooooooong line' | sed -n 'l 20' [11:08:19]
+2016-10-26 09:43:39	shbot1	[11:08:20] Petter: loooooooooooooooooo\ [11:08:20]
+2016-10-26 09:43:39	shbot1	[11:08:20] Petter: ooooooooooooooong l\ [11:08:20]
+2016-10-26 09:43:39	shbot1	[11:08:20] Petter: ine$ [11:08:20]
+2016-10-26 09:43:39	Petter	[11:10:38] Looks like you can disable wrapping with 0. [11:10:38]
+2016-10-26 09:43:39	Petter	[11:10:57] At least in GNU sed. [11:10:57]
+2016-10-26 09:43:39	ifohancroft	[11:12:34] Is there a place where you can see differences between standard sed vs GNU sed or if there are other flavours/variants as well or the only way is the documentation [11:12:34]
+2016-10-26 09:43:39	Soliton	[11:23:43] ifohancroft: http://pubs.opengroup.org/onlinepubs/9699919799/utilities/sed.html that's the posix specification. for what some specific variant supports you need to check its documentation. [11:23:43]
+2016-10-26 09:43:39	ifohancroft	[11:24:12] Thank you, Soliton. [11:24:12]
+2016-10-26 09:43:39	Petter	[11:26:39] To edit files in place, you should use an editor. Like ed. [11:26:39]
+2016-10-26 09:43:39	Petter	[11:28:39] # printf 'foo\r\n' > crfile;   printf '%s\n' '%s/^M//' w | ed -s crfile;   sed -n l crfile [11:28:39]
+2016-10-26 09:43:39	shbot1	[11:28:40] Petter: ? [11:28:40]
+2016-10-26 09:43:39	shbot1	[11:28:40] Petter: foo\r$ [11:28:40]
+2016-10-26 09:43:39	Petter	[11:28:51] Ops. [11:28:51]
+2016-10-26 09:43:39	Petter	[11:30:21] Oh, I think my copy-paste don't work with ^M. To get ^M in the pattern, use Ctrl+v Ctrl+m. [11:30:21]
+2016-10-26 09:43:39	Petter	[11:31:06] Ed doesn't seem to work with \r. At least I can't get it to. [11:31:06]
+2016-10-26 09:43:39	Soliton	[11:31:43] # printf 'foo\r\n' > crfile;   printf '%s\n' $'%s/\r//' w | ed -s crfile;   sed -n l crfile [11:31:43]
+2016-10-26 09:43:39	shbot1	[11:31:44] Soliton: foo$ [11:31:44]
+2016-10-26 09:43:39	Petter	[11:32:04] Nice! Didn't think of that. [11:32:04]
+2016-10-26 09:43:39	Petter	[11:32:32] That's a Bash thing though, or? [11:32:32]
+2016-10-26 09:43:39	Soliton	[11:33:21] yes. [11:33:21]
+2016-10-26 09:43:39	Soliton	[11:33:36] ed sees a literal \r. [11:33:36]
+2016-10-26 09:43:39	geirha	[11:46:12] soon to be an sh thing [11:46:12]
+2016-10-26 09:43:39	Riviera	[12:53:32] Or just let printf do everything. [12:53:32]
+2016-10-26 09:43:39	Petter	[12:58:40] # printf 'foo\r\n' > crfile;   printf '%%s/\r//\nw\n' | ed -s crfile;   sed -n l crfile [12:58:40]
+2016-10-26 09:43:39	shbot1	[12:58:41] Petter: foo$ [12:58:41]
+2016-10-26 09:43:39	Petter	[12:59:03] Cool! Thanks Riviera 8 ) [12:59:03]
+2016-10-26 09:43:39	ifohancroft	[14:52:39] Btw what would you guys recommend for learning sed? Should I run through the man pages and then learn regex/the flavor that sed uses? [14:52:39]
+2016-10-26 09:43:39	_val_	[14:54:29] ifohancroft: /topic [14:54:29]
+2016-10-26 09:43:39	Soliton	[15:01:00] learning basic regular expressions is certainly useful. if you need to do more complicated stuff than s/// commands sed is likely not the tool to use anyway. [15:01:00]
+2016-10-26 09:43:39	ifohancroft	[15:05:09] _val_ good point, ty, you too Soliton [15:05:09]
+2016-10-26 09:43:39	ghoti	[18:36:35] So .. I know that I can substitute the Nth occurrence of something by appending a number as a flag -- as in, `s/RE/rpl/2`. What if I want to replace the Nth through Mth?  For example, `s/RE/rpl/{1-3}`? I'm using FreeBSD's sed, so I'm pretty sure this isn't possible .. but might it be possible using GNU sed? [18:36:35]
+2016-10-26 09:43:39	izalove	[18:37:13] don't think so [18:37:13]
+2016-10-26 09:43:39	izalove	[18:37:29] your best bet is to use s/// multiple times [18:37:29]
+2016-10-26 09:43:39	ghoti	[18:37:42] yep, that was my fallback position. [18:37:42]
+2016-10-26 09:43:39	ghoti	[18:37:54] thanks for confirming. [18:37:54]
+2016-10-26 09:43:39	Petter	[19:42:25] Because sed is fun. [19:42:25]
+2016-10-26 09:43:39	Petter	[19:42:34] # printf '%s\n' 'RE RE' 'RE RE RE RE RE RE RE' | sed ':a; s/RE/rpl/1; x; /.\{2\}/!{ s/^/./; x; ba; }; s/.*//; x;' [19:42:34]
+2016-10-26 09:43:39	shbot1	[19:42:36] Petter: rpl rpl [19:42:36]
+2016-10-26 09:43:39	shbot1	[19:42:36] Petter: rpl rpl rpl RE RE RE RE [19:42:36]
+2016-10-26 09:43:39	***	Playback Complete.
+2016-10-26 09:44:24	--	Channel created on Wed, 09 Sep 2009 05:53:00
+2016-10-26 09:50:00		[09:44]
+2016-10-26 10:02:58	<--	zipe31 (~zipe31@min31-1-82-224-11-112.fbx.proxad.net) has quit (Quit: Leaving)
+2016-10-26 10:06:36	<--	oskarkv (~oskar@c213-89-225-149.bredband.comhem.se) has quit (Remote host closed the connection)
+2016-10-26 10:06:36		[10:06]
+2016-10-26 10:18:15	<--	GinoManWorks (~GinoMan@50-251-53-110-static.hfc.comcastbusiness.net) has quit (Quit: Leaving)
+2016-10-26 10:23:48	<--	shbot1 (~shbot@37.139.2.101) has quit (Remote host closed the connection)
+2016-10-26 10:23:48		[10:23]
+2016-10-26 10:23:56	-->	shbot (~shbot@37.139.2.101) has joined ##sed
+2016-10-26 10:29:00		[10:23]
+2016-10-26 10:29:54	-->	D630 (~D630@unaffiliated/d630) has joined ##sed
+2016-10-26 10:35:00		[10:29]
+2016-10-26 10:43:45	<--	D630 (~D630@unaffiliated/d630) has quit (Quit: WeeChat 1.6)
+2016-10-26 10:49:00		[10:43]
+2016-10-26 11:34:03	<--	corsibu (~corsibu@0x3ec7fa6a.kol.customer.dk.telia.net) has quit (Remote host closed the connection)
+2016-10-26 11:34:03		[11:34]
+2016-10-26 11:34:37	-->	corsibu (~corsibu@0x3ec7fa6a.kol.customer.dk.telia.net) has joined ##sed
+2016-10-26 11:36:46	<--	corsibu (~corsibu@0x3ec7fa6a.kol.customer.dk.telia.net) has quit (Read error: Connection reset by peer)
+2016-10-26 11:37:11	-->	corsibu (~corsibu@0x3ec7fa6a.kol.customer.dk.telia.net) has joined ##sed
+2016-10-26 11:37:50	<--	corsibu (~corsibu@0x3ec7fa6a.kol.customer.dk.telia.net) has quit (Remote host closed the connection)
+2016-10-26 11:39:15	-->	cyborg-one (~cyborg-on@188-115-191-178.broadband.tenet.odessa.ua) has joined ##sed
+2016-10-26 11:45:00		[11:39]
+2016-10-26 12:01:11	-->	elastix (~elastix@cpc85186-haye23-2-0-cust65.17-4.cable.virginm.net) has joined ##sed
+2016-10-26 12:01:11		[12:01]
+2016-10-26 12:03:02	<--	p3rs3us (~jduro@host86-132-96-22.range86-132.btcentralplus.com) has quit (Quit: Leaving)
+2016-10-26 12:09:00		[12:03]

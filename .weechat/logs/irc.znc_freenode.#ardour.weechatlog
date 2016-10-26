@@ -7598,3 +7598,296 @@
 2016-10-26 09:05:35	melanie__	arour send move that strip human touches and strip moves away 
 2016-10-26 09:06:03	OvenWerks	melanie__: there are two ways to deal with state buttons, the button sends a press and the daw decides what to do with it (probably toogle, select from a radio set, etc). Others are more open if just the state is sent 1 for on 0 for off. In this case a toggle on the controller side is better. This does mean the controller can send a 1 and always know it is turning rec on not off or sending a 0 is always off.
 2016-10-26 09:06:19	melanie__	in that case the controller needs to have the last word 
+2016-10-26 09:07:11	tom-	OvenWerks: there is no standard for these kinds of things, best practices at best
+2016-10-26 09:07:48	OvenWerks	I think mute/solo/record (and some others) are good canididates for the controllers sends the state rather than the press.
+2016-10-26 09:08:41	melanie__	yes if done in software or mechanical does not matter but for mute/solo/record true
+2016-10-26 09:09:15	OvenWerks	other button presses are better done with no feedback and rather a text display.
+2016-10-26 09:09:53	OvenWerks	banking for example needs the feedback not that the bank has changed but where to.
+2016-10-26 09:09:58	melanie__	or other indication but yes some ndication is needed for feedback
+2016-10-26 09:10:22	OvenWerks	in that case track names change
+2016-10-26 09:11:40	OvenWerks	The way things are now in Ardour's OSC, there are some things the controller would have to remember the state of... for example the user has switches to only audio inputs or just buses
+2016-10-26 09:11:40		[09:11]
+2016-10-26 09:12:20	-->	ben_xdubber (~harrison@96-82-239-145-static.hfc.comcastbusiness.net) has joined #ardour
+2016-10-26 09:12:25	OvenWerks	This would be a good case for the controller to have a radio button set.
+2016-10-26 09:12:26	tom-	rgareus: it's good to know that you've tested how well scripting could work with a real hardware device
+2016-10-26 09:13:01	tom-	rgareus: that tells me it's not absurd
+2016-10-26 09:13:18	melanie__	bool array for buttons would also do the trick 
+2016-10-26 09:13:42	melanie__	or if a software interface radio buttons
+2016-10-26 09:14:05	tom-	these variations are best handled in ...
+2016-10-26 09:14:16	-->	slyrus (~chatzilla@192.77.239.158) has joined #ardour
+2016-10-26 09:14:26	OvenWerks	tom-: nothing is absurd, the priority set point is more the question.
+2016-10-26 09:16:33	OvenWerks	melanie__: in this case the bool array doesn't really make sense because the surface picks it out... connecting the surface at session startup sets this to what the surface wants. I could do more from the DAW side but it would end up limiting what the surface can set up.
+2016-10-26 09:17:41	<--	jerome__ (5204ba24@gateway/web/freenode/ip.82.4.186.36) has quit (Ping timeout: 260 seconds)
+2016-10-26 09:18:00	melanie__	well i use them in the software controlling the hardware to have currentstate/laststate comparison 
+2016-10-26 09:19:34	<--	Align_Waivers (~athan@192.132.61.10) has quit (Quit: Konversation terminated!)
+2016-10-26 09:19:35	-->	NickSB2 (~NickSB2__@cpc5-harb9-2-0-cust141.perr.cable.virginm.net) has joined #ardour
+2016-10-26 09:19:41	melanie__	that way all buttons can be momentary and having all possibilities
+2016-10-26 09:19:45	-->	ShalokShalom_ (~quassel@mobiledyn3.mrsn.at) has joined #ardour
+2016-10-26 09:21:10	<--	nilg (~user@77.70.2.229) has quit (Remote host closed the connection)
+2016-10-26 09:21:28	<--	aloiscochard (uid2076@gateway/web/irccloud.com/x-qnvdcwkgmqbovdeq) has quit (Ping timeout: 256 seconds)
+2016-10-26 09:21:43	--	irc: disconnected from server
+2016-10-26 09:43:40	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined #ardour
+2016-10-26 09:43:40		[09:43]
+2016-10-26 09:43:40	--	Topic for #ardour is "5.4 is released | download: http://ardour.org/download |  paste to http://pastebin.com/ | OS X users please /join #ardour-osx"
+2016-10-26 09:43:40	--	Topic set by las on Sat, 01 Oct 2016 05:02:53
+2016-10-26 09:43:40	--	Channel #ardour: 145 nicks (1 op, 0 voices, 144 normals)
+2016-10-26 09:43:40	***	Buffer Playback...
+2016-10-26 09:43:40	tom-	[18:57:16] huge step from midi [18:57:16]
+2016-10-26 09:43:40	melanie__	[18:58:18] just trigger play? [18:58:18]
+2016-10-26 09:43:40	melanie__	[18:58:27] not much [18:58:27]
+2016-10-26 09:43:40	OvenWerks	[18:59:29] toggles that light their led on press are ok so long as the LED is set before sending message. The daw can then turn it off again in the case of invalide press. (record not available for example.) [18:59:29]
+2016-10-26 09:43:40	tom-	[18:59:55] if you have to hardcode multiple entry points for the same method thats violating the DRY rule [18:59:55]
+2016-10-26 09:43:40	OvenWerks	[19:00:07] transport needs "press buttons" that send 1 one on press and maybe a 0 on release [19:00:07]
+2016-10-26 09:43:40	melanie__	[19:00:30] yes the toggle comes exclusive from ardour [19:00:30]
+2016-10-26 09:43:40	OvenWerks	[19:01:33] Most OSC surfaces will only accept feddback the same a sent, so it it only sends 1 it will not receive 0. If the LED is set locally... the LED state will most of the time be wrong [19:01:33]
+2016-10-26 09:43:40	tom-	[19:02:02] please remind the gui analogy. a controller wants to look at ardour in a custom way, like a user changing colors and fontsizes in the editor ui [19:02:02]
+2016-10-26 09:43:40	OvenWerks	[19:02:16] melanie__: not true, togglable state buttons for rec/mute/solo are common in the OSC world. [19:02:16]
+2016-10-26 09:43:40	tom-	[19:02:32] a user is also just a special human case of a controller [19:02:32]
+2016-10-26 09:43:40	OvenWerks	[19:02:52] in such case the controller becomes middleware [19:02:52]
+2016-10-26 09:43:40	melanie__	[19:05:11] interaction hardware human nad software is not easy [19:05:11]
+2016-10-26 09:43:40	melanie__	[19:05:35] arour send move that strip human touches and strip moves away [19:05:35]
+2016-10-26 09:43:40	OvenWerks	[19:06:03] melanie__: there are two ways to deal with state buttons, the button sends a press and the daw decides what to do with it (probably toogle, select from a radio set, etc). Others are more open if just the state is sent 1 for on 0 for off. In this case a toggle on the controller side is better. This does mean the controller can send a 1 and always know it is turning rec on not off or sending a 0 is always off. [19:06:03]
+2016-10-26 09:43:40	melanie__	[19:06:19] in that case the controller needs to have the last word [19:06:19]
+2016-10-26 09:43:40	tom-	[19:07:11] OvenWerks: there is no standard for these kinds of things, best practices at best [19:07:11]
+2016-10-26 09:43:40	OvenWerks	[19:07:48] I think mute/solo/record (and some others) are good canididates for the controllers sends the state rather than the press. [19:07:48]
+2016-10-26 09:43:40	melanie__	[19:08:41] yes if done in software or mechanical does not matter but for mute/solo/record true [19:08:41]
+2016-10-26 09:43:40	OvenWerks	[19:09:15] other button presses are better done with no feedback and rather a text display. [19:09:15]
+2016-10-26 09:43:40	OvenWerks	[19:09:53] banking for example needs the feedback not that the bank has changed but where to. [19:09:53]
+2016-10-26 09:43:40	melanie__	[19:09:58] or other indication but yes some ndication is needed for feedback [19:09:58]
+2016-10-26 09:43:40	OvenWerks	[19:10:22] in that case track names change [19:10:22]
+2016-10-26 09:43:40	OvenWerks	[19:11:40] The way things are now in Ardour's OSC, there are some things the controller would have to remember the state of... for example the user has switches to only audio inputs or just buses [19:11:40]
+2016-10-26 09:43:40	OvenWerks	[19:12:25] This would be a good case for the controller to have a radio button set. [19:12:25]
+2016-10-26 09:43:40	tom-	[19:12:26] rgareus: it's good to know that you've tested how well scripting could work with a real hardware device [19:12:26]
+2016-10-26 09:43:40	tom-	[19:13:01] rgareus: that tells me it's not absurd [19:13:01]
+2016-10-26 09:43:40	melanie__	[19:13:18] bool array for buttons would also do the trick [19:13:18]
+2016-10-26 09:43:40	melanie__	[19:13:42] or if a software interface radio buttons [19:13:42]
+2016-10-26 09:43:40	tom-	[19:14:05] these variations are best handled in ... [19:14:05]
+2016-10-26 09:43:40	OvenWerks	[19:14:26] tom-: nothing is absurd, the priority set point is more the question. [19:14:26]
+2016-10-26 09:43:40	OvenWerks	[19:16:33] melanie__: in this case the bool array doesn't really make sense because the surface picks it out... connecting the surface at session startup sets this to what the surface wants. I could do more from the DAW side but it would end up limiting what the surface can set up. [19:16:33]
+2016-10-26 09:43:40	melanie__	[19:18:00] well i use them in the software controlling the hardware to have currentstate/laststate comparison [19:18:00]
+2016-10-26 09:43:40	melanie__	[19:19:41] that way all buttons can be momentary and having all possibilities [19:19:41]
+2016-10-26 09:43:40	tom-	[19:22:22] melanie__: are you into hardware? [19:22:22]
+2016-10-26 09:43:40	melanie__	[19:22:47] tom-: yes [19:22:47]
+2016-10-26 09:43:40	OvenWerks	[19:29:50] tom-: right, MB has done that with touchOSC. I am now doing that with Control and MaurizioB is working on a made for ardour solution. [19:29:50]
+2016-10-26 09:43:40	tom-	[19:30:18] OvenWerks: nice [19:30:18]
+2016-10-26 09:43:40	OvenWerks	[19:30:51] tom-: if I can get Control to build on my system, I would like to improve it (fix) and make it installable with an Ardour map (or five) preinstalled [19:30:51]
+2016-10-26 09:43:40	tom-	[19:31:15] control runs on my ipod, it's an old version possibly (and i can't update the ipod) [19:31:15]
+2016-10-26 09:43:40	tom-	[19:31:47] ah.. possibly another control :) [19:31:47]
+2016-10-26 09:43:40	OvenWerks	[19:32:06] tom-: http://www.ovenwerks.net/control/a-s-ctl.js is the map [19:32:06]
+2016-10-26 09:43:40	OvenWerks	[19:32:30] tom-: http://charlie-roberts.com/Control/ [19:32:30]
+2016-10-26 09:43:40	LAbot	[19:32:32] Title: Control (at charlie-roberts.com) [19:32:32]
+2016-10-26 09:43:40	OvenWerks	[19:41:06] tom many of the changes in OSC were based on touchOSC, I am not ignoring it. I just can't test what I do for it. [19:41:06]
+2016-10-26 09:43:40	tom-	[19:42:16] OvenWerks: it's possibly the most important dumb but flexible controller to support [19:42:16]
+2016-10-26 09:43:40	OvenWerks	[19:42:25] tom-: I do have two touchOSC maps in: http://www.ovenwerks.net/paste/ [19:42:25]
+2016-10-26 09:43:40	LAbot	[19:42:26] Title: Index of /paste (at www.ovenwerks.net) [19:42:26]
+2016-10-26 09:43:40	OvenWerks	[19:42:48] They are probably out of date as I haven't touched them for a bit. [19:42:48]
+2016-10-26 09:43:40	OvenWerks	[19:43:34] they are both tuned towards MB use with some things Ben mentioned he would like to see. I could make others though. [19:43:34]
+2016-10-26 09:43:40	***	Playback Complete.
+2016-10-26 09:44:04	tom-	the mixbus one looked awful
+2016-10-26 09:44:10	OvenWerks	:)
+2016-10-26 09:44:34	--	Channel created on Sat, 25 Nov 2006 20:42:44
+2016-10-26 09:44:40	tom-	a massiv block, to be operated with two hands!?
+2016-10-26 09:44:57	OvenWerks	tom-: the comments I got where that OSC seems to be unreliable for anything more than that.
+2016-10-26 09:46:01	tom-	OvenWerks: with a middleware or script in-between, touchosc can be very very powerful
+2016-10-26 09:46:16	tom-	OvenWerks: you can't even get a gist of that if you only see the surface in the designer
+2016-10-26 09:46:42	tom-	OvenWerks: las should donate the money for you to get touchosc to do the ping pong
+2016-10-26 09:46:50	OvenWerks	tom-: to be honest, for what the mb one does I would use a second computer keyboard with middleware like midikb
+2016-10-26 09:47:43	OvenWerks	tom-: the money is not the thing, it is cheap. google doesn't seem to have a payonce option.
+2016-10-26 09:48:02	OvenWerks	(google playstore)
+2016-10-26 09:48:47	OvenWerks	tom-: I have money sitting in paypal right now.
+2016-10-26 09:49:27	tom-	OvenWerks: las should donate anyway the money for you to get touchosc :)
+2016-10-26 09:50:17	OvenWerks	tom-: he already speads some money around to other devs once the limit is passed.
+2016-10-26 09:50:53	tom-	sounds good
+2016-10-26 09:53:26	MaurizioB	hi tom-!
+2016-10-26 09:53:47	tom-	hi melanie__ 
+2016-10-26 09:53:49	tom-	eh.. 
+2016-10-26 09:53:51	tom-	MaurizioB: 
+2016-10-26 09:53:54	tom-	 :)
+2016-10-26 09:54:17	MaurizioB	:D
+2016-10-26 09:54:57	tom-	MaurizioB: hows it going?
+2016-10-26 09:55:12	-->	dizero (~dizero@1.152.97.78) has joined #ardour
+2016-10-26 09:55:29	MaurizioB	tom-: everything all right, thanks, just busy with lots of things around... you?
+2016-10-26 09:56:12	tom-	MaurizioB: i should not even hang out here. some pressure, but i can handle :)
+2016-10-26 09:56:40	MaurizioB	tom-: pressure for positive things, I hope
+2016-10-26 09:57:01	tom-	yes, not bad things. interesting et al
+2016-10-26 09:57:08	MaurizioB	tom-: that's good, then :)
+2016-10-26 09:58:10	tom-	yes, but time is limited :|
+2016-10-26 09:58:49	MaurizioB	I know, but that doesn't always mean it's a bad thing
+2016-10-26 09:58:49		[09:58]
+2016-10-26 09:59:40	tom-	it's natural. we can measure it
+2016-10-26 10:00:11	MaurizioB	and can be a stimulus
+2016-10-26 10:00:23	MaurizioB	imagine what would happen if we had all the time we want
+2016-10-26 10:00:32	tom-	in some instances indeed
+2016-10-26 10:00:45	MaurizioB	but, yes, I get what you mean
+2016-10-26 10:01:02	tom-	do you know this scenario? you should do a, but then you do b that was something else you moved forward in time
+2016-10-26 10:01:02	-->	prokoudine_ (~alex@ppp83-237-112-192.pppoe.mtu-net.ru) has joined #ardour
+2016-10-26 10:01:18	MaurizioB	I know
+2016-10-26 10:01:38	tom-	just to not do a. then you do c, d that you would not have done if you would not should do a
+2016-10-26 10:01:43	tom-	strange
+2016-10-26 10:01:46	MaurizioB	and, actually, what I crave is not the time, but the ability to be focused on things
+2016-10-26 10:02:25	tom-	yes
+2016-10-26 10:02:44	MaurizioB	that's why I declared that the next week I'll be on "vacation", which actually means I'll have no "external work", but time and energy for personal projects
+2016-10-26 10:02:56	MaurizioB	which is, anyway, work :)
+2016-10-26 10:03:19	tom-	good plan :)
+2016-10-26 10:05:28	MaurizioB	part of that work, btw, is to finish setting up my new pc, finally getting to know Ardour5 and prepare the work for the new OSC support on ArdouVy :)
+2016-10-26 10:06:01	MaurizioB	two years after those chat we had, we're finally here :)
+2016-10-26 10:06:17	tom-	fantastic! :)
+2016-10-26 10:08:07	tom-	you will like ardour5.x i think.. maybe also the scripting things, which could wake up ideas on how to talk ardouvy
+2016-10-26 10:08:21	MaurizioB	tom-: I was thinking about that too
+2016-10-26 10:09:51	MaurizioB	even if I don't really like the idea of having two "things" to install, what I'd want for ArdouVy is that it should work "out of the box". But I might consider a way to make it "expandable"
+2016-10-26 10:10:46	OvenWerks	MaurizioB: Ardouvy should be able to set Ardour up. If not, I am willing to expand.
+2016-10-26 10:11:04	MaurizioB	OvenWerks: what do you mean?
+2016-10-26 10:11:53	tom-	custom protocols (i guess)
+2016-10-26 10:12:14	OvenWerks	the controller should be able to tell Ardour what the banksize is, what feedback it wants, what types of tracks it wants to see and what fader math it would like.
+2016-10-26 10:13:09	<--	dizero (~dizero@1.152.97.78) has quit (Ping timeout: 256 seconds)
+2016-10-26 10:13:32	MaurizioB	OvenWerks: oh, ok, I get it. Well, that should be enough, I think. Even if I might want to be able to use the Hyper Text Coffee Pot Control Protocol ;)
+2016-10-26 10:13:48	OvenWerks	MaurizioB: if you are able to set what port you talk from and can get your feedback on that, you don't even have to set the port.
+2016-10-26 10:14:31	OvenWerks	MaurizioB: if there is something missing, I am willing to add more.
+2016-10-26 10:14:31		[10:14]
+2016-10-26 10:14:44	MaurizioB	OvenWerks: you're a blessing :)
+2016-10-26 10:15:28	-->	ShalokShalom__ (~quassel@mobiledyn2.mrsn.at) has joined #ardour
+2016-10-26 10:15:48	OvenWerks	with my open stage control setup, so long as OSC is enabled, I have one connect/refresh button and everything just works.
+2016-10-26 10:16:27	tom-	you should possibly document the (hardcoded) scenario of host<->controller talk very well
+2016-10-26 10:16:43	OvenWerks	With Control, I have to set feddback port to manual and enter it first. (same touchOSC)
+2016-10-26 10:17:12	OvenWerks	tom-: I thought it was :) but I am not very good at explaining things.
+2016-10-26 10:17:25	MaurizioB	OvenWerks: do you mean the ardour osc port?
+2016-10-26 10:18:00	OvenWerks	MaurizioB: no, the control surface port.
+2016-10-26 10:18:08	OvenWerks	the one Ardour sends to.
+2016-10-26 10:18:20	<--	ShalokShalom_ (~quassel@mobiledyn3.mrsn.at) has quit (Ping timeout: 260 seconds)
+2016-10-26 10:18:46	MaurizioB	OvenWerks: I really don't remember how I did that on ArdouVy, doesn't Ardour's OSC use some sort of "submission"?
+2016-10-26 10:18:56	OvenWerks	MaurizioB: if the controller sends and receives from the same port A sets itself up to that port on its own.
+2016-10-26 10:19:52	<--	ShalokShalom__ (~quassel@mobiledyn2.mrsn.at) has quit (Read error: Connection reset by peer)
+2016-10-26 10:20:13	<--	deva (~deva@aasimon.org) has quit (Quit: Konversation terminated!)
+2016-10-26 10:20:46	OvenWerks	Ardour's receive port is normally 3819 and can only be changed with a text edit. but the port it sends to is normally the port it receives from. It can be optionally set from the gui to a fixed port.
+2016-10-26 10:21:41	MaurizioB	OvenWerks: I'd need to re-read my code, I really don't remember what I did and how :)
+2016-10-26 10:22:04	tom-	MaurizioB: it just worked :)
+2016-10-26 10:22:18	MaurizioB	tom-: it was magic! :D
+2016-10-26 10:22:25	tom-	you sat at the drums then hit ardouvy
+2016-10-26 10:22:46	tom-	can one even say sat
+2016-10-26 10:22:50	OvenWerks	tom-: if you find any of my documentation wrong/hard to understand/whatever please feel free to do a PR to either https://github.com/ovenwerks/manual or https://github.com/Ardour/manual
+2016-10-26 10:23:24	tom-	OvenWerks: i'm missing an entry-level graphic
+2016-10-26 10:23:53	tom-	OvenWerks: all actors, programs, interfaces, surfaces, cabling, protocols, naming involved
+2016-10-26 10:24:26	OvenWerks	MaurizioB: I think you used the the /routes/list which has been replaced by /strip.list
+2016-10-26 10:25:16	<--	dsr1204 (~dsr1204@99-111-235-130.lightspeed.cicril.sbcglobal.net) has quit (Ping timeout: 244 seconds)
+2016-10-26 10:25:21	tom-	OvenWerks: which only you can provide
+2016-10-26 10:25:41	-->	ShalokShalom_ (~quassel@mobiledyn2.mrsn.at) has joined #ardour
+2016-10-26 10:26:42	MaurizioB	OvenWerks: oh, right
+2016-10-26 10:26:53	tom-	OvenWerks: also: an exemplary session on how a controller meets ardour and vice versa
+2016-10-26 10:27:45	<--	Valvalion (~Valvalion@109.132.22.27) has quit (Remote host closed the connection)
+2016-10-26 10:29:14	<--	phoracek (~phoracek@ip-89-102-24-203.net.upcbroadband.cz) has quit (Quit: WeeChat 1.5)
+2016-10-26 10:29:48	OvenWerks	tom-: if you could do a rough diagram even if not accurate that shows style tha would be very helpful because right now I am completely blank
+2016-10-26 10:29:48		[10:29]
+2016-10-26 10:30:00	OvenWerks	example session is doable.
+2016-10-26 10:31:02	tom-	OvenWerks: i can not guess on anything you have envisioned :)
+2016-10-26 10:32:12	tom-	if you can't draw a multicontroller scenario involving some of the beauty of the api it's probably too complicated
+2016-10-26 10:33:08	tom-	you can then pin down names for stuff and refer to that unambiguously
+2016-10-26 10:33:14	<--	oofus_lt (~chris@APuteaux-151-1-42-71.w82-124.abo.wanadoo.fr) has quit (Quit: Konversation terminated!)
+2016-10-26 10:36:06	-->	rghvdberg (~rghvdberg@145.130.225.41) has joined #ardour
+2016-10-26 10:36:58	OvenWerks	tom the only graphic I can think of is computer-net- controller
+2016-10-26 10:37:49	OvenWerks	but I will try some more. I would like to be coding first...
+2016-10-26 10:37:54	tom-	OvenWerks: let's see. i'll first read the doc again anytime soon and then try to identify which parts were unclear
+2016-10-26 10:38:14	OvenWerks	tom-: that would be helpful.
+2016-10-26 10:38:25	tom-	rgareus: is the surface you have doing osc?
+2016-10-26 10:38:36	OvenWerks	midi I think
+2016-10-26 10:38:52	rgareus	tom-: the NI maschine2 series ?
+2016-10-26 10:38:55	tom-	OvenWerks: okie, will do. not quite soon but assured
+2016-10-26 10:39:03	OvenWerks	he was talking about a USB to MIDI port
+2016-10-26 10:39:09	tom-	rgareus: the one you have at your desk
+2016-10-26 10:39:17	rgareus	tom-: which one  on my desk ?
+2016-10-26 10:39:21	OvenWerks	 :)
+2016-10-26 10:39:37	tom-	rgareus: huh? don't you have any of these maschines at your hands now?
+2016-10-26 10:39:37	 *	OvenWerks wishes for such confusion...
+2016-10-26 10:40:21	rgareus	well, actually none on the desk itself..  all on side-stands.  a BCF2K currently and a NI Maschine2  . the first is MIDI the latter HID
+2016-10-26 10:40:43	tom-	heh... 
+2016-10-26 10:41:11	 *	rgareus likes a clean desk.  only surfaces on desk are a X250  and a HP-45
+2016-10-26 10:41:25	tom-	lol :)
+2016-10-26 10:41:38	<--	Ricardus (~rich@cpe-69-201-72-201.twcny.res.rr.com) has quit (Quit: Like I am SO outta here!)
+2016-10-26 10:41:44	rgareus	and some sheets of paper.  which may or may not count as "surface"
+2016-10-26 10:41:53	tom-	almost
+2016-10-26 10:43:31	tom-	rgareus: is it talking a custom protocol?
+2016-10-26 10:45:52	rgareus	tom-: definitly. 
+2016-10-26 10:45:52		[10:45]
+2016-10-26 10:46:24	tom-	hm, but are you reverse-engineering it or is there documentation available?
+2016-10-26 10:46:25	rgareus	though I suppose, someone could write an emulator for my handwriting.
+2016-10-26 10:47:39	rgareus	NI Maschine2 is pretty straight foward.   there's no official documentation, but there's prior art and it's easy to discover
+2016-10-26 10:48:09	-->	Synthead (~Synthead@98.99.251.254) has joined #ardour
+2016-10-26 10:48:25	rgareus	It sends a N byte message. always all all buttons + knobs on every change.
+2016-10-26 10:48:39	tom-	i see
+2016-10-26 10:49:33	tom-	but why wouldn't they document it?
+2016-10-26 10:50:38	rgareus	time is money
+2016-10-26 10:51:17	tom-	hm
+2016-10-26 10:51:26	rgareus	tom-: they probably have some "internal specs"  which is complete for the whole device and also includes some <secrets> for the hwardware.
+2016-10-26 10:51:43	tom-	sort of?
+2016-10-26 10:51:51	rgareus	I'm just guessing
+2016-10-26 10:51:57	tom-	reflashing or such
+2016-10-26 10:52:14	rgareus	and schematics and layouts and...
+2016-10-26 10:52:31	rgareus	someone would have to copy only the relevant parts and put them somewhere.
+2016-10-26 10:53:30	rgareus	and documentation is no fun. and they probably can't justify to pay someone for it.
+2016-10-26 10:53:30	tom-	that sounds like an artificial problem
+2016-10-26 10:53:30	rgareus	well, I don't know.  ask  NI.
+2016-10-26 10:53:41	rgareus	why should they publish it?
+2016-10-26 10:54:01	tom-	right! all the reverse engineering fun would be gone! :)
+2016-10-26 10:54:08	rgareus	anyway, it's just a simple struct:  https://github.com/Ardour/ardour/blob/27305439683cad75650daf4efce196ffe61a2825/libs/surfaces/maschine2/m2_dev_mk2.h#L47
+2016-10-26 10:54:09	tom-	not everyone can do
+2016-10-26 10:54:23	rgareus	no reverse engineering needed.  the device itself follows the HID spec
+2016-10-26 10:54:53	tom-	nicely done
+2016-10-26 10:54:55	rgareus	just which bit corresponds to which button.  takes about 5 mins
+2016-10-26 10:56:04	rgareus	drawing to the screen is a bit more obscure.  but also straing forward.  it's not unlike xbm (x-bitmap)
+2016-10-26 10:57:15	-->	Simon_ (bf6dac5e@gateway/web/freenode/ip.191.109.172.94) has joined #ardour
+2016-10-26 10:57:31	tom-	what about a totally different approach that would make the HID/low-level/c++ io with the device seperate from ardour (and make it accessible outside ardour) and then couple that with ardour via existing ardour io facilities like osc
+2016-10-26 10:57:31	<--	Simon_ (bf6dac5e@gateway/web/freenode/ip.191.109.172.94) has quit (Client Quit)
+2016-10-26 10:58:16	rgareus	tom-: HID is kernel provided  on all OS
+2016-10-26 10:58:38	rgareus	Human Interface Device -- like your mouse or keyboard
+2016-10-26 10:58:56	rgareus	ardour just opens the device.
+2016-10-26 10:59:27	OvenWerks	rgareus: so my midikb would "just work" with it then
+2016-10-26 10:59:59	OvenWerks	(for key input anyway)
+2016-10-26 11:00:01	rgareus	OvenWerks: I don't know
+2016-10-26 11:00:16	rgareus	OvenWerks: interpreting the messages meaningfully  is left to the application
+2016-10-26 11:00:22	-->	frinknet (~frinknet@184-157-28-62.dyn.centurytel.net) has joined #ardour
+2016-10-26 11:00:24	OvenWerks	rgareus: does it show up in /dev/input
+2016-10-26 11:00:32	tom-	rgareus: i see, so that's not much different to interact with any serial device xy using protocol z
+2016-10-26 11:00:39	rgareus	OvenWerks: /dev/hidraw*
+2016-10-26 11:00:56	frinknet	Just did my first commercial session on Ardour! Loving it!
+2016-10-26 11:00:56		[11:00]
+2016-10-26 11:01:08	tom-	rgareus: i have custom serial controller, would you hardcode support please? :)
+2016-10-26 11:01:34	OvenWerks	rgareus: different then
+2016-10-26 11:02:00	rgareus	tom-: send me one for evaluation.
+2016-10-26 11:02:25	tom-	rgareus: i like your attitude
+2016-10-26 11:03:43	tom-	it could be an experiment to "capsule" such a controller as an osc object outside ardour and let it talk to ardour via osc
+2016-10-26 11:03:46	rgareus	OvenWerks: in lsusb, the NI shows up at     bInterfaceClass  3 Human Interface Device
+2016-10-26 11:03:59	rgareus	OvenWerks: and linux automatically adds the device nodes.
+2016-10-26 11:04:27	tom-	the api would rapidly change to fit (other/yet unknown) needs i speculate
+2016-10-26 11:05:32	rgareus	OvenWerks: default permissions are still a problem.   the Push2 is autoatically added to the "audio" group on las' debian maschine.  the NI here is not (I've added a udev.rule file to git)
+2016-10-26 11:05:48	OvenWerks	rgareus: my keyboard/wiimote create an entry in /dev/input/ with relatively standard ways of relating to them
+2016-10-26 11:05:50	rgareus	on windows & OSX permissions are set up correctly to talk to the maschine.
+2016-10-26 11:06:09	rgareus	OvenWerks: keyboards are probably special cased.
+2016-10-26 11:06:37	OvenWerks	rgareus: keyboards/mice and joysticks? maybe
+2016-10-26 11:06:43	-->	dsr1204 (~dsr1204@99-111-235-130.lightspeed.cicril.sbcglobal.net) has joined #ardour
+2016-10-26 11:07:50	<--	rghvdberg (~rghvdberg@145.130.225.41) has quit (Ping timeout: 250 seconds)
+2016-10-26 11:07:57	rgareus	frinknet: I'm glad you had fun and a good time.
+2016-10-26 11:11:54	<--	Align_Waivers (~athan@192.132.61.10) has quit (Ping timeout: 250 seconds)
+2016-10-26 11:12:02	 *	tom- calls it a day early
+2016-10-26 11:12:11	<--	tom- (~srv@84-74-158-93.dclient.hispeed.ch) has quit (Quit: leaving)
+2016-10-26 11:12:56	<--	Headwar (~edouard@2a01cb00054ce400a4e4874ce1a7c5c7.ipv6.abo.wanadoo.fr) has quit (Quit: Leaving)
+2016-10-26 11:18:00		[11:12]
+2016-10-26 11:20:06	<--	jpbouza (~Juan@190.176.52.232) has quit (Remote host closed the connection)
+2016-10-26 11:21:50	<--	rhydermike (~quassel@cpc80381-grim18-2-0-cust221.12-3.cable.virginm.net) has quit (Remote host closed the connection)
+2016-10-26 11:25:45	-->	jpbouza (~Juan@190.176.52.232) has joined #ardour
+2016-10-26 11:31:00		[11:25]
+2016-10-26 11:32:38	-->	nilg (~user@77.70.2.229) has joined #ardour
+2016-10-26 11:38:00		[11:32]
+2016-10-26 11:38:13	<--	takuan (~takuan@178-118-91-39.access.telenet.be) has quit (Remote host closed the connection)
+2016-10-26 11:39:11	<--	nilg (~user@77.70.2.229) has quit (Remote host closed the connection)
+2016-10-26 11:39:56	-->	_FrnchFrgg_ (~Icedove@2a01:e35:2e92:63f0:fa16:54ff:fef7:e1a8) has joined #ardour
+2016-10-26 11:41:48	-->	Ricardus (~rich@2604:6000:ab42:1f00:8cef:378d:c1a1:21e0) has joined #ardour
+2016-10-26 11:42:02	<--	Bitrunner (~bitrunner@srv14.k-itx.net) has quit (Ping timeout: 252 seconds)
+2016-10-26 11:42:09	-->	Bitrunner (~bitrunner@srv14.k-itx.net) has joined #ardour
+2016-10-26 11:48:00		[11:42]
+2016-10-26 11:57:04	<--	Ebardie (~Ebardie@aelfric.plus.com) has quit (Quit: KVIrc 4.2.0 Equilibrium http://www.kvirc.net/)
+2016-10-26 11:58:16	-->	Ebardie (~Ebardie@aelfric.plus.com) has joined #ardour
+2016-10-26 12:00:53	<--	_FrnchFrgg_ (~Icedove@2a01:e35:2e92:63f0:fa16:54ff:fef7:e1a8) has quit (Ping timeout: 260 seconds)
+2016-10-26 12:01:00	<--	Ebardie (~Ebardie@aelfric.plus.com) has quit (Remote host closed the connection)
+2016-10-26 12:03:46	-->	Ebardie (~Ebardie@aelfric.plus.com) has joined #ardour
+2016-10-26 12:03:46		[12:03]
+2016-10-26 12:04:52	<--	ShalokShalom (~quassel@2a02:8388:1700:ef80:211:50ff:fe9b:f818) has quit (Remote host closed the connection)
+2016-10-26 12:10:00		[12:04]

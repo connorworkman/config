@@ -6584,3 +6584,235 @@
 2016-10-26 08:56:54	@dazo	well, not just that it eats your quota ... if you have long latencies, that broadcast traffic will clog your tunnel so the data you really need often arrives just too late
 2016-10-26 08:57:04	@dazo	and for streaming that won't fly well
 2016-10-26 09:02:05	<--	SkinnyMelon (~SkinnyMel@gw.jak.sulinet.hu) has quit (Ping timeout: 244 seconds)
+2016-10-26 09:08:00		[09:02]
+2016-10-26 09:08:40	@krzee	dazo, oh i see... well its python (supybot + factoids) so im sure someone could do that... but unless it's bash im not the someone
+2016-10-26 09:08:52	@krzee	SviMik: even if vpnHelpercould configure the vpn for you, you wouldnt like it... it would definitely give you a routed tun setup :D
+2016-10-26 09:09:55	@dazo	heh
+2016-10-26 09:10:13	@krzee	<SviMik> [20:34:23] btw, if you want to put two servers into single config (for random/failover), they must use same cert
+2016-10-26 09:10:14	@krzee	false
+2016-10-26 09:10:37	SviMik	really?
+2016-10-26 09:10:38	@krzee	they must use the same PKI, but they do not need to use the same cert
+2016-10-26 09:10:46	@krzee	sure, just think about how pki works
+2016-10-26 09:10:48	@dazo	and they must have the same CN
+2016-10-26 09:10:55	@dazo	if you use --verify-x509-name
+2016-10-26 09:11:01	@krzee	thats a big if
+2016-10-26 09:11:31	@krzee	but ya, if you enforce the checking of the CN, then you enforced them to use the same CN
+2016-10-26 09:11:38	@dazo	(or --tls-remote ... but that's deprecated for --verify-x509-name)
+2016-10-26 09:11:45	@krzee	if you just check for MITM, then you need to sign both as servers
+2016-10-26 09:12:10	@krzee	!mitm
+2016-10-26 09:12:10	@vpnHelper	"mitm" is (#1) http://openvpn.net/index.php/documentation/howto.html#mitm to know about stopping Man-in-the-Middle attacks by signing the server cert specially, or (#2) use !servercert to generate the server cert manually or use the easy-rsa build-key-server script to build your server certificates, or (#3) then use: remote-cert-tls server in the client config
+2016-10-26 09:13:20	-->	davimore (~davimore@46.227.67.83) has joined #openvpn
+2016-10-26 09:13:27	SviMik	you can't include two certs into single config, can you?...
+2016-10-26 09:13:40	 *	SviMik is totally confused now
+2016-10-26 09:14:52	-->	SkinnyMelon (~SkinnyMel@gw.jak.sulinet.hu) has joined #openvpn
+2016-10-26 09:15:00	<--	wallbroken (~wallbroke@unaffiliated/wallbroken) has quit (Read error: Connection reset by peer)
+2016-10-26 09:15:09	@dazo	SviMik: no
+2016-10-26 09:15:37	SviMik	if you wish to put multiple "remote" into the config - you can't say "use this cert for this, and that cert for that"
+2016-10-26 09:15:42	SviMik	that's what I meant
+2016-10-26 09:15:57	@dazo	Ahh, I see ... no you can't do that either
+2016-10-26 09:16:15	-->	wallbroken (~wallbroke@unaffiliated/wallbroken) has joined #openvpn
+2016-10-26 09:17:10	@dazo	but --remote is for the client side ... which normally talks to a server signed by the same CA as the client cert
+2016-10-26 09:17:21	@dazo	(you can separate that, but that's a bit more complicated)
+2016-10-26 09:17:23	SviMik	you must have one cert for all the servers. why krzee trying to confuse me?
+2016-10-26 09:17:30	@dazo	no
+2016-10-26 09:17:34	@dazo	krzee is right
+2016-10-26 09:17:45	daemon	dazo, if I have a tun0 up which is 172.17.0.1/24, and 172.17.0.3 is the gateway to 172.16.20.0/24 would: route add 172.16.20.0/24 172.17.0.3 be correct?
+2016-10-26 09:17:57	@dazo	each server can have independent server certificates .... signed by the same CA
+2016-10-26 09:18:00	daemon	just it seems when I send a ping to 172.16.20.1 it does not go anywhere
+2016-10-26 09:18:26	@dazo	the client have a CA certificate which have signed the server certificates ... thus it will approve those certificates
+2016-10-26 09:18:54	<--	wallbroken (~wallbroke@unaffiliated/wallbroken) has quit (Read error: Connection reset by peer)
+2016-10-26 09:18:57	SviMik	dazo ah, you mean to take a single client cert, and sign it by multiple servers?
+2016-10-26 09:19:23	-->	wallbroken (~wallbroke@unaffiliated/wallbroken) has joined #openvpn
+2016-10-26 09:19:31	@dazo	SviMik: no.  The client certificates are independent of server certificates as well
+2016-10-26 09:20:00	<--	davimore (~davimore@46.227.67.83) has quit (Ping timeout: 260 seconds)
+2016-10-26 09:20:20	@dazo	SviMik: and to make things manageable, you have only 1 CA ... which signs both server and client certificates ... thus, servers and clients have a copy of the same CA certificate
+2016-10-26 09:21:16	-->	davimore (~davimore@46.227.67.83) has joined #openvpn
+2016-10-26 09:21:20	SviMik	ok, so at least the CA *must* be the same, right?
+2016-10-26 09:21:43	--	irc: disconnected from server
+2016-10-26 09:43:42	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined #openvpn
+2016-10-26 09:43:42		[09:43]
+2016-10-26 09:43:42	--	Topic for #openvpn is "OpenVPN Community Support Channel || PLEASE read entire /topic || Current Release: 2.3.12 (23 Aug 2016) || First time? Use !welcome and !goal || Access-Server? /join #openvpn-as || Your problem is probably firewall. Really || TAP/bridging is almost always a bad idea || Vulninfo: !heartbleed !poodle !ovpnuke !sweet32 || Patience is a virtue"
+2016-10-26 09:43:42	--	Topic set by danhunsaker (sid145261@openvpn/corp/danhunsaker) on Sun, 09 Oct 2016 21:20:15
+2016-10-26 09:43:42	--	Channel #openvpn: 236 nicks (7 ops, 2 voices, 227 normals)
+2016-10-26 09:43:42	***	Buffer Playback...
+2016-10-26 09:43:42	@dazo	[19:09:55] heh [19:09:55]
+2016-10-26 09:43:42	@krzee	[19:10:13] <SviMik> [20:34:23] btw, if you want to put two servers into single config (for random/failover), they must use same cert [19:10:13]
+2016-10-26 09:43:42	@krzee	[19:10:14] false [19:10:14]
+2016-10-26 09:43:42	SviMik	[19:10:37] really? [19:10:37]
+2016-10-26 09:43:42	@krzee	[19:10:38] they must use the same PKI, but they do not need to use the same cert [19:10:38]
+2016-10-26 09:43:42	@krzee	[19:10:46] sure, just think about how pki works [19:10:46]
+2016-10-26 09:43:42	@dazo	[19:10:48] and they must have the same CN [19:10:48]
+2016-10-26 09:43:42	@dazo	[19:10:55] if you use --verify-x509-name [19:10:55]
+2016-10-26 09:43:42	@krzee	[19:11:01] thats a big if [19:11:01]
+2016-10-26 09:43:42	@krzee	[19:11:31] but ya, if you enforce the checking of the CN, then you enforced them to use the same CN [19:11:31]
+2016-10-26 09:43:42	@dazo	[19:11:38] (or --tls-remote ... but that's deprecated for --verify-x509-name) [19:11:38]
+2016-10-26 09:43:42	@krzee	[19:11:45] if you just check for MITM, then you need to sign both as servers [19:11:45]
+2016-10-26 09:43:42	@krzee	[19:12:10] !mitm [19:12:10]
+2016-10-26 09:43:42	@vpnHelper	[19:12:10] "mitm" is (#1) http://openvpn.net/index.php/documentation/howto.html#mitm to know about stopping Man-in-the-Middle attacks by signing the server cert specially, or (#2) use !servercert to generate the server cert manually or use the easy-rsa build-key-server script to build your server certificates, or (#3) then use: remote-cert-tls server in the client config [19:12:10]
+2016-10-26 09:43:42	SviMik	[19:13:27] you can't include two certs into single config, can you?... [19:13:27]
+2016-10-26 09:43:42	 *	SviMik [19:13:40] is totally confused now [19:13:40]
+2016-10-26 09:43:42	@dazo	[19:15:09] SviMik: no [19:15:09]
+2016-10-26 09:43:42	SviMik	[19:15:37] if you wish to put multiple "remote" into the config - you can't say "use this cert for this, and that cert for that" [19:15:37]
+2016-10-26 09:43:42	SviMik	[19:15:42] that's what I meant [19:15:42]
+2016-10-26 09:43:42	@dazo	[19:15:57] Ahh, I see ... no you can't do that either [19:15:57]
+2016-10-26 09:43:42	@dazo	[19:17:10] but --remote is for the client side ... which normally talks to a server signed by the same CA as the client cert [19:17:10]
+2016-10-26 09:43:42	@dazo	[19:17:21] (you can separate that, but that's a bit more complicated) [19:17:21]
+2016-10-26 09:43:42	SviMik	[19:17:23] you must have one cert for all the servers. why krzee trying to confuse me? [19:17:23]
+2016-10-26 09:43:42	@dazo	[19:17:30] no [19:17:30]
+2016-10-26 09:43:42	@dazo	[19:17:34] krzee is right [19:17:34]
+2016-10-26 09:43:42	daemon	[19:17:45] dazo, if I have a tun0 up which is 172.17.0.1/24, and 172.17.0.3 is the gateway to 172.16.20.0/24 would: route add 172.16.20.0/24 172.17.0.3 be correct? [19:17:45]
+2016-10-26 09:43:42	@dazo	[19:17:57] each server can have independent server certificates .... signed by the same CA [19:17:57]
+2016-10-26 09:43:42	daemon	[19:18:00] just it seems when I send a ping to 172.16.20.1 it does not go anywhere [19:18:00]
+2016-10-26 09:43:42	@dazo	[19:18:26] the client have a CA certificate which have signed the server certificates ... thus it will approve those certificates [19:18:26]
+2016-10-26 09:43:42	SviMik	[19:18:57] dazo ah, you mean to take a single client cert, and sign it by multiple servers? [19:18:57]
+2016-10-26 09:43:42	@dazo	[19:19:31] SviMik: no.  The client certificates are independent of server certificates as well [19:19:31]
+2016-10-26 09:43:42	@dazo	[19:20:20] SviMik: and to make things manageable, you have only 1 CA ... which signs both server and client certificates ... thus, servers and clients have a copy of the same CA certificate [19:20:20]
+2016-10-26 09:43:42	SviMik	[19:21:20] ok, so at least the CA *must* be the same, right? [19:21:20]
+2016-10-26 09:43:42	@dazo	[19:22:11] SviMik: in configurations with only 1 CA, then the CA certificate must be the same on all hosts [19:22:11]
+2016-10-26 09:43:42	@dazo	[19:29:49] the OpenVPN server needs to know that there's a LAN with a specific subnet behind which client [19:29:49]
+2016-10-26 09:43:42	@dazo	[19:29:49] (hence why you need --client-config-dir) [19:29:49]
+2016-10-26 09:43:42	daemon	[19:29:50] cool thank you [19:29:50]
+2016-10-26 09:43:42	@dazo	[19:29:50] yw! [19:29:50]
+2016-10-26 09:43:42	@dazo	[19:36:52] cool! I'm happy it worked! [19:36:52]
+2016-10-26 09:43:42	daemon	[19:37:12] now just need to set all the routes up in a non manual way [19:37:12]
+2016-10-26 09:43:42	@dazo	[19:37:17] :) [19:37:17]
+2016-10-26 09:43:42	daemon	[19:41:37] lets call this lan 'daemonslan' [19:41:37]
+2016-10-26 09:43:42	daemon	[19:41:43] when it connects if I had: [19:41:43]
+2016-10-26 09:43:42	daemon	[19:41:50] push route 172.16.20.0/24 172.17.0.3 [19:41:50]
+2016-10-26 09:43:42	daemon	[19:41:53] would that not also get that push? [19:41:53]
+2016-10-26 09:43:42	slypknot	[19:42:30] daemon: http://openvpn.net/index.php/open-source/documentation/howto.html#scope [19:42:30]
+2016-10-26 09:43:42	@vpnHelper	[19:42:31] Title: HOWTO (at openvpn.net) [19:42:31]
+2016-10-26 09:43:42	daemon	[19:42:35] slypknot, ta [19:42:35]
+2016-10-26 09:43:42	slypknot	[19:42:44] its all there [19:42:44]
+2016-10-26 09:43:42	@dazo	[19:42:46] daemon: depends :)   .... LANs you want all clients to have access to, I'd put in the main config .... LANs only certain clients should have access to goes into the CCD [19:42:46]
+2016-10-26 09:43:42	***	Playback Complete.
+2016-10-26 09:44:05	daemon	interesting
+2016-10-26 09:44:12	daemon	openvpn totally ignored route 172.16.20.0/24 172.17.0.3
+2016-10-26 09:44:18	daemon	did not add it to the routing table at least
+2016-10-26 09:44:50	--	Channel created on Sat, 25 Nov 2006 20:42:40
+2016-10-26 09:44:54	daemon	seem as I have ccd for 'daemonlan' do I need to add it to ccd/daemonlan instead
+2016-10-26 09:45:20	daemon	it did try though ...
+2016-10-26 09:45:21	daemon	Oct 26 19:42:24 hostname openvpn[7986]: /sbin/route add -net 172.17.0.0 172.17.0.1 255.255.255.0
+2016-10-26 09:45:52	daemon	wait no
+2016-10-26 09:45:52	daemon	hmm
+2016-10-26 09:46:07	@dazo	there's something wrong here .... subnet mask
+2016-10-26 09:46:18	daemon	ahhh
+2016-10-26 09:46:20	daemon	openvpn does not use CIDR
+2016-10-26 09:46:24	@dazo	nope
+2016-10-26 09:46:45	daemon	<daemon> Oct 26 19:42:24 hostname openvpn[7986]: /sbin/route add -net 172.17.0.0 172.17.0.1 255.255.255.0
+2016-10-26 09:46:47	daemon	err
+2016-10-26 09:46:51	daemon	172.16.20.0/24     172.17.0.3         UGS        tun0
+2016-10-26 09:46:52	daemon	happier now :)
+2016-10-26 09:47:00	@dazo	:)
+2016-10-26 09:47:08	daemon	quite suprised that ovpn does not use cidr
+2016-10-26 09:47:23	slypknot	lol
+2016-10-26 09:47:37	@dazo	yeah ... no one have written the code to parse it ... that's why :)
+2016-10-26 09:47:43	@dazo	it's not that it's not wanted ;-)
+2016-10-26 09:47:47	daemon	ah lol
+2016-10-26 09:48:14	slypknot	daemon: if you have the time please submit a patch :)
+2016-10-26 09:48:20	@dazo	hehe :)
+2016-10-26 09:48:24	@dazo	that's the spirit!
+2016-10-26 09:48:29	 *	slypknot is only pulling yer leg
+2016-10-26 09:48:32	daemon	right on it :) might be able to figure out what the bloody hell I am doing if I have to look at the code ;P
+2016-10-26 09:48:35	wallbroken	i have a problem
+2016-10-26 09:48:43	wallbroken	i did a test
+2016-10-26 09:48:47	wallbroken	dhcp-option DNS 192.168.10.1 on client
+2016-10-26 09:48:47	slypknot	no kidding !
+2016-10-26 09:48:59	wallbroken	192.168.10.1 is a non existent address
+2016-10-26 09:49:17	<--	jackbrown (~se@unaffiliated/jackbrown) has quit (Quit: Ex-Chat)
+2016-10-26 09:49:18	wallbroken	but the client is still resolving domains
+2016-10-26 09:50:07	slypknot	more than one DNS server ..
+2016-10-26 09:51:28	daemon	get a ipconfig /all
+2016-10-26 09:51:32	slypknot	wallbroken: what OS is the client ?
+2016-10-26 09:51:32	daemon	from the client assuming its windows
+2016-10-26 09:51:38	wallbroken	iOS
+2016-10-26 09:52:14	slypknot	so what is the DNS set ?
+2016-10-26 09:52:20	slypknot	set to *
+2016-10-26 09:52:33	wallbroken	now i changed also the wifi dns
+2016-10-26 09:52:36	wallbroken	to a random number
+2016-10-26 09:52:39	wallbroken	but still resolving
+2016-10-26 09:52:53	 *	slypknot slaps head
+2016-10-26 09:54:07	slypknot	wallbroken: disconnect from openvpn; delete *all* DNS settings; connect to server via IP address *not* DNS name ..
+2016-10-26 09:54:46	wallbroken	but i'm reading the application loog
+2016-10-26 09:54:51	slypknot	then prey !
+2016-10-26 09:54:57	wallbroken	and looks like openvpn is ignoring that instruction
+2016-10-26 09:55:19	slypknot	!paste
+2016-10-26 09:55:20	@vpnHelper	"paste" is (#1) "pastebin" is (#1) please paste anything with more than 5 lines into a pastebin site or (#2) https://gist.github.com is recommended for fewest ads; try fpaste.org or paste.kde.org as backups or (#3) If you're pasting config files, see !configs for grep syntax to remove comments or (#4) gist allows multiple files per paste, useful if you have several files to show, or (#2) paste.ee
+2016-10-26 09:55:21	@vpnHelper	is also nice, or (#3) <bibble> termbin is good. just from command line cat file.txt | nc termbin.com 9999 , will return 'termbin.com/1234'
+2016-10-26 09:56:41	-->	metachr0n (~nobody@gateway/vpn/privateinternetaccess/metachr0n) has joined #openvpn
+2016-10-26 09:56:56	daemon	dazo, hehe ok I found a bug in ubitiqiti routers
+2016-10-26 09:57:06	daemon	Ubiquiti
+2016-10-26 09:57:41	daemon	when I push route "172.16.20.0 255.255.255.0 172.17.0.3"
+2016-10-26 09:57:46	daemon	it totally locks up the router
+2016-10-26 09:57:55	daemon	had to hard reset it :P
+2016-10-26 09:57:56	@dazo	wonderful!
+2016-10-26 09:58:09	daemon	looks like I will need to make seperate ccd for everyone
+2016-10-26 09:58:24	daemon	I take it I can just put that line in everyone who is not 'daemonlan'
+2016-10-26 09:58:31	daemon	and they will get pushed the route to daemonlan
+2016-10-26 09:59:02	daemon	or is there perhaps a way I can make it so daemonlan does not get sent that route (which is a route back to its self really)
+2016-10-26 09:59:02		[09:59]
+2016-10-26 09:59:08	@dazo	daemon: you can use an "include-like" approach .... any configuration file can contain 'config include-this.conf'
+2016-10-26 09:59:21	wallbroken	wow, i removed dns server ip from the clients at all, but the client still connects using domain name...
+2016-10-26 09:59:30	@dazo	(include-this.conf is then a file name with more openvpn options)
+2016-10-26 09:59:30	wallbroken	maybe it's resolved in a local cache?
+2016-10-26 09:59:35	daemon	so in each ccd/client I could have 'config daemonlan.route'
+2016-10-26 09:59:38	daemon	or something like that
+2016-10-26 09:59:41	@dazo	yeah
+2016-10-26 09:59:44	daemon	cool
+2016-10-26 10:00:50	@dazo	I don't know if that feature is a side-effect of how the option parser is written .... but it comes from the fact that the option parser is recursive and the same parser is used for both command line options and config files
+2016-10-26 10:01:15	daemon	I just hope it only sends the route to everyone who is not daemonlan
+2016-10-26 10:01:31	@dazo	:)
+2016-10-26 10:01:37	@dazo	oh, there is another option
+2016-10-26 10:01:54	daemon	--ignore-route-push or something akin?
+2016-10-26 10:01:56	@dazo	you can have it as you had it ... but in the CCD for daemonlan, put 'push-reset'
+2016-10-26 10:02:12	daemon	ooh thats a nice solution
+2016-10-26 10:02:15	@dazo	but then you need to add manually all those other pushed options
+2016-10-26 10:02:48	@dazo	in the 2.4 release, --pull-filter will also come ... but I doubt your ubi-router ships with our 'git master/2.4_alpha' release :-P
+2016-10-26 10:03:36	daemon	I would not think so ... lets see what its rollio9ng
+2016-10-26 10:04:22	daemon	OpenVPN 2.2.1 mipsel-linux-gnu
+2016-10-26 10:04:42	@dazo	right, that's fairly old (not even IPv6 support)
+2016-10-26 10:04:42	slypknot	daemon: make sure you dont have any routing conflicts
+2016-10-26 10:05:14	daemon	dazo, might be manually patched
+2016-10-26 10:05:14	daemon	 [SSL] [LZO2] [EPOLL] [PKCS11] [eurephia] [MH] [PF_INET6] [IPv6 payload 20110424-2 (2.2RC2)] built on Dec  1 2014
+2016-10-26 10:05:20	daemon	ipv6 payload?
+2016-10-26 10:05:47	@dazo	oh ... they've based it on some of the earlier releases from cron2
+2016-10-26 10:06:04	@dazo	(he hosted some patched 2.2 versions for mipsel, iirc)
+2016-10-26 10:06:09	daemon	ah cool
+2016-10-26 10:06:12	@dazo	but as the date says .... it's ancient
+2016-10-26 10:06:30	daemon	time for an email to ubi to tell them howto get one of there devices to dead lock and need power cycling
+2016-10-26 10:07:11	@dazo	:)
+2016-10-26 10:08:21	-->	Fir (~chris@85-69-253-116.rev.numericable.fr) has joined #openvpn
+2016-10-26 10:14:00		[10:08]
+2016-10-26 10:22:18	<--	Envil (~envil@x4db46659.dyn.telefonica.de) has quit (Remote host closed the connection)
+2016-10-26 10:23:32	<--	SkinnyMelon (~SkinnyMel@gw.jak.sulinet.hu) has quit (Ping timeout: 260 seconds)
+2016-10-26 10:25:02	-->	SkinnyMelon (~SkinnyMel@195.199.207.86) has joined #openvpn
+2016-10-26 10:26:09	<--	defsdoor (~andy@cpc35-sutt4-2-0-cust184.19-1.cable.virginm.net) has quit (Remote host closed the connection)
+2016-10-26 10:32:00		[10:26]
+2016-10-26 10:34:50	<--	metachr0n (~nobody@gateway/vpn/privateinternetaccess/metachr0n) has quit (Quit: WeeChat 1.5)
+2016-10-26 10:35:22	-->	LaserAllan (~Burn@campnorthernlight.com) has joined #openvpn
+2016-10-26 10:41:00		[10:35]
+2016-10-26 10:51:52	<--	SkinnyMelon (~SkinnyMel@195.199.207.86) has quit (Remote host closed the connection)
+2016-10-26 10:57:00		[10:51]
+2016-10-26 10:59:56	-->	bf_ (~bf_@x4e32f2ac.dyn.telefonica.de) has joined #openvpn
+2016-10-26 11:00:01	<--	ExoUNX (~textual@unaffiliated/exounx) has quit (Quit: I'm outta here)
+2016-10-26 11:01:58	-->	davimore_ (~davimore@46.227.67.83) has joined #openvpn
+2016-10-26 11:04:32	<--	davimore (~davimore@46.227.67.83) has quit (Ping timeout: 250 seconds)
+2016-10-26 11:10:00		[11:04]
+2016-10-26 11:15:46	<--	Fir (~chris@85-69-253-116.rev.numericable.fr) has quit (Quit: Leaving)
+2016-10-26 11:16:49	-->	MrNice (~MrNice@178-17-170-137.static.host) has joined #openvpn
+2016-10-26 11:22:00		[11:16]
+2016-10-26 11:40:57	<--	klow (~textual@c-98-247-49-57.hsd1.wa.comcast.net) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-10-26 11:40:57		[11:40]
+2016-10-26 11:44:12	<--	AndrewAlexMac (~andrewale@185.21.218.136) has quit (Remote host closed the connection)
+2016-10-26 11:50:00		[11:44]
+2016-10-26 11:57:59	<--	shootbird (~quassel@beepbeep.serverpit.com) has quit (Ping timeout: 256 seconds)
+2016-10-26 12:00:26	<--	NoSleeves (uid180082@gateway/web/irccloud.com/x-swedjaoqoxldzfhh) has quit (Quit: Connection closed for inactivity)
+2016-10-26 12:01:11	-->	elastix (~elastix@cpc85186-haye23-2-0-cust65.17-4.cable.virginm.net) has joined #openvpn
+2016-10-26 12:05:12	-->	shootbird (~quassel@beepbeep.serverpit.com) has joined #openvpn
+2016-10-26 12:05:12		[12:05]
+2016-10-26 12:08:00	<--	GFXDude (~GFXDude@ciscoasa.ecrsoft.com) has quit (Ping timeout: 260 seconds)
+2016-10-26 12:08:27	<--	KaiForce (~chatzilla@107-223-70-10.lightspeed.bcvloh.sbcglobal.net) has quit (Quit: ChatZilla 0.9.92 [Firefox 49.0.2/20161019084923])
+2016-10-26 12:14:00		[12:08]
+2016-10-26 12:15:59	-->	klow (~textual@c-98-247-49-57.hsd1.wa.comcast.net) has joined #openvpn
+2016-10-26 12:21:00		[12:15]
+2016-10-26 12:22:14	-->	Kyth (~Kyth@albicollis.berigora.net) has joined #openvpn
