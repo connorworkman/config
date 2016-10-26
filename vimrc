@@ -358,7 +358,7 @@ au BufNewFile,BufRead *toxic.conf* set filetype=cfg
 "au BufNewFile,BufRead *conf setf config
 "au BufNewFile,BufRead *conf setf conf
 au BufNewFile,BufRead *conf setf cfg
-au BufNewFile,BufRead db.* setf bindzone
+au BufNewFile,BufRead db.* set filetype=bindzone
 au BufNewFile,BufRead *grub* setf grub
 
 " Tell vim to remember certain things when we exit
