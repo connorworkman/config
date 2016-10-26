@@ -173,8 +173,12 @@ fi
 
 ## User configuration
 
+zstyle :omz:plugins:ssh-agent agent-forwarding on
+zstyle :omz:plugins:ssh-agent identities identity id_rsa id_ecdsa
+
 ## Start gpg/ssh agent (keychain)
-{ eval $(keychain --eval --agents ssh,gpg identity id_rsa id_ecdsa); } 2>&1 9>&1
+{ eval $(keychain --eval --agents ssh,gpg identity); } 2>&1 9>&1
+#{ eval $(keychain --eval --agents gpg); } 2>&1 9>&1
 
 ## Envoy commands as alternate ssh/gpg-agent manager
 #[[ ${EUID} -eq 1000 ]] && { envoy -t ssh-agent -a identity id_rsa id_ecdsa; source <(envoy -p); }
@@ -182,9 +186,6 @@ fi
 
 ## Zshmarks bookmark file
 BOOKMARKS_FILE="/store/config/.bookmarks"
-
-zstyle :omz:plugins:ssh-agent agent-forwarding on
-zstyle :omz:plugins:ssh-agent identities identity id_rsa id_ecdsa
 
 zle -N znt-history-widget
 bindkey "^R" znt-history-widget

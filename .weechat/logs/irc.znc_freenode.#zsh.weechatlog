@@ -7688,3 +7688,317 @@
 2016-10-25 14:17:14	-->	drmt (~drmt@2804:d41:737:1600:ff5d:8200:c5d6:5f33) has joined #zsh
 2016-10-25 14:23:00		[14:17]
 2016-10-25 14:26:27	-->	macabre (~ibtjw@unaffiliated/macabre) has joined #zsh
+2016-10-25 14:29:55	danielsh	I think the point is that if you set envvars in .zlogin they won't be visible to .zshrc of the login shell
+2016-10-25 14:30:16	<--	cloudhead (~cloudhead@ip5f5af2ef.dynamic.kabel-deutschland.de) has quit (Ping timeout: 276 seconds)
+2016-10-25 14:30:30	OODani	Ah, that's true. It's inapplicable to .zprofile though.
+2016-10-25 14:31:06	-->	Guest30 (~textual@139.195.170.9) has joined #zsh
+2016-10-25 14:31:09	danielsh	*nod*
+2016-10-25 14:31:30	<--	SCHAAP137 (~SCHAAP137@unaffiliated/schaap137) has quit (Quit: Leaving)
+2016-10-25 14:31:35	<--	macabre (~ibtjw@unaffiliated/macabre) has quit (Ping timeout: 265 seconds)
+2016-10-25 14:33:41	<--	Guest30 (~textual@139.195.170.9) has quit (Quit: Textual IRC Client: www.textualapp.com)
+2016-10-25 14:34:22	<--	dmc (~poly@unaffiliated/polyzen) has quit (Quit: WeeChat 1.6)
+2016-10-25 14:34:58	-->	akurniawan (~textual@139.195.170.9) has joined #zsh
+2016-10-25 14:35:29	-->	polyzen (~poly@unaffiliated/polyzen) has joined #zsh
+2016-10-25 14:39:51	-->	macabre (~ibtjw@unaffiliated/macabre) has joined #zsh
+2016-10-25 14:39:51		[14:39]
+2016-10-25 14:44:20	-->	Phantom7 (~textual@cpe-69-204-251-52.nyc.res.rr.com) has joined #zsh
+2016-10-25 14:46:32	-->	nikitamog (~nikita@50-251-229-75-static.hfc.comcastbusiness.net) has joined #zsh
+2016-10-25 14:47:16	<--	SeepingN (~CPngN@unaffiliated/cpngn/x-6985199) has quit (Quit: The system is going down for reboot NOW!)
+2016-10-25 14:51:46	OODani	Ooh, that's weird. An unrelated question: my prompt has %n in it, and it's not expanding to anything. LOGNAME is set correctly but USERNAME is unset - however, setting USERNAME=$LOGNAME still doesn't populate %n with anything. Any ideas?
+2016-10-25 14:52:55	OODani	Wow, actually, setting USERNAME=$LOGNAME doesn't actually change USERNAME at all. o_O
+2016-10-25 14:53:00	OODani	wat
+2016-10-25 14:53:28	Mikachu	you can only change username if you're effectively root, i would assume
+2016-10-25 14:54:34	OODani	Does… changing USERNAME actually change your effective user?
+2016-10-25 14:54:49	Mikachu	yeah
+2016-10-25 14:54:58	OODani	Okay, that explains that. Fair enough. :P
+2016-10-25 14:54:58		[14:54]
+2016-10-25 14:54:59	Mikachu	same with UID
+2016-10-25 14:55:01	Mikachu	and EUID
+2016-10-25 14:55:20	Mikachu	i don't know why %n would be empty for you though
+2016-10-25 14:56:09	OODani	My guess is that it's the same reason id -un fails with "cannot find name for user ID 313873", which I think is because the server uses LDAP.
+2016-10-25 14:56:58	Mikachu	ah
+2016-10-25 14:57:22	OODani	LOGNAME is somehow correct though. I have no idea where it's actually looking up the info.
+2016-10-25 14:57:37	<--	cdown (~cdown@199.201.64.135) has quit (Ping timeout: 260 seconds)
+2016-10-25 14:58:13	Mikachu	supposedly it comes from getlogin(3)
+2016-10-25 14:59:13	<--	dsdeiz (~dsdeiz@drupal.org/user/447770/view) has quit (Read error: Connection reset by peer)
+2016-10-25 14:59:32	-->	dsdeiz (~dsdeiz@drupal.org/user/447770/view) has joined #zsh
+2016-10-25 15:00:36	OODani	Hmm. whoami fails too - there's an ldapwhoami in the path, but it just says it can't authenticate.
+2016-10-25 15:00:41	OODani	This setup is so weird.
+2016-10-25 15:01:36	<--	ZyX-I (~ZyX-I@broadband-77-37-230-77.nationalcablenetworks.ru) has quit (Ping timeout: 252 seconds)
+2016-10-25 15:02:43	Mikachu	i think i will absolve zsh of any responsibility here
+2016-10-25 15:04:37	OODani	Yeah, absolutely. Getting everything working on this server has been a nightmare and none of it is zsh's fault. ;)
+2016-10-25 15:04:51	OODani	(zsh wasn't even installed, I had to get Linuxbrew working first. :O )
+2016-10-25 15:05:20	-->	lexinator (~Adium@207.198.105.57) has joined #zsh
+2016-10-25 15:08:43	-->	hpt (~hpt@221.219.64.95) has joined #zsh
+2016-10-25 15:13:22	<--	akurniawan (~textual@139.195.170.9) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-10-25 15:13:22		[15:13]
+2016-10-25 15:14:19	-->	oxsyn (~oxsyn@shell.crunk.io) has joined #zsh
+2016-10-25 15:33:50	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined #zsh
+2016-10-25 15:33:50		[15:33]
+2016-10-25 15:33:50	--	Topic for #zsh is "v5.2 | http://zsh.sf.net/ | http://zshwiki.org/ | http://zsh.sf.net/FAQ/ | http://zshwiki.org/home/docs/wikifaq | http://tinyurl.com/zsh-refcard-pdf | Just ask. | Nobody here or everybody clueless? try the zsh-users mailinglist: http://www.zsh.org/mla"
+2016-10-25 15:33:50	--	Topic set by Mikachu (~Mikachu@gimp/developer/Mikachu) on Wed, 02 Dec 2015 11:54:14
+2016-10-25 15:33:50	--	Channel #zsh: 403 nicks (0 ops, 0 voices, 403 normals)
+2016-10-25 15:33:50	***	Buffer Playback...
+2016-10-25 15:33:50	danielsh	[18:48:00] found it now, must be local problem, sorry for the noise [18:48:00]
+2016-10-25 15:33:50	heftig	[19:16:17] ft: that's nice. nothing for -cnewer though? [19:16:17]
+2016-10-25 15:33:50	ft	[19:18:26] heftig: you should be able to use the zsh/stat module to do that. [19:18:26]
+2016-10-25 15:33:50	ft	[19:18:50] It gives you access to atime, mtime and ctime of a file. [19:18:50]
+2016-10-25 15:33:50	ft	[19:19:15] See zshmodules(1) for details. [19:19:15]
+2016-10-25 15:33:50	heftig	[19:24:23] hmm [19:24:23]
+2016-10-25 15:33:50	heftig	[19:24:25] nt() { (( $(zstat +ctime $REPLY) >= stamptime )) } [19:24:25]
+2016-10-25 15:33:50	heftig	[19:27:30] with err_return that immediately aborts the glob [19:27:30]
+2016-10-25 15:33:50	heftig	[19:28:10] that's... not nice; i want err_return for other stuff [19:28:10]
+2016-10-25 15:33:50	Mikachu	[20:44:13] just put return in front of the statement? [20:44:13]
+2016-10-25 15:33:50	Mikachu	[20:44:57] (and add a $ to the first (( ) [20:44:57]
+2016-10-25 15:33:50	Mikachu	[20:45:04] oh he left [20:45:04]
+2016-10-25 15:33:50	JayGuerette	[21:03:38] danielsh: ",,, report it to the list please" Which list exactly? I found a bunch of problems... my fear is that zftp is largely unsupported [21:03:38]
+2016-10-25 15:33:50	JayGuerette	[21:04:32] zsh-users ? [21:04:32]
+2016-10-25 15:33:50	danielsh	[21:32:50] JayGuerette, either list is fine in this case [21:32:50]
+2016-10-25 15:33:50	danielsh	[21:33:07] the lists are nested anyway, so the right people will see it regardless of where you post to [21:33:07]
+2016-10-25 15:33:50	danielsh	[21:34:31] JayGuerette, zsh-users@zsh.org is fine [21:34:31]
+2016-10-25 15:33:50	JayGuerette	[22:09:15] ty [22:09:15]
+2016-10-25 15:33:50	OODani	[23:48:22] Hmm, I'm just noticed that the docs say "[.zlogin] should not change the shell environment at all." Why not? Doesn't it make sense to set enviroment variables in login shells, since they're inherited by nonlogin shells anyway? My current setup is .zshenv for stuff that's needed in all shells (autoloading functions mostly), .zprofile for setting up the environment (path, fpath, umask, etc.), and .zshrc for [23:48:22]
+2016-10-25 15:33:50	OODani	[23:48:24] loading aliases, plugins, completion, options, and so on. I check [[ -o login ]] in .zshrc to decide whether to print a fortune (i.e., only do it in interactive login shells). Is this arrangement of the three files *wrong*, and if so, how should it be done? [23:48:24]
+2016-10-25 15:33:50	Mikachu	[23:49:05] where did you find that text? [23:49:05]
+2016-10-25 15:33:50	OODani	[23:50:30] Last paragraph of http://zsh.sourceforge.net/Intro/intro_3.html [23:50:30]
+2016-10-25 15:33:50	Mikachu	[23:54:03] i disagree with that text [23:54:03]
+2016-10-25 15:33:50	Mikachu	[23:54:13] wrt env variables [23:54:13]
+2016-10-25 15:33:50	Mikachu	[23:54:16] the other parts are correct [23:54:16]
+2016-10-25 15:33:50	OODani	[23:54:41] So what I'm doing is fine, yeah? [23:54:41]
+2016-10-25 15:33:50	Mikachu	[23:58:41] i'd say so yeah [23:58:41]
+2016-10-25 15:33:50	OODani	[00:04:37] Cool beans. [00:04:37]
+2016-10-25 15:33:50	danielsh	[00:29:55] I think the point is that if you set envvars in .zlogin they won't be visible to .zshrc of the login shell [00:29:55]
+2016-10-25 15:33:50	OODani	[00:30:30] Ah, that's true. It's inapplicable to .zprofile though. [00:30:30]
+2016-10-25 15:33:50	danielsh	[00:31:09] *nod* [00:31:09]
+2016-10-25 15:33:50	OODani	[00:51:46] Ooh, that's weird. An unrelated question: my prompt has %n in it, and it's not expanding to anything. LOGNAME is set correctly but USERNAME is unset - however, setting USERNAME=$LOGNAME still doesn't populate %n with anything. Any ideas? [00:51:46]
+2016-10-25 15:33:50	OODani	[00:52:55] Wow, actually, setting USERNAME=$LOGNAME doesn't actually change USERNAME at all. o_O [00:52:55]
+2016-10-25 15:33:50	OODani	[00:53:00] wat [00:53:00]
+2016-10-25 15:33:50	Mikachu	[00:53:28] you can only change username if you're effectively root, i would assume [00:53:28]
+2016-10-25 15:33:50	OODani	[00:54:34] Does… changing USERNAME actually change your effective user? [00:54:34]
+2016-10-25 15:33:50	Mikachu	[00:54:49] yeah [00:54:49]
+2016-10-25 15:33:50	OODani	[00:54:58] Okay, that explains that. Fair enough. :P [00:54:58]
+2016-10-25 15:33:50	Mikachu	[00:54:59] same with UID [00:54:59]
+2016-10-25 15:33:50	Mikachu	[00:55:01] and EUID [00:55:01]
+2016-10-25 15:33:50	Mikachu	[00:55:20] i don't know why %n would be empty for you though [00:55:20]
+2016-10-25 15:33:50	OODani	[00:56:09] My guess is that it's the same reason id -un fails with "cannot find name for user ID 313873", which I think is because the server uses LDAP. [00:56:09]
+2016-10-25 15:33:50	Mikachu	[00:56:58] ah [00:56:58]
+2016-10-25 15:33:50	OODani	[00:57:22] LOGNAME is somehow correct though. I have no idea where it's actually looking up the info. [00:57:22]
+2016-10-25 15:33:50	Mikachu	[00:58:13] supposedly it comes from getlogin(3) [00:58:13]
+2016-10-25 15:33:50	OODani	[01:00:36] Hmm. whoami fails too - there's an ldapwhoami in the path, but it just says it can't authenticate. [01:00:36]
+2016-10-25 15:33:50	OODani	[01:00:41] This setup is so weird. [01:00:41]
+2016-10-25 15:33:50	Mikachu	[01:02:43] i think i will absolve zsh of any responsibility here [01:02:43]
+2016-10-25 15:33:50	OODani	[01:04:37] Yeah, absolutely. Getting everything working on this server has been a nightmare and none of it is zsh's fault. ;) [01:04:37]
+2016-10-25 15:33:50	OODani	[01:04:51] (zsh wasn't even installed, I had to get Linuxbrew working first. :O ) [01:04:51]
+2016-10-25 15:33:50	***	Playback Complete.
+2016-10-25 15:35:03	--	Channel created on Tue, 02 Sep 2003 05:34:53
+2016-10-25 15:38:59	<--	Rodya_ (~Rodya_@2601:46:4001:e0b4:85d4:b921:3e26:c311) has quit (Remote host closed the connection)
+2016-10-25 15:44:00		[15:38]
+2016-10-25 15:48:24	-->	Rodya_ (~Rodya_@2601:46:4001:e0b4:2865:c5a7:1d30:862a) has joined #zsh
+2016-10-25 15:51:33	<--	BenderRodriguez (~Foxhoundz@unaffiliated/foxhoundz) has quit (Ping timeout: 248 seconds)
+2016-10-25 15:51:45	-->	BenderRodriguez (~Foxhoundz@unaffiliated/foxhoundz) has joined #zsh
+2016-10-25 15:51:55	-->	mkoskar (~mkoskar@unaffiliated/mkoskar) has joined #zsh
+2016-10-25 15:53:33	DHowett	linuxbrew? somebody decided that homebrew was not degenerate enough, and ported it somewhere where package management is a problem that has been solved perhaps dozens, maybe hundreds of times?
+2016-10-25 15:54:03	DHowett	The suggestion that one might use it for non-root package management is absurd
+2016-10-25 15:54:12	DHowett	seeing as the page starts with "first install these packages using apt or yum..."
+2016-10-25 15:56:21	<--	BenderRodriguez (~Foxhoundz@unaffiliated/foxhoundz) has quit (Ping timeout: 248 seconds)
+2016-10-25 15:57:10	-->	BenderRodriguez (~Foxhoundz@unaffiliated/foxhoundz) has joined #zsh
+2016-10-25 16:03:00		[15:57]
+2016-10-25 16:05:25	<--	BenderRodriguez (~Foxhoundz@unaffiliated/foxhoundz) has quit (Ping timeout: 248 seconds)
+2016-10-25 16:05:42	<--	lexinator (~Adium@207.198.105.57) has quit (Quit: Leaving.)
+2016-10-25 16:11:00		[16:05]
+2016-10-25 16:13:13	-->	LordRyan (ryan@ny1.hashbang.sh) has joined #zsh
+2016-10-25 16:15:49	OODani	That's exactly what I'm using it for and it works fine so. ¯\_(ツ)_/¯ Gotta use something for non-root package manage, right?
+2016-10-25 16:19:22	llua	s/solved/attempted/
+2016-10-25 16:25:00		[16:19]
+2016-10-25 16:28:11	<--	drmt (~drmt@2804:d41:737:1600:ff5d:8200:c5d6:5f33) has quit (Quit: Leaving)
+2016-10-25 16:28:16	<--	stryx` (~stryx@unaffiliated/stryx/x-3871776) has quit (Ping timeout: 260 seconds)
+2016-10-25 16:29:27	-->	stryx` (~stryx@unaffiliated/stryx/x-3871776) has joined #zsh
+2016-10-25 16:34:22	<--	Bl4ck57rik3r (~Bl4ck57ri@199.254.238.211) has quit (Ping timeout: 252 seconds)
+2016-10-25 16:40:00		[16:34]
+2016-10-25 16:49:45	-->	noganex (~noganex@p5DCB563E.dip0.t-ipconnect.de) has joined #zsh
+2016-10-25 16:53:16	<--	noganex_ (~noganex@p5DCB5802.dip0.t-ipconnect.de) has quit (Ping timeout: 276 seconds)
+2016-10-25 16:58:19	<--	xall (~xall@wsip-70-166-121-212.ph.ph.cox.net) has quit (Ping timeout: 256 seconds)
+2016-10-25 16:58:19		[16:58]
+2016-10-25 17:01:42	-->	oxa (~oxa@cpe-172-89-163-103.socal.res.rr.com) has joined #zsh
+2016-10-25 17:03:06	oxa	hey y'all ive got a quick question regarding this error: _arguments:451: _vim_files: function definition file not found - when trying to complete filenames
+2016-10-25 17:05:11	oxa	what seems to be causing it? my zcomp doesnt look incorrect, and everything works with a fresh default .zshrc
+2016-10-25 17:07:25	OODani	oxa: Are you using a framework, like oh-my-zsh or Prezto? Or any plugins in general?
+2016-10-25 17:07:36	oxa	not for zsh
+2016-10-25 17:08:07	<--	FoH (~foh@23-117-206-221.lightspeed.brhmal.sbcglobal.net) has left #zsh
+2016-10-25 17:08:19	-->	FoH (~foh@23-117-206-221.lightspeed.brhmal.sbcglobal.net) has joined #zsh
+2016-10-25 17:08:34	oxa	another weird thing ijust noticed - if i try to complete a modifier it will give me the same error, but it then completes it anyway
+2016-10-25 17:09:47	<--	Phantom7 (~textual@cpe-69-204-251-52.nyc.res.rr.com) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-10-25 17:11:12	-->	cdown (~cdown@199.201.64.2) has joined #zsh
+2016-10-25 17:11:22	llua	third person so far
+2016-10-25 17:12:08	llua	what does your .zshrc look like?
+2016-10-25 17:12:34	oxa	im about to modify it one moment
+2016-10-25 17:14:06	Mikachu	echo $fpath $ZSH_VERSION
+2016-10-25 17:14:06		[17:14]
+2016-10-25 17:15:09	oxa	https://github.com/canibaoxa/dotfiles/blob/master/zsh/.zshrc
+2016-10-25 17:16:14	oxa	Mikachu: /usr/share/zsh/functions/Completion/Unix is in there - which is correct
+2016-10-25 17:16:37	Mikachu	that's a bold statement
+2016-10-25 17:17:01	oxa	no thats a bold statement
+2016-10-25 17:17:08	oxa	are you saying its incorrect?
+2016-10-25 17:17:14	Mikachu	if your fpath doesn't have the zsh version number in it, i don't know what you did
+2016-10-25 17:17:23	Mikachu	and is very likely the cause of your problems
+2016-10-25 17:17:38	llua	archlinux packages lit like that
+2016-10-25 17:17:45	oxa	thats how arch does it
+2016-10-25 17:17:52	Mikachu	okay, arch is not supported here then
+2016-10-25 17:18:38	llua	does echo /etc/zsh/* only print zprofile?
+2016-10-25 17:18:46	oxa	Mikachu: cool go back to being silent
+2016-10-25 17:18:52	oxa	sec llua
+2016-10-25 17:19:06	oxa	llua: yea
+2016-10-25 17:19:40	llua	rm .zcompdump; exec zsh
+2016-10-25 17:21:36	<--	macabre (~ibtjw@unaffiliated/macabre) has quit (Remote host closed the connection)
+2016-10-25 17:21:55	oxa	right that works but what values were modified to cause the issue
+2016-10-25 17:23:29	-->	nuck (~Nuck@c-73-12-228-136.hsd1.ca.comcast.net) has joined #zsh
+2016-10-25 17:23:53	--	nuck is now known as Guest64410
+2016-10-25 17:23:56	-->	hahuang65 (~hahuang65@2601:647:4000:d7:e538:4001:6bfe:c47e) has joined #zsh
+2016-10-25 17:25:02	llua	http://www.zsh.org/mla/workers/2016/msg01051.html
+2016-10-25 17:25:45	llua	i can only assume it is related to that
+2016-10-25 17:26:22	oxa	aahhh that makes sense
+2016-10-25 17:26:31	oxa	thank you llua much appreciated
+2016-10-25 17:28:17	-->	chandan (~chandan@125.16.167.59) has joined #zsh
+2016-10-25 17:28:49	<--	hahuang65 (~hahuang65@2601:647:4000:d7:e538:4001:6bfe:c47e) has quit (Ping timeout: 260 seconds)
+2016-10-25 17:29:26	<--	oxa (~oxa@cpe-172-89-163-103.socal.res.rr.com) has left #zsh
+2016-10-25 17:29:26		[17:29]
+2016-10-25 17:29:48	<--	Guest64410 (~Nuck@c-73-12-228-136.hsd1.ca.comcast.net) has quit (Ping timeout: 250 seconds)
+2016-10-25 17:30:05	llua	i wonder if deleting .zcompdump is really needed to trigger that now
+2016-10-25 17:30:43	llua	or how the other two managed to break it without seemingly deleting it.
+2016-10-25 17:31:02	Mikachu	does _vim do (( $+functions[_vim_files] )) && _vim_files ?
+2016-10-25 17:31:13	llua	iirc it does
+2016-10-25 17:31:31	Mikachu	ah, that would explain it
+2016-10-25 17:31:32	llua	|| _vim_files
+2016-10-25 17:31:43	Mikachu	well you know what i meant
+2016-10-25 17:31:53	Mikachu	so if it's autoloaded, that check thinks it's already defined
+2016-10-25 17:32:58	llua	changing compdump seemed more logical, since that test is kinda common in completers
+2016-10-25 17:33:21	-->	xall (~xall@wsip-70-166-121-212.ph.ph.cox.net) has joined #zsh
+2016-10-25 17:33:47	Mikachu	that code is only called if .zcompdump doesn't exist, right?
+2016-10-25 17:33:52	Mikachu	(or is outdated)
+2016-10-25 17:33:57	llua	yea
+2016-10-25 17:34:06	Mikachu	right, then it doesn't matter that it adds a bunch of extra stats
+2016-10-25 17:57:05	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined #zsh
+2016-10-25 17:57:05		[17:57]
+2016-10-25 17:57:05	--	Topic for #zsh is "v5.2 | http://zsh.sf.net/ | http://zshwiki.org/ | http://zsh.sf.net/FAQ/ | http://zshwiki.org/home/docs/wikifaq | http://tinyurl.com/zsh-refcard-pdf | Just ask. | Nobody here or everybody clueless? try the zsh-users mailinglist: http://www.zsh.org/mla"
+2016-10-25 17:57:05	--	Topic set by Mikachu (~Mikachu@gimp/developer/Mikachu) on Wed, 02 Dec 2015 11:54:14
+2016-10-25 17:57:05	--	Channel #zsh: 401 nicks (0 ops, 0 voices, 401 normals)
+2016-10-25 17:57:05	***	Buffer Playback...
+2016-10-25 17:57:05	DHowett	[01:54:03] The suggestion that one might use it for non-root package management is absurd [01:54:03]
+2016-10-25 17:57:05	DHowett	[01:54:12] seeing as the page starts with "first install these packages using apt or yum..." [01:54:12]
+2016-10-25 17:57:05	OODani	[02:15:49] That's exactly what I'm using it for and it works fine so. ¯\_(ツ)_/¯ Gotta use something for non-root package manage, right? [02:15:49]
+2016-10-25 17:57:05	llua	[02:19:22] s/solved/attempted/ [02:19:22]
+2016-10-25 17:57:05	oxa	[03:03:06] hey y'all ive got a quick question regarding this error: _arguments:451: _vim_files: function definition file not found - when trying to complete filenames [03:03:06]
+2016-10-25 17:57:05	oxa	[03:05:11] what seems to be causing it? my zcomp doesnt look incorrect, and everything works with a fresh default .zshrc [03:05:11]
+2016-10-25 17:57:05	OODani	[03:07:25] oxa: Are you using a framework, like oh-my-zsh or Prezto? Or any plugins in general? [03:07:25]
+2016-10-25 17:57:05	oxa	[03:07:36] not for zsh [03:07:36]
+2016-10-25 17:57:05	oxa	[03:08:34] another weird thing ijust noticed - if i try to complete a modifier it will give me the same error, but it then completes it anyway [03:08:34]
+2016-10-25 17:57:05	llua	[03:11:22] third person so far [03:11:22]
+2016-10-25 17:57:05	llua	[03:12:08] what does your .zshrc look like? [03:12:08]
+2016-10-25 17:57:05	oxa	[03:12:34] im about to modify it one moment [03:12:34]
+2016-10-25 17:57:05	Mikachu	[03:14:06] echo $fpath $ZSH_VERSION [03:14:06]
+2016-10-25 17:57:05	oxa	[03:15:09] https://github.com/canibaoxa/dotfiles/blob/master/zsh/.zshrc [03:15:09]
+2016-10-25 17:57:05	oxa	[03:16:14] Mikachu: /usr/share/zsh/functions/Completion/Unix is in there - which is correct [03:16:14]
+2016-10-25 17:57:05	Mikachu	[03:16:37] that's a bold statement [03:16:37]
+2016-10-25 17:57:05	oxa	[03:17:01] no thats a bold statement [03:17:01]
+2016-10-25 17:57:05	oxa	[03:17:08] are you saying its incorrect? [03:17:08]
+2016-10-25 17:57:05	Mikachu	[03:17:14] if your fpath doesn't have the zsh version number in it, i don't know what you did [03:17:14]
+2016-10-25 17:57:05	Mikachu	[03:17:23] and is very likely the cause of your problems [03:17:23]
+2016-10-25 17:57:05	llua	[03:17:38] archlinux packages lit like that [03:17:38]
+2016-10-25 17:57:05	oxa	[03:17:45] thats how arch does it [03:17:45]
+2016-10-25 17:57:05	Mikachu	[03:17:52] okay, arch is not supported here then [03:17:52]
+2016-10-25 17:57:05	llua	[03:18:38] does echo /etc/zsh/* only print zprofile? [03:18:38]
+2016-10-25 17:57:05	oxa	[03:18:46] Mikachu: cool go back to being silent [03:18:46]
+2016-10-25 17:57:05	oxa	[03:18:52] sec llua [03:18:52]
+2016-10-25 17:57:05	oxa	[03:19:06] llua: yea [03:19:06]
+2016-10-25 17:57:05	llua	[03:19:40] rm .zcompdump; exec zsh [03:19:40]
+2016-10-25 17:57:05	oxa	[03:21:55] right that works but what values were modified to cause the issue [03:21:55]
+2016-10-25 17:57:05	llua	[03:25:02] http://www.zsh.org/mla/workers/2016/msg01051.html [03:25:02]
+2016-10-25 17:57:05	llua	[03:25:45] i can only assume it is related to that [03:25:45]
+2016-10-25 17:57:05	oxa	[03:26:22] aahhh that makes sense [03:26:22]
+2016-10-25 17:57:05	oxa	[03:26:31] thank you llua much appreciated [03:26:31]
+2016-10-25 17:57:05	llua	[03:30:05] i wonder if deleting .zcompdump is really needed to trigger that now [03:30:05]
+2016-10-25 17:57:05	llua	[03:30:43] or how the other two managed to break it without seemingly deleting it. [03:30:43]
+2016-10-25 17:57:05	Mikachu	[03:31:02] does _vim do (( $+functions[_vim_files] )) && _vim_files ? [03:31:02]
+2016-10-25 17:57:05	llua	[03:31:13] iirc it does [03:31:13]
+2016-10-25 17:57:05	Mikachu	[03:31:31] ah, that would explain it [03:31:31]
+2016-10-25 17:57:05	llua	[03:31:32] || _vim_files [03:31:32]
+2016-10-25 17:57:05	Mikachu	[03:31:43] well you know what i meant [03:31:43]
+2016-10-25 17:57:05	Mikachu	[03:31:53] so if it's autoloaded, that check thinks it's already defined [03:31:53]
+2016-10-25 17:57:05	llua	[03:32:58] changing compdump seemed more logical, since that test is kinda common in completers [03:32:58]
+2016-10-25 17:57:05	Mikachu	[03:33:47] that code is only called if .zcompdump doesn't exist, right? [03:33:47]
+2016-10-25 17:57:05	Mikachu	[03:33:52] (or is outdated) [03:33:52]
+2016-10-25 17:57:05	llua	[03:33:57] yea [03:33:57]
+2016-10-25 17:57:05	Mikachu	[03:34:06] right, then it doesn't matter that it adds a bunch of extra stats [03:34:06]
+2016-10-25 17:57:05	llua	[03:45:20] zayita: learn _vim_files is _vim_files: function definition file not found - http://www.zsh.org/mla/workers/2016/msg01051.html [03:45:20]
+2016-10-25 17:57:05	zayita	[03:45:20] llua: '_vim_files' added. [03:45:20]
+2016-10-25 17:57:05	llua	[03:45:57] just so i don't have to grep my logs [03:45:57]
+2016-10-25 17:57:05	llua	[03:53:13] http://unix.stackexchange.com/questions/316648/zsh-change-completion-rules-and-recompile-zwc-file 250 points for anyone able to mind read [03:53:13]
+2016-10-25 17:57:05	***	Playback Complete.
+2016-10-25 17:58:22	--	Channel created on Tue, 02 Sep 2003 05:34:53
+2016-10-25 18:04:00		[17:58]
+2016-10-25 18:07:46	-->	Phantom7 (~textual@cpe-69-204-251-52.nyc.res.rr.com) has joined #zsh
+2016-10-25 18:07:49	-->	BenderRodriguez (~Foxhoundz@unaffiliated/foxhoundz) has joined #zsh
+2016-10-25 18:13:00		[18:07]
+2016-10-25 18:24:18	<--	Rodya_ (~Rodya_@2601:46:4001:e0b4:2865:c5a7:1d30:862a) has quit (Quit: Leaving...)
+2016-10-25 18:27:20	-->	nuck (~Nuck@c-73-12-228-136.hsd1.ca.comcast.net) has joined #zsh
+2016-10-25 18:27:43	--	nuck is now known as Guest70781
+2016-10-25 18:27:53	<--	Guest70781 (~Nuck@c-73-12-228-136.hsd1.ca.comcast.net) has quit (Changing host)
+2016-10-25 18:27:53	-->	Guest70781 (~Nuck@oftn/oswg-member/Nuck) has joined #zsh
+2016-10-25 18:28:28	--	Guest70781 is now known as nuck
+2016-10-25 18:28:28		[18:28]
+2016-10-25 18:51:12	<--	xall (~xall@wsip-70-166-121-212.ph.ph.cox.net) has quit (Ping timeout: 256 seconds)
+2016-10-25 18:51:12		[18:51]
+2016-10-25 18:56:46	<--	nchambers (dtscode@freenode/weird-exception/bartender/learnprogramming.nchambers) has quit (Quit: ZNC - http://znc.in)
+2016-10-25 19:02:00		[18:56]
+2016-10-25 19:04:46	-->	lexinator (~Adium@2601:645:8303:24b9:c98f:be8e:ca4c:9f95) has joined #zsh
+2016-10-25 19:07:26	<--	cdown (~cdown@199.201.64.2) has quit (Read error: Connection reset by peer)
+2016-10-25 19:08:55	-->	cdown (~cdown@12.37.166.67) has joined #zsh
+2016-10-25 19:09:24	-->	xall (~xall@2600:8800:1285:f100:4d98:f709:5bb3:a89e) has joined #zsh
+2016-10-25 19:15:00		[19:09]
+2016-10-25 19:16:44	<--	lexinator (~Adium@2601:645:8303:24b9:c98f:be8e:ca4c:9f95) has quit (Quit: Leaving.)
+2016-10-25 19:21:00	<--	Phantom7 (~textual@cpe-69-204-251-52.nyc.res.rr.com) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-10-25 19:22:03	<--	nerfquark (~nerfquark@cpe-67-253-49-244.maine.res.rr.com) has quit (Read error: Connection reset by peer)
+2016-10-25 19:28:00		[19:22]
+2016-10-25 19:31:32	-->	blimey (~blimey@cpe-104-35-111-152.socal.res.rr.com) has joined #zsh
+2016-10-25 19:37:00		[19:31]
+2016-10-25 19:43:41	-->	lexinator (~Adium@2601:645:8303:24b9:c98f:be8e:ca4c:9f95) has joined #zsh
+2016-10-25 19:46:13	<--	BenderRodriguez (~Foxhoundz@unaffiliated/foxhoundz) has quit (Ping timeout: 248 seconds)
+2016-10-25 19:50:08	-->	macabre (~ibtjw@unaffiliated/macabre) has joined #zsh
+2016-10-25 19:50:48	<--	meh` (~meh@151.42.84.40) has quit (Ping timeout: 260 seconds)
+2016-10-25 19:52:50	-->	vuoto (~vuoto@n9pl7d.static.netgroup.dk) has joined #zsh
+2016-10-25 19:52:50		[19:52]
+2016-10-25 19:54:36	<--	macabre (~ibtjw@unaffiliated/macabre) has quit (Ping timeout: 260 seconds)
+2016-10-25 19:56:30	<--	asmodai (asmodai@freebsd/developer/asmodai) has quit (Quit: new world)
+2016-10-25 19:56:34	-->	strull (~strull@pD9F4B473.dip0.t-ipconnect.de) has joined #zsh
+2016-10-25 20:02:00		[19:56]
+2016-10-25 20:04:32	-->	asmodai (asmodai@freebsd/developer/asmodai) has joined #zsh
+2016-10-25 20:05:05	<--	flavius (~flavius@unaffiliated/flavius) has quit (Quit: WeeChat 1.6)
+2016-10-25 20:10:12	-->	mozzarel1 (~sam@unaffiliated/sam113101) has joined #zsh
+2016-10-25 20:12:44	<--	mozzarella (~sam@unaffiliated/sam113101) has quit (Ping timeout: 250 seconds)
+2016-10-25 20:12:47	--	mozzarel1 is now known as mozzarella
+2016-10-25 20:17:47	<--	stryx` (~stryx@unaffiliated/stryx/x-3871776) has quit (Ping timeout: 256 seconds)
+2016-10-25 20:17:47		[20:17]
+2016-10-25 20:18:36	-->	stryx` (~stryx@unaffiliated/stryx/x-3871776) has joined #zsh
+2016-10-25 20:24:00		[20:18]
+2016-10-25 20:25:03	-->	firstdayonthejob (~firstdayo@cpc99346-croy26-2-0-cust153.19-2.cable.virginm.net) has joined #zsh
+2016-10-25 20:25:22	-->	bocaneri (~bocaneri@about/linux/staff/sauvin) has joined #zsh
+2016-10-25 20:28:48	<--	Nanuq (~nanuq@2001:470:1d:758:214:4fff:fe4a:a370) has quit (Ping timeout: 245 seconds)
+2016-10-25 20:32:24	<--	firstdayonthejob (~firstdayo@cpc99346-croy26-2-0-cust153.19-2.cable.virginm.net) has quit (Ping timeout: 244 seconds)
+2016-10-25 20:36:42	-->	flavius (~flavius@unaffiliated/flavius) has joined #zsh
+2016-10-25 20:42:00		[20:36]
+2016-10-25 20:42:27	-->	zpe (~zpe@c83-251-121-58.bredband.comhem.se) has joined #zsh
+2016-10-25 20:44:13	<--	gbit86__ (uid97908@gateway/web/irccloud.com/x-gydxjspyinboyyvg) has quit (Ping timeout: 245 seconds)
+2016-10-25 20:47:15	-->	gbit86__ (uid97908@gateway/web/irccloud.com/x-qyunpufjybdyvzxb) has joined #zsh
+2016-10-25 20:51:13	-->	brk_ (~brk_@109.202.145.146) has joined #zsh
+2016-10-25 20:55:49	<--	blimey (~blimey@cpe-104-35-111-152.socal.res.rr.com) has quit (Quit: Leaving)
+2016-10-25 20:56:13	-->	Nanuq (~nanuq@tecciztecatl.teotlalli.ecks.ca) has joined #zsh
+2016-10-25 20:56:18	<--	stryx` (~stryx@unaffiliated/stryx/x-3871776) has quit (Ping timeout: 256 seconds)
+2016-10-25 20:58:43	-->	stryx` (~stryx@unaffiliated/stryx/x-3871776) has joined #zsh
+2016-10-25 20:58:43		[20:58]
+2016-10-25 20:59:42	<--	brk_ (~brk_@109.202.145.146) has quit (Quit: Leaving)
+2016-10-25 21:00:24	-->	brk_ (~brk_@109.202.145.146) has joined #zsh
+2016-10-25 21:00:27	<--	brk_ (~brk_@109.202.145.146) has quit (Remote host closed the connection)
+2016-10-25 21:00:38	-->	brk_ (~brk_@109.202.145.146) has joined #zsh
+2016-10-25 21:00:53	<--	zpe (~zpe@c83-251-121-58.bredband.comhem.se) has quit (Remote host closed the connection)
+2016-10-25 21:01:33	-->	zpe (~zpe@c83-251-121-58.bredband.comhem.se) has joined #zsh
+2016-10-25 21:05:56	<--	zpe (~zpe@c83-251-121-58.bredband.comhem.se) has quit (Ping timeout: 256 seconds)

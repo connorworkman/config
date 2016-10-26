@@ -3008,3 +3008,163 @@
 2016-10-25 14:24:45	-->	tinkersh_ (~TinkerSh@103.10.28.8) has joined ##sed
 2016-10-25 14:24:45		[14:24]
 2016-10-25 14:24:45	<--	tinkersh (~TinkerSh@103.10.28.8) has quit (Read error: Connection reset by peer)
+2016-10-25 14:42:34	<--	al-damiri (uid142631@gateway/web/irccloud.com/x-bbqxxcqwdgmvcwzz) has quit (Quit: Connection closed for inactivity)
+2016-10-25 14:42:34		[14:42]
+2016-10-25 15:08:44	-->	hpt (~hpt@221.219.64.95) has joined ##sed
+2016-10-25 15:08:44		[15:08]
+2016-10-25 15:33:47	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined ##sed
+2016-10-25 15:33:47		[15:33]
+2016-10-25 15:33:47	--	Topic for ##sed is "The Stream EDitor | Paste at: http://sprunge.us (/msg greybot sprunge) | FAQ: http://sed.sf.net/sedfaq.html | Intro/Tutorial: http://xrl.us/sedintro#uh-0 | POSIX: http://xrl.us/sedstd | Reference: http://xrl.us/gnused | Regex: #regex | Do NOT try to parse markup (html, xml, etc) with sed! /msg greybot html | Please ask your question and be patient, someone will get to you soon"
+2016-10-25 15:33:47	--	Topic set by e36freak (~daniel.mi@auriga.kiwilight.com) on Wed, 21 Aug 2013 16:29:09
+2016-10-25 15:33:47	--	Channel ##sed: 126 nicks (0 ops, 0 voices, 126 normals)
+2016-10-25 15:33:47	***	Buffer Playback...
+2016-10-25 15:33:47	shbot	[10:07:15] Soliton: abc^M [10:07:15]
+2016-10-25 15:33:47	tsakos	[10:07:23] Soliton: I know [10:07:23]
+2016-10-25 15:33:47	tsakos	[10:07:41] I have done many many scripts :) [10:07:41]
+2016-10-25 15:33:47	tsakos	[10:07:55] maybe too many haha [10:07:55]
+2016-10-25 15:33:47	Soliton	[10:08:45] well, impossible to say anything as long as you're just making weird claims about bogus ^M characters and utf8 issues without showing anything. [10:08:45]
+2016-10-25 15:33:47	tsakos	[10:09:10] Well, I can show misintrepreted characters [10:09:10]
+2016-10-25 15:33:47	tsakos	[10:09:19] I don't think that makes any sense at all [10:09:19]
+2016-10-25 15:33:47	tsakos	[10:11:11] hmm, ok, I was wrong [10:11:11]
+2016-10-25 15:33:47	tsakos	[10:11:21] cat -v was reporting weird characters [10:11:21]
+2016-10-25 15:33:47	tsakos	[10:11:50] but still, I cannot match something with grep after sed has processed the stream [10:11:50]
+2016-10-25 15:33:47	Soliton	[10:12:45] show your actual input and maybe someone can help. [10:12:45]
+2016-10-25 15:33:47	tsakos	[10:16:15] Ok, found where the problem is lying [10:16:15]
+2016-10-25 15:33:47	tsakos	[10:16:35] thanks for your time anyway :) [10:16:35]
+2016-10-25 15:33:47	tsakos	[10:17:58] sometimes you have re-think what you are doing before making assumptions xD [10:17:58]
+2016-10-25 15:33:47	Soliton	[10:29:15] that's why it is always better to show what you're actually doing because then other people are actually able to verify your assumptions. [10:29:15]
+2016-10-25 15:33:47	tsakos	[11:01:03] forgetting -n in cat (first command) was enough for grep to not match '^<ul>' ;) [11:01:03]
+2016-10-25 15:33:47	tsakos	[11:01:28] that was my problem, didn't fixed yet... gone for a break as it was needed xD [11:01:28]
+2016-10-25 15:33:47	tsakos	[11:01:37] fixed it* [11:01:37]
+2016-10-25 15:33:47	watmm	[16:20:02] I'd like to print three lines from a file that are right after each other, and each line contains a different specific word. [16:20:02]
+2016-10-25 15:33:47	Soliton	[16:28:15] ok. [16:28:15]
+2016-10-25 15:33:47	Petter	[16:28:54] Hehe. [16:28:54]
+2016-10-25 15:33:47	Petter	[16:52:49] watmm: Is this something you are working on currently? Is it going alright? [16:52:49]
+2016-10-25 15:33:47	Nimitz14	[15:18:15] #awk [15:18:15]
+2016-10-25 15:33:47	izalove	[15:34:04] yeah [15:34:04]
+2016-10-25 15:33:47	saml	[14:55:18] how can I delete lines between a line that matches a pattern  and another line that matches different pattern? [14:55:18]
+2016-10-25 15:33:47	gnomon	[15:02:29] saml, like so: printf '%s\n' {1..20} | sed -e '/^7$/,/^12$/d' [15:02:29]
+2016-10-25 15:33:47	saml	[15:06:11] thanks.  looks like the end line pattern, ^12$ is repeating twice in the input stream.. so I want to delete from first match of ^7$  to last match of ^12$ [15:06:11]
+2016-10-25 15:33:47	Petter	[15:44:48] Hm, for literally delete from one pattern to the last of another pattern. Here's what I came up with: [15:44:48]
+2016-10-25 15:33:47	Petter	[15:44:57] # printf '%s\n' normal1 del-start del-stop1 normal2 del-stop2 normal3  |  sed -n '/del-start/{ :a; n; /del-stop/!ba; n; :b; N; $!bb; s/.*\n[^\n]*del-stop[^\n]*\n//; }; p;' [15:44:57]
+2016-10-25 15:33:47	shbot	[15:44:59] Petter: normal1 [15:44:59]
+2016-10-25 15:33:47	shbot	[15:44:59] Petter: normal3 [15:44:59]
+2016-10-25 15:33:47	Petter	[15:45:26] Note though, that at some point it buffers of the rest of the input stream. [15:45:26]
+2016-10-25 15:33:47	Petter	[15:47:00] If the task is rather to delete to the second end pattern it's not necessary to buffer up. [15:47:00]
+2016-10-25 15:33:47	Petter	[15:47:09] # printf '%s\n' normal1 del-start del-stop1 normal2 del-stop2 normal3  | sed -n '/del-start/{ :a; n; /del-stop/!ba; :b; n; //!bb; d; }; p;' [15:47:09]
+2016-10-25 15:33:47	shbot	[15:47:10] Petter: normal1 [15:47:10]
+2016-10-25 15:33:47	shbot	[15:47:10] Petter: normal3 [15:47:10]
+2016-10-25 15:33:47	Petter	[15:48:31] The first one is GNU sed only because of [^\n]* (at least). [15:48:31]
+2016-10-25 15:33:47	 *	zoeurk [16:20:09] salut [16:20:09]
+2016-10-25 15:33:47	zoeurk	[16:20:38] alors vous tripez bien vous aussi? [16:20:38]
+2016-10-25 15:33:47	zoeurk	[16:21:15] ça déchire i3-msg -t get_workspaces | sed 's/.*,"name":"\([^,]*\)",[^:]*:true.*/\1/g' [16:21:15]
+2016-10-25 15:33:47	dualbus	[16:30:52] zoeurk: english please [16:30:52]
+2016-10-25 15:33:47	zoeurk	[16:31:26] ok [16:31:26]
+2016-10-25 15:33:47	zoeurk	[16:31:49] but i don't now who do this. [16:31:49]
+2016-10-25 15:33:47	zoeurk	[16:31:51] :) [16:31:51]
+2016-10-25 15:33:47	zoeurk	[16:42:19] are you working? [16:42:19]
+2016-10-25 15:33:47	dualbus	[16:52:41] zoeurk: no, I simply do not understand french [16:52:41]
+2016-10-25 15:33:47	zoeurk	[17:07:19] what are you doing? [17:07:19]
+2016-10-25 15:33:47	dualbus	[17:15:12] yes [17:15:12]
+2016-10-25 15:33:47	izalove	[17:15:35] are you really? [17:15:35]
+2016-10-25 15:33:47	dualbus	[17:16:41] sometimes [17:16:41]
+2016-10-25 15:33:47	***	Playback Complete.
+2016-10-25 15:34:31	--	Channel created on Wed, 09 Sep 2009 05:53:00
+2016-10-25 15:40:00		[15:34]
+2016-10-25 16:39:09	Phanes	weird question but why doesn't this work?
+2016-10-25 16:39:09		[16:39]
+2016-10-25 16:39:21	Phanes	strace -p $(ps ax | grep bash | grep -v grep | head -n 1 | awk '{ print $1;}') 2>&1 | grep "read(0, \"" | sed 's/r/g/g;'
+2016-10-25 16:40:13	Phanes	it seems when redirecting stderr to stdout from strace, that grep will work but sed does not
+2016-10-25 16:46:00		[16:40]
+2016-10-25 16:47:26	Phanes	strace -p $(ps ax | grep bash | grep -v grep | head -n 1 | awk '{ print $1;}') 2>&1 | grep "read(0, \"" 2>&1 | sed 's/read(0, \"//g;s/\".*$//g;'
+2016-10-25 16:47:31	Phanes	^ does not work either
+2016-10-25 16:47:37	Phanes	but the grep does if i remove the pipe to sed
+2016-10-25 16:53:00		[16:47]
+2016-10-25 17:13:28	-->	al-damiri (uid142631@gateway/web/irccloud.com/x-qtdtimewmosgxrrp) has joined ##sed
+2016-10-25 17:13:28		[17:13]
+2016-10-25 17:14:06	<--	tinkersh_ (~TinkerSh@103.10.28.8) has quit (Read error: Connection reset by peer)
+2016-10-25 17:20:00		[17:14]
+2016-10-25 17:21:15	-->	tinkersh (~TinkerSh@103.10.28.8) has joined ##sed
+2016-10-25 17:27:00		[17:21]
+2016-10-25 17:57:02	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined ##sed
+2016-10-25 17:57:02		[17:57]
+2016-10-25 17:57:02	--	Topic for ##sed is "The Stream EDitor | Paste at: http://sprunge.us (/msg greybot sprunge) | FAQ: http://sed.sf.net/sedfaq.html | Intro/Tutorial: http://xrl.us/sedintro#uh-0 | POSIX: http://xrl.us/sedstd | Reference: http://xrl.us/gnused | Regex: #regex | Do NOT try to parse markup (html, xml, etc) with sed! /msg greybot html | Please ask your question and be patient, someone will get to you soon"
+2016-10-25 17:57:02	--	Topic set by e36freak (~daniel.mi@auriga.kiwilight.com) on Wed, 21 Aug 2013 16:29:09
+2016-10-25 17:57:02	--	Channel ##sed: 127 nicks (0 ops, 0 voices, 127 normals)
+2016-10-25 17:57:02	***	Buffer Playback...
+2016-10-25 17:57:02	tsakos	[10:09:19] I don't think that makes any sense at all [10:09:19]
+2016-10-25 17:57:02	tsakos	[10:11:11] hmm, ok, I was wrong [10:11:11]
+2016-10-25 17:57:02	tsakos	[10:11:21] cat -v was reporting weird characters [10:11:21]
+2016-10-25 17:57:02	tsakos	[10:11:50] but still, I cannot match something with grep after sed has processed the stream [10:11:50]
+2016-10-25 17:57:02	Soliton	[10:12:45] show your actual input and maybe someone can help. [10:12:45]
+2016-10-25 17:57:02	tsakos	[10:16:15] Ok, found where the problem is lying [10:16:15]
+2016-10-25 17:57:02	tsakos	[10:16:35] thanks for your time anyway :) [10:16:35]
+2016-10-25 17:57:02	tsakos	[10:17:58] sometimes you have re-think what you are doing before making assumptions xD [10:17:58]
+2016-10-25 17:57:02	Soliton	[10:29:15] that's why it is always better to show what you're actually doing because then other people are actually able to verify your assumptions. [10:29:15]
+2016-10-25 17:57:02	tsakos	[11:01:03] forgetting -n in cat (first command) was enough for grep to not match '^<ul>' ;) [11:01:03]
+2016-10-25 17:57:02	tsakos	[11:01:28] that was my problem, didn't fixed yet... gone for a break as it was needed xD [11:01:28]
+2016-10-25 17:57:02	tsakos	[11:01:37] fixed it* [11:01:37]
+2016-10-25 17:57:02	watmm	[16:20:02] I'd like to print three lines from a file that are right after each other, and each line contains a different specific word. [16:20:02]
+2016-10-25 17:57:02	Soliton	[16:28:15] ok. [16:28:15]
+2016-10-25 17:57:02	Petter	[16:28:54] Hehe. [16:28:54]
+2016-10-25 17:57:02	Petter	[16:52:49] watmm: Is this something you are working on currently? Is it going alright? [16:52:49]
+2016-10-25 17:57:02	Nimitz14	[15:18:15] #awk [15:18:15]
+2016-10-25 17:57:02	izalove	[15:34:04] yeah [15:34:04]
+2016-10-25 17:57:02	saml	[14:55:18] how can I delete lines between a line that matches a pattern  and another line that matches different pattern? [14:55:18]
+2016-10-25 17:57:02	gnomon	[15:02:29] saml, like so: printf '%s\n' {1..20} | sed -e '/^7$/,/^12$/d' [15:02:29]
+2016-10-25 17:57:02	saml	[15:06:11] thanks.  looks like the end line pattern, ^12$ is repeating twice in the input stream.. so I want to delete from first match of ^7$  to last match of ^12$ [15:06:11]
+2016-10-25 17:57:02	Petter	[15:44:48] Hm, for literally delete from one pattern to the last of another pattern. Here's what I came up with: [15:44:48]
+2016-10-25 17:57:02	Petter	[15:44:57] # printf '%s\n' normal1 del-start del-stop1 normal2 del-stop2 normal3  |  sed -n '/del-start/{ :a; n; /del-stop/!ba; n; :b; N; $!bb; s/.*\n[^\n]*del-stop[^\n]*\n//; }; p;' [15:44:57]
+2016-10-25 17:57:02	shbot	[15:44:59] Petter: normal1 [15:44:59]
+2016-10-25 17:57:02	shbot	[15:44:59] Petter: normal3 [15:44:59]
+2016-10-25 17:57:02	Petter	[15:45:26] Note though, that at some point it buffers of the rest of the input stream. [15:45:26]
+2016-10-25 17:57:02	Petter	[15:47:00] If the task is rather to delete to the second end pattern it's not necessary to buffer up. [15:47:00]
+2016-10-25 17:57:02	Petter	[15:47:09] # printf '%s\n' normal1 del-start del-stop1 normal2 del-stop2 normal3  | sed -n '/del-start/{ :a; n; /del-stop/!ba; :b; n; //!bb; d; }; p;' [15:47:09]
+2016-10-25 17:57:02	shbot	[15:47:10] Petter: normal1 [15:47:10]
+2016-10-25 17:57:02	shbot	[15:47:10] Petter: normal3 [15:47:10]
+2016-10-25 17:57:02	Petter	[15:48:31] The first one is GNU sed only because of [^\n]* (at least). [15:48:31]
+2016-10-25 17:57:02	 *	zoeurk [16:20:09] salut [16:20:09]
+2016-10-25 17:57:02	zoeurk	[16:20:38] alors vous tripez bien vous aussi? [16:20:38]
+2016-10-25 17:57:02	zoeurk	[16:21:15] ça déchire i3-msg -t get_workspaces | sed 's/.*,"name":"\([^,]*\)",[^:]*:true.*/\1/g' [16:21:15]
+2016-10-25 17:57:02	dualbus	[16:30:52] zoeurk: english please [16:30:52]
+2016-10-25 17:57:02	zoeurk	[16:31:26] ok [16:31:26]
+2016-10-25 17:57:02	zoeurk	[16:31:49] but i don't now who do this. [16:31:49]
+2016-10-25 17:57:02	zoeurk	[16:31:51] :) [16:31:51]
+2016-10-25 17:57:02	zoeurk	[16:42:19] are you working? [16:42:19]
+2016-10-25 17:57:02	dualbus	[16:52:41] zoeurk: no, I simply do not understand french [16:52:41]
+2016-10-25 17:57:02	zoeurk	[17:07:19] what are you doing? [17:07:19]
+2016-10-25 17:57:02	dualbus	[17:15:12] yes [17:15:12]
+2016-10-25 17:57:02	izalove	[17:15:35] are you really? [17:15:35]
+2016-10-25 17:57:02	dualbus	[17:16:41] sometimes [17:16:41]
+2016-10-25 17:57:02	Phanes	[02:39:09] weird question but why doesn't this work? [02:39:09]
+2016-10-25 17:57:02	Phanes	[02:39:21] strace -p $(ps ax | grep bash | grep -v grep | head -n 1 | awk '{ print $1;}') 2>&1 | grep "read(0, \"" | sed 's/r/g/g;' [02:39:21]
+2016-10-25 17:57:02	Phanes	[02:40:13] it seems when redirecting stderr to stdout from strace, that grep will work but sed does not [02:40:13]
+2016-10-25 17:57:02	Phanes	[02:47:26] strace -p $(ps ax | grep bash | grep -v grep | head -n 1 | awk '{ print $1;}') 2>&1 | grep "read(0, \"" 2>&1 | sed 's/read(0, \"//g;s/\".*$//g;' [02:47:26]
+2016-10-25 17:57:02	Phanes	[02:47:31] ^ does not work either [02:47:31]
+2016-10-25 17:57:02	Phanes	[02:47:37] but the grep does if i remove the pipe to sed [02:47:37]
+2016-10-25 17:57:02	***	Playback Complete.
+2016-10-25 17:57:46	--	Channel created on Wed, 09 Sep 2009 05:53:00
+2016-10-25 18:03:00		[17:57]
+2016-10-25 18:22:17	<--	roboguy` (~roboguy_@205.59.124.24.cm.sunflower.com) has quit
+2016-10-25 18:22:17		[18:22]
+2016-10-25 18:52:47	<--	geggam (~geggam@ec2-107-20-130-165.compute-1.amazonaws.com) has quit (Ping timeout: 256 seconds)
+2016-10-25 18:52:47		[18:52]
+2016-10-25 19:06:43	<--	aw1 (~aw1@unaffiliated/aw1) has quit (Ping timeout: 245 seconds)
+2016-10-25 19:12:00		[19:06]
+2016-10-25 19:20:02	-->	aw1 (~aw1@unaffiliated/aw1) has joined ##sed
+2016-10-25 19:22:08	<--	aw1 (~aw1@unaffiliated/aw1) has quit (Max SendQ exceeded)
+2016-10-25 19:23:45	-->	aw1 (~aw1@unaffiliated/aw1) has joined ##sed
+2016-10-25 19:29:00		[19:23]
+2016-10-25 20:19:33	-->	abernix (~abernix@unaffiliated/abernix) has joined ##sed
+2016-10-25 20:19:33		[20:19]
+2016-10-25 20:48:12	-->	abernix_ (~abernix@unaffiliated/abernix) has joined ##sed
+2016-10-25 20:48:12		[20:48]
+2016-10-25 20:48:17	-->	corsibu (~corsibu@171.20.68.68) has joined ##sed
+2016-10-25 20:50:38	<--	abernix (~abernix@unaffiliated/abernix) has quit (Ping timeout: 256 seconds)
+2016-10-25 20:51:35	<--	corsibu (~corsibu@171.20.68.68) has quit (Remote host closed the connection)
+2016-10-25 20:52:45	-->	corsibu (~corsibu@171.20.68.68) has joined ##sed
+2016-10-25 20:57:18	-->	han-solo (~han-solo@101.56.122.230) has joined ##sed
+2016-10-25 21:02:07	<--	corsibu (~corsibu@171.20.68.68) has quit (Remote host closed the connection)
+2016-10-25 21:02:42	-->	corsibu (~corsibu@171.20.68.68) has joined ##sed
+2016-10-25 21:06:43	<--	corsibu (~corsibu@171.20.68.68) has quit (Ping timeout: 245 seconds)
+2016-10-25 21:06:43		[21:06]
