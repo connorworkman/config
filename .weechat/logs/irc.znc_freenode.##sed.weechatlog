@@ -3217,3 +3217,123 @@
 2016-10-25 23:33:50	<--	han-solo (~han-solo@101.59.205.165) has quit (Ping timeout: 256 seconds)
 2016-10-25 23:37:09	<--	cyborg-one (~cyborg-on@188-115-191-178.broadband.tenet.odessa.ua) has quit (Quit: cyborg-one)
 2016-10-25 23:43:00		[23:37]
+2016-10-26 00:20:26	-->	zipe31 (~zipe31@min31-1-82-224-11-112.fbx.proxad.net) has joined ##sed
+2016-10-26 00:20:26		[00:20]
+2016-10-26 00:21:32	-->	ifohancroft (~ifo@techtavern/ifo) has joined ##sed
+2016-10-26 00:22:36	ifohancroft	Hello, Everyone! How do I replace \n"\n" with "\n" in a series of files? (they are just 10-15 files with regular names so I can do it file by file manually)
+2016-10-26 00:22:51	ifohancroft	" as in double quotes
+2016-10-26 00:24:16	Soliton	sed 's/\\n"\\n"/"\\n"/g'
+2016-10-26 00:24:47	ifohancroft	Thank you, Soliton. I'll try it. So it's sed 's/\\n"\\n"/"\\n"/g' filename.ext?
+2016-10-26 00:26:40	Soliton	sure.
+2016-10-26 00:28:04	<--	tinkersh (~TinkerSh@103.10.28.8) has quit (Ping timeout: 260 seconds)
+2016-10-26 00:29:39	-->	tinkersh (~TinkerSh@103.10.28.8) has joined ##sed
+2016-10-26 00:32:09	<--	TyrfingMjolnir (~Tyrfing@62.92.82.250) has quit (Ping timeout: 250 seconds)
+2016-10-26 00:34:02	-->	TyrfingMjolnir (~Tyrfing@62.92.82.250) has joined ##sed
+2016-10-26 00:36:28	ifohancroft	I am sorry Soliton but I am a bit confused. I've tried sed 's/\\n"\\n"/"\\n"/g' test.csv and the file stays the same and I get the output of all the lines, I tried sed 's/\\n"\\n"/"\\n"/g' test.csv > test2.csv and test2.csv is the same as test.csv, nothing changed
+2016-10-26 00:36:28		[00:36]
+2016-10-26 00:37:27	<--	lel (~lel@unaffiliated/lel) has quit (Read error: Connection reset by peer)
+2016-10-26 00:38:52	Soliton	then there is no line with \n"\n" in them in that file.
+2016-10-26 00:38:53	-->	han-solo (~han-solo@101.57.6.238) has joined ##sed
+2016-10-26 00:40:18	ifohancroft	oh shit, I just checked, one of the line endings is CR not LF
+2016-10-26 00:40:37	Riviera	Well, please wait.
+2016-10-26 00:40:47	Riviera	ifohancroft: What do you mean with \n
+2016-10-26 00:41:00	Riviera	ifohancroft: Do you mean the character sequence backslash n
+2016-10-26 00:41:04	ifohancroft	Riviera as in Unix line end
+2016-10-26 00:41:09	Riviera	ifohancroft: or do you mean the line feed character.
+2016-10-26 00:41:11	Riviera	ifohancroft: Okay.
+2016-10-26 00:41:23	Riviera	ifohancroft: Soliton understood the other variant.
+2016-10-26 00:41:54	Riviera	ifohancroft: sed's not really a good tool for this task, it works line-wise.
+2016-10-26 00:42:02	<--	rexwin_ (~rexwin@163.47.13.246) has left ##sed
+2016-10-26 00:42:21	<--	riemann (~riemann@84-10-11-234.static.chello.pl) has quit (Ping timeout: 260 seconds)
+2016-10-26 00:43:24	ifohancroft	What would you recommend as a tool for the job? Btw looking at how the file actually looks, it seems I no longer need to replace Unix New Line " Unix New Line " with " Unix New Line but just CR (can't remember the code) which I think was Windows new line with nothing (not null byte, I just want to remove it from the file)
+2016-10-26 00:44:14	_val_	ifohancroft: sed -n l test.csv
+2016-10-26 00:44:23	_val_	so show how the file looks like
+2016-10-26 00:44:29	ifohancroft	thank you _val_
+2016-10-26 00:46:35	ifohancroft	"1234","string","anotherstring","0","0","0","0","0","0","0","0",\
+2016-10-26 00:46:35	ifohancroft	"0","0\r"$
+2016-10-26 00:46:39	ifohancroft	here is an example row
+2016-10-26 00:48:10	ifohancroft	I'd like it to be "1234","string","anotherstring","0","0","0","0","0","0","0","0","0","0"\n where \n is Unix new line
+2016-10-26 00:49:33	_val_	Act: 1,2,3,9,10,11,12,15]
+2016-10-26 00:49:37	_val_	[##sed]
+2016-10-26 00:49:49	_val_	uhm this was another act
+2016-10-26 00:50:00	_val_	ifohancroft: use  sed 's/\\r//g' filename
+2016-10-26 00:50:14	ifohancroft	Thank you, _val_ let me try that
+2016-10-26 00:50:20	_val_	you won't see the \n unless you use sed -n l filename.
+2016-10-26 00:50:36	_val_	A plain text editor won't show you crlf or unix newline feeds
+2016-10-26 00:51:06	-->	riemann (~riemann@84-10-11-234.static.chello.pl) has joined ##sed
+2016-10-26 00:52:27	ifohancroft	the file seems to look the same, even after doing sed 's/\\r//g' filename
+2016-10-26 00:52:27		[00:52]
+2016-10-26 00:52:46	_val_	ifohancroft: sed i.bak 's/\\r//g' filename
+2016-10-26 00:53:12	ifohancroft	what should i.bak be? the output file?
+2016-10-26 00:54:47	_val_	ifohancroft: i.bak should be -i.bak
+2016-10-26 00:54:59	Petter	Think you would need \r, and not \\r in the pattern.
+2016-10-26 00:55:00	_val_	it does create a backup file in-place
+2016-10-26 00:55:36	_val_	Petter: but we need to excape the metachar right?
+2016-10-26 00:56:10	ifohancroft	_val_ it seems it doesn't, I get .bak at the end of the line after the unix new line character
+2016-10-26 00:56:17	Petter	# printf '%s\r\n' foo | sed 's/\\r//g' | sed -n l
+2016-10-26 00:56:18	shbot1	Petter: foo\r$
+2016-10-26 00:56:25	Petter	# printf '%s\r\n' foo | sed 's/\r//' | sed -n l
+2016-10-26 00:56:26	shbot1	Petter: foo$
+2016-10-26 00:57:42	ifohancroft	btw Petter is right, it seems to work with sed 's/\r//g' btw is it possible to do the replacement in place instead of outputting it to stdout or another file
+2016-10-26 00:58:08	Petter	You don't need the 'g' unless you have multiple carriage returns in one line.
+2016-10-26 00:59:29	ifohancroft	Thank you.
+2016-10-26 00:59:39	ifohancroft	Thank you everyone.
+2016-10-26 00:59:41	_val_	# echo "0","0\r"$ | sed 's/\\r//g'
+2016-10-26 00:59:42	shbot1	_val_: 0,0$
+2016-10-26 01:00:00	_val_	ifohancroft: just don't include .bak then
+2016-10-26 01:00:11	han-solo	# printf "%s\r\n" foo | sed 'y/\r/ /'
+2016-10-26 01:00:12	shbot1	han-solo: foo
+2016-10-26 01:00:35	ifohancroft	_val_ even without including it, just doing sed 's/\r//' test.csv I get the result instead of it being written to test.csv
+2016-10-26 01:01:05	_val_	ifohancroft: but that will only display the result on your screen and won't write it to a file
+2016-10-26 01:01:29	Petter	_val_: with echo you should use the -e switch to make \r a carriage return.
+2016-10-26 01:01:40	ifohancroft	That's what I mean, I want the editing/replacing to be done in place
+2016-10-26 01:02:00	_val_	:/
+2016-10-26 01:02:02	han-solo	use the '-i' option, not standard though
+2016-10-26 01:02:05	_val_	ifohancroft: just use -i
+2016-10-26 01:02:41	ifohancroft	thank you _val_ and han-solo (nice nickname btw) that seems to be working
+2016-10-26 01:03:53	ifohancroft	btw when doing sed -n l file I see \ is this sed breaking the line to be shorter?
+2016-10-26 01:06:00	Petter	Yes.
+2016-10-26 01:07:29	Petter	You could give it an argument as well, to wrap at different lengths.
+2016-10-26 01:07:29		[01:07]
+2016-10-26 01:08:19	Petter	# printf '%s\n' 'looooooooooooooooooooooooooooooooong line' | sed -n 'l 20'
+2016-10-26 01:08:20	shbot1	Petter: loooooooooooooooooo\
+2016-10-26 01:08:20	shbot1	Petter: ooooooooooooooong l\
+2016-10-26 01:08:20	shbot1	Petter: ine$
+2016-10-26 01:10:38	Petter	Looks like you can disable wrapping with 0.
+2016-10-26 01:10:57	Petter	At least in GNU sed.
+2016-10-26 01:12:34	ifohancroft	Is there a place where you can see differences between standard sed vs GNU sed or if there are other flavours/variants as well or the only way is the documentation
+2016-10-26 01:18:00		[01:12]
+2016-10-26 01:23:43	Soliton	ifohancroft: http://pubs.opengroup.org/onlinepubs/9699919799/utilities/sed.html that's the posix specification. for what some specific variant supports you need to check its documentation.
+2016-10-26 01:24:12	ifohancroft	Thank you, Soliton.
+2016-10-26 01:26:39	Petter	To edit files in place, you should use an editor. Like ed.
+2016-10-26 01:28:39	Petter	# printf 'foo\r\n' > crfile;   printf '%s\n' '%s/^M//' w | ed -s crfile;   sed -n l crfile
+2016-10-26 01:28:40	shbot1	Petter: ?
+2016-10-26 01:28:40	shbot1	Petter: foo\r$
+2016-10-26 01:28:51	Petter	Ops.
+2016-10-26 01:28:59	<--	tinkersh (~TinkerSh@103.10.28.8) has quit (Ping timeout: 256 seconds)
+2016-10-26 01:29:43	-->	tinkersh (~TinkerSh@103.10.28.8) has joined ##sed
+2016-10-26 01:29:59	<--	johnmilton (~johnmilto@192.206.23.197) has quit (Remote host closed the connection)
+2016-10-26 01:30:21	Petter	Oh, I think my copy-paste don't work with ^M. To get ^M in the pattern, use Ctrl+v Ctrl+m.
+2016-10-26 01:31:06	Petter	Ed doesn't seem to work with \r. At least I can't get it to.
+2016-10-26 01:31:43	Soliton	# printf 'foo\r\n' > crfile;   printf '%s\n' $'%s/\r//' w | ed -s crfile;   sed -n l crfile
+2016-10-26 01:31:44	shbot1	Soliton: foo$
+2016-10-26 01:32:04	Petter	Nice! Didn't think of that.
+2016-10-26 01:32:32	Petter	That's a Bash thing though, or?
+2016-10-26 01:33:21	Soliton	yes.
+2016-10-26 01:33:21		[01:33]
+2016-10-26 01:33:36	Soliton	ed sees a literal \r.
+2016-10-26 01:39:00		[01:33]
+2016-10-26 01:43:03	<--	han-solo (~han-solo@101.57.6.238) has quit (Ping timeout: 256 seconds)
+2016-10-26 01:46:12	geirha	soon to be an sh thing
+2016-10-26 01:52:00		[01:46]
+2016-10-26 01:55:58	-->	johnmilton (~johnmilto@47.206.47.42) has joined ##sed
+2016-10-26 01:55:58	<--	johnmilton (~johnmilto@47.206.47.42) has quit (Client Quit)
+2016-10-26 01:56:51	-->	johnmilton (~johnmilto@192.206.23.197) has joined ##sed
+2016-10-26 02:00:48	<--	tinkersh (~TinkerSh@103.10.28.8) has quit (Read error: Connection reset by peer)
+2016-10-26 02:00:53	-->	tinkersh_ (~TinkerSh@103.10.28.8) has joined ##sed
+2016-10-26 02:06:00		[02:00]
+2016-10-26 02:08:25	-->	han-solo (~han-solo@115.244.218.66) has joined ##sed
+2016-10-26 02:14:00		[02:08]
+2016-10-26 02:31:39	-->	p3rs3us (~jduro@host86-132-96-22.range86-132.btcentralplus.com) has joined ##sed
+2016-10-26 02:31:39		[02:31]
+2016-10-26 02:44:28	<--	p3rs3us (~jduro@host86-132-96-22.range86-132.btcentralplus.com) has quit (Ping timeout: 250 seconds)

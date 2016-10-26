@@ -389,7 +389,7 @@ zhelp() {
 
 vkfix() {
     find . -maxdepth 1 -name "*.mp3" -print0 | while IFS= read -r -d '' first; do
-	printf '"%s" ' "${first}"
+	printf "'%s' " "${first}"
 	printf \"
 	printf "${first}" | sed -n '
 		s/\<\(.\)/\u\1/g
