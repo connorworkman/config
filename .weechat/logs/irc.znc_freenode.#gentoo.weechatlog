@@ -29564,3 +29564,79 @@
 2016-10-25 23:15:09	-->	Chicago (cjc@unaffiliated/chicago) has joined #gentoo
 2016-10-25 23:15:33	<--	ribx (~ribx@x4db1dde1.dyn.telefonica.de) has quit (Ping timeout: 245 seconds)
 2016-10-25 23:16:16	maolang	ya as not many package have both single ability to have both 2.7 and 3.5, most are one or the other and some more 2.7 and 3.4
+2016-10-25 23:17:05	maolang	wokko: i took the make.conf approach for the entries if it led to less entries in a package.use file
+2016-10-25 23:17:25	<--	jtriley (~jtriley@209-6-38-104.c3-0.smr-ubr2.sbo-smr.ma.cable.rcn.com) has quit (Ping timeout: 260 seconds)
+2016-10-25 23:17:58	wokko	maolang: I'll see what happens after the rebuilds, I'll try and see if it will allow me to remove 3.4
+2016-10-25 23:18:20	-->	mguillech (~mguillech@181.95.51.85) has joined #gentoo
+2016-10-25 23:18:57	maolang	wokko: if you have some 2.7 packages that dont yet have 3.5 as targets and they have sub dependents those will need targets at 3.4
+2016-10-25 23:19:10	-->	rico666 (~rico666@94.142.234.173) has joined #gentoo
+2016-10-25 23:19:15	<--	tecumseh (~tecumseh@mtl01-4-78-203-200-19.fbx.proxad.net) has quit (Quit: Leaving)
+2016-10-25 23:19:34	maolang	or also targets 2.7
+2016-10-25 23:19:56	-->	Mowgli (~mowgli@182.74.206.26) has joined #gentoo
+2016-10-25 23:19:57	wokko	yeah we'll wait and see there is only 10 more packages to go for the rebuild
+2016-10-25 23:20:11	rico666	guys, I'm currently bitten badly by "unrecognized relocation (0x2b) in section `.text'"  on EVERY Gentoo VM I have here (~ 30)
+2016-10-25 23:20:26	maolang	most of those emerge quick in any case except the pypy bunchies!
+2016-10-25 23:20:37	rico666	what is it all of sudden? 32bit machines, 64bit machines, binutils broken? glibc broken?
+2016-10-25 23:21:02	rico666	every emerge on every machine fials
+2016-10-25 23:22:28	rico666	compile is ok, up until the linking phase where it spills this error.
+2016-10-25 23:22:48	<--	mguillech (~mguillech@181.95.51.85) has quit (Ping timeout: 250 seconds)
+2016-10-25 23:22:50	latenite	mlen, thank you for spotting this. I was just looking at /var/tmp/portage/ . I amm good now :D
+2016-10-25 23:23:44	--	NextHendrix is now known as LibreHendrix
+2016-10-25 23:24:37	-->	`VL (~vl@178.23.225.78) has joined #gentoo
+2016-10-25 23:24:38	sectroyer	maolang: After unmasking 1.9 breaks with this error: https://ctrlv.it/c/8946/2781708519
+2016-10-25 23:24:46	sectroyer	It looks this package simply doesn't like me :)
+2016-10-25 23:25:09	<--	berti (~quassel@i577B6474.versanet.de) has quit (Remote host closed the connection)
+2016-10-25 23:25:42	--	LibreHendrix is now known as SexHendrix
+2016-10-25 23:26:38	maolang	had a bit of a wrestle myself with that very package ealier...
+2016-10-25 23:27:16	--	SexHendrix is now known as NeoHendrix-ng
+2016-10-25 23:29:05	<--	maolang (~maolang@vil93-5-82-230-197-98.fbx.proxad.net) has quit (Remote host closed the connection)
+2016-10-25 23:30:31	-->	brendel (~brice@LAubervilliers-656-1-215-246.w217-128.abo.wanadoo.fr) has joined #gentoo
+2016-10-25 23:30:31		[23:30]
+2016-10-25 23:31:38	<--	timahvo1_ (~rogue@197.237.131.125) has quit (Ping timeout: 250 seconds)
+2016-10-25 23:31:49	rico666	dafuq? New glibc renders binutils unusable, renders recompilation (thus downgrade) impossible??
+2016-10-25 23:31:53	<--	timahvo1 (~rogue@197.237.131.125) has quit (Ping timeout: 260 seconds)
+2016-10-25 23:31:58	+kent\n	aditya3098: the "best trick" is --with-bdeps=y --backtrack=100
+2016-10-25 23:32:09	rico666	neither can I upgrade binutils. same error
+2016-10-25 23:32:23	+kent\n	"Remove perl things" is very much not recommended as a default behaviour
+2016-10-25 23:33:23	-->	timahvo1 (~rogue@197.237.131.125) has joined #gentoo
+2016-10-25 23:33:40	-->	timahvo1_ (~rogue@197.237.131.125) has joined #gentoo
+2016-10-25 23:34:39	+kent\n	and fefelix is also wrong about "doing @world is bad" here.
+2016-10-25 23:34:46	-->	maolang (~maolang@2a01:e35:2e6c:5620:4a5d:60ff:fecc:e4a1) has joined #gentoo
+2016-10-25 23:35:10	-->	violetina (~quassel@unaffiliated/violetina) has joined #gentoo
+2016-10-25 23:35:44	-->	berti (~quassel@i577B6474.versanet.de) has joined #gentoo
+2016-10-25 23:36:33	-->	sebastianlutter (~sebastian@pd95cdee4.dip0.t-ipconnect.de) has joined #gentoo
+2016-10-25 23:37:20	-->	cdown_ (~cdown@199.201.64.4) has joined #gentoo
+2016-10-25 23:37:49	maolang	wokko: by now you are done emerging hehe
+2016-10-25 23:38:57	wokko	maolang: Yeah just on the next stage then finished hopefully.... just doing the rebuilds of build deps about 14 packages
+2016-10-25 23:39:44	fefelix	kent\n: why not backtrack=1000
+2016-10-25 23:39:46	fefelix	is better!
+2016-10-25 23:40:01	+kent\n	--with-bdeps=y is more important reallyt
+2016-10-25 23:40:10	<--	cdown (~cdown@12.37.166.67) has quit (Ping timeout: 276 seconds)
+2016-10-25 23:40:12	+kent\n	numbers over 30 recommended though for --backtrack
+2016-10-25 23:40:21	--	cdown_ is now known as cdown
+2016-10-25 23:40:25	-->	messer440 (~messer@156.17.85.29) has joined #gentoo
+2016-10-25 23:40:27	maolang	backtrack=forever :)
+2016-10-25 23:41:31	Kelsar	but forever makes no sense with a counter
+2016-10-25 23:41:36	Kelsar	it is not a time
+2016-10-25 23:41:41	fefelix	Kelsar: should be countably infinite
+2016-10-25 23:42:06	maolang	wokko: just rebooted after all this and like 8 days later, desktop feels slightly snappier, but could be i rebooted and have not really run anything yet...
+2016-10-25 23:42:31	-->	Xionaba (~fartofago@h83-209-195-57.cust.se.alltele.net) has joined #gentoo
+2016-10-25 23:42:55	<--	emmett1 (~emmett@115.132.158.29) has quit (Remote host closed the connection)
+2016-10-25 23:43:44	wokko	:) it needed a fresh start....
+2016-10-25 23:44:02	-->	emmett1 (~emmett@115.132.158.29) has joined #gentoo
+2016-10-25 23:44:23	<--	Vurtatoo (~Vurtatoo@86.57.158.250) has quit (Remote host closed the connection)
+2016-10-25 23:45:19	-->	SkunkyFone (~skunky@unaffiliated/skunky) has joined #gentoo
+2016-10-25 23:45:25	maolang	with that many under the hood changes in any case, it was most defitively a good idea to have a full reload from scratch
+2016-10-25 23:46:18	<--	kingkongmok (~kingkongm@219.137.213.82) has quit (Ping timeout: 252 seconds)
+2016-10-25 23:46:18		[23:46]
+2016-10-25 23:47:10	wokko	maolang: Ok all done and 3.4 removed :)
+2016-10-25 23:47:21	-->	SylvieLorxu (~TheLastPr@541B7AAC.cm-5-4b.dynamic.ziggo.nl) has joined #gentoo
+2016-10-25 23:47:34	maolang	so 2.7 and 3.5 in da house
+2016-10-25 23:47:56	wokko	yeah mate until it catches on fire
+2016-10-25 23:48:01	maolang	haha
+2016-10-25 23:48:13	<--	latenite (~latenite@p5B3755B1.dip0.t-ipconnect.de) has quit (Remote host closed the connection)
+2016-10-25 23:48:14	<--	tlaxkit (~Thunderbi@92.177.99.40) has quit (Quit: tlaxkit)
+2016-10-25 23:48:40	rico666	hooray, binary binutils package 2.26 from a working host, rebuilding...
+2016-10-25 23:48:42	maolang	most my single targets are now on  3.5
+2016-10-25 23:49:42	-->	latenite (~latenite@p5B3755B1.dip0.t-ipconnect.de) has joined #gentoo
+2016-10-25 23:50:25	-->	spareproject (~bob@gateway/tor-sasl/spareproject) has joined #gentoo
