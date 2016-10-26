@@ -1163,7 +1163,7 @@ abexpac() {
 }
 
 dsgenkey () {
-        if [[ ! "${1}" > /dev/null ]]; then
+        if [[ -z "${1}" ]]; then
          printf '%s\n' 'No zone specified!'
         else
          pushd /etc/bind
@@ -1171,28 +1171,28 @@ dsgenkey () {
 	     -K /etc/bind/private -n ZONE "$1"
          sudo dnssec-keygen -f KSK -a NSEC3RSASHA1 \
 	     -b 4096  -K /etc/bind/private -n ZONE "$1"
-         for key in `ls /etc/bind/private/K"$1"*.key`; do
-          sudo echo "\$INCLUDE /etc/bind/private/${key}">>/etc/bind/db."$1"
-         done
+         sudo find /etc/bind/private/ -maxdepth 1 -name "K$1*.key" \
+		-exec printf '%s' "\$INCLUDE /etc/bind/private/{}" >>"/etc/bind/db.${1}" \;
          sudo dnssec-signzone -A -3 \
 	     $(head -c 1000 /dev/random | sha1sum | cut -b 1-16) \
 	     -N INCREMENT -K ./private -o "$1" -S -t db."$1"
-         popd;
+         popd
         fi
 }
 
 dssign () {
 	[[ ${PWD} != /etc/bind ]] && pushd . >/dev/null 2>&1
 	cd "/etc/bind"
-	if [[ ! ${1} ]]; then
+	if [[ -z "${1}" ]]; then
          printf '%b' 'no zone specified!\nsign "alyp.tk"? (Y/n)' ; read ans
          [[ ${ans} =~ ([ \t]*[Yy].*|) ]] && { popd >/dev/null 2>&1; dssign 'alyp.tk'; return 0; }
-          echo -n "\r\nenter zone(s) to sign: " ; read ans2
-	  [[ -z ${ans2} ]] && { echo "exiting..."; return 2; } || \
-	  { zarray=(`<<<$ans2`);
-	  popd >/dev/null 2>&1;
-	  dssign $zarray[@];
-	  return 0; }
+          echo -n "\r\nenter zone(s) to sign: " ; read -r ans2
+	  [[ -z "${ans2}" ]] && { echo "exiting..."; return 2; } || \
+	  { zarray=( $ans2 )
+		popd >/dev/null 2>&1
+		dssign "$zarray[@]"
+		return 0
+	  }
 	else
  	  IFSold=${IFS}
 	  IFS=$'\n'
@@ -1203,13 +1203,13 @@ dssign () {
 	  printf '%b' "\r"
 	fi
 	 for i in "${@}" ; do
-	  SERIAL=$(named-checkzone ${i} db.${i} | \
+	  SERIAL=$(named-checkzone "${i}" "db.${i}" | \
 	  	egrep --color="never" -ho '[0-9]{10}')
 	  	#sed 's/.*K\([[:digit:]]{10}\).*/\1/')
-	  sudo sed -i 's/'${SERIAL}'/'$((${SERIAL}+1))'/' db.${i}
+	  sudo sed -i 's/'"${SERIAL}"'/'"$((SERIAL+1))"'/' "db.${i}"
 	  sudo dnssec-signzone -A -3 \
 	  	$(head -c 1000 /dev/random | sha1sum | cut -b 1-16) \
-	  	-N INCREMENT -K ./private -o ${i} -S -t db.${i}
+	  	-N INCREMENT -K ./private -o "${i}" -S -t "db.${i}"
 	 done
 	popd >/dev/null 2>&1
 	return 0
