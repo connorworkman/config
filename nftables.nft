@@ -68,10 +68,12 @@ table ip filter {
 	accept;
   }
     chain logdrop {
-	limit rate 1/minute log counter reject;
+	#type filter hook input priority 0; policy drop;
+	limit rate 1/second counter accept;
+	limit rate 10/hour log counter reject;
+	counter reject;
 	#counter accept
 	#counter drop;
-	#counter reject;
   }
 }
 
@@ -132,11 +134,13 @@ table ip6 filter {
 	accept;
   }
     chain logdrop {
-	limit rate 1/second counter log counter accept;
-	limit rate 1/minute counter log counter reject;
- 	#counter reject;
-	counter accept;
+	#type filter hook input priority 0; policy drop;
+	limit rate 1/second counter accept;
+	limit rate 10/hour log counter reject;
+ 	counter reject;
+	#limit rate 1/minute counter log counter reject;
 	#limit rate 1/second counter log counter accept;
+	#counter accept;
 	#counter drop;
   }
 }

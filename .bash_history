@@ -520,3 +520,8 @@ cd ~
 v .bashrc
 scg
 s-config 
+. /home/alyptik/aliases.sh 
+modprobe -l nf*
+find /usr/lib/modules/ -name "nf*.ko.gz"
+_ modprobe nf_conntrack
+_ modprobe nf_conntrack
