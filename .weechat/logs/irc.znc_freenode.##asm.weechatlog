@@ -9884,3 +9884,227 @@
 2016-10-26 02:43:00	<--	traceur920 (~user@93-41-108-173.ip81.fastwebnet.it) has quit (Ping timeout: 250 seconds)
 2016-10-26 02:43:48	<--	palantir (~palantir@139.115.70.37.rev.sfr.net) has quit (Client Quit)
 2016-10-26 02:44:28	<--	archivist (~archivist@host81-149-189-98.in-addr.btopenworld.com) has quit (Ping timeout: 250 seconds)
+2016-10-26 02:44:54	<--	fr0gRIP (~fr0gRIP@163.5.223.102) has quit (Ping timeout: 250 seconds)
+2016-10-26 02:45:46	<--	osa1_ (~omer@50-253-193-254-static.hfc.comcastbusiness.net) has quit (Ping timeout: 265 seconds)
+2016-10-26 02:46:12	<--	snyp (~Snyp@nas4.meghbelabroadband.in) has quit (Quit: WeeChat 1.6)
+2016-10-26 02:47:04	<--	the_wench (~the_wench@host81-149-189-98.in-addr.btopenworld.com) has quit (Ping timeout: 260 seconds)
+2016-10-26 02:49:14	control	Can I DW/DD a big-endian word in nasm?
+2016-10-26 02:50:01	GeDaMo	I wouldn't have thought so, I think you'd have to do it manually with db
+2016-10-26 02:53:03	fizzie	You could write a macro for byte-swapping (with <<, >>, &, |), and use that with dw, dd. (A little questionable if that's worth it.)
+2016-10-26 02:54:57	-->	archivist (~archivist@host81-149-189-98.in-addr.btopenworld.com) has joined ##asm
+2016-10-26 02:54:57		[02:54]
+2016-10-26 02:55:45	-->	Antares (~Antares@95.165.128.197) has joined ##asm
+2016-10-26 02:56:28	-->	the_wench (~the_wench@81.149.189.98) has joined ##asm
+2016-10-26 02:56:29	<--	Antares (~Antares@95.165.128.197) has quit (Client Quit)
+2016-10-26 02:57:05	-->	Antares (~Antares@95.165.128.197) has joined ##asm
+2016-10-26 02:57:56	<--	jan64 (~jan64@bjg241.neoplus.adsl.tpnet.pl) has quit (Quit: Leaving)
+2016-10-26 02:58:23	<--	Antares (~Antares@95.165.128.197) has quit (Client Quit)
+2016-10-26 03:02:25	-->	meth (~meth@unaffiliated/meth) has joined ##asm
+2016-10-26 03:04:42	control	Good, thanks.
+2016-10-26 03:07:17	-->	rgrinberg (~rgrinberg@blk-212-79-74.eastlink.ca) has joined ##asm
+2016-10-26 03:12:10	-->	MoZu4k_ (~MoZu4k@189.natext-192-249-3-128-25.utk.edu) has joined ##asm
+2016-10-26 03:12:10		[03:12]
+2016-10-26 03:14:39	-->	traceur920 (~user@93-41-108-173.ip81.fastwebnet.it) has joined ##asm
+2016-10-26 03:18:36	hackal	GeDaMo: is it the same with store byte instruction? The incrementing
+2016-10-26 03:18:50	GeDaMo	hackal: yes
+2016-10-26 03:18:52	hackal	sb $t2, 0($s0)
+2016-10-26 03:18:59	-->	fr0gRIP (~fr0gRIP@163.5.223.102) has joined ##asm
+2016-10-26 03:19:11	GeDaMo	Normally you would make the constant the base address of the string / buffer
+2016-10-26 03:19:16	hackal	next time I want to store something in $s0 I just increment it right?
+2016-10-26 03:19:30	GeDaMo	The register would start at 0 and you'd increment it
+2016-10-26 03:24:21	-->	GinoManWorks (~GinoMan@50-251-53-110-static.hfc.comcastbusiness.net) has joined ##asm
+2016-10-26 03:24:43	traceur920	Hello, I've written some code to make a shift light that receive as input a square wave with a period of 23 to 5 ms and reacts lighting up two LEDs when conditions are met. I'm quite new at this, first time with an AVR (attiny13a), second with assembly, and can't understand why LED keeps flickering instead of just be on or off
+2016-10-26 03:24:51	-->	osa1 (~omer@haskell/developer/osa1) has joined ##asm
+2016-10-26 03:24:55	traceur920	this is the code http://pastebin.com/2ZU697M9
+2016-10-26 03:27:55	GeDaMo	traceur920: you seem to be jumping back to loop instead of returning from the interrupts
+2016-10-26 03:27:55		[03:27]
+2016-10-26 03:29:06	traceur920	yes, i know, but i manually enable global interrupt later, so, even being horrible, should work (i suppose)
+2016-10-26 03:29:23	-->	Antares (~Antares@95.165.128.197) has joined ##asm
+2016-10-26 03:29:34	GeDaMo	I would have though you were overflowing the stack
+2016-10-26 03:29:37	GeDaMo	^thought
+2016-10-26 03:30:21	-->	osa1_ (~omer@50-253-193-254-static.hfc.comcastbusiness.net) has joined ##asm
+2016-10-26 03:30:49	<--	osa1 (~omer@haskell/developer/osa1) has quit (Ping timeout: 260 seconds)
+2016-10-26 03:31:41	traceur920	Ah, but for avr putting PC to stack doesn't have to be done manually ? so that, if you don't do it, it just lose the previous position?
+2016-10-26 03:32:32	GeDaMo	Traditionally interrupts save the current state on the stack, I'll admit I don't know if AVR does that
+2016-10-26 03:34:07	traceur920	I'm not sure, but will try putting RETI at the end instead of RJMP
+2016-10-26 03:35:36	<--	osa1_ (~omer@50-253-193-254-static.hfc.comcastbusiness.net) has quit (Ping timeout: 250 seconds)
+2016-10-26 03:36:55	traceur920	Another contextual (dumb) question: when in sleep and an interrupt occurs, does PC start from its vector respective memory address or just go on from last sleep request?
+2016-10-26 03:37:32	archivist	whatever the manual states
+2016-10-26 03:43:00		[03:37]
+2016-10-26 03:44:32	<--	cd80 (~bf3@gateway/vpn/privateinternetaccess/emul16) has quit (Ping timeout: 260 seconds)
+2016-10-26 03:48:34	<--	fr0gRIP (~fr0gRIP@163.5.223.102) has quit (Quit: fr0gRIP)
+2016-10-26 03:48:52	-->	fr0gRIP (~fr0gRIP@163.5.223.102) has joined ##asm
+2016-10-26 03:50:46	-->	rnsanchez_ (~rnsanchez@177.18.169.225) has joined ##asm
+2016-10-26 03:51:58	<--	nightfrog (nightfrog@65-35-35-108.res.bhn.net) has quit (Ping timeout: 252 seconds)
+2016-10-26 03:52:14	-->	cd80 (~bf3@46.166.137.230) has joined ##asm
+2016-10-26 03:53:24	<--	rnsanchez (~rnsanchez@179.177.214.35.dynamic.adsl.gvt.net.br) has quit (Ping timeout: 260 seconds)
+2016-10-26 03:53:44	traceur920	Ok, as i can understand from datasheet of the tiny13 it seems to jump back to predefined vector memory address. While simulating with AVR Studio it does not. Actually it doesn't even wait for pin level changes to exit from "sleep". It just goes on
+2016-10-26 03:57:33	<--	MoZu4k_ (~MoZu4k@189.natext-192-249-3-128-25.utk.edu) has left ##asm
+2016-10-26 04:01:54	<--	dminuoso_ (~dminuoso@unaffiliated/dminuoso) has quit (Ping timeout: 244 seconds)
+2016-10-26 04:01:54		[04:01]
+2016-10-26 04:06:41	-->	Geek (~Geek@95-42-153-38.ip.btc-net.bg) has joined ##asm
+2016-10-26 04:06:57	-->	_m8 (~m8@host11-141-dynamic.252-95-r.retail.telecomitalia.it) has joined ##asm
+2016-10-26 04:07:04	--	Geek is now known as Guest93854
+2016-10-26 04:08:08	roxfan	iirc there's #avr channel, you could try that
+2016-10-26 04:08:35	roxfan	it's quite possible the emulator doesn't handle sleep stuff
+2016-10-26 04:09:14	<--	m8 (~m8@unaffiliated/m8) has quit (Ping timeout: 245 seconds)
+2016-10-26 04:09:23	traceur920	sure, thank you anyway!
+2016-10-26 04:14:44	-->	osa1_ (~omer@2001:18e8:2:28b6:2ab2:bdff:fedf:fa66) has joined ##asm
+2016-10-26 04:17:17	-->	king_jah (~jah@S0106503955715ed3.ss.shawcable.net) has joined ##asm
+2016-10-26 04:17:17		[04:17]
+2016-10-26 04:20:34	<--	rgrinberg (~rgrinberg@blk-212-79-74.eastlink.ca) has quit (Ping timeout: 256 seconds)
+2016-10-26 04:20:46	-->	CheckDavid (uid14990@gateway/web/irccloud.com/x-pulbkjgnutqhnhbe) has joined ##asm
+2016-10-26 04:26:00		[04:20]
+2016-10-26 04:28:38	<--	osa1_ (~omer@2001:18e8:2:28b6:2ab2:bdff:fedf:fa66) has quit (Ping timeout: 256 seconds)
+2016-10-26 04:31:11	-->	nktn (~nktn___@181.46.158.157) has joined ##asm
+2016-10-26 04:31:34	<--	hackal (56a75747@gateway/web/freenode/ip.86.167.87.71) has quit (Quit: Page closed)
+2016-10-26 04:33:28	-->	slither (~jesus@2.26.134.158) has joined ##asm
+2016-10-26 04:39:00		[04:33]
+2016-10-26 04:48:49	<--	Guest93854 (~Geek@95-42-153-38.ip.btc-net.bg) has quit (Ping timeout: 245 seconds)
+2016-10-26 04:49:13	<--	fr0gRIP (~fr0gRIP@163.5.223.102) has quit (Ping timeout: 245 seconds)
+2016-10-26 04:51:41	-->	fr0gRIP (~fr0gRIP@163.5.223.102) has joined ##asm
+2016-10-26 04:53:39	-->	rgrinberg (~rgrinberg@24.222.87.130) has joined ##asm
+2016-10-26 04:53:51	-->	lapinozz (~lapinozz@45.74.164.117) has joined ##asm
+2016-10-26 04:58:08	-->	ggole_ (~ggole@124-148-96-23.dyn.iinet.net.au) has joined ##asm
+2016-10-26 04:58:08		[04:58]
+2016-10-26 04:59:13	<--	ggole (~ggole@124-148-116-83.dyn.iinet.net.au) has quit (Ping timeout: 245 seconds)
+2016-10-26 05:02:17	<--	fr0gRIP (~fr0gRIP@163.5.223.102) has quit (Ping timeout: 260 seconds)
+2016-10-26 05:03:05	-->	nightfrog (nightfrog@65-35-35-108.res.bhn.net) has joined ##asm
+2016-10-26 05:05:15	<--	nightfrog (nightfrog@65-35-35-108.res.bhn.net) has quit (Client Quit)
+2016-10-26 05:05:39	-->	nightfrog (nightfrog@65-35-35-108.res.bhn.net) has joined ##asm
+2016-10-26 05:08:19	-->	fr0gRIP (~fr0gRIP@163.5.223.102) has joined ##asm
+2016-10-26 05:10:18	-->	palantir (~palantir@139.115.70.37.rev.sfr.net) has joined ##asm
+2016-10-26 05:12:24	<--	slidercrank (~slidercra@unaffiliated/slidercrank) has quit (Quit: Leaving)
+2016-10-26 05:12:42	-->	ARM9 (~ARM9@46-236-101-75.customer.t3.se) has joined ##asm
+2016-10-26 05:16:31	-->	cagmz (~cagmz@cpe-107-185-130-191.socal.res.rr.com) has joined ##asm
+2016-10-26 05:16:31		[05:16]
+2016-10-26 05:17:19	-->	hmmmm (~sdfgsf@72.79.171.107) has joined ##asm
+2016-10-26 05:20:40	<--	ggole_ (~ggole@124-148-96-23.dyn.iinet.net.au) has quit (Ping timeout: 260 seconds)
+2016-10-26 05:21:07	-->	nejm (~Thunderbi@ip51cfc7e6.direct-adsl.nl) has joined ##asm
+2016-10-26 05:27:00		[05:21]
+2016-10-26 05:29:40	-->	osa1_ (~omer@50-253-193-254-static.hfc.comcastbusiness.net) has joined ##asm
+2016-10-26 05:29:40	<--	osa1_ (~omer@50-253-193-254-static.hfc.comcastbusiness.net) has quit (Client Quit)
+2016-10-26 05:35:00		[05:29]
+2016-10-26 05:37:08	-->	stunrod (~coderfrea@103.224.156.74) has joined ##asm
+2016-10-26 05:38:14	-->	Neslepaks (~Neslepaks@178.61.71.85) has joined ##asm
+2016-10-26 05:40:41	<--	Hask (~Hask@mail.vauban.lu) has quit (Ping timeout: 250 seconds)
+2016-10-26 05:42:29	-->	ds0 (~david@107.191.111.196) has joined ##asm
+2016-10-26 05:42:32	ds0	quick question about assembly (it's for improving my sec knowledge) - on the prolog, EBP (the Frame Pointer) is pushed on the stack, then ESP is copied into EBP making the new Frame Pointer.  So when people refer to the saved frame pointer (SFP) do they mean the EBP that was first pushed on the stack or the new Frame Pointer?
+2016-10-26 05:45:36	<--	stunrod (~coderfrea@103.224.156.74) has quit (Ping timeout: 250 seconds)
+2016-10-26 05:46:40	ds0	I'm assuming it's the one that was pushed on the stack? because after prolog the esp register contains the value for the current stack?
+2016-10-26 05:46:42	<--	palantir (~palantir@139.115.70.37.rev.sfr.net) has quit (Read error: Connection reset by peer)
+2016-10-26 05:47:00	-->	palantir (~palantir@139.115.70.37.rev.sfr.net) has joined ##asm
+2016-10-26 05:47:28	vulture	ds0: probably the old one (i.e. the one that was saved)
+2016-10-26 05:47:47	vulture	I've not heard this acronym (SFP) before so that's probably a bad sign
+2016-10-26 05:48:10	vulture	saved usually means a register value you wrote to the stack to save it so that you can overwrite the register
+2016-10-26 05:48:17	vulture	so that is a pretty reasonable educated guess :P
+2016-10-26 05:49:10	ds0	vulture yeah i thought so thanks, it's from the classic "smashing the stack for fun and profit" phrack article - http://phrack.org/issues/49/14.html#article
+2016-10-26 05:49:15	chr1s	that would be my interpretation too
+2016-10-26 05:49:36	chr1s	saved = on the stack
+2016-10-26 05:50:38	ds0	does anyone here know of an acronym that references the esp from the previous frame that has been saved on the stack?
+2016-10-26 05:50:38		[05:50]
+2016-10-26 05:51:08	vulture	frame pointer ?
+2016-10-26 05:51:16	vulture	(since in your scenario it gets moved to ebp)
+2016-10-26 05:51:44	vulture	(side note: saving the frame pointer in ebp is an antiquated practice that is often avoided these days, cuz optimization)
+2016-10-26 05:52:08	ds0	ah i see so there's no term for the previous frame pointer? it's just literally this is the FP for function_1, this is the FP for function_2?
+2016-10-26 05:52:15	zid	parent fp?
+2016-10-26 05:52:33	vulture	what you said was not previous frame pointer
+2016-10-26 05:52:35	ds0	vulture: yeah it's from '96 so i expected stuff to be different now
+2016-10-26 05:52:37	vulture	what you said was esp
+2016-10-26 05:52:45	vulture	esp isnt really the frame pointer
+2016-10-26 05:52:57	ds0	opps meant EBP
+2016-10-26 05:52:58	vulture	ebp used like that is technically the frame pointer
+2016-10-26 05:53:10	ds0	me being an idiot sorry
+2016-10-26 05:53:12	vulture	:D
+2016-10-26 05:53:46	vulture	well, you just have an array or a stack of stack frames
+2016-10-26 05:53:53	vulture	and those may or may not have these saved frame pointers
+2016-10-26 05:54:11	vulture	so whatever you want to call that, it doesnt really matter
+2016-10-26 05:55:05	ds0	okay cheers for the help :)
+2016-10-26 05:55:45	-->	phinxy (~tehhhd@unaffiliated/phinxy) has joined ##asm
+2016-10-26 05:56:13	<--	fr0gRIP (~fr0gRIP@163.5.223.102) has quit (Quit: fr0gRIP)
+2016-10-26 05:57:03	-->	jan64 (~jan64@afiq87.neoplus.adsl.tpnet.pl) has joined ##asm
+2016-10-26 05:57:43	-->	pimlu (~pimlu@128.172.35.11) has joined ##asm
+2016-10-26 05:58:29	-->	WilburPB (~WilburPB@146.197.246.70) has joined ##asm
+2016-10-26 05:59:52	<--	chr1s (~chris@212-147-34-113.fix.access.vtx.ch) has quit (Quit: Konversation terminated!)
+2016-10-26 06:02:22	-->	Manticore (~Manticore@2a07-a880-4601-1012-1dac-2f71-51f9-2c32.pool6.ovpn.se) has joined ##asm
+2016-10-26 06:02:44	--	Manticore is now known as Guest29266
+2016-10-26 06:02:51	<--	Guest29266 (~Manticore@2a07-a880-4601-1012-1dac-2f71-51f9-2c32.pool6.ovpn.se) has quit (Client Quit)
+2016-10-26 06:03:58	<--	phinxy (~tehhhd@unaffiliated/phinxy) has quit (Read error: Connection reset by peer)
+2016-10-26 06:05:33	<--	nejm (~Thunderbi@ip51cfc7e6.direct-adsl.nl) has quit (Quit: nejm)
+2016-10-26 06:11:00		[06:05]
+2016-10-26 06:13:18	-->	ararob (~yaaic@46-227-67-181.pool.ovpn.se) has joined ##asm
+2016-10-26 06:13:18	<--	ararob (~yaaic@46-227-67-181.pool.ovpn.se) has quit (Changing host)
+2016-10-26 06:13:18	-->	ararob (~yaaic@unaffiliated/ararob) has joined ##asm
+2016-10-26 06:15:37	-->	slash^ (~unknown@2001:a61:11a3:f101:199e:e1c7:87a8:8444) has joined ##asm
+2016-10-26 06:17:47	<--	traceur920 (~user@93-41-108-173.ip81.fastwebnet.it) has quit (Quit: Leaving)
+2016-10-26 06:19:23	--	ybden is now known as molum
+2016-10-26 06:20:49	<--	pimlu (~pimlu@128.172.35.11) has quit (Ping timeout: 256 seconds)
+2016-10-26 06:23:46	-->	Judge_Dredd (~Judge_Dre@unaffiliated/judge-dredd/x-2170742) has joined ##asm
+2016-10-26 06:29:00		[06:23]
+2016-10-26 06:34:28	<--	frag (~chat@163.172.36.171) has quit (Remote host closed the connection)
+2016-10-26 06:34:52	<--	Neslepaks (~Neslepaks@178.61.71.85) has left ##asm
+2016-10-26 06:36:33	--	rnsanchez_ is now known as rnsanchez
+2016-10-26 06:39:28	-->	slicktux (~slicktux@unaffiliated/slicktux) has joined ##asm
+2016-10-26 06:39:28	<--	palantir (~palantir@139.115.70.37.rev.sfr.net) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-10-26 06:44:13	<--	lowin (~lowin@151.245.90.253) has quit (Ping timeout: 245 seconds)
+2016-10-26 06:44:13		[06:44]
+2016-10-26 06:44:47	-->	Guest93854 (~Geek@95-42-153-38.ip.btc-net.bg) has joined ##asm
+2016-10-26 06:45:50	-->	AverageJ0e (~joe@ip68-3-197-107.ph.ph.cox.net) has joined ##asm
+2016-10-26 06:47:02	-->	araml (~araml@unaffiliated/araml) has joined ##asm
+2016-10-26 06:53:00		[06:47]
+2016-10-26 06:57:30	-->	lowin (~lowin@151.245.126.148) has joined ##asm
+2016-10-26 07:03:00		[06:57]
+2016-10-26 07:04:33	<--	Prutheus (~XPS@WB21-0110.STUDFB.UniBw-Muenchen.de) has quit (Quit: leaving)
+2016-10-26 07:06:46	<--	rgrinberg (~rgrinberg@24.222.87.130) has quit (Ping timeout: 265 seconds)
+2016-10-26 07:12:00		[07:06]
+2016-10-26 07:19:13	<--	Amun_Ra (~amun-ra@retro.rocks) has quit (Ping timeout: 245 seconds)
+2016-10-26 07:19:54	-->	pimlu (~pimlu@128.172.35.4) has joined ##asm
+2016-10-26 07:23:59	-->	apaz (~Esteban@host97.190-31-177.telecom.net.ar) has joined ##asm
+2016-10-26 07:24:51	-->	palantir (~palantir@AMontsouris-652-1-208-93.w86-212.abo.wanadoo.fr) has joined ##asm
+2016-10-26 07:27:21	<--	sn1c (~sn1c@xdsl-87-78-177-217.netcologne.de) has quit (Quit: sn1c)
+2016-10-26 07:27:21		[07:27]
+2016-10-26 07:27:53	-->	Amun_Ra (~amun-ra@retro.rocks) has joined ##asm
+2016-10-26 07:28:24	-->	Prod_ (~DaffyDuck@0138800884.0.fullrate.ninja) has joined ##asm
+2016-10-26 07:34:00		[07:28]
+2016-10-26 07:35:49	-->	MoALTz (~no@77-254-12-108.adsl.inetia.pl) has joined ##asm
+2016-10-26 07:37:49	-->	kbw (~KeyboardW@104-178-145-79.lightspeed.tukrga.sbcglobal.net) has joined ##asm
+2016-10-26 07:38:13	-->	meowrobot (~katgirl@ool-18ba0f1f.dyn.optonline.net) has joined ##asm
+2016-10-26 07:38:37	<--	pimlu (~pimlu@128.172.35.4) has quit (Ping timeout: 260 seconds)
+2016-10-26 07:39:46	-->	snyp (~Snyp@nas4.meghbelabroadband.in) has joined ##asm
+2016-10-26 07:45:00		[07:39]
+2016-10-26 07:45:17	-->	kaos (~kaos@h7n8-vn-a12.ias.bredband.telia.com) has joined ##asm
+2016-10-26 07:48:34	<--	OS-20611 (~OS-20611@unaffiliated/os-20611) has quit (Quit: Leaving)
+2016-10-26 07:49:55	-->	pimlu (~pimlu@128.172.35.4) has joined ##asm
+2016-10-26 07:54:09	<--	pimlu (~pimlu@128.172.35.4) has quit (Ping timeout: 250 seconds)
+2016-10-26 07:54:09	<--	Guest93854 (~Geek@95-42-153-38.ip.btc-net.bg) has quit (Ping timeout: 250 seconds)
+2016-10-26 08:00:00		[07:54]
+2016-10-26 08:00:33	-->	pimlu (~pimlu@128.172.35.4) has joined ##asm
+2016-10-26 08:00:47	-->	Guest93854 (~Geek@95-42-153-38.ip.btc-net.bg) has joined ##asm
+2016-10-26 08:02:44	-->	W_v_D (~textual@ip-82-151-35-124.dyn.kabeltex.nl) has joined ##asm
+2016-10-26 08:03:15	<--	lapinozz (~lapinozz@45.74.164.117) has quit (Ping timeout: 250 seconds)
+2016-10-26 08:09:00		[08:03]
+2016-10-26 08:09:07	<--	Prod_ (~DaffyDuck@0138800884.0.fullrate.ninja) has quit (Ping timeout: 276 seconds)
+2016-10-26 08:14:29	-->	daltonx (~daltonx@r179-25-209-15.dialup.adsl.anteldata.net.uy) has joined ##asm
+2016-10-26 08:16:37	<--	daltonx_ (~daltonx@r186-54-171-91.dialup.adsl.anteldata.net.uy) has quit (Ping timeout: 260 seconds)
+2016-10-26 08:21:38	<--	cagmz (~cagmz@cpe-107-185-130-191.socal.res.rr.com) has quit (Quit: Leaving)
+2016-10-26 08:22:29	<--	slash^ (~unknown@2001:a61:11a3:f101:199e:e1c7:87a8:8444) has quit (Read error: Connection reset by peer)
+2016-10-26 08:23:42	-->	Prutheus (~XPS@WB21-0110.STUDFB.UniBw-Muenchen.de) has joined ##asm
+2016-10-26 08:27:29	<--	rendar (~I@95.233.83.70) has quit (Ping timeout: 265 seconds)
+2016-10-26 08:27:29		[08:27]
+2016-10-26 08:29:13	<--	kbw (~KeyboardW@104-178-145-79.lightspeed.tukrga.sbcglobal.net) has quit (Quit: My MacBook Air has gone to sleep. ZZZzzz…)
+2016-10-26 08:31:04	<--	_m8 (~m8@host11-141-dynamic.252-95-r.retail.telecomitalia.it) has quit (Read error: Connection reset by peer)
+2016-10-26 08:32:21	-->	kbw (~KeyboardW@104-178-145-79.lightspeed.tukrga.sbcglobal.net) has joined ##asm
+2016-10-26 08:34:44	<--	Guest93854 (~Geek@95-42-153-38.ip.btc-net.bg) has quit (Ping timeout: 265 seconds)
+2016-10-26 08:36:28	<--	egos (~egos@mc3.data.slu.se) has quit (Quit: ZNC - http://znc.in)
+2016-10-26 08:39:26	-->	egos (~egos@mc3.data.slu.se) has joined ##asm
+2016-10-26 08:42:33	-->	nejm (~Thunderbi@ip51cfc7e6.direct-adsl.nl) has joined ##asm
+2016-10-26 08:42:33		[08:42]
+2016-10-26 08:43:12	<--	|DM| (~|DM|@79.101.135.1) has quit (Remote host closed the connection)
+2016-10-26 08:47:18	<--	palantir (~palantir@AMontsouris-652-1-208-93.w86-212.abo.wanadoo.fr) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-10-26 08:48:53	-->	jackbrown (~se@unaffiliated/jackbrown) has joined ##asm
+2016-10-26 08:53:16	-->	palantir (~palantir@85-171-132-206.rev.numericable.fr) has joined ##asm
+2016-10-26 08:56:56	-->	rendar (~I@95.233.83.70) has joined ##asm
+2016-10-26 09:00:04	<--	Xylitol (~temari@unaffiliated/xylitol) has quit (Read error: Connection reset by peer)
+2016-10-26 09:00:04		[09:00]
+2016-10-26 09:00:32	-->	Guest93854 (~Geek@95-42-153-38.ip.btc-net.bg) has joined ##asm
+2016-10-26 09:05:44	-->	osa1 (~omer@haskell/developer/osa1) has joined ##asm

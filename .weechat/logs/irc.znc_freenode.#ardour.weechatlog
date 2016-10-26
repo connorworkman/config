@@ -7107,3 +7107,494 @@
 2016-10-26 02:42:33	-->	rosslagerwall_ (~rosslager@22.188.9.51.dyn.plus.net) has joined #ardour
 2016-10-26 02:44:28	<--	karswell (~user@144.67.198.146.dyn.plus.net) has quit (Ping timeout: 250 seconds)
 2016-10-26 02:44:52	-->	Lex_NewtoN (~quassel@5.44.169.197) has joined #ardour
+2016-10-26 02:47:04	<--	rosslagerwall_ (~rosslager@22.188.9.51.dyn.plus.net) has quit (Ping timeout: 260 seconds)
+2016-10-26 02:51:56	-->	henkz (~henke@c-c4c671d5.215-6-64736c10.cust.bredbandsbolaget.se) has joined #ardour
+2016-10-26 02:52:45	-->	rosslagerwall_ (~rosslager@22.188.9.51.dyn.plus.net) has joined #ardour
+2016-10-26 02:54:42	-->	karswell (~user@146.198.67.144) has joined #ardour
+2016-10-26 02:54:42		[02:54]
+2016-10-26 02:55:01	<--	NickSB2 (~NickSB2__@cpc5-harb9-2-0-cust141.perr.cable.virginm.net) has quit (Remote host closed the connection)
+2016-10-26 02:56:59	-->	barjac-pi2 (~baz@host86-184-235-112.range86-184.btcentralplus.com) has joined #ardour
+2016-10-26 02:57:00	-->	nilg` (~user@92.247.176.162) has joined #ardour
+2016-10-26 03:02:00		[02:57]
+2016-10-26 03:05:11	ristic	rgareus: Is 0e658529011d859e508e3ef62d29fa2fe56535eb related when I bounce the master to grid it isin't always on the grid when I import it into another session?
+2016-10-26 03:06:30	rgareus	s/bounce/export/
+2016-10-26 03:06:39	ristic	yep
+2016-10-26 03:06:42	ristic	thats the one
+2016-10-26 03:07:13	rgareus	ristic: and yes it fixes that issue if you have latent effects on the master bus (such as a lookahead limiter)
+2016-10-26 03:09:01	ristic	So if I disable those latency creating plugins on the mater bus, in theory (before this fix) the exported audio should be aligned correctly?
+2016-10-26 03:09:05	<--	krabador (~krabador@unaffiliated/krabador) has quit (Read error: Connection reset by peer)
+2016-10-26 03:09:13	rgareus	ristic: remove (not disable)
+2016-10-26 03:09:20	ristic	Ah
+2016-10-26 03:10:04	ristic	Thanks
+2016-10-26 03:10:41	rgareus	that's another long story. Tdeally there'd be 3 way bypass:      "hard-bypass (no latency)",  "bypass (latent)",  "active (latent)".
+2016-10-26 03:10:52	<--	mbenson_away (~mbenson@108-87-152-117.lightspeed.nsvltn.sbcglobal.net) has quit (Ping timeout: 260 seconds)
+2016-10-26 03:10:58	rgareus	so you can go from  bypass  to active   without "click/time-shift"
+2016-10-26 03:12:10	rgareus	it currently depends on the plugin in question.
+2016-10-26 03:12:25	-->	mbenson_away (~mbenson@108-87-152-117.lightspeed.nsvltn.sbcglobal.net) has joined #ardour
+2016-10-26 03:13:20	rgareus	currently  only "sane" exports line up with 00:00:00:00     Session Export   master-bus.      Stem-Export:  tracks only (with and w/o processing)
+2016-10-26 03:13:23	<--	AndChat|320025 (~AndChat32@152.200.125.174) has quit (Ping timeout: 245 seconds)
+2016-10-26 03:14:08	rgareus	Session Export: combining  tracks+busses+master   may or may not align with 00:00:00:00 when re-importing  (depends on plugins)    and stems from busses may neither.
+2016-10-26 03:14:48	rgareus	Region-Export is also "unsafe" for alignment
+2016-10-26 03:15:29	-->	Ebardie (~Ebardie@aelfric.plus.com) has joined #ardour
+2016-10-26 03:15:50	MaurizioB	gcrk: are you here? I'm planning to begin the work on ardouvy in a couple of weeks at maximum, I could share the code, but I wouldn't suggest to use it, most of it was poorly written and cannot be ported to the new OSC protocol
+2016-10-26 03:16:03	rgareus	ristic: since you've had issues in the past, it'd be great if you could confirm the fix when you have some time.
+2016-10-26 03:16:38	ristic	A send before the plugins? Something like this: https://imgur.com/a/OT1dC
+2016-10-26 03:16:38	MaurizioB	gcrk: if you're interested, we can work on it together, if you like working with python and know a bit about KiVy
+2016-10-26 03:16:38	LAbot	Title: Imgur: The most awesome images on the Internet (at imgur.com)
+2016-10-26 03:17:27	rgareus	ristic: the send itself should make no difference.  the calf limiter has latency (I think)
+2016-10-26 03:17:27		[03:17]
+2016-10-26 03:17:36	ristic	I'll test my current largeish session with 5.4 and with a git compiled and compare.
+2016-10-26 03:17:59	-->	clark|w (~clark_wil@173-25-41-60.client.mchsi.com) has joined #ardour
+2016-10-26 03:18:05	rgareus	ristic: that send is a feeback loop
+2016-10-26 03:18:12	ristic	What I mean by the screenshot rgareus is, could I in theory export the 'master no latency' track and
+2016-10-26 03:18:15	rgareus	ristic: it goes to a track which itself is connected to master
+2016-10-26 03:18:24	ristic	Oops, forot to disconnect the master.
+2016-10-26 03:18:59	rgareus	ristic: with current git, you don't need that workaround
+2016-10-26 03:19:49	ristic	But it would in theory work with 5.4? I don't really want to work on my current projects with a git build.
+2016-10-26 03:20:17	rgareus	ristic: in theory, yes.
+2016-10-26 03:20:54	ristic	Ok, well I'll give it and the fix a shot and give some feedback later.
+2016-10-26 03:21:14	rgareus	but the export won't be "limited" by the limiter.. which somewhat defeats the purpose of adding it in the first place :)
+2016-10-26 03:21:31	ristic	Yeah
+2016-10-26 03:22:05	ristic	What I was thinking was to simplify not having to delete the plugins and then load them up and set the setting again etc.
+2016-10-26 03:22:26	ristic	I guess having two sessions, one for mix and one for master is the way to go.
+2016-10-26 03:23:30	ristic	But it's nice to hear a demo of something that is limited :)
+2016-10-26 03:23:35	ristic	LOUDER
+2016-10-26 03:27:01	rgareus	ristic: actually since Ardour 5.4, bypass should properly update the latency (no need to remove the plugin anymore)
+2016-10-26 03:30:57	the_CLA_2	Does the Calf Limiter actually WORK? Last time I tested it didn't really limit to the set value.
+2016-10-26 03:32:06	ristic	Seems to for me. I have aur/calf-git 0.0.60.r2370.e7daf55-1 from the Arch Linux AUR.
+2016-10-26 03:32:29	ristic	What would you recommend in terms of limiters the_CLA_2?
+2016-10-26 03:32:29		[03:32]
+2016-10-26 03:32:42	ristic	talking foss at least.
+2016-10-26 03:32:44	 *	rgareus prefers swh's fast looahead limiter
+2016-10-26 03:32:49	rgareus	lookahead*
+2016-10-26 03:33:02	the_CLA_2	Fast lookahead - and I think zam also has a new one that should work.
+2016-10-26 03:36:11	ristic	Hmm, will have to check the zam one. Didn't know there was a limiter in the pack.
+2016-10-26 03:36:45	the_CLA_2	...or rather a Maximizer - ZaMaximX2
+2016-10-26 03:37:54	-->	mbenson (~mbenson@apache/committer/mbenson) has joined #ardour
+2016-10-26 03:38:08	<--	mbenson_away (~mbenson@108-87-152-117.lightspeed.nsvltn.sbcglobal.net) has quit (Ping timeout: 244 seconds)
+2016-10-26 03:38:38	the_CLA_2	...wich makes it louder as you turn it up, instead of just limiting. That's the one thing I didn't like so much about the Zam one, when I tested it, IIRC.
+2016-10-26 03:39:12	<--	papachef (~compsogna@cxr69-h06-212-195-56-168.dsl.sta.abo.bbox.fr) has quit (Quit: Ex-Chat)
+2016-10-26 03:45:00		[03:39]
+2016-10-26 03:46:15	-->	rhydermike (~quassel@cpc80381-grim18-2-0-cust221.12-3.cable.virginm.net) has joined #ardour
+2016-10-26 03:51:50	-->	yann-kaelig (~inyan@89-64-15-210.dynamic.chello.pl) has joined #ardour
+2016-10-26 03:54:58	-->	Headwar (~edouard@2a01cb00054ce400a4e4874ce1a7c5c7.ipv6.abo.wanadoo.fr) has joined #ardour
+2016-10-26 03:56:13	<--	clark|w (~clark_wil@173-25-41-60.client.mchsi.com) has quit (Ping timeout: 244 seconds)
+2016-10-26 03:57:57	<--	mbenson (~mbenson@apache/committer/mbenson) has quit (Ping timeout: 248 seconds)
+2016-10-26 04:03:00		[03:57]
+2016-10-26 04:13:58	<--	remixvinil (~remix@176.60.213.3) has quit (Quit: Leaving.)
+2016-10-26 04:19:00		[04:13]
+2016-10-26 04:25:28	-->	krabador (~krabador@unaffiliated/krabador) has joined #ardour
+2016-10-26 04:31:00		[04:25]
+2016-10-26 04:45:10	-->	clark|w (~clark_wil@173-25-41-60.client.mchsi.com) has joined #ardour
+2016-10-26 04:47:48	-->	prokoudine2 (~prokoudin@46.148.192.211) has joined #ardour
+2016-10-26 04:47:48		[04:47]
+2016-10-26 04:48:20	<--	prokoudine (~prokoudin@46.148.192.215) has quit (Ping timeout: 256 seconds)
+2016-10-26 04:49:33	<--	clark|w (~clark_wil@173-25-41-60.client.mchsi.com) has quit (Ping timeout: 250 seconds)
+2016-10-26 04:52:29	-->	valdavis (47b50e91@gateway/web/cgi-irc/kiwiirc.com/ip.71.181.14.145) has joined #ardour
+2016-10-26 04:58:00		[04:52]
+2016-10-26 05:04:44	-->	clark|w (~clark_wil@173-25-41-60.client.mchsi.com) has joined #ardour
+2016-10-26 05:10:00		[05:04]
+2016-10-26 05:16:18	<--	valdavis (47b50e91@gateway/web/cgi-irc/kiwiirc.com/ip.71.181.14.145) has quit (Quit: http://www.kiwiirc.com/ - A hand crafted IRC client)
+2016-10-26 05:17:20	vald	rgareus do you record?
+2016-10-26 05:18:13	rgareus	vald: not a lot anymore. these days working in Ardour+Mixbus takes up most of my time.
+2016-10-26 05:18:40	vald	are you one of the developers?  If so, my hats off to you
+2016-10-26 05:18:59	vald	I am loving it
+2016-10-26 05:19:08	rgareus	vald: cheers!
+2016-10-26 05:19:25	vald	Been working in ProTools and Adobe Auditino
+2016-10-26 05:19:31	vald	but am LOVING Ardour
+2016-10-26 05:20:15	 *	rgareus too 
+2016-10-26 05:20:18	vald	I would love to be able to edit tracks in the editor windows (meaning reverse, etc)
+2016-10-26 05:21:08	rgareus	reverse should be possible.  but waveform editing in general is not planned (arodur is non destructive)
+2016-10-26 05:22:09	rgareus	vald:  Region > Edit > Reverse  (Alt+4)
+2016-10-26 05:22:34	vald	really?
+2016-10-26 05:23:01	vald	can I add a reverb to a reverse track, then put the track back forward and let the reverb stay reversed?
+2016-10-26 05:23:19	rgareus	vald: no. not directly.  
+2016-10-26 05:23:24	rgareus	effects are always added "live".
+2016-10-26 05:23:29	nick_m	vald, sure. i do it a lot
+2016-10-26 05:23:53	vald	I could route the reverb output to a track input and record the reverb to a track?
+2016-10-26 05:23:54	rgareus	but you can duplicate the region onto a different track,  reverse it there for reverb
+2016-10-26 05:24:08	rgareus	vald: yes, or "bounce with processing"
+2016-10-26 05:24:26	vald	I just want the reverb, not the orignal track
+2016-10-26 05:24:33	nick_m	vald, you have to to it "manually" .. reverse the track, set up a new track to record the reverb, record the reverb, trim, reverse the original and the reverb again.
+2016-10-26 05:24:41	vald	the reverse "ghost" of the track
+2016-10-26 05:25:04	vald	I will try tonight
+2016-10-26 05:25:04		[05:25]
+2016-10-26 05:25:44	vald	thanks nick_m
+2016-10-26 05:26:23	nick_m	vald, jconvolver is great for this kind of stuff, but a bit fiddly. its the old school way where getting it right may take some time
+2016-10-26 05:27:03	the_CLA_2	nick_m: What is your favorite reverb to do reverse effects? I think zita kinda sounded "too natural" for such an effect, when I tried it, IIRC.
+2016-10-26 05:27:23	<--	vald (47b50e91@gateway/web/cgi-irc/kiwiirc.com/ip.71.181.14.145) has quit (Quit: http://www.kiwiirc.com/ - A hand crafted IRC client)
+2016-10-26 05:27:59	nick_m	the_CLA_2, i have an impulse response of some 480L presets. car-park is good.
+2016-10-26 05:28:45	the_CLA_2	Ah, ok. Might have to look on my desktop if I have these already. :)
+2016-10-26 05:28:46	nick_m	also an old emt thing
+2016-10-26 05:29:56	-->	_FrnchFrgg_ (~Icedove@2a01:e35:2e92:63f0:fa16:54ff:fef7:e1a8) has joined #ardour
+2016-10-26 05:35:00		[05:29]
+2016-10-26 05:37:55	-->	wolfgang_ (~quassel@2a02:8388:1700:ef80:211:50ff:fe9b:f818) has joined #ardour
+2016-10-26 05:38:24	--	wolfgang_ is now known as ShalokShalom
+2016-10-26 05:39:46	<--	ahellquist_wrk (~aht@109-124-147-131.customer.t3.se) has quit (Ping timeout: 265 seconds)
+2016-10-26 05:45:00		[05:39]
+2016-10-26 05:50:36	-->	vekoon (~vekoon@188-141-112-94.dynamic.upc.ie) has joined #ardour
+2016-10-26 05:52:46	-->	IvanDSM_ (~ivan@179.110.173.241) has joined #ardour
+2016-10-26 05:53:36	Caterpillar	rgareus: https://bugzilla.redhat.com/show_bug.cgi?id=1385789 
+2016-10-26 05:53:38	LAbot	Title: Bug 1385789 harvid missing, Ardour is not able to handle videos (at bugzilla.redhat.com)
+2016-10-26 05:53:39	Caterpillar	bah
+2016-10-26 05:55:53	<--	IvanDSM (~ivan@187.57.123.26) has quit (Ping timeout: 256 seconds)
+2016-10-26 05:56:09	-->	deva (~deva@aasimon.org) has joined #ardour
+2016-10-26 05:56:40	<--	lerni (~lerni@183.229.107.92.dynamic.wline.res.cust.swisscom.ch) has quit
+2016-10-26 05:58:34	rgareus	Caterpillar: you can compile ffmpeg with only "legal" codecs,  it's not very useful for most real-world tasks in that case, but still.
+2016-10-26 05:59:04	rgareus	nils: ^^
+2016-10-26 05:59:20	rgareus	the implementation is actually free and legal.
+2016-10-26 05:59:24	<--	sigma6 (~mbeer@gate.codingtechnologies.de) has quit (Ping timeout: 260 seconds)
+2016-10-26 05:59:43	rgareus	it's only using the codec which requires obtaining a patent license
+2016-10-26 06:00:30	Caterpillar	rgareus: he could haved used rpmfusion repos that allows him to build packages with borderline license materfial
+2016-10-26 06:00:30		[06:00]
+2016-10-26 06:00:31	nils	rgareus: yeah, but so far AIUI nobody wanted to maintain a skeleton ffmpeg package in Fedora either (because of it not being very useful)
+2016-10-26 06:00:33	Caterpillar	material
+2016-10-26 06:01:02	Caterpillar	note that rpmfusion is (un)officially supported by Fedora team
+2016-10-26 06:01:07	nils	Caterpillar: I'm not putting stones in the way of anybody who wants to drive this, you know.
+2016-10-26 06:01:23	nils	And it's not, but I gotta go now.
+2016-10-26 06:01:27	<--	nils (nils@nat/redhat/x-qeuhbqdyjmmyapfc) has quit (Quit: Leaving)
+2016-10-26 06:01:29	rgareus	it's fully featured in debian/main .
+2016-10-26 06:02:42	-->	avoca (~avoca@92.251.169.49.threembb.ie) has joined #ardour
+2016-10-26 06:06:38	rgareus	Caterpillar: I'm sorry but there's nothing on our end we can do, then.   http://manual.ardour.org/video-timeline/setup/ has a script to get the binaries directly: sh -c "$(curl -s -L http://git.io/tVUCkw)"
+2016-10-26 06:06:48	rgareus	Caterpillar: and ardour from ardour.org includes the tools.
+2016-10-26 06:08:56	rgareus	it is a bit of a gray area, and I certainly believe that RedHat being a multi-millon company in the US does not want to tempt the lawyers.
+2016-10-26 06:08:56	<--	IvanDSM_ (~ivan@179.110.173.241) has quit (Read error: Connection reset by peer)
+2016-10-26 06:10:04	rgareus	many of those codec-patent issues can boil down to who pays more to the right lawyers.
+2016-10-26 06:11:41	tom-	are the video binaries that ardour delivers fully featured?
+2016-10-26 06:12:09	tom-	is this a gray area?
+2016-10-26 06:12:10	rgareus	codec wise, yes.  feature wise no:  only gpl features have been enabled
+2016-10-26 06:12:11	-->	nilsph (~yaaic@tmo-102-149.customers.d1-online.com) has joined #ardour
+2016-10-26 06:12:48	tom-	i was meaning codecs
+2016-10-26 06:12:54	nilsph	Caterpillar: caught my bus :)
+2016-10-26 06:13:26	rgareus	tom-: yes the binaries can do mp3  and h264.  the mpegla  requires the end-user to take care of licensing
+2016-10-26 06:13:53	rgareus	and they allow gratis use if your target audience is < 1000.  for mp3 and h264
+2016-10-26 06:14:09	tom-	ah, interesting
+2016-10-26 06:14:20	-->	slyrus (~chatzilla@2601:647:304:300:d10c:997b:dd88:b029) has joined #ardour
+2016-10-26 06:14:26	rgareus	different numbers for different codecs..  it's a bit of a mess
+2016-10-26 06:14:56	tom-	mr mpeg will get you for the 1001th listener :)
+2016-10-26 06:15:01	rgareus	anyway in Europe you're safe  software/implementaions are not patentable.  so even if using the codec is not "free", the implementation is.
+2016-10-26 06:15:01	tom-	1001st
+2016-10-26 06:15:16	tom-	i hope that will stay like this
+2016-10-26 06:16:10	tom-	there were many attempts to push that through
+2016-10-26 06:16:10		[06:16]
+2016-10-26 06:16:22	rgareus	of course :)
+2016-10-26 06:16:50	rgareus	but the EU parliament had common sense. back in 2005
+2016-10-26 06:17:20	tom-	the best i heard (8-10 years ago) was the attempt to push it through via agricultural commitee / group
+2016-10-26 06:17:54	-->	jpbouza (~Juan@190.176.52.232) has joined #ardour
+2016-10-26 06:18:20	Caterpillar	nilsph: as Ardour user for the video side, I can say that it should have submitted to rpmfusion repositories rather than Fedora repositories :-(
+2016-10-26 06:18:58	nilsph	caterpillar: you mean the request for enhancement?
+2016-10-26 06:19:12	Caterpillar	nilsph: I mean https://bugzilla.redhat.com/show_bug.cgi?id=1385789
+2016-10-26 06:19:14	LAbot	Title: Bug 1385789 harvid missing, Ardour is not able to handle videos (at bugzilla.redhat.com)
+2016-10-26 06:19:53	rgareus	Caterpillar: we're also a bit on the cautious side: external tools, not directly built-into ardour.  just in case.
+2016-10-26 06:19:55	nilsph	Caterpillar: no worries mate
+2016-10-26 06:20:11	 *	tom- spends a virtual round of beers due to a "getting older day"
+2016-10-26 06:20:38	nilsph	tom-: congratulations!
+2016-10-26 06:20:56	rgareus	lol
+2016-10-26 06:21:07	tom-	cheers :)
+2016-10-26 06:21:29	<--	krabador (~krabador@unaffiliated/krabador) has quit (Quit: Leaving)
+2016-10-26 06:22:23	rgareus	FWIW,  xjadeo and harvid link against ffmpeg's libraries... so if ffmpeg is not an option, nor are the video-monitor (xjadeo) and timeline decoder (harvid)
+2016-10-26 06:24:34	Caterpillar	rgareus: concerning the async problem between video and audio, I can definitely say that is gone. Now it is all perfect :-)))
+2016-10-26 06:25:16	rgareus	Caterpillar: I wonder what fixed it.
+2016-10-26 06:25:56	nilsph	rgareus: that's what I assumed
+2016-10-26 06:26:44	OvenWerks	MaurizioB: just a quick note on my findings with Control. I think Control's buffer is quite small. I have a session with only 15 tracks on it and if I set Ardour to send feedback from all tracks (banksize 0) there is missing info. I have not found out what the limit is yet... I guess I should try various bank sizes, but I am guessing 8 (sreensize wise) would be the practical limit.
+2016-10-26 06:27:46	tom-	bundles.
+2016-10-26 06:28:00	OvenWerks	MaurizioB: anyway, the point is that for ardouvy you should use a good size buffr to not loose anything on a refresh.
+2016-10-26 06:28:13	OvenWerks	tom-: yes... sometimes that makes sense, others not.
+2016-10-26 06:28:45	tom-	packed shortcut bundles :)
+2016-10-26 06:28:53	OvenWerks	tom-: I don't know what OSC lib the Android end is using.
+2016-10-26 06:29:03	rgareus	OvenWerks: try  changing  SessionEvent::create_per_thread_pool (event_loop_name(), 128);   to ,1024
+2016-10-26 06:29:13	tom-	that is: a bundle with a shortcut on path and typetags with msgpacked values
+2016-10-26 06:29:49	rgareus	OvenWerks: that's only used for session-rt events (such as solo, mute) though
+2016-10-26 06:29:50	OvenWerks	rgareus: I have no problems with open stage control, just with the android end.
+2016-10-26 06:30:33	rgareus	OvenWerks: mmh.  maybe android drops unhandled UDP packets early?
+2016-10-26 06:30:41	OvenWerks	rgareus: also in general single events are not a problem, it is a full surface reset where the whole surface gets updated.
+2016-10-26 06:30:57	OvenWerks	rgareus: like I say probaly buffer size.
+2016-10-26 06:31:25	<--	_FrnchFrgg_ (~Icedove@2a01:e35:2e92:63f0:fa16:54ff:fef7:e1a8) has quit (Ping timeout: 260 seconds)
+2016-10-26 06:31:25		[06:31]
+2016-10-26 06:31:59	-->	_FrnchFrgg_ (~Icedove@2a01:e35:2e92:63f0:fa16:54ff:fef7:e1a8) has joined #ardour
+2016-10-26 06:32:07	OvenWerks	Control is built on top of phonegap. My understanding of phonegap is that the app is basically a webpage on top of it.
+2016-10-26 06:32:09	tom-	OvenWerks: openstage runs in the browser? it could be dropped there
+2016-10-26 06:32:37	tom-	if you can do 100 events/second into a browser, that's already good. the limit is probably below
+2016-10-26 06:32:39	OvenWerks	tom-: open stage is what I will use on my surface
+2016-10-26 06:33:09	tom-	i mean the osc events could be dropped somewhere on the browserside
+2016-10-26 06:33:36	OvenWerks	tom-: I was talking about "Control"
+2016-10-26 06:33:50	OvenWerks	tom-: open stage control works fine.
+2016-10-26 06:34:10	tom-	ah..
+2016-10-26 06:34:45	OvenWerks	tom-: using bundles is on my todo list for at least things that are always sent in groups like transport controls
+2016-10-26 06:35:16	tom-	OvenWerks: yes, a good example
+2016-10-26 06:35:45	tom-	i don't use bundles but start to think where they can make sense
+2016-10-26 06:36:50	OvenWerks	tom-: I could do a que messages and send on timer || when full
+2016-10-26 06:37:02	tom-	thinking of a very dump scenario, where everything that a surface needs to know is sent in one bundle
+2016-10-26 06:37:03	OvenWerks	full == by size.
+2016-10-26 06:37:25	OvenWerks	tom-: there is an upper limit to size
+2016-10-26 06:37:30	-->	Yruama_Lairba (~UTILISATE@mut38-h04-89-80-39-202.dsl.sta.abo.bbox.fr) has joined #ardour
+2016-10-26 06:37:59	tom-	around 60 kilobytes, that's good enough for a lot of things
+2016-10-26 06:38:03	OvenWerks	tom-: total packet size may be less than 1500
+2016-10-26 06:38:15	OvenWerks	(bytes)
+2016-10-26 06:38:18	tom-	forget about the MTU stuff, it's handled for you
+2016-10-26 06:39:18	<--	nilsph (~yaaic@tmo-102-149.customers.d1-online.com) has quit (Quit: Yaaic - Yet another Android IRC client - http://www.yaaic.org)
+2016-10-26 06:39:31	tom-	OvenWerks: osc library does handle to chunk udp datagrams for you. from an application pov it's around 60 kb
+2016-10-26 06:39:38	OvenWerks	tom-: I already have a timer for meters
+2016-10-26 06:39:50	tom-	you can extend that to anything with slip if needed at all
+2016-10-26 06:40:55	tom-	imagine a simple case: a bundle containing track stati
+2016-10-26 06:41:00	tom-	from all tracks
+2016-10-26 06:41:18	OvenWerks	tom-: I would probably do one bundle per track.
+2016-10-26 06:41:31	tom-	and then put them in a bundle, yeah :)
+2016-10-26 06:42:16	OvenWerks	each track is an object, select is an object, master is an object
+2016-10-26 06:43:11	OvenWerks	each of those gets hit by a timer.
+2016-10-26 06:43:50	tom-	a timer for what?
+2016-10-26 06:44:02	tom-	to send periodically
+2016-10-26 06:44:06	OvenWerks	tom-: in the end the receiving applet on a slow android has to deal with each command individually.
+2016-10-26 06:44:16	OvenWerks	tom-:  for metering
+2016-10-26 06:44:37	OvenWerks	tom meter values are sent on a timed basis
+2016-10-26 06:44:51	tom-	are we talking a *java applet* running in the browser or standalone?
+2016-10-26 06:45:12	OvenWerks	tom-: in the end we don't know... 
+2016-10-26 06:45:38	tom-	OvenWerks: metering is a prime case to make compromises
+2016-10-26 06:46:01	OvenWerks	for Control it runs on top of the phonegap app.
+2016-10-26 06:46:31	tom-	you can either be late (i.e. collect some before sending), have a datastorm or a meter that is not very fluid and anything in between
+2016-10-26 06:46:31		[06:46]
+2016-10-26 06:46:32	OvenWerks	tom-: that is why it uses a timer. It can also be turned off. head possition is a nother case
+2016-10-26 06:47:09	<--	dsr1204 (~dsr1204@99-111-235-130.lightspeed.cicril.sbcglobal.net) has quit (Ping timeout: 250 seconds)
+2016-10-26 06:47:31	tom-	OvenWerks: yes
+2016-10-26 06:47:44	tom-	OvenWerks: ph position could be predicted to some degree
+2016-10-26 06:47:52	tom-	meter position less so
+2016-10-26 06:48:07	OvenWerks	the user/surface designer can choose to have up to 4 types of head position.
+2016-10-26 06:48:13	<--	_FrnchFrgg_ (~Icedove@2a01:e35:2e92:63f0:fa16:54ff:fef7:e1a8) has quit (Ping timeout: 260 seconds)
+2016-10-26 06:49:38	OvenWerks	tom-: position is generally one text string per time slot. Not really an issue, meters are one float per track per time period.
+2016-10-26 06:51:03	<--	prokoudine2 (~prokoudin@46.148.192.211) has quit (Quit: Nettalk6 - www.ntalk.de)
+2016-10-26 06:51:40	OvenWerks	tom-: this is where the choice between banking at the send end and letting the controller have all the info for everything and desiding how to display it comes in
+2016-10-26 06:52:29	tom-	OvenWerks: a graphic that helps to dive in quickly into the principles and naming of things in ardour OSC would rock
+2016-10-26 06:52:31	OvenWerks	tom-: banking on the Ardour side means data tranfer is limited to bank size.
+2016-10-26 06:52:44	tom-	g8ving "context"
+2016-10-26 06:53:08	-->	JL__ (52e3be7c@gateway/web/freenode/ip.82.227.190.124) has joined #ardour
+2016-10-26 06:53:52	 *	OvenWerks is having trouble just keeping up with documentation as is
+2016-10-26 06:54:12	OvenWerks	tom-: I hvae yet to document the new GUI
+2016-10-26 06:54:28	<--	slyrus (~chatzilla@2601:647:304:300:d10c:997b:dd88:b029) has quit (Ping timeout: 260 seconds)
+2016-10-26 06:54:46	OvenWerks	The GUI is pretty important for most tablet OSC use.
+2016-10-26 06:55:01	OvenWerks	(it allows manual port setting)
+2016-10-26 06:55:23	tom-	OvenWerks: my last experiments were lower-level, trying out to send these "packed" osc bundles from a microcrontroller and process it like osc on the host
+2016-10-26 06:56:16	<--	JL__ (52e3be7c@gateway/web/freenode/ip.82.227.190.124) has quit (Client Quit)
+2016-10-26 06:56:49	tom-	the rate is acceptable via usb
+2016-10-26 06:57:59	tom-	OvenWerks: i've testwise introduced a typed blob 'B' that is for number arrays
+2016-10-26 06:59:14	tom-	you can naturally omit ffffffffffffffffffff for instance
+2016-10-26 07:00:47	tom-	ehm, i've even created a opensoundcontrol "organization" on github. feel free to join :)
+2016-10-26 07:01:02	<--	avoca (~avoca@92.251.169.49.threembb.ie) has quit (Quit: WeeChat 1.5)
+2016-10-26 07:01:06	tom-	or should i invite you.. nobody i've invited has yet joined
+2016-10-26 07:01:22	tom-	well it was a bit out of the blue
+2016-10-26 07:03:04	tom-	there could be generic test procedures to test compliance and compatibility of/between ocs libraries
+2016-10-26 07:03:04		[07:03]
+2016-10-26 07:04:33	tom-	a standard could say "you need to implement an echo service"
+2016-10-26 07:06:16	tom-	OvenWerks: re metering: if ardour would be very smart, it could send chunks of metering data in advance as one message
+2016-10-26 07:06:41	tom-	but that again would imply a lot. so nothing realistic
+2016-10-26 07:07:57	tom-	and movements of divs or similar in a browser at the same rate as in ardour ui aren't that practical
+2016-10-26 07:11:20	<--	gcrk (~georg@port-92-195-217-21.dynamic.qsc.de) has left #ardour
+2016-10-26 07:15:56	<--	nilg` (~user@92.247.176.162) has quit (Remote host closed the connection)
+2016-10-26 07:21:00		[07:15]
+2016-10-26 07:31:23	OvenWerks	tom-: control surfaces are generally for humans to read. meter sync in this case is not very important.
+2016-10-26 07:33:47	OvenWerks	tom-: I think bundling will make a large difference from perpacket. Worrying about the savings of omitting parameter type is more trouble than it is worth I think.
+2016-10-26 07:34:38	OvenWerks	tom-: to do that means the controler has to be increasingly smart... my findings are that controllers are incredibly dumb
+2016-10-26 07:40:00		[07:34]
+2016-10-26 07:41:34	tom-	OvenWerks: that calls for scripting glue :)
+2016-10-26 07:42:11	OvenWerks	tom-: only for the over the top user. The average user... wants PNP
+2016-10-26 07:42:46	tom-	doesn't exclude scripting glue!
+2016-10-26 07:42:56	OvenWerks	tom-: the average user already thinks this stuff is too hard to set up and needs a tutorial...
+2016-10-26 07:43:16	tom-	a script could customly guide the user!
+2016-10-26 07:43:50	tom-	you don't want to hardcode that!
+2016-10-26 07:43:51	OvenWerks	tom-: Control has scripting (it is the only way I could get things working well)
+2016-10-26 07:44:42	tom-	the scripting can be on either side, but assuming there are dump controllers without it, it's safe to put it to the other side
+2016-10-26 07:45:33	tom-	because a 3rd "side" intermediary is a no-go PNP wise, it seems
+2016-10-26 07:45:41	OvenWerks	tom-: I used scripting just to be able to send a 4 parameter message, most android controllers (including paid for) only do one... and do not allow you to choose type.
+2016-10-26 07:46:25	OvenWerks	tom-: I know you love scripting :) you will have to work that out with rg
+2016-10-26 07:46:33	tom-	it's absurd to think that you can handle all controllers with static api
+2016-10-26 07:46:50	tom-	controller variability can only be handled with glue in a reasonable way
+2016-10-26 07:46:59	OvenWerks	tom-: effectively the API OSC connects to is static
+2016-10-26 07:47:52	-->	Valvalion (~Valvalion@109.132.22.27) has joined #ardour
+2016-10-26 07:47:58	tom-	why aren't the midnams hardcoded
+2016-10-26 07:47:59	OvenWerks	tom there are settings that can be changed on the fly.
+2016-10-26 07:48:19	OvenWerks	midnams are not scripts, just settings
+2016-10-26 07:48:20	tom-	and osc could be so much more useful than midnam
+2016-10-26 07:48:46	OvenWerks	tom-: feel free to add to my code.
+2016-10-26 07:49:08	tom-	OvenWerks: the midnam says (iirc): "i send you this, you do that"
+2016-10-26 07:49:27	tom-	OvenWerks: the osc api says "you need to send me this for me to do that"
+2016-10-26 07:49:49	tom-	OvenWerks: with a scripting layer you can make that better. and also add minimal state handling that's probably missing on device
+2016-10-26 07:49:53	OvenWerks	tom-: I will only move as fast as I move, and my priorities are mine. (I have a list)
+2016-10-26 07:50:34	OvenWerks	actually that is not correct, settings can change what OSC sends back or does for at least some incoming messages.
+2016-10-26 07:51:09	tom-	OvenWerks: we just have a different design approach on how to easily couple ardour with other stuff osc-wise i guess
+2016-10-26 07:51:53	OvenWerks	tom-: you are thinking in the, I am making a controller, right now I am thinking in the what do most people use/need to work with.
+2016-10-26 07:53:06	tom-	hm, no
+2016-10-26 07:53:10	OvenWerks	tom-: I want a framwork that can be used by everyone first, then add things to help those with more specialized needs, then add extra stuff
+2016-10-26 07:53:47	OvenWerks	tom-: perhaps you really want middleware
+2016-10-26 07:55:01	-->	nyntx (~nyntx@31.208.66.159) has joined #ardour
+2016-10-26 07:55:01		[07:55]
+2016-10-26 07:55:05	nyntx	hi
+2016-10-26 07:55:06	tom-	dumb controller include that indeed. now the choice is as intermediary or using ardours scripting facilities
+2016-10-26 07:55:20	-->	mbenson (~mbenson@216.1.180.2) has joined #ardour
+2016-10-26 07:55:24	nyntx	is there function to record a midi track into audio track?
+2016-10-26 07:55:35	OvenWerks	tom-: to put it another way, maybe you need to make middleware that does what you want so that you can show in a concrete way what you are thinking, because right now my understanding of what you hjope to gain if very cloudy
+2016-10-26 07:55:37	<--	mbenson (~mbenson@216.1.180.2) has quit (Changing host)
+2016-10-26 07:55:37	-->	mbenson (~mbenson@apache/committer/mbenson) has joined #ardour
+2016-10-26 07:56:04	OvenWerks	scripting is not intermediate, but advanced.
+2016-10-26 07:56:06	tom-	OvenWerks: been there :)
+2016-10-26 07:56:17	rgareus	nyntx: you can simply create an audio track, connect the midi track's output to the audio track and record
+2016-10-26 07:56:22	OvenWerks	biab
+2016-10-26 07:56:41	nyntx	rgareus: does the same trick work in qtractor?
+2016-10-26 07:56:45	rgareus	nyntx: no idea
+2016-10-26 07:57:04	rgareus	it's not a "trick" it's just an old fashioned bounce.. so I expect it would work
+2016-10-26 07:57:24	-->	slyrus (~chatzilla@192.77.239.158) has joined #ardour
+2016-10-26 07:57:28	rgareus	Freezing Midi tracks (to audio) is planned and on the ToDo list for Ardour.
+2016-10-26 07:57:33	nyntx	rgareus: maybe you can make a right-click function to record into audio trak
+2016-10-26 07:58:18	tom-	OvenWerks: it's some years ago though. the intermediary helped greatly to make a nice initial handshake and keep some state
+2016-10-26 07:58:31	tom-	OvenWerks: for a touchosc surface
+2016-10-26 07:59:15	tom-	OvenWerks: it was using a slightly modified osc api. las was at the time not interested to have a look at it
+2016-10-26 08:00:01	tom-	the tests were quite promising. i'd say it was better than anything i've seen since (does that sound arrogant?)
+2016-10-26 08:00:04	rgareus	nyntx: there are very few good use-cases in Ardour for  freezing midi to audio.
+2016-10-26 08:00:22	tom-	then scripting arrived in ardour. great! now let's close the gap
+2016-10-26 08:02:08	rgareus	nyntx: the only ones I can think of is to save CPU power (heavy synths)  or to share sessions with someone who does not have a given synth (plugin/hardware)
+2016-10-26 08:03:40	tom-	OvenWerks: you NEED middleware for controllers
+2016-10-26 08:03:56	tom-	OvenWerks: this is not something the user will see or care about
+2016-10-26 08:03:58	-->	Align_Waivers (~athan@192.132.61.10) has joined #ardour
+2016-10-26 08:04:00	<--	nyntx (~nyntx@31.208.66.159) has quit (Ping timeout: 260 seconds)
+2016-10-26 08:04:25	tom-	OvenWerks: but you don't want to HARDCODE the middleware
+2016-10-26 08:04:33	tom-	OvenWerks: unless you do :)
+2016-10-26 08:05:24	tom-	OvenWerks: middleware can be as simple as midnam-like mapping
+2016-10-26 08:05:29	tom-	OvenWerks: it can be more
+2016-10-26 08:06:01	-->	nyntx (~nyntx@31.208.66.159) has joined #ardour
+2016-10-26 08:06:19	-->	jerome__ (5204ba24@gateway/web/freenode/ip.82.4.186.36) has joined #ardour
+2016-10-26 08:07:18	jerome__	Hi all, I just installed the latest Ardour version and I am a little lost with the UI. I went under Preferences and I can't figure out how to close that window...
+2016-10-26 08:08:24	nyntx	i can't compile it
+2016-10-26 08:09:01	jerome__	Even after restarting Ardour the Preferences window is hugging the whole screen and I can't figure out how to close it...
+2016-10-26 08:09:23	<--	Lex_NewtoN (~quassel@5.44.169.197) has quit (Remote host closed the connection)
+2016-10-26 08:10:18	jerome__	Never mind I found the toggle buttons on the left side of the menu...
+2016-10-26 08:10:18		[08:10]
+2016-10-26 08:10:43	rgareus	jerome__: or right click on it, and re-attach it
+2016-10-26 08:10:59	rgareus	on the "tab" button top right.     ... or menu > Window > ..
+2016-10-26 08:12:05	jerome__	THanks!
+2016-10-26 08:12:14	nyntx	rgareus: do you have ardour-bin?
+2016-10-26 08:12:51	rgareus	nyntx: http://ardour.org/download.html  or http://nightly.ardour.org/  is the easiest way
+2016-10-26 08:12:52	LAbot	Title: Ardour - Nightly Builds (at nightly.ardour.org)
+2016-10-26 08:13:45	rgareus	nyntx: or if you're on Linux..  get it from your gnu/linux distro   but you're on your own there.  distros differ greatly.
+2016-10-26 08:14:33	nyntx	rgareus: my distro is compiling based and i need a bin
+2016-10-26 08:14:57	rgareus	nyntx: ardour is not a single binary.
+2016-10-26 08:15:22	<--	nyntx (~nyntx@31.208.66.159) has quit (Read error: Connection reset by peer)
+2016-10-26 08:16:15	tom-	OvenWerks: for a PNP experience for most users, i have a hard time to imagine how that would work with controller xy without middleare and a static / non-scripted api. only controllers that care totally about all principles of ardour api will work. the gazillion other controllers wont care (so ardour would have to)
+2016-10-26 08:17:44	tom-	i agree that hardcoded support for a specific controller like push2 can be PNP
+2016-10-26 08:19:59	melanie__	what do you mean with middlewear?
+2016-10-26 08:20:08	tom-	but to support *many* controllers, the path of hardcoding should be left
+2016-10-26 08:21:01	rgareus	middle*ware*
+2016-10-26 08:21:27	rgareus	some software in the middle.    ardour talks to  /middleware/ ;  middleware talks to the actual controller
+2016-10-26 08:22:00	melanie__	sorry typo
+2016-10-26 08:22:15	melanie__	hm 
+2016-10-26 08:22:19	tom-	a<->b<->c
+2016-10-26 08:22:45	tom-	a(b)<->c would be more elegant
+2016-10-26 08:23:03	melanie__	would not do that
+2016-10-26 08:23:04	tom-	and portable
+2016-10-26 08:23:23	rgareus	it's quite common for translating OSC messages.
+2016-10-26 08:24:03	tom-	you could look at it in a graphical way
+2016-10-26 08:24:18	rgareus	UX sucks though.  but hackers love the flexibility of middleware for control surfaces
+2016-10-26 08:24:18	tom-	you have the ardour library and the gtk gui
+2016-10-26 08:24:34	tom-	the gtk gui can change, the function remain the same
+2016-10-26 08:24:46	rgareus	tom-: there's no middleware there
+2016-10-26 08:24:58	tom-	a view onto the ardour's methods etc should be like a gui, a customized view on it
+2016-10-26 08:25:08	rgareus	tom-: you describe an API
+2016-10-26 08:25:28	tom-	that's why mapping (and in case of osc scripting to access other info) is good
+2016-10-26 08:25:28		[08:25]
+2016-10-26 08:25:43	melanie__	it would be more interessing to find a way to send over the osc funktions to a controller
+2016-10-26 08:26:01	melanie__	like some sort of config exchange
+2016-10-26 08:26:08	rgareus	melanie__: the other way 'round
+2016-10-26 08:26:19	rgareus	melanie__: have a controller announce its functions to the host.
+2016-10-26 08:26:26	rgareus	keep the controller as dumb as possible
+2016-10-26 08:26:33	melanie__	that would be best ;)
+2016-10-26 08:27:00	melanie__	and zeroconf for finding together
+2016-10-26 08:27:31	melanie__	network needs dhcp though but that is easy to do
+2016-10-26 08:28:43	tom-	controller announces to host, host announces to controller. who cares? as long as there is middleware that can solve it :)
+2016-10-26 08:30:06	rgareus	tom-: those users who need to launch and configure the middleware care :)
+2016-10-26 08:30:25	rgareus	and it's one more API to maintain.
+2016-10-26 08:30:34	melanie__	one mre piece that can make it harder to configure
+2016-10-26 08:30:44	rgareus	s/API/protocol/
+2016-10-26 08:30:44	tom-	not at all
+2016-10-26 08:30:53	melanie__	one more piece of software to have bugs and fail
+2016-10-26 08:31:27	tom-	we know that ardour lua has access to and control over most things in ardour. it's scriptable. controller integration with the help of it seems almost served on a silver tablet
+2016-10-26 08:31:44	tom-	what is obvious for some is bs for others :)
+2016-10-26 08:32:49	tom-	rgareus: melanie__ the middleware lives as a script inside ardour, what i'm trying to say
+2016-10-26 08:33:32	tom-	if a controller wants to use osc, that's just a middleware that maps some ardour methods
+2016-10-26 08:33:45	melanie__	hm
+2016-10-26 08:33:48	tom-	living inside ardour
+2016-10-26 08:34:01	rgareus	tom-: probably not in the foreseeable future
+2016-10-26 08:34:09	tom-	if another controller wants to send other osc messages, you just put another mapping
+2016-10-26 08:34:15	rgareus	tom-: at least not in a scriptable way
+2016-10-26 08:34:17	tom-	or slightly different protocol handling
+2016-10-26 08:34:26	tom-	concerning feedbak etc
+2016-10-26 08:34:32	melanie__	figuring i am more on the hardware side programming the controller i have to say o scripting on that side
+2016-10-26 08:34:46	rgareus	tom-: I tried again.. and gave up on scriptable control surfaces recently
+2016-10-26 08:35:20	rgareus	getting scriptable surfaces right is more complicated than just writing one in C++
+2016-10-26 08:35:31	melanie__	to make it clear i say it with the word of the linux god torvald "if you want to interface with hardware use c not even c++"
+2016-10-26 08:35:39	melanie__	and he s right
+2016-10-26 08:36:12	rgareus	melanie__: in the context of communication directly with hardware on the link-level
+2016-10-26 08:36:17	tom-	rgareus: what did you try?
+2016-10-26 08:36:34	OvenWerks	tom-: most OSC controllers have mappings (because OSC is so open/unstandardised) Ardour should now be able to work well with touch OSC.
+2016-10-26 08:36:39	rgareus	melanie__: for complex interaction, particularly surfaces with displays and such.  I'd built on top in C++
+2016-10-26 08:36:44	melanie__	rgareus: yes but we can keep that for us ;)
+2016-10-26 08:37:28	melanie__	i usually devide it in higher level and lower level code 
+2016-10-26 08:37:48	tom-	melanie__: if you stick in a usb-key, that's hardware at it's best. but the things that it triggers can be very high-levelish (ie show a mount dialog or similar)
+2016-10-26 08:37:58	melanie__	but in the end it comes down to use c c++ or a dialect of them
+2016-10-26 08:37:59	tom-	don't want to hack an xdialog in c
+2016-10-26 08:39:03	tom-	i think you underestimate the power of pre compiled vs. interpreted (or similar)
+2016-10-26 08:39:06	-->	dsr1204 (~dsr1204@99-111-235-130.lightspeed.cicril.sbcglobal.net) has joined #ardour
+2016-10-26 08:40:03	tom-	could we agree it needs less to change a script and make it run again
+2016-10-26 08:40:14	rgareus	tom-: I tried using a lua script for the maschine2 interface.  and threading bit bad.
+2016-10-26 08:40:51	OvenWerks	tom-, melanie__: OSC controllers are really _still_ very young even considering how long OSC has been around. Most of them are effectively broken when it comes to reacting to feedback.
+2016-10-26 08:40:51		[08:40]
+2016-10-26 08:41:02	tom-	this means someone doesn't even need the ardour build stack. just a device, some interest and he/she can come up with a script that can be added like a midnam to ardour
+2016-10-26 08:41:30	melanie__	hm change a script fast reminds me of someone at work and then nothing works anymore
+2016-10-26 08:41:53	tom-	rgareus: interesting
+2016-10-26 08:42:11	tom-	rgareus: did i dream that or do you also have studio montiros now?
+2016-10-26 08:42:17	rgareus	tom-: binding signals from at least 3 different thread contexts into a single interpreter pushes a lot of complexity into the script.  the alternative to use different interpreters likewise.
+2016-10-26 08:42:18	melanie__	OvenWerks: yes they are
+2016-10-26 08:42:31	OvenWerks	for example, most tablet OSC controllers set the state of a button based on what the user does rather than what the feedback says.
+2016-10-26 08:42:54	rgareus	tom-: one cannot just interrupt a script interpreter.  so there'll have to be "sync" points.
+2016-10-26 08:43:13	tom-	rgareus: if the script gets more complicated than needed in c++ it's certainly not convenient
+2016-10-26 08:43:36	tom-	rgareus: why are there 3 threads needed?
+2016-10-26 08:43:42	MaurizioB	OvenWerks: good to know, thanks
+2016-10-26 08:44:44	OvenWerks	so a user touches a button-> sends "1"-> surface coulrs button to signify on->DAW sends button on->user lifts finger->surface turns switch off :P
+2016-10-26 08:44:50	tom-	OvenWerks: yes, but that's not even at the level of any decades old midi device that knows "local off" ;)
+2016-10-26 08:45:12	tom-	OvenWerks: why? because the feedback path would require middleware
+2016-10-26 08:45:14	MaurizioB	OvenWerks: I think that I might be able to use a variable size buffer (so I'd be able to change its size as the tracklist grows), but I really need to get the documentation, I don't even remember what I used for OSC
+2016-10-26 08:46:03	OvenWerks	tom-: no tyhe feedback does not require middle ware only a working button...
+2016-10-26 08:46:14	<--	electro-flinch (~colinf@axicon.plus.com) has quit (Quit: Leaving.)
+2016-10-26 08:48:00	tom-	well there are round buttons, square buttons, toggle buttons, tri-state buttons, mutli-super-duper buttons, and more. how would you possibly handle them without middleware or an agreed-on protocol
+2016-10-26 08:49:01	tom-	you can handle a case that makes some assumptions already
+2016-10-26 08:49:43	rgareus	tom-: gui actions (e.g. toggle snap, selection chage),  libardour callbacks (e.g. solo/mute change)   and device communication itself (read/write to hw)
+2016-10-26 08:49:46	OvenWerks	tom-: all controllers at this time seem to assume there will be no feedback
+2016-10-26 08:50:25	OvenWerks	tom-: if there is anything that allows feedback, it expects the feedback to exactly mirror the sent messages
+2016-10-26 08:52:06	OvenWerks	making switches work correctly means only one extra parameter that determines if the switch on indication is local or remote. Toggles can be both, momentary buttons not.
+2016-10-26 08:52:19	tom-	rgareus: the maschine is a nice device. does it feel / work good?
+2016-10-26 08:54:08	tom-	OvenWerks: if i could give you a hint you should not hardcode against that standard (no feedback) but accept middleware to make it work
+2016-10-26 08:54:14	tom-	OvenWerks: :)
+2016-10-26 08:54:22	melanie__	momentary are better in my opinion anyways you have the switch and for indication the led which is in that case advantage
+2016-10-26 08:55:02	<--	slyrus (~chatzilla@192.77.239.158) has quit (Ping timeout: 265 seconds)
+2016-10-26 08:55:04	melanie__	toggle he button send to ardour adour sends back and toggles the led 
+2016-10-26 08:55:18	tom-	yes... there are leds to
+2016-10-26 08:55:28	tom-	how do they relate to the button etc
+2016-10-26 08:56:04	tom-	it's hard to imply every controllers logic and principles in a static osc api
+2016-10-26 08:56:04		[08:56]
+2016-10-26 08:56:08	OvenWerks	middleware can't make up for broken controllers.
+2016-10-26 08:56:15	melanie__	thay light up the button you toggled ?
+2016-10-26 08:56:24	tom-	that's designed for a non-middleware scenario that cannot work for 99% of controllers
+2016-10-26 08:57:01	tom-	well, you can trigger "play" for sure
+2016-10-26 08:57:15	-->	oofus_lt (~chris@APuteaux-151-1-42-71.w82-124.abo.wanadoo.fr) has joined #ardour
+2016-10-26 08:57:16	tom-	huge step from midi
+2016-10-26 08:58:18	melanie__	just trigger play?
+2016-10-26 08:58:27	melanie__	not much
+2016-10-26 08:59:29	OvenWerks	toggles that light their led on press are ok so long as the LED is set before sending message. The daw can then turn it off again in the case of invalide press. (record not available for example.)
+2016-10-26 08:59:55	tom-	if you have to hardcode multiple entry points for the same method thats violating the DRY rule
+2016-10-26 09:00:07	OvenWerks	transport needs "press buttons" that send 1 one on press and maybe a 0 on release
+2016-10-26 09:00:30	melanie__	yes the toggle comes exclusive from ardour 
+2016-10-26 09:01:33	OvenWerks	Most OSC surfaces will only accept feddback the same a sent, so it it only sends 1 it will not receive 0. If the LED is set locally... the LED state will most of the time be wrong
+2016-10-26 09:02:02	tom-	please remind the gui analogy. a controller wants to look at ardour in a custom way, like a user changing colors and fontsizes in the editor ui
+2016-10-26 09:02:16	OvenWerks	melanie__: not true, togglable state buttons for rec/mute/solo are common in the OSC world.
+2016-10-26 09:02:32	tom-	a user is also just a special human case of a controller
+2016-10-26 09:02:52	OvenWerks	in such case the controller becomes middleware
+2016-10-26 09:05:11	melanie__	interaction hardware human nad software is not easy 
+2016-10-26 09:05:35	melanie__	arour send move that strip human touches and strip moves away 
+2016-10-26 09:06:03	OvenWerks	melanie__: there are two ways to deal with state buttons, the button sends a press and the daw decides what to do with it (probably toogle, select from a radio set, etc). Others are more open if just the state is sent 1 for on 0 for off. In this case a toggle on the controller side is better. This does mean the controller can send a 1 and always know it is turning rec on not off or sending a 0 is always off.
+2016-10-26 09:06:19	melanie__	in that case the controller needs to have the last word 

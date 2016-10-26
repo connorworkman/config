@@ -26315,3 +26315,1365 @@
 2016-10-26 02:44:28	<--	SuperG (~SuperG@195.171.92.42) has quit (Ping timeout: 250 seconds)
 2016-10-26 02:44:30	<--	Sparklyballs (~sparklyba@unaffiliated/sparklyballs) has quit (Ping timeout: 252 seconds)
 2016-10-26 02:44:32	-->	moetuned (~Jean-luc@220-244-73-210.tpgi.com.au) has joined #bash
+2016-10-26 02:44:54	<--	bolt (r00t@unaffiliated/bolt) has quit (Ping timeout: 250 seconds)
+2016-10-26 02:45:20	-->	JeanCarloMachado (~jean@189-10-224-214.cslce701.dsl.brasiltelecom.net.br) has joined #bash
+2016-10-26 02:45:33	resh	##$1*   vs.  ##"$1"*
+2016-10-26 02:46:12	<--	moetunes (~Jean-luc@33.47.194.203.dial.dynamic.acc02-nort-cbr.comindico.com.au) has quit (Ping timeout: 250 seconds)
+2016-10-26 02:46:15	-->	DrNo (~DrNo@112.58.7.51.dyn.plus.net) has joined #bash
+2016-10-26 02:46:29	geirha	and I'd remove the set -e
+2016-10-26 02:46:44	-->	uiyice (~uiyice@c-68-33-17-232.hsd1.md.comcast.net) has joined #bash
+2016-10-26 02:47:17	alcohol	resh: quotes inside quotes? o_o
+2016-10-26 02:47:39	alcohol	resh: or is that because of the {} ?
+2016-10-26 02:47:45	geirha	the quotes avoid $1 from being treated as a pattern
+2016-10-26 02:47:52	alcohol	i see
+2016-10-26 02:47:53	<--	corsibu (~corsibu@171.20.68.68) has quit (Remote host closed the connection)
+2016-10-26 02:47:55	alcohol	thanks :)
+2016-10-26 02:48:15	geirha	and it doesn't make sense to have the * at the end
+2016-10-26 02:48:15	resh	# set -- "*";   smth='*hello';  echo "1: ${smth##$1}  vs.  2: ${smth##"$1"}"
+2016-10-26 02:48:17	shbot1	resh: 1:   vs.  2: hello
+2016-10-26 02:48:28	-->	corsibu (~corsibu@171.20.68.68) has joined #bash
+2016-10-26 02:48:43	-->	JyZyXEL (~foo@a88-112-115-132.elisa-laajakaista.fi) has joined #bash
+2016-10-26 02:48:50	resh	if [ -z "${cmd##$1*}" ]; then      is like   if [ "$cmd" = "$1" ]; then  ....
+2016-10-26 02:48:50		[02:48]
+2016-10-26 02:48:52	geirha	you probably either want "${cmd##*"$1"}" or "${cmd%%"$1"*}"
+2016-10-26 02:49:07	<--	wonderworld (~ww@ip-176-198-197-145.hsi05.unitymediagroup.de) has quit (Remote host closed the connection)
+2016-10-26 02:49:16	geirha	local and "${1:0:1}" are non-POSIX features
+2016-10-26 02:49:25	<--	wallbroken (~wallbroke@unaffiliated/wallbroken) has quit (Read error: Connection reset by peer)
+2016-10-26 02:49:39	alcohol	geirha: well, given that if a command is selfupdate, and i pass in "self", it should match cause composer can autocomplete it internally.. which do i want then?
+2016-10-26 02:49:41	-->	wallbroken_ (~wallbroke@151.72.121.251) has joined #bash
+2016-10-26 02:50:06	geirha	ok, so you want without the *
+2016-10-26 02:50:07	<--	spleen (~gg@2a01:e35:2e29:a880:16da:e9ff:feab:d12f) has quit (Quit: Quitte)
+2016-10-26 02:50:14	geirha	"${cmd#"$1"}"
+2016-10-26 02:50:23	geirha	selfupdate -> update
+2016-10-26 02:50:40	alcohol	geirha: they seem to work in ash though, which is what alpine ships with, and the containers i am building will only extend from alpine.. so i think that is safe?
+2016-10-26 02:50:40	--	wallbroken_ is now known as wallbroken
+2016-10-26 02:50:41	<--	wallbroken (~wallbroke@151.72.121.251) has quit (Changing host)
+2016-10-26 02:50:41	-->	wallbroken (~wallbroke@unaffiliated/wallbroken) has joined #bash
+2016-10-26 02:51:00	geirha	alcohol: Then I'd change the shebang to #!/bin/ash
+2016-10-26 02:51:03	-->	StrongJava (~tim_rohre@65-101-6-61.dia.static.qwest.net) has joined #bash
+2016-10-26 02:51:26	alcohol	wait.. now you have me doubting :<
+2016-10-26 02:51:31	alcohol	gonne go check what /bin/sh is
+2016-10-26 02:51:41	geirha	That way it won't break if you ever replace sh
+2016-10-26 02:52:01	-->	corsibu_ (~corsibu@171.20.68.68) has joined #bash
+2016-10-26 02:52:14	<--	corsibu (~corsibu@171.20.68.68) has quit (Read error: Connection reset by peer)
+2016-10-26 02:52:18	alcohol	ah, /bin/sh is BusyBox v1.24.2
+2016-10-26 02:52:42	geirha	ah, the "never know what you're gonna get"-sh
+2016-10-26 02:52:47	resh	# is-command() { local cmd_initials=(self blah ...); for init in "${cmd_initials[@]}"; do [[ $1 == "$init"* ]] && return; done; false; };  is-command self && echo $_ = true; is-command moo || echo $_ = false
+2016-10-26 02:52:48	shbot1	resh: self = true
+2016-10-26 02:52:48	shbot1	resh: moo = false
+2016-10-26 02:53:01	alcohol	maybe i should just install bash in the container.. doubt it would increase the size by much
+2016-10-26 02:53:52	osse	by bash is 772K
+2016-10-26 02:53:57	-->	nikivi (~nikivi@131.155.203.84) has joined #bash
+2016-10-26 02:54:45	<--	subhead (~subhead@109.235.42.45) has quit
+2016-10-26 02:54:55	geirha	# ls -lh /bin/bash
+2016-10-26 02:54:56	shbot1	geirha: lrwxrwxrwx 1 root root 5 Oct 21 14:48 /bin/bash -> bash4
+2016-10-26 02:54:57	-->	Filystyn (~piotr@unaffiliated/filystyn) has joined #bash
+2016-10-26 02:55:00	geirha	# ls -lh /bin/bash44
+2016-10-26 02:55:01	shbot1	geirha: -rwxrwxr-x 1 root root 1.1M Oct 21 14:48 /bin/bash44
+2016-10-26 02:55:02	resh	this script is very easy to rewrite as pure sh
+2016-10-26 02:55:04	-->	subhead (~subhead@109.235.42.45) has joined #bash
+2016-10-26 02:55:05	alcohol	so, given that i am now using bash, what should i fix in my paste? :p
+2016-10-26 02:55:12	resh	just remove "local cmd"
+2016-10-26 02:55:31	geirha	I'd use case in is_command
+2016-10-26 02:55:43	-->	Sparklyballs (~sparklyba@unaffiliated/sparklyballs) has joined #bash
+2016-10-26 02:55:47	<--	corsibu_ (~corsibu@171.20.68.68) has quit (Remote host closed the connection)
+2016-10-26 02:55:51	Perun	how can I do a multiple rename for all files like bla.bup to foo_bla.bup?
+2016-10-26 02:55:54	geirha	case $1 in about | archive | browse | ...
+2016-10-26 02:56:06	alcohol	geirha: case self in selfupdate matches?
+2016-10-26 02:56:23	-->	corsibu (~corsibu@171.20.68.68) has joined #bash
+2016-10-26 02:56:25	-->	nilg` (~user@92.247.176.162) has joined #bash
+2016-10-26 02:56:27	resh	and change ${1:0:1} into $(printf %c "$1")
+2016-10-26 02:56:30	<--	Adbray (~Adbtay@2001:470:1f11:def:7068:5cd6:b5bf:3701) has quit (Disconnected by services)
+2016-10-26 02:56:47	geirha	case $1 in -*) set -- composer "$@" ;; ...
+2016-10-26 02:56:53	-->	tecuani (~tecuani@dslb-088-071-102-021.088.071.pools.vodafone-ip.de) has joined #bash
+2016-10-26 02:56:54	-->	p3rs3us (~jduro@host86-132-96-22.range86-132.btcentralplus.com) has joined #bash
+2016-10-26 02:57:07	-->	Adbray_ (~Adbtay@2001:470:1f11:def:7068:5cd6:b5bf:3701) has joined #bash
+2016-10-26 02:57:47	resh	Perun: it is a FAQ thing
+2016-10-26 02:58:01	geirha	alcohol: is "v" supposed to be a valid command?
+2016-10-26 02:58:09	alcohol	let me test that quickly
+2016-10-26 02:58:23	alcohol	yes it expands to validate
+2016-10-26 02:58:30	<--	Aussie_matt (~quassel@2001:8003:a4f1:d000:222:15ff:fe99:bafd) has quit (Read error: Connection reset by peer)
+2016-10-26 02:58:42	resh	# >bla.php >blu.php; for x in *.php; do mv "$x" "foo_$x"; done; ls
+2016-10-26 02:58:43	shbot1	resh: foo_bla.php  foo_blu.php
+2016-10-26 02:58:45	geirha	ok, what about "w"?
+2016-10-26 02:58:57	geirha	how does it know whether to use "why" or "why-not" ?
+2016-10-26 02:58:58	alcohol	geirha: no because it has two possible expansions
+2016-10-26 02:59:05	alcohol	so it will throw an error
+2016-10-26 02:59:07	Perun	ok thx
+2016-10-26 02:59:10	geirha	aha, but your function doesn't handle that
+2016-10-26 02:59:21	alcohol	geirha: no i know, its not perfect :/
+2016-10-26 02:59:29	alcohol	i tried to keep it simple
+2016-10-26 02:59:40	<--	last_staff (~Thunderbi@79.135.14.226) has quit (Quit: last_staff)
+2016-10-26 02:59:58	Perun	resh: oh hmm I need it recursive
+2016-10-26 03:00:12	<--	corsibu (~corsibu@171.20.68.68) has quit (Remote host closed the connection)
+2016-10-26 03:00:27	-->	corsibu (~corsibu@171.20.68.68) has joined #bash
+2016-10-26 03:01:09	resh	Perun: still a FAQ.  i mean, the answer is in FAQ at wiki.wooledge.org, link in the topic
+2016-10-26 03:01:20	<--	alex1a (~alex1a@a81-84-38-221.cpe.netcabo.pt) has quit (Read error: Connection reset by peer)
+2016-10-26 03:01:44	<--	star_prone (~sviatovig@81.89.12.66) has quit (Remote host closed the connection)
+2016-10-26 03:02:03	Perun	resh: aaaa there is a link hehe sorry... thx
+2016-10-26 03:02:04	Kingsy	Is this --> [[ $BUILD_ENV = "dev" ]]; then echo 1; else echo 2; fi <-- valid in /bin/sh ? looks like it gives me a syntax error
+2016-10-26 03:02:13	-->	star_prone (~sviatovig@81.89.12.66) has joined #bash
+2016-10-26 03:02:32	alcohol	Kingsy: i think sh only supports [], not [[]]
+2016-10-26 03:02:39	<--	nikivi (~nikivi@131.155.203.84) has quit (Quit: irc)
+2016-10-26 03:02:39	Kingsy	got ya
+2016-10-26 03:02:43	alcohol	Kingsy: but it is situational
+2016-10-26 03:02:58	alcohol	Kingsy: as in, it depends on what /bin/sh is :p
+2016-10-26 03:03:12	Kingsy	alcohol: http://hastebin.com/apikiqumoy.bash
+2016-10-26 03:03:12	pasteban	Paste is available without javascript on http://hastebin.com/raw/apikiqumoy
+2016-10-26 03:03:29	alcohol	you're missing if
+2016-10-26 03:03:36	alcohol	its [] && do something
+2016-10-26 03:03:40	alcohol	or if []; then .. done
+2016-10-26 03:03:49	alcohol	s/done/fi/
+2016-10-26 03:04:05	Kingsy	alcohol: /bin/sh if [ $BUILD_ENV = "dev" ]; then echo 1; else echo 2; fi <-- gives me the same result.
+2016-10-26 03:04:05		[03:04]
+2016-10-26 03:04:24	-->	ash_workz (~chatzilla@50-243-5-153-static.hfc.comcastbusiness.net) has joined #bash
+2016-10-26 03:04:31	resh	# : Perun; mkdir a b; >a/bla.php >b/blu.php; find -name '*.php' -execdir bash -c 'set -- "${1#./}"; mv "$1" "foo_$1"' -- {} ';'; echo $(: print what we have now:; find)
+2016-10-26 03:04:32	shbot1	resh: . ./b ./b/foo_blu.php ./a ./a/foo_bla.php ./.bashrc ./.mkshrc
+2016-10-26 03:04:48	alcohol	try /bin/sh -c 'if [ $BUILD_ENV = "dev" ]; then echo 1; else echo 2; fi' ?
+2016-10-26 03:04:51	alcohol	:/
+2016-10-26 03:04:53	alcohol	i dunno
+2016-10-26 03:05:01	-->	kurkale6ka (~kurkale6k@win.ops.offices.venntro.com) has joined #bash
+2016-10-26 03:05:06	Kingsy	that worked...
+2016-10-26 03:05:13	Kingsy	hrm, what happened there..
+2016-10-26 03:05:17	resh	you should always put quotes around all variable substitutions in [ ... ] in sh
+2016-10-26 03:05:34	kurkale6ka	sh# [ 3 -le 3 ] && echo yes
+2016-10-26 03:05:35	shbot1	kurkale6ka: yes
+2016-10-26 03:05:40	kurkale6ka	sh# [ 3 -lt 3 ] && echo yes
+2016-10-26 03:05:41	shbot1	kurkale6ka: no output
+2016-10-26 03:05:46	<--	scrimple (~scrimple@195.30.121.97) has quit (Remote host closed the connection)
+2016-10-26 03:05:59	alcohol	Kingsy: running a script != passing arguments to the bash interpreter from the command line
+2016-10-26 03:06:54	-->	scrimple (~scrimple@195.30.121.97) has joined #bash
+2016-10-26 03:07:02	-->	ER_nesto (~Ernesto@host81-131-234-16.range81-131.btcentralplus.com) has joined #bash
+2016-10-26 03:07:39	alcohol	geirha: the case works nicely for -*, but not really for all the other commands :(
+2016-10-26 03:08:02	<--	aw1 (~aw1@unaffiliated/aw1) has quit (Ping timeout: 256 seconds)
+2016-10-26 03:08:05	geirha	is_command() { awk -v prefix="$1" 'BEGIN {for (i = 1; i < ARGC; ++i) if (index(ARGV[i], prefix) == 1) count++; exit(count!=1)}'; }
+2016-10-26 03:08:30	Kingsy	I see
+2016-10-26 03:08:32	geirha	err
+2016-10-26 03:08:38	Kingsy	I really need to read a resource on this.
+2016-10-26 03:08:39	-->	acetakwas (~acetakwas@154.65.5.250) has joined #bash
+2016-10-26 03:08:43	alcohol	awk.. as in awkward. i have no idea what that does :<
+2016-10-26 03:08:44	Kingsy	Any recommended guides?
+2016-10-26 03:08:46	geirha	is_command() { awk -v prefix="$1" 'BEGIN {for (i = 1; i < ARGC; ++i) if (index(ARGV[i], prefix) == 1) count++; exit(count!=1)}' about archive browse ...; }
+2016-10-26 03:09:10	-->	dking_desktop (~danielk@vbo1.inmotionhosting.com) has joined #bash
+2016-10-26 03:09:36	<--	cmd-t (73f805c1@gateway/web/freenode/ip.115.248.5.193) has quit (Ping timeout: 260 seconds)
+2016-10-26 03:09:40	geirha	it counts how many of the arguments starts with the prefix, and exits with success if the count is exactly 1
+2016-10-26 03:09:57	-->	SuperG (~SuperG@195.171.92.42) has joined #bash
+2016-10-26 03:10:22	ash_workz	when I do this [ https://gist.github.com/anonymous/fd57f9d82c6ac1be656e28f8851e5b76 ] is "hello" not indented?
+2016-10-26 03:10:44	geirha	indentation is included
+2016-10-26 03:10:55	geirha	but read is trimming leading and trailing whitespace
+2016-10-26 03:11:07	geirha	'IFS= read -rd '' var << 'EOF'
+2016-10-26 03:11:10	geirha	err
+2016-10-26 03:11:12	geirha	IFS= read -rd '' var << 'EOF'
+2016-10-26 03:11:14	ash_workz	I see
+2016-10-26 03:11:20	ash_workz	thanks
+2016-10-26 03:11:30	-->	cdg (~cdg@157.166.173.5) has joined #bash
+2016-10-26 03:12:19	geirha	you can't use mapfile?
+2016-10-26 03:12:25	geirha	mapfile -t lines << 'EOF'
+2016-10-26 03:12:25	geirha	and then  printf '%s\n' "${lines[@]}"
+2016-10-26 03:12:39	alcohol	geirha: nice idea.. and I dont mean to devalue it, but you forgot an edge-case :<
+2016-10-26 03:12:47	<--	dking_desktop (~danielk@vbo1.inmotionhosting.com) has left #bash
+2016-10-26 03:12:52	alcohol	geirha: why is now unusable cause it matches why-not
+2016-10-26 03:13:08	geirha	ah
+2016-10-26 03:14:01	resh	... if (prefix != "why-not" && index(ARGV[...
+2016-10-26 03:14:02	geirha	is_command() { awk -v prefix="$1" 'BEGIN {for (i = 1; i < ARGC; ++i) { if (ARGV[i] == prefix) exit(0); if (index(ARGV[i], prefix) == 1) count++; }; exit(count!=1)}' about archive browse ...; }
+2016-10-26 03:14:15	-->	skomorokh_ (~quassel@unaffiliated/skomorokh) has joined #bash
+2016-10-26 03:14:17	alcohol	geirha: also, self-update and selfupdate are basically an alias of each other. i need to make sure both are usable though, cause of legacy reasons :/
+2016-10-26 03:14:36	alcohol	but self cannot be used now :/
+2016-10-26 03:16:22	<--	uiyice (~uiyice@c-68-33-17-232.hsd1.md.comcast.net) has quit (Ping timeout: 250 seconds)
+2016-10-26 03:17:05	-->	wonderworld (~ww@dslb-088-075-028-175.088.075.pools.vodafone-ip.de) has joined #bash
+2016-10-26 03:17:35	geirha	is_command() { case $1 in self-*) set -- "self${1#self-}" ;; esac; awk -v prefix="$1"...
+2016-10-26 03:17:38	alcohol	i'm almost considering just calling composer $1 --help, if it cannot expand the input it will error and return an error exit code
+2016-10-26 03:17:49	geirha	turns self-foo into selffoo first
+2016-10-26 03:18:32	geirha	could do that in the awk script too
+2016-10-26 03:18:39	-->	MaBunny (~Peter@45.250.58.190) has joined #bash
+2016-10-26 03:19:06	--	MaBunny is now known as OtakuSenpai
+2016-10-26 03:19:06		[03:19]
+2016-10-26 03:20:11	geirha	oh wait
+2016-10-26 03:20:25	geirha	it only matters for se, sel self
+2016-10-26 03:20:35	geirha	no just sel self
+2016-10-26 03:21:16	geirha	is_command() { case $1 in sel | self | why) return 0 ;; esac; awk -v prefix="$1"...
+2016-10-26 03:21:17	-->	uiyice (~uiyice@c-68-33-17-232.hsd1.md.comcast.net) has joined #bash
+2016-10-26 03:21:22	alcohol	s and se will always conflict yes, sel and self are valid
+2016-10-26 03:21:41	-->	aw1 (~aw1@unaffiliated/aw1) has joined #bash
+2016-10-26 03:21:53	alcohol	should I quote $1 there?
+2016-10-26 03:21:59	alcohol	in the case
+2016-10-26 03:22:12	geirha	not necessary, as the case word is not subjected to word splitting or pathname expansion
+2016-10-26 03:22:19	KnightsWhoSayNi	case is one of the few cases (pun intended) you dont need to
+2016-10-26 03:22:56	geirha	clear-cache and dump-autoload look like special cases too
+2016-10-26 03:23:11	-->	anonymuse (~anonymuse@65.209.61.114) has joined #bash
+2016-10-26 03:23:14	alcohol	yeah.. true
+2016-10-26 03:24:13	<--	rafi (~Thunderbi@223.186.215.120) has quit (Ping timeout: 245 seconds)
+2016-10-26 03:24:22	-->	GinoManWorks (~GinoMan@50-251-53-110-static.hfc.comcastbusiness.net) has joined #bash
+2016-10-26 03:24:33	alcohol	so the case $1 in self-*) set -- "self${1#self-}" ;; esac; is probably safer since i can apply it for all 3 easily
+2016-10-26 03:24:47	alcohol	with 3 cases
+2016-10-26 03:24:50	geirha	So allowing any unique prefix like that is not a good idea. Hard to implement, and if you add a new command, it may break existing usage
+2016-10-26 03:24:51	alcohol	err, 3 expressions
+2016-10-26 03:24:53	<--	ZIPY (~ZIPY@unaffiliated/zipy) has left #bash
+2016-10-26 03:25:03	<--	serialoverflow (~znc@pc9.gatrobe.uni-hannover.de) has quit (Ping timeout: 250 seconds)
+2016-10-26 03:25:44	alcohol	geirha: fair enough. so maybe my ugly hack by calling composer $1 --help is the most "safe" approach ? :<
+2016-10-26 03:26:10	-->	arin0v (~arinov@178.90.43.31) has joined #bash
+2016-10-26 03:27:21	geirha	probably, and instead make specific aliases, like allowing up for update (but not upd)
+2016-10-26 03:27:33	-->	serialoverflow (~znc@pc9.gatrobe.uni-hannover.de) has joined #bash
+2016-10-26 03:27:53	-->	hahuang65 (~hahuang65@2601:647:4000:d7:c0af:32d8:6a81:1d07) has joined #bash
+2016-10-26 03:28:55	<--	StrongJava (~tim_rohre@65-101-6-61.dia.static.qwest.net) has quit (Remote host closed the connection)
+2016-10-26 03:29:53	<--	ar1nov (~arinov@37.151.212.47) has quit (Ping timeout: 260 seconds)
+2016-10-26 03:30:33	-->	StrongJava (~tim_rohre@65-101-6-61.dia.static.qwest.net) has joined #bash
+2016-10-26 03:31:07	<--	pcre (~quassel@2a03:2260:11b:0:94d4:e9d2:b11d:76ca) has quit (Ping timeout: 250 seconds)
+2016-10-26 03:32:08	<--	hahuang65 (~hahuang65@2601:647:4000:d7:c0af:32d8:6a81:1d07) has quit (Ping timeout: 245 seconds)
+2016-10-26 03:33:09	<--	dinfuehr (~dinfuehr@62-47-188-3.adsl.highway.telekom.at) has quit (Ping timeout: 260 seconds)
+2016-10-26 03:33:56	-->	dinfuehr (~dinfuehr@188-23-213-174.adsl.highway.telekom.at) has joined #bash
+2016-10-26 03:34:06	<--	TomyWork (~tomy@85.199.84.100) has quit (Ping timeout: 256 seconds)
+2016-10-26 03:34:06		[03:34]
+2016-10-26 03:36:37	-->	pcre (~quassel@anon-35-86.vpn.ipredator.se) has joined #bash
+2016-10-26 03:36:57	-->	undef (~undef@35.243.46.84.mobile.mezon.lt) has joined #bash
+2016-10-26 03:37:38	-->	TanPy (~tanpy@tst-ext.thestreet.com) has joined #bash
+2016-10-26 03:37:46	undef	hello why this doesnt return any result
+2016-10-26 03:37:46	undef	RESULT=$(mycommand) &
+2016-10-26 03:37:47	undef	wait
+2016-10-26 03:37:47	undef	echo $RESULT
+2016-10-26 03:37:52	-->	troulouliou_div2 (~troulouli@unaffiliated/troulouliou-div2/x-0271439) has joined #bash
+2016-10-26 03:38:29	<--	resh (~resh@80.83.239.72) has quit (Ping timeout: 260 seconds)
+2016-10-26 03:38:29	undef	I want to run command in the background and get output
+2016-10-26 03:38:59	-->	CEnnis91 (uid3543@gateway/web/irccloud.com/x-opewxllswrcwwnex) has joined #bash
+2016-10-26 03:39:29	-->	Tanta (~tanta@50-201-37-70-static.hfc.comcastbusiness.net) has joined #bash
+2016-10-26 03:41:15	han-solo	# result=$(printf "hello world") & printf "$result"
+2016-10-26 03:41:16	shbot1	han-solo: [1] 35
+2016-10-26 03:41:32	dreisner	undef: you won't, it's happening in a subshell. you'd have to write the result to a file and read it back in after the job completes.
+2016-10-26 03:43:06	han-solo	# result=$(printf "hello world"); export result & printf "$result"
+2016-10-26 03:43:07	shbot1	han-solo: [1] 36
+2016-10-26 03:43:07	shbot1	han-solo: hello world
+2016-10-26 03:43:11	undef	yeh thank you got it after some googling found this
+2016-10-26 03:43:33	dreisner	han-solo: that's not an accurate test.
+2016-10-26 03:43:41	han-solo	yeah
+2016-10-26 03:43:42	alyptik	#exec 9<>$(mktemp); printf "hello world" >&9 2>&1 & ( exec <&9; cat ) 
+2016-10-26 03:43:52	undef	how to suppress pid?
+2016-10-26 03:44:05	-->	systemovich (~user@dsl-197-245-59-152.voxdsl.co.za) has joined #bash
+2016-10-26 03:44:06	-->	moby (~moby@187-127-179-194.user.veloxzone.com.br) has joined #bash
+2016-10-26 03:44:07	han-solo	suppress?
+2016-10-26 03:44:19	dreisner	undef: do it from a script, not your commandline
+2016-10-26 03:44:19	-->	iamawesome (~shibly@unaffiliated/shibly) has joined #bash
+2016-10-26 03:44:23	undef	dont include it in the output
+2016-10-26 03:44:25	<--	iamawesome (~shibly@unaffiliated/shibly) has left #bash
+2016-10-26 03:44:27	-->	andyhoang2 (~andyhoang@171.250.5.64) has joined #bash
+2016-10-26 03:44:28	<--	terrasapien (~pi@d154-20-235-212.bchsia.telus.net) has quit (Read error: Connection reset by peer)
+2016-10-26 03:44:30	<--	johnmilton (~johnmilto@192.206.23.197) has quit (Quit: Namaste)
+2016-10-26 03:44:32	<--	cd80 (~bf3@gateway/vpn/privateinternetaccess/emul16) has quit (Ping timeout: 260 seconds)
+2016-10-26 03:44:47	alyptik	# exec 9<>$(mktemp); printf "hello world" >&9 2>&1 & ( exec <&9; cat )  
+2016-10-26 03:44:48	shbot1	alyptik: [1] 36
+2016-10-26 03:44:48	shbot1	alyptik: [1]+  Done                    printf "hello world" 1>&9 2>&1
+2016-10-26 03:44:59	<--	_ng (ngoldin@nat/redhat/x-yoyasvsuljbtmjff) has quit (Ping timeout: 256 seconds)
+2016-10-26 03:45:00	alyptik	guess not
+2016-10-26 03:45:27	-->	terrasapien (~pi@d154-20-235-212.bchsia.telus.net) has joined #bash
+2016-10-26 03:45:52	<--	uiyice (~uiyice@c-68-33-17-232.hsd1.md.comcast.net) has quit (Ping timeout: 276 seconds)
+2016-10-26 03:46:08	-->	johnmilton (~johnmilto@192.206.23.197) has joined #bash
+2016-10-26 03:46:29	undef	alyptik: this command looks like it might could destroy my computer
+2016-10-26 03:46:53	alyptik	it is a hacky was to write to an rw FD and rewind it
+2016-10-26 03:47:01	alyptik	s/was/way
+2016-10-26 03:47:20	-->	fakenerd (~fakenerd@183.129.21.200) has joined #bash
+2016-10-26 03:47:34	<--	pheanex (~pheanex@2001-4dd6-927f-0-4cc0-f80-721b-2ada.ipv6dyn.netcologne.de) has quit (Remote host closed the connection)
+2016-10-26 03:47:35	undef	nic
+2016-10-26 03:48:21	-->	AaronMT (~textual@66.207.193.22) has joined #bash
+2016-10-26 03:48:24	-->	MrPockets (~John@unaffiliated/mrpockets) has joined #bash
+2016-10-26 03:48:25	MrPockets	Word!
+2016-10-26 03:48:40	alyptik	Preposition!
+2016-10-26 03:48:43	-->	NimeshNeema (uid2689@gateway/web/irccloud.com/x-grgigpkjwbanqwed) has joined #bash
+2016-10-26 03:49:14	<--	moby (~moby@187-127-179-194.user.veloxzone.com.br) has left #bash ("Leaving")
+2016-10-26 03:49:14		[03:49]
+2016-10-26 03:51:21	-->	vuoto (~vuoto@80-71-135-9.u.parknet.dk) has joined #bash
+2016-10-26 03:52:14	-->	cd80 (~bf3@46.166.137.230) has joined #bash
+2016-10-26 03:52:33	<--	|spathi| (~benton@bzq-79-176-142-70.red.bezeqint.net) has quit (Ping timeout: 245 seconds)
+2016-10-26 03:52:40	<--	sokle (~s0k1e@178-173-153.dynamic.cyta.gr) has left #bash
+2016-10-26 03:53:31	-->	trojan1347 (~connor@li1253-45.members.linode.com) has joined #bash
+2016-10-26 03:54:24	<--	cdown (~cdown@199.201.64.4) has quit (Ping timeout: 265 seconds)
+2016-10-26 03:54:48	<--	linux_g10 (~g10@196-210-55-235.dynamic.isadsl.co.za) has quit (Ping timeout: 260 seconds)
+2016-10-26 03:55:13	-->	TomyLobo (~TomyLobo@2a02:8109:87c0:20c:95ab:4cf0:ca61:77d0) has joined #bash
+2016-10-26 03:55:16	-->	zarac (~kev@unaffiliated/zarac) has joined #bash
+2016-10-26 03:55:58	-->	lonewulf` (~lonewulf@unaffiliated/lonewulf/x-3292126) has joined #bash
+2016-10-26 03:55:58	zarac	can i do something like `  echo ($FOO || 'bar')  ` ?? to echo bar if $FOO is not set?
+2016-10-26 03:56:21	-->	uiyice (~uiyice@c-68-33-17-232.hsd1.md.comcast.net) has joined #bash
+2016-10-26 03:57:46	<--	scrimple (~scrimple@195.30.121.97) has quit (Ping timeout: 244 seconds)
+2016-10-26 03:57:58	-->	scrimple (~scrimple@195.30.121.97) has joined #bash
+2016-10-26 04:00:09	<--	Riyria (~Riyria@machine77.Level3.com) has quit (Quit: The most interesting network tech in the world... Stay adjacent, my friends.)
+2016-10-26 04:00:21	-->	_ng (ngoldin@nat/redhat/x-lfwznkipqwcjcuaf) has joined #bash
+2016-10-26 04:00:25	Soliton	# echo "${FOO-bar}"
+2016-10-26 04:00:26	shbot1	Soliton: bar
+2016-10-26 04:00:30	-->	linux_g10 (~g10@196-215-7-228.dynamic.isadsl.co.za) has joined #bash
+2016-10-26 04:01:16	<--	uiyice (~uiyice@c-68-33-17-232.hsd1.md.comcast.net) has quit (Ping timeout: 260 seconds)
+2016-10-26 04:03:23	<--	johnmilton (~johnmilto@192.206.23.197) has quit (Quit: Namaste)
+2016-10-26 04:03:44	<--	twistedpixels (~twistedpi@unaffiliated/twistedpixels) has quit (Read error: Connection reset by peer)
+2016-10-26 04:04:40	-->	johnmilton (~johnmilto@192.206.23.197) has joined #bash
+2016-10-26 04:04:40		[04:04]
+2016-10-26 04:04:52	-->	uiyice (~uiyice@c-68-33-17-232.hsd1.md.comcast.net) has joined #bash
+2016-10-26 04:05:43	-->	kurahaupo__ (~kurahaupo@ppp118-211-210-54.bras1.syd2.internode.on.net) has joined #bash
+2016-10-26 04:07:03	-->	Darby_Crash (~Darby_Cra@net-31-27-188-125.cust.vodafonedsl.it) has joined #bash
+2016-10-26 04:10:18	<--	Alex-SF (~Alex-SF@c-71-198-228-84.hsd1.ca.comcast.net) has quit (Ping timeout: 252 seconds)
+2016-10-26 04:10:59	<--	tlaxkit (~Thunderbi@92.177.99.40) has quit (Remote host closed the connection)
+2016-10-26 04:10:59	-->	pandaadb (~pandaadb@94.198.186.66) has joined #bash
+2016-10-26 04:11:17	-->	tlaxkit (~Thunderbi@92.177.99.40) has joined #bash
+2016-10-26 04:11:33	pandaadb	hi - can someone please tell me how to write a variable into a date command so that it uses the variables value instead of using the string?
+2016-10-26 04:11:36	pandaadb	i have: FROM=`date --utc +%FT%T.%3NZ -d '${!DAYS} days ago 00:00:00'`
+2016-10-26 04:11:53	pandaadb	and i am not sure how to expand the DAYS variable because of the single quote character
+2016-10-26 04:12:01	dreisner	don't use single quotes.
+2016-10-26 04:12:14	dreisner	use double quotes. that's what they're for.
+2016-10-26 04:12:35	<--	vuoto (~vuoto@80-71-135-9.u.parknet.dk) has quit (Quit: Lost terminal)
+2016-10-26 04:12:36	undef	same like php double quotes
+2016-10-26 04:13:06	pandaadb	see .. now i feel stupid for not trying that in the first place :D thank you that worked perfectly fine
+2016-10-26 04:13:28	pandaadb	somehow i thought there was a difference with when to use what quotes
+2016-10-26 04:13:32	kurahaupo__	pandaadb: you probably don't want that ! either
+2016-10-26 04:13:55	kurahaupo__	pandaadb: and please use $() instead of ``
+2016-10-26 04:14:31	pandaadb	oh is the `` bad practice?
+2016-10-26 04:14:45	pandaadb	yeah the ! sign was because i got despearate and tried all sorts of things
+2016-10-26 04:15:06	kurahaupo__	!` > pandaadb
+2016-10-26 04:15:07	greybot	pandaadb: The backquote (`) is used in the old-style command substitution, e.g. foo=`command`. The foo=$(command) syntax is recommended instead. Backslash handling inside $() is less surprising, and $() is easier to nest. See http://mywiki.wooledge.org/BashFAQ/082
+2016-10-26 04:15:29	pandaadb	thank you!
+2016-10-26 04:16:06	kurahaupo__	pandaadb: are you sure that %3N does what you want?
+2016-10-26 04:17:25	pandaadb	kurahaupo__, it spits out a date of form: ommand`. The foo=$(command) syntax is recommended instead. Backslas
+2016-10-26 04:17:27	pandaadb	sorry
+2016-10-26 04:17:33	pandaadb	2015-10-27T00:00:00.000Z
+2016-10-26 04:17:49	pandaadb	so a zulu timestamp. I have to admit though i found that on stackoverflow
+2016-10-26 04:18:08	undef	is it possible to execute two command using -execdir
+2016-10-26 04:18:17	pandaadb	i think it means 3 miliseconds precission after the second
+2016-10-26 04:18:17	kurahaupo__	undef: yes
+2016-10-26 04:18:34	<--	S0rin_ (~S0rin@ns353173.ip-91-121-91.eu) has quit (Quit: WeeChat 1.5)
+2016-10-26 04:18:37	<--	corsibu (~corsibu@171.20.68.68) has quit (Ping timeout: 260 seconds)
+2016-10-26 04:18:48	undef	kurahaupo__: when I use ; or &&
+2016-10-26 04:18:50	kurahaupo__	pandaadb: that would be the naïve expectation yes, but I harbour doubts
+2016-10-26 04:18:51	undef	it gives error
+2016-10-26 04:18:53	<--	wonderworld (~ww@dslb-088-075-028-175.088.075.pools.vodafone-ip.de) has quit (Remote host closed the connection)
+2016-10-26 04:18:54	-->	S0rin (~S0rin@ns353173.ip-91-121-91.eu) has joined #bash
+2016-10-26 04:19:08	pandaadb	kurahaupo__, it works on my ubuntu 16.04
+2016-10-26 04:19:14	<--	cisstrd (~cisstrd@unaffiliated/cisstrd) has quit (Quit: WeeChat 1.4)
+2016-10-26 04:19:14	pandaadb	is there a safer way of formatting the date?
+2016-10-26 04:19:29	pandaadb	I assume it might behave differently on different platforms?
+2016-10-26 04:19:36	kurahaupo__	undef: well use the syntax dictated by find, since it's inside find, and not shell syntax
+2016-10-26 04:20:26	undef	got it
+2016-10-26 04:20:26		[04:20]
+2016-10-26 04:20:28	<--	cyphase (~cyphase@unaffiliated/cyphase) has quit (Ping timeout: 245 seconds)
+2016-10-26 04:20:32	kurahaupo__	pandaadb: including fractional seconds? no, that's about as good as you get
+2016-10-26 04:21:18	pandaadb	i think it should be fine then
+2016-10-26 04:21:31	pandaadb	though i guess i could just create the date, since my second precission is always 00.00.00.000
+2016-10-26 04:21:45	kurahaupo__	# date -d '12:34:56.78' +'%FT%T.%3N'
+2016-10-26 04:21:46	shbot1	kurahaupo__: 2016-10-26T12:34:56.780
+2016-10-26 04:22:08	kurahaupo__	well waddaya know, it works.
+2016-10-26 04:22:19	pandaadb	haha :)
+2016-10-26 04:22:52	kurahaupo__	special case handling for %N so it dwym
+2016-10-26 04:23:07	<--	geirha (geirha@gina.it.ntnu.no) has quit (Ping timeout: 250 seconds)
+2016-10-26 04:23:29	kurahaupo__	(otherwise inconsistently with other field widths)
+2016-10-26 04:24:34	<--	hadrig (~textual@hgen-hadrien.hgen.slu.se) has quit (Quit: My Mac Mini has gone to sleep. ZZZzzz…)
+2016-10-26 04:24:54	-->	b3h3m0th (uid26288@gateway/web/irccloud.com/x-lezytazktegympkp) has joined #bash
+2016-10-26 04:25:21	-->	cyphase (~cyphase@unaffiliated/cyphase) has joined #bash
+2016-10-26 04:25:59	-->	whippythellama (~whippythe@cpe-2606-A000-4FCA-D900-A87A-C9AB-AAEF-C156.dyn6.twc.com) has joined #bash
+2016-10-26 04:26:49	<--	Mowgli (~mowgli@182.74.206.26) has quit (Ping timeout: 276 seconds)
+2016-10-26 04:27:39	<--	zaphomet (~zed@95.211.174.229) has quit (Max SendQ exceeded)
+2016-10-26 04:27:47	-->	zaphomet (~zed@95.211.174.229) has joined #bash
+2016-10-26 04:29:49	<--	algun (~algun@unaffiliated/algun) has quit (Quit: algun)
+2016-10-26 04:32:51	-->	Alex-SF (~Alex-SF@c-71-198-228-84.hsd1.ca.comcast.net) has joined #bash
+2016-10-26 04:34:32	<--	devnull84 (~devnull84@196.15.203.251) has quit
+2016-10-26 04:34:40	-->	greycat (~wooledg@remote.wooledge.org) has joined #bash
+2016-10-26 04:35:34	jeffreylevesque	what's the cleanest way to remove spacing before, and trailing?
+2016-10-26 04:35:34		[04:35]
+2016-10-26 04:35:43	greycat	!faq trim
+2016-10-26 04:35:43	greybot	http://mywiki.wooledge.org/BashFAQ/067 -- How can I trim leading/trailing white space from one of my variables?
+2016-10-26 04:35:55	jeffreylevesque	thanks!
+2016-10-26 04:38:41	-->	Mowgli (~mowgli@123.176.34.117) has joined #bash
+2016-10-26 04:40:28	-->	dennisw (~dennis@104-10-140-195.lightspeed.hstntx.sbcglobal.net) has joined #bash
+2016-10-26 04:40:45	-->	rupesh_ (~rupesh@125.16.97.127) has joined #bash
+2016-10-26 04:41:29	-->	polymorphisme (~Icedove@2a01:e35:2421:ea10:7627:eaff:fe50:a29b) has joined #bash
+2016-10-26 04:41:39	-->	Lew2354 (Lew2354@79-66-4-112.dynamic.dsl.as9105.com) has joined #bash
+2016-10-26 04:42:30	Lew2354	hey there, anyone here free to help me fix this small linux batch script?
+2016-10-26 04:42:45	Lew2354	bash*
+2016-10-26 04:42:52	<--	HerbY_NL2 (~HerbY_NL2@2001:67c:2564:518:7c4b:9863:1043:b2ff) has quit (Quit: Leaving)
+2016-10-26 04:43:01	-->	djoularef (~DanJ@88.207.207.59) has joined #bash
+2016-10-26 04:43:11	<--	Jameser (~textual@60.24.142.163) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-10-26 04:43:12	_adb	!ask
+2016-10-26 04:43:12	greybot	If you have a question, please just ask it. Don't look for topic experts. Don't ask to ask. Don't PM! Don't ask if people are awake, or in the mood to help. Just ask the question straight out, and be patient waiting for an answer. http://mywiki.wooledge.org/NetEtiquette
+2016-10-26 04:43:35	<--	AquaL1te (~AquaL1te@unaffiliated/aqual1te) has quit (Quit: leaving)
+2016-10-26 04:43:56	-->	hadrig (~textual@hgen-hadrien.hgen.slu.se) has joined #bash
+2016-10-26 04:44:03	Lew2354	Id need help privately
+2016-10-26 04:44:15	greycat	*plonk*
+2016-10-26 04:44:23	Lew2354	?
+2016-10-26 04:44:28	han-solo	meh
+2016-10-26 04:44:33	han-solo	why?
+2016-10-26 04:44:43	djoularef	Hello. could somebody explain one thing. I'm running a command that will run on remote host (for ex. /etc/apache --restart) but I want to save the output on local machine from where I run the command. How to do this ?
+2016-10-26 04:44:48	Lew2354	hard to explain and easier that way
+2016-10-26 04:45:00	han-solo	!script
+2016-10-26 04:45:00	greybot	script(1) allows you to record an interactive session in a terminal. Also, you can use it instead of expect(1) for simple tasks, because it creates a pty.
+2016-10-26 04:45:10	han-solo	that's just the whole session
+2016-10-26 04:45:11	greycat	ssh shovels the server command's stdout and stderr back through to the client.  Just redirect as you normally would.
+2016-10-26 04:45:14	han-solo	err
+2016-10-26 04:45:47	greycat	ssh root@server /etc/apache --restart >client.log 2>&1
+2016-10-26 04:46:23	djoularef	greycat thanks, I give it a try
+2016-10-26 04:46:28	Lew2354	han-solo would you have the time to spare 10 mins or so ?
+2016-10-26 04:46:45	han-solo	I don't know much about anything
+2016-10-26 04:46:52	han-solo	why don't you ask in here
+2016-10-26 04:47:17	Lew2354	would be easier in private chat
+2016-10-26 04:47:18	phy1729	Lew2354: asking for help in private will almost certainly result in no one helping you
+2016-10-26 04:47:19	<--	Mowgli (~mowgli@123.176.34.117) has quit (Ping timeout: 256 seconds)
+2016-10-26 04:47:32	Lew2354	I dont know why ?
+2016-10-26 04:47:48	han-solo	Lew2354: Ask in here. It'll only do you good
+2016-10-26 04:48:00	Meanderthal	Lew2354: I probably can't help but I'd like to see the script.  :)
+2016-10-26 04:48:08	Lew2354	Okay, just dont want to spam the chat haha
+2016-10-26 04:48:15	phy1729	!paste
+2016-10-26 04:48:15	greybot	Paste short snippets (up to 5 lines) in channel. Paste more using https://gist.github.com/ or http://sprunge.us/ (see !sprunge). Please don't use pastebin.com, it's full of ads and has the annoying habit of adding whitespace
+2016-10-26 04:49:16	Lew2354	sec
+2016-10-26 04:50:26	-->	th299792458 (~Thunderbi@wcw-staff-145-18-165-26.wireless.uva.nl) has joined #bash
+2016-10-26 04:51:01	Lew2354	Its supposed to copy the files with the name of the parent directory, count from 1 onwards and keep the file extension, basically if i have a file thats being copied from a directory like /mnt/sdb1/flashmem3/industry named IMG_0028.JPG (or whatever the name is) it should be renamed to what ever the parent directory is and should be counted so IMG_0028.JPG becomes industry1.JPG and another would
+2016-10-26 04:51:01		[04:51]
+2016-10-26 04:51:01	Lew2354	be industry2.JPG same with .doc etc etc  I know i need to add dirname or something but not sure on how to do it also I removed the extra $2
+2016-10-26 04:51:02	Lew2354	http://pastebin.com/raw/M6BxtUSM
+2016-10-26 04:51:14	Soliton	!check
+2016-10-26 04:51:14	checkbot	Soliton: No comments
+2016-10-26 04:51:31	Lew2354	heres what happens
+2016-10-26 04:51:31	Lew2354	http://imgur.com/pBF7REB
+2016-10-26 04:51:33	<--	ZyX-I (~ZyX-I@broadband-77-37-230-77.nationalcablenetworks.ru) has quit (Ping timeout: 260 seconds)
+2016-10-26 04:51:37	-->	hwcomcn (~hwcomcn@114.217.188.28) has joined #bash
+2016-10-26 04:51:42	-->	est31 (~quassel@gateway/tor-sasl/est31) has joined #bash
+2016-10-26 04:52:12	--	tsbtmn_ is now known as tsbtmn
+2016-10-26 04:52:23	Lew2354	it also needs to copy into directories so if there are multiple directories it would go through them all
+2016-10-26 04:52:34	<--	th299792458 (~Thunderbi@wcw-staff-145-18-165-26.wireless.uva.nl) has left #bash
+2016-10-26 04:52:54	-->	patadasAlHigado (~patadasAl@asavpn242231.vpn.mcgill.ca) has joined #bash
+2016-10-26 04:53:01	-->	kpease (~kpease@pool-72-74-171-203.bstnma.fios.verizon.net) has joined #bash
+2016-10-26 04:53:04	<--	_ADN_ (~ADN@212.161.49.106) has quit (Ping timeout: 260 seconds)
+2016-10-26 04:53:42	-->	xall_ (~xall@ip68-230-65-100.ph.ph.cox.net) has joined #bash
+2016-10-26 04:54:02	Soliton	!check http://pastebin.com/raw/M6BxtUSM
+2016-10-26 04:54:02	checkbot	Soliton: No comments
+2016-10-26 04:54:10	Soliton	odd.
+2016-10-26 04:54:17	Lew2354	what ?
+2016-10-26 04:54:21	Soliton	!qefe > Lew2354
+2016-10-26 04:54:21	greybot	Lew2354: "$Quote" "$Every" "$Fucking" "$Expansion"
+2016-10-26 04:54:24	Meanderthal	Try a bash shebang.
+2016-10-26 04:54:36	Meanderthal	maybe    I don;t know anything
+2016-10-26 04:54:54	-->	linuxd00d (~g10@196-215-7-176.dynamic.isadsl.co.za) has joined #bash
+2016-10-26 04:55:05	Lew2354	yeah ive quoted them as well
+2016-10-26 04:55:15	<--	[diablo] (~miles@unaffiliated/miles/x-000000001) has quit (Quit: Leaving)
+2016-10-26 04:55:18	Soliton	there's a lot of quotes missing.
+2016-10-26 04:55:29	<--	linux_g10 (~g10@196-215-7-228.dynamic.isadsl.co.za) has quit (Ping timeout: 260 seconds)
+2016-10-26 04:55:29	Lew2354	ive just added around the $1's
+2016-10-26 04:55:44	Soliton	for example here: cccpsub $1/$cfile/
+2016-10-26 04:55:45	-->	cdown (~cdown@12.37.166.67) has joined #bash
+2016-10-26 04:56:54	Soliton	paste your script into shellcheck.net and it'll hopefully tell you all places.
+2016-10-26 04:57:06	_adb	line 4. what's the best way to quote that to safely expand and still get globbing? would it be like this: "$1"/.*
+2016-10-26 04:57:08	<--	Filystyn (~piotr@unaffiliated/filystyn) has quit (Quit: Konversation terminated!)
+2016-10-26 04:57:20	-->	keltim (~keltim@173.212.48.130) has joined #bash
+2016-10-26 04:57:24	greycat	.* is a very dangerous glob, but otherwise that quoting is correct
+2016-10-26 04:57:35	-->	keltim_ (~keltim@173.212.48.130) has joined #bash
+2016-10-26 04:57:35	Lew2354	yeah ive quoted that, thank you
+2016-10-26 04:57:44	greycat	if he's using .* in a script, that's probably the root of every problem
+2016-10-26 04:57:50	Lew2354	its due Fri morn tho im stressing a bit haha
+2016-10-26 04:57:59	greycat	# echo .*
+2016-10-26 04:58:00	shbot1	greycat: . .. .bashrc .mkshrc
+2016-10-26 04:58:28	Lew2354	huh?
+2016-10-26 04:58:47	<--	Alex-SF (~Alex-SF@c-71-198-228-84.hsd1.ca.comcast.net) has quit (Quit: Alex-SF)
+2016-10-26 04:59:22	-->	bkolden (~bkolden@cpe-104-172-195-0.socal.res.rr.com) has joined #bash
+2016-10-26 04:59:23	-->	ahmed_elgabri (~ahmedelga@212.123.217.154) has joined #bash
+2016-10-26 04:59:58	<--	xall_ (~xall@ip68-230-65-100.ph.ph.cox.net) has quit (Ping timeout: 276 seconds)
+2016-10-26 05:00:17	pandaadb	hi - i have another single quote character issue which is this:$(es2csv.py -u ${URL} -q '${QUERY}' -o ${FILENAME} -i ${INDEX} -r -f ${FIELDS})
+2016-10-26 05:00:24	<--	OS-16517 (OS-16517@unaffiliated/os-16517) has quit (Remote host closed the connection)
+2016-10-26 05:00:32	pandaadb	QUERY is a json argument. So it has a lot of double quote characters in it
+2016-10-26 05:00:37	<--	linuxd00d (~g10@196-215-7-176.dynamic.isadsl.co.za) has quit (Ping timeout: 276 seconds)
+2016-10-26 05:00:47	greycat	Use double quotes instead of single quotes if you want the expansion inside it to occur.
+2016-10-26 05:00:47	Hello71	!quotes
+2016-10-26 05:00:47	greybot	http://mywiki.wooledge.org/Quotes
+2016-10-26 05:00:47	pandaadb	which is why i am trying to put it into a single quote argument which is how i manually execute it
+2016-10-26 05:00:48	Hello71	!guide
+2016-10-26 05:00:48	greybot	<http://mywiki.wooledge.org/BashGuide>. PDF: <http://s.ntnu.no/bashguide.pdf>. Also lhunath's newer version (work in progress): <http://guide.bash.academy>
+2016-10-26 05:00:53	<--	bl4ckpajamas (~Blackpaja@mail.cria.ca) has quit (Remote host closed the connection)
+2016-10-26 05:01:14	pandaadb	so with double quotes it gets confused because of the double quotes in QUERY itself
+2016-10-26 05:01:22	greycat	Doesn't *matter* what's in the variable.  "$json" is correctly quoted.
+2016-10-26 05:01:23	-->	ponyrider (~cf2iqx@unaffiliated/ponyrider) has joined #bash
+2016-10-26 05:01:29	<--	ahmedelgabri (~ahmedelga@212.123.217.154) has quit (Ping timeout: 256 seconds)
+2016-10-26 05:01:36	Lew2354	greycat anything obvious thats wrong with it ?
+2016-10-26 05:02:15	greycat	json='{"foo":"bar" etc.}'; x=$(ecthing "$json")
+2016-10-26 05:02:29	-->	crayon (~user@argenla.tor-exit.network) has joined #bash
+2016-10-26 05:02:36	<--	crayon (~user@argenla.tor-exit.network) has quit (Changing host)
+2016-10-26 05:02:36	-->	crayon (~user@unaffiliated/crayon) has joined #bash
+2016-10-26 05:02:57	<--	jlf (~user@pdpc/supporter/active/jlf) has quit (Ping timeout: 260 seconds)
+2016-10-26 05:02:58	<--	aw1 (~aw1@unaffiliated/aw1) has quit (Quit: Leaving)
+2016-10-26 05:03:35	pandaadb	greycat, even if it is correctly quotes, doesn't it depend on the es2csv script that i am using to interpret it correctly?
+2016-10-26 05:03:38	Lew2354	Just need to sort this function and its done im sure
+2016-10-26 05:03:52	pandaadb	it also seems to be adding random characters when i enable debugging
+2016-10-26 05:04:07	-->	linuxd00d (~g10@196-210-55-249.dynamic.isadsl.co.za) has joined #bash
+2016-10-26 05:04:10	greycat	!quotes
+2016-10-26 05:04:10	greybot	http://mywiki.wooledge.org/Quotes
+2016-10-26 05:04:11	greycat	Read that.
+2016-10-26 05:04:40	<--	star_prone (~sviatovig@81.89.12.66) has quit (Remote host closed the connection)
+2016-10-26 05:04:49	pandaadb	like: http://pastebin.com/Nb4hkv1C - wich seems to be adding new lines
+2016-10-26 05:04:49	pasteban	Paste is available without ads on http://pastebin.com/raw?i=Nb4hkv1C
+2016-10-26 05:05:20	-->	star_prone (~sviatovig@81.89.12.66) has joined #bash
+2016-10-26 05:05:24	greycat	whatever 0-109-dynamic.dk.customer.tdc.net] joined
+2016-10-26 05:05:24	greycat	          #NetHack
+2016-10-26 05:05:28	greycat	crap
+2016-10-26 05:05:29	<--	TheRinger (~TheRinger@c-73-35-211-122.hsd1.wa.comcast.net) has quit (Remote host closed the connection)
+2016-10-26 05:05:36	greycat	whatevet http://pastebin.com/Nb4hkv1C is, it's not bash.
+2016-10-26 05:05:36	pasteban	Paste is available without ads on http://pastebin.com/raw?i=Nb4hkv1C
+2016-10-26 05:05:41	han-solo	damn, i cannot access pastebin :/
+2016-10-26 05:05:50	greycat	Yeah, pastebin.com is EVIL.
+2016-10-26 05:06:02	<--	star_prone (~sviatovig@81.89.12.66) has quit (Remote host closed the connection)
+2016-10-26 05:06:02		[05:06]
+2016-10-26 05:06:05	greycat	There is NO fucking context in his pastebin at all.
+2016-10-26 05:06:05	han-solo	but it was very curl friendly
+2016-10-26 05:06:11	greycat	Line one is literally: -q '
+2016-10-26 05:06:17	pandaadb	oh sorry, i didn't know what to use
+2016-10-26 05:06:18	Lew2354	think that you can help fix my function ?
+2016-10-26 05:06:19	han-solo	;)
+2016-10-26 05:06:27	greycat	Line two appears to be mechanically extra-quoted JSON of some kind.
+2016-10-26 05:06:36	<--	ahmed_elgabri (~ahmedelga@212.123.217.154) has quit (Ping timeout: 260 seconds)
+2016-10-26 05:06:39	Soliton	Lew2354: newpath="$2/$2$count.$fext"  fix that assignment so it doesn't use $2 twice.
+2016-10-26 05:06:41	pandaadb	oh, that is what set -x puts out
+2016-10-26 05:06:49	-->	moby (~moby@187-127-179-194.user.veloxzone.com.br) has joined #bash
+2016-10-26 05:06:49	greycat	I don't know why he wasted umpteen lines of IRC with a pastebin.com link instead of just PASTING THE TWO LINES.
+2016-10-26 05:06:53	Lew2354	yeah i have changed it but still same
+2016-10-26 05:07:12	greycat	Then ignore the damned set -x output.
+2016-10-26 05:07:23	Soliton	!doesntwork > Lew2354
+2016-10-26 05:07:24	greybot	Lew2354: Saying something "doesn't work" helps neither you or us. Explain the result you *want* or *expect*, what you are *doing* and *how* it is failing. Copy/paste the commands you use and the errors they produce. Consider set -x to get more information on what is happening.
+2016-10-26 05:07:34	Lew2354	I have done that
+2016-10-26 05:07:34	greycat	Maybe your variable CONTAINS a newline character.  Where did it come from?
+2016-10-26 05:07:35	<--	iliv (~iliv@93.77.152.230) has quit (Quit: Time to get some sleep... ZzZzZzZ)
+2016-10-26 05:07:37	-->	Rapture (~textual@50-232-118-138-static.hfc.comcastbusiness.net) has joined #bash
+2016-10-26 05:07:39	han-solo	haven't seen this forawhile :)
+2016-10-26 05:07:45	Lew2354	-x just says something about a commecnt which means nothing
+2016-10-26 05:07:58	-->	iliv (~iliv@93.77.152.230) has joined #bash
+2016-10-26 05:08:09	han-solo	it's for debugging
+2016-10-26 05:08:19	-->	heurist`_ (heurist@unaffiliated/heurist) has joined #bash
+2016-10-26 05:08:45	han-solo	it means, you can figure it out
+2016-10-26 05:09:02	greycat	set -x is helpful but it's not God.  If you don't like the format, just use something else to show the thing you need shown.  E.g. printf %s "$json" | hd
+2016-10-26 05:09:23	Lew2354	i mean right now this is what ive been messing with
+2016-10-26 05:09:55	Lew2354	http://imgur.com/87HJgp0
+2016-10-26 05:10:06	<--	heurist` (heurist@unaffiliated/heurist) has quit (Ping timeout: 244 seconds)
+2016-10-26 05:10:18	-->	davidfetter_ge (~chatzilla@64.129.231.6) has joined #bash
+2016-10-26 05:11:07	Soliton	and the issue now is...?
+2016-10-26 05:11:22	davidfetter_ge	hi
+2016-10-26 05:11:26	<--	synthroid (~synthroid@gateway/vpn/privateinternetaccess/synthroid) has quit (Remote host closed the connection)
+2016-10-26 05:11:34	Lew2354	just notices path should have been dname, but its still the same issue - ill show sec
+2016-10-26 05:11:54	Lew2354	its just the same as i said before
+2016-10-26 05:12:04	<--	moby (~moby@187-127-179-194.user.veloxzone.com.br) has quit (Quit: Leaving)
+2016-10-26 05:12:16	Lew2354	http://imgur.com/O92vHCg
+2016-10-26 05:12:19	-->	Prelude2004c_Zzz (~Prelude20@anonymousvpn.zazeen.com) has joined #bash
+2016-10-26 05:12:36	Prelude2004c_Zzz	hey guys.. what is wrong with this ? root@enc1-3:~# if [ -z $(df|grep encx) ]; then echo "not ok";else echo "ok";fi     >>>> -bash: [: too many arguments
+2016-10-26 05:12:42	<--	bkolden (~bkolden@cpe-104-172-195-0.socal.res.rr.com) has quit (Ping timeout: 256 seconds)
+2016-10-26 05:12:46	davidfetter_ge	so i looked at the FAQ, and I'm pretty sure i didn't see the answer to this. i've got a command that produces output for awhile.  i'd like to follow that output line by line until i see a certain regex and then exit. i have a pretty good idea how to do this in perl, but the bash thing is giving me troubles
+2016-10-26 05:12:50	greycat	!ifgrep > Prelude2004c_Zzz
+2016-10-26 05:12:50	greybot	Prelude2004c_Zzz: if grep -q word "$file"; then blah blah; fi # DO NOT use [[ or [ or ` or $() or any other crap. "if" expects a command. "grep" is a command. "[" is too. You don't need both. Likewise, if foo | grep -q bar; then ...
+2016-10-26 05:13:22	greycat	davidfetter_ge: tail -F mylogfile | while read -r line; do [[ $line = *stop* ]] && break; done
+2016-10-26 05:13:30	-->	heurist_ (heurist@unaffiliated/heurist) has joined #bash
+2016-10-26 05:13:54	Prelude2004c_Zzz	ahhhh  ok putting [[ works :)
+2016-10-26 05:14:06	davidfetter_ge	greycat: it's not a log file, but i presume command |wile read -r line; ...
+2016-10-26 05:14:08	davidfetter_ge	would also work
+2016-10-26 05:14:14	greycat	Prelude2004c_Zzz: Dear god.  That was BY NO MEANS what the factoid told you to do.
+2016-10-26 05:14:15	davidfetter_ge	while*
+2016-10-26 05:14:24	greycat	Prelude2004c_Zzz: if df | grep -q whatever; then stuff; else other stuff; fi
+2016-10-26 05:14:49	greycat	davidfetter_ge: yes, whatever command as long as it does LINE buffering or NO buffering.
+2016-10-26 05:14:53	<--	han-solo (~han-solo@115.244.218.66) has quit (Ping timeout: 260 seconds)
+2016-10-26 05:14:53	<--	dellavg (dellavg@2a03:b0c0:3:d0::7:400f) has quit (Ping timeout: 260 seconds)
+2016-10-26 05:15:28	<--	heurist`_ (heurist@unaffiliated/heurist) has quit (Ping timeout: 245 seconds)
+2016-10-26 05:15:56	Soliton	Lew2354: if you want someone to be able to help you: 1) post the current version of the script. 2) post the error you get with that current version of the script. 3) stop posting text as images.
+2016-10-26 05:16:07	-->	han-solo (~han-solo@101.56.183.202) has joined #bash
+2016-10-26 05:16:08	davidfetter_ge	greycat: ok. now about that stop. i actually want an atom in the regex. would VAR=$(grep -o  ...)  instead of line = *stop* do that?
+2016-10-26 05:16:25	greycat	davidfetter_ge: WHAT regex?
+2016-10-26 05:16:34	Lew2354	Okay, its the same 'error' as before ill post the latest
+2016-10-26 05:17:11	-->	davix (~david@unaffiliated/bashtard) has joined #bash
+2016-10-26 05:17:21	-->	fakenerd_ (~fakenerd@183.129.21.200) has joined #bash
+2016-10-26 05:17:23	Soliton	!sprungefunc > Lew2354
+2016-10-26 05:17:23	greybot	Lew2354: sprunge() { tail -n +1 -- "$@" | curl -F 'sprunge=<-' http://sprunge.us; } # usage: sprunge file1 file2 ... # or cmd | sprunge
+2016-10-26 05:17:39	davidfetter_ge	greycat: so i'm waiting for a line that matches 'Tests finished. number of errors: ([[:digit:]])' and i'm interested in the number
+2016-10-26 05:17:40	Soliton	Lew2354: you can use that to post stuff from the command line.
+2016-10-26 05:18:12	greycat	davidfetter_ge: What do you want to do with the number?  Just write it to stdout?  Tell me you don't need to store it in a variable that has to survive this pipeline.
+2016-10-26 05:18:24	-->	heurist`_` (heurist@unaffiliated/heurist) has joined #bash
+2016-10-26 05:18:59	davidfetter_ge	well, i need to spit it out in a message and exit with a code based on it
+2016-10-26 05:19:08	davidfetter_ge	but the script ends at that point
+2016-10-26 05:19:15	greycat	Exit THE WHOLE SCRIPT?  There's more of the script AFTER this pipeline?  Or... what?
+2016-10-26 05:19:17	davidfetter_ge	so no, i guess it doesn't really need to survive
+2016-10-26 05:19:23	davidfetter_ge	the entire script
+2016-10-26 05:19:25	Lew2354	http://pastebin.com/raw/kspKJpH8
+2016-10-26 05:19:35	greycat	Is breaking out of this pipeline sufficient?
+2016-10-26 05:19:48	davidfetter_ge	um, i guess
+2016-10-26 05:19:53	<--	heurist_ (heurist@unaffiliated/heurist) has quit (Ping timeout: 250 seconds)
+2016-10-26 05:20:02	greycat	Right now you're trapped in a pipeline which means a subshell which means nothing you do affects the parent script....
+2016-10-26 05:20:07	<--	fakenerd (~fakenerd@183.129.21.200) has quit (Ping timeout: 276 seconds)
+2016-10-26 05:20:09	greycat	So.
+2016-10-26 05:20:47	davidfetter_ge	perhaps i need more coffee
+2016-10-26 05:21:04	<--	undef (~undef@35.243.46.84.mobile.mezon.lt) has quit (Quit: Lost terminal)
+2016-10-26 05:21:04		[05:21]
+2016-10-26 05:21:16	greycat	re='Tests finished. number of errors: ([[:digit:]]+)'; tail/whatever | while read -r line; do if [[ $line =~ $re ]] && something something BASH_REMATCH; break; fi; done
+2016-10-26 05:21:23	<--	troulouliou_div2 (~troulouli@unaffiliated/troulouliou-div2/x-0271439) has quit (Remote host closed the connection)
+2016-10-26 05:21:32	Soliton	Lew2354: cccp: line 24: syntax error near unexpected token `done'
+2016-10-26 05:21:34	greycat	gah
+2016-10-26 05:22:02	greycat	re='Tests finished. number of errors: ([[:digit:]]+)'; tail/whatever | while read -r line; do if [[ $line =~ $re ]]; then something something "${BASH_REMATCH[1]}"; break; fi; done
+2016-10-26 05:22:04	Lew2354	what should i change about it ?
+2016-10-26 05:22:09	-->	cdown_ (~cdown@199.201.64.3) has joined #bash
+2016-10-26 05:22:38	-->	corsibu (~corsibu@0x3ec7fa6a.kol.customer.dk.telia.net) has joined #bash
+2016-10-26 05:22:39	Soliton	Lew2354: well, since you said you get the same error as before... maybe post the actual script you're using?
+2016-10-26 05:22:59	Lew2354	that is the one im using, im meaning when i try to run it
+2016-10-26 05:23:02	-->	maogrady (~chatzilla@5.175.83.20) has joined #bash
+2016-10-26 05:23:16	davidfetter_ge	greycat: thanks :)
+2016-10-26 05:23:28	Soliton	when i try to run it i get a syntax error.
+2016-10-26 05:23:36	<--	riemann (~riemann@84-10-11-234.static.chello.pl) has quit (Quit: Leaving)
+2016-10-26 05:23:54	Lew2354	i get this
+2016-10-26 05:23:55	Lew2354	http://imgur.com/O92vHCg
+2016-10-26 05:24:02	Soliton	not being able to see what you're actually running makes it impossible to help.
+2016-10-26 05:24:03	-->	Colin_Mac (~Colin@107-0-117-234-ip-static.hfc.comcastbusiness.net) has joined #bash
+2016-10-26 05:24:26	Lew2354	as in the code ?
+2016-10-26 05:24:36	<--	cdown (~cdown@12.37.166.67) has quit (Ping timeout: 256 seconds)
+2016-10-26 05:24:46	Lew2354	cccp is the pastebin i just sent
+2016-10-26 05:24:47	--	cdown_ is now known as cdown
+2016-10-26 05:25:00	Soliton	maybe you're just bad at copy&pasting. try the sprunge function i mentioned above.
+2016-10-26 05:25:47	Lew2354	not really sure how, i can giv eyou remote acess or skype ?
+2016-10-26 05:25:58	<--	JeanCarloMachado (~jean@189-10-224-214.cslce701.dsl.brasiltelecom.net.br) has quit (Ping timeout: 276 seconds)
+2016-10-26 05:26:54	-->	bkolden (~bkolden@ec2-54-67-53-31.us-west-1.compute.amazonaws.com) has joined #bash
+2016-10-26 05:28:06	-->	hahuang65 (~hahuang65@2601:647:4000:d7:c0af:32d8:6a81:1d07) has joined #bash
+2016-10-26 05:28:12	-->	nullspoon (~nullspoon@71-211-248-180.hlrn.qwest.net) has joined #bash
+2016-10-26 05:29:14	<--	anonymuse (~anonymuse@65.209.61.114) has quit (Read error: Connection reset by peer)
+2016-10-26 05:29:28	-->	anonymuse (~anonymuse@65.209.61.114) has joined #bash
+2016-10-26 05:29:41	Lew2354	Soliton ?
+2016-10-26 05:30:13	-->	blizzow (~jburns@2601:280:4a00:4c00:fae4:f4b0:66e2:e966) has joined #bash
+2016-10-26 05:30:53	Soliton	Lew2354: can you read my last statement? can you do what it says?
+2016-10-26 05:31:02	Lew2354	I dont understand how to use it
+2016-10-26 05:31:47	Soliton	paste the following into your terminal window:  sprunge() { tail -n +1 -- "$@" | curl -F 'sprunge=<-' http://sprunge.us; }
+2016-10-26 05:32:01	Soliton	then type: sprunge path/to/cccp
+2016-10-26 05:32:30	Lew2354	doing now
+2016-10-26 05:33:13	<--	hahuang65 (~hahuang65@2601:647:4000:d7:c0af:32d8:6a81:1d07) has quit (Ping timeout: 256 seconds)
+2016-10-26 05:35:24	Lew2354	doesnt work :(
+2016-10-26 05:35:50	<--	ronator (~ronator@185.28.184.90) has quit (Quit: Leaving ...)
+2016-10-26 05:36:37	han-solo	what's the error?
+2016-10-26 05:36:37		[05:36]
+2016-10-26 05:36:43	<--	MrWoohoo (~MrWoohoo@47.147.4.221) has quit (Ping timeout: 245 seconds)
+2016-10-26 05:36:57	<--	r00twrh (~r00tWears@73.44.33.86) has quit (Quit: Leaving)
+2016-10-26 05:36:58	Lew2354	syntax
+2016-10-26 05:37:11	Lew2354	also i removed a done and the error is different
+2016-10-26 05:37:27	han-solo	it's highly likely that you must have pasted it wrong
+2016-10-26 05:37:49	-->	Alex-SF (~Alex-SF@c-71-198-228-84.hsd1.ca.comcast.net) has joined #bash
+2016-10-26 05:37:57	Lew2354	http://pastebin.com/raw/6XVXLiW6
+2016-10-26 05:38:14	-->	Neslepaks (~Neslepaks@178.61.71.85) has joined #bash
+2016-10-26 05:38:20	han-solo	i'd no problem
+2016-10-26 05:38:24	<--	DaVu (~quassel@unaffiliated/david1977) has quit
+2016-10-26 05:38:39	han-solo	works like a charm
+2016-10-26 05:38:47	-->	r00twrh (~r00tWears@73.44.33.86) has joined #bash
+2016-10-26 05:38:49	-->	Zheis (c0c48e57@gateway/web/freenode/ip.192.196.142.87) has joined #bash
+2016-10-26 05:38:50	Lew2354	idk man
+2016-10-26 05:38:52	-->	BenA (~Ben@unaffiliated/BenA) has joined #bash
+2016-10-26 05:38:52	Zheis	Hello
+2016-10-26 05:39:23	han-solo	what's the error exactly?(i cannot access pastbin)
+2016-10-26 05:39:28	Zheis	I want to substract 1 to a variable, will this command work in a script : nbLigneCSV=$((wc -l $fichierCSV | awk '{print $1}')-1)
+2016-10-26 05:39:43	greycat	Zheis: $(( has to end with ))
+2016-10-26 05:39:51	Lew2354	its rather large, can i send a imgur link for ya ?
+2016-10-26 05:40:06	greycat	var=$(( $(wc -l < "$file") - 1 ))
+2016-10-26 05:40:32	Zheis	greycat so .. nbLigneCSV=$((wc -l $fichierCSV | awk '{print $1}' -1))
+2016-10-26 05:40:33	Zheis	Oh ok
+2016-10-26 05:40:48	greycat	nbLigneCSV=$(( $(wc -l < "$fichierCSV") - 1 ))
+2016-10-26 05:40:58	Lew2354	han-solo i sent a chat request
+2016-10-26 05:41:04	han-solo	yeah, running a 56K modem, and only getting avg 5Kbps speed. Yeah, i'd like an image
+2016-10-26 05:41:11	Lew2354	wow
+2016-10-26 05:41:12	--	giany_ is now known as giany
+2016-10-26 05:41:19	-->	ritztech (~ritztech@wsip-174-71-251-185.lv.lv.cox.net) has joined #bash
+2016-10-26 05:41:19	<--	ritztech (~ritztech@wsip-174-71-251-185.lv.lv.cox.net) has quit (Remote host closed the connection)
+2016-10-26 05:41:21	Zheis	greycat : so i don't even need the awk..
+2016-10-26 05:41:23	-->	sudoritz (~ritztech@wsip-174-71-251-185.lv.lv.cox.net) has joined #bash
+2016-10-26 05:41:30	Lew2354	i thought my 100Mbps was bad
+2016-10-26 05:41:31	greycat	han-solo: Good to know my *plonk*sense is still working very well.
+2016-10-26 05:41:46	han-solo	:)
+2016-10-26 05:42:06	Zheis	greycat: i'll try it, thanks !
+2016-10-26 05:42:09	cd80	my 150/150 is really bad jk
+2016-10-26 05:42:26	Lew2354	up is just 20 :(
+2016-10-26 05:42:44	<--	emg (~emg@74-123-189-254.static.wiline.com) has quit (Ping timeout: 256 seconds)
+2016-10-26 05:43:14	<--	ER_nesto (~Ernesto@host81-131-234-16.range81-131.btcentralplus.com) has quit (Quit: DRIVER_IRQL_NOT_LESS_OR_EQUAL (ETD.sys))
+2016-10-26 05:44:12	-->	mnrmnaugh (~mnrmnaugh@unaffiliated/mnrmnaugh) has joined #bash
+2016-10-26 05:44:13	<--	fakenerd_ (~fakenerd@183.129.21.200) has quit (Remote host closed the connection)
+2016-10-26 05:44:18	<--	mnrmnaugh (~mnrmnaugh@unaffiliated/mnrmnaugh) has quit (Max SendQ exceeded)
+2016-10-26 05:44:47	-->	mnrmnaugh (~mnrmnaugh@unaffiliated/mnrmnaugh) has joined #bash
+2016-10-26 05:45:41	<--	Colin_Mac (~Colin@107-0-117-234-ip-static.hfc.comcastbusiness.net) has quit (Ping timeout: 256 seconds)
+2016-10-26 05:45:52	-->	fakenerd (~fakenerd@183.129.21.200) has joined #bash
+2016-10-26 05:46:12	<--	hadrig (~textual@hgen-hadrien.hgen.slu.se) has quit (Quit: Textual IRC Client: www.textualapp.com)
+2016-10-26 05:46:19	-->	wonderworld (~ww@x4d0a0054.dyn.telefonica.de) has joined #bash
+2016-10-26 05:47:00	Lew2354	huh ?
+2016-10-26 05:49:30	<--	kpease (~kpease@pool-72-74-171-203.bstnma.fios.verizon.net) has quit (Quit: Textual IRC Client: www.textualapp.com)
+2016-10-26 05:49:40	Lew2354	greycat you still there bud ?
+2016-10-26 05:51:35	han-solo	cccpsub "$1"/"$cfile"/ can be re-written as "cccpsub "${1}/${cfile}"?
+2016-10-26 05:51:37	<--	deekej (deekej@nat/redhat/x-onpfkwjnhezahoms) has quit (Remote host closed the connection)
+2016-10-26 05:51:37		[05:51]
+2016-10-26 05:51:55	-->	PryMar56 (~prymar@unaffiliated/prymar56) has joined #bash
+2016-10-26 05:51:56	greycat	remove the " before cccpsub
+2016-10-26 05:51:57	<--	scrimple (~scrimple@195.30.121.97) has quit (Ping timeout: 260 seconds)
+2016-10-26 05:52:05	greycat	and remove the stupidbraces
+2016-10-26 05:52:44	Lew2354	also i done that sprunge thing but nothing showed just changed to a >
+2016-10-26 05:53:27	-->	synthroid (~synthroid@gateway/vpn/privateinternetaccess/synthroid) has joined #bash
+2016-10-26 05:53:59	-->	flacko (~flacko@78-61-193-147.static.zebra.lt) has joined #bash
+2016-10-26 05:54:05	han-solo	!quote
+2016-10-26 05:54:05	greybot	http://mywiki.wooledge.org/Quotes
+2016-10-26 05:54:26	greycat	that said, there is nothing *wrong* with cccpsub "$1"/"$cfile"/
+2016-10-26 05:54:39	han-solo	for cfile in '"$1"/.*' '"$1"/*'?
+2016-10-26 05:54:40	greycat	it's got a few extra characters, but it's acceptable
+2016-10-26 05:54:45	-->	mnrmnaughmnrgle (~mnrmnaugh@unaffiliated/mnrmnaugh) has joined #bash
+2016-10-26 05:54:50	<--	zefferno (mkalfon@unaffiliated/zefferno) has quit (Quit: Leaving)
+2016-10-26 05:54:51	greycat	han-solo: *that* one, of course, is dead wrong.
+2016-10-26 05:55:04	Lew2354	how should it be fixed ?
+2016-10-26 05:55:12	han-solo	that's an extraction from his script
+2016-10-26 05:55:24	han-solo	just use double quotes only
+2016-10-26 05:55:24	greycat	I believe you.
+2016-10-26 05:55:40	greycat	I also believe that he really *really* doesn't want to do "$1"/.*
+2016-10-26 05:56:06	han-solo	# touch one.txt two.txt three.txt four.txt five.txt; for file in '"*.txt";do printf "$i";done
+2016-10-26 05:56:12	shbot1	han-solo: Missing terminating quote, bracket or keyword
+2016-10-26 05:56:13	greycat	Given the second glob, I believe what he really, really wants is shopt -s dotglob; for cfile in "$1"/*
+2016-10-26 05:56:19	han-solo	# touch one.txt two.txt three.txt four.txt five.txt; for file in '"*.txt"';do printf "$i";done
+2016-10-26 05:56:21	shbot1	han-solo: no output
+2016-10-26 05:56:23	-->	oxhak (~OxHaK@unaffiliated/oxhak) has joined #bash
+2016-10-26 05:56:40	han-solo	Lew2354: what you want is ,
+2016-10-26 05:56:40	-->	ProfessorKaos64 (~mikeyd@216.49.14.203.res-cmts.pnt.ptd.net) has joined #bash
+2016-10-26 05:56:48	Lew2354	what i want is it to find any and all files with a directory and sub directories and put in cfile
+2016-10-26 05:56:49	han-solo	# touch one.txt two.txt three.txt four.txt five.txt; for file in "*.txt";do printf "$i";done
+2016-10-26 05:56:50	shbot1	han-solo: no output
+2016-10-26 05:56:57	-->	jlf (~user@pdpc/supporter/active/jlf) has joined #bash
+2016-10-26 05:57:05	 *	greycat watches han-solo flail around incompetently
+2016-10-26 05:57:05	han-solo	# touch one.txt two.txt three.txt four.txt five.txt; for file in "*.txt";do printf "$file";done
+2016-10-26 05:57:06	shbot1	han-solo: *.txt
+2016-10-26 05:57:22	<--	CrypticSquared (~CrypticS_@unaffiliated/crypticsquared) has quit (Ping timeout: 252 seconds)
+2016-10-26 05:57:47	greycat	!dotglob
+2016-10-26 05:57:48	greybot	dotglob, if set, makes bash include filenames beginning with a '.' (excluding . and ..) in the results of pathname expansion (shopt -s dotglob)
+2016-10-26 05:58:06	-->	JeanCarloMachado (~jean@189-10-224-214.cslce701.dsl.brasiltelecom.net.br) has joined #bash
+2016-10-26 05:58:10	sjohnson	don't quote the glob.
+2016-10-26 05:58:14	Lew2354	so the issue it pointing towards these lines
+2016-10-26 05:58:19	Lew2354	function cccpsub {
+2016-10-26 05:58:19	Lew2354	for cfile in "$1"/.* "$1"/*; do
+2016-10-26 05:58:19	Lew2354		if [ -d "$cfile" ]; then
+2016-10-26 05:58:19	Lew2354			# found a directory
+2016-10-26 05:58:19	Lew2354			cccpsub "$1"/"$cfile"/
+2016-10-26 05:58:20	--	Mode #bash [+b *!Lew2354@*.as9105.com] by candide
+2016-10-26 05:58:24	<--	mnrmnaugh (~mnrmnaugh@unaffiliated/mnrmnaugh) has quit (Ping timeout: 260 seconds)
+2016-10-26 05:58:27	-->	nouser (~nouser@ip4d14ffbe.dynamic.kabel-deutschland.de) has joined #bash
+2016-10-26 05:58:41	-->	alex1a (~alex1a@a81-84-38-221.cpe.netcabo.pt) has joined #bash
+2016-10-26 05:59:04	han-solo	# touch 1.txt 2.txt; for file in "*.txt";do echo $file;done
+2016-10-26 05:59:06	shbot1	han-solo: 1.txt 2.txt
+2016-10-26 05:59:21	han-solo	yeah, i should go for a simple example
+2016-10-26 05:59:22	<--	fakenerd (~fakenerd@183.129.21.200) has quit (Remote host closed the connection)
+2016-10-26 05:59:27	--	Mode #bash [-b *!Lew2354@*.as9105.com] by candide
+2016-10-26 05:59:41	greycat	shopt -s dotglob; for cfile in "$1"/*; do ...; done
+2016-10-26 05:59:46	-->	heurist__ (heurist@unaffiliated/heurist) has joined #bash
+2016-10-26 06:00:04	greycat	.* is EVIL and it will corrupt your precious bodily fluids
+2016-10-26 06:00:18	<--	bkolden (~bkolden@ec2-54-67-53-31.us-west-1.compute.amazonaws.com) has quit (Quit: WeeChat 1.4)
+2016-10-26 06:00:28	<--	kbdkode (~kbdkode@unaffiliated/kbdkode) has quit (Quit:      see ya    )
+2016-10-26 06:00:30	Lew2354	hmm
+2016-10-26 06:00:32	greycat	attempts to WORK AROUND .* in a non-bash shell usually end up driving you insane.  dotglob is what you want.
+2016-10-26 06:00:46	<--	systemovich (~user@dsl-197-245-59-152.voxdsl.co.za) has quit (Ping timeout: 250 seconds)
+2016-10-26 06:00:47	Lew2354	okay so replor the for cfile line with that ?
+2016-10-26 06:00:48	<--	djoularef (~DanJ@88.207.207.59) has quit (Read error: Connection reset by peer)
+2016-10-26 06:00:51	Lew2354	replace*
+2016-10-26 06:00:52	<--	BenA (~Ben@unaffiliated/BenA) has quit (Quit: joined channel #quit, type /quit to join him)
+2016-10-26 06:01:06	-->	mnrmnaugh (~mnrmnaugh@unaffiliated/mnrmnaugh) has joined #bash
+2016-10-26 06:01:25	-->	BenA (~Ben@unaffiliated/BenA) has joined #bash
+2016-10-26 06:01:33	<--	cdown (~cdown@199.201.64.3) has quit (Ping timeout: 260 seconds)
+2016-10-26 06:02:12	han-solo	# shopt dotglob
+2016-10-26 06:02:13	shbot1	han-solo: dotglob         off
+2016-10-26 06:02:22	<--	MrHands (~hans@unaffiliated/mrhands) has quit (Quit: leaving)
+2016-10-26 06:02:26	-->	CrypticSquared (~CrypticS_@unaffiliated/crypticsquared) has joined #bash
+2016-10-26 06:02:31	-->	systemovich (~user@dsl-197-245-59-152.voxdsl.co.za) has joined #bash
+2016-10-26 06:02:48	<--	heurist`_` (heurist@unaffiliated/heurist) has quit (Ping timeout: 244 seconds)
+2016-10-26 06:02:54	<--	osse (~osse@zsh/user/osse) has quit (Quit: WeeChat 1.6-dev)
+2016-10-26 06:03:22	Lew2354	greycat i send a chat request
+2016-10-26 06:04:16	<--	mnrmnaugh (~mnrmnaugh@unaffiliated/mnrmnaugh) has quit (Read error: Connection reset by peer)
+2016-10-26 06:04:32	<--	mnrmnaughmnrgle (~mnrmnaugh@unaffiliated/mnrmnaugh) has quit (Ping timeout: 260 seconds)
+2016-10-26 06:05:20	Lew2354	sent*
+2016-10-26 06:05:27	-->	S00do (~S000do@c-67-190-58-99.hsd1.co.comcast.net) has joined #bash
+2016-10-26 06:05:47	 *	Lew2354 slaps greycat around a bit with a large trout
+2016-10-26 06:05:57	han-solo	ah
+2016-10-26 06:05:57	-->	foo_ (~han-solo@101.56.183.202) has joined #bash
+2016-10-26 06:06:00	<--	davix (~david@unaffiliated/bashtard) has quit (Quit: WeeChat 1.6)
+2016-10-26 06:06:04	Lew2354	whats up han ?
+2016-10-26 06:06:07	-->	MrHands (~hans@unaffiliated/mrhands) has joined #bash
+2016-10-26 06:06:35	 *	davidfetter_ge curious whether han-solo shot first.
+2016-10-26 06:06:49	-->	davix (~david@unaffiliated/bashtard) has joined #bash
+2016-10-26 06:06:49		[06:06]
+2016-10-26 06:07:56	<--	BenA (~Ben@unaffiliated/BenA) has quit (Quit: joined channel #quit, type /quit to join him)
+2016-10-26 06:08:27	-->	BenA (~Ben@unaffiliated/BenA) has joined #bash
+2016-10-26 06:08:42	<--	denisk (~denisk@CPE-144-132-235-16.nsw.bigpond.net.au) has quit (Remote host closed the connection)
+2016-10-26 06:09:28	Lew2354	??
+2016-10-26 06:10:02	sjohnson	nice irc etiquette.
+2016-10-26 06:10:32	Lew2354	Yep
+2016-10-26 06:10:38	<--	BenA (~Ben@unaffiliated/BenA) has quit (Client Quit)
+2016-10-26 06:10:49	-->	denisk (~denisk@CPE-144-132-235-16.nsw.bigpond.net.au) has joined #bash
+2016-10-26 06:11:11	-->	BenA (~Ben@unaffiliated/BenA) has joined #bash
+2016-10-26 06:11:31	-->	cup`ocoffee (~cup@x5f775ddb.dyn.telefonica.de) has joined #bash
+2016-10-26 06:12:08	<--	han-solo (~han-solo@101.56.183.202) has quit (Ping timeout: 245 seconds)
+2016-10-26 06:12:13	<--	Lew2354 (Lew2354@79-66-4-112.dynamic.dsl.as9105.com) has quit (Read error: Connection reset by peer)
+2016-10-26 06:12:18	<--	denisk (~denisk@CPE-144-132-235-16.nsw.bigpond.net.au) has quit (Read error: Connection reset by peer)
+2016-10-26 06:12:29	<--	terrasapien (~pi@d154-20-235-212.bchsia.telus.net) has quit (Ping timeout: 260 seconds)
+2016-10-26 06:12:46	<--	foo_ (~han-solo@101.56.183.202) has quit (Ping timeout: 276 seconds)
+2016-10-26 06:12:58	<--	SuperG (~SuperG@195.171.92.42) has quit (Ping timeout: 245 seconds)
+2016-10-26 06:13:14	-->	parasite (~parasite@mar75-4-82-230-46-11.fbx.proxad.net) has joined #bash
+2016-10-26 06:13:25	<--	Prelude2004c_Zzz (~Prelude20@anonymousvpn.zazeen.com) has quit (Ping timeout: 276 seconds)
+2016-10-26 06:14:05	-->	foobar_ (~han-solo@115.245.35.226) has joined #bash
+2016-10-26 06:14:11	-->	Lew2354 (Lew2354@79.66.4.112) has joined #bash
+2016-10-26 06:14:13	<--	foobar_ (~han-solo@115.245.35.226) has quit (Client Quit)
+2016-10-26 06:14:14	<--	pcre (~quassel@anon-35-86.vpn.ipredator.se) has quit (Ping timeout: 252 seconds)
+2016-10-26 06:14:16	-->	pcre_ (~quassel@2a03:2260:11b:0:8256:f2ff:fef2:e297) has joined #bash
+2016-10-26 06:14:17	Lew2354	back*
+2016-10-26 06:14:27	-->	denisk (~denisk@CPE-144-132-235-16.nsw.bigpond.net.au) has joined #bash
+2016-10-26 06:14:32	-->	foobar_ (~han-solo@115.244.220.16) has joined #bash
+2016-10-26 06:14:42	-->	foobar__ (~han-solo@115.244.220.16) has joined #bash
+2016-10-26 06:14:45	--	foobar__ is now known as han-solo
+2016-10-26 06:14:49	<--	han-solo (~han-solo@115.244.220.16) has quit (Client Quit)
+2016-10-26 06:14:53	<--	rahtgaz (~rahtgaz@unaffiliated/rahtgaz) has quit (Quit: WeeChat 1.6)
+2016-10-26 06:15:03	<--	eduardas_m (~eduardas_@213.197.143.19) has quit (Quit: Leaving)
+2016-10-26 06:15:15	-->	han-solo (~han-solo@115.244.220.16) has joined #bash
+2016-10-26 06:15:27	Lew2354	Hey han-solo
+2016-10-26 06:16:13	-->	denis_k (~denisk@CPE-144-132-235-16.nsw.bigpond.net.au) has joined #bash
+2016-10-26 06:16:16	<--	denisk (~denisk@CPE-144-132-235-16.nsw.bigpond.net.au) has quit (Read error: Connection reset by peer)
+2016-10-26 06:16:39	-->	dellavg (dellavg@2a03:b0c0:3:d0::7:400f) has joined #bash
+2016-10-26 06:17:06	<--	OtakuSenpai (~Peter@45.250.58.190) has quit (Quit: Bye guys hav a good time :))
+2016-10-26 06:17:09	-->	[r4] (~r4]@staticline-31-183-98-219.toya.net.pl) has joined #bash
+2016-10-26 06:17:23	-->	ZIPY (~ZIPY@unaffiliated/zipy) has joined #bash
+2016-10-26 06:17:27	<--	denis_k (~denisk@CPE-144-132-235-16.nsw.bigpond.net.au) has quit (Remote host closed the connection)
+2016-10-26 06:18:06	-->	denisk (~denisk@CPE-144-132-235-16.nsw.bigpond.net.au) has joined #bash
+2016-10-26 06:18:46	ZIPY	for i in {1..300} do printf -v tmp "%03d" $i; wget http://www.example.com/$tmp.jpg; sleep 10; done  hey, i got an error "printf: Illegal option -v"
+2016-10-26 06:19:15	-->	terrasapien (~pi@d154-20-235-212.bchsia.telus.net) has joined #bash
+2016-10-26 06:19:17	<--	foobar_ (~han-solo@115.244.220.16) has quit (Client Quit)
+2016-10-26 06:19:27	izalove	because you're not in bash
+2016-10-26 06:19:37	<--	denisk (~denisk@CPE-144-132-235-16.nsw.bigpond.net.au) has quit (Read error: Connection reset by peer)
+2016-10-26 06:19:44	izalove	!sh
+2016-10-26 06:19:44	greybot	sh is NOT bash; it is a POSIX or Bourne shell. To run bash code, your script MUST use a bash shebang, and it MUST be executed directly or with bash (NOT sh myscript). Sometimes /bin/sh symlinks to bash, but you can't rely on this and it will disable many bash features. <http://mywiki.wooledge.org/BashGuide/Practices#Choose_Your_Shell>
+2016-10-26 06:19:45	<--	pcre_ (~quassel@2a03:2260:11b:0:8256:f2ff:fef2:e297) has quit (Ping timeout: 260 seconds)
+2016-10-26 06:19:58	<--	NimeshNeema (uid2689@gateway/web/irccloud.com/x-grgigpkjwbanqwed) has quit (Quit: Connection closed for inactivity)
+2016-10-26 06:20:15	Lew2354	izalove can i speak with you for a few mins ?
+2016-10-26 06:20:22	<--	JeanCarloMachado (~jean@189-10-224-214.cslce701.dsl.brasiltelecom.net.br) has quit (Ping timeout: 244 seconds)
+2016-10-26 06:20:22	izalove	sure
+2016-10-26 06:20:31	han-solo	for i in {1..300};do wget http://ww...../$i.jpg;done would suffice, i guess
+2016-10-26 06:20:32	<--	systemovich (~user@dsl-197-245-59-152.voxdsl.co.za) has quit (Read error: Connection reset by peer)
+2016-10-26 06:20:43	han-solo	although that's no t necessary
+2016-10-26 06:20:46	Lew2354	sent a chat request iza
+2016-10-26 06:21:25	han-solo	ZIPY: use curl
+2016-10-26 06:21:29	Knirch	what, a dcc chat? haven't seen those in >10 years :D
+2016-10-26 06:21:45	izalove	me neither and i don't know if i can make it work
+2016-10-26 06:21:52	<--	qdk (~qdk@93.176.70.6) has quit (Ping timeout: 276 seconds)
+2016-10-26 06:21:52		[06:21]
+2016-10-26 06:21:56	Lew2354	i just right clicked your name and it allowed
+2016-10-26 06:22:13	han-solo	it's cool! I used the good ol' telnet :)
+2016-10-26 06:22:23	<--	mohan (~mohan@cpc87311-slou4-2-0-cust69.17-4.cable.virginm.net) has quit (Ping timeout: 250 seconds)
+2016-10-26 06:22:29	-->	pcre (~quassel@b2b-130-180-86-10.unitymedia.biz) has joined #bash
+2016-10-26 06:23:01	<--	Ishaq (~Ishaq@budgetnode/management) has quit (Excess Flood)
+2016-10-26 06:23:22	-->	mohan (~mohan@cpc87311-slou4-2-0-cust69.17-4.cable.virginm.net) has joined #bash
+2016-10-26 06:23:24	izalove	fwiw the smart thing to do is     wget http://www.example.com/{001..300}.jpg;
+2016-10-26 06:23:39	-->	Ishaq (~Ishaq@budgetnode/management) has joined #bash
+2016-10-26 06:23:46	Lew2354	izalove can skype is you want for pm
+2016-10-26 06:23:55	sjohnson	heh
+2016-10-26 06:24:15	<--	Noldorin (~noldorin@unaffiliated/noldorin) has quit (Quit: Textual IRC Client: www.textualapp.com)
+2016-10-26 06:26:31	<--	pcre (~quassel@b2b-130-180-86-10.unitymedia.biz) has quit (Client Quit)
+2016-10-26 06:26:58	ZIPY	izalove: thx works, why didn't tell you before? xD
+2016-10-26 06:27:04	ZIPY	+you
+2016-10-26 06:27:12	-->	SuperG (~SuperG@89.192.175.100) has joined #bash
+2016-10-26 06:27:14	izalove	i did
+2016-10-26 06:27:22	ZIPY	this morning?
+2016-10-26 06:27:38	izalove	yeah hours ago
+2016-10-26 06:28:16	ZIPY	hmm ok my fault then =)
+2016-10-26 06:28:49	<--	terrasapien (~pi@d154-20-235-212.bchsia.telus.net) has quit (Ping timeout: 260 seconds)
+2016-10-26 06:29:07	-->	apaz (~Esteban@host97.190-31-177.telecom.net.ar) has joined #bash
+2016-10-26 06:29:59	-->	pcre (~quassel@b2b-130-180-86-10.unitymedia.biz) has joined #bash
+2016-10-26 06:30:18	<--	tlaxkit (~Thunderbi@92.177.99.40) has quit (Remote host closed the connection)
+2016-10-26 06:30:34	-->	tlaxkit (~Thunderbi@92.177.99.40) has joined #bash
+2016-10-26 06:31:10	<--	czerasz (~czerasz@h-62.96.154.90.host.de.colt.net) has quit (Quit: Ex-Chat)
+2016-10-26 06:31:42	-->	algun (~algun@unaffiliated/algun) has joined #bash
+2016-10-26 06:31:58	-->	JeanCarloMachado (~jean@189-10-224-214.cslce701.dsl.brasiltelecom.net.br) has joined #bash
+2016-10-26 06:32:55	-->	mjones (uid180508@gateway/web/irccloud.com/x-fbtftxczbhabrakx) has joined #bash
+2016-10-26 06:34:26	<--	pandaadb (~pandaadb@94.198.186.66) has quit (Quit: Leaving)
+2016-10-26 06:34:50	<--	Guest54938 (~Freenode@27.16.1.85.dynamic.wline.res.cust.swisscom.ch) has quit (Ping timeout: 244 seconds)
+2016-10-26 06:34:56	<--	Neslepaks (~Neslepaks@178.61.71.85) has left #bash
+2016-10-26 06:35:47	-->	Warnaud (~Freenode@27.16.1.85.dynamic.wline.res.cust.swisscom.ch) has joined #bash
+2016-10-26 06:35:47	--	Warnaud is now known as Guest63099
+2016-10-26 06:36:03	-->	lunaphyte (~lunaphyte@unaffiliated/lunaphyte) has joined #bash
+2016-10-26 06:36:35	<--	JeanCarloMachado (~jean@189-10-224-214.cslce701.dsl.brasiltelecom.net.br) has quit (Ping timeout: 250 seconds)
+2016-10-26 06:37:51	<--	Zheis (c0c48e57@gateway/web/freenode/ip.192.196.142.87) has quit (Ping timeout: 260 seconds)
+2016-10-26 06:37:51		[06:37]
+2016-10-26 06:41:06	-->	gshrikant (~gshrikant@122.164.252.239) has joined #bash
+2016-10-26 06:41:13	<--	troker (~troker@66.37.38.50) has quit (Remote host closed the connection)
+2016-10-26 06:41:20	-->	r00tWearsRedHats (~r00tWears@73.44.33.86) has joined #bash
+2016-10-26 06:41:38	<--	r00tWearsRedHats (~r00tWears@73.44.33.86) has quit (Read error: Connection reset by peer)
+2016-10-26 06:41:51	<--	r00twrh (~r00tWears@73.44.33.86) has quit (Quit: Leaving)
+2016-10-26 06:42:03	-->	gelignite (~gelignite@x4db58fa8.dyn.telefonica.de) has joined #bash
+2016-10-26 06:42:11	-->	ahmed_elgabri (~ahmedelga@ip4da074e6.direct-adsl.nl) has joined #bash
+2016-10-26 06:42:23	<--	mikecmpbll (~mikecmpbl@ruby/staff/mikecmpbll) has quit (Quit: inabit. zz.)
+2016-10-26 06:42:40	<--	skomorokh_ (~quassel@unaffiliated/skomorokh) has quit (Remote host closed the connection)
+2016-10-26 06:42:45	-->	JeanCarloMachado (~jean@189-10-224-214.cslce701.dsl.brasiltelecom.net.br) has joined #bash
+2016-10-26 06:43:31	-->	skomorokh_ (~quassel@unaffiliated/skomorokh) has joined #bash
+2016-10-26 06:43:31	lunaphyte	hi.  i have a list of files i'd like to rename: http://dpaste.com/0MX5FZ7.txt - i'd like to replace the date component.  my plan was to replace all characters between the last underscore and the first period.  how can i do this?
+2016-10-26 06:44:28	izalove	for ... mv "$f" "${f%_*}foobar.dat.pgp"
+2016-10-26 06:44:34	-->	arortell (~arortell@72-161-133-70.dyn.centurytel.net) has joined #bash
+2016-10-26 06:44:39	greycat	!lame
+2016-10-26 06:44:41	greybot	for f in ./*.wav; do lame "$f" "${f%.wav}.mp3"; done
+2016-10-26 06:44:54	-->	troker (~troker@66.37.38.50) has joined #bash
+2016-10-26 06:45:52	<--	ZIPY (~ZIPY@unaffiliated/zipy) has left #bash
+2016-10-26 06:46:28	--	davix1 is now known as davix2
+2016-10-26 06:46:37	--	davix2 is now known as davix4
+2016-10-26 06:46:48	--	davix4 is now known as davixx
+2016-10-26 06:47:05	<--	xaa (~xaa@2a02:a03f:2f:cc00:a08f:c5b6:2afa:812e) has quit (Quit: xaa)
+2016-10-26 06:47:45	<--	ponyrider (~cf2iqx@unaffiliated/ponyrider) has quit (Ping timeout: 244 seconds)
+2016-10-26 06:48:05	--	davixx is now known as davix[matrix]
+2016-10-26 06:48:26	-->	nitric (~nitric@unaffiliated/nitric) has joined #bash
+2016-10-26 06:48:43	-->	kgirthofer (~kgirthofe@pool-96-227-58-188.phlapa.fios.verizon.net) has joined #bash
+2016-10-26 06:48:50	<--	Guest17221 (tesseract@nat/redhat/x-zlbgjwxzrerkagdy) has quit (Quit: Leaving)
+2016-10-26 06:49:09	-->	_ADN_ (~ADN@212.161.49.106) has joined #bash
+2016-10-26 06:49:19	<--	andyhoang2 (~andyhoang@171.250.5.64) has quit (Ping timeout: 250 seconds)
+2016-10-26 06:51:41	-->	stomplee (~biggystom@216.129.83.42) has joined #bash
+2016-10-26 06:52:22	-->	andyhoang2 (~andyhoang@171.250.5.64) has joined #bash
+2016-10-26 06:52:55	<--	kurkale6ka (~kurkale6k@win.ops.offices.venntro.com) has quit (Quit: WeeChat 1.6)
+2016-10-26 06:52:55		[06:52]
+2016-10-26 06:53:23	sjohnson	at the very least, no -h?  sheesh!
+2016-10-26 06:53:41	sjohnson	tut ut
+2016-10-26 06:53:45	sjohnson	*tut
+2016-10-26 06:54:28	<--	diogenese (diogenese@diogenese.velotech.net) has quit (Ping timeout: 244 seconds)
+2016-10-26 06:54:52	<--	MindSpark (~MindSpark@p5795A705.dip0.t-ipconnect.de) has quit (Remote host closed the connection)
+2016-10-26 06:56:20	<--	kgirthofer (~kgirthofe@pool-96-227-58-188.phlapa.fios.verizon.net) has quit (Ping timeout: 260 seconds)
+2016-10-26 06:56:35	-->	hahuang65 (~hahuang65@2601:647:4000:d7:c0af:32d8:6a81:1d07) has joined #bash
+2016-10-26 06:57:01	-->	Geom` (~Geom@112.201.156.109) has joined #bash
+2016-10-26 06:57:06	<--	Geom (~Geom@112.201.156.109) has quit (Ping timeout: 250 seconds)
+2016-10-26 06:57:27	<--	aswen (~aswen@smtp2.nedap.com) has quit (Quit: WeeChat 1.5)
+2016-10-26 06:57:56	-->	pajpax (~pajpax@bband-dyn159.178-41-166.t-com.sk) has joined #bash
+2016-10-26 06:59:39	-->	Masterphi (~Masterphi@199.192.105.248) has joined #bash
+2016-10-26 07:00:00	<--	VikingHoarder (~VikingHoa@203.233.108.93.rev.vodafone.pt) has quit (Remote host closed the connection)
+2016-10-26 07:01:45	<--	hahuang65 (~hahuang65@2601:647:4000:d7:c0af:32d8:6a81:1d07) has quit (Ping timeout: 260 seconds)
+2016-10-26 07:02:26	-->	cdown (~cdown@199.201.64.135) has joined #bash
+2016-10-26 07:03:00	<--	cdown (~cdown@199.201.64.135) has quit (Read error: Connection reset by peer)
+2016-10-26 07:03:37	-->	el-aman (~Mutter@213.55.105.116) has joined #bash
+2016-10-26 07:04:24	<--	el-aman (~Mutter@213.55.105.116) has quit (Read error: Connection reset by peer)
+2016-10-26 07:04:24	<--	han-solo (~han-solo@115.244.220.16) has quit (Quit: leaving)
+2016-10-26 07:04:26	-->	cdown (~cdown@199.201.64.135) has joined #bash
+2016-10-26 07:04:46	-->	el-aman (~Mutter@213.55.105.41) has joined #bash
+2016-10-26 07:05:01	<--	andyhoang2 (~andyhoang@171.250.5.64) has quit (Ping timeout: 260 seconds)
+2016-10-26 07:05:01	<--	karakedi (~eAC53C340@unaffiliated/orphan) has quit (Ping timeout: 256 seconds)
+2016-10-26 07:05:02	<--	hwcomcn (~hwcomcn@114.217.188.28) has quit (Quit: Leaving...)
+2016-10-26 07:05:04	-->	nidr0x (~z4.30i@nidr0x.ddns.jazztel.es) has joined #bash
+2016-10-26 07:05:20	<--	el-aman (~Mutter@213.55.105.41) has quit (Read error: Connection reset by peer)
+2016-10-26 07:05:38	-->	el-aman (~Mutter@213.55.105.116) has joined #bash
+2016-10-26 07:06:44	<--	zarac (~kev@unaffiliated/zarac) has quit (Quit: WeeChat 1.6)
+2016-10-26 07:07:08	<--	sobersocialist (Instantbir@cet-nat.comcastcntr.pa.bo.comcast.net) has quit (Ping timeout: 245 seconds)
+2016-10-26 07:07:10	<--	SuperG (~SuperG@89.192.175.100) has quit (Quit: My Mac has gone to sleep. ZZZzzz…)
+2016-10-26 07:07:28	<--	el-aman (~Mutter@213.55.105.116) has quit (Read error: Connection reset by peer)
+2016-10-26 07:08:20	-->	cupholderguy (~darkstar@2804:7f1:e480:fffa::4) has joined #bash
+2016-10-26 07:08:20		[07:08]
+2016-10-26 07:09:09	-->	star_prone (~sviatovig@5-12-143-129.residential.rdsnet.ro) has joined #bash
+2016-10-26 07:12:18	-->	ER_nesto (~Ernesto@host81-131-234-16.range81-131.btcentralplus.com) has joined #bash
+2016-10-26 07:12:23	-->	awb (~awb@108-81-230-18.lightspeed.sntcca.sbcglobal.net) has joined #bash
+2016-10-26 07:13:20	<--	nullspoon (~nullspoon@71-211-248-180.hlrn.qwest.net) has quit (Quit: WeeChat 1.6)
+2016-10-26 07:13:25	<--	star_prone (~sviatovig@5-12-143-129.residential.rdsnet.ro) has quit (Ping timeout: 260 seconds)
+2016-10-26 07:13:32	ash_workz	shbot had to change it's nick?
+2016-10-26 07:13:43	<--	cupholderguy (~darkstar@2804:7f1:e480:fffa::4) has left #bash ("Leaving")
+2016-10-26 07:14:54	-->	brainproxy (~michael@pdpc/supporter/gold/brainproxy) has joined #bash
+2016-10-26 07:15:56	<--	nilg` (~user@92.247.176.162) has quit (Remote host closed the connection)
+2016-10-26 07:16:02	lunaphyte	izalove, greycat: thanks, that's perfect
+2016-10-26 07:17:35	-->	diogenese (~diogenese@diogenese.velotech.net) has joined #bash
+2016-10-26 07:17:43	-->	periappi (5c921bfb@gateway/web/freenode/ip.92.146.27.251) has joined #bash
+2016-10-26 07:18:17	<--	todd_dsmw (~todd_dsmw@74.112.21.215) has quit (Remote host closed the connection)
+2016-10-26 07:18:28	periappi	Hi
+2016-10-26 07:19:23	-->	neilpdx (47edc114@gateway/web/freenode/ip.71.237.193.20) has joined #bash
+2016-10-26 07:19:53	--	ER_nesto is now known as Chinesium
+2016-10-26 07:20:51	periappi	I have a small question about my bash script. I created a function which returns 1 ("exit 1") if a grep failed to find a string, then I use it in my main script in a condition. The problem is, when the function returns something else than 0 my entier script stops. Any idea about my issue ?
+2016-10-26 07:21:03	-->	firstdayonthejob (~firstdayo@cpc99346-croy26-2-0-cust153.19-2.cable.virginm.net) has joined #bash
+2016-10-26 07:21:16	<--	Scartozzo (~flavio@2-238-140-4.ip244.fastwebnet.it) has quit (Ping timeout: 265 seconds)
+2016-10-26 07:21:23	Tanta	use 'return 1' and not 'exit 1'
+2016-10-26 07:21:23	_adb	"return" vs "exit"
+2016-10-26 07:21:33	Tanta	exit will abort execution
+2016-10-26 07:21:38	<--	lunaphyte (~lunaphyte@unaffiliated/lunaphyte) has left #bash ("leaving")
+2016-10-26 07:22:19	periappi	If I use "return", will my condition interprets it the "usual way" (0 : OK ; >0 : KO) ?
+2016-10-26 07:22:34	-->	emg (~emg@74-123-189-254.static.wiline.com) has joined #bash
+2016-10-26 07:22:35	greycat	return is "exit from a function but not the whole script"
+2016-10-26 07:22:41	<--	iliv (~iliv@93.77.152.230) has quit (Quit: Time to get some sleep... ZzZzZzZ)
+2016-10-26 07:22:43	greycat	return also "exits" from a sourced file
+2016-10-26 07:22:56	greycat	(unless you use it inside a function inside a sourced file)
+2016-10-26 07:23:06	periappi	Ok, thanks for the help guys ! :D
+2016-10-26 07:24:10	-->	blueness (~blueness@gentoo/developer/blueness) has joined #bash
+2016-10-26 07:24:10		[07:24]
+2016-10-26 07:24:15	-->	somis (~somis@149.56.153.182) has joined #bash
+2016-10-26 07:25:12	-->	Scartozzo (~flavio@2-238-140-4.ip244.fastwebnet.it) has joined #bash
+2016-10-26 07:27:27	<--	flacko (~flacko@78-61-193-147.static.zebra.lt) has quit (Quit: WeeChat 0.4.2)
+2016-10-26 07:27:38	<--	gbit86__ (uid97908@gateway/web/irccloud.com/x-qyunpufjybdyvzxb) has quit (Ping timeout: 245 seconds)
+2016-10-26 07:27:42	-->	flacko (~flacko@78-61-193-147.static.zebra.lt) has joined #bash
+2016-10-26 07:28:41	<--	atomi (~atomi@71-83-179-177.dhcp.lnbh.ca.charter.com) has quit (Remote host closed the connection)
+2016-10-26 07:28:59	-->	gbit86__ (uid97908@gateway/web/irccloud.com/x-zrvrcipucuwxxfiy) has joined #bash
+2016-10-26 07:29:29	-->	kneth` (~user@x1-6-c0-56-27-ce-d0-76.cpe.webspeed.dk) has joined #bash
+2016-10-26 07:29:53	<--	sjohnson (sjohnson@cow.sj.rfc1459.net) has quit (Quit: dirtyc0w)
+2016-10-26 07:30:34	<--	b3h3m0th (uid26288@gateway/web/irccloud.com/x-lezytazktegympkp) has quit (Quit: Connection closed for inactivity)
+2016-10-26 07:31:36	-->	root__ (~root@107.191.102.55) has joined #bash
+2016-10-26 07:31:57	<--	pcre (~quassel@b2b-130-180-86-10.unitymedia.biz) has quit (Quit: No Ping reply in 180 seconds.)
+2016-10-26 07:32:20	<--	S00do (~S000do@c-67-190-58-99.hsd1.co.comcast.net) has quit (Quit: Leaving)
+2016-10-26 07:32:36	-->	bizarro_1 (~bizarro_1@98.red-79-155-31.dynamicip.rima-tde.net) has joined #bash
+2016-10-26 07:33:13	<--	hs0ucy (~hs0ucy@68.67.45.242) has quit (Ping timeout: 260 seconds)
+2016-10-26 07:34:37	-->	lompik (~lompik@2001:19f0:6800:1522:5400:ff:fe21:fd3d) has joined #bash
+2016-10-26 07:34:41	<--	blackcat73 (~Blackcat@thor.ipbrick.com) has left #bash ("Leaving")
+2016-10-26 07:34:52	-->	pcre (~quassel@b2b-130-180-86-10.unitymedia.biz) has joined #bash
+2016-10-26 07:35:22	-->	mikecmpbll (~mikecmpbl@ruby/staff/mikecmpbll) has joined #bash
+2016-10-26 07:37:24	-->	wyre (~wyre@79.109.56.159.dyn.user.ono.com) has joined #bash
+2016-10-26 07:37:27	-->	paraxor (~a@unaffiliated/prazial) has joined #bash
+2016-10-26 07:37:58	-->	atomi (~atomi@71-83-179-177.dhcp.lnbh.ca.charter.com) has joined #bash
+2016-10-26 07:38:30	paraxor	http://sprunge.us/ZSXe
+2016-10-26 07:38:41	paraxor	why doesn't the output of the python script get written to the log file?
+2016-10-26 07:39:30	greycat	Is the logfile created at all?  Maybe it's not writable due to permissions.
+2016-10-26 07:39:30		[07:39]
+2016-10-26 07:39:42	paraxor	it is
+2016-10-26 07:39:51	greycat	Maybe the python program doesn't write anything to stdout or stderr.
+2016-10-26 07:39:58	paraxor	echo "=== Started tunnel on $(date) ===" >> $logfile writes correctly
+2016-10-26 07:40:05	paraxor	the python program definitely writes to stdout
+2016-10-26 07:40:31	greycat	Maybe the python program's stdout is buffered, and the program is being killed while a buffer of output is unflushed.
+2016-10-26 07:40:55	dualbus	in such case, use python -u
+2016-10-26 07:41:14	<--	Chinesium (~Ernesto@host81-131-234-16.range81-131.btcentralplus.com) has quit (Quit: DRIVER_IRQL_NOT_LESS_OR_EQUAL (ETD.sys))
+2016-10-26 07:41:21	<--	wonderworld (~ww@x4d0a0054.dyn.telefonica.de) has quit (Remote host closed the connection)
+2016-10-26 07:41:35	<--	strull (~strull@pD9F4B473.dip0.t-ipconnect.de) has quit (Remote host closed the connection)
+2016-10-26 07:42:23	-->	Orion3k (~Orion3k@47-51-33-228.static.mtpk.ca.charter.com) has joined #bash
+2016-10-26 07:42:30	<--	BenA (~Ben@unaffiliated/BenA) has quit (Quit: joined channel #quit, type /quit to join him)
+2016-10-26 07:44:00	<--	davidfetter_ge (~chatzilla@64.129.231.6) has quit (Ping timeout: 256 seconds)
+2016-10-26 07:44:47	Tanta	no dude
+2016-10-26 07:44:50	Tanta	use autossh
+2016-10-26 07:45:28	<--	winem_ (~quassel@port-83-236-188-194.static.qsc.de) has quit (Remote host closed the connection)
+2016-10-26 07:45:47	-->	terrasapien (~pi@d154-20-235-212.bchsia.telus.net) has joined #bash
+2016-10-26 07:46:29	Tanta	http://pastebin.com/raw/ruqyV2UH here's an example systemd unit file for an autossh tunnel
+2016-10-26 07:47:04	-->	xall_ (~xall@ip68-230-65-100.ph.ph.cox.net) has joined #bash
+2016-10-26 07:47:29	<--	nashgul (~thulsadoo@236.red-79-146-184.dynamicip.rima-tde.net) has quit (Ping timeout: 260 seconds)
+2016-10-26 07:48:16	<--	Iridos (~iridos@unaffiliated/iridos) has quit (Remote host closed the connection)
+2016-10-26 07:48:28	-->	iliv (~iliv@93.77.152.230) has joined #bash
+2016-10-26 07:48:42	-->	Iridos (~iridos@unaffiliated/iridos) has joined #bash
+2016-10-26 07:48:46	-->	hs0ucy (~hs0ucy@68.67.45.242) has joined #bash
+2016-10-26 07:49:44	-->	hahuang65 (~hahuang65@2601:647:4000:d7:c0af:32d8:6a81:1d07) has joined #bash
+2016-10-26 07:50:11	-->	el-aman (~Mutter@213.55.105.116) has joined #bash
+2016-10-26 07:51:11	<--	pcre (~quassel@b2b-130-180-86-10.unitymedia.biz) has quit (Quit: No Ping reply in 180 seconds.)
+2016-10-26 07:51:26	<--	el-aman (~Mutter@213.55.105.116) has quit (Read error: Connection reset by peer)
+2016-10-26 07:51:56	<--	tlaxkit (~Thunderbi@92.177.99.40) has quit (Quit: tlaxkit)
+2016-10-26 07:53:08	<--	Iridos (~iridos@unaffiliated/iridos) has quit (Read error: Connection reset by peer)
+2016-10-26 07:53:12	-->	CutMeOwnThroat (~iridos@unaffiliated/iridos) has joined #bash
+2016-10-26 07:53:40	paraxor	greycat: that was it! thanks!
+2016-10-26 07:53:45	paraxor	and dualbus
+2016-10-26 07:53:57	paraxor	I just assumed it would be line-buffered
+2016-10-26 07:54:16	-->	pcre (~quassel@b2b-130-180-86-10.unitymedia.biz) has joined #bash
+2016-10-26 07:54:39	Lew2354	'for cfile in "$1"/.* "$1"/*; do if [ -d "$cfile" ]; then' trying to go through all directories and sub directories but i feel like the for statement is wrong - how can i fix
+2016-10-26 07:54:39		[07:54]
+2016-10-26 07:54:56	paraxor	Lew2354: you can use find
+2016-10-26 07:55:02	-->	geggam (~geggam@ec2-107-20-130-165.compute-1.amazonaws.com) has joined #bash
+2016-10-26 07:55:29	-->	davidfetter_ge (~chatzilla@64.129.231.6) has joined #bash
+2016-10-26 07:55:50	Lew2354	well its meant to go through all directories/sub and find all files and then it will do other thigns with them and copy
+2016-10-26 07:56:16	Lew2354	im sure for cfile in "$1"/.* "$1"/*; is wrong
+2016-10-26 07:56:32	<--	rupesh_ (~rupesh@125.16.97.127) has quit (Ping timeout: 252 seconds)
+2016-10-26 07:58:44	emg	Lew2354: bash or sh?
+2016-10-26 07:58:51	-->	osse (~osse@zsh/user/osse) has joined #bash
+2016-10-26 07:59:01	Lew2354	bash
+2016-10-26 07:59:05	emg	Lew2354: also using find would be the best way
+2016-10-26 07:59:17	emg	Lew2354: turn on dotglob, then just use * not .*
+2016-10-26 07:59:21	emg	!dotglob
+2016-10-26 07:59:21	greybot	dotglob, if set, makes bash include filenames beginning with a '.' (excluding . and ..) in the results of pathname expansion (shopt -s dotglob)
+2016-10-26 07:59:24	Lew2354	hmm im not sure emg
+2016-10-26 07:59:28	greycat	This sounds strangely familiar.
+2016-10-26 07:59:42	Lew2354	yeah im still working on it greycat
+2016-10-26 07:59:50	<--	pcre (~quassel@b2b-130-180-86-10.unitymedia.biz) has quit (Quit: No Ping reply in 180 seconds.)
+2016-10-26 07:59:52	greycat	10:57  greycat> .* is a very dangerous glob, but otherwise that quoting is correct
+2016-10-26 07:59:58	greycat	10:57  greycat> if he's using .* in a script, that's probably the root of every problem
+2016-10-26 08:00:05	-->	ccl (~ccl@unaffiliated/ccl) has joined #bash
+2016-10-26 08:00:05	emg	but if you're doing all directories/subdirectories, then just write a script and call find -exec thatscript
+2016-10-26 08:00:13	Lew2354	ddint really tell me how/where to put it im quite a novice
+2016-10-26 08:00:18	emg	(or export the function and call  find -exec bash -c 'thatfunction'
+2016-10-26 08:00:25	Lew2354	sec
+2016-10-26 08:00:57	periappi	In this case  : "if ! ls "Livre $livre" ; then ....  ; fi" How do you do to prevent ls from outputting stuff (in case of error) ? Thx
+2016-10-26 08:00:59	Lew2354	http://pastebin.com/raw/Y6K8KeRr
+2016-10-26 08:01:10	greycat	periappi: if you're testing for file existence, use [[ -e ]]
+2016-10-26 08:01:24	-->	andyhoang2 (~andyhoang@171.250.5.64) has joined #bash
+2016-10-26 08:01:33	emg	and for future reference, if you were using POSIX sh, you'd use .[!.]* and ..?* and * in order to get all files that aren't . or .. and you'd have to do an existence check for each one because if there is no file the glob doesn't expand
+2016-10-26 08:01:41	periappi	greycat what if it's about folders ?
+2016-10-26 08:01:48	greycat	periappi: *sigh*   what are you trying to do?
+2016-10-26 08:01:49	Lew2354	how should i change it emg
+2016-10-26 08:02:02	-->	kanrao (~kanrao@cvl92-2-82-235-134-111.fbx.proxad.net) has joined #bash
+2016-10-26 08:02:12	periappi	greycat I'm trying to check if "Livre $livre" folder exists
+2016-10-26 08:02:21	<--	_ADN_ (~ADN@212.161.49.106) has quit (Ping timeout: 265 seconds)
+2016-10-26 08:02:26	greycat	if [[ ! -e "Livre $livre" ]]
+2016-10-26 08:02:38	greycat	-e checks for existence without regard to what KIND of file it is
+2016-10-26 08:02:56	periappi	Sweet ! Thanks greycat !
+2016-10-26 08:02:58	greycat	if you want to check specifically *whether it exists and is a directory* then you'd use -d instead
+2016-10-26 08:03:05	emg	Lew2354: 1) use find 2) if for some reason you decide not to use find (use find) use dotglob as I showed you
+2016-10-26 08:03:26	Lew2354	emg can you show me exactly how it should be implemented
+2016-10-26 08:03:38	greycat	emg: for context, this is the same advice I gave 5 hours ago after I *plonked* him immediately upon his insistence that he had to be helped privately.
+2016-10-26 08:03:57	emg	!dotglob > Lew2354
+2016-10-26 08:03:57	greybot	Lew2354: dotglob, if set, makes bash include filenames beginning with a '.' (excluding . and ..) in the results of pathname expansion (shopt -s dotglob)
+2016-10-26 08:03:58	Lew2354	I dont see why asking for private chat is an issue ?
+2016-10-26 08:04:02	greycat	I've been piecing together other people's responses to get a sideways view of the questions he's been asking.
+2016-10-26 08:04:04	emg	!shopt > Lew2354
+2016-10-26 08:04:04	greybot	Lew2354: http://wiki.bash-hackers.org/internals/shell_options -- nullglob and extglob are most common. dotglob and nocase{match,glob} can be handy too.
+2016-10-26 08:04:20	Lew2354	greycat ive spoken to you a lot without response
+2016-10-26 08:04:28	<--	hs0ucy (~hs0ucy@68.67.45.242) has quit (Ping timeout: 260 seconds)
+2016-10-26 08:04:30	-->	pcre (~quassel@b2b-130-180-86-10.unitymedia.biz) has joined #bash
+2016-10-26 08:05:34	-->	Klaus_D1eter_ (~klaus@46.183.103.8) has joined #bash
+2016-10-26 08:05:37	Tanta	# IFS=$' ' read -r _ total _ available < <(free -mt | tail -n 1 | sed "s#\s\+# #g"); echo "total: $total ; available: $available"
+2016-10-26 08:05:39	shbot1	Tanta: bash: free: command not found
+2016-10-26 08:05:39	shbot1	Tanta: total:  ; available:
+2016-10-26 08:05:52	<--	geggam (~geggam@ec2-107-20-130-165.compute-1.amazonaws.com) has quit (Remote host closed the connection)
+2016-10-26 08:06:14	Tanta	hmm, well that works in my shell
+2016-10-26 08:06:17	<--	andyhoang2 (~andyhoang@171.250.5.64) has quit (Ping timeout: 250 seconds)
+2016-10-26 08:06:43	Lew2354	also idk what *plonked* means
+2016-10-26 08:07:19	<--	osse (~osse@zsh/user/osse) has quit (Quit: WeeChat 1.7-dev)
+2016-10-26 08:07:29	-->	osse (~osse@zsh/user/osse) has joined #bash
+2016-10-26 08:08:04	-->	rupesh_ (~rupesh@125.16.97.118) has joined #bash
+2016-10-26 08:08:44	yitz_	Timed ignore
+2016-10-26 08:09:13	Lew2354	No need for that is there
+2016-10-26 08:09:52	yitz_	"Need" is a fuzzy term. People get to ignore whomever they want around here. Welcome to IRC.
+2016-10-26 08:09:52		[08:09]
+2016-10-26 08:09:53	gci_admin	If one is irritating the crusty old curmudgeons with homework questions ... well ... yeah. ;)
+2016-10-26 08:10:19	Lew2354	Yeah some people are needlessly rude on here i guess
+2016-10-26 08:10:26	greycat	Even homework questions usually get answers, eventually, once we can figure out what the hell they're *asking* for and what the bloody restrictions are.
+2016-10-26 08:10:38	<--	hugdru (~hugdru@unaffiliated/hugdru) has quit (Ping timeout: 256 seconds)
+2016-10-26 08:10:47	gci_admin	The concept of "rude" is subjective.
+2016-10-26 08:10:55	Lew2354	Just wanted a response i can show you everything in PM as it doesnt have a limit on what i can send
+2016-10-26 08:11:20	Lew2354	You would be able to fix it in 10 mins or so given that you know your stuff
+2016-10-26 08:11:26	greycat	!faq #bash
+2016-10-26 08:11:27	greybot	http://mywiki.wooledge.org/BashFAQ/064 -- Why is it so hard to get an answer to the question that I asked in #bash?
+2016-10-26 08:11:40	Lew2354	I explained it all greycat ?
+2016-10-26 08:11:44	<--	sujeet (~sujeet@unaffiliated/freeboson) has quit (Ping timeout: 245 seconds)
+2016-10-26 08:12:17	<--	stacks88` (~x@167.114.219.244) has quit (Remote host closed the connection)
+2016-10-26 08:12:59	-->	stacks88 (~x@167.114.219.244) has joined #bash
+2016-10-26 08:13:21	-->	sujeet (sujeet@unaffiliated/freeboson) has joined #bash
+2016-10-26 08:13:37	yitz_	Lew2354: Don't use PM unless you're paying people for their time. If something is too long to explain in under two lines (~500 chars) use a pastebin.
+2016-10-26 08:13:48	Lew2354	I have
+2016-10-26 08:13:58	Lew2354	I dont see how PM is such a big issue
+2016-10-26 08:14:24	gci_admin	So, explain it again more clearly. What exactly are you attempting to accomplish and what do you /think/ you need to do to accomplish it, without pasting all your script.
+2016-10-26 08:14:35	-->	vuoto (~vuoto@80-71-135-9.u.parknet.dk) has joined #bash
+2016-10-26 08:14:40	kanrao	!check IFS=$'\n' read -r -a array <<<~/test ; for i in "${array[@]}" do printf "%s\n" "${i}" done;
+2016-10-26 08:14:41	checkbot	kanrao: shellcheck.net says: Line 1: Couldn't find 'done' for this 'do'. Line 1: Expected 'done' matching previously mentioned 'do'. Line 1: Use semicolon or linefeed before 'done' (or quote to make it literal) (and 2 more)
+2016-10-26 08:14:57	Lew2354	I have but its not easy if its ignored and/or other people are also talking - which is why a quick PM would be easier
+2016-10-26 08:14:58	yitz_	People are offering their time to answer questions on the channel, not to be bugged via PM. It's a communal help. If you move to PM, you're making it hard for others to chime in and moving the entire burden to one person
+2016-10-26 08:15:17	<--	w0ng (~w0ng@unaffiliated/w0ng) has quit (Quit: leaving)
+2016-10-26 08:15:18	kanrao	yeah, and the bot is there for a reason ;)
+2016-10-26 08:15:21	kanrao	and google
+2016-10-26 08:15:28	gci_admin	:D
+2016-10-26 08:15:32	greycat	Bots love /msg.  You can talk to the bot in /msg all day long.
+2016-10-26 08:15:42	-->	w0ng (~w0ng@unaffiliated/w0ng) has joined #bash
+2016-10-26 08:15:51	kanrao	thanks for your bots guys, by the way :)
+2016-10-26 08:16:34	-->	wonderworld (~ww@ip-176-198-197-145.hsi05.unitymediagroup.de) has joined #bash
+2016-10-26 08:16:39	-->	star_prone (~sviatovig@5-12-143-129.residential.rdsnet.ro) has joined #bash
+2016-10-26 08:16:39	Lew2354	So shall i re explain again here ?
+2016-10-26 08:16:41	izalove	Lew2354: is there any problem with what i gave you?
+2016-10-26 08:16:45	-->	hs0ucy (~hs0ucy@68.67.45.242) has joined #bash
+2016-10-26 08:17:21	Lew2354	Okay so right now im sure the issue is $1"/.* "$1"/*; i dont know how to use the getglob thing so i need to knw exactly what to type
+2016-10-26 08:17:26	<--	p3rs3us (~jduro@host86-132-96-22.range86-132.btcentralplus.com) has quit (Ping timeout: 252 seconds)
+2016-10-26 08:17:30	<--	pcre (~quassel@b2b-130-180-86-10.unitymedia.biz) has quit (Quit: No Ping reply in 180 seconds.)
+2016-10-26 08:17:43	izalove	izalove | https://arin.ga/grxl3i/raw
+2016-10-26 08:17:45	izalove	izalove | this seems to be working
+2016-10-26 08:17:48	izalove	check that?
+2016-10-26 08:18:08	<--	hs0ucy (~hs0ucy@68.67.45.242) has quit (Client Quit)
+2016-10-26 08:18:23	-->	hs0ucy (~hs0ucy@68.67.45.242) has joined #bash
+2016-10-26 08:18:29	yitz_	Lew2354: Instead of being shown exactly what to type wouldn't it make more sense to learn how globs work?
+2016-10-26 08:18:30	-->	oxhak_ (~OxHaK@219-132-190-109.isp.overthebox.ovh) has joined #bash
+2016-10-26 08:18:44	Lew2354	Id learn by seeing a working example
+2016-10-26 08:18:49	Lew2354	checking now izalove thank you!
+2016-10-26 08:18:59	 *	izalove is 50% offended
+2016-10-26 08:19:09	<--	blueness (~blueness@gentoo/developer/blueness) has quit (Quit: blueness)
+2016-10-26 08:19:28	<--	alex1a (~alex1a@a81-84-38-221.cpe.netcabo.pt) has quit (Read error: Connection reset by peer)
+2016-10-26 08:19:32	-->	blueness (~blueness@gentoo/developer/blueness) has joined #bash
+2016-10-26 08:19:57	rafalcpp	izalove: psssst, they are just 2 genders
+2016-10-26 08:19:59	-->	p3rs3us (~jduro@host86-132-96-22.range86-132.btcentralplus.com) has joined #bash
+2016-10-26 08:20:06	rafalcpp	s/they/there
+2016-10-26 08:20:19	izalove	70%
+2016-10-26 08:20:44	rafalcpp	izalove: you are not the special snowflakeeeee, and other people have right to free speech even if they have other opinions then yoursssss
+2016-10-26 08:20:46	<--	crayon (~user@unaffiliated/crayon) has quit (K-Lined)
+2016-10-26 08:20:55	-->	zeissoctopus (~zeissocto@119247027210.ctinets.com) has joined #bash
+2016-10-26 08:21:28	-->	pcre (~quassel@b2b-130-180-86-10.unitymedia.biz) has joined #bash
+2016-10-26 08:21:54	Lew2354	izalove doesn't work correctly :(
+2016-10-26 08:22:01	izalove	what's the problem?
+2016-10-26 08:22:18	izalove	ask here not in dcc
+2016-10-26 08:22:28	kanrao	!check IFS=$'\n' read -r -a array <~/test && for i in "${array[@]}"; do printf "%s\n" "${i}" done;
+2016-10-26 08:22:28	checkbot	kanrao: shellcheck.net says: Line 1: Couldn't find 'done' for this 'do'. Line 1: Expected 'done' matching previously mentioned 'do'. Line 1: Use semicolon or linefeed before 'done' (or quote to make it literal) (and 2 more)
+2016-10-26 08:22:38	<--	bocaneri (~bocaneri@about/linux/staff/sauvin) has quit (Remote host closed the connection)
+2016-10-26 08:23:06	greycat	If you're trying to read the lines of a file into an array, use mapfile.
+2016-10-26 08:23:07	<--	Lew2354 (Lew2354@79.66.4.112) has quit (Read error: Connection reset by peer)
+2016-10-26 08:23:22	greycat	mapfile -t array < ~/test
+2016-10-26 08:23:29	-->	Lew2354 (Lew2354@79-66-4-112.dynamic.dsl.as9105.com) has joined #bash
+2016-10-26 08:23:32	Lew2354	sorry dc'd
+2016-10-26 08:23:35	Lew2354	its not copying
+2016-10-26 08:23:51	kanrao	it's really weird, when I feed a text file with \n in it, it stops outputting at the first newline
+2016-10-26 08:24:03	-->	m0viefreak (~asdf@unaffiliated/m0viefreak) has joined #bash
+2016-10-26 08:24:18	greycat	Of course it does.  read stops at the first newline.  That's why you use mapfile instead.
+2016-10-26 08:24:49	kanrao	d'oh!
+2016-10-26 08:24:54	kanrao	thank you!
+2016-10-26 08:24:54		[08:24]
+2016-10-26 08:25:00	-->	geirha (geirha@gina.it.ntnu.no) has joined #bash
+2016-10-26 08:25:21	-->	rahtgaz (~rahtgaz@unaffiliated/rahtgaz) has joined #bash
+2016-10-26 08:26:56	<--	est31 (~quassel@gateway/tor-sasl/est31) has quit (Remote host closed the connection)
+2016-10-26 08:27:09	-->	est31 (~quassel@gateway/tor-sasl/est31) has joined #bash
+2016-10-26 08:27:28	Lew2354	Okay i think i got i tall to work but just adding shopt -s nullglob dotglob before the function
+2016-10-26 08:28:37	emg	izalove: is that your link?!
+2016-10-26 08:28:47	izalove	it's your now
+2016-10-26 08:28:50	emg	izalove: or minimal changes?
+2016-10-26 08:29:13	izalove	http://pastebin.com/raw/6XVXLiW6  her script
+2016-10-26 08:29:35	izalove	nope wrong link
+2016-10-26 08:29:47	izalove	http://pastebin.com/raw/kspKJpH8
+2016-10-26 08:30:10	emg	you changed so much for the better but left the function keyword!
+2016-10-26 08:30:19	<--	linuxd00d (~g10@196-210-55-249.dynamic.isadsl.co.za) has quit (Quit: Leaving)
+2016-10-26 08:30:24	emg	also indentation is screwed up :-(
+2016-10-26 08:30:31	emg	in... 1 place
+2016-10-26 08:30:39	emg	FOR SHAME!
+2016-10-26 08:30:51	Lew2354	I didnt use the script you made izalove however adding the shopt -s nullglob dotglob before the func on mine has made everything work - thanks ! :)))
+2016-10-26 08:30:53	izalove	it's because i don't use tabs
+2016-10-26 08:30:59	izalove	cool
+2016-10-26 08:31:32	emg	Lew2354: remove the "$1"/.* because it's redundant when you have dotglob turned on
+2016-10-26 08:32:16	emg	Lew2354: you can use pgrep -c instead of pgrep | wc -l  (assuming the same pgrep implementation...)
+2016-10-26 08:32:38	<--	jervis_ (~jervis@0x00.nasarok.de) has quit (Ping timeout: 244 seconds)
+2016-10-26 08:33:00	Lew2354	-c doesnt work with the custom puppy linux i have to use haha
+2016-10-26 08:33:03	emg	Lew2354: you should use (( instead of [ for arithmetic comparisons. e.g. if ((running > 1)); instead of if [ "$running" -gt 1];  (also always quote)
+2016-10-26 08:33:19	emg	Lew2354: and in bash it's recommended to use [[ instead of [
+2016-10-26 08:33:20	emg	!test
+2016-10-26 08:33:20	greybot	Use [[ .. ]] for testing strings or files, (( .. )) for testing numbers and 'if ..'' for testing commands. Do *NOT* use [ .. ] in bash (only in sh). See <http://mywiki.wooledge.org/BashSheet#Tests> and <http://mywiki.wooledge.org/tests>. Difference between [ and [[: <http://mywiki.wooledge.org/BashFAQ/031>
+2016-10-26 08:34:10	emg	Lew2354: and you don't have to use $ for variables inside (( and $((, and bash's (( is nice, intead of count=$((count + 1)) you can just do ((count++))
+2016-10-26 08:34:18	-->	ghoti (~paul@hq.experiencepoint.com) has joined #bash
+2016-10-26 08:34:30	emg	Lew2354: and I'd recommend getting rid of all the extraneous semicolons
+2016-10-26 08:34:33	greycat	count=$((count + 1)) is valid and correct for POSIX sh, though
+2016-10-26 08:34:33	ghoti	Hmm, #sed appears to be invitation-only.
+2016-10-26 08:34:35	-->	NeverDie (~NeverDie@pool-173-56-25-199.nycmny.fios.verizon.net) has joined #bash
+2016-10-26 08:34:41	greycat	ghoti: ##sed
+2016-10-26 08:34:41	izalove	what
+2016-10-26 08:34:42	emg	ghoti: ##sed
+2016-10-26 08:34:46	ghoti	ah, tnx.
+2016-10-26 08:34:51	-->	x3kl1 (~x3kl1@unaffiliated/x3kl1) has joined #bash
+2016-10-26 08:35:28	<--	webdev007 (~webdev007@23-91-152-184.cpe.pppoe.ca) has quit (Ping timeout: 250 seconds)
+2016-10-26 08:35:46	x3kl1	how hard can it be to grep one damn thing.. anyone that can shed light on this. im having trouble filtering out a text with grep
+2016-10-26 08:35:53	x3kl1	ifconfig wlan0 | grep 'wlan0: flags=67<' | cut -d'<' -f2 | awk '{print $0}'
+2016-10-26 08:35:57	x3kl1	i want the UP or DOWN status
+2016-10-26 08:36:17	emg	x3kl1: can you show what the output of ifconfig wlan0 is?
+2016-10-26 08:36:33	Lew2354	Okay, so i just tried to run it again after i cleared the copied files and its not copying LOL
+2016-10-26 08:36:33	-->	jervis (~jervis@0x00.nasarok.de) has joined #bash
+2016-10-26 08:36:34	<--	jervis (~jervis@0x00.nasarok.de) has quit (Changing host)
+2016-10-26 08:36:34	-->	jervis (~jervis@unaffiliated/jervis) has joined #bash
+2016-10-26 08:36:39	emg	x3kl1: and next time explain what you want, not how you tried to do it, example input desired output, it's much more useful
+2016-10-26 08:36:52	x3kl1	aha ok
+2016-10-26 08:36:58	Klaus_D1eter_	well, parsing the output of ifconfig is horrible. how about ifconfig wlan0|grep -E "(UP|DOWN)"
+2016-10-26 08:37:02	<--	cdg (~cdg@157.166.173.5) has quit (Remote host closed the connection)
+2016-10-26 08:37:09	-->	d0nn1e (~d0nn1e@cpe-104-138-218-156.triad.res.rr.com) has joined #bash
+2016-10-26 08:37:12	<--	patadasAlHigado (~patadasAl@asavpn242231.vpn.mcgill.ca) has quit (Ping timeout: 250 seconds)
+2016-10-26 08:37:42	greycat	on Debian 8, ifconfig doesn't even have "flags" in its output.  The UP BROADCAST RUNNING MULTICAST are just bare fields on line 4.
+2016-10-26 08:37:48	-->	larryv (~larryv@wikipedia/larryv) has joined #bash
+2016-10-26 08:38:00	x3kl1	hm ok
+2016-10-26 08:38:12	x3kl1	Klaus_D1eter_: it gives me the whole line
+2016-10-26 08:38:13	greycat	Also, if you're on Linux, ifconfig has been deprectated for like 10-15 years.  You should be looking into ip link show wlan0 instead.
+2016-10-26 08:38:26	emg	probably better parsing /proc/net/dev
+2016-10-26 08:38:29	greycat	$ ip link show eth0
+2016-10-26 08:38:29	greycat	2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP mode DEFAULT group default qlen 1000
+2016-10-26 08:38:33	greycat	    link/ether 6c:3b:e5:2b:f7:19 brd ff:ff:ff:ff:ff:ff
+2016-10-26 08:38:48	x3kl1	ah, k didnt know of that command
+2016-10-26 08:38:56	<--	larryv (~larryv@wikipedia/larryv) has left #bash
+2016-10-26 08:39:04	<--	wallbroken (~wallbroke@unaffiliated/wallbroken) has quit (Read error: Connection reset by peer)
+2016-10-26 08:39:08	Klaus_D1eter_	and and if you jsut want the match, use "-o"
+2016-10-26 08:39:11	-->	wallbroken (~wallbroke@unaffiliated/wallbroken) has joined #bash
+2016-10-26 08:39:21	emg	(ignore me, that doesn't say up/down)
+2016-10-26 08:39:59	emg	good to note that grep -o is not POSIX, it's a GNUism
+2016-10-26 08:39:59		[08:39]
+2016-10-26 08:40:03	x3kl1	Klaus_D1eter_: thx :)
+2016-10-26 08:40:24	Klaus_D1eter_	emg: good to know, I wasn't aware of it. thank you.
+2016-10-26 08:40:46	-->	WayToDoor (~milk.bott@maison.api-d.com) has joined #bash
+2016-10-26 08:41:17	Klaus_D1eter_	x3kl1: also you might want to include the state-part of the output into your match.
+2016-10-26 08:42:34	Tanta	or just try a network socket
+2016-10-26 08:42:39	Lew2354	emg So it worked fine and after trying to run it again it doesnt copy anything, not changed the config at all
+2016-10-26 08:42:40	Tanta	if that works, the link is up
+2016-10-26 08:42:43	<--	pcre (~quassel@b2b-130-180-86-10.unitymedia.biz) has quit (Quit: No Ping reply in 180 seconds.)
+2016-10-26 08:42:44	<--	WayToDoor (~milk.bott@maison.api-d.com) has quit (Client Quit)
+2016-10-26 08:42:50	-->	pcre (~quassel@b2b-130-180-86-10.unitymedia.biz) has joined #bash
+2016-10-26 08:42:56	Tanta	stop parsing the output of ifconfig and just test it
+2016-10-26 08:42:58	-->	nikivi (~nikivi@dhcp-077-250-172-150.chello.nl) has joined #bash
+2016-10-26 08:43:11	periappi	Is there a way to set the field separator of gawk on every single characters (or another way to simply read a word like an array) ?
+2016-10-26 08:43:32	greycat	If this is specifically an awk question, ask #awk
+2016-10-26 08:44:29	emg	periappi: yes for gawk, let's continue the conversation in #awk
+2016-10-26 08:44:30	<--	mjones (uid180508@gateway/web/irccloud.com/x-fbtftxczbhabrakx) has quit (Quit: Connection closed for inactivity)
+2016-10-26 08:45:27	periappi	Well, I'm trying to use awk because I don't know how to use it with more basic commands. Otherwise, do you know a way to read a word like an array ? ("hello" --> "[h,e,l,l,o] or more generally a way to easily access to a caracters of a word)
+2016-10-26 08:45:44	emg	ok, back up another step, what are you trying to do?
+2016-10-26 08:46:07	emg	(bash does have substring parameter expansion... but let's figure out what your real goal is)
+2016-10-26 08:46:13	greycat	A *bash* array, or an *awk* array?
+2016-10-26 08:46:24	emg	wait, don't skip !wayttd
+2016-10-26 08:46:27	-->	OS-16517 (OS-16517@unaffiliated/os-16517) has joined #bash
+2016-10-26 08:46:30	emg	:-)
+2016-10-26 08:46:33	greycat	True.
+2016-10-26 08:46:53	greycat	Where does the word come from, and what do you want to do with it?
+2016-10-26 08:47:07	-->	PhsShft (~Derek@128.135.100.108) has joined #bash
+2016-10-26 08:47:13	-->	rge (~wfe@151.72.121.251) has joined #bash
+2016-10-26 08:47:14	periappi	Well I have a word, and I'd like to get the content of the caracters it is composed of. For example : I have "hello" and I want the third letter and I got "l"
+2016-10-26 08:48:08	greycat	And then what?
+2016-10-26 08:48:22	<--	pcre (~quassel@b2b-130-180-86-10.unitymedia.biz) has quit (Quit: http://quassel-irc.org - Chat comfortably. Anywhere.)
+2016-10-26 08:48:27	emg	(and why?)
+2016-10-26 08:48:50	-->	webdev007 (~webdev007@23.91.152.184) has joined #bash
+2016-10-26 08:48:53	-->	jackbrown (~se@unaffiliated/jackbrown) has joined #bash
+2016-10-26 08:48:58	<--	Zucca (~zucca@85-76-71-104-nat.elisa-mobile.fi) has quit (Remote host closed the connection)
+2016-10-26 08:50:28	emg	the suspense is killing me
+2016-10-26 08:50:38	periappi	I just found out that I can use regex instead of this weird system I told you about. Your "why" showed my the way ^^
+2016-10-26 08:50:43	izalove	emg: they'll tell you at the time
+2016-10-26 08:50:56	emg	you don't need regex!!!
+2016-10-26 08:51:01	periappi	In fact, I got vars like "010" and I wanted to extract the "0" et only get "10"
+2016-10-26 08:51:03	-->	Zucca (~zucca@85-76-71-104-nat.elisa-mobile.fi) has joined #bash
+2016-10-26 08:51:13	periappi	So I could be able to add number to it
+2016-10-26 08:51:18	emg	# var=hello; echo "${var:3:1}"
+2016-10-26 08:51:20	shbot1	emg: l
+2016-10-26 08:51:23	periappi	(eg. 10 + 1)
+2016-10-26 08:51:31	greycat	where did the 10 come from?
+2016-10-26 08:51:36	periappi	Oh thanks emg, it looks nice, I'll try it
+2016-10-26 08:51:36	emg	that being said, we still have no idea what you're trying to do so we can't help you figure out the best way to do it
+2016-10-26 08:51:54	emg	!psychic
+2016-10-26 08:51:54	greybot	Nope, still not psychic.
+2016-10-26 08:51:56	emg	damn
+2016-10-26 08:52:06	greycat	Are you just asking how to remove leading zeroes?
+2016-10-26 08:52:22	periappi	Sorry, but the program is quite big and it would be really hard to explain it to you (in english moreover). Anyway, thanks..
+2016-10-26 08:52:28	periappi	Euh, yeah greycat
+2016-10-26 08:52:33	greycat	# var=0000092387; echo $((10#$var))
+2016-10-26 08:52:35	<--	PhsShft (~Derek@128.135.100.108) has quit (Quit: PhsShft)
+2016-10-26 08:52:35	shbot1	greycat: 92387
+2016-10-26 08:52:56	periappi	Wow ! Thanks greycat !
+2016-10-26 08:53:08	<--	kneth` (~user@x1-6-c0-56-27-ce-d0-76.cpe.webspeed.dk) has quit (Ping timeout: 256 seconds)
+2016-10-26 08:53:10	periappi	I'm going to use that now :)
+2016-10-26 08:53:17	greycat	("read the variable as a base 10 integer")
+2016-10-26 08:53:35	emg	periappi: next time, ask how to do what you actually want to do
+2016-10-26 08:53:40	-->	KCmetro (~KCmetro@159.140.254.104) has joined #bash
+2016-10-26 08:53:59	emg	# var=000092385; echo "${var##+(0)}" # also
+2016-10-26 08:54:00	shbot1	emg: 92385
+2016-10-26 08:54:25	greycat	that one requires enable extglob first
+2016-10-26 08:54:31	-->	kristian_on_linu (~kristian@cm-84.210.211.216.getinternet.no) has joined #bash
+2016-10-26 08:54:47	-->	Cerbb (~kvirc@173-219-156-34.bcstcmtk02.com.sta.suddenlink.net) has joined #bash
+2016-10-26 08:55:10	-->	Ermson4t (5c921bfb@gateway/web/freenode/ip.92.146.27.251) has joined #bash
+2016-10-26 08:55:10		[08:55]
+2016-10-26 08:56:25	<--	johnmilton (~johnmilto@192.206.23.197) has quit (Remote host closed the connection)
+2016-10-26 08:57:32	-->	last_staff (~Thunderbi@179-134-11.connect.netcom.no) has joined #bash
+2016-10-26 08:57:38	<--	d0nn1e (~d0nn1e@cpe-104-138-218-156.triad.res.rr.com) has quit (Quit: ZNC - http://znc.in)
+2016-10-26 08:58:08	<--	Klaus_D1eter_ (~klaus@46.183.103.8) has quit (Ping timeout: 260 seconds)
+2016-10-26 08:58:36	kanrao	!check ERROR_CHECK=$(echo "Error\ntest\n\Error\n" | sed -n '1p' | grep "Error"); if [ "${ERROR_CHECK}" == "Error" ]; then echo "ERROR DETECTED!"; exit 1; fi
+2016-10-26 08:58:36	checkbot	kanrao: shellcheck.net says: Line 1: echo won't expand escape sequences. Consider printf
+2016-10-26 08:58:45	kanrao	right!
+2016-10-26 08:58:46	-->	karakedi (~eAC53C340@unaffiliated/orphan) has joined #bash
+2016-10-26 08:58:47	KCmetro	anybody use royal ts or tsx?
+2016-10-26 08:58:48	KCmetro	trying to get the advanced custom command to work for ssh connection
+2016-10-26 08:58:51	KCmetro	(there's not a royal ts/tsx channel)
+2016-10-26 08:58:53	kanrao	echo sucks!
+2016-10-26 08:59:27	greycat	kanrao: if grep.
+2016-10-26 08:59:38	greycat	kanrao:  if yourcommand | grep -q Error; then blah; fi
+2016-10-26 09:00:22	-->	PhsShft (~Derek@128.135.100.108) has joined #bash
+2016-10-26 09:00:39	KCmetro	royaltsx custom command works fine for initial connection but need to ssh into master/agent nodes from that node, ssh then ssh basically
+2016-10-26 09:00:53	greycat	KCmetro: wake us when you get to the bash part
+2016-10-26 09:01:00	<--	awb (~awb@108-81-230-18.lightspeed.sntcca.sbcglobal.net) has quit (Quit: awb)
+2016-10-26 09:01:12	KCmetro	right, so I'm trying to see if it works with bash.
+2016-10-26 09:01:24	KCmetro	not so far
+2016-10-26 09:01:36	KCmetro	hence asking if anybody in here uses royal ts/tsx
+2016-10-26 09:01:48	<--	Rapture (~textual@50-232-118-138-static.hfc.comcastbusiness.net) has quit (Ping timeout: 265 seconds)
+2016-10-26 09:02:10	Tanta	can you do if grep -q <<< "$(your-command)"
+2016-10-26 09:02:14	kanrao	!check if [ "$(printf "Error\ntest\n\Error\n" | sed -n '1p' | grep -q "Error")" == "Error" ]; then printf "ERROR DETECTED!"; fi
+2016-10-26 09:02:14	checkbot	kanrao: No comments
+2016-10-26 09:02:17	greycat	"Can anyone read my mind and anticipate my question and ask it for me?  ... better still, just skip the part where you ask a question for me, and spoon feed me the answer!"
+2016-10-26 09:02:31	greycat	Tanta: you wouldn't use a command substitution there at all.
+2016-10-26 09:02:37	<--	_ng (ngoldin@nat/redhat/x-lfwznkipqwcjcuaf) has quit (Ping timeout: 260 seconds)
+2016-10-26 09:02:45	greycat	Tanta: if your-command | grep -q foo; then ...; fi
+2016-10-26 09:02:51	<--	PhsShft (~Derek@128.135.100.108) has quit (Client Quit)
+2016-10-26 09:02:59	KCmetro	better yet how about you not respond to me at all grey
+2016-10-26 09:03:00	KCmetro	lol
+2016-10-26 09:03:04	greycat	Tanta: if you INSIST on being an antipipist, then maybe:  if grep -q foo < <(your-command); then ...; fi
+2016-10-26 09:03:14	<--	KCmetro (~KCmetro@159.140.254.104) has quit (Quit: Leaving...)
+2016-10-26 09:03:15	Tanta	I was getting rid of the pipe, I guess you can do input substitution
+2016-10-26 09:03:15	Tanta	right
+2016-10-26 09:03:25	greycat	Why bother getting rid of the pipe?
+2016-10-26 09:03:37	Tanta	it is this channel that has made me obsessed with getting rid of pipes
+2016-10-26 09:03:41	<--	REX (~quassel@91.180.46.216) has quit (Remote host closed the connection)
+2016-10-26 09:04:09	greycat	That only matters when one part of the pipeline is a set of bash commands, especially ones that set variables you want to keep around.
+2016-10-26 09:04:15	izalove	cough cough   a < <(b)    is faster than    b | a
+2016-10-26 09:04:16	-->	mmazing (~mmazing@unaffiliated/mmazing) has joined #bash
+2016-10-26 09:04:17	x3kl1	how do i include quotemarks in a variable?
+2016-10-26 09:04:29	izalove	x3kl1: you're doing it wrong
+2016-10-26 09:04:41	x3kl1	apparently :P
+2016-10-26 09:04:42	izalove	you don't need to include quotes in a variable, and you can't do it
+2016-10-26 09:04:46	greycat	var='Bill "richer than you" Gates'
+2016-10-26 09:04:46	Tanta	# var='"""""""'; echo "$var"
+2016-10-26 09:04:47	shbot1	Tanta: """""""
+2016-10-26 09:04:48	x3kl1	ok
+2016-10-26 09:04:51	izalove	you need to add quotes when you expand the variable
+2016-10-26 09:05:04	x3kl1	izalove: ok thx
+2016-10-26 09:05:39	<--	davidfetter_ge (~chatzilla@64.129.231.6) has quit (Ping timeout: 250 seconds)
+2016-10-26 09:05:43	<--	KingsQuest (~ident@unaffiliated/kingsquest) has quit (Ping timeout: 256 seconds)
+2016-10-26 09:06:05	<--	lompik (~lompik@2001:19f0:6800:1522:5400:ff:fe21:fd3d) has quit (Ping timeout: 250 seconds)
