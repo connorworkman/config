@@ -25,6 +25,7 @@ export QT_PLUGIN_PATH=${HOME}/.kde4/lib/kde4/plugins/:/usr/lib/kde4/plugins/
 export QT_QPA_PLATFORMTHEME=qt5ct
 ## Python2 compatibility
 #export PYTHON="/usr/bin/python2.7"
+export PYTHON="/store/config/scripts/python2"
 export PYTHONSTARTUP=${HOME}/.pyrc
 ##Compilation flags
 export ARCHFLAGS="-arch x86_64"
