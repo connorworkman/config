@@ -10268,3 +10268,104 @@
 2016-10-26 12:43:20		[12:43]
 2016-10-26 12:43:49	<--	Cipher45 (~Cipher45@unaffiliated/cipher45) has quit (Ping timeout: 260 seconds)
 2016-10-26 12:45:22	-->	nine_milli (~nine_mill@32.211.52.104) has joined ##asm
+2016-10-26 12:48:54	--	irc: disconnected from server
+2016-10-26 12:54:14	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined ##asm
+2016-10-26 12:54:14		[12:54]
+2016-10-26 12:54:14	--	Topic for ##asm is "Assembly programming channel, all architectures welcome (please specify). Don't ask to ask! Use a pastebin if appropriate! Check your manuals! *** AT&T vs Intel flamers will be banned."
+2016-10-26 12:54:14	--	Topic set by Jester01 (~Jester01@62.100.244.69) on Fri, 30 Sep 2016 06:54:51
+2016-10-26 12:54:15	--	Channel ##asm: 293 nicks (0 ops, 0 voices, 293 normals)
+2016-10-26 12:54:15	***	Buffer Playback...
+2016-10-26 12:54:15	GeDaMo	[13:19:30] The register would start at 0 and you'd increment it [13:19:30]
+2016-10-26 12:54:15	traceur920	[13:24:43] Hello, I've written some code to make a shift light that receive as input a square wave with a period of 23 to 5 ms and reacts lighting up two LEDs when conditions are met. I'm quite new at this, first time with an AVR (attiny13a), second with assembly, and can't understand why LED keeps flickering instead of just be on or off [13:24:43]
+2016-10-26 12:54:15	traceur920	[13:24:55] this is the code http://pastebin.com/2ZU697M9 [13:24:55]
+2016-10-26 12:54:15	GeDaMo	[13:27:55] traceur920: you seem to be jumping back to loop instead of returning from the interrupts [13:27:55]
+2016-10-26 12:54:15	traceur920	[13:29:05] yes, i know, but i manually enable global interrupt later, so, even being horrible, should work (i suppose) [13:29:05]
+2016-10-26 12:54:15	GeDaMo	[13:29:34] I would have though you were overflowing the stack [13:29:34]
+2016-10-26 12:54:15	GeDaMo	[13:29:37] ^thought [13:29:37]
+2016-10-26 12:54:15	traceur920	[13:31:41] Ah, but for avr putting PC to stack doesn't have to be done manually ? so that, if you don't do it, it just lose the previous position? [13:31:41]
+2016-10-26 12:54:15	GeDaMo	[13:32:32] Traditionally interrupts save the current state on the stack, I'll admit I don't know if AVR does that [13:32:32]
+2016-10-26 12:54:15	traceur920	[13:34:07] I'm not sure, but will try putting RETI at the end instead of RJMP [13:34:07]
+2016-10-26 12:54:15	traceur920	[13:36:55] Another contextual (dumb) question: when in sleep and an interrupt occurs, does PC start from its vector respective memory address or just go on from last sleep request? [13:36:55]
+2016-10-26 12:54:15	archivist	[13:37:32] whatever the manual states [13:37:32]
+2016-10-26 12:54:15	traceur920	[13:53:44] Ok, as i can understand from datasheet of the tiny13 it seems to jump back to predefined vector memory address. While simulating with AVR Studio it does not. Actually it doesn't even wait for pin level changes to exit from "sleep". It just goes on [13:53:44]
+2016-10-26 12:54:15	roxfan	[14:08:08] iirc there's #avr channel, you could try that [14:08:08]
+2016-10-26 12:54:15	roxfan	[14:08:35] it's quite possible the emulator doesn't handle sleep stuff [14:08:35]
+2016-10-26 12:54:15	traceur920	[14:09:23] sure, thank you anyway! [14:09:23]
+2016-10-26 12:54:15	ds0	[15:42:32] quick question about assembly (it's for improving my sec knowledge) - on the prolog, EBP (the Frame Pointer) is pushed on the stack, then ESP is copied into EBP making the new Frame Pointer.  So when people refer to the saved frame pointer (SFP) do they mean the EBP that was first pushed on the stack or the new Frame Pointer? [15:42:32]
+2016-10-26 12:54:15	ds0	[15:46:40] I'm assuming it's the one that was pushed on the stack? because after prolog the esp register contains the value for the current stack? [15:46:40]
+2016-10-26 12:54:15	vulture	[15:47:28] ds0: probably the old one (i.e. the one that was saved) [15:47:28]
+2016-10-26 12:54:15	vulture	[15:47:47] I've not heard this acronym (SFP) before so that's probably a bad sign [15:47:47]
+2016-10-26 12:54:15	vulture	[15:48:10] saved usually means a register value you wrote to the stack to save it so that you can overwrite the register [15:48:10]
+2016-10-26 12:54:15	vulture	[15:48:17] so that is a pretty reasonable educated guess :P [15:48:17]
+2016-10-26 12:54:15	ds0	[15:49:10] vulture yeah i thought so thanks, it's from the classic "smashing the stack for fun and profit" phrack article - http://phrack.org/issues/49/14.html#article [15:49:10]
+2016-10-26 12:54:15	chr1s	[15:49:15] that would be my interpretation too [15:49:15]
+2016-10-26 12:54:15	chr1s	[15:49:36] saved = on the stack [15:49:36]
+2016-10-26 12:54:15	ds0	[15:50:38] does anyone here know of an acronym that references the esp from the previous frame that has been saved on the stack? [15:50:38]
+2016-10-26 12:54:15	vulture	[15:51:07] frame pointer ? [15:51:07]
+2016-10-26 12:54:15	vulture	[15:51:16] (since in your scenario it gets moved to ebp) [15:51:16]
+2016-10-26 12:54:15	vulture	[15:51:44] (side note: saving the frame pointer in ebp is an antiquated practice that is often avoided these days, cuz optimization) [15:51:44]
+2016-10-26 12:54:15	ds0	[15:52:08] ah i see so there's no term for the previous frame pointer? it's just literally this is the FP for function_1, this is the FP for function_2? [15:52:08]
+2016-10-26 12:54:15	zid	[15:52:15] parent fp? [15:52:15]
+2016-10-26 12:54:15	vulture	[15:52:33] what you said was not previous frame pointer [15:52:33]
+2016-10-26 12:54:15	ds0	[15:52:35] vulture: yeah it's from '96 so i expected stuff to be different now [15:52:35]
+2016-10-26 12:54:15	vulture	[15:52:37] what you said was esp [15:52:37]
+2016-10-26 12:54:15	vulture	[15:52:45] esp isnt really the frame pointer [15:52:45]
+2016-10-26 12:54:15	ds0	[15:52:57] opps meant EBP [15:52:57]
+2016-10-26 12:54:15	vulture	[15:52:58] ebp used like that is technically the frame pointer [15:52:58]
+2016-10-26 12:54:15	ds0	[15:53:10] me being an idiot sorry [15:53:10]
+2016-10-26 12:54:15	vulture	[15:53:12] :D [15:53:12]
+2016-10-26 12:54:15	vulture	[15:53:46] well, you just have an array or a stack of stack frames [15:53:46]
+2016-10-26 12:54:15	vulture	[15:53:53] and those may or may not have these saved frame pointers [15:53:53]
+2016-10-26 12:54:15	vulture	[15:54:11] so whatever you want to call that, it doesnt really matter [15:54:11]
+2016-10-26 12:54:15	ds0	[15:55:05] okay cheers for the help :) [15:55:05]
+2016-10-26 12:54:15	CharlesN	[22:36:29] is there a mov instruction that only moves 1 byte  ? for x86 [22:36:29]
+2016-10-26 12:54:15	Jester02	[22:36:49] yes [22:36:49]
+2016-10-26 12:54:15	 *	Jester02 [22:37:03] whacks CharlesN with the instruction set reference [22:37:03]
+2016-10-26 12:54:15	zid	[22:37:07] https://www.google.co.uk/?gfe_rd=cr&ei=DDARWN7WPPLW8geG8pnoCg#q=1+byte+mov [22:37:07]
+2016-10-26 12:54:15	zid	[22:37:11] or you know, google [22:37:11]
+2016-10-26 12:54:15	vulture	[22:37:28] or you could've just tried it. e.g., mov [22:37:28]
+2016-10-26 12:54:15	CharlesN	[22:37:29] thanks zid [22:37:29]
+2016-10-26 12:54:15	***	Playback Complete.
+2016-10-26 12:54:21	--	Channel created on Sun, 27 May 2007 05:31:12
+2016-10-26 12:58:44	-->	vdamewood (~vdamewood@unaffiliated/vdamewood) has joined ##asm
+2016-10-26 13:01:45	<--	control (~control@unaffiliated/control) has quit (Ping timeout: 260 seconds)
+2016-10-26 13:07:00		[13:01]
+2016-10-26 13:09:06	-->	pimlu (~pimlu@128.172.35.9) has joined ##asm
+2016-10-26 13:15:00		[13:09]
+2016-10-26 13:17:58	<--	damme_ (~damme@2001:16d8:cc75::802) has quit (Ping timeout: 245 seconds)
+2016-10-26 13:23:00		[13:17]
+2016-10-26 13:24:19	<--	pimlu (~pimlu@128.172.35.9) has quit (Ping timeout: 252 seconds)
+2016-10-26 13:25:25	-->	pimlu (~pimlu@128.172.35.9) has joined ##asm
+2016-10-26 13:25:25	<--	CharlesN (~cnb@pc-223-18-214-201.cm.vtr.net) has quit (Ping timeout: 252 seconds)
+2016-10-26 13:26:19	<--	Guest93854 (~Geek@95-42-153-38.ip.btc-net.bg) has quit (Ping timeout: 276 seconds)
+2016-10-26 13:30:03	<--	pimlu (~pimlu@128.172.35.9) has quit (Ping timeout: 265 seconds)
+2016-10-26 13:30:55	<--	Church- (~hatter@unaffiliated/church-) has quit (Ping timeout: 256 seconds)
+2016-10-26 13:32:47	-->	Church- (~hatter@unaffiliated/church-) has joined ##asm
+2016-10-26 13:35:32	-->	pimlu (~pimlu@128.172.35.9) has joined ##asm
+2016-10-26 13:40:21	<--	wildlander (~wild@unaffiliated/wildlander) has quit (Quit: Saliendo)
+2016-10-26 13:40:21		[13:40]
+2016-10-26 13:41:30	-->	majorshake (~chat@46.101.130.233) has joined ##asm
+2016-10-26 13:41:38	--	problemchild is now known as MoonUnit7
+2016-10-26 13:42:07	<--	pimlu (~pimlu@128.172.35.9) has quit (Ping timeout: 244 seconds)
+2016-10-26 13:42:54	-->	arescorpio (~arescorpi@88-217-114-200.fibertel.com.ar) has joined ##asm
+2016-10-26 13:43:25	-->	pimlu (~pimlu@128.172.35.9) has joined ##asm
+2016-10-26 13:43:57	<--	Church- (~hatter@unaffiliated/church-) has quit (Ping timeout: 256 seconds)
+2016-10-26 13:48:13	<--	nktn (~nktn___@181.46.158.157) has quit (Ping timeout: 260 seconds)
+2016-10-26 13:54:00		[13:48]
+2016-10-26 13:58:33	--	MoonUnit7 is now known as problemchild
+2016-10-26 14:00:23	-->	nktn (~nktn___@181.46.158.157) has joined ##asm
+2016-10-26 14:03:06	<--	CheckDavid (uid14990@gateway/web/irccloud.com/x-pulbkjgnutqhnhbe) has quit (Quit: Connection closed for inactivity)
+2016-10-26 14:05:04	-->	watersoul_ (~ircuser@172.245.255.61) has joined ##asm
+2016-10-26 14:05:14	<--	watersoul (~ircuser@172.245.255.61) has quit (Read error: Connection reset by peer)
+2016-10-26 14:08:06	<--	slither (~jesus@2.26.134.158) has quit (Ping timeout: 250 seconds)
+2016-10-26 14:10:44	-->	SunnyD (~SunnyD@cpe-72-178-78-211.hot.res.rr.com) has joined ##asm
+2016-10-26 14:10:44		[14:10]
+2016-10-26 14:15:50	-->	royalt213 (~royalt213@2601:647:cd01:1eed:81ca:ecfd:cd78:4089) has joined ##asm
+2016-10-26 14:19:05	-->	Church- (~hatter@unaffiliated/church-) has joined ##asm
+2016-10-26 14:19:14	<--	nine_milli (~nine_mill@32.211.52.104) has quit (Quit: nine_milli)
+2016-10-26 14:25:00		[14:19]
+2016-10-26 14:29:28	<--	royalt213 (~royalt213@2601:647:cd01:1eed:81ca:ecfd:cd78:4089) has quit (Ping timeout: 260 seconds)
+2016-10-26 14:32:48	<--	lecture01 (~Thunderbi@2a00:c1a0:8502:e300:224:81ff:fe12:72e5) has quit (Ping timeout: 250 seconds)
+2016-10-26 14:34:25	<--	paule32 (~jens@2a00:c1a0:8502:e300:224:81ff:fe12:72e5) has quit (Ping timeout: 260 seconds)
+2016-10-26 14:36:14	-->	lecture01 (~Thunderbi@2a00:c1a0:8502:e300:224:81ff:fe12:72e5) has joined ##asm
+2016-10-26 14:37:05	-->	paule32 (~jens@2a00:c1a0:8502:e300:224:81ff:fe12:72e5) has joined ##asm

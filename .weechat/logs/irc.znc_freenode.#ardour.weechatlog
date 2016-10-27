@@ -7896,3 +7896,199 @@
 2016-10-26 12:37:52	-->	naught101 (~naught101@14-202-176-150.static.tpgi.com.au) has joined #ardour
 2016-10-26 12:43:00		[12:37]
 2016-10-26 12:46:09	-->	NickSB (~nicksb@cpc5-harb9-2-0-cust141.perr.cable.virginm.net) has joined #ardour
+2016-10-26 12:47:30	<--	edogawa (~quassel@91-114-253-105.adsl.highway.telekom.at) has quit (Remote host closed the connection)
+2016-10-26 12:47:52	<--	dsr1204 (~dsr1204@99-111-235-130.lightspeed.cicril.sbcglobal.net) has quit (Ping timeout: 244 seconds)
+2016-10-26 12:48:55	--	irc: disconnected from server
+2016-10-26 12:54:17	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined #ardour
+2016-10-26 12:54:17		[12:54]
+2016-10-26 12:54:17	--	Topic for #ardour is "5.4 is released | download: http://ardour.org/download |  paste to http://pastebin.com/ | OS X users please /join #ardour-osx"
+2016-10-26 12:54:17	--	Topic set by las on Sat, 01 Oct 2016 05:02:53
+2016-10-26 12:54:17	--	Channel #ardour: 137 nicks (1 op, 0 voices, 136 normals)
+2016-10-26 12:54:17	***	Buffer Playback...
+2016-10-26 12:54:17	rgareus	[20:47:39] NI Maschine2 is pretty straight foward.   there's no official documentation, but there's prior art and it's easy to discover [20:47:39]
+2016-10-26 12:54:17	rgareus	[20:48:25] It sends a N byte message. always all all buttons + knobs on every change. [20:48:25]
+2016-10-26 12:54:17	tom-	[20:48:39] i see [20:48:39]
+2016-10-26 12:54:17	tom-	[20:49:33] but why wouldn't they document it? [20:49:33]
+2016-10-26 12:54:17	rgareus	[20:50:38] time is money [20:50:38]
+2016-10-26 12:54:17	tom-	[20:51:17] hm [20:51:17]
+2016-10-26 12:54:17	rgareus	[20:51:26] tom-: they probably have some "internal specs"  which is complete for the whole device and also includes some <secrets> for the hwardware. [20:51:26]
+2016-10-26 12:54:17	tom-	[20:51:43] sort of? [20:51:43]
+2016-10-26 12:54:17	rgareus	[20:51:51] I'm just guessing [20:51:51]
+2016-10-26 12:54:17	tom-	[20:51:57] reflashing or such [20:51:57]
+2016-10-26 12:54:17	rgareus	[20:52:14] and schematics and layouts and... [20:52:14]
+2016-10-26 12:54:17	rgareus	[20:52:31] someone would have to copy only the relevant parts and put them somewhere. [20:52:31]
+2016-10-26 12:54:17	rgareus	[20:53:30] and documentation is no fun. and they probably can't justify to pay someone for it. [20:53:30]
+2016-10-26 12:54:17	tom-	[20:53:30] that sounds like an artificial problem [20:53:30]
+2016-10-26 12:54:17	rgareus	[20:53:30] well, I don't know.  ask  NI. [20:53:30]
+2016-10-26 12:54:17	rgareus	[20:53:41] why should they publish it? [20:53:41]
+2016-10-26 12:54:17	tom-	[20:54:01] right! all the reverse engineering fun would be gone! :) [20:54:01]
+2016-10-26 12:54:17	rgareus	[20:54:08] anyway, it's just a simple struct:  https://github.com/Ardour/ardour/blob/27305439683cad75650daf4efce196ffe61a2825/libs/surfaces/maschine2/m2_dev_mk2.h#L47 [20:54:08]
+2016-10-26 12:54:17	tom-	[20:54:09] not everyone can do [20:54:09]
+2016-10-26 12:54:17	rgareus	[20:54:23] no reverse engineering needed.  the device itself follows the HID spec [20:54:23]
+2016-10-26 12:54:17	tom-	[20:54:53] nicely done [20:54:53]
+2016-10-26 12:54:17	rgareus	[20:54:55] just which bit corresponds to which button.  takes about 5 mins [20:54:55]
+2016-10-26 12:54:17	rgareus	[20:56:04] drawing to the screen is a bit more obscure.  but also straing forward.  it's not unlike xbm (x-bitmap) [20:56:04]
+2016-10-26 12:54:17	tom-	[20:57:31] what about a totally different approach that would make the HID/low-level/c++ io with the device seperate from ardour (and make it accessible outside ardour) and then couple that with ardour via existing ardour io facilities like osc [20:57:31]
+2016-10-26 12:54:17	rgareus	[20:58:16] tom-: HID is kernel provided  on all OS [20:58:16]
+2016-10-26 12:54:17	rgareus	[20:58:38] Human Interface Device -- like your mouse or keyboard [20:58:38]
+2016-10-26 12:54:17	rgareus	[20:58:56] ardour just opens the device. [20:58:56]
+2016-10-26 12:54:17	OvenWerks	[20:59:26] rgareus: so my midikb would "just work" with it then [20:59:26]
+2016-10-26 12:54:17	OvenWerks	[20:59:59] (for key input anyway) [20:59:59]
+2016-10-26 12:54:17	rgareus	[21:00:01] OvenWerks: I don't know [21:00:01]
+2016-10-26 12:54:17	rgareus	[21:00:16] OvenWerks: interpreting the messages meaningfully  is left to the application [21:00:16]
+2016-10-26 12:54:17	OvenWerks	[21:00:24] rgareus: does it show up in /dev/input [21:00:24]
+2016-10-26 12:54:17	tom-	[21:00:32] rgareus: i see, so that's not much different to interact with any serial device xy using protocol z [21:00:32]
+2016-10-26 12:54:17	rgareus	[21:00:39] OvenWerks: /dev/hidraw* [21:00:39]
+2016-10-26 12:54:17	frinknet	[21:00:56] Just did my first commercial session on Ardour! Loving it! [21:00:56]
+2016-10-26 12:54:17	tom-	[21:01:08] rgareus: i have custom serial controller, would you hardcode support please? :) [21:01:08]
+2016-10-26 12:54:17	OvenWerks	[21:01:34] rgareus: different then [21:01:34]
+2016-10-26 12:54:17	rgareus	[21:02:00] tom-: send me one for evaluation. [21:02:00]
+2016-10-26 12:54:17	tom-	[21:02:25] rgareus: i like your attitude [21:02:25]
+2016-10-26 12:54:17	tom-	[21:03:43] it could be an experiment to "capsule" such a controller as an osc object outside ardour and let it talk to ardour via osc [21:03:43]
+2016-10-26 12:54:17	rgareus	[21:03:46] OvenWerks: in lsusb, the NI shows up at     bInterfaceClass  3 Human Interface Device [21:03:46]
+2016-10-26 12:54:17	rgareus	[21:03:59] OvenWerks: and linux automatically adds the device nodes. [21:03:59]
+2016-10-26 12:54:17	tom-	[21:04:27] the api would rapidly change to fit (other/yet unknown) needs i speculate [21:04:27]
+2016-10-26 12:54:17	rgareus	[21:05:32] OvenWerks: default permissions are still a problem.   the Push2 is autoatically added to the "audio" group on las' debian maschine.  the NI here is not (I've added a udev.rule file to git) [21:05:32]
+2016-10-26 12:54:17	OvenWerks	[21:05:48] rgareus: my keyboard/wiimote create an entry in /dev/input/ with relatively standard ways of relating to them [21:05:48]
+2016-10-26 12:54:17	rgareus	[21:05:50] on windows & OSX permissions are set up correctly to talk to the maschine. [21:05:50]
+2016-10-26 12:54:17	rgareus	[21:06:09] OvenWerks: keyboards are probably special cased. [21:06:09]
+2016-10-26 12:54:17	OvenWerks	[21:06:37] rgareus: keyboards/mice and joysticks? maybe [21:06:37]
+2016-10-26 12:54:17	rgareus	[21:07:57] frinknet: I'm glad you had fun and a good time. [21:07:57]
+2016-10-26 12:54:17	 *	tom- [21:12:02] calls it a day early [21:12:02]
+2016-10-26 12:54:17	***	Playback Complete.
+2016-10-26 12:55:10	--	Channel created on Sat, 25 Nov 2006 20:42:44
+2016-10-26 12:59:09	-->	avlinux (~tester@xplr-104-249-226-155.xplornet.com) has joined #ardour
+2016-10-26 13:05:00		[12:59]
+2016-10-26 13:16:06	<--	rosslagerwall_ (~rosslager@22.188.9.51.dyn.plus.net) has quit (Ping timeout: 250 seconds)
+2016-10-26 13:16:14	-->	rosslagerwall_ (~rosslager@205.190.9.51.dyn.plus.net) has joined #ardour
+2016-10-26 13:19:54	-->	Stuzz (~Stuzz@58-6-140-220.dyn.iinet.net.au) has joined #ardour
+2016-10-26 13:20:20	<--	NoCode (~quassel@unaffiliated/nocode) has quit (Ping timeout: 260 seconds)
+2016-10-26 13:20:20		[13:20]
+2016-10-26 13:22:26	-->	NoCode (~quassel@unaffiliated/nocode) has joined #ardour
+2016-10-26 13:24:36	<--	Caterpillar (~caterpill@unaffiliated/caterpillar) has quit (Quit: You were not made to live as brutes, but to follow virtue and knowledge.)
+2016-10-26 13:30:00		[13:24]
+2016-10-26 13:31:19	<--	NoCode (~quassel@unaffiliated/nocode) has quit (Remote host closed the connection)
+2016-10-26 13:32:01	-->	IvanDSM (~ivan@179.110.173.241) has joined #ardour
+2016-10-26 13:32:37	IvanDSM	Hey everyone, I came in last night to warn about a problem with the password recovery on the website, just came here to reiterate the message. Sorry if I'm being annoying!
+2016-10-26 13:33:31	-->	NoCode (~quassel@unaffiliated/nocode) has joined #ardour
+2016-10-26 13:38:17	rgareus	IvanDSM: please email paul 
+2016-10-26 13:38:49	rgareus	IvanDSM: paul@linuxaudiosystems.com he's not on IRC 
+2016-10-26 13:39:05	rgareus	for the next 7-8 days or so.
+2016-10-26 13:39:43	<--	ShalokShalom_ (~quassel@mobiledyn2.mrsn.at) has quit (Ping timeout: 265 seconds)
+2016-10-26 13:45:00		[13:39]
+2016-10-26 13:45:26	Bitrunner	Hmm are there any plans for an "edit in external editor/audacity" Function for single Regions? Sometimes this could be handy. Audacity has for example a real great adaptive noise filter which is very helpful from time to time 
+2016-10-26 13:46:47	Bitrunner	and there are plenty of highly specialized audiofile editors out there that may have useful functions Ardour won't ever implement itself I think
+2016-10-26 13:47:06	avlinux	Bitrunner, Somebody is working on an LV2 Noise Reduction Plugin, perhaps that would work as well
+2016-10-26 13:47:22	Bitrunner	avlinux: well, that's only an example for a useful external editor
+2016-10-26 13:48:39	rgareus	Bitrunner: it's been on the ToDo list since ages.. but it's not yet implemented.
+2016-10-26 13:49:02	rgareus	Bitrunner: audacity might be the only realistic sndfile editor that works x-platform.
+2016-10-26 13:49:16	avlinux	Bitrunner, I don't know if my eyes could take going from Ardour's beauty to Audacity's...... um well, interesting interface, kidding (not kidding)
+2016-10-26 13:49:28	Bitrunner	avlinux: btw I don't think the way audacity "noise reduction" is possible as a plugin so easy. 
+2016-10-26 13:49:42	rgareus	Bitrunner: why not?
+2016-10-26 13:50:23	avlinux	Bitrunner, If it's equally adaptive should do the same thing, or not?
+2016-10-26 13:50:49	Bitrunner	avlinux: of course, but how to calibrate that?
+2016-10-26 13:51:04	rgareus	Bitrunner: you play through it
+2016-10-26 13:51:44	avlinux	Bitrunner, I don't know what the GUI is like on the plugin, I haven't tested it yet
+2016-10-26 13:51:55	Bitrunner	rgareus: that's not the same. In Audacity, you first select a part of your Track as "noise sample" and then apply the resulting filter to the whole thing
+2016-10-26 13:52:08	rgareus	Bitrunner: compare to https://youtu.be/l8Nbf2Jk3pg?t=42s  (also a LV2 plugin)
+2016-10-26 13:52:30	Bitrunner	rgareus: ever used the audacity noise reduction? 
+2016-10-26 13:52:31	rgareus	LV2s could also analyze a region in the background..
+2016-10-26 13:52:34	rgareus	Bitrunner: yes
+2016-10-26 13:52:42	rgareus	Bitrunner: and I was never happy with it :)
+2016-10-26 13:53:24	Bitrunner	well, ist must be applied very decent and kills all the natural room reflections, too 
+2016-10-26 13:53:52	rgareus	the newish spectral editing feats of audacity are neat though.
+2016-10-26 13:54:12	Bitrunner	ah that sounds interesting
+2016-10-26 13:56:25	-->	son0p (~AndChat32@181.33.161.44) has joined #ardour
+2016-10-26 13:56:28	-->	kyan (~kyan@cpe-74-78-187-9.maine.res.rr.com) has joined #ardour
+2016-10-26 13:57:04	avlinux	Bitrunner: https://community.ardour.org/node/6175
+2016-10-26 13:57:34	Bitrunner	avlinux: i was not looking for noise reduction especially
+2016-10-26 13:57:40	Bitrunner	avlinux: but thanks anywaya
+2016-10-26 13:57:55	rgareus	Bitrunner: audacity spectral editing example: https://www.youtube.com/watch?v=pGku4-CJnzc
+2016-10-26 13:58:02	avlinux	Bitrunner, BTW I'm not at all suggesting that opening Audacity from Ardour is a bad idea, simply the more options the better
+2016-10-26 13:58:59	rgareus	avlinux: I only just found out that you finished the .sf2 for the AVL Drumkits. that's awesome
+2016-10-26 13:59:13	Bitrunner	avlinux: my question was only if someone had that idea before... if it's on "to do" List, all ok. Maybe should get a little more priority since it may take out "customer pressure" to implement the audio-eding-feature of the day ;)
+2016-10-26 13:59:26	rgareus	avlinux: are the .midnam more or less fixed -- ie can we bundle them with ardour?
+2016-10-26 14:00:19	avlinux	rgareus, Oh, thanks. Yes please do, I emailed them to las months ago, but I'm sure he must have forgotten or had bigger fish to fry
+2016-10-26 14:00:19		[14:00]
+2016-10-26 14:00:40	avlinux	rgareus, I also talked to Ben about it via email
+2016-10-26 14:01:11	avlinux	rgareus, Perhaps las found them to be too peripheral
+2016-10-26 14:01:26	rgareus	they're a tad large for bundling,  though only using the 5pc kits and xz (instead of zip) they're 25MB only
+2016-10-26 14:01:42	Bitrunner	rgareus: impressive ;)
+2016-10-26 14:02:23	rgareus	avlinux: I'm pondering to make ready-to-use presets for a-fluidsynth or something..
+2016-10-26 14:02:59	avlinux	rgareus, yes certainly all of them are not needed
+2016-10-26 14:03:31	avlinux	rgareus, They are no Drumgizmo or Addictive Drums, but I'm pleased with the quality for Soundfonts, I have commercial Soundfonts that sound far worse :)
+2016-10-26 14:05:02	avlinux	rgareus, One could argue a small set of basic but good quality instruments (ie bass, piano, strings) could be appealing
+2016-10-26 14:05:14	<--	dl2s4 (~dsl2@humble.cf) has quit (Ping timeout: 250 seconds)
+2016-10-26 14:05:27	-->	dl2s4 (~dsl2@2605:6400:1:fed5:22:2aec:234f:5a46) has joined #ardour
+2016-10-26 14:06:11	rgareus	avlinux: something like what the MOD does (since there's no file-selector): a plugin that's /just a drumkit/  drop it in and go.  
+2016-10-26 14:06:28	avlinux	rgareus, Pushes the bundle size though, and there aren't many CC-BY-SA licensed or freely licensed SF2's out there
+2016-10-26 14:06:28	rgareus	really it's just fluidsynth  but with a fixed .sf2 or preset
+2016-10-26 14:06:42	avlinux	rgareus, Yes exactly!
+2016-10-26 14:06:52	rgareus	looking at  http://libremusicproduction.com/tutorials/using-avl-drumkits-fluid-synth-ardour   that's 4 steps too many :)
+2016-10-26 14:06:53	LAbot	Title: Using AVL drumkits with a-Fluid Synth in Ardour | Libre Music Production (at libremusicproduction.com)
+2016-10-26 14:07:10	avlinux	rgareus, :)
+2016-10-26 14:07:16	rgareus	if you want a fancy drum-setup,  sure  drumgizmo can deliver  or any complex commercial plugin.
+2016-10-26 14:07:57	avlinux	rgareus, I hope to tackle a Drumgizmo kit this winter
+2016-10-26 14:08:19	avlinux	rgareus, Our studio now is much better suited to such things
+2016-10-26 14:08:29	rgareus	well, a-fluidsynth with AVL loaded..  drag to favorites sidebar (preset).   and then just drag it to some empty space in the mixer  kills 2 steps.
+2016-10-26 14:09:03	<--	slyrus (~chatzilla@192.77.239.158) has quit (Ping timeout: 252 seconds)
+2016-10-26 14:09:11	avlinux	rgareus, That's pretty slick!
+2016-10-26 14:10:09	rgareus	I'll look into meta-data  (automatically select percussive mode)  and allowing plugins to ship midnams to the host has been on my ToDo list ever since setBfree can dynamically generate those..
+2016-10-26 14:10:30	rgareus	I hope to get there before 5.5. maybe 5.6
+2016-10-26 14:11:40	avlinux	rgareus, Wow that would be a great feature, I fired up pedal board with your Leslie on my MOD last night, it's great!
+2016-10-26 14:12:38	avlinux	rgareus, Ability to adjust horn and drum speeds would be nice though, instead of presets, I'm assuming there's a reason you did it that way
+2016-10-26 14:13:09	rgareus	avlinux: now I have 2 reasons to make a proper GUI for it.  the current one was done by the MOD team
+2016-10-26 14:13:31	rgareus	avlinux: Bollie is the 2nd reason. he also plays guitar through it... since he got his MOD yesterday.
+2016-10-26 14:14:43	avlinux	rgareus, I rolled back the tone on my guitar and if you play fingerstyle with lots of high drone strings, it can get pretty Hammy sounding (for a guitar)
+2016-10-26 14:15:39	rgareus	avlinux: I'm not even sure if it's the extended [configurable] version.  falktx packaged it and did the mod-guis for setBfree.
+2016-10-26 14:15:39		[14:15]
+2016-10-26 14:21:56	<--	Guest91542 (~Thunderbi@d118-75-67-2.try.wideopenwest.com) has quit (Ping timeout: 260 seconds)
+2016-10-26 14:22:05	Bitrunner	hmm I'm getting better. Fixed 3 false Tones in complex live recording today ;)
+2016-10-26 14:22:22	Bitrunner	(one of them would be better fixed using a "shot gun filter")
+2016-10-26 14:22:34	-->	benni (b894421a@gateway/web/freenode/ip.184.148.66.26) has joined #ardour
+2016-10-26 14:22:54	NoteOn	hi yo
+2016-10-26 14:22:56	Bitrunner	that guy had 2 hours time to relax and prepare for the concert... and the FIRST one is wrong. Ouch. 
+2016-10-26 14:25:00	benni	ardour3 everything was working fine until i exported my last mix and since then no signals seem to be reaching my master bus. Other sessions perform perfectly but this one doesn't. the jack and internal audio connection all seem to be fine. Some tracks will playback if I hit the solo button others wont. What did I do?
+2016-10-26 14:25:45	Bitrunner	you used ardour3 ;)
+2016-10-26 14:26:05	Bitrunner	using ardour5 might solve _many_ problems
+2016-10-26 14:26:11	benni	well it was an upgrade ;)...i'm using linux os
+2016-10-26 14:26:38	benni	not sure a stable version is available for linux mint lmde
+2016-10-26 14:26:40	NoteOn	ardour5 is good?
+2016-10-26 14:26:46	Bitrunner	better than 3
+2016-10-26 14:27:11	benni	is 3 a lemon? i can go back to my older version which worked ok
+2016-10-26 14:27:17	Bitrunner	benni: just try download from ardour.org, should work fine I think. But you will have to donate at least a �/$ ;)
+2016-10-26 14:27:39	benni	oh ok..i'll give it a try
+2016-10-26 14:28:08	Bitrunner	there are so much improvements that's really rewarding.
+2016-10-26 14:28:16	benni	thx
+2016-10-26 14:28:36	Bitrunner	and I was able to get 5.1 running on Debian Stale, so there should not be a really problem on mint
+2016-10-26 14:29:02	Bitrunner	although it runs much more stable on my kubuntu up to now. But that were 32/64Bit Mixup Problems
+2016-10-26 14:29:22	rgareus	debian/testing has 5.3 and probably 5.4 tomorrow (it's been in sid since a few days)
+2016-10-26 14:30:06	Bitrunner	well, kubuntu seems to work well for now. Only some smaller jackd/pulseaudio/legacy_apps issues which were all solvable
+2016-10-26 14:30:07	benni	maybe i'll try 5.3 from testing first
+2016-10-26 14:30:36	rgareus	day after tomorrow (uploaded on 2016-10-24   + 5 days)
+2016-10-26 14:31:19	rgareus	benni: or https://nightly.ardour.org/ or http://ardour.org/download  (which can be installed in parallel to distro builds)
+2016-10-26 14:31:19		[14:31]
+2016-10-26 14:31:21	LAbot	Title: Ardour - Nightly Builds (at nightly.ardour.org)
+2016-10-26 14:31:28	rgareus	benni: for the case at hand..  did you check port-connections?
+2016-10-26 14:31:30	<--	avlinux (~tester@xplr-104-249-226-155.xplornet.com) has quit (Quit: Leaving)
+2016-10-26 14:32:03	benni	port connections? where do I find those?
+2016-10-26 14:32:25	rgareus	benni: at the bottom of every mixer strip.  for example
+2016-10-26 14:32:45	benni	oh yes the mixer outputs all look good
+2016-10-26 14:32:58	rgareus	it should say "master" on tracks usually
+2016-10-26 14:33:03	Bitrunner	but I think it would be time to kick ass all that "Audio Layer" Crap and restart from scratch with cleanly distinct layers. Layer 0: Hardware, Layer 1: an universal Audio Crossbar with unlimited channels, Layer 3: Client Application and Crossbar Control surfaces ("Mixer View"). 
+2016-10-26 14:33:26	rgareus	benni: does the master level-meter move?
+2016-10-26 14:34:05	benni	no, the mixer outputs say they are connected to the master bus but the mixer level doesnt move
+2016-10-26 14:34:38	Bitrunner	rgareus: well, on my actual Project with 16 INput Tracks and 6 Busses, none of the input Tracks are routed directly to Master ;)
+2016-10-26 14:34:48	Bitrunner	only the busses
+2016-10-26 14:35:04	rgareus	benni: another guess:   in the editor window,  does the "Feeedback" button blink (top right-ish) ?
+2016-10-26 14:35:18	<--	prokoudine_ (~alex@ppp83-237-112-192.pppoe.mtu-net.ru) has quit (Quit: prokoudine_)
+2016-10-26 14:35:24	rgareus	Bitrunner: there's a preference to auto-connect. it's on by default
+2016-10-26 14:35:24	benni	outputs are routed to the master bus and some are routed to other effects busses
+2016-10-26 14:35:54	benni	feedback button is off
+2016-10-26 14:36:00	Bitrunner	rgareus: yep, and that's ok. Although for Many-Track-Projects I would suggest to use group busses for everything. 
+2016-10-26 14:36:15	Bitrunner	makes Things _much_ easier
+2016-10-26 14:36:56	benni	i have 3 busses, one for reverb, on for compression and one for a guitar effects bus
+2016-10-26 14:37:39	rgareus	benni: assuming the tracks play  and the track's level meters show a signal.. I don't have an idea.
+2016-10-26 14:37:45	rgareus	benni: can you make a screenshot of the mixer window  and upload it to someplace  http://imgur.com/ or https://snag.gy/ or ..   that may shed some light.
+2016-10-26 14:37:46	LAbot	Title: Imgur: The most awesome images on the Internet (at imgur.com)
+2016-10-26 14:37:57	benni	ok

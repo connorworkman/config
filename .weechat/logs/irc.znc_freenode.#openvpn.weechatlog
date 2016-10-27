@@ -6828,3 +6828,96 @@
 2016-10-26 12:43:24	<--	Exagone313 (exa@elou.world) has quit (Quit: see ya!)
 2016-10-26 12:44:14	-->	fengshaun (~fengshaun@unaffiliated/fengshaun) has joined #openvpn
 2016-10-26 12:46:15	<--	gffa (~unknown@unaffiliated/gffa) has quit (Quit: sleep)
+2016-10-26 12:47:42	-->	Exagone313 (exa@elou.world) has joined #openvpn
+2016-10-26 12:48:55	--	irc: disconnected from server
+2016-10-26 12:54:19	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined #openvpn
+2016-10-26 12:54:19		[12:54]
+2016-10-26 12:54:19	--	Topic for #openvpn is "OpenVPN Community Support Channel || PLEASE read entire /topic || Current Release: 2.3.12 (23 Aug 2016) || First time? Use !welcome and !goal || Access-Server? /join #openvpn-as || Your problem is probably firewall. Really || TAP/bridging is almost always a bad idea || Vulninfo: !heartbleed !poodle !ovpnuke !sweet32 || Patience is a virtue"
+2016-10-26 12:54:19	--	Topic set by danhunsaker (sid145261@openvpn/corp/danhunsaker) on Sun, 09 Oct 2016 21:20:15
+2016-10-26 12:54:19	--	Channel #openvpn: 230 nicks (7 ops, 2 voices, 221 normals)
+2016-10-26 12:54:19	***	Buffer Playback...
+2016-10-26 12:54:19	 *	slypknot [19:52:53] slaps head [19:52:53]
+2016-10-26 12:54:19	slypknot	[19:54:07] wallbroken: disconnect from openvpn; delete *all* DNS settings; connect to server via IP address *not* DNS name .. [19:54:07]
+2016-10-26 12:54:19	wallbroken	[19:54:46] but i'm reading the application loog [19:54:46]
+2016-10-26 12:54:19	slypknot	[19:54:51] then prey ! [19:54:51]
+2016-10-26 12:54:19	wallbroken	[19:54:57] and looks like openvpn is ignoring that instruction [19:54:57]
+2016-10-26 12:54:19	slypknot	[19:55:19] !paste [19:55:19]
+2016-10-26 12:54:19	@vpnHelper	[19:55:20] "paste" is (#1) "pastebin" is (#1) please paste anything with more than 5 lines into a pastebin site or (#2) https://gist.github.com is recommended for fewest ads; try fpaste.org or paste.kde.org as backups or (#3) If you're pasting config files, see !configs for grep syntax to remove comments or (#4) gist allows multiple files per paste, useful if you have several files to show, or (#2) paste.ee [19:55:20]
+2016-10-26 12:54:19	@vpnHelper	[19:55:21] is also nice, or (#3) <bibble> termbin is good. just from command line cat file.txt | nc termbin.com 9999 , will return 'termbin.com/1234' [19:55:21]
+2016-10-26 12:54:19	daemon	[19:56:56] dazo, hehe ok I found a bug in ubitiqiti routers [19:56:56]
+2016-10-26 12:54:19	daemon	[19:57:06] Ubiquiti [19:57:06]
+2016-10-26 12:54:19	daemon	[19:57:41] when I push route "172.16.20.0 255.255.255.0 172.17.0.3" [19:57:41]
+2016-10-26 12:54:19	daemon	[19:57:46] it totally locks up the router [19:57:46]
+2016-10-26 12:54:19	daemon	[19:57:55] had to hard reset it :P [19:57:55]
+2016-10-26 12:54:19	@dazo	[19:57:56] wonderful! [19:57:56]
+2016-10-26 12:54:19	daemon	[19:58:09] looks like I will need to make seperate ccd for everyone [19:58:09]
+2016-10-26 12:54:19	daemon	[19:58:24] I take it I can just put that line in everyone who is not 'daemonlan' [19:58:24]
+2016-10-26 12:54:19	daemon	[19:58:31] and they will get pushed the route to daemonlan [19:58:31]
+2016-10-26 12:54:19	daemon	[19:59:02] or is there perhaps a way I can make it so daemonlan does not get sent that route (which is a route back to its self really) [19:59:02]
+2016-10-26 12:54:19	@dazo	[19:59:08] daemon: you can use an "include-like" approach .... any configuration file can contain 'config include-this.conf' [19:59:08]
+2016-10-26 12:54:19	wallbroken	[19:59:21] wow, i removed dns server ip from the clients at all, but the client still connects using domain name... [19:59:21]
+2016-10-26 12:54:19	@dazo	[19:59:30] (include-this.conf is then a file name with more openvpn options) [19:59:30]
+2016-10-26 12:54:19	wallbroken	[19:59:30] maybe it's resolved in a local cache? [19:59:30]
+2016-10-26 12:54:19	daemon	[19:59:35] so in each ccd/client I could have 'config daemonlan.route' [19:59:35]
+2016-10-26 12:54:19	daemon	[19:59:38] or something like that [19:59:38]
+2016-10-26 12:54:19	@dazo	[19:59:41] yeah [19:59:41]
+2016-10-26 12:54:19	daemon	[19:59:44] cool [19:59:44]
+2016-10-26 12:54:19	@dazo	[20:00:50] I don't know if that feature is a side-effect of how the option parser is written .... but it comes from the fact that the option parser is recursive and the same parser is used for both command line options and config files [20:00:50]
+2016-10-26 12:54:19	daemon	[20:01:15] I just hope it only sends the route to everyone who is not daemonlan [20:01:15]
+2016-10-26 12:54:19	@dazo	[20:01:31] :) [20:01:31]
+2016-10-26 12:54:19	@dazo	[20:01:37] oh, there is another option [20:01:37]
+2016-10-26 12:54:19	daemon	[20:01:54] --ignore-route-push or something akin? [20:01:54]
+2016-10-26 12:54:19	@dazo	[20:01:56] you can have it as you had it ... but in the CCD for daemonlan, put 'push-reset' [20:01:56]
+2016-10-26 12:54:19	daemon	[20:02:12] ooh thats a nice solution [20:02:12]
+2016-10-26 12:54:19	@dazo	[20:02:15] but then you need to add manually all those other pushed options [20:02:15]
+2016-10-26 12:54:19	@dazo	[20:02:47] in the 2.4 release, --pull-filter will also come ... but I doubt your ubi-router ships with our 'git master/2.4_alpha' release :-P [20:02:47]
+2016-10-26 12:54:19	daemon	[20:03:36] I would not think so ... lets see what its rollio9ng [20:03:36]
+2016-10-26 12:54:19	daemon	[20:04:22] OpenVPN 2.2.1 mipsel-linux-gnu [20:04:22]
+2016-10-26 12:54:19	@dazo	[20:04:42] right, that's fairly old (not even IPv6 support) [20:04:42]
+2016-10-26 12:54:19	slypknot	[20:04:42] daemon: make sure you dont have any routing conflicts [20:04:42]
+2016-10-26 12:54:19	daemon	[20:05:14] dazo, might be manually patched [20:05:14]
+2016-10-26 12:54:19	daemon	[20:05:14]  [SSL] [LZO2] [EPOLL] [PKCS11] [eurephia] [MH] [PF_INET6] [IPv6 payload 20110424-2 (2.2RC2)] built on Dec  1 2014 [20:05:14]
+2016-10-26 12:54:19	daemon	[20:05:20] ipv6 payload? [20:05:20]
+2016-10-26 12:54:19	@dazo	[20:05:47] oh ... they've based it on some of the earlier releases from cron2 [20:05:47]
+2016-10-26 12:54:19	@dazo	[20:06:04] (he hosted some patched 2.2 versions for mipsel, iirc) [20:06:04]
+2016-10-26 12:54:19	daemon	[20:06:09] ah cool [20:06:09]
+2016-10-26 12:54:19	@dazo	[20:06:12] but as the date says .... it's ancient [20:06:12]
+2016-10-26 12:54:19	daemon	[20:06:30] time for an email to ubi to tell them howto get one of there devices to dead lock and need power cycling [20:06:30]
+2016-10-26 12:54:19	@dazo	[20:07:11] :) [20:07:11]
+2016-10-26 12:54:19	Kyth	[22:38:55] Is it possible to set the MTU used of a tun device on a per-client basis? [22:38:55]
+2016-10-26 12:54:19	Kyth	[22:41:41] (I have a machine where some websites never load over the VPN, but this clears up if I reduce the MTU) [22:41:41]
+2016-10-26 12:54:19	***	Playback Complete.
+2016-10-26 12:54:35	SviMik	Kyth hint: everything you put into a client config will be used for that particular client only.
+2016-10-26 12:54:47	 *	Kyth nods
+2016-10-26 12:55:26	--	Channel created on Sat, 25 Nov 2006 20:42:40
+2016-10-26 12:55:45	SviMik	probably you're looking for --tun-mtu
+2016-10-26 12:55:56	Kyth	Will that do the right thing if only one client ever sees it?
+2016-10-26 12:56:51	Kyth	Using ip(8) to reduce the MTU causes other clients to start having the problem.
+2016-10-26 12:57:00	SviMik	if openvpn allows you to use this option on client side - then it should work as expected.
+2016-10-26 12:58:19	SviMik	just add "tun-mtu 1234" into client config, and if it starts - then it worked.
+2016-10-26 12:58:49	<--	elastix (~elastix@cpc85186-haye23-2-0-cust65.17-4.cable.virginm.net) has quit (Quit: Leaving)
+2016-10-26 12:59:03	SviMik	if you put something inappropriate there - it will warn you immediately.
+2016-10-26 13:00:18	Kyth	Interestingly, it prints a warning but appears to be working.
+2016-10-26 13:02:16	Kyth	Thanks.
+2016-10-26 13:08:00		[13:02]
+2016-10-26 13:08:05	-->	bluenemo (~bluenemo@unaffiliated/bluenemo) has joined #openvpn
+2016-10-26 13:14:00		[13:08]
+2016-10-26 13:14:13	<--	bf_ (~bf_@x4e32f2ac.dyn.telefonica.de) has quit (Ping timeout: 244 seconds)
+2016-10-26 13:20:00		[13:14]
+2016-10-26 13:30:08	<--	SCHAAP137 (~SCHAAP137@unaffiliated/schaap137) has quit (Ping timeout: 260 seconds)
+2016-10-26 13:36:00		[13:30]
+2016-10-26 13:38:41	-->	flugger (~flugger@gateway/vpn/privateinternetaccess/flugger) has joined #openvpn
+2016-10-26 13:42:07	-->	bf_ (~bf_@x4dbaa0ad.dyn.telefonica.de) has joined #openvpn
+2016-10-26 13:43:55	-->	allizom (~Thunderbi@host240-174-dynamic.36-79-r.retail.telecomitalia.it) has joined #openvpn
+2016-10-26 13:46:06	<--	THX1138 (~THX1138@unaffiliated/zzyzx) has quit (Quit: l8r)
+2016-10-26 13:48:16	-->	Ryushin (chris@2001:470:4b:38f:a634:d9ff:feed:eb30) has joined #openvpn
+2016-10-26 13:51:40	-->	iq (~iq@47.185.67.13) has joined #openvpn
+2016-10-26 13:51:40		[13:51]
+2016-10-26 13:59:11	-->	norkle (~norkle@unaffiliated/norkle) has joined #openvpn
+2016-10-26 13:59:13	-->	THX1138` (~THX1138@unaffiliated/zzyzx) has joined #openvpn
+2016-10-26 13:59:41	<--	Kyth (~Kyth@albicollis.berigora.net) has left #openvpn ("Konversation terminated!")
+2016-10-26 14:05:00		[13:59]
+2016-10-26 14:28:43	<--	klow (~textual@c-98-247-49-57.hsd1.wa.comcast.net) has quit (Ping timeout: 256 seconds)
+2016-10-26 14:28:43		[14:28]
+2016-10-26 14:34:16	<--	StrongJava (~tim_rohre@65-101-6-61.dia.static.qwest.net) has quit (Quit: Textual IRC Client: www.textualapp.com)
+2016-10-26 14:35:34	<--	iq (~iq@47.185.67.13) has quit (Ping timeout: 250 seconds)
