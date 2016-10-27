@@ -30230,3 +30230,781 @@
 2016-10-27 06:25:36	majuscule	it only accepts the last pattern i pass
 2016-10-27 06:26:01	majuscule	i see this now though http://unix.stackexchange.com/questions/47805/how-do-we-specify-multiple-ignore-patterns-for-tree-command
 2016-10-27 06:26:06	majuscule	so maybe i was just being dumb
+2016-10-27 06:26:35	Soliton	at least you're asking in such a vague way that you're unlikely to get more specific help.
+2016-10-27 06:26:50	<--	wyre_ (~wyre@79.109.56.159.dyn.user.ono.com) has quit (Remote host closed the connection)
+2016-10-27 06:27:11	geirha	We love it when we get to fill in the blanks with wrong guesses :)
+2016-10-27 06:28:19	-->	wyre_ (~wyre@79.109.56.159.dyn.user.ono.com) has joined #bash
+2016-10-27 06:28:38	majuscule	sorry about that, you're right :-/. let me be more specific. i have a dir of a bunch of files in the form of roles/{prod,staging,dev}-{foo,bar,baz}, and i'd like to get tree to show me roles/{foo,bar,baz}, so basically i'd like to do sed -i /foo|bar|baz|-// | sort -u on the files before they get to tree
+2016-10-27 06:28:56	majuscule	does that make sense?
+2016-10-27 06:29:12	<--	wyre_ (~wyre@79.109.56.159.dyn.user.ono.com) has quit (Client Quit)
+2016-10-27 06:29:20	<--	maogrady (~chatzilla@5.175.83.20) has quit (Quit: ChatZilla 0.9.92 [Firefox 49.0.2/20161019084923])
+2016-10-27 06:29:37	Soliton	so you want to actually show a different tree not just leave out entries?
+2016-10-27 06:29:45	<--	tesaf (~root@2602:ffea:1:39d::3257) has quit (Quit: WeeChat 0.4.2)
+2016-10-27 06:30:15	Soliton	i.e. removing some prefix from certain entries.
+2016-10-27 06:30:21	<--	wyre (wyre@gateway/shell/xshellz/x-adkesdifoidoouke) has quit (Quit: ZNC 1.6.1+deb1 - http://znc.in)
+2016-10-27 06:30:39	-->	tesaf (~root@2602:ffea:1:39d::3257) has joined #bash
+2016-10-27 06:30:41	majuscule	yes, (although there're a ton of files in the dir and i am pruning some entries first)
+2016-10-27 06:31:39	-->	wyre (wyre@gateway/shell/xshellz/x-xkgwaffxrxzmuqgx) has joined #bash
+2016-10-27 06:32:04	-->	algun (~algun@unaffiliated/algun) has joined #bash
+2016-10-27 06:32:05	<--	RobertBirnie (~RobertBir@157.22.52.193) has quit (Quit: Textual IRC Client: www.textualapp.com)
+2016-10-27 06:32:12	-->	wyre_ (~wyre@79.109.56.159.dyn.user.ono.com) has joined #bash
+2016-10-27 06:32:30	Soliton	# mkdir -p roles/{prod,staging,dev}-{foo,bar,baz}; tree roles | sed -e 's/dev-//' -e 's/prod-//' -e 's/staging-//'
+2016-10-27 06:32:31	shbot	Soliton: bash: tree: command not found
+2016-10-27 06:32:46	Soliton	well, try if that's what you mean.
+2016-10-27 06:32:57	<--	tlaxkit (~Thunderbi@92.177.99.40) has quit (Remote host closed the connection)
+2016-10-27 06:33:14	-->	tlaxkit (~Thunderbi@92.177.99.40) has joined #bash
+2016-10-27 06:33:39	geirha	time to write your own tree(1)
+2016-10-27 06:33:44	majuscule	that works but it doesn't start with the actual dir, those values are just examples, because there are a lot more and i don't want to have to update the script each time.
+2016-10-27 06:33:48	majuscule	thank you in any case Soliton :-)
+2016-10-27 06:33:58	<--	afuentes (~kusanagi@201.165.35.37.dynamic.jazztel.es) has quit (Ping timeout: 276 seconds)
+2016-10-27 06:34:13	majuscule	yeah, i probably will just walk the dirs myself, it's nbd
+2016-10-27 06:34:13	emg	what's with everyone using multiple -e instead of ; for sed?
+2016-10-27 06:34:30	emg	still fearful of non POSIX compliant implementations?
+2016-10-27 06:34:39	majuscule	i didn't know that was a thing, cool
+2016-10-27 06:35:13	<--	mikecmpbll (~mikecmpbl@ruby/staff/mikecmpbll) has quit (Quit: inabit. zz.)
+2016-10-27 06:35:36	han-solo	maybe, the some other commands also have '-e' option, so being consistent :)
+2016-10-27 06:35:43	<--	diogenese (~diogenese@diogenese.velotech.net) has quit (Read error: Connection reset by peer)
+2016-10-27 06:35:44	Soliton	i was just using ^W and ^Y to produce those.
+2016-10-27 06:36:45	-->	diogenese (diogenese@diogenese.velotech.net) has joined #bash
+2016-10-27 06:36:45	<--	Jameser (~textual@60.24.142.163) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-10-27 06:37:08	<--	deekej (deekej@nat/redhat/x-qnbsftysqnwjtepr) has quit (Remote host closed the connection)
+2016-10-27 06:37:27	<--	flying (~flying@90.216.134.194) has quit
+2016-10-27 06:38:00	-->	aelgabri (~ahmedelga@ip4da074e6.direct-adsl.nl) has joined #bash
+2016-10-27 06:38:08	-->	M66964[m] (66964matri@gateway/shell/matrix.org/x-ecndcjfqewrbbpgu) has joined #bash
+2016-10-27 06:38:08		[06:38]
+2016-10-27 06:39:29	-->	Walex (~Walex@SMTP.sabi.co.UK) has joined #bash
+2016-10-27 06:40:12	ash_workz	I expected this to print each element on a line:
+2016-10-27 06:40:15	-->	davidfetter_ge (~chatzilla@64.129.231.6) has joined #bash
+2016-10-27 06:40:16	ash_workz	# arr=('foo bar' 'baz bin' 'quux qax'); f(){ for i in "$*"; do echo "$i"; done; }; f "${arr[@]}"
+2016-10-27 06:40:17	-->	nomotif (~nomotif@c-98-207-81-55.hsd1.ca.comcast.net) has joined #bash
+2016-10-27 06:40:17	shbot	ash_workz: foo bar baz bin quux qax
+2016-10-27 06:40:32	ash_workz	do I need to set IFS?
+2016-10-27 06:41:01	hyper_ch	depends
+2016-10-27 06:41:39	geirha	!$*
+2016-10-27 06:41:39	greybot	The difference between $@ and $*: Without quotes (don't do this!), there is no difference. With double quotes, "$@" expands to each positional parameter as its own argument: "$1" "$2" ..., while "$*" expands to the single argument "$1c$2c...", where 'c' is the first character of IFS. You almost always want "$@" (QUOTED!). The same goes for arrays: "${array[@]}".
+2016-10-27 06:41:43	Soliton	# arr=('foo bar' 'baz bin' 'quux qax'); f(){ for i; do echo "$i"; done; }; f "${arr[@]}"
+2016-10-27 06:41:44	shbot	Soliton: foo bar
+2016-10-27 06:41:44	shbot	Soliton: baz bin
+2016-10-27 06:41:44	shbot	Soliton: quux qax
+2016-10-27 06:41:48	ash_workz	oh
+2016-10-27 06:42:14	ash_workz	I don't get why that worked
+2016-10-27 06:42:16	ash_workz	I mean
+2016-10-27 06:42:22	ash_workz	the `for i;` part
+2016-10-27 06:42:23	geirha	# help for
+2016-10-27 06:42:23	shbot	geirha: for: for NAME [in WORDS ... ] ; do COMMANDS; done -- http://ix.io/aSf
+2016-10-27 06:42:32	-->	oxhak (~OxHaK@unaffiliated/oxhak) has joined #bash
+2016-10-27 06:42:42	emg	(don't even need the ;)
+2016-10-27 06:43:00	<--	oxhak (~OxHaK@unaffiliated/oxhak) has quit (Remote host closed the connection)
+2016-10-27 06:43:03	geirha	«If `in WORDS ...;' is not present, then `in "$@"' is assumed.»
+2016-10-27 06:43:10	emg	# f(){ for i do echo "$i"; done;}; f 1 2
+2016-10-27 06:43:12	shbot	emg: 1
+2016-10-27 06:43:12	shbot	emg: 2
+2016-10-27 06:43:15	ash_workz	I see
+2016-10-27 06:43:16	-->	greycat (~wooledg@remote.wooledge.org) has joined #bash
+2016-10-27 06:43:56	<--	Eddinn (~Eddinn@89-160-191-75.du.xdsl.is) has quit (Quit: Leaving)
+2016-10-27 06:44:30	<--	Synthead (~Synthead@98.99.251.254) has quit (Quit: Synthead)
+2016-10-27 06:44:39	-->	ThisIsMe (945743c8@gateway/web/freenode/ip.148.87.67.200) has joined #bash
+2016-10-27 06:45:09	ThisIsMe	I want to pass variables in switch case. eg:
+2016-10-27 06:45:31	ThisIsMe	case "$prev" in
+2016-10-27 06:45:43	ThisIsMe	$var) ...
+2016-10-27 06:45:55	ThisIsMe	anyone can help me out?
+2016-10-27 06:46:13	-->	jozwior (~jozwior@89-74-91-111.dynamic.chello.pl) has joined #bash
+2016-10-27 06:46:22	emg	do that...
+2016-10-27 06:46:34	ThisIsMe	does not work
+2016-10-27 06:46:41	ThisIsMe	its not going in
+2016-10-27 06:46:44	greycat	What's in the second variable?
+2016-10-27 06:46:52	emg	!doesntwork
+2016-10-27 06:46:52	greybot	Saying something "doesn't work" helps neither you or us. Explain the result you *want* or *expect*, what you are *doing* and *how* it is failing. Copy/paste the commands you use and the errors they produce. Consider set -x to get more information on what is happening.
+2016-10-27 06:46:54	ThisIsMe	my variable is slighly complex
+2016-10-27 06:47:05	emg	obtw, globs work, alternation doesn't
+2016-10-27 06:47:12	geirha	Oh slightly complex, that explains it
+2016-10-27 06:47:21	han-solo	# case 1 in 1) echo "one" ;; 2) echo "two" ;; *) echo "nope wew" ;; esac;
+2016-10-27 06:47:22	shbot	han-solo: one
+2016-10-27 06:47:33	-->	oxhak (~OxHaK@unaffiliated/oxhak) has joined #bash
+2016-10-27 06:47:35	han-solo	oh!
+2016-10-27 06:47:36	emg	(if it's unquoted that is)
+2016-10-27 06:47:46	ThisIsMe	case "$prev" in 		"${services[1]}")
+2016-10-27 06:47:48	greycat	# file=foo.jpg; pat='*.jpg'; case $file in $pat) echo match;; esac
+2016-10-27 06:47:49	shbot	greycat: match
+2016-10-27 06:47:54	-->	Colin_Mac (~Colin@107-0-117-234-ip-static.hfc.comcastbusiness.net) has joined #bash
+2016-10-27 06:48:03	-->	linetrace (~linetrace@c-174-62-214-15.hsd1.vt.comcast.net) has joined #bash
+2016-10-27 06:48:19	emg	ThisIsMe: and what is in services? what is in prev? why doyou think it should match but doesn't?
+2016-10-27 06:48:24	emg	!set-x > ThisIsMe
+2016-10-27 06:48:24	greybot	ThisIsMe: set -x (or ''bash -x myscript'') makes bash output the exact command that it will run after parsing and expansion. You can put ''set -x'' just before the code you want to debug (turn off with ''set +x''). To add more information, change PS4 first: eg. PS4='+($?) $BASH_SOURCE:$FUNCNAME:$LINENO:'
+2016-10-27 06:48:30	emg	also do that^^
+2016-10-27 06:48:46	<--	han-solo (~han-solo@115.246.95.110) has quit (Quit: leaving)
+2016-10-27 06:50:47	-->	ocbtec (~ocbtec@x55b426c5.dyn.telefonica.de) has joined #bash
+2016-10-27 06:50:55	davidfetter_ge	hi
+2016-10-27 06:51:12	-->	apaz (~Esteban@host174.190-30-88.telecom.net.ar) has joined #bash
+2016-10-27 06:51:17	davidfetter_ge	is there a relatively cross-platform way to get getopt_long-like functionality?
+2016-10-27 06:51:27	izalove	yeah, with getopts
+2016-10-27 06:51:28	greycat	Sure.  A while loop.
+2016-10-27 06:51:37	greycat	izalove: no.
+2016-10-27 06:51:38	izalove	ah _long
+2016-10-27 06:51:39	davidfetter_ge	does getopts actually do long?
+2016-10-27 06:51:42	greycat	no.
+2016-10-27 06:51:42	 *	izalove didn't read that part
+2016-10-27 06:51:47	izalove	i is sorry
+2016-10-27 06:52:05	greycat	!faq options
+2016-10-27 06:52:06	greybot	http://mywiki.wooledge.org/BashFAQ/035 -- How can I handle command-line arguments (options) to my script easily?
+2016-10-27 06:52:11	davidfetter_ge	hey, i already crashed that nuclear reactor. nothing worse is in my control
+2016-10-27 06:52:21	izalove	phew
+2016-10-27 06:52:21	<--	linetrace (~linetrace@c-174-62-214-15.hsd1.vt.comcast.net) has quit (Remote host closed the connection)
+2016-10-27 06:52:44	-->	linetrace (~linetrace@c-174-62-214-15.hsd1.vt.comcast.net) has joined #bash
+2016-10-27 06:52:45	davidfetter_ge	...except those launch codes
+2016-10-27 06:53:33	 *	izalove books a ticket for mars
+2016-10-27 06:53:33		[06:53]
+2016-10-27 06:53:39	<--	linetrace (~linetrace@c-174-62-214-15.hsd1.vt.comcast.net) has quit (Remote host closed the connection)
+2016-10-27 06:53:43	-->	Alex-SF (~Alex-SF@gw.willowgarage.com) has joined #bash
+2016-10-27 06:54:04	davidfetter_ge	what did you think they were launching? ;)
+2016-10-27 06:54:11	<--	oxhak (~OxHaK@unaffiliated/oxhak) has quit (Remote host closed the connection)
+2016-10-27 06:54:37	-->	hahuang65 (~hahuang65@2601:647:4000:d7:bc45:688a:d142:25dc) has joined #bash
+2016-10-27 06:55:23	izalove	nukes
+2016-10-27 06:55:40	 *	izalove scared as hell
+2016-10-27 06:55:44	-->	cdown (~cdown@199.201.64.135) has joined #bash
+2016-10-27 06:55:58	geirha	The kicker: He launched them at Mars by accident
+2016-10-27 06:56:18	<--	mohan (~mohan@195.35.91.111) has quit (Ping timeout: 256 seconds)
+2016-10-27 06:56:36	dualbus	because he didn't properly quote dat script, that's the lesson here today
+2016-10-27 06:56:38	davidfetter_ge	^^^
+2016-10-27 06:57:06	<--	jbeeze (~jbeeze@63.118.61.181) has quit
+2016-10-27 06:57:21	<--	Dick_Fitzwel (~wigums@unaffiliated/wigums) has quit (Remote host closed the connection)
+2016-10-27 06:57:21	<--	ThisIsMe (945743c8@gateway/web/freenode/ip.148.87.67.200) has quit (Ping timeout: 260 seconds)
+2016-10-27 06:57:39	-->	blizzow (~jburns@2601:280:4a00:4c00:fae4:f4b0:66e2:e966) has joined #bash
+2016-10-27 06:57:56	-->	oxhak (~OxHaK@unaffiliated/oxhak) has joined #bash
+2016-10-27 06:58:36	<--	armyriad (~armyriad@gateway/vpn/privateinternetaccess/armyriad) has quit (Read error: Connection reset by peer)
+2016-10-27 06:59:04	<--	chandu20 (~quassel@124.123.81.196) has quit (Ping timeout: 250 seconds)
+2016-10-27 06:59:09	-->	armyriad (~armyriad@gateway/vpn/privateinternetaccess/armyriad) has joined #bash
+2016-10-27 07:01:53	<--	Ishaq (~Ishaq@budgetnode/management) has quit (Excess Flood)
+2016-10-27 07:02:16	<--	Colin_Mac (~Colin@107-0-117-234-ip-static.hfc.comcastbusiness.net) has quit (Ping timeout: 265 seconds)
+2016-10-27 07:03:30	<--	Noldorin (~noldorin@unaffiliated/noldorin) has quit (Quit: Textual IRC Client: www.textualapp.com)
+2016-10-27 07:04:13	<--	edvorg (~edvorg@14.169.49.229) has quit (Ping timeout: 245 seconds)
+2016-10-27 07:05:08	-->	Ishaq (~Ishaq@budgetnode/management) has joined #bash
+2016-10-27 07:05:46	-->	malex (~malex@pdpc/supporter/student/malex) has joined #bash
+2016-10-27 07:05:47	-->	devnull84 (~devnull84@169-1-177-12.ip.afrihost.co.za) has joined #bash
+2016-10-27 07:06:44	-->	nitric (~nitric@unaffiliated/nitric) has joined #bash
+2016-10-27 07:08:25	<--	BenA (~Ben@unaffiliated/BenA) has quit (Quit: joined channel #quit, type /quit to join him)
+2016-10-27 07:08:33	<--	Klaus_Dieter (~klaus@x4db49e76.dyn.telefonica.de) has quit (Ping timeout: 265 seconds)
+2016-10-27 07:08:33		[07:08]
+2016-10-27 07:08:59	-->	BenA (~Ben@unaffiliated/BenA) has joined #bash
+2016-10-27 07:09:20	<--	TomyWork (~tomy@85.199.84.100) has quit (Ping timeout: 256 seconds)
+2016-10-27 07:10:13	<--	devnull84 (~devnull84@169-1-177-12.ip.afrihost.co.za) has quit (Ping timeout: 252 seconds)
+2016-10-27 07:11:02	-->	gbit86__ (uid97908@gateway/web/irccloud.com/x-xcryzgvafobxtwre) has joined #bash
+2016-10-27 07:11:28	<--	f4 (~f4@95-29-44-73.broadband.corbina.ru) has quit (Ping timeout: 244 seconds)
+2016-10-27 07:11:38	<--	Keanu73 (~Keanu73@unaffiliated/keanu73) has quit (Ping timeout: 250 seconds)
+2016-10-27 07:13:01	<--	scrimple (~scrimple@195.30.121.97) has quit (Ping timeout: 244 seconds)
+2016-10-27 07:13:12	<--	VikingHoarder (~VikingHoa@203.233.108.93.rev.vodafone.pt) has quit (Ping timeout: 260 seconds)
+2016-10-27 07:14:14	<--	REX (~quassel@91.180.46.216) has quit (Remote host closed the connection)
+2016-10-27 07:15:04	-->	Klaus_Dieter (~klaus@x55b4a826.dyn.telefonica.de) has joined #bash
+2016-10-27 07:15:46	<--	jozwior (~jozwior@89-74-91-111.dynamic.chello.pl) has quit (Remote host closed the connection)
+2016-10-27 07:16:19	-->	f4 (~f4@95-29-44-73.broadband.corbina.ru) has joined #bash
+2016-10-27 07:16:19	<--	f4 (~f4@95-29-44-73.broadband.corbina.ru) has quit (Max SendQ exceeded)
+2016-10-27 07:16:44	-->	f4 (~f4@95-29-44-73.broadband.corbina.ru) has joined #bash
+2016-10-27 07:16:44	<--	f4 (~f4@95-29-44-73.broadband.corbina.ru) has quit (Max SendQ exceeded)
+2016-10-27 07:17:09	-->	f4 (~f4@95-29-44-73.broadband.corbina.ru) has joined #bash
+2016-10-27 07:17:10	<--	f4 (~f4@95-29-44-73.broadband.corbina.ru) has quit (Max SendQ exceeded)
+2016-10-27 07:17:10	<--	theglass (~glass@unaffiliated/theglass) has quit (Quit: ZNC - http://znc.in)
+2016-10-27 07:17:11	<--	BenA (~Ben@unaffiliated/BenA) has quit (Quit: joined channel #quit, type /quit to join him)
+2016-10-27 07:17:28	<--	skomorokh (~quassel@unaffiliated/skomorokh) has quit (Remote host closed the connection)
+2016-10-27 07:17:34	-->	f4 (~f4@95-29-44-73.broadband.corbina.ru) has joined #bash
+2016-10-27 07:17:34	<--	f4 (~f4@95-29-44-73.broadband.corbina.ru) has quit (Max SendQ exceeded)
+2016-10-27 07:18:06	-->	skomorokh (~quassel@unaffiliated/skomorokh) has joined #bash
+2016-10-27 07:18:28	-->	Mac101 (~Mac@cpc81439-lanc8-2-0-cust74.3-3.cable.virginm.net) has joined #bash
+2016-10-27 07:18:49	ClowningAround	could I get some grep help here? I want to output a keyword, but if a second keyword is in that line I do not want that to be outputted. Looks like grep -v may come in use here?
+2016-10-27 07:19:16	greycat	awk '/foo/ && ! /bar/'
+2016-10-27 07:19:28	ClowningAround	you rock
+2016-10-27 07:20:39	<--	MindSpark (~MindSpark@p5795B093.dip0.t-ipconnect.de) has quit (Remote host closed the connection)
+2016-10-27 07:21:23	-->	Colin_Mac (~Colin@107-0-117-234-ip-static.hfc.comcastbusiness.net) has joined #bash
+2016-10-27 07:21:52	<--	pandaadb (~pandaadb@188.172.151.69) has quit (Quit: Leaving)
+2016-10-27 07:22:08	<--	keltim (~keltim@ec2-23-21-162-133.compute-1.amazonaws.com) has quit (Ping timeout: 260 seconds)
+2016-10-27 07:22:29	<--	keltim_ (~keltim@ec2-23-21-162-133.compute-1.amazonaws.com) has quit (Ping timeout: 256 seconds)
+2016-10-27 07:23:35	-->	Keanu73 (~Keanu73@unaffiliated/keanu73) has joined #bash
+2016-10-27 07:23:35		[07:23]
+2016-10-27 07:24:12	<--	jahmalz (~jah@4.34.174.83.rev.vodafone.pt) has quit (Quit: Leaving)
+2016-10-27 07:24:15	<--	FroMaster (~david@47.146.199.111) has quit (Quit: Leaving)
+2016-10-27 07:24:40	<--	skomorokh (~quassel@unaffiliated/skomorokh) has quit (Remote host closed the connection)
+2016-10-27 07:24:56	<--	Keanu73 (~Keanu73@unaffiliated/keanu73) has quit (Client Quit)
+2016-10-27 07:25:16	-->	skomorokh (~quassel@unaffiliated/skomorokh) has joined #bash
+2016-10-27 07:25:44	-->	REX (~quassel@quassel.zerofox.xyz) has joined #bash
+2016-10-27 07:25:54	<--	kaldoran (~kaldoran@cable-192.222.205.239.electronicbox.net) has quit (Ping timeout: 245 seconds)
+2016-10-27 07:27:50	<--	p0ly3d3r (~quassel@server.schreibt-dir.de) has quit (Remote host closed the connection)
+2016-10-27 07:28:14	-->	cdown_ (~cdown@199.201.64.135) has joined #bash
+2016-10-27 07:28:16	<--	cowboybebop` (~cowboybeb@unaffiliated/up/x-6424988) has quit (Max SendQ exceeded)
+2016-10-27 07:28:17	-->	Colin_Mac_ (~Colin@107-0-117-234-ip-static.hfc.comcastbusiness.net) has joined #bash
+2016-10-27 07:28:30	-->	cowboybebop` (~cowboybeb@47.149.242.20) has joined #bash
+2016-10-27 07:28:31	<--	cowboybebop` (~cowboybeb@47.149.242.20) has quit (Changing host)
+2016-10-27 07:28:31	-->	cowboybebop` (~cowboybeb@unaffiliated/up/x-6424988) has joined #bash
+2016-10-27 07:28:50	<--	cdown (~cdown@199.201.64.135) has quit (Remote host closed the connection)
+2016-10-27 07:28:54	--	cdown_ is now known as cdown
+2016-10-27 07:29:25	<--	CutMeOwnThroat (~iridos@unaffiliated/iridos) has quit (Remote host closed the connection)
+2016-10-27 07:29:54	<--	destiny (uid73933@gateway/web/irccloud.com/x-cuilmtyqqnbqupwx) has quit (Quit: Connection closed for inactivity)
+2016-10-27 07:29:59	-->	p0ly3d3r (~quassel@server.schreibt-dir.de) has joined #bash
+2016-10-27 07:30:26	<--	Colin_Mac (~Colin@107-0-117-234-ip-static.hfc.comcastbusiness.net) has quit (Ping timeout: 251 seconds)
+2016-10-27 07:30:43	-->	CutMeOwnThroat (~iridos@unaffiliated/iridos) has joined #bash
+2016-10-27 07:31:23	-->	bizarro_1 (~bizarro_1@98.red-79-155-31.dynamicip.rima-tde.net) has joined #bash
+2016-10-27 07:33:42	<--	hs0ucy (~hs0ucy@68.67.45.242) has quit (Ping timeout: 252 seconds)
+2016-10-27 07:35:20	<--	Celmor (~celmor@HSI-KBW-149-172-216-251.hsi13.kabel-badenwuerttemberg.de) has left #bash
+2016-10-27 07:35:24	<--	blackcat73 (~Blackcat@thor.ipbrick.com) has left #bash ("Leaving")
+2016-10-27 07:35:53	<--	chachasmooth (~chachasmo@unaffiliated/chachasmooth) has quit (Ping timeout: 252 seconds)
+2016-10-27 07:36:43	<--	cdown (~cdown@199.201.64.135) has quit (Ping timeout: 245 seconds)
+2016-10-27 07:36:46	<--	acetakwas (~acetakwas@154.65.5.250) has quit (Ping timeout: 250 seconds)
+2016-10-27 07:37:17	-->	chachasmooth (~chachasmo@unaffiliated/chachasmooth) has joined #bash
+2016-10-27 07:37:32	-->	keltim (~keltim@173.212.48.130) has joined #bash
+2016-10-27 07:37:51	-->	keltim_ (~keltim@173.212.48.130) has joined #bash
+2016-10-27 07:38:13	<--	oxhak (~OxHaK@unaffiliated/oxhak) has quit (Remote host closed the connection)
+2016-10-27 07:38:38	-->	cdown (~cdown@199.201.64.135) has joined #bash
+2016-10-27 07:38:38		[07:38]
+2016-10-27 07:39:40	-->	mikecmpbll (~mikecmpbl@ruby/staff/mikecmpbll) has joined #bash
+2016-10-27 07:40:16	-->	riemann (~riemann@ip-222-88.ists.pl) has joined #bash
+2016-10-27 07:41:39	-->	shyam-id-au (caaba4bb@gateway/web/freenode/ip.202.171.164.187) has joined #bash
+2016-10-27 07:41:48	<--	shyam-id-au (caaba4bb@gateway/web/freenode/ip.202.171.164.187) has left #bash
+2016-10-27 07:41:49	-->	OS-25441 (~OS-25441@212.62.61.180) has joined #bash
+2016-10-27 07:42:13	<--	Al3xG0 (~unix@unaffiliated/al3xg0) has quit (Ping timeout: 276 seconds)
+2016-10-27 07:42:27	-->	Al3xG0 (~unix@unaffiliated/al3xg0) has joined #bash
+2016-10-27 07:43:21	-->	oxhak (~OxHaK@unaffiliated/oxhak) has joined #bash
+2016-10-27 07:44:09	<--	wyre (wyre@gateway/shell/xshellz/x-xkgwaffxrxzmuqgx) has quit (Quit: ZNC 1.6.1+deb1 - http://znc.in)
+2016-10-27 07:45:02	-->	cisstrd (~cisstrd@unaffiliated/cisstrd) has joined #bash
+2016-10-27 07:46:04	<--	oxhak (~OxHaK@unaffiliated/oxhak) has quit (Remote host closed the connection)
+2016-10-27 07:46:22	<--	pokalyis (~nerium@banan.olf.sgsnet.se) has quit (Quit: Textual IRC Client: www.textualapp.com)
+2016-10-27 07:47:10	-->	gelignite (~gelignite@x5ce491a0.dyn.telefonica.de) has joined #bash
+2016-10-27 07:47:11	-->	wyre (wyre@gateway/shell/xshellz/x-mzjacwrqrowjrbbu) has joined #bash
+2016-10-27 07:48:12	<--	OS-25441 (~OS-25441@212.62.61.180) has quit (Ping timeout: 250 seconds)
+2016-10-27 07:48:22	-->	oxhak (~OxHaK@unaffiliated/oxhak) has joined #bash
+2016-10-27 07:49:23	-->	scottj (~scott@unaffiliated/scottj) has joined #bash
+2016-10-27 07:49:26	-->	hs0ucy (~hs0ucy@68.67.45.242) has joined #bash
+2016-10-27 07:49:27	-->	patadasAlHigado (~patadasAl@asavpn242247.vpn.mcgill.ca) has joined #bash
+2016-10-27 07:51:11	<--	wyre_ (~wyre@79.109.56.159.dyn.user.ono.com) has quit (Quit: Leaving)
+2016-10-27 07:51:11	-->	Limes (~Limes@2a00:23c4:2f82:4700:953e:a472:dc62:ca53) has joined #bash
+2016-10-27 07:53:18	<--	anyofyou (~anyofyou@27.0.232.139) has quit (Remote host closed the connection)
+2016-10-27 07:54:37	<--	riemann (~riemann@ip-222-88.ists.pl) has quit (Ping timeout: 260 seconds)
+2016-10-27 07:54:37		[07:54]
+2016-10-27 07:54:39	<--	tlaxkit (~Thunderbi@92.177.99.40) has quit (Remote host closed the connection)
+2016-10-27 07:54:58	-->	tlaxkit (~Thunderbi@92.177.99.40) has joined #bash
+2016-10-27 07:55:42	<--	armyriad (~armyriad@gateway/vpn/privateinternetaccess/armyriad) has quit (Read error: Connection reset by peer)
+2016-10-27 07:56:06	-->	riemann (~riemann@ip-222-88.ists.pl) has joined #bash
+2016-10-27 07:56:32	-->	armyriad (~armyriad@gateway/vpn/privateinternetaccess/armyriad) has joined #bash
+2016-10-27 07:58:34	-->	anyofyou (~anyofyou@27.0.232.139) has joined #bash
+2016-10-27 07:59:08	<--	REX (~quassel@quassel.zerofox.xyz) has quit (Remote host closed the connection)
+2016-10-27 07:59:15	-->	REX (~quassel@quassel.zerofox.xyz) has joined #bash
+2016-10-27 08:02:10	-->	ych (~horrror@46-116-40-93.bb.netvision.net.il) has joined #bash
+2016-10-27 08:02:31	-->	FroMaster (~david@47.146.199.111) has joined #bash
+2016-10-27 08:03:17	-->	Alex-SF_ (~Alex-SF@70-35-54-233.static.wiline.com) has joined #bash
+2016-10-27 08:03:45	-->	oxhak_ (~OxHaK@219-132-190-109.isp.overthebox.ovh) has joined #bash
+2016-10-27 08:03:51	<--	oxhak (~OxHaK@unaffiliated/oxhak) has quit (Quit: Lost terminal)
+2016-10-27 08:04:00	<--	somis (~somis@84-73-227-69.dclient.hispeed.ch) has quit (Quit: WeeChat 1.6)
+2016-10-27 08:05:58	<--	Alex-SF (~Alex-SF@gw.willowgarage.com) has quit (Ping timeout: 250 seconds)
+2016-10-27 08:05:58	--	Alex-SF_ is now known as Alex-SF
+2016-10-27 08:06:18	<--	Colin_Mac_ (~Colin@107-0-117-234-ip-static.hfc.comcastbusiness.net) has quit (Ping timeout: 245 seconds)
+2016-10-27 08:06:35	<--	russw (~russ@bas1-ottawa01-1176118445.dsl.bell.ca) has quit (Remote host closed the connection)
+2016-10-27 08:07:21	-->	Colin_Mac_ (~Colin@107-0-117-234-ip-static.hfc.comcastbusiness.net) has joined #bash
+2016-10-27 08:07:43	-->	codingthings (~codingthi@144.121.72.130) has joined #bash
+2016-10-27 08:07:57	sjohnson	is there any grep switch to make it stop searching after x number of lines have been reached?
+2016-10-27 08:08:11	greycat	I believe GNU grep has a -m option for that.
+2016-10-27 08:08:25	-->	WayToDoor (~milk.bott@maison.api-d.com) has joined #bash
+2016-10-27 08:08:29	<--	JeanCarl1Machado (~jean@189-10-225-172.cslce701.dsl.brasiltelecom.net.br) has quit (Quit: leaving)
+2016-10-27 08:08:32	sjohnson	thank you.
+2016-10-27 08:08:46	-->	JeanCarloMachado (~jean@189-10-225-172.cslce701.dsl.brasiltelecom.net.br) has joined #bash
+2016-10-27 08:08:58	sjohnson	-m NUM, --max-count=NUM
+2016-10-27 08:09:07	-->	chandu20 (~quassel@124.123.81.196) has joined #bash
+2016-10-27 08:09:38	<--	WayToDoor (~milk.bott@maison.api-d.com) has quit (Client Quit)
+2016-10-27 08:09:38		[08:09]
+2016-10-27 08:09:39	-->	nopex (~nopex@mute.neuroticdata.com) has joined #bash
+2016-10-27 08:12:25	<--	devtea (~tdreyer1@unaffiliated/tdreyer1) has quit (Ping timeout: 256 seconds)
+2016-10-27 08:12:57	-->	elastix (~elastix@cpc85186-haye23-2-0-cust65.17-4.cable.virginm.net) has joined #bash
+2016-10-27 08:13:18	sjohnson	i should have said s/reached/returned/, but you got the idea.
+2016-10-27 08:13:39	-->	wildlander (~wild@unaffiliated/wildlander) has joined #bash
+2016-10-27 08:13:40	greycat	I knew it was ambiguous and that there was a 50/50 chance the answer would be wrong.
+2016-10-27 08:13:54	osse	optimist
+2016-10-27 08:14:29	<--	kitallis (~kitallis@162.243.30.122) has quit (Ping timeout: 248 seconds)
+2016-10-27 08:15:44	<--	Naeil (~nzoueidi@ubuntu/member/na3il) has quit (Ping timeout: 260 seconds)
+2016-10-27 08:16:09	-->	Keanu73 (~Keanu73@unaffiliated/keanu73) has joined #bash
+2016-10-27 08:18:02	<--	tlaxkit (~Thunderbi@92.177.99.40) has quit (Quit: tlaxkit)
+2016-10-27 08:18:52	<--	bocaneri (~bocaneri@about/linux/staff/sauvin) has quit (Read error: Connection reset by peer)
+2016-10-27 08:19:48	--	davidfetter_ge is now known as davidfetter
+2016-10-27 08:21:17	sjohnson	grepping a 5 gigabyte flatfile am teh suckage.
+2016-10-27 08:21:36	<--	patadasAlHigado (~patadasAl@asavpn242247.vpn.mcgill.ca) has quit (Quit: Leaving)
+2016-10-27 08:21:42	greycat	create a database table, import it into the database
+2016-10-27 08:22:06	sjohnson	hmm, not a bad idea.
+2016-10-27 08:22:28	sjohnson	not so bad the 2nd time when it's cached at least.
+2016-10-27 08:22:41	-->	TomyLobo (~TomyLobo@2a02:8109:87c0:20c:f550:f458:e3f7:4c8f) has joined #bash
+2016-10-27 08:23:00	 *	izalove doesn't have 5gb of cache
+2016-10-27 08:23:13	sjohnson	ram's cheap these days!
+2016-10-27 08:23:14	-->	ZyX-I (~ZyX-I@broadband-77-37-230-77.nationalcablenetworks.ru) has joined #bash
+2016-10-27 08:24:01	<--	dlight (~dlight@unaffiliated/dlight) has quit (Quit: Leaving)
+2016-10-27 08:24:02	<--	joyceg (uid91416@gateway/web/irccloud.com/x-qgzebcdjkbeglovw) has quit (Quit: Connection closed for inactivity)
+2016-10-27 08:24:33	geirha	You can even download some for free
+2016-10-27 08:25:07	<--	ych (~horrror@46-116-40-93.bb.netvision.net.il) has quit (Quit: My Mac has gone to sleep. ZZZzzz…)
+2016-10-27 08:25:07		[08:25]
+2016-10-27 08:25:09	geirha	http://www.downloadmoreram.com/   You're welcome!
+2016-10-27 08:25:24	-->	Alex-SF_ (~Alex-SF@gw.willowgarage.com) has joined #bash
+2016-10-27 08:25:30	sjohnson	izy ^
+2016-10-27 08:26:38	<--	KindOne (~KindOne@freenude/topless/kindone) has quit (Read error: Connection reset by peer)
+2016-10-27 08:26:38	izalove	but what if i need more than 32 gb?
+2016-10-27 08:28:24	<--	Alex-SF (~Alex-SF@70-35-54-233.static.wiline.com) has quit (Ping timeout: 260 seconds)
+2016-10-27 08:28:25	--	Alex-SF_ is now known as Alex-SF
+2016-10-27 08:28:27	geirha	Don't be silly
+2016-10-27 08:28:39	geirha	Who would ever need that much ram?
+2016-10-27 08:28:50	izalove	i was just trying to futureproof my system
+2016-10-27 08:29:17	<--	cdg (~cdg@157.166.173.5) has quit (Remote host closed the connection)
+2016-10-27 08:29:24	-->	adac (~adac@80-109-174-123.cable.dynamic.surfer.at) has joined #bash
+2016-10-27 08:29:29	<--	riemann (~riemann@ip-222-88.ists.pl) has quit (Ping timeout: 244 seconds)
+2016-10-27 08:30:38	-->	theglass (~glass@unaffiliated/theglass) has joined #bash
+2016-10-27 08:30:51	hyper_ch	640kb ram is all you'll ever need
+2016-10-27 08:31:14	sjohnson	i have 16 gigs at home, it's useful for ramdrives.
+2016-10-27 08:31:25	hyper_ch	my notebook only has 16gigs
+2016-10-27 08:31:26	sjohnson	computer's getting a bit old though.
+2016-10-27 08:31:49	greycat	8 GB on the home deskto pPC
+2016-10-27 08:32:13	greycat	4 GB on the workplace-supplied desktop PC (windows 7; I installed Debian alongside that)
+2016-10-27 08:32:15	ash_workz	# arr=(foo bar baz); f(){ for ((i=0; i<"$#"; i++)); do echo "\$$i: ${$i}"; done; }; f "${arr[@]}" # $i cannot be indirect?
+2016-10-27 08:32:17	shbot	ash_workz: bash: \$$i: ${$i}: bad substitution
+2016-10-27 08:32:33	greycat	that isn't how indirection works
+2016-10-27 08:32:38	greycat	Read faq 6 again.
+2016-10-27 08:32:44	hyper_ch	greycat: you poor thing. They force you to touch windows=
+2016-10-27 08:32:55	<--	alex1a (~alex1a@a81-84-38-221.cpe.netcabo.pt) has quit (Read error: Connection reset by peer)
+2016-10-27 08:33:01	<--	REX (~quassel@quassel.zerofox.xyz) has quit (Remote host closed the connection)
+2016-10-27 08:33:09	-->	REX (~quassel@quassel.zerofox.xyz) has joined #bash
+2016-10-27 08:33:59	<--	REX (~quassel@quassel.zerofox.xyz) has quit (Remote host closed the connection)
+2016-10-27 08:34:06	-->	somis (~somis@149.56.153.179) has joined #bash
+2016-10-27 08:34:25	sjohnson	my new laptop has 8 gigs of ram but it seems like a pretty "budget" computer (Lenovo).
+2016-10-27 08:35:31	<--	nomotif (~nomotif@c-98-207-81-55.hsd1.ca.comcast.net) has quit (Ping timeout: 276 seconds)
+2016-10-27 08:35:55	-->	KindOne (kindone@freenude/topless/kindone) has joined #bash
+2016-10-27 08:38:05	-->	oxhak (~OxHaK@unaffiliated/oxhak) has joined #bash
+2016-10-27 08:38:07	-->	jbitdrop (~jbitdrop@x55b426c5.dyn.telefonica.de) has joined #bash
+2016-10-27 08:38:17	-->	REX (~quassel@quassel.zerofox.xyz) has joined #bash
+2016-10-27 08:38:35	-->	Achylles (~Achylles@201-68-86-191.dsl.telesp.net.br) has joined #bash
+2016-10-27 08:39:14	<--	enkeyz (~enkeyz@unaffiliated/enkeyz) has quit (Remote host closed the connection)
+2016-10-27 08:39:22	-->	21WAAH4RL (~enkeyz@2a01-036d-0200-29f3-c58a-c0a0-4e03-d997.pool6.digikabel.hu) has joined #bash
+2016-10-27 08:39:23	-->	32NAAGZ4L (~enkeyz@unaffiliated/enkeyz) has joined #bash
+2016-10-27 08:39:38	sjohnson	webcam on it sucks.
+2016-10-27 08:40:37	hyper_ch	don't you put some sticky tape over the webcam? oO
+2016-10-27 08:40:37		[08:40]
+2016-10-27 08:41:48	sjohnson	nah, i'm not that paranoid.
+2016-10-27 08:42:13	<--	hs0ucy (~hs0ucy@68.67.45.242) has quit (Ping timeout: 260 seconds)
+2016-10-27 08:42:15	sjohnson	if the government wants to spy on me like that, i'll give them a striptease.
+2016-10-27 08:42:36	-->	enkeyz (~enkeyz@unaffiliated/enkeyz) has joined #bash
+2016-10-27 08:42:47	hyper_ch	if it only was the gvt
+2016-10-27 08:43:04	<--	32NAAGZ4L (~enkeyz@unaffiliated/enkeyz) has quit (Client Quit)
+2016-10-27 08:43:39	<--	}ls{ (~kalle@unaffiliated/ls/x-8089558) has quit (Read error: Connection reset by peer)
+2016-10-27 08:43:56	<--	gshrikant (~gshrikant@122.164.252.239) has quit (Ping timeout: 250 seconds)
+2016-10-27 08:44:32	<--	slappy16 (~Adium@209.66.91.113) has quit (Remote host closed the connection)
+2016-10-27 08:45:24	<--	iliv (~iliv@93.77.152.230) has quit (Quit: Time to get some sleep... ZzZzZzZ)
+2016-10-27 08:45:36	sjohnson	who else?  hax0rz?
+2016-10-27 08:46:14	-->	}ls{ (~kalle@unaffiliated/ls/x-8089558) has joined #bash
+2016-10-27 08:46:16	<--	oxhak_ (~OxHaK@219-132-190-109.isp.overthebox.ovh) has quit (Remote host closed the connection)
+2016-10-27 08:46:16	<--	oxhak (~OxHaK@unaffiliated/oxhak) has quit (Remote host closed the connection)
+2016-10-27 08:46:46	-->	theshams (~thesha@124.40.246.86) has joined #bash
+2016-10-27 08:48:00	<--	lompik (~lompik@2001:19f0:6800:1522:5400:ff:fe21:fd3d) has quit (Ping timeout: 260 seconds)
+2016-10-27 08:48:05	<--	theshams (~thesha@124.40.246.86) has quit (Max SendQ exceeded)
+2016-10-27 08:48:42	-->	theshams (~thesha@124.40.246.86) has joined #bash
+2016-10-27 08:49:06	-->	GinoManWorks (~GinoMan@50-251-53-110-static.hfc.comcastbusiness.net) has joined #bash
+2016-10-27 08:49:38	<--	niseak (~niseak@162.222.47.229) has quit (Remote host closed the connection)
+2016-10-27 08:50:03	-->	niseak (~niseak@67.218.25.247) has joined #bash
+2016-10-27 08:50:46	-->	x3kl1 (~x3kl1@unaffiliated/x3kl1) has joined #bash
+2016-10-27 08:51:09	<--	eihabarabia (~eihabarab@129.208.112.6) has quit (Remote host closed the connection)
+2016-10-27 08:51:25	-->	oxhak (~OxHaK@unaffiliated/oxhak) has joined #bash
+2016-10-27 08:51:40	osse	me
+2016-10-27 08:52:07	SchrodingersScat	that was proven to be not paranoia, afaik
+2016-10-27 08:52:38	greycat	osse's haxx0red webcam neckbeard p0rn stash
+2016-10-27 08:52:57	-->	agopo (~agopo@2a02:8108:45c0:ec8c:751e:9016:2642:f9a6) has joined #bash
+2016-10-27 08:53:33	-->	star_prone (~sviatovig@5-12-143-129.residential.rdsnet.ro) has joined #bash
+2016-10-27 08:53:46	SchrodingersScat	someone accused me of being a 'hacker' recently.  They probably meant cracker, but still took it as a compliment. "Aw shucks, you shouldn't have."
+2016-10-27 08:54:14	agopo	how come when I try to execute a script, it works like this "./scriptname" but not like this "./home/username/.scripts/scriptname"?
+2016-10-27 08:54:16	-->	conchubhar (~conchubha@185.108.128.7) has joined #bash
+2016-10-27 08:54:20	-->	riemann (~riemann@ip-222-88.ists.pl) has joined #bash
+2016-10-27 08:54:21	<--	conchubhar (~conchubha@185.108.128.7) has quit (Client Quit)
+2016-10-27 08:54:32	greycat	that will work as long as the script is executable
+2016-10-27 08:54:39	agopo	it's on 755
+2016-10-27 08:54:43	agopo	still won't work
+2016-10-27 08:54:48	-->	hs0ucy (~hs0ucy@68.67.45.242) has joined #bash
+2016-10-27 08:54:50	greycat	are you sure you're in / or whatever directory has home/username/ as a subdirectory?
+2016-10-27 08:54:56	<--	niseak (~niseak@67.218.25.247) has quit (Ping timeout: 260 seconds)
+2016-10-27 08:55:03	agopo	when I'm in it, it works
+2016-10-27 08:55:09	greycat	if you're not in / then you probably do not want the leading .
+2016-10-27 08:55:15	agopo	is that related to the dot . ?
+2016-10-27 08:55:17	_adb	the leading . in "./scriptname" references the current directory. it's not needed when specifying the full path. just use "/home/username/.scripts/..."
+2016-10-27 08:55:19	<--	codingthings (~codingthi@144.121.72.130) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-10-27 08:55:24	-->	hugdru (~hugdru@unaffiliated/hugdru) has joined #bash
+2016-10-27 08:55:24	greycat	. is a directory name, not some magic thing
+2016-10-27 08:55:38	agopo	I mistakenly thought it meant "execute"
+2016-10-27 08:55:38		[08:55]
+2016-10-27 08:55:43	agopo	my bad <blush>
+2016-10-27 08:56:26	-->	oxhak_ (~OxHaK@219-132-190-109.isp.overthebox.ovh) has joined #bash
+2016-10-27 08:56:47	sjohnson	osse: if i gave you a striptease you could hang a bucket full of sand off your dong.
+2016-10-27 08:57:13	agopo	hmm it still won't work
+2016-10-27 08:57:19	agopo	tells me directory or file not found
+2016-10-27 08:57:37	greycat	use tab completion at each step instead of typing out the whole bloody thing
+2016-10-27 08:57:40	agopo	I'm trying to create an alias for the script
+2016-10-27 08:57:52	greycat	Why not just put that directory into your PATH?
+2016-10-27 08:57:58	<--	star_prone (~sviatovig@5-12-143-129.residential.rdsnet.ro) has quit (Ping timeout: 245 seconds)
+2016-10-27 08:58:02	agopo	that I could try as well
+2016-10-27 08:58:20	greycat	Or if you don't want all the scripts from that directory to be used in your PATH, just copy the one you want into your own ~/bin/
+2016-10-27 08:59:02	-->	masoudd (~masoudd@5.115.129.153) has joined #bash
+2016-10-27 08:59:06	<--	masoudd (~masoudd@5.115.129.153) has quit (Read error: Connection reset by peer)
+2016-10-27 08:59:47	-->	LukeLR (~LukeLR@pD955DD6A.dip0.t-ipconnect.de) has joined #bash
+2016-10-27 09:00:01	<--	LukeLR (~LukeLR@pD955DD6A.dip0.t-ipconnect.de) has quit (Remote host closed the connection)
+2016-10-27 09:00:06	<--	Colin_Mac_ (~Colin@107-0-117-234-ip-static.hfc.comcastbusiness.net) has quit (Read error: Connection reset by peer)
+2016-10-27 09:00:11	-->	niseak (~niseak@162.222.47.229) has joined #bash
+2016-10-27 09:01:55	agopo	greycat: the /bin-solution is what I was looking for
+2016-10-27 09:01:59	agopo	works, cheers
+2016-10-27 09:02:07	-->	codingthings (~codingthi@144.121.72.130) has joined #bash
+2016-10-27 09:02:28	<--	hs0ucy (~hs0ucy@68.67.45.242) has quit (Ping timeout: 260 seconds)
+2016-10-27 09:04:17	-->	Neville (~ferdiet@mail.gradientfx.com) has joined #bash
+2016-10-27 09:04:36	-->	mise (~yourname@185.108.128.7) has joined #bash
+2016-10-27 09:04:39	-->	larryv (~larryv@wikipedia/larryv) has joined #bash
+2016-10-27 09:04:46	<--	larryv (~larryv@wikipedia/larryv) has left #bash
+2016-10-27 09:05:19	-->	ProjektGopher (~quassel@S0106c8d71920973b.vs.shawcable.net) has joined #bash
+2016-10-27 09:06:41	<--	theshams (~thesha@124.40.246.86) has quit (Ping timeout: 244 seconds)
+2016-10-27 09:06:44	<--	sobersocialist (Instantbir@cet-nat.comcastcntr.pa.bo.comcast.net) has quit (Quit: Instantbird 1.5 -- http://www.instantbird.com)
+2016-10-27 09:08:22	-->	gffa (~unknown@unaffiliated/gffa) has joined #bash
+2016-10-27 09:09:01	-->	shyam-id-au (caaba4bb@gateway/web/freenode/ip.202.171.164.187) has joined #bash
+2016-10-27 09:09:01	<--	shyam-id-au (caaba4bb@gateway/web/freenode/ip.202.171.164.187) has quit (Client Quit)
+2016-10-27 09:09:20	<--	mise (~yourname@185.108.128.7) has quit (Quit: leaving)
+2016-10-27 09:09:29	<--	tdy (~tdy@unaffiliated/tdy) has quit (Ping timeout: 256 seconds)
+2016-10-27 09:09:37	-->	theshams (~thesha@124.40.246.86) has joined #bash
+2016-10-27 09:09:46	-->	new_student (~njw@14.140.69.161) has joined #bash
+2016-10-27 09:10:10	Neville	This command is not working as I expected.
+2016-10-27 09:10:23	Neville	find "$PWD" -type d -name "*cache*" -size +512k -printf "%u %s\t" -exec du -sh {} \;
+2016-10-27 09:10:50	Neville	when I remove the -size +512k; it works.
+2016-10-27 09:10:50		[09:10]
+2016-10-27 09:11:16	Neville	So how do I implement the size flag?
+2016-10-27 09:11:17	new_student	Hi! I recently came across [n]<> in bash and tried it. However, I am unable to find out why this is happening: https://paste.fedoraproject.org/462017/ (See lines [43-44], [88-89], [135-136])
+2016-10-27 09:11:19	greycat	what does it do wrong?
+2016-10-27 09:11:20	<--	chandu20 (~quassel@124.123.81.196) has quit (Ping timeout: 260 seconds)
+2016-10-27 09:12:33	Neville	it does not return anything
+2016-10-27 09:12:41	greycat	Oh, type d.  You tried to find a DIRECTORY that's over 512 kB in size?  My god, that would be hundreds of thousands of files.
+2016-10-27 09:12:50	greycat	# ls -ld /
+2016-10-27 09:12:51	shbot	greycat: drwxrwxr-x 11 root root 0 Oct 21 14:48 /
+2016-10-27 09:12:56	greycat	gah, stupid VM thing
+2016-10-27 09:13:01	greycat	drwxr-xr-x 22 wooledg wooledg 4096 Oct 21 10:52 /
+2016-10-27 09:13:08	greycat	See there?  That directory is 4096 bytes.
+2016-10-27 09:13:43	greycat	It's got like 24 things in it.  Their names and inode numbers all fit within 4096 bytes, so the directory didn't have to allocate a second block of disk space.
+2016-10-27 09:14:05	 *	greycat wonders why his root directory is owned by wooledg
+2016-10-27 09:14:05	Neville	The goal of the command is to return directories larger than 0 bytes
+2016-10-27 09:14:23	greycat	EVERY directory is larger than 0 bytes unless you're on some bizarre VM thing like the bot is
+2016-10-27 09:14:37	-->	pheanex (~pheanex@2001-4dd6-a782-0-5cbc-757c-1a37-d611.ipv6dyn.netcologne.de) has joined #bash
+2016-10-27 09:14:38	greycat	The size of a directory is just not normally a useful quantity.
+2016-10-27 09:15:17	greycat	If you create 10240 files in a directory and then delete them all, it'll leave the directory a bit swollen up.  That's common for lost+found directories, to ensure that they have space to hold filenames when fsck is poking around at a very low level.
+2016-10-27 09:16:18	greycat	So, what are you *really* trying to do?
+2016-10-27 09:16:48	<--	jathan (~jathan@132.248.174.116) has quit (Quit: Saliendo)
+2016-10-27 09:17:26	-->	afuentes (~kusanagi@201.165.35.37.dynamic.jazztel.es) has joined #bash
+2016-10-27 09:17:43	-->	hs0ucy (~hs0ucy@68.67.45.242) has joined #bash
+2016-10-27 09:18:00	-->	nilg (~user@77.70.2.229) has joined #bash
+2016-10-27 09:18:38	<--	scottj (~scott@unaffiliated/scottj) has left #bash
+2016-10-27 09:18:51	Neville	eliminate these lines... root 0	0	/fs/shows/boswell/shots/101_101_101/3d/light/maya/cache
+2016-10-27 09:19:14	<--	geggam (~geggam@ec2-107-20-130-165.compute-1.amazonaws.com) has quit (Ping timeout: 245 seconds)
+2016-10-27 09:19:56	greycat	Like I know where those lines came from.  But if you meant what you said about eliminating things that show up as size 0 in whatever file system you're dealing with, why not -size +0
+2016-10-27 09:20:03	<--	nilg (~user@77.70.2.229) has quit (Remote host closed the connection)
+2016-10-27 09:20:57	<--	johnmilton (~johnmilto@static-47-206-47-42.mias.fl.frontiernet.net) has quit (Remote host closed the connection)
+2016-10-27 09:21:01	Neville	I made a little large than 0 by using 512k
+2016-10-27 09:21:24	greycat	You just made up a number out of thin air without any understanding of what the number means.
+2016-10-27 09:21:32	-->	mrrhq (~mrrhq@unaffiliated/mrrhq) has joined #bash
+2016-10-27 09:21:41	new_student	I found the answer to my question at http://backreference.org/2011/01/29/in-place-editing-of-files/
+2016-10-27 09:22:04	twkm	hopefully it isn't too wrong.
+2016-10-27 09:22:38	greycat	!faq replace
+2016-10-27 09:22:38	greybot	http://mywiki.wooledge.org/BashFAQ/021 -- How can I replace a string with another string in a variable, a stream, a file, or in all the files in a directory?
+2016-10-27 09:22:47	-->	atmx (~atmx@atmx.co) has joined #bash
+2016-10-27 09:23:08	<--	atmx (~atmx@atmx.co) has quit (Client Quit)
+2016-10-27 09:23:19	new_student	twkm: was that directed at me?
+2016-10-27 09:23:20	Neville	regardless it's a number and should have the same net effect...yet the command is incorrect
+2016-10-27 09:23:32	-->	atmx (~atmx@atmx.co) has joined #bash
+2016-10-27 09:23:33	greycat	Neville: Did you read ANYTHING I said at all?
+2016-10-27 09:23:37	<--	atmx (~atmx@atmx.co) has quit (Client Quit)
+2016-10-27 09:23:38	new_student	oh you were replying to Neville
+2016-10-27 09:23:45	greycat	a 512 kilobyte DIRECTORY is a FUCKING GODZILLA
+2016-10-27 09:23:58	greycat	new_student: no, twkm's comment was directed at your URL
+2016-10-27 09:24:54	greycat	here on HP-UX I have a fairly large /var/tmp:
+2016-10-27 09:24:55	greycat	drwxrwxrwt  13 root       bin           3072 Oct 27 08:34 /var/tmp
+2016-10-27 09:24:57	new_student	I was looking for inplace replace without having to create a temporary file. sponge works, but that adds dependency on the moreutils package
+2016-10-27 09:25:00	-->	conrad_ (~conrad@115.252.119.142) has joined #bash
+2016-10-27 09:25:10	greycat	It's three times the size of most of the other directories around it -- THREE kilobytes!
+2016-10-27 09:25:25	greycat	!sponge
+2016-10-27 09:25:25	greybot	sponge() ( tmp=$(mktemp) && cat > "$tmp" && cat -- "$tmp" > "$1" && rm -- "$tmp"; ) # read and write the same file in a pipeline: grep -v '^#' file | sponge file
+2016-10-27 09:25:58	new_student	I said, I don't want to create temporary file. It breaks hard links
+2016-10-27 09:25:58		[09:25]
+2016-10-27 09:25:59	twkm	new_student: all such changes imply some kind of temporary space, usually programs use another file.
+2016-10-27 09:26:33	greycat	If you don't create a temp file, at least to hold a BACKUP OF THE ORIGINAL, then there will be a period of time where your file is being clobbered and rewritten, and if the system crashes at that point, your data are all lost.
+2016-10-27 09:26:45	-->	stomplee (~biggystom@216.129.83.42) has joined #bash
+2016-10-27 09:27:08	new_student	The files are all small. If the system crashes, i restart the process
+2016-10-27 09:27:13	<--	Rapture (~textual@50-232-118-138-static.hfc.comcastbusiness.net) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-10-27 09:27:16	<--	jeffreylevesque (~chatzilla@129.6.45.20) has quit (Ping timeout: 265 seconds)
+2016-10-27 09:27:31	Neville	My approach is obviously wrong, yet what do I change the find command or du cmd. Honestly, I don't know what is happening here.
+2016-10-27 09:27:47	greycat	Neville: you haven't explained anything clearly yet.
+2016-10-27 09:27:57	new_student	Also, I am going this on copies anyway, so don't care about backup
+2016-10-27 09:28:21	_adb	perhaps sed -i
+2016-10-27 09:29:09	greycat	What are you trying to do?
+2016-10-27 09:29:15	new_student	_adb: sed -i creates a temp file
+2016-10-27 09:30:09	-->	atmx (~atmx@atmx.co) has joined #bash
+2016-10-27 09:30:25	Neville	The command seeks to locate directories with cache in the name; and total the size; yet it return all cache folders along 0 bytes one.
+2016-10-27 09:30:35	greycat	Oh man, my /tmp is pretty enormous!  drwxrwxrwt  15 root       bin          58368 Oct 27 14:21 /tmp
+2016-10-27 09:30:35	greycat	Man, there must have been a shitstorm of files in that directory at some point.  And yet, neville was looking for directories TEN TIMES WORSE than that one!
+2016-10-27 09:30:55	Neville	these cache directories are like temp files
+2016-10-27 09:31:03	greycat	If you LITERALLY just want to remove directories that are reported with size 0 by ls -ld (how is that even possible, I don't know), then use -size +0
+2016-10-27 09:31:29	greycat	But what is your REAL GOAL?  Do you want to skip EMPTY directories?  GNU find has a -empty flag.
+2016-10-27 09:32:07	Neville	that not the point...I want to skip empty directories...
+2016-10-27 09:32:16	greycat	Then use GNUfind's ! -empty
+2016-10-27 09:32:18	<--	D630 (~D630@unaffiliated/d630) has quit (Quit: WeeChat 1.6)
+2016-10-27 09:32:29	greycat	SIZE HAS NOTHING TO DO WITH THIS
+2016-10-27 09:32:35	Neville	ahh, finally a different approach...hmm...let me test
+2016-10-27 09:33:58	-->	eihabarabia (~eihabarab@95.186.87.110) has joined #bash
+2016-10-27 09:34:18	-->	oxhak__ (~OxHaK@219-132-190-109.isp.overthebox.ovh) has joined #bash
+2016-10-27 09:34:24	twkm	new_student: then why do you care about the inode?  sponge probably uses a temp file even if it rewrites the original inode, which has its own risks.
+2016-10-27 09:35:02	greycat	The sponge program is really, really dangerous.  It clobbers a file with total data loss if the thing crashes.
+2016-10-27 09:35:09	greycat	Apparently this is what he WANTS.
+2016-10-27 09:36:06	-->	Rapture (~textual@50-232-118-138-static.hfc.comcastbusiness.net) has joined #bash
+2016-10-27 09:36:22	twkm	even if it doesn't truncate first the file would be in a weird state until the copyback+truncate+fsync finishes.
+2016-10-27 09:36:40	<--	winem_ (~quassel@port-83-236-188-194.static.qsc.de) has quit (Ping timeout: 256 seconds)
+2016-10-27 09:37:01	greycat	twkm: you seem to understand what he wants, yes.
+2016-10-27 09:37:22	-->	tdy (~tdy@unaffiliated/tdy) has joined #bash
+2016-10-27 09:37:27	greycat	It should be obvious by the word "student" in his name.
+2016-10-27 09:37:28	twkm	possibly.  but if sie is using a copy anyway i don't get why a new inode is a hassle.
+2016-10-27 09:37:40	twkm	unless "homework".
+2016-10-27 09:37:42	<--	codingthings (~codingthi@144.121.72.130) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-10-27 09:37:52	greycat	Hard links were mentioned.
+2016-10-27 09:38:14	twkm	i missed that.
+2016-10-27 09:38:16	Neville	greycat: the empty flag does work better...thanks
+2016-10-27 09:38:57	<--	ron_o (~ron_o@unaffiliated/ron-o/x-8242187) has quit (Quit: WeeChat 5.7)
+2016-10-27 09:39:14	<--	eihabarabia (~eihabarab@95.186.87.110) has quit (Quit: Textual IRC Client: www.textualapp.com)
+2016-10-27 09:39:54	new_student	twkm: Well, consider the scenario when you are writing a custom package manager, which depends relies on hard links, and you need to patch RPATHs and similar 'build strings'
+2016-10-27 09:40:02	new_student	s/depends//
+2016-10-27 09:40:28	greycat	Why... in the fucking hell... do people... CONTINUALLY... come into #bash... because they are writing... their own... fucking... package managers.
+2016-10-27 09:40:46	new_student	I gave an example. Didn't say I was doing that.
+2016-10-27 09:40:46	greycat	BASH IS NOT A LANGUAGE YOU USE TO WRITE AN OPERATING SYSTEM
+2016-10-27 09:40:53	greycat	Not even if you're a STUDENT.
+2016-10-27 09:40:57	emg	is that a challenge? :-P
+2016-10-27 09:41:10	new_student	emg: Not really, but you could consider it to be one :)
+2016-10-27 09:41:10		[09:41]
+2016-10-27 09:41:21	-->	skweek (~skweek@68-200-146-225.res.bhn.net) has joined #bash
+2016-10-27 09:41:32	greycat	*plonk*
+2016-10-27 09:41:37	Riviera	8)
+2016-10-27 09:41:38	new_student	greycat: I try to learn something new everyday. Hence the substring 'student' in the nick.
+2016-10-27 09:41:59	greycat	"What if I'm doing X?" "I may or may not be doing X."
+2016-10-27 09:42:00	emg	eval question, is this quoting right?   eval printf %s \"\${"$((0x$digit + 1))"}\"
+2016-10-27 09:42:04	twkm	new_student: i accept the hard link issue, and in fact i don't really care why you want it but it did make me wonder.  i went on to describe the races possible, which maybe you don't care about i guess.
+2016-10-27 09:42:52	new_student	twkm: I don't see how it's a race condition in this code: https://paste.fedoraproject.org/462032/47759736/
+2016-10-27 09:43:01	greycat	emg: if you want to curl up in a ball until the pain stops, then the eval is doing its job.  Which is not, of course, in any way related to whether it's doing what you WANT.
+2016-10-27 09:45:11	-->	hhee (~hhee@128-74-197-209.broadband.corbina.ru) has joined #bash
+2016-10-27 09:46:30	emg	greycat: fair point. stupid hex to binary script for fun http://ix.io/1A1e
+2016-10-27 09:46:35	<--	[r4] (~r4]@staticline-31-183-98-219.toya.net.pl) has quit (Remote host closed the connection)
+2016-10-27 09:46:52	<--	Zialus (~RMF@117.26.60.94.rev.vodafone.pt) has quit (Ping timeout: 256 seconds)
+2016-10-27 09:46:54	emg	also just realized I can just set -x to see what's happening... looks right, but I've avoided eval for so long now that I'm scared when I see it
+2016-10-27 09:47:04	<--	REX (~quassel@quassel.zerofox.xyz) has quit (Remote host closed the connection)
+2016-10-27 09:47:06	-->	`Cam (~textual@59-102-36-195.tpgi.com.au) has joined #bash
+2016-10-27 09:47:07	-->	dodobrain (~dodobrain@14-202-40-12.tpgi.com.au) has joined #bash
+2016-10-27 09:47:24	<--	`Cam (~textual@59-102-36-195.tpgi.com.au) has quit (Client Quit)
+2016-10-27 09:47:57	greycat	if $digit contains anything malicious, it could break out of your quoting
+2016-10-27 09:48:18	--	Guest3629 is now known as Warnaud
+2016-10-27 09:48:54	-->	Zialus (~RMF@117.26.60.94.rev.vodafone.pt) has joined #bash
+2016-10-27 09:51:15	<--	atmx (~atmx@atmx.co) has quit (Quit: leaving)
+2016-10-27 09:51:29	_val_	is there any easy way to copy the current line on the terminal to the buffer?
+2016-10-27 09:51:34	greycat	no
+2016-10-27 09:51:44	_val_	you're so bitter greycat :/
+2016-10-27 09:51:48	_val_	I was expecting a yes.
+2016-10-27 09:51:54	greycat	That's not bitter.  That's just an easy question.
+2016-10-27 09:52:34	emg	greycat: hmm, I can't come up with an example that would be able to break it. everything just explods at 0x expecting a digit
+2016-10-27 09:52:44	emg	s/break it/break the quoting/
+2016-10-27 09:53:21	greycat	It becomes much less easy if we waste energy focusing on "the buffer" and trying to unravel what that means, but if we just skip that bit and focus on "copying the content from a terminal", then we see immediately that no, there is no easy way to do that.  In general.
+2016-10-27 09:54:04	<--	Soda (~user@31.40.42.31) has quit (Remote host closed the connection)
+2016-10-27 09:54:38	-->	tax (~tax@cpe-72-182-55-97.austin.res.rr.com) has joined #bash
+2016-10-27 09:55:02	_val_	Thanks for your time and patience greycat.
+2016-10-27 09:55:59	-->	edvorg (~edvorg@14.169.49.229) has joined #bash
+2016-10-27 09:56:25	-->	Alex-SF_ (~Alex-SF@70-35-54-233.static.wiline.com) has joined #bash
+2016-10-27 09:56:25		[09:56]
+2016-10-27 09:56:48	-->	cdg (~cdg@157.166.173.5) has joined #bash
+2016-10-27 09:57:36	greycat	emg: well... I can get it to throw syntax errors, but I haven't managed to inject code yet.
+2016-10-27 09:58:00	greycat	# digit='0)); id; : ((0"' ; eval printf %s \"\${"$((0x$digit + 1))"}\"
+2016-10-27 09:58:02	shbot	greycat: bash: 0x0)); id; : ((0" + 1: syntax error in expression (error token is ")); id; : ((0" + 1")
+2016-10-27 09:58:07	-->	slappy16 (~Adium@209.66.91.113) has joined #bash
+2016-10-27 09:58:08	-->	xall_ (~xall@2600:8800:8885:eb00:b062:8e17:bfe:685f) has joined #bash
+2016-10-27 09:58:12	<--	JeanCarloMachado (~jean@189-10-225-172.cslce701.dsl.brasiltelecom.net.br) has quit (Ping timeout: 250 seconds)
+2016-10-27 09:58:33	-->	ron_o (~ron_o@unaffiliated/ron-o/x-8242187) has joined #bash
+2016-10-27 09:59:07	emg	hmm, perhaps safer to do digit=0x$digit earlier then use digit instead inside the $((
+2016-10-27 09:59:31	<--	Alex-SF (~Alex-SF@gw.willowgarage.com) has quit (Ping timeout: 250 seconds)
+2016-10-27 09:59:31	--	Alex-SF_ is now known as Alex-SF
+2016-10-27 09:59:38	greycat	Safest bet is to abort if digit doesn't match +([0-9])
+2016-10-27 09:59:47	<--	tax (~tax@cpe-72-182-55-97.austin.res.rr.com) has quit (Read error: Connection reset by peer)
+2016-10-27 10:00:11	greycat	Not sure why you're doing this crazy stuff anyway.  ((digit++)); echo "${!digit}"   is all you want, right?
+2016-10-27 10:00:11	<--	anyofyou (~anyofyou@27.0.232.139) has quit (Remote host closed the connection)
+2016-10-27 10:00:26	emg	POSIX
+2016-10-27 10:00:32	-->	`Cam (~textual@59-102-36-195.tpgi.com.au) has joined #bash
+2016-10-27 10:00:34	-->	d_t (~textual@83-244-233-135.cust-83.exponential-e.net) has joined #bash
+2016-10-27 10:00:37	<--	ccl (~ccl@unaffiliated/ccl) has quit (Ping timeout: 248 seconds)
+2016-10-27 10:00:46	_val_	greycat: xclip seems to come close to what I was trying
+2016-10-27 10:00:47	<--	Mac101 (~Mac@cpc81439-lanc8-2-0-cust74.3-3.cable.virginm.net) has quit (Quit: Leaving)
+2016-10-27 10:00:51	_val_	but this requires to echo the whole line.
+2016-10-27 10:01:17	greycat	Wow.  even "val_" can't be tab completed, let alone "val"
+2016-10-27 10:01:46	greycat	I guess "val" can be if I press tab twice, because the other one gets chosen first... strange.
+2016-10-27 10:01:49	_val_	Promise me you won't swear? :-p
+2016-10-27 10:02:02	greycat	Anyway, YOU, there is no way to read the content of the terminal.
+2016-10-27 10:02:18	<--	hhee (~hhee@128-74-197-209.broadband.corbina.ru) has quit (Remote host closed the connection)
+2016-10-27 10:02:18	greycat	As far as bash is concerned, it is a write-only medium.
+2016-10-27 10:02:27	<--	StrongJava (~tim_rohre@65-101-6-61.dia.static.qwest.net) has quit (Quit: Textual IRC Client: www.textualapp.com)
+2016-10-27 10:02:30	-->	Eddinn (~Eddinn@89-160-191-75.du.xdsl.is) has joined #bash
+2016-10-27 10:02:47	emg	ok, a bit safer:   digit=0x${line%${line#?}}; case $digit in 0x[[:xdigit:]]);; *) continue;; esac; eval printf %s \"\${"$((digit + 1))"}\"
+2016-10-27 10:03:02	emg	instead of just throwing out spaces, throw out all that arent xdigit
+2016-10-27 10:03:02	<--	Eddinn (~Eddinn@89-160-191-75.du.xdsl.is) has quit (Remote host closed the connection)
+2016-10-27 10:03:23	-->	hhee (~hhee@128-74-197-209.broadband.corbina.ru) has joined #bash
+2016-10-27 10:03:25	<--	KingsQuest (~ident@unaffiliated/kingsquest) has quit (Quit: linux unhackable correct code http://pastebin.ca/3732832)
+2016-10-27 10:03:30	-->	Eddinn (~Eddinn@89-160-191-75.du.xdsl.is) has joined #bash
+2016-10-27 10:03:33	emg	and don't use $digit in the eval line, put the 0x in earlier and just use digit
+2016-10-27 10:04:51	phy1729	!pf1 > CuriousErnestBro
+2016-10-27 10:04:51	greybot	CuriousErnestBro: http://mywiki.wooledge.org/BashPitfalls#pf1 -- Don't do this! -- for i in $(ls *.mp3)
+2016-10-27 10:05:15	phy1729	paths can contain anything except null
+2016-10-27 10:06:56	twkm	new_student: there is no way to avoid a race when re-using the inode, though i think i remember you asserting that the files are all "small" which might make the window small enough to be tolerated or you have some way to detect failures.
+2016-10-27 10:07:54	-->	last_staff (~Thunderbi@179-134-11.connect.netcom.no) has joined #bash
+2016-10-27 10:07:55	new_student	twkm: Could you please explain a bit more about this race condition? How is reading all, put in memory, then dump all to the same inode, a race condition, if done sequentially?
+2016-10-27 10:08:42	<--	blueness_ (~blueness@gentoo/developer/blueness) has quit (Quit: blueness_)
+2016-10-27 10:09:05	new_student	the file [1]<> file thingy in bash had a race condition, agreed, since there was no guarantee on whether write will occur after complete read or not
+2016-10-27 10:11:43	<--	hs0ucy (~hs0ucy@68.67.45.242) has quit (Ping timeout: 245 seconds)
+2016-10-27 10:11:43		[10:11]
+2016-10-27 10:12:21	twkm	new_student: consider a file that contains "abc" to be replaced with "def".  if sponge hasn't yet written the 'f', resized the file (whether before writing or after) and asked for a filesystem synchronization then if something occurs that stops that sequence from happening (e.g., full filesystem) the inode will not have "def", it may be "" or "d" or "dbc" or several other combinations.
+2016-10-27 10:13:13	new_student	What do you mean by 'resized the file '
+2016-10-27 10:13:55	<--	ron_o (~ron_o@unaffiliated/ron-o/x-8242187) has quit (Ping timeout: 252 seconds)
+2016-10-27 10:14:16	new_student	according to what I understand, the file will be truncated by sponge first, and then everything is written in append mode
+2016-10-27 10:14:29	twkm	will the replacement always be exactly the same size, never any shrinking or growing?  if so you can eliminate the resizing element of the sequence and still have a race as to the writes.
+2016-10-27 10:14:42	<--	pheanex (~pheanex@2001-4dd6-a782-0-5cbc-757c-1a37-d611.ipv6dyn.netcologne.de) has quit (Quit: Leaving.)
+2016-10-27 10:14:46	-->	codingthings (~codingthi@144.121.72.130) has joined #bash
+2016-10-27 10:15:03	<--	`Cam (~textual@59-102-36-195.tpgi.com.au) has quit (Quit: ZZZ)
+2016-10-27 10:15:49	ash_workz	is there a tput for stopping bold?
+2016-10-27 10:15:51	twkm	okay, truncate first.  what if someone else is using the system and fills it before sponge can write the full content back into the file?  truncate to zero is always allowed.  writing needs blocks of storage which aren't guaranteed to exist in a truncate first method.
+2016-10-27 10:15:52	new_student	no, replacement can be larger or smaller.
+2016-10-27 10:16:00	-->	KingsQuest (~ident@unaffiliated/kingsquest) has joined #bash
+2016-10-27 10:16:04	greycat	ash_workz: usually you just use sgr0
+2016-10-27 10:16:04	twkm	ash_workz: no, just sgr0.
+2016-10-27 10:16:16	new_student	one can safely assume that no body is reading or writing to that file other than you write now
+2016-10-27 10:16:17	ash_workz	sgr0 will revert color too though, right?
+2016-10-27 10:16:21	greycat	TIAS
+2016-10-27 10:16:27	twkm	all attributes.
+2016-10-27 10:16:28	new_student	in my scenario
+2016-10-27 10:16:53	twkm	new_student: not that file.  the filesystem can fill when sponge is preparing to write to the file.
+2016-10-27 10:17:17	new_student	I was just curious about the race case, not about scenarios where I run out of space or some one plucks out the power cord
+2016-10-27 10:17:38	-->	atmx_ (~eert@atmx.co) has joined #bash
+2016-10-27 10:17:45	twkm	new_student: if sponge resizes after it writes then at least most filesystems will have guaranteed the same blocks can be reused and thus a shorter file *should* always succeed.
+2016-10-27 10:18:13	<--	aelgabri (~ahmedelga@ip4da074e6.direct-adsl.nl) has quit (Quit: WeeChat 1.5)
+2016-10-27 10:18:25	<--	martian67 (~martian67@about/linux/regular/martian67) has quit (Read error: Connection reset by peer)
+2016-10-27 10:18:32	new_student	please explain 'resizes after it writes'
+2016-10-27 10:18:36	twkm	new_student: it is a filesystem race.  not a race for that file -- though you might consider locking it to be sure another instance of your program (and perhaps others) won't be doing anything at the same time.
+2016-10-27 10:18:48	-->	aw1 (~aw1@unaffiliated/aw1) has joined #bash
+2016-10-27 10:20:31	twkm	new_student: if the data written should produce a smaller file you can change the file's size after the writes, or even before as long as you ask for the size needed.  but lots of programs will set the size to 0 and let writing the data deal with growing the size to what it writes.
+2016-10-27 10:20:58	<--	atmx_ (~eert@atmx.co) has left #bash
+2016-10-27 10:21:13	greycat	That includes a naive shell command like  echo "new stuff" > oldfile
+2016-10-27 10:21:16	new_student	but what if I have enought GBs available on the filesystem
+2016-10-27 10:21:31	new_student	Do I need to care about this case?
+2016-10-27 10:21:34	twkm	ash_workz: it may be that dim is available and is the exact opposite rather than a lower than usual brightness, but don't count on it.
+2016-10-27 10:21:45	-->	atmx (~eert@atmx.co) has joined #bash
+2016-10-27 10:21:47	--	atmx is now known as eert
+2016-10-27 10:21:57	--	eert is now known as atmx
+2016-10-27 10:21:58	twkm	new_student: feel free to make that assumption.
+2016-10-27 10:22:29	new_student	and by resize, did you mean modification of the inode to reflect the change in size?
+2016-10-27 10:22:30	-->	anyofyou (~anyofyou@27.0.232.46) has joined #bash
+2016-10-27 10:22:34	new_student	*inode data
+2016-10-27 10:23:06	twkm	change the inode's size, so that wanting just "de" in a file that had "abc" won't result in "dec".
+2016-10-27 10:23:43	new_student	But won't a truncate in the beginning guarantee that?
+2016-10-27 10:23:55	-->	olalonde (uid136@gateway/web/irccloud.com/x-idhgchlurgeuegsj) has joined #bash
+2016-10-27 10:23:59	<--	todd_dsmw (~todd_dsmw@74.112.21.215) has quit (Remote host closed the connection)
+2016-10-27 10:24:05	new_student	s/beginning / before writing anything
+2016-10-27 10:24:07	-->	martian67 (~martian67@about/linux/regular/martian67) has joined #bash
+2016-10-27 10:24:10	olalonde	Oh got it http://stackoverflow.com/questions/4143252/how-to-make-the-cut-command-treat-several-sequential-delimiters-as-one
+2016-10-27 10:24:14	twkm	yes, and since you want to assume your filesystem will never run out of space even though such things do happen, you'll get the file you want.
+2016-10-27 10:24:48	new_student	twkm: Thank you for your patienct answering :)
+2016-10-27 10:24:51	-->	hs0ucy (~hs0ucy@68.67.45.242) has joined #bash
+2016-10-27 10:24:56	new_student	*patient. Damn this keyboard
+2016-10-27 10:25:58	<--	Zialus (~RMF@117.26.60.94.rev.vodafone.pt) has quit (Ping timeout: 256 seconds)
+2016-10-27 10:27:28	-->	Zialus (~RMF@117.26.60.94.rev.vodafone.pt) has joined #bash
+2016-10-27 10:27:28		[10:27]
+2016-10-27 10:27:28	<--	polyzen (~poly@unaffiliated/polyzen) has quit (Quit: WeeChat 1.6)
+2016-10-27 10:27:52	<--	adac (~adac@80-109-174-123.cable.dynamic.surfer.at) has quit (Ping timeout: 260 seconds)
+2016-10-27 10:28:01	-->	bumbar_ (~bumbar@unaffiliated/bumbar) has joined #bash
+2016-10-27 10:28:19	bumbar_	is this correct way to "merge" files to single file? https://dpaste.de/95Dt
+2016-10-27 10:28:44	greycat	No, it's not.
+2016-10-27 10:29:13	greycat	Basically every line of that is wrong except the line that simply says "done"
+2016-10-27 10:29:39	greycat	If you have a list of filenames in an array, you just want:  cat "${files[@]}" > "$tmp"
+2016-10-27 10:31:13	new_student	...assuming that IFS hasn't been modified?
+2016-10-27 10:31:55	bumbar_	greycat, unfortunately, that doesn't seem to work
+2016-10-27 10:32:16	greycat	You probably didn't populate the array correctly.
+2016-10-27 10:32:38	greycat	Your line 3 indicates you seem to think you can put a list of filenames in a string variable with spaces between them.
+2016-10-27 10:32:42	bumbar_	i did it as: files=$(ls myfile_*)
+2016-10-27 10:32:44	<--	atmx (~eert@atmx.co) has quit (Remote host closed the connection)
+2016-10-27 10:32:48	greycat	...
+2016-10-27 10:32:56	greycat	As I said.  EVERYTHING YOU DID WAS WRONG.  And continues to be wrong.
+2016-10-27 10:33:13	greycat	Why don't you simply do:  cat myfile_* > "$tmp"
+2016-10-27 10:33:36	bumbar_	why wouldn't it work iterating over files and doing cat $file >> $file2
+2016-10-27 10:33:48	agopo	haha greycat, you're helpful and edgy at the same time
+2016-10-27 10:34:06	-->	johnmilton (~johnmilto@96-58-242-186.res.bhn.net) has joined #bash
+2016-10-27 10:34:14	greycat	bumbar_: because you DID EVERYTHING WRONG.  And even if you magically fixed all your errors, that's still an inefficient and silly way.
+2016-10-27 10:34:37	greycat	Why run a whole cat process for each separate file?  The whole point of cat is to conCATenate multiple files.
+2016-10-27 10:34:41	<--	NimeshNeema (uid2689@gateway/web/irccloud.com/x-vowtmjqgudxtyzeb) has quit (Quit: Connection closed for inactivity)
+2016-10-27 10:35:19	bumbar_	uh, i was told cat means catalogue, as in display a file contents
+2016-10-27 10:35:26	greycat	dpkg --print-architecture maybe, but I think it's still wrong
+2016-10-27 10:35:30	greycat	... ECHAN
+2016-10-27 10:35:37	<--	hugdru (~hugdru@unaffiliated/hugdru) has quit (Quit: WeeChat 1.6)
+2016-10-27 10:35:46	greycat	 NAME
+2016-10-27 10:35:46	greycat	      cat - concatenate, copy, and print files
+2016-10-27 10:35:56	greycat	NAME
+2016-10-27 10:35:56	greycat	       cat - concatenate files and print on the standard output
+2016-10-27 10:36:50	mrrhq	apt-get changelog linux-image-$(dpkg-architecture -q DEB_HOST_ARCH)
+2016-10-27 10:36:56	-->	blueness_ (~blueness@gentoo/developer/blueness) has joined #bash
+2016-10-27 10:37:41	mrrhq	Whoops, wrong channel. Sorry.
+2016-10-27 10:38:27	-->	a3Dman (~3Dman@unaffiliated/a3dman) has joined #bash
+2016-10-27 10:38:39	-->	jozwior (~jozwior@62.244.139.219) has joined #bash
+2016-10-27 10:41:13	bumbar_	greycat, thanks for the one liner. i'll try and stay away from bash anyhow!
+2016-10-27 10:41:53	-->	adac (~adac@80-109-174-123.cable.dynamic.surfer.at) has joined #bash
+2016-10-27 10:42:53	<--	aw1 (~aw1@unaffiliated/aw1) has quit (Quit: Leaving)
+2016-10-27 10:42:53		[10:42]
+2016-10-27 10:43:11	<--	blueness_ (~blueness@gentoo/developer/blueness) has quit (Quit: blueness_)
+2016-10-27 10:45:58	-->	REX (~quassel@quassel.zerofox.xyz) has joined #bash
+2016-10-27 10:46:38	-->	ron_o (~ron_o@unaffiliated/ron-o/x-8242187) has joined #bash
+2016-10-27 10:47:38	<--	x3kl1 (~x3kl1@unaffiliated/x3kl1) has quit (Quit: Lost terminal)
+2016-10-27 10:47:57	<--	netj (~netj@c-50-174-63-93.hsd1.ca.comcast.net) has quit (Ping timeout: 244 seconds)
+2016-10-27 10:48:13	-->	netj (~netj@c-50-174-63-93.hsd1.ca.comcast.net) has joined #bash
+2016-10-27 10:48:16	-->	blueness_ (~blueness@gentoo/developer/blueness) has joined #bash
+2016-10-27 10:50:54	<--	Achylles (~Achylles@201-68-86-191.dsl.telesp.net.br) has quit (Ping timeout: 256 seconds)
+2016-10-27 10:51:00	<--	synthroid (~synthroid@gateway/vpn/privateinternetaccess/synthroid) has quit
+2016-10-27 10:52:09	<--	tdy (~tdy@unaffiliated/tdy) has quit (Ping timeout: 256 seconds)
+2016-10-27 10:53:32	<--	Al3xG0 (~unix@unaffiliated/al3xg0) has quit (Ping timeout: 260 seconds)
+2016-10-27 10:53:56	-->	Al3xG0 (~unix@177.41.74.230.dynamic.adsl.gvt.net.br) has joined #bash
+2016-10-27 10:53:56	<--	Al3xG0 (~unix@177.41.74.230.dynamic.adsl.gvt.net.br) has quit (Changing host)
+2016-10-27 10:53:56	-->	Al3xG0 (~unix@unaffiliated/al3xg0) has joined #bash
+2016-10-27 10:54:45	<--	oxhak_ (~OxHaK@219-132-190-109.isp.overthebox.ovh) has quit (Ping timeout: 265 seconds)
+2016-10-27 10:54:53	<--	edvorg (~edvorg@14.169.49.229) has quit (Ping timeout: 256 seconds)
+2016-10-27 10:54:59	<--	oxhak (~OxHaK@unaffiliated/oxhak) has quit (Ping timeout: 256 seconds)
+2016-10-27 10:55:24	<--	blizzow (~jburns@2601:280:4a00:4c00:fae4:f4b0:66e2:e966) has quit (Ping timeout: 260 seconds)
+2016-10-27 10:55:33	stoned	Dude. He's grey. And he's a cat.
+2016-10-27 10:55:44	-->	hyphenated (~hyphenate@mail.tw.co.nz) has joined #bash
+2016-10-27 10:55:51	stoned	Edgy is not only implied, it's understood!
+2016-10-27 10:56:31	osse	one might say it's grokked
+2016-10-27 10:57:31	-->	Bl4ck57rik3r (~Bl4ck57ri@kite.riseup.net) has joined #bash
+2016-10-27 10:59:31	<--	Bl4ck57rik3r (~Bl4ck57ri@kite.riseup.net) has quit (Client Quit)
+2016-10-27 10:59:31		[10:59]
+2016-10-27 10:59:40	<--	blueness_ (~blueness@gentoo/developer/blueness) has quit (Quit: blueness_)
+2016-10-27 10:59:53	<--	xall_ (~xall@2600:8800:8885:eb00:b062:8e17:bfe:685f) has quit (Ping timeout: 260 seconds)
+2016-10-27 11:00:09	<--	AaronMT (~textual@2607:fea8:3ca0:2:ac08:2057:8fa4:46f8) has quit (Quit: Textual IRC Client: www.textualapp.com)
+2016-10-27 11:00:57	<--	oxhak__ (~OxHaK@219-132-190-109.isp.overthebox.ovh) has quit (Remote host closed the connection)
+2016-10-27 11:01:02	<--	adac (~adac@80-109-174-123.cable.dynamic.surfer.at) has quit (Ping timeout: 265 seconds)
+2016-10-27 11:02:48	-->	OS-16517 (OS-16517@unaffiliated/os-16517) has joined #bash
+2016-10-27 11:04:46	<--	ash_workz (~chatzilla@50-243-5-153-static.hfc.comcastbusiness.net) has quit (Ping timeout: 250 seconds)
+2016-10-27 11:05:52	<--	KingsQuest (~ident@unaffiliated/kingsquest) has quit (Remote host closed the connection)
+2016-10-27 11:06:06	<--	codingthings (~codingthi@144.121.72.130) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-10-27 11:07:18	<--	Klaus_Dieter (~klaus@x55b4a826.dyn.telefonica.de) has quit (Read error: Connection reset by peer)
+2016-10-27 11:07:22	<--	Geom (~Geom@112.201.156.109) has quit (Ping timeout: 250 seconds)
+2016-10-27 11:07:48	<--	last_staff (~Thunderbi@179-134-11.connect.netcom.no) has quit (Quit: last_staff)
+2016-10-27 11:08:05	-->	Klaus_Dieter (~klaus@x55b4a826.dyn.telefonica.de) has joined #bash
+2016-10-27 11:08:49	-->	KingsQuest (~ident@unaffiliated/kingsquest) has joined #bash
+2016-10-27 11:11:29	<--	jozwior (~jozwior@62.244.139.219) has quit (Ping timeout: 252 seconds)
+2016-10-27 11:11:38	<--	gffa (~unknown@unaffiliated/gffa) has quit (Quit: sleep)
+2016-10-27 11:12:10	<--	apaz (~Esteban@host174.190-30-88.telecom.net.ar) has quit (Quit: Leaving)
+2016-10-27 11:14:14	<--	shwouchk (~shwouchk@unaffiliated/shwouchk) has quit (Read error: Connection reset by peer)
+2016-10-27 11:14:14	-->	jozwior (~jozwior@62.244.139.219) has joined #bash
+2016-10-27 11:14:25	<--	greycat (~wooledg@remote.wooledge.org) has quit (Quit: This time the bullet cold rocked ya / A yellow ribbon instead of a swastika)
+2016-10-27 11:15:20	<--	ZyX-I (~ZyX-I@broadband-77-37-230-77.nationalcablenetworks.ru) has quit (Ping timeout: 250 seconds)
+2016-10-27 11:15:20		[11:15]
+2016-10-27 11:15:47	<--	Tanta (~tanta@pool-108-51-123-216.washdc.fios.verizon.net) has quit (Quit: Leaving)
+2016-10-27 11:16:55	-->	Achylles (~Achylles@201-68-86-191.dsl.telesp.net.br) has joined #bash
+2016-10-27 11:17:25	<--	Willis (Willis@107.161.160.241) has quit (Ping timeout: 248 seconds)
+2016-10-27 11:18:52	<--	wallbroken (~wallbroke@unaffiliated/wallbroken) has left #bash
+2016-10-27 11:19:04	-->	Bl4ck57rik3r (~Bl4ck57ri@kite.riseup.net) has joined #bash
+2016-10-27 11:20:07	-->	Willis (Willis@107.161.160.241) has joined #bash
+2016-10-27 11:22:21	-->	SuperG (~SuperG@176.26.97.155) has joined #bash
+2016-10-27 11:25:00	-->	KindOne_ (kindone@freenude/topless/kindone) has joined #bash
+2016-10-27 11:25:49	<--	KindOne (kindone@freenude/topless/kindone) has quit (Ping timeout: 276 seconds)
+2016-10-27 11:25:59	-->	Anderssen (~shadow007@p5DE41B13.dip0.t-ipconnect.de) has joined #bash
+2016-10-27 11:26:11	<--	hhee (~hhee@128-74-197-209.broadband.corbina.ru) has quit (Ping timeout: 244 seconds)
+2016-10-27 11:27:13	-->	periappi (5c921bfb@gateway/web/freenode/ip.92.146.27.251) has joined #bash

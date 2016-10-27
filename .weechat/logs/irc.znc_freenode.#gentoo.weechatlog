@@ -34871,3 +34871,989 @@
 2016-10-27 06:24:43	<--	sinraj (~sinraj@unaffiliated/sinraj) has quit (Quit: sinraj)
 2016-10-27 06:25:43	+iamben	minimalism: more on-disk space used; the "pure" dev repo is missing lots of metadata stuff, the semi-official mirror with most metadata added back in is still missing changelogs
 2016-10-27 06:26:05	minimalism	Ah true.. git would store all the changes wouldn't it
+2016-10-27 06:26:14	+iamben	the metadata-included mirror is on github, not official gentoo infra
+2016-10-27 06:26:15	BtbN	Changelogs don't make sense for a git based mirror anyway.
+2016-10-27 06:26:17	barteks2x	now I need to get wifi working... I'm sure I added iwlwifi kernel module...
+2016-10-27 06:26:21	+iamben	BtbN: i disagree.
+2016-10-27 06:26:29	BtbN	You can just fire up git log
+2016-10-27 06:26:41	+iamben	BtbN: it's not as useful as gentoo changelogs
+2016-10-27 06:27:03	BtbN	The changelogs in the rsync mirrors are generated from the git log messages iirc
+2016-10-27 06:27:04	+iamben	minimalism: the default is now a shallow clone but it's still more space used
+2016-10-27 06:27:18	-->	pekkari (~pekkari@2001:67c:1560:8007::aac:c0ca) has joined #gentoo
+2016-10-27 06:27:21	+iamben	BtbN: yes, but formatted differently, so they can be parsed by gentoo context
+2016-10-27 06:27:46	minimalism	iamben: You're saying git is more spaced used or the rsync?
+2016-10-27 06:27:50	minimalism	space*
+2016-10-27 06:27:53	+iamben	minimalism: git uses more space
+2016-10-27 06:28:05	BtbN	but is way faster when syncing in exchange
+2016-10-27 06:28:06	+grknight	iamben: hmm.. perhaps we need to bindmount /run as well as that's where udev puts important things
+2016-10-27 06:28:09	minimalism	Okay. Well I'd prefer wait a little longer than use more space, so I'm glad I have the option.
+2016-10-27 06:28:09		[06:28]
+2016-10-27 06:28:09	-->	__VEGAN__ (~wat@2001:0:9d38:6ab8:cc1:2178:51a3:271b) has joined #gentoo
+2016-10-27 06:28:10	__VEGAN__	Have you  eaten  ground beef  recently? Ground beef is the result of everything outside of  the  cow's  bones  (including nerves)  being  ground up. Ground beef often contains  prions   (misfolded proteins)  which  due  to  mammalic  protein metabolism act  virally and will cause you to come  down with  Creutzfeldt-Jakob Disease (CJD) where your brain slowly decays due to holes forming in your
+2016-10-27 06:28:10	__VEGAN__	brain,  as the proteins in your body lose their ability to fold properly. Do you feel as smart as you were last week or last month? You may have it. Meat has always been murder,  but now,  when you serve beef, you may be  murdering  the ones you love  and even yourself.   There IS a healthy alternative!  Visit www.vegan.org today!
+2016-10-27 06:28:12	<--	__VEGAN__ (~wat@2001:0:9d38:6ab8:cc1:2178:51a3:271b) has left #gentoo
+2016-10-27 06:28:28	BtbN	You are that short on space that a few 100MB are an issue?
+2016-10-27 06:28:32	minimalism	I was having a good day, then that happened.
+2016-10-27 06:28:38	-->	obarun (~obarun@154.67.14.64) has joined #gentoo
+2016-10-27 06:28:40	minimalism	BtbN: Please see my nickname.
+2016-10-27 06:28:42	--	Mode #gentoo [+o iamben] by ChanServ
+2016-10-27 06:29:03	BtbN	So you prefer having 99% of your disk empty, even though it could be used to speed things up?
+2016-10-27 06:29:22	minimalism	It's not really speeding up regular use though. It's just specifically for a sync.
+2016-10-27 06:29:31	<--	luke_penn (~luke_penn@147.162.229.154) has quit (Remote host closed the connection)
+2016-10-27 06:29:35	@iamben	rsync is also the only officially supported end-user source (and webrsync generated from that)
+2016-10-27 06:29:43	--	Mode #gentoo [-o iamben] by ChanServ
+2016-10-27 06:30:10	BtbN	git-sync is quite noticably speeding up the sync
+2016-10-27 06:30:21	BtbN	As it can tell the server exactly which changes it needs
+2016-10-27 06:30:24	+iamben	it really depends on your network link and your client hardware
+2016-10-27 06:30:30	<--	FroZnShiva (~FroZnShiv@46.59.225.64) has quit (Quit: So long and thanks for all the fish.)
+2016-10-27 06:31:04	+grknight	iamben: if you still have your test open, see if a /run bindmount fixes udevadm info calls that os-prober makes
+2016-10-27 06:31:09	<--	barteks2x (~barteks2x@car21.t17.ds.pwr.wroc.pl) has quit (Remote host closed the connection)
+2016-10-27 06:31:19	router	http://oi63.tinypic.com/sq5oaw.jpg that the program for system information my desctop ?
+2016-10-27 06:31:28	+iamben	grknight: i just bindmouned exactly /run/udev/data only, and it works.  not sure how safe a whole /run bindmount is, i can try though
+2016-10-27 06:31:37	netz	hardened: if I don't chose it now, is it fairly simple to switch over if I should chose to use it later?
+2016-10-27 06:31:59	+iamben	BtbN: and some would say that "correctness" is better than saving a few seconds... just like you don't care about a few 100's of MBs, many peple don't care about a few (dozens of) seconds
+2016-10-27 06:32:11	+grknight	iamben: hmm.. maybe just need /run/udev for the control and other details
+2016-10-27 06:32:20	BtbN	git is incorrect? It's the exact same tree it downloads.
+2016-10-27 06:32:25	+iamben	for the record, im using gentoo-mirror/gentoo git
+2016-10-27 06:32:36	+iamben	BtbN: it's lacking things the official tree has, yes, incorrect
+2016-10-27 06:32:57	<--	tlaxkit (~Thunderbi@92.177.99.40) has quit (Remote host closed the connection)
+2016-10-27 06:33:14	-->	tlaxkit (~Thunderbi@92.177.99.40) has joined #gentoo
+2016-10-27 06:33:17	BtbN	Not really. no functionality is lost, and git log is even more powerfull.
+2016-10-27 06:33:19	m_barteks2x	How can I get WiFi working without using wired connection?
+2016-10-27 06:33:38	BtbN	set everything up for it while still in the live environment with working wifi
+2016-10-27 06:33:39	+iamben	BtbN: "equery changelog" can show the latest relevant changes for your stable level /version
+2016-10-27 06:33:44	+iamben	git log cannot do that
+2016-10-27 06:34:05	BtbN	it should be extended to be able to issue the relevent git log commands.
+2016-10-27 06:34:26	+iamben	ok well im describing current reality
+2016-10-27 06:34:46	m_barteks2x	It's not that easy when I can't test anything...
+2016-10-27 06:34:54	-->	barthess (~barthess@93.85.142.231) has joined #gentoo
+2016-10-27 06:35:00	-->	AndrewBobadilla (~barbaea@185.145.128.202) has joined #gentoo
+2016-10-27 06:35:12	BtbN	you basically only need wpa_supplicant for it to work.
+2016-10-27 06:35:16	uraniuss	it is possible that each package install serve many dependencies?
+2016-10-27 06:35:17	BtbN	and linux-firmware
+2016-10-27 06:35:41	BtbN	The wifi driver in your kernel can be enabled without working Wifi, in case you miss it.
+2016-10-27 06:35:59	BtbN	so emerge that while in your chroot, and you are mostly fine.
+2016-10-27 06:35:59	m_barteks2x	I know I need iwlwifi for it to work
+2016-10-27 06:36:09	BtbN	that's a kernel module
+2016-10-27 06:36:26	-->	alan_w (~alan_w@75.78.166.9) has joined #gentoo
+2016-10-27 06:37:15	<--	AndrewBobadilla (~barbaea@185.145.128.202) has quit (K-Lined)
+2016-10-27 06:40:15	-->	FroZnShiva (~FroZnShiv@46.59.225.64) has joined #gentoo
+2016-10-27 06:40:36	<--	FroZnShiva (~FroZnShiv@46.59.225.64) has quit (Client Quit)
+2016-10-27 06:40:51	-->	FroZnShiva (~FroZnShiv@46.59.225.64) has joined #gentoo
+2016-10-27 06:41:55	netz	hrm. I take it mirrorselect doesn't exist within stage3 tarball?
+2016-10-27 06:42:01	<--	_ohm (~research@unaffiliated/-ohm/x-0955948) has quit (Ping timeout: 244 seconds)
+2016-10-27 06:42:16	+iamben	netz: correct, you can do it outside chroot, or skip it, or emerge it before using it
+2016-10-27 06:43:11	netz	ok, cool.
+2016-10-27 06:43:11		[06:43]
+2016-10-27 06:43:28	-->	M66964[m] (66964matri@gateway/shell/matrix.org/x-ecndcjfqewrbbpgu) has joined #gentoo
+2016-10-27 06:44:20	-->	piling (~piling@unaffiliated/piling) has joined #gentoo
+2016-10-27 06:44:24	<--	Ultra_DuckZ (~duckz@186.9-252-62.static.virginmediabusiness.co.uk) has quit (Quit: Konversation terminated!)
+2016-10-27 06:45:16	-->	wonko7 (~wonko7@69.75.150.77.rev.sfr.net) has joined #gentoo
+2016-10-27 06:46:00	<--	hog (~hog@122.171.190.29) has left #gentoo
+2016-10-27 06:46:43	-->	barteks2x (~barteks2x@156.17.234.190) has joined #gentoo
+2016-10-27 06:46:59	-->	_johanne1 (~johannes@port-92-203-141-57.dynamic.qsc.de) has joined #gentoo
+2016-10-27 06:47:19	barteks2x	do I just understand it incorrectly or the wiki can't count? "There are three tools that support command-line driven wireless configurations: net-wireless/iw, net-wireless/wireless-tools and net-wireless/wpa_supplicant. Of these two, net-wireless/wpa_supplicant is the preferred one"
+2016-10-27 06:47:21	<--	_sfiguser (~sfigguser@93-35-242-188.ip57.fastwebnet.it) has quit (Ping timeout: 256 seconds)
+2016-10-27 06:47:47	<--	netz (~netz@unaffiliated/ntzrmtthihu777) has quit (Quit: WeeChat 1.6)
+2016-10-27 06:47:55	-->	netz (~netz@unaffiliated/ntzrmtthihu777) has joined #gentoo
+2016-10-27 06:48:18	netz	bah, time warner's here futzing about with cables and such. rather inconvenient timing on their part.
+2016-10-27 06:48:28	_johanne1	hello, I read that firefox 49.0.1 is known to be vulnerable for 5 days, but gentoo is still at 49.0.0 ... when will updates folow?
+2016-10-27 06:48:37	+grknight	iamben: added a note on this topic to the GRUB2 wiki page under Troubleshooting
+2016-10-27 06:48:48	<--	nE0sIghT (~Thunderbi@unaffiliated/ne0sight) has quit (Remote host closed the connection)
+2016-10-27 06:49:07	+grknight	barteks2x: oops, thought i got all of those
+2016-10-27 06:49:42	<--	asurace (~asurace@131.228.216.130) has quit (Ping timeout: 252 seconds)
+2016-10-27 06:49:42	netz	hrm. so what package does mirrorselect belong to? emerge --search mirror isn't pulling anything up, do I need to sync or sommat first?
+2016-10-27 06:49:43	+iamben	barteks2x: looks like it's been that way a very long time, in any case you want wpa_supplicant for sure, possibly iw for troubleshooting or simple status checking
+2016-10-27 06:50:09	+grknight	iamben: he noticed the word two should be removed
+2016-10-27 06:50:10	piling	hi there
+2016-10-27 06:50:27	+iamben	netz: it's called mirrorselect, but you do need to get a /usr/portage/ repo first, like via emerge-webrsync
+2016-10-27 06:50:35	barteks2x	tha's more helpful than what the wiki says, thanks
+2016-10-27 06:50:35	+iamben	grknight: yeah but it's been like that since guidexml days afaict =)
+2016-10-27 06:50:44	+grknight	iamben: no, i recently changed it
+2016-10-27 06:50:58	+iamben	oh i just fail at figuring out wiki templates, sorry
+2016-10-27 06:51:29	+iamben	grknight: we should stop pretending that wireless-tools is a viable tool =)
+2016-10-27 06:51:30	+grknight	iamben: yeah, see history of https://wiki.gentoo.org/wiki/Handbook:Parts/Networking/Wireless
+2016-10-27 06:51:47	piling	guys as far as i remmeber i've made conf for the screen brightness. do i need additional configuration because i can not change it ?
+2016-10-27 06:51:50	+grknight	iamben: it's only kept now since netifrc needs to be updated
+2016-10-27 06:52:02	piling	i mean, kernel conf.
+2016-10-27 06:52:59	+kurly	_johanne1: bug #597836 probably
+2016-10-27 06:53:01	willikins	kurly: https://bugs.gentoo.org/597836 "<www-client/{firefox,firefox-bin}-49.0.2: use after free and cache infoleak (CVE-2016-{5287,5288})"; Gentoo Security, Vulnerabilities; CONF; hanno:security
+2016-10-27 06:53:02	+kurly	!botsnack
+2016-10-27 06:53:02	willikins	kurly: cheers
+2016-10-27 06:53:58	-->	_ohm (~research@unaffiliated/-ohm/x-0955948) has joined #gentoo
+2016-10-27 06:54:32	<--	wdna (~wdna@bzq-79-182-63-225.red.bezeqint.net) has quit (Ping timeout: 260 seconds)
+2016-10-27 06:55:43	-->	cdown (~cdown@199.201.64.135) has joined #gentoo
+2016-10-27 06:55:56	-->	nullbyte_ (~ghost@unaffiliated/nullby7e) has joined #gentoo
+2016-10-27 06:55:58	+iamben	_johanne1: just for the record, 49.0.1 addresses an issue that doesn't affect gentoo/linux, so while 49.0.2 is certainly due, it's not like we're TWO versions behind, just the one
+2016-10-27 06:57:41	-->	anon9002 (~anon@cm-110-169-82-52.revip16.asianet.co.th) has joined #gentoo
+2016-10-27 06:58:08	_johanne1	ok, I just wonder how many days a good hacker needs to exploit the bugs in 49.0.0 ?
+2016-10-27 06:59:33	<--	Guest93854 (~Geek@212.73.149.139) has quit (Ping timeout: 260 seconds)
+2016-10-27 06:59:33		[06:59]
+2016-10-27 06:59:38	+iamben	the situation is sub-optimal.
+2016-10-27 06:59:38	_johanne1	maybe I'll just try out some cool new browsers like qupzilla for the meantime... :)
+2016-10-27 07:00:02	+iamben	join the gentoo mozilla team and help out if you want
+2016-10-27 07:00:36	-->	_sfiguser (~sfigguser@93-35-253-193.ip57.fastwebnet.it) has joined #gentoo
+2016-10-27 07:02:56	minimalism	I was just going through equery uses for my installed packages, and I noticed +static-analyzer is enabled by default for sys-devel/llvm, but the description says "Install the Clang static analyzer (requires USE=clang)" but clang is not enabled by default
+2016-10-27 07:03:19	<--	vpi (~vpi@195.66.82.9) has quit (Remote host closed the connection)
+2016-10-27 07:04:02	netz	crap. at emerge --ask --update --deep --newuse @world, /var/tmp/portage/dev-libs/lzo-2.08/distdir/lzo-2.08.tar.gz is a broken symlink to /usr/portage/distfiles/lzo-2.08.tar.gz
+2016-10-27 07:04:09	anon9002	I was prompted to allow the "LLVM-Grant" license for sys-libs/libomp-3.9.0 after trying to update today. Anyone knows if it's still free as in free speech?
+2016-10-27 07:04:38	<--	piling (~piling@unaffiliated/piling) has quit (Ping timeout: 245 seconds)
+2016-10-27 07:04:58	+iamben	netz: can you use wgetpaste to pastebin that full build.log?
+2016-10-27 07:05:05	netz	iamben: sure.
+2016-10-27 07:05:12	-->	piling (~piling@unaffiliated/piling) has joined #gentoo
+2016-10-27 07:05:18	-->	nyo_ (~nyo@host168-197-dynamic.250-95-r.retail.telecomitalia.it) has joined #gentoo
+2016-10-27 07:05:27	+xiaomiao	anon9002: the license is in /usr/portage/licenses, maybe you want to read it
+2016-10-27 07:05:49	<--	nyo (~nyo@host46-184-dynamic.52-79-r.retail.telecomitalia.it) has quit (Ping timeout: 276 seconds)
+2016-10-27 07:05:56	<--	s_kunk (~s_kunk@unaffiliated/s-kunk/x-5139101) has quit (Ping timeout: 256 seconds)
+2016-10-27 07:06:26	<--	hellrazor_ (~hellrazor@p4FEEAC79.dip0.t-ipconnect.de) has quit (Quit: Verlassend)
+2016-10-27 07:06:26	<--	lck (~Adium@2a02:6b8:0:2312:2124:70db:eec:db95) has quit (Ping timeout: 250 seconds)
+2016-10-27 07:06:34	netz	iamben: https://ptpb.pw/RbP5 is /var/tmp/portage/dev-libs/lzo-2.08/temp/build.log
+2016-10-27 07:07:23	+iamben	netz: so nothing exists at /usr/portage/distfiles/lzo-2.08.tar.gz at all?
+2016-10-27 07:07:47	<--	frostwork (~frostwork@p5DDE7477.dip0.t-ipconnect.de) has quit (Quit: Leaving)
+2016-10-27 07:08:26	netz	iamben: no, a file exists, and file reports it as being 'gzip compressed data, max compression, from Unix'
+2016-10-27 07:08:51	+iamben	netz: how did you determine there's a broken symlink then?
+2016-10-27 07:09:17	-->	albertus1 (~seb@x55b5c61d.dyn.telefonica.de) has joined #gentoo
+2016-10-27 07:09:36	netz	crap, checked outside the chroot. its not broken.
+2016-10-27 07:09:48	--	Vtec234_ is now known as Vtec234
+2016-10-27 07:10:14	-->	coffea (~coffea@c-69-249-72-124.hsd1.pa.comcast.net) has joined #gentoo
+2016-10-27 07:10:44	+iamben	netz: did you do all the rbind mounts for dev proc sys per the handbook?
+2016-10-27 07:11:26	-->	lck (~Adium@host-167-156-66-217.spbmts.ru) has joined #gentoo
+2016-10-27 07:11:27	netz	dangit. I didn't :/
+2016-10-27 07:11:28	<--	f4 (~f4@95-29-44-73.broadband.corbina.ru) has quit (Ping timeout: 244 seconds)
+2016-10-27 07:11:43	<--	peedub|work-away (~chris@71-92-244-106.static.trlk.ca.charter.com) has quit (Ping timeout: 256 seconds)
+2016-10-27 07:11:46	anon9002	xiaomiao: Thank you. The license appears to be free.
+2016-10-27 07:13:10	<--	tdr (~tdr@unaffiliated/tdr) has quit (Ping timeout: 252 seconds)
+2016-10-27 07:13:13	-->	p_l (sid98063@gateway/web/irccloud.com/x-hnzeblooiawjwuvf) has joined #gentoo
+2016-10-27 07:13:25	-->	peedub|work-away (~chris@71-92-244-106.static.trlk.ca.charter.com) has joined #gentoo
+2016-10-27 07:14:32	-->	GurliGebis (~GurliGebi@gentoo/developer/gurligebis) has joined #gentoo
+2016-10-27 07:14:32	--	Mode #gentoo [+v GurliGebis] by ChanServ
+2016-10-27 07:14:59	netz	iamben: thanks. fell into an arch habit, using arch-chroot
+2016-10-27 07:14:59		[07:14]
+2016-10-27 07:15:23	+grknight	anon9002: i don't think anyone on the licenses team examined it yet as it was only added 8 hours ago;  if they do then it might be added to a "free" license group and silence that message
+2016-10-27 07:15:56	 *	netz really wished coreboot was more supported by manuf.
+2016-10-27 07:16:19	-->	f4 (~f4@95-29-44-73.broadband.corbina.ru) has joined #gentoo
+2016-10-27 07:16:19	<--	f4 (~f4@95-29-44-73.broadband.corbina.ru) has quit (Max SendQ exceeded)
+2016-10-27 07:16:36	<--	uraniuss (254d73fc@gateway/web/freenode/ip.37.77.115.252) has quit (Ping timeout: 260 seconds)
+2016-10-27 07:16:44	-->	f4 (~f4@95-29-44-73.broadband.corbina.ru) has joined #gentoo
+2016-10-27 07:16:44	<--	f4 (~f4@95-29-44-73.broadband.corbina.ru) has quit (Max SendQ exceeded)
+2016-10-27 07:17:04	<--	iamboris (~boris2015@unaffiliated/boris2015) has left #gentoo ("WeeChat 1.5")
+2016-10-27 07:17:09	-->	f4 (~f4@95-29-44-73.broadband.corbina.ru) has joined #gentoo
+2016-10-27 07:17:10	<--	f4 (~f4@95-29-44-73.broadband.corbina.ru) has quit (Max SendQ exceeded)
+2016-10-27 07:17:16	<--	xmorph (~xt_@unaffiliated/xmorph) has quit (Remote host closed the connection)
+2016-10-27 07:17:34	-->	f4 (~f4@95-29-44-73.broadband.corbina.ru) has joined #gentoo
+2016-10-27 07:17:34	<--	f4 (~f4@95-29-44-73.broadband.corbina.ru) has quit (Max SendQ exceeded)
+2016-10-27 07:17:59	-->	f4 (~f4@95-29-44-73.broadband.corbina.ru) has joined #gentoo
+2016-10-27 07:17:59	<--	f4 (~f4@95-29-44-73.broadband.corbina.ru) has quit (Max SendQ exceeded)
+2016-10-27 07:18:08	+grknight	it certainly could warrant a bug on the topic if not solved in a few days
+2016-10-27 07:18:24	-->	f4 (~f4@95-29-44-73.broadband.corbina.ru) has joined #gentoo
+2016-10-27 07:18:24	<--	f4 (~f4@95-29-44-73.broadband.corbina.ru) has quit (Max SendQ exceeded)
+2016-10-27 07:19:10	barteks2x	is there any rule for how wlp/enpXsY names are generated?
+2016-10-27 07:19:30	+xiaomiao	barteks2x: yes, but it's very hard to predict
+2016-10-27 07:20:01	barteks2x	I have wlp9s0 and enp8s0...
+2016-10-27 07:20:14	+grknight	barteks2x: that particular rule you pointed out is based on pci bus and slot
+2016-10-27 07:20:15	netz	barteks2x: once they get gen'd they stay the same (proviso you don't move the device in question to another pci/usb bus :))
+2016-10-27 07:20:38	+grknight	netz: or you add a pci/usb bus
+2016-10-27 07:20:42	barteks2x	and apparently ifconfig thinks that wlp9s0 is ethernet drvice
+2016-10-27 07:20:45	netz	grknight: yeah.
+2016-10-27 07:20:47	+xiaomiao	netz: ... which depends on the order of initialization, thus possibly changing between kernels
+2016-10-27 07:21:07	<--	brendel (~brice@LAubervilliers-656-1-215-246.w217-128.abo.wanadoo.fr) has quit (Ping timeout: 265 seconds)
+2016-10-27 07:21:29	netz	honestly I see no problem with masking the rule in the case of single-card-of-each-type systems, as you'll always get foo0 and bar0
+2016-10-27 07:21:33	+grknight	barteks2x: ifconfig is deprecated, but still used for tools that depend on that output format;  the iproute2 suite replaces it (primary command is ip)
+2016-10-27 07:22:07	barteks2x	I just got used to using it to check if things are working
+2016-10-27 07:22:30	barteks2x	(it goes back to me starting from windows where I knew about ipconfig)
+2016-10-27 07:22:31	<--	`VL (~vl@178.23.225.78) has quit (Quit: Leaving)
+2016-10-27 07:22:55	-->	hotaronohanako (~user@unaffiliated/hotaronohanako) has joined #gentoo
+2016-10-27 07:23:16	+grknight	barteks2x: one benefit of 'ip link' is it shows all interfaces even if they are not active (this would be 'ifconfig -a' and confuses a lot of new users)
+2016-10-27 07:23:21	-->	xmorph (~xt_@unaffiliated/xmorph) has joined #gentoo
+2016-10-27 07:24:01	barteks2x	also, do I really need to specify driver for wpa_supplicant in /etc/conf.d/net?
+2016-10-27 07:24:29	+iamben	the default driver has been the right one since 2.3 or so... so "no"
+2016-10-27 07:24:42	barteks2x	the wiki says otherwise
+2016-10-27 07:25:05	+grknight	barteks2x: on older versions of wpa_supplicant, it was needed.  they change the compiled in default every so often.  putting it explictly makes things straight forward.  almost everyone should use -Dnl80211 anyway
+2016-10-27 07:25:34	barteks2x	at least for ethernet, but then there is wireless
+2016-10-27 07:25:41	barteks2x	unless it is for wireless?
+2016-10-27 07:25:52	+grknight	yes, that is for wireless
+2016-10-27 07:26:20	<--	peedub|work-away (~chris@71-92-244-106.static.trlk.ca.charter.com) has quit (Ping timeout: 260 seconds)
+2016-10-27 07:26:41	+grknight	ethernet is 802.3 fwiw
+2016-10-27 07:26:51	-->	Kelzier (~duka@79.175.84.119) has joined #gentoo
+2016-10-27 07:27:19	barteks2x	I don't even know what kind of encryption my wifi router uses...
+2016-10-27 07:28:02	<--	mvaenskae (~mvaenskae@unaffiliated/mvaenskae) has quit (Read error: Connection reset by peer)
+2016-10-27 07:28:14	-->	cdown_ (~cdown@199.201.64.135) has joined #gentoo
+2016-10-27 07:28:30	barteks2x	found it, router says it's WPA2-PSK, I don't see information about WPA2-anythign on the wiki
+2016-10-27 07:28:41	+iamben	which wiki article are you following?
+2016-10-27 07:28:49	<--	JohnMH (~johnmh@developer.openblox.org) has quit (Excess Flood)
+2016-10-27 07:28:50	barteks2x	https://wiki.gentoo.org/wiki/Handbook:AMD64/Networking/Wireless
+2016-10-27 07:28:50	<--	cdown (~cdown@199.201.64.135) has quit (Remote host closed the connection)
+2016-10-27 07:28:54	--	cdown_ is now known as cdown
+2016-10-27 07:28:59	-->	peedub|work-away (~chris@71-92-244-106.static.trlk.ca.charter.com) has joined #gentoo
+2016-10-27 07:29:00	+grknight	most home/SOHO networks use WPA{,2}-PSK  the rest of the details you don't need to care about
+2016-10-27 07:29:04	-->	JohnMH (~johnmh@developer.openblox.org) has joined #gentoo
+2016-10-27 07:29:27	<--	SkunkyFone (~skunky@unaffiliated/skunky) has quit (Remote host closed the connection)
+2016-10-27 07:30:12	+grknight	a lot of that article is talking about WEP or open networks.  the wpa_supplicant article goes into detail about how to configure that
+2016-10-27 07:30:12		[07:30]
+2016-10-27 07:30:14	+iamben	barteks2x: the "simple case" example should work, you can also use "wpa_passphrase yourssid yourkey" to generate a config section
+2016-10-27 07:30:43	strixdio	grknight: since you mentioned iproute2, do you know if it's still necessary to emerge brctl to make a persistent bridge?
+2016-10-27 07:30:49	<--	larzen (~Adium@184.70.103.94) has quit (Quit: Leaving.)
+2016-10-27 07:30:59	+grknight	strixdio: since netifrc-0.4.0, no
+2016-10-27 07:31:11	strixdio	grknight: I know one can make a bridge with iproute2, and I have, but I could not get it to stick until I emerged brctl
+2016-10-27 07:31:14	-->	m0n0lith (~mono@dyndsl-082-149-181-251.ewe-ip-backbone.de) has joined #gentoo
+2016-10-27 07:31:23	-->	bizarro_1 (~bizarro_1@98.red-79-155-31.dynamicip.rima-tde.net) has joined #gentoo
+2016-10-27 07:31:24	strixdio	is it a different config?
+2016-10-27 07:31:47	barteks2x	well... after I configured wpa_supplicant, wifi should work, right?
+2016-10-27 07:31:54	+grknight	strixdio: i've updated all the wiki examples i can find to use sysfs + iproute2
+2016-10-27 07:32:05	<--	Thymo (~Thymo@524ACC90.cm-4-3d.dynamic.ziggo.nl) has quit (Quit: ZNC - http://znc.in)
+2016-10-27 07:32:23	strixdio	grknight: https://wiki.gentoo.org/wiki/Network_bridge
+2016-10-27 07:32:23	<--	barteks2x (~barteks2x@156.17.234.190) has quit (Remote host closed the connection)
+2016-10-27 07:32:42	strixdio	though idk what sysfs is tbh.
+2016-10-27 07:32:55	+grknight	strixdio: you can convert the syntax even on stable, but netifrc-0.4.0 and greater removes the brctl calls
+2016-10-27 07:33:02	+grknight	strixdio: /sys
+2016-10-27 07:33:07	strixdio	oh derp
+2016-10-27 07:33:30	strixdio	how do I check what version of netifrc I am on?
+2016-10-27 07:33:47	+grknight	strixdio: 'emerge -pvO netifrc'
+2016-10-27 07:33:53	strixdio	ty
+2016-10-27 07:33:55	-->	Thymo (~Thymo@524ACC90.cm-4-3d.dynamic.ziggo.nl) has joined #gentoo
+2016-10-27 07:34:07	strixdio	net-misc/netifrc-0.2.2::gentoo
+2016-10-27 07:34:12	strixdio	That would be why.
+2016-10-27 07:34:39	-->	Bloodclaw (~bloodclaw@2001:bc8:3078:1fe:9b86:1680:649a:6306) has joined #gentoo
+2016-10-27 07:34:58	+grknight	strixdio: the installation section of that article can be cleaned up, but i don't think it's a great idea until 0.4.0 is stable
+2016-10-27 07:35:07	-->	ycbdlzb (~hpuq@181.128.176.233) has joined #gentoo
+2016-10-27 07:35:09	ycbdlzb	Have you eaten ground beef recently? Ground beef is the result of everything outside of the cow's bones (including nerves) being ground up. Ground beef often contains prions (misfolded proteins) which due to mammalic protein metabolism act virally and will cause you to come down with Creutzfeldt-Jakob Disease (CJD) where your brain slowly decays due to holes forming in your brain.
+2016-10-27 07:35:09	<--	ycbdlzb (~hpuq@181.128.176.233) has quit (Killed (Sigyn (Spam is off topic on freenode.)))
+2016-10-27 07:35:27	+grknight	K-lined :)
+2016-10-27 07:35:27	-->	poeppman (~poeppman@xdsl-89-0-212-81.netcologne.de) has joined #gentoo
+2016-10-27 07:35:37	-->	masasp (~lbh@ourhost-103-234-14-54.core.yourhub.com.au) has joined #gentoo
+2016-10-27 07:35:38	masasp	As the proteins in your body lose their ability to fold properly. Do you feel as smart as you were last week or last month? You may have it. Meat has always been murder, but now, when you serve beef, you may be murdering the ones you love and even yourself. There IS a healthy alternative! Visit www.vegan.org today!
+2016-10-27 07:35:40	<--	masasp (~lbh@ourhost-103-234-14-54.core.yourhub.com.au) has left #gentoo
+2016-10-27 07:36:13	muffindrake	Sigh
+2016-10-27 07:36:29	<--	_ohm (~research@unaffiliated/-ohm/x-0955948) has quit (Quit: ##conservative for a channel to discuss politics on the right)
+2016-10-27 07:36:43	<--	cdown (~cdown@199.201.64.135) has quit (Ping timeout: 245 seconds)
+2016-10-27 07:36:44	+grknight	that's gonna be one tough bot to squash
+2016-10-27 07:37:33	<--	poeppman__ (~poeppman@xdsl-84-44-192-239.netcologne.de) has quit (Ping timeout: 245 seconds)
+2016-10-27 07:37:38	-->	AL_ (~al@unaffiliated/al-/x-5135750) has joined #gentoo
+2016-10-27 07:37:48	+iamben	best to just ignore it then go out and buy extra steaks tonight
+2016-10-27 07:38:38	-->	cdown (~cdown@199.201.64.135) has joined #gentoo
+2016-10-27 07:38:49	netz	while I do love me a good steak, prions are a thing and are pretty problematic.
+2016-10-27 07:39:00	-->	Guest93854 (~Geek@212.73.149.139) has joined #gentoo
+2016-10-27 07:39:16	+iamben	living results in death, let's not worry about that in #gentoo, we do support here
+2016-10-27 07:39:31	minimalism	Can anyone explain what a virtual package is? I'm reading the dev-manual.gentoo.org doc and couldn't find anything in the wiki. It's still unclear to me what it does, I'm just checking out their USE flags like on virtual/ffmpeg
+2016-10-27 07:39:49	<--	_johanne1 (~johannes@port-92-203-141-57.dynamic.qsc.de) has quit (Quit: leaving)
+2016-10-27 07:39:58	+grknight	minimalism: a package which only provides alternatives for the same end but installs nothing itself
+2016-10-27 07:39:58	+iamben	minimalism: it's just a dummy package with a (sometimes large) "or" dep, to allow you to select any provider for a certain function
+2016-10-27 07:40:05	<--	ghostwalker (~rhonabwy@95.157.58.47.dynamic.cablesurf.de) has quit (Quit: Leaving)
+2016-10-27 07:40:08	<--	buscher (~buscher@konversation/developer/buscher) has quit
+2016-10-27 07:40:21	-->	zyliwax (~zyliwax@unaffiliated/zyliwax) has joined #gentoo
+2016-10-27 07:40:37	+deadk	addpattern 0 1 visit www.vegan.org today!
+2016-10-27 07:40:40	+deadk	oops.
+2016-10-27 07:40:40	 *	grknight wishes for old-style virtuals to make a return
+2016-10-27 07:40:46	-->	raffaele (~raffaele@151.77.243.40) has joined #gentoo
+2016-10-27 07:41:43	-->	poeppman_ (~poeppman@xdsl-87-78-150-134.netcologne.de) has joined #gentoo
+2016-10-27 07:41:52	<--	lck (~Adium@host-167-156-66-217.spbmts.ru) has quit (Quit: Leaving.)
+2016-10-27 07:41:54	minimalism	iamben: Well, it has basically identical USE flags that seem totally redundant and I just don't understand.. like with x264 on virtual/ and media-video/ for ffmpeg
+2016-10-27 07:42:21	-->	rhonabwy (~rhonabwy@95.157.58.47.dynamic.cablesurf.de) has joined #gentoo
+2016-10-27 07:42:24	+grknight	minimalism: the USE on a virtual act as either a selector or a pass-along
+2016-10-27 07:42:42	+iamben	minimalism: packages depend directly on the virtual... so for them to ensure you get libav with a certain feature on, or ffmpeg with a feature on, the flag has to exist on the virtual, to pass that requirement on to the virtual provider
+2016-10-27 07:42:47	<--	rhonabwy (~rhonabwy@95.157.58.47.dynamic.cablesurf.de) has quit (Remote host closed the connection)
+2016-10-27 07:42:52	minimalism	If I set x264 on virtual/ffmpeg, will media-video/ffmpeg also automatically set the same USE?
+2016-10-27 07:42:55	+iamben	no
+2016-10-27 07:43:06	+iamben	but it will enforce the REQUIREMENT, and tell you to add the flag there as well
+2016-10-27 07:43:11	-->	rhonabwy (~rhonabwy@95.157.58.47.dynamic.cablesurf.de) has joined #gentoo
+2016-10-27 07:43:23	minimalism	I don't really understand the point then
+2016-10-27 07:43:29	m_barteks2x	Does nouveau work in any way with nvidia optimus?
+2016-10-27 07:43:30	<--	wonko7 (~wonko7@69.75.150.77.rev.sfr.net) has quit (Ping timeout: 244 seconds)
+2016-10-27 07:43:32	minimalism	Why separate that all into a separate ebuild
+2016-10-27 07:44:00	+iamben	minimalism: so that dozens of ffmpeg-using packages don't have to duplicated the same "ffmpeg or libav" dep, they just depend on the virtual
+2016-10-27 07:44:04	<--	poeppman (~poeppman@xdsl-89-0-212-81.netcologne.de) has quit (Ping timeout: 260 seconds)
+2016-10-27 07:44:20	+iamben	many virtuals have more than just 2 choices, also
+2016-10-27 07:45:36	+grknight	m_barteks2x: you may need something like bumblebee or prime to do that
+2016-10-27 07:45:36		[07:45]
+2016-10-27 07:45:50	BtbN	bumblebee is dead though
+2016-10-27 07:46:00	<--	FireBurn|Work (~fireburnu@no-sources/fireburn) has quit (Remote host closed the connection)
+2016-10-27 07:46:10	+grknight	BtbN: then what is replacing it?
+2016-10-27 07:46:13	BtbN	nothing
+2016-10-27 07:46:24	-->	FireBurn (~fireburnu@79.154.115.87.dyn.plus.net) has joined #gentoo
+2016-10-27 07:46:25	<--	FireBurn (~fireburnu@79.154.115.87.dyn.plus.net) has quit (Changing host)
+2016-10-27 07:46:25	-->	FireBurn (~fireburnu@no-sources/fireburn) has joined #gentoo
+2016-10-27 07:46:30	m_barteks2x	And died anyone here know how would the official nvidia optimus driver work? Last time I tried it I had to log out and log in to switch GPU
+2016-10-27 07:46:33	BtbN	But it's not been updated since 2013 and plain doesn't work with any more recent OpenGL
+2016-10-27 07:46:46	BtbN	There is no official optimus driver
+2016-10-27 07:46:56	m_barteks2x	What...
+2016-10-27 07:47:05	BtbN	the most official you can get is running the intel card on the modesetting driver, and telling it to pass everythough through to the nvidia card.
+2016-10-27 07:47:05	maolang	minimalism: do --> equery depgraph virtual/ffmpeg #to get an idea on what different versions would require
+2016-10-27 07:47:22	-->	larzen (~Adium@184.70.103.94) has joined #gentoo
+2016-10-27 07:47:28	m_barteks2x	I had it working with bumblebee on debian.... Sort of.... I had to reboot each time I wanted to use it
+2016-10-27 07:48:01	BtbN	bumblebee degrades performance so much that it's barely worth it anymore anyway
+2016-10-27 07:48:01	+grknight	m_barteks2x: see https://nouveau.freedesktop.org/wiki/Optimus/ for ideas
+2016-10-27 07:48:14	BtbN	With nouveau/intel DRI_PRIME should just work though
+2016-10-27 07:48:40	BtbN	But nouveau isn't exactly useful for most cards used in Optimus-Laptops
+2016-10-27 07:49:13	m_barteks2x	What I'm interested in is getting more modern openly versions working
+2016-10-27 07:49:24	m_barteks2x	*opengl
+2016-10-27 07:50:34	m_barteks2x	In kernel config I see something for switchable gpus
+2016-10-27 07:50:46	m_barteks2x	Should I enable it?
+2016-10-27 07:50:59	muffindrake	read its help description
+2016-10-27 07:51:20	<--	gentoo_ (~gentoo@ip-89-102-93-12.net.upcbroadband.cz) has quit (Quit: Konversation terminated!)
+2016-10-27 07:51:53	m_barteks2x	It says it's for nvidia.. Hybrid power
+2016-10-27 07:52:25	m_barteks2x	That damn android keyboard keeps correcting nvidia.. To nobody's
+2016-10-27 07:52:54	<--	grubles (~grubles@unaffiliated/grubles) has quit (Quit: Leaving)
+2016-10-27 07:53:17	muffindrake	It should correct to "unfair"
+2016-10-27 07:53:21	-->	lck (~Adium@178.71.178.115) has joined #gentoo
+2016-10-27 07:54:28	m_barteks2x	I hate the lack of good drivers for my laptop on linux...
+2016-10-27 07:54:39	<--	tlaxkit (~Thunderbi@92.177.99.40) has quit (Remote host closed the connection)
+2016-10-27 07:54:58	-->	tlaxkit (~Thunderbi@92.177.99.40) has joined #gentoo
+2016-10-27 07:55:02	-->	s_kunk (~s_kunk@unaffiliated/s-kunk/x-5139101) has joined #gentoo
+2016-10-27 07:55:03	+iamben	a fast gpu is more important than good drivers though, right? =)
+2016-10-27 07:55:27	maolang	if you want a task you run in the background not saturating the rest of the system in cpu usage, with nice you -20 or +20 it?
+2016-10-27 07:55:28	<--	wonton (~wonton@unaffiliated/wonton) has quit (Ping timeout: 245 seconds)
+2016-10-27 07:55:30	m_barteks2x	I didn't chose this laptop...
+2016-10-27 07:55:38	muffindrake	maolang: +20
+2016-10-27 07:55:43	maolang	ok cool thanks
+2016-10-27 07:55:54	<--	Stels (~stels@95.104.248.174) has quit (Ping timeout: 244 seconds)
+2016-10-27 07:56:13	maolang	so hightest priority and nice is when its set lower for example when you watch it with htop
+2016-10-27 07:56:21	muffindrake	Actually no, 19 is the nicest it can go
+2016-10-27 07:56:45	<--	FireBurn (~fireburnu@no-sources/fireburn) has quit (Quit: Konversation terminated!)
+2016-10-27 07:56:47	maolang	thats probably 20 as well if you counting 0 for 1
+2016-10-27 07:57:21	-->	TIE-Fighter (~TIE-Fight@p3EE27AE9.dip0.t-ipconnect.de) has joined #gentoo
+2016-10-27 07:57:24	<--	anon9002 (~anon@cm-110-169-82-52.revip16.asianet.co.th) has quit (Quit: leaving)
+2016-10-27 07:57:27	<--	Bircoph (~Bircoph@gentoo/developer/bircoph) has quit (Ping timeout: 244 seconds)
+2016-10-27 07:57:42	m_barteks2x	So should I try to use the proprietary drivers or nouveau!
+2016-10-27 07:57:44	maolang	i can see the difference in htop as well its blue-ish instead of red-ish
+2016-10-27 07:57:44	<--	CrowX- (~CrowX-@79.141.115.88) has quit (Ping timeout: 250 seconds)
+2016-10-27 07:57:56	m_barteks2x	*?
+2016-10-27 07:58:22	@NeddySeagoon	maolang: The job will still use all of your CPU if noting else needs it.
+2016-10-27 07:58:30	-->	ribx (~ribx@x4db247cb.dyn.telefonica.de) has joined #gentoo
+2016-10-27 07:59:18	maolang	NeddySeagoon: thats the intention, but most importantis whatever i use will get as much juice as it needs, so basicaly the long running background task yield nicely to other things when needed
+2016-10-27 07:59:44	@NeddySeagoon	maolang: Thats correct.
+2016-10-27 08:00:40	-->	FireBurn (~fireburnu@79.154.115.87.dyn.plus.net) has joined #gentoo
+2016-10-27 08:00:40		[08:00]
+2016-10-27 08:00:41	<--	FireBurn (~fireburnu@79.154.115.87.dyn.plus.net) has quit (Changing host)
+2016-10-27 08:00:41	-->	FireBurn (~fireburnu@no-sources/fireburn) has joined #gentoo
+2016-10-27 08:00:43	maolang	NeddySeagoon: in my case i run ffmpeg encode jobs almost always, but i wanted if i emerge something, so that it actually takes more precedence instead of splitting completely the cpu
+2016-10-27 08:01:01	@NeddySeagoon	m_barteks2x: Optimus, nVidia only or two complete graphics systems?
+2016-10-27 08:01:01	-->	wonko7 (~wonko7@69.75.150.77.rev.sfr.net) has joined #gentoo
+2016-10-27 08:01:09	<--	stelf (~TIE-Fight@p3EE26422.dip0.t-ipconnect.de) has quit (Ping timeout: 260 seconds)
+2016-10-27 08:01:23	m_barteks2x	What?
+2016-10-27 08:01:37	m_barteks2x	I don't fully understand the question
+2016-10-27 08:01:48	muffindrake	m_barteks2x: Does your laptop have an integrated intel graphics card, as well as a dedicated nvidia one?
+2016-10-27 08:01:52	@NeddySeagoon	maolang emerge runs at nice=3 by default.  Your nice=19 job mill step aside for emerge
+2016-10-27 08:01:56	@NeddySeagoon	will*
+2016-10-27 08:02:00	m_barteks2x	I think so
+2016-10-27 08:02:13	maolang	cool :)
+2016-10-27 08:02:14	muffindrake	lspci should give you an idea
+2016-10-27 08:02:36	BtbN	it wouldn't be an Optimus setup without an Intel card.
+2016-10-27 08:02:36	m_barteks2x	According to that there are 2 gpus
+2016-10-27 08:02:41	<--	parapente (~nobody@unaffiliated/parapente) has quit (Ping timeout: 265 seconds)
+2016-10-27 08:03:13	@NeddySeagoon	m_barteks2x: Does your laptop have an Opimus setup or two complete graphics systems?
+2016-10-27 08:03:20	@NeddySeagoon	Optimus*
+2016-10-27 08:03:45	-->	wonton (~wonton@unaffiliated/wonton) has joined #gentoo
+2016-10-27 08:03:56	@NeddySeagoon	m_barteks2x What laptop?  I'll look it up
+2016-10-27 08:04:05	m_barteks2x	Almost 100%. Sure it's optimus
+2016-10-27 08:04:39	BtbN	What even would "two complete graphics systems" be?
+2016-10-27 08:04:49	BtbN	There are two generally independend GPUs in there
+2016-10-27 08:04:54	<--	ayjay_t (~ajp_@24-151-28-56.dhcp.nwtn.ct.charter.com) has quit (Read error: Connection reset by peer)
+2016-10-27 08:04:54	-->	Stels (~stels@91.185.83.137) has joined #gentoo
+2016-10-27 08:05:00	<--	PsyLok (~PsyLok@unaffiliated/psylok) has quit (Remote host closed the connection)
+2016-10-27 08:05:26	-->	ayjay_t (~ajp_@24-151-28-56.dhcp.nwtn.ct.charter.com) has joined #gentoo
+2016-10-27 08:05:48	@NeddySeagoon	m_barteks2x: I don't actually have one of those  :)  but I understand that the nVidia driver will drive both graphics chips without the need for the modesetting driver.  You need to look at the nVidia readme file.
+2016-10-27 08:06:03	m_barteks2x	All I know for sure is that with bumblebee I could run optirun command and it was much faster
+2016-10-27 08:06:43	@NeddySeagoon	BtbN: Optimus is one and a half graphics systems.  The nVidia chip has no connection to the display surface.
+2016-10-27 08:06:46	<--	nyo_ (~nyo@host168-197-dynamic.250-95-r.retail.telecomitalia.it) has quit (Remote host closed the connection)
+2016-10-27 08:06:49	-->	loriot (~tro0o0on@dslb-094-217-198-225.094.217.pools.vodafone-ip.de) has joined #gentoo
+2016-10-27 08:07:05	-->	nyo (~nyo@host168-197-dynamic.250-95-r.retail.telecomitalia.it) has joined #gentoo
+2016-10-27 08:07:20	BtbN	NeddySeagoon, well, you can't really connect a display to two GPUs
+2016-10-27 08:07:22	Kelsar	NeddySeagoon: in recent versions, my system luckily has a hardware multiplexer
+2016-10-27 08:07:38	@NeddySeagoon	Kelsar: Thats the old way.
+2016-10-27 08:07:45	m_barteks2x	Optimus does that
+2016-10-27 08:07:58	<--	iflema (~ian@2001:8003:2068:5800:1d7a:3dd0:2be0:8f8e) has quit (Ping timeout: 250 seconds)
+2016-10-27 08:08:02	@NeddySeagoon	BtbN: Thats what a multiplexer is for
+2016-10-27 08:08:28	<--	nyo (~nyo@host168-197-dynamic.250-95-r.retail.telecomitalia.it) has quit (Remote host closed the connection)
+2016-10-27 08:09:17	@NeddySeagoon	m_barteks2x: With Optimus, both GPUs can render an image into the same pixel buffer but only the Intel GPU can draw the image to the display
+2016-10-27 08:09:25	-->	nyo (~nyo@host168-197-dynamic.250-95-r.retail.telecomitalia.it) has joined #gentoo
+2016-10-27 08:09:26	-->	nyo_ (~nyo@host168-197-dynamic.250-95-r.retail.telecomitalia.it) has joined #gentoo
+2016-10-27 08:09:27	-->	karolherbst (~karol@ip5f5be100.dynamic.kabel-deutschland.de) has joined #gentoo
+2016-10-27 08:09:43	<--	cristianonet (~cristi@82.76.34.101) has quit
+2016-10-27 08:09:44	jerichowasahoax	"sys-devel/llvm LLVM_TARGETS: *"  <-- Was this syntax introduced recently?
+2016-10-27 08:09:55	-->	cristianonet (~cristi@82.76.34.101) has joined #gentoo
+2016-10-27 08:10:09	<--	venom00ut (~venom00@unaffiliated/venom00) has quit (Ping timeout: 250 seconds)
+2016-10-27 08:10:16	m_barteks2x	I know what it does, I want to know how could I get it working
+2016-10-27 08:10:48	-->	gattler (~gattler@80.123.115.250) has joined #gentoo
+2016-10-27 08:11:09	+iamben	jerichowasahoax: the USE_EXPAND: syntax for package.use has been there a year or 2 i think, not sure if it's always been wildcard-able like that
+2016-10-27 08:12:04	jerichowasahoax	iamben: oh cool, because I'd been entering "use_expand_this use_expand_that" into package.use like a twit this whole time :V
+2016-10-27 08:12:23	-->	iterati (~vangelis@79.103.101.247.dsl.dyn.forthnet.gr) has joined #gentoo
+2016-10-27 08:12:25	@NeddySeagoon	m_barteks2x: follow the Wiki ... do you need a link?
+2016-10-27 08:12:53	jerichowasahoax	I do know wildcards in general have been part of package.use for a while now, because I still remember a news entry recommending you add "*/* someflag" to package.use
+2016-10-27 08:13:07	m_barteks2x	But in the end? How will I be able to use the second gpu?
+2016-10-27 08:13:14	@NeddySeagoon	m_barteks2x: https://wiki.gentoo.org/wiki/NVIDIA/Optimus
+2016-10-27 08:13:28	@NeddySeagoon	m_barteks2x: that page tells you.
+2016-10-27 08:13:47	m_barteks2x	I know that link.. It explains how to install it.. But I have no idea how it would be ised
+2016-10-27 08:14:03	+grknight	NeddySeagoon: he wanted to use the nouveau driver.. and i pointed to him https://nouveau.freedesktop.org/wiki/Optimus/
+2016-10-27 08:14:29	m_barteks2x	It doesn't really matter which one anymore
+2016-10-27 08:14:35	m_barteks2x	As long as it's stable
+2016-10-27 08:14:37	@NeddySeagoon	grknight: That should work too
+2016-10-27 08:14:48	jerichowasahoax	m_barteks2x: You mentioned a Bumblebee earlier?
+2016-10-27 08:15:04	jerichowasahoax	i don't know, i stay clear of this tech because i've heard nothing but nightmare stories about it
+2016-10-27 08:15:06	-->	_0bitcount (~Big_Byte@92.176.142.156) has joined #gentoo
+2016-10-27 08:15:30	m_barteks2x	I had that on debian but after resuming from sleep using it froze my laptop
+2016-10-27 08:15:37	<--	cristianonet (~cristi@82.76.34.101) has quit (Ping timeout: 260 seconds)
+2016-10-27 08:15:38	tlhonmey	It's good for cramming battery life + performance into a laptop.
+2016-10-27 08:15:39	+grknight	jerichowasahoax: it does seem to be a dead project and there are replacements
+2016-10-27 08:15:44	<--	Naeil (~nzoueidi@ubuntu/member/na3il) has quit (Ping timeout: 260 seconds)
+2016-10-27 08:15:44		[08:15]
+2016-10-27 08:15:45	tlhonmey	If you don't need both, it's just a hassle.
+2016-10-27 08:15:52	-->	CrowX- (~CrowX-@79.141.115.88) has joined #gentoo
+2016-10-27 08:16:06	-->	errorist (c38eb324@gateway/web/freenode/ip.195.142.179.36) has joined #gentoo
+2016-10-27 08:16:07	jerichowasahoax	m_barteks2x: but it's possible that without something like bumblebee the Optimus technology is supposed to "just werk" when you launch some graphics-intensive program
+2016-10-27 08:16:14	errorist	hi everyone
+2016-10-27 08:16:36	-->	ppnup (~ffpb@209.131.247.2) has joined #gentoo
+2016-10-27 08:16:37	ppnup	Have you eaten ground beef recently? Ground beef is the result of everything outside of the cow's bones (including nerves) being ground up. Ground beef often contains prions (misfolded proteins) which due to mammalic protein metabolism act virally and will cause you to come down with Creutzfeldt-Jakob Disease (CJD) where your brain slowly decays due to holes forming in your brain.
+2016-10-27 08:16:37	errorist	guys quick questions : whats the best practice for update @world ?
+2016-10-27 08:16:40	<--	ppnup (~ffpb@209.131.247.2) has quit (Killed (Sigyn (Spam is off topic on freenode.)))
+2016-10-27 08:16:47	-->	zufiu (~hsm@67-197-239-232.lw1.cm.dyn.comporium.net) has joined #gentoo
+2016-10-27 08:16:48	zufiu	As the proteins in your body lose their ability to fold properly. Do you feel as smart as you were last week or last month? You may have it. Meat has always been murder, but now, when you serve beef, you may be murdering the ones you love and even yourself. There IS a healthy alternative! Visit www.vegan.org today!
+2016-10-27 08:16:52	m_barteks2x	I know on windows there is right click option to run program with nvidia gpu
+2016-10-27 08:16:53	<--	zufiu (~hsm@67-197-239-232.lw1.cm.dyn.comporium.net) has left #gentoo
+2016-10-27 08:17:45	+grknight	errorist: at minimum: 'emerge -avuDN @world'  sometimes you may need '--with-bdeps=y' (build only dependencies) and/or --backtrack=30 for slot conflicts (and no other errors/USE changes)
+2016-10-27 08:18:02	<--	tlaxkit (~Thunderbi@92.177.99.40) has quit (Quit: tlaxkit)
+2016-10-27 08:18:04	-->	lefou (~lefou@p54A44D71.dip0.t-ipconnect.de) has joined #gentoo
+2016-10-27 08:18:15	jerichowasahoax	m_barteks2x: well, my best advice is "try bumblebee again". you came from debian, you could have been running an old version.
+2016-10-27 08:18:37	muffindrake	m_barteks2x: It would take a selfless act from nvidia to get proper support for that in linux
+2016-10-27 08:18:51	muffindrake	But there are apparently license issues and that wouldn't make nvidia much money
+2016-10-27 08:18:52	<--	bocaneri (~bocaneri@about/linux/staff/sauvin) has quit (Read error: Connection reset by peer)
+2016-10-27 08:18:54	jerichowasahoax	m_barteks2x: if it freezes, come back with pastebins from dmesg and friends
+2016-10-27 08:19:11	m_barteks2x	But on debian I didn't have to know or care about kernel modules
+2016-10-27 08:19:23	jerichowasahoax	muffindrake: well, there's bumblebee, and making a right click option is easy for most of the popular file managers
+2016-10-27 08:19:32	m_barteks2x	So installation reduced to aptget
+2016-10-27 08:19:40	jerichowasahoax	m_barteks2x: kernel modules are easy
+2016-10-27 08:19:40	<--	bifidotftw (~bifidotft@p5792DF61.dip0.t-ipconnect.de) has quit (Ping timeout: 244 seconds)
+2016-10-27 08:19:44	m_barteks2x	Here.... I have no idea
+2016-10-27 08:19:54	<--	Stels (~stels@91.185.83.137) has quit (Ping timeout: 252 seconds)
+2016-10-27 08:19:55	muffindrake	jerichowasahoax: Bumblebee does have a performance impact however. Admittedly, it works extremely well.
+2016-10-27 08:19:56	@NeddySeagoon	m_barteks2x: In Gentoo, you build your own distro.  You hawe to care about everything#
+2016-10-27 08:20:06	<--	Jadz1a (~jadzia@2a02:8109:8ac0:1950:beee:7bff:fe9e:b04a) has quit (Quit: Leaving)
+2016-10-27 08:20:09	m_barteks2x	It's easy once you know which ones to use
+2016-10-27 08:20:13	errorist	grknight: thanks.
+2016-10-27 08:20:19	jerichowasahoax	m_barteks2x: the wiki usually tells you
+2016-10-27 08:20:22	muffindrake	Gentoo is only a hair away from linux from scratch
+2016-10-27 08:20:47	jerichowasahoax	m_barteks2x: and if nvidia-drivers are installed, the module is appropriately just named "nvidia"
+2016-10-27 08:21:10	-->	iflema (~ian@CPE-60-227-13-3.nsw.bigpond.net.au) has joined #gentoo
+2016-10-27 08:21:26	m_barteks2x	Ok, I will try
+2016-10-27 08:21:36	<--	rain0r (~rain0r@2a02:810d:12c0:1c28::2) has quit (Quit: rain0r)
+2016-10-27 08:21:39	strixdio	muffindrake: oh?
+2016-10-27 08:21:48	strixdio	muffindrake: Probably very different though.
+2016-10-27 08:22:14	<--	errorist (c38eb324@gateway/web/freenode/ip.195.142.179.36) has quit (Quit: Page closed)
+2016-10-27 08:22:30	+grknight	muffindrake: more than a hair.. as in you get to keep yours ;)
+2016-10-27 08:22:41	muffindrake	Of course there's a magnitude more effort for actual LFS, but it's the closest "distro" next to it
+2016-10-27 08:23:08	<--	shaggymane (~steve@node-1w7jr9qjk2r6904zl3tyl2s0a.ipv6.telus.net) has quit (Remote host closed the connection)
+2016-10-27 08:23:11	muffindrake	grknight: I thought all gentoo users eventually lose all their hair
+2016-10-27 08:23:15	-->	nyo__ (~nyo@host211-48-dynamic.49-82-r.retail.telecomitalia.it) has joined #gentoo
+2016-10-27 08:23:23	<--	xavier1 (~xavier@108-171-72-65.dr.cgocable.ca) has quit (Read error: Connection reset by peer)
+2016-10-27 08:23:23	<--	Xavier|The_other (~Xavier@108-171-72-65.dr.cgocable.ca) has quit (Read error: Connection reset by peer)
+2016-10-27 08:23:57	-->	Xavier|The_other (~Xavier@108-171-72-65.dr.cgocable.ca) has joined #gentoo
+2016-10-27 08:24:41	-->	xavier1 (~xavier@108-171-72-65.dr.cgocable.ca) has joined #gentoo
+2016-10-27 08:24:47	netz	muffindrake: it migrates downwards to the face :P
+2016-10-27 08:24:59	<--	FireBurn (~fireburnu@no-sources/fireburn) has quit (Remote host closed the connection)
+2016-10-27 08:25:08	netz	its rather unsettling for female users, though :P
+2016-10-27 08:26:17	-->	shaggymane (~steve@node-1w7jr9qjk2r6904zl3tyl2s0a.ipv6.telus.net) has joined #gentoo
+2016-10-27 08:26:21	<--	nyo_ (~nyo@host168-197-dynamic.250-95-r.retail.telecomitalia.it) has quit (Ping timeout: 260 seconds)
+2016-10-27 08:26:21	<--	nyo (~nyo@host168-197-dynamic.250-95-r.retail.telecomitalia.it) has quit (Ping timeout: 260 seconds)
+2016-10-27 08:26:25	<--	shaggymane (~steve@node-1w7jr9qjk2r6904zl3tyl2s0a.ipv6.telus.net) has quit (Remote host closed the connection)
+2016-10-27 08:26:28	<--	hardbot (~hardbot@89-156-95-95.rev.numericable.fr) has quit (Ping timeout: 260 seconds)
+2016-10-27 08:26:38	<--	KindOne (~KindOne@freenude/topless/kindone) has quit (Read error: Connection reset by peer)
+2016-10-27 08:26:58	<--	Agent_Smith_BR (~Agent_Smi@unaffiliated/agent-smith-br/x-9903544) has quit (Ping timeout: 256 seconds)
+2016-10-27 08:28:12	-->	shaggymane (~steve@node-1w7jr9qjk2r6904zl3tyl2s0a.ipv6.telus.net) has joined #gentoo
+2016-10-27 08:28:19	<--	way218 (~way218@77.47.122.90.dynamic.cablesurf.de) has quit (Remote host closed the connection)
+2016-10-27 08:28:22	<--	nyo__ (~nyo@host211-48-dynamic.49-82-r.retail.telecomitalia.it) has quit (Ping timeout: 276 seconds)
+2016-10-27 08:28:23	-->	Judge_Dredd (~Judge_Dre@unaffiliated/judge-dredd/x-2170742) has joined #gentoo
+2016-10-27 08:28:51	-->	Agent_Smith_BR (~Agent_Smi@unaffiliated/agent-smith-br/x-9903544) has joined #gentoo
+2016-10-27 08:29:05	-->	Stels (~stels@95.104.249.127) has joined #gentoo
+2016-10-27 08:29:29	-->	nyo__ (~nyo@host6-192-dynamic.32-79-r.retail.telecomitalia.it) has joined #gentoo
+2016-10-27 08:30:45	<--	livingBEEF (~livingBEE@46.13.161.162) has quit (Quit: Lost terminal)
+2016-10-27 08:30:45		[08:30]
+2016-10-27 08:32:13	<--	gattler (~gattler@80.123.115.250) has quit (Quit: WeeChat 1.6)
+2016-10-27 08:33:10	-->	gattler (~gattler@80.123.115.250) has joined #gentoo
+2016-10-27 08:33:55	-->	kabeero (~kabeero@unaffiliated/kabeero) has joined #gentoo
+2016-10-27 08:34:22	-->	N8Fear (~n8fear@p3EE3DDFB.dip0.t-ipconnect.de) has joined #gentoo
+2016-10-27 08:35:55	<--	nullbyte_ (~ghost@unaffiliated/nullby7e) has quit (Quit: quit.)
+2016-10-27 08:35:55	-->	KindOne (kindone@freenude/topless/kindone) has joined #gentoo
+2016-10-27 08:36:00	-->	FireBurn (~fireburnu@no-sources/fireburn) has joined #gentoo
+2016-10-27 08:36:04	m_barteks2x	I first want to get it working with just intel gpu, and can't find some kernel options.. Where are "enable mode setting on intel by default" and "enable legacy cavern support for the modesetting intel driver"?
+2016-10-27 08:36:27	<--	FireBurn (~fireburnu@no-sources/fireburn) has quit (Remote host closed the connection)
+2016-10-27 08:36:35	m_barteks2x	*fbdev
+2016-10-27 08:36:44	-->	[drizzt] (~Saint@62.117.222.73.dyn.user.ono.com) has joined #gentoo
+2016-10-27 08:36:48	m_barteks2x	Instead of cavern
+2016-10-27 08:36:54	netz	so, with regards to compiling gcc itself, does -march=native have a particular set of benefits as far as compilation goes?
+2016-10-27 08:37:29	<--	ribx (~ribx@x4db247cb.dyn.telefonica.de) has quit (Ping timeout: 252 seconds)
+2016-10-27 08:37:38	Hoolootwo	it might make compilation faster
+2016-10-27 08:38:02	<--	Agent_Smith_BR (~Agent_Smi@unaffiliated/agent-smith-br/x-9903544) has quit (Ping timeout: 250 seconds)
+2016-10-27 08:38:03	Hoolootwo	than a compiler compiled without the -march=native flag, that is
+2016-10-27 08:38:03	-->	FireBurn (~fireburnu@no-sources/fireburn) has joined #gentoo
+2016-10-27 08:38:07	<--	N8Fear_ (~n8fear@p54A041CD.dip0.t-ipconnect.de) has quit (Ping timeout: 276 seconds)
+2016-10-27 08:39:12	-->	Agent_Smith_BR (~Agent_Smi@unaffiliated/agent-smith-br/x-9903544) has joined #gentoo
+2016-10-27 08:40:15	netz	Hoolootwo: gotcha, since -march=native compiled gcc should theoretically perform better than generic, yeah?
+2016-10-27 08:40:27	m_barteks2x	Should I try without these settings?
+2016-10-27 08:41:32	-->	nullbyte_ (~ghost@unaffiliated/nullby7e) has joined #gentoo
+2016-10-27 08:42:04	Hoolootwo	I believe so
+2016-10-27 08:42:55	@NeddySeagoon	m_barteks2x Use the kernel search.  Press /.
+2016-10-27 08:43:03	m_barteks2x	I tried
+2016-10-27 08:43:19	m_barteks2x	And didn't find anything similar
+2016-10-27 08:43:25	+grknight	m_barteks2x: the "enable modesetting on intel by default" has been removed in recent kernels
+2016-10-27 08:43:40	@NeddySeagoon	m_barteks2x: Press z to show all the hidden settings.  Then you can search them too
+2016-10-27 08:44:33	@NeddySeagoon	m_barteks2x: z is a toggle
+2016-10-27 08:44:48	biberao	neddy!
+2016-10-27 08:45:09	<--	platyhelminth (~platyhelm@cac94-16-83-157-144-239.fbx.proxad.net) has quit (Quit: Leaving)
+2016-10-27 08:45:16	<--	nullbyte_ (~ghost@unaffiliated/nullby7e) has quit (Client Quit)
+2016-10-27 08:45:20	-->	venom00ut (~venom00@unaffiliated/venom00) has joined #gentoo
+2016-10-27 08:45:25	m_barteks2x	The second one is now named "direct rendering manager (whatever)"
+2016-10-27 08:45:30	<--	castlelore (~castlelor@unaffiliated/castlelore) has quit (Ping timeout: 244 seconds)
+2016-10-27 08:45:56	m_barteks2x	Wait no
+2016-10-27 08:45:56		[08:45]
+2016-10-27 08:46:07	m_barteks2x	It just wasn't there before
+2016-10-27 08:46:07	<--	blind_observer (~blind_obs@188.4.200.123.dsl.dyn.forthnet.gr) has quit (Quit: leaving)
+2016-10-27 08:47:35	-->	Nuc1eoN (~nuc@lak-175-211.wohnheime.ruhr-uni-bochum.de) has joined #gentoo
+2016-10-27 08:47:42	+grknight	m_barteks2x: notice on the Intel wiki page that the Linux 4.4 block superscedes the previous one for kernel config
+2016-10-27 08:47:51	<--	FireBurn (~fireburnu@no-sources/fireburn) has quit (Remote host closed the connection)
+2016-10-27 08:47:56	<--	AL_ (~al@unaffiliated/al-/x-5135750) has quit (Remote host closed the connection)
+2016-10-27 08:48:12	m_barteks2x	Didn't think to scroll that far down on that small screen
+2016-10-27 08:49:14	netz	I seem to recall someone saying one can supply patches semi-automatically into a given ebuild for some supported packages; where can I find the proper docs on this, hopefully in relation to building a kernel?
+2016-10-27 08:49:26	-->	FireBurn (~fireburnu@no-sources/fireburn) has joined #gentoo
+2016-10-27 08:49:27	+grknight	m_barteks2x: i fixed the titles now :)
+2016-10-27 08:50:22	+grknight	netz: all of the kernel builds support user patches by placing them in /etc/portage/patches then doing an emerge.  https://wiki.gentoo.org/wiki//etc/portage/patches for details
+2016-10-27 08:50:28	<--	nyo__ (~nyo@host6-192-dynamic.32-79-r.retail.telecomitalia.it) has quit (Remote host closed the connection)
+2016-10-27 08:50:47	<--	FireBurn (~fireburnu@no-sources/fireburn) has quit (Remote host closed the connection)
+2016-10-27 08:51:19	netz	grknight: nice, thanks for that. I don't want to be too spoonfed, but I do need a starting point to read at :)
+2016-10-27 08:51:23	-->	nyo (~nyo@host6-192-dynamic.32-79-r.retail.telecomitalia.it) has joined #gentoo
+2016-10-27 08:51:24	-->	nyo_ (~nyo@host6-192-dynamic.32-79-r.retail.telecomitalia.it) has joined #gentoo
+2016-10-27 08:51:26	-->	nyo__ (~nyo@host6-192-dynamic.32-79-r.retail.telecomitalia.it) has joined #gentoo
+2016-10-27 08:51:39	<--	slicktux (~slicktux@unaffiliated/slicktux) has quit (Quit: where does the red fern grow?)
+2016-10-27 08:51:44	<--	nyo__ (~nyo@host6-192-dynamic.32-79-r.retail.telecomitalia.it) has quit (Remote host closed the connection)
+2016-10-27 08:51:44	<--	nyo_ (~nyo@host6-192-dynamic.32-79-r.retail.telecomitalia.it) has quit (Remote host closed the connection)
+2016-10-27 08:51:44	<--	nyo (~nyo@host6-192-dynamic.32-79-r.retail.telecomitalia.it) has quit (Remote host closed the connection)
+2016-10-27 08:52:25	-->	nyo (~nyo@host6-192-dynamic.32-79-r.retail.telecomitalia.it) has joined #gentoo
+2016-10-27 08:52:26	-->	nyo_ (~nyo@host6-192-dynamic.32-79-r.retail.telecomitalia.it) has joined #gentoo
+2016-10-27 08:52:29	-->	nyo__ (~nyo@host6-192-dynamic.32-79-r.retail.telecomitalia.it) has joined #gentoo
+2016-10-27 08:52:32	+grknight	netz: packages need to use EAPI6 (or greater but 6 is latest) or else call epatch_user in the processing of the ebuild in order to support such patches
+2016-10-27 08:52:55	+grknight	eshowkw (part of gentoolkit) quickly can show the EAPI of every version of a package
+2016-10-27 08:52:57	netz	grknight: yeah, I recall this being discussed as a new standard :)
+2016-10-27 08:53:47	-->	johnnyreb (~tth@unaffiliated/johnnyreb) has joined #gentoo
+2016-10-27 08:56:56	<--	oneirosFade (~vrmxm@161.84.225.15) has quit (Quit: WeeChat 1.4)
+2016-10-27 08:57:46	<--	nyo__ (~nyo@host6-192-dynamic.32-79-r.retail.telecomitalia.it) has quit (Remote host closed the connection)
+2016-10-27 08:57:47	<--	nyo (~nyo@host6-192-dynamic.32-79-r.retail.telecomitalia.it) has quit (Remote host closed the connection)
+2016-10-27 08:57:47	<--	nyo_ (~nyo@host6-192-dynamic.32-79-r.retail.telecomitalia.it) has quit (Remote host closed the connection)
+2016-10-27 08:58:10	<--	Judge_Dredd (~Judge_Dre@unaffiliated/judge-dredd/x-2170742) has quit (Remote host closed the connection)
+2016-10-27 08:58:24	<--	mackal (~mike@pool-96-237-144-12.bstnma.fios.verizon.net) has quit (Quit: BE VIGILANT.)
+2016-10-27 08:58:35	muffindrake	How does one deal with patches present in the ebuild which conflict with own patches?
+2016-10-27 08:59:01	muffindrake	Is there an alternative to modifying and adding the ebuild to a local overlay?
+2016-10-27 09:00:13	BtbN	user patches are applied last for that
+2016-10-27 09:00:22	BtbN	so you'll have to rebase your patch
+2016-10-27 09:00:44	<--	Guest93854 (~Geek@212.73.149.139) has quit (Quit: Leaving)
+2016-10-27 09:00:51	<--	Bloodclaw (~bloodclaw@2001:bc8:3078:1fe:9b86:1680:649a:6306) has quit (Quit: Leaving)
+2016-10-27 09:02:23	muffindrake	I was under the impression user patches were applied first. I must have read wrong
+2016-10-27 09:02:23		[09:02]
+2016-10-27 09:02:28	toralf	grknight: eshowkw shows EAPI ?
+2016-10-27 09:02:45	-->	stakewinner00 (~stakewinn@2001:41d0:6b:3d00::1ec) has joined #gentoo
+2016-10-27 09:03:07	+grknight	it does in the ~arch version. not sure about stable
+2016-10-27 09:05:14	+grknight	toralf: was added in 0.3.1
+2016-10-27 09:05:18	toralf	grknight: 0.3.0.9-r2 doesn't show it
+2016-10-27 09:05:22	toralf	grknight: ah
+2016-10-27 09:05:23	+iamben	muffindrake: it depends on where the packager chooses to add epatch_user/eapply_user, but traditionally it's after all normal patches but before the rest of src_prepare
+2016-10-27 09:06:50	<--	Turingtoast (~Tino@79.239.89.183) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-10-27 09:08:18	-->	Turingtoast (~Tino@p4FEF59B7.dip0.t-ipconnect.de) has joined #gentoo
+2016-10-27 09:09:29	<--	tdy (~tdy@unaffiliated/tdy) has quit (Ping timeout: 256 seconds)
+2016-10-27 09:12:53	<--	Turingtoast (~Tino@p4FEF59B7.dip0.t-ipconnect.de) has quit (Ping timeout: 244 seconds)
+2016-10-27 09:14:21	netz	hrm. shouldn't the install guide suggest editing /etc/locale.gen first in order to save time on the locale-archive?
+2016-10-27 09:14:40	netz	before doing the emerge --blah -blah @world ?
+2016-10-27 09:16:33	<--	xmorph (~xt_@unaffiliated/xmorph) has quit (Quit: leaving)
+2016-10-27 09:17:01	zyliwax	is it possible to run just one emerge command that will download all sources first, then proceed with the build? i know about --fetchonly already but i'm eager for more :)
+2016-10-27 09:17:04	-->	`VL (~vl@broadband-46-188-31-14.2com.net) has joined #gentoo
+2016-10-27 09:17:41	maolang	is doing something like this possible one way or another? --> emerge --update =gnome-extra/*::gentoo
+2016-10-27 09:17:41		[09:17]
+2016-10-27 09:18:14	-->	xmorph (~xt_@unaffiliated/xmorph) has joined #gentoo
+2016-10-27 09:20:11	-->	fefelix (~Miranda@x4d089730.dyn.telefonica.de) has joined #gentoo
+2016-10-27 09:20:34	-->	ribx (~ribx@x4db247cb.dyn.telefonica.de) has joined #gentoo
+2016-10-27 09:23:53	-->	_ohm (~research@unaffiliated/-ohm/x-0955948) has joined #gentoo
+2016-10-27 09:24:03	<--	ng0 (~ng0@gateway/tor-sasl/niasterisk) has quit (Quit: WeeChat 1.6)
+2016-10-27 09:25:18	<--	timahvo1 (~rogue@197.237.131.125) has quit (Ping timeout: 244 seconds)
+2016-10-27 09:25:32	<--	timahvo1_ (~rogue@197.237.131.125) has quit (Ping timeout: 252 seconds)
+2016-10-27 09:26:28	<--	pekkari (~pekkari@2001:67c:1560:8007::aac:c0ca) has quit (Quit: Konversation terminated!)
+2016-10-27 09:26:43	-->	PsyLok (~PsyLok@151.67.28.147) has joined #gentoo
+2016-10-27 09:26:44	<--	PsyLok (~PsyLok@151.67.28.147) has quit (Changing host)
+2016-10-27 09:26:44	-->	PsyLok (~PsyLok@unaffiliated/psylok) has joined #gentoo
+2016-10-27 09:26:58	Thymo	I want to display a message when booting an entry in GRUB. Is there a command in the config that waits for any key inputs to continue?
+2016-10-27 09:27:04	-->	timahvo1 (~rogue@197.237.131.125) has joined #gentoo
+2016-10-27 09:27:18	Thymo	In the way of "Press any key to continue..."
+2016-10-27 09:27:19	-->	timahvo1_ (~rogue@197.237.131.125) has joined #gentoo
+2016-10-27 09:27:49	maolang	well --> emerge --update $(qlist -I gnome-extra*) # does the trick :)
+2016-10-27 09:27:59	-->	emerald (~smaragd@p2E504138.dip0.t-ipconnect.de) has joined #gentoo
+2016-10-27 09:28:35	-->	nE0sIghT (~Thunderbi@unaffiliated/ne0sight) has joined #gentoo
+2016-10-27 09:28:57	maolang	Thymo: open up /etc/default/grub and run  through the file, not sure if you can do it, but i believe you can make it at least wait forever until you press enter on default choice
+2016-10-27 09:29:15	m_barteks2x	Why compilation of almost everything outputs so much text?
+2016-10-27 09:29:38	maolang	m_barteks2x: if you want more quietness add --quiet
+2016-10-27 09:29:51	muffindrake	Why is the sky blue?
+2016-10-27 09:30:07	maolang	you can also add it to your emerge defaults variable in make.conf
+2016-10-27 09:30:20	m_barteks2x	Maolang: There is a reason for both
+2016-10-27 09:30:24	<--	_ohm (~research@unaffiliated/-ohm/x-0955948) has quit (Ping timeout: 260 seconds)
+2016-10-27 09:30:28	m_barteks2x	Worn nick
+2016-10-27 09:30:31	m_barteks2x	Wrong
+2016-10-27 09:30:38	maolang	muffindrake: because of the atmosphere and the sun through it :)
+2016-10-27 09:31:20	Thymo	maolang: That would not work for a single bootentry. I'm looking for something similair to the sleep command but waits for a keypress instead.
+2016-10-27 09:31:29	muffindrake	That was a rhetorical question
+2016-10-27 09:31:32	m_barteks2x	The first thing I'm installing in DE is irc
+2016-10-27 09:31:38	maolang	muffindrake: i know :)
+2016-10-27 09:31:44	m_barteks2x	I hate touchscreens
+2016-10-27 09:31:52	<--	Wicla_ (~wicla@78-73-249-81-no197.tbcn.telia.com) has quit (Quit: leaving)
+2016-10-27 09:32:03	<--	kensington (kensington@gentoo/developer/kensington) has quit (Remote host closed the connection)
+2016-10-27 09:32:38	<--	albertus1 (~seb@x55b5c61d.dyn.telefonica.de) has quit (Quit: Leaving.)
+2016-10-27 09:32:40	<--	Xavier|The_other (~Xavier@108-171-72-65.dr.cgocable.ca) has quit (Read error: Connection reset by peer)
+2016-10-27 09:32:41	<--	xavier1 (~xavier@108-171-72-65.dr.cgocable.ca) has quit (Read error: Connection reset by peer)
+2016-10-27 09:32:41		[09:32]
+2016-10-27 09:33:07	-->	_ohm (~research@unaffiliated/-ohm/x-0955948) has joined #gentoo
+2016-10-27 09:33:19	-->	poeppman (~Thunderbi@xdsl-87-78-150-134.netcologne.de) has joined #gentoo
+2016-10-27 09:33:24	-->	kensington (kensington@gentoo/developer/kensington) has joined #gentoo
+2016-10-27 09:33:24	--	Mode #gentoo [+v kensington] by ChanServ
+2016-10-27 09:33:35	-->	Xavier|The_other (~Xavier@108-171-72-65.dr.cgocable.ca) has joined #gentoo
+2016-10-27 09:34:00	-->	xavier1 (~xavier@108-171-72-65.dr.cgocable.ca) has joined #gentoo
+2016-10-27 09:34:20	<--	gattler (~gattler@80.123.115.250) has quit (Quit: WeeChat 1.6)
+2016-10-27 09:34:30	-->	ng0 (~ng0@gateway/tor-sasl/niasterisk) has joined #gentoo
+2016-10-27 09:34:44	-->	Judge_Dredd (~Judge_Dre@unaffiliated/judge-dredd/x-2170742) has joined #gentoo
+2016-10-27 09:34:51	<--	bitcraft_ (~bitcraft_@173-23-165-29.client.mchsi.com) has quit (Quit: Leaving)
+2016-10-27 09:34:52	-->	mazes_80 (~mazes_80@mur31-4-78-210-220-201.fbx.proxad.net) has joined #gentoo
+2016-10-27 09:34:56	-->	gattler (~gattler@213-47-159-178.static.upcbusiness.at) has joined #gentoo
+2016-10-27 09:35:15	<--	gattler (~gattler@213-47-159-178.static.upcbusiness.at) has quit (Client Quit)
+2016-10-27 09:35:19	<--	poeppman (~Thunderbi@xdsl-87-78-150-134.netcologne.de) has quit (Client Quit)
+2016-10-27 09:35:22	-->	bitcraft (~bitcraft_@173-23-165-29.client.mchsi.com) has joined #gentoo
+2016-10-27 09:35:31	-->	poeppman (~Thunderbi@xdsl-87-78-150-134.netcologne.de) has joined #gentoo
+2016-10-27 09:35:50	jerichowasahoax	I can't get kernel 4.8 to boot. I don't know what's wrong, because the kernel just ???? and stops responding before radeon has a chance to start displaying. Does anyone recognize this as something they've already solved?
+2016-10-27 09:36:03	+iamben	jerichowasahoax: what kernel are you coming from?
+2016-10-27 09:36:08	jerichowasahoax	iamben: 4.7
+2016-10-27 09:36:32	+iamben	jerichowasahoax: does this system normally boot to a state with networking, so you can try to ssh in and/or ping?
+2016-10-27 09:36:41	-->	gattler (~gattler@80.123.115.250) has joined #gentoo
+2016-10-27 09:36:55	-->	Wicla (~wicla@78-73-249-81-no197.tbcn.telia.com) has joined #gentoo
+2016-10-27 09:37:10	-->	tdy (~tdy@unaffiliated/tdy) has joined #gentoo
+2016-10-27 09:37:11	jerichowasahoax	iamben: on 4.7, yes. i'm not sure if it gets that far in 4.8 though
+2016-10-27 09:37:16	-->	DingoSaar (~hagen@pD9E08C61.dip0.t-ipconnect.de) has joined #gentoo
+2016-10-27 09:37:34	+iamben	that'd be a good test, there's a very good chance it's just dead display, but otherwise booting fine
+2016-10-27 09:37:34	<--	minimalism (~none@unaffiliated/minimalism) has quit (Quit: minimalism)
+2016-10-27 09:37:45	<--	maolang (~maolang@2a01:e35:2e6c:5620:4a5d:60ff:fecc:e4a1) has quit (Ping timeout: 260 seconds)
+2016-10-27 09:38:05	-->	hlmjr (~herbmille@50-248-67-125-static.hfc.comcastbusiness.net) has joined #gentoo
+2016-10-27 09:38:06	<--	Nuc1eoN (~nuc@lak-175-211.wohnheime.ruhr-uni-bochum.de) has quit (Quit: Konversation terminated!)
+2016-10-27 09:38:53	<--	hlmjr (~herbmille@50-248-67-125-static.hfc.comcastbusiness.net) has quit (Client Quit)
+2016-10-27 09:39:16	DingoSaar	I need help with autogen. Preliminary question: Is there a kind of "dpaste" where I can upload text files, instead of only Copy'n'Pasting?
+2016-10-27 09:39:39	DingoSaar	(Oh... good evening, if it's OK to greet...)
+2016-10-27 09:39:44	jerichowasahoax	iamben: new problem: while 4.7 boots and has network access, nothing seems to be able to connect to it in the first place
+2016-10-27 09:40:12	jerichowasahoax	iamben: e.g. my irc client is currently running from the affected system, but i can't ssh into it from my phone
+2016-10-27 09:40:26	+iamben	DingoSaar: wgetpaste
+2016-10-27 09:40:52	<--	barthess (~barthess@93.85.142.231) has quit (Quit: Leaving.)
+2016-10-27 09:40:59	jerichowasahoax	iamben: or even send ICMP pings apparently
+2016-10-27 09:41:11	+iamben	jerichowasahoax: do you have any iptables rules?
+2016-10-27 09:41:35	jerichowasahoax	iamben: "iptables --list" complains about missing modules, so i'm assuming it's inert
+2016-10-27 09:42:39	-->	apokatastasis (~void@75.110.232.218) has joined #gentoo
+2016-10-27 09:43:33	+iamben	jerichowasahoax: do you manually configure your networking, or use dhcp?
+2016-10-27 09:44:04	jerichowasahoax	iamben: i told networkmanager to assign a static address but didn't give it any special rules
+2016-10-27 09:44:12	m_barteks2x	I installed xorg and it complains that it can't find twm xterm
+2016-10-27 09:44:34	+iamben	jerichowasahoax: is it possible you did it wrong?
+2016-10-27 09:44:51	+iamben	m_barteks2x: get a real WM and configure .xinitrc to load that instead of the default twm+xterm
+2016-10-27 09:44:52	jerichowasahoax	iamben: is there a checklist
+2016-10-27 09:44:56	m_barteks2x	I thought emerge would automatically install dependencies
+2016-10-27 09:45:33	m_barteks2x	Oh right, I didn't install cinnamon
+2016-10-27 09:45:35	<--	lck (~Adium@178.71.178.115) has quit (Quit: Leaving.)
+2016-10-27 09:45:51	+iamben	m_barteks2x: those aren't dependencies of xorg... that's what the sample xinitrc happens to use, but almost no one actually wants that
+2016-10-27 09:46:22	m_barteks2x	That almost is surprising here
+2016-10-27 09:46:35	<--	gattler (~gattler@80.123.115.250) has quit (Quit: WeeChat 1.6)
+2016-10-27 09:46:43	-->	julibert (~victorx@unaffiliated/victorx) has joined #gentoo
+2016-10-27 09:46:56	+iamben	if you disable the "minimal" flag on xinit, you'll get twm+xterm, but again almost no one wants that
+2016-10-27 09:47:04	+iamben	it would be a real waste to have it default to that
+2016-10-27 09:47:15	jerichowasahoax	iamben: manually running "dhcpcd -s 192.168.0.85" did the trick, so i need to convince networkmanager to do this automatically somehow
+2016-10-27 09:47:40	<--	piling (~piling@unaffiliated/piling) has quit (Ping timeout: 276 seconds)
+2016-10-27 09:48:11	julibert	Please can you help me with the log? https://paste.pound-python.org/show/8z1gmuuYk7w0g55nz0LE/
+2016-10-27 09:48:11		[09:48]
+2016-10-27 09:48:25	jerichowasahoax	iamben: for reference, this computer is connected via a wireless connection, but it's an absurdly heavy desktop computer that only ever connects to the one network
+2016-10-27 09:48:57	+iamben	jerichowasahoax: what's wrong with NM's default behavior of running dhcp on interfaces it finds?
+2016-10-27 09:49:20	-->	research_ (~research@unaffiliated/-ohm/x-0955948) has joined #gentoo
+2016-10-27 09:49:41	jerichowasahoax	iamben: the dhcp server gets confused about address assignment when i switch operating systems
+2016-10-27 09:49:54	jerichowasahoax	resulting in all kinds of bizarre networking problems
+2016-10-27 09:50:32	+iamben	if you're not hopping to new networks, maybe it'd be easier to use netifrc with static config
+2016-10-27 09:50:51	<--	sdoubleyou (~sdouble25@unaffiliated/sdouble25) has quit (Quit: WeeChat 1.6)
+2016-10-27 09:50:56	-->	bifidotftw (~bifidotft@p5792DF61.dip0.t-ipconnect.de) has joined #gentoo
+2016-10-27 09:51:09	jerichowasahoax	i think that might be more effort than convincing networkmanager to run a dhcpcd command
+2016-10-27 09:51:29	<--	poeppman (~Thunderbi@xdsl-87-78-150-134.netcologne.de) has left #gentoo
+2016-10-27 09:51:34	jerichowasahoax	i think nm has directories somewhere for putting in scripts to run at certain stages
+2016-10-27 09:51:51	+iamben	im sure it does, i just dont know how myself
+2016-10-27 09:52:21	-->	pyx (~pyx@unaffiliated/pyx) has joined #gentoo
+2016-10-27 09:52:33	<--	pyx (~pyx@unaffiliated/pyx) has quit (Client Quit)
+2016-10-27 09:52:34	<--	_ohm (~research@unaffiliated/-ohm/x-0955948) has quit (Ping timeout: 250 seconds)
+2016-10-27 09:53:25	-->	sdoubleyou (~sdouble25@unaffiliated/sdouble25) has joined #gentoo
+2016-10-27 09:54:38	-->	tax (~tax@cpe-72-182-55-97.austin.res.rr.com) has joined #gentoo
+2016-10-27 09:54:45	-->	piling (~piling@unaffiliated/piling) has joined #gentoo
+2016-10-27 09:54:56	<--	piling (~piling@unaffiliated/piling) has quit (Client Quit)
+2016-10-27 09:55:03	-->	leah_twoskin (~anon@50-37-23-41.grdv.nv.frontiernet.net) has joined #gentoo
+2016-10-27 09:56:22	DingoSaar	https://paste.pound-python.org/show/vMluEFybin5cFfDLH9rU/ - it seems to have problems with guile.
+2016-10-27 09:56:28	DingoSaar	iamben, TNX
+2016-10-27 09:57:15	DingoSaar	Recently, my database directory of installed packages went broken :-( so I have to recompile my whole world file.
+2016-10-27 09:57:21	-->	maolang (~maolang@vil93-5-82-230-197-98.fbx.proxad.net) has joined #gentoo
+2016-10-27 09:57:36	+iamben	DingoSaar: what version of guile is installed?
+2016-10-27 09:57:56	DingoSaar	very possibly some "unknown" packages make probs.
+2016-10-27 09:57:58	DingoSaar	sec.
+2016-10-27 09:58:08	-->	niklas_e (~niklas@176.10.248.227) has joined #gentoo
+2016-10-27 09:58:46	DingoSaar	dev-scheme/guile 2.0.12-r1
+2016-10-27 09:58:49	niklas_e	is there any wiki now how to make dovecot to work?
+2016-10-27 09:59:18	DingoSaar	dev-scheme/guile-lib
+2016-10-27 09:59:19	-->	adlerweb (~adlerweb@unaffiliated/adlerweb) has joined #gentoo
+2016-10-27 09:59:38	DingoSaar	0.1.9
+2016-10-27 09:59:47	<--	tax (~tax@cpe-72-182-55-97.austin.res.rr.com) has quit (Read error: Connection reset by peer)
+2016-10-27 10:00:01	<--	Deda_Zych (~zerom@unaffiliated/deda-zych/x-1167266) has quit (Ping timeout: 276 seconds)
+2016-10-27 10:00:29	-->	PhexCat (~HenxYank@5.29.97.245) has joined #gentoo
+2016-10-27 10:00:47	-->	poeppman (~poeppman@xdsl-213-196-251-86.netcologne.de) has joined #gentoo
+2016-10-27 10:01:03	<--	hololeap (~hololeap@unaffiliated/hololeap) has quit (Quit: KVIrc 4.9.2 Aria http://www.kvirc.net/)
+2016-10-27 10:01:26	-->	hololeap (~hololeap@unaffiliated/hololeap) has joined #gentoo
+2016-10-27 10:02:03	-->	Deda_Zych (~zerom@user-78-139-229-226.tomtelnet.ru) has joined #gentoo
+2016-10-27 10:02:04	<--	Deda_Zych (~zerom@user-78-139-229-226.tomtelnet.ru) has quit (Changing host)
+2016-10-27 10:02:04	-->	Deda_Zych (~zerom@unaffiliated/deda-zych/x-1167266) has joined #gentoo
+2016-10-27 10:02:18	<--	Section1 (~section1@190.195.84.109) has quit (Quit: Leaving)
+2016-10-27 10:02:44	<--	kabeero (~kabeero@unaffiliated/kabeero) has quit (Ping timeout: 256 seconds)
+2016-10-27 10:02:57	<--	poeppman_ (~poeppman@xdsl-87-78-150-134.netcologne.de) has quit (Ping timeout: 260 seconds)
+2016-10-27 10:02:57	+iamben	DingoSaar: looks like that's unstable/testing guile, but stable autogen, any reason why?
+2016-10-27 10:03:46	m_barteks2x	I don't think installing cinnamon will finish today...
+2016-10-27 10:03:46		[10:03]
+2016-10-27 10:04:12	m_barteks2x	It showed 2+ screens ok packages
+2016-10-27 10:04:43	+iamben	m_barteks2x: most of those will take just a minute or 2, but yes it may take you a couple of hours
+2016-10-27 10:04:48	-->	chr1stopher (~christoph@c-76-122-158-246.hsd1.mi.comcast.net) has joined #gentoo
+2016-10-27 10:04:53	DingoSaar	some pkg require 2.0...
+2016-10-27 10:04:54	+iamben	you can use something lighter like fluxbox until that's ready, though
+2016-10-27 10:05:24	m_barteks2x	Is it possible to install multiple things at once?
+2016-10-27 10:05:33	maolang	yes
+2016-10-27 10:05:48	m_barteks2x	The best package manager ever
+2016-10-27 10:05:55	maolang	and no
+2016-10-27 10:06:41	m_barteks2x	So yes or no?
+2016-10-27 10:06:53	maolang	you can emerge multiple things at the same time, but once it reaches the install phase only one can install, but they check, if another emerge session is not installing it will lock the install state until that part is installed becomming available for whoever is next
+2016-10-27 10:07:09	+iamben	it shoudl be fine, if the deps overlap then you may end up building some packages more than once
+2016-10-27 10:07:44	<--	ribx (~ribx@x4db247cb.dyn.telefonica.de) has quit (Ping timeout: 260 seconds)
+2016-10-27 10:07:49	<--	boombanana (~jorick@78-22-70-154.access.telenet.be) has quit (Ping timeout: 276 seconds)
+2016-10-27 10:07:52	m_barteks2x	No debian based distribution allows that
+2016-10-27 10:08:04	maolang	nope, they are not smart enough :)
+2016-10-27 10:08:26	maolang	good old apt-get and dpkg heh!
+2016-10-27 10:08:32	m_barteks2x	I could install i3 in the meantime
+2016-10-27 10:08:42	<--	blueness_ (~blueness@gentoo/developer/blueness) has quit (Quit: blueness_)
+2016-10-27 10:08:58	maolang	as iamben mention if they have overlapped packages, you may instal some twice
+2016-10-27 10:09:02	<--	alphis (~noone@unaffiliated/alphis) has quit (Ping timeout: 250 seconds)
+2016-10-27 10:09:11	jerichowasahoax	iamben: The good news is networking now works as intended in 4.7 on boot.
+2016-10-27 10:09:17	jerichowasahoax	iamben: The bad news is in 4.8, it does not.
+2016-10-27 10:09:48	+iamben	jerichowasahoax: can you pastebin your 4.8 config?
+2016-10-27 10:10:15	+iamben	DingoSaar: can you pastebin emerge --info output?
+2016-10-27 10:10:27	maolang	m_barteks2x: an example of this here --> https://dl.dropboxusercontent.com/1/view/hm877veth6whxx5/Apps/Shutter/Selection_001.png
+2016-10-27 10:10:38	jerichowasahoax	iamben: https://paste.pound-python.org/show/GvTPdM44cRTnylT2jUaH/
+2016-10-27 10:10:48	-->	alphis (~noone@unaffiliated/alphis) has joined #gentoo
+2016-10-27 10:11:34	+iamben	jerichowasahoax: is it possible the required firmware list has changed? or that your linux-firmware package went missing? or that newer linux-firmware is required?
+2016-10-27 10:11:44	m_barteks2x	So now debian will probably become second windows on my laptop
+2016-10-27 10:12:10	m_barteks2x	Rarely used but I may still need it
+2016-10-27 10:12:19	maolang	m_barteks2x: once you are at home in gentoo, the other distros will simply feel .... hmm limited...
+2016-10-27 10:12:42	jerichowasahoax	iamben: neither linux-firmware nor radeon-ucode have versions later than this June, and I updated the Portage tree this morning
+2016-10-27 10:12:48	m_barteks2x	Probably like windows feels now to me
+2016-10-27 10:13:06	maolang	m_barteks2x: you checked the link i pasted ealier?
+2016-10-27 10:13:31	m_barteks2x	The screenshot? Or even earlier?
+2016-10-27 10:13:41	maolang	the one i pasted minutes ago
+2016-10-27 10:13:43	maolang	yes
+2016-10-27 10:13:48	<--	monk (~aknm@unaffiliated/aknm) has quit (Ping timeout: 250 seconds)
+2016-10-27 10:13:59	m_barteks2x	So yes
+2016-10-27 10:14:20	DingoSaar	 https://paste.pound-python.org/show/HwJcKzdG0Qp2mFt5fl2k/
+2016-10-27 10:14:40	+iamben	DingoSaar: that's a lot of overlays.
+2016-10-27 10:15:00	DingoSaar	yupp... most are masked...
+2016-10-27 10:15:20	jerichowasahoax	iamben: the gentoo wiki page for radeon doesn't seem to suggest any sort of firmware change either
+2016-10-27 10:15:43	+iamben	jerichowasahoax: wikis get outdated.  im not saying that's the issue here, but dont trust it like gospel
+2016-10-27 10:15:49	-->	monk (~aknm@unaffiliated/aknm) has joined #gentoo
+2016-10-27 10:16:19	<--	AsumFace (~asumface@ip1f1060c0.dynamic.kabel-deutschland.de) has quit (Quit: install gentoo)
+2016-10-27 10:16:33	DingoSaar	iamben, I tried to go back on some overlays... I can also drop all of them, but I fear my guile is quite broken.
+2016-10-27 10:16:45	+iamben	jerichowasahoax: i cant think of any way forward except modularizing radeon and setting up another framebuffer driver to handdle display before radeon loads, then you can do all sorts of post-boot testing
+2016-10-27 10:16:47	DingoSaar	I tried to re-install it from an empty tree, but it also stopped
+2016-10-27 10:16:50	 *	maolang has a hard time imagining iamben singing at the church :)
+2016-10-27 10:17:47	leah_twoskin	It seems as though the moment I fix one thing with dracut, another problem appears out of thin air.
+2016-10-27 10:18:26	leah_twoskin	This time dracut takes a very, very long time to move from decrypting the root drive to the rest of the boot process.
+2016-10-27 10:18:56	leah_twoskin	I'm looking through the debug information in rdsosreport.txt and it looks like `dracut: /lib/dracut-lib.sh@435(check_finished)` is being run several hundred times.
+2016-10-27 10:18:56		[10:18]
+2016-10-27 10:19:18	leah_twoskin	And it goes on for around 23050 lines until it finally decides to get on with the rest of its job.
+2016-10-27 10:20:08	maolang	leah_twoskin: you mean on creating the initramfs or at boot time when initramfs starts up and before it goes into kernel?
+2016-10-27 10:20:30	leah_twoskin	maolang: Before to goes into kernel.
+2016-10-27 10:20:40	leah_twoskin	Immediately after unlocking the root drive.
+2016-10-27 10:20:47	maolang	minutes instead of seconds?
+2016-10-27 10:20:51	leah_twoskin	Minutes
+2016-10-27 10:21:39	maolang	should literally be seconds at most, from own experience on whole drive encryption wheni was using bitlocker in windows
+2016-10-27 10:22:18	maolang	you using a keyfile or a passphrase?
+2016-10-27 10:22:19	leah_twoskin	maolang: It used to be seconds when I first started using dracut. I wonder if I've unearthed a bug.
+2016-10-27 10:22:23	leah_twoskin	passphrase
+2016-10-27 10:23:23	<--	wonko7 (~wonko7@69.75.150.77.rev.sfr.net) has quit (Ping timeout: 245 seconds)
+2016-10-27 10:23:27	maolang	perhaps you have selected some / an option(s) that make it loop trying until it fails then continues on the boot process...
+2016-10-27 10:23:48	<--	sdoubleyou (~sdouble25@unaffiliated/sdouble25) has quit (Quit: WeeChat 1.6)
+2016-10-27 10:24:32	DingoSaar	iamben, environment: https://paste.lugons.org/show/10248/
+2016-10-27 10:24:39	maolang	kinda like a bad entry in fstab that make it try for 90 seconds then continues...
+2016-10-27 10:25:21	leah_twoskin	maolang: My dracut cmdline options are all pretty basic. Everything else doesn't even start until it gets to the kernel.
+2016-10-27 10:25:44	<--	niklas_e (~niklas@176.10.248.227) has quit (Quit: Leaving)
+2016-10-27 10:26:01	<--	Relsak (~dragan@unaffiliated/kasler) has quit (Quit: Leaving.)
+2016-10-27 10:26:03	+iamben	DingoSaar: try rebuilding guile
+2016-10-27 10:26:23	DingoSaar	did that, nothing changes. :-(
+2016-10-27 10:26:35	DingoSaar	Hm... probably from an empty tree... that could work...
+2016-10-27 10:26:54	DingoSaar	I'll be back after that is complete and/or stops.
+2016-10-27 10:26:58	+iamben	DingoSaar: what does "qcheck guile" say, as far as how many total and good files?
+2016-10-27 10:26:59	DingoSaar	iamben, TNX!
+2016-10-27 10:28:05	<--	_0bitcount (~Big_Byte@92.176.142.156) has quit (Quit: Leaving)
+2016-10-27 10:28:08	DingoSaar	% sudo qcheck guile
+2016-10-27 10:28:08	DingoSaar	Checking dev-scheme/guile-2.0.12-r1 ...
+2016-10-27 10:28:08	DingoSaar	  * 795 out of 795 files are good
+2016-10-27 10:28:48	+iamben	i feel like iv'e seen this failure but i cant find it in my logs.  you see soon after the actual compile starts how it prints out a patch file? it shouldn't be doing that
+2016-10-27 10:29:19	<--	D-ion (~D-ion@pppoe.178-66-198-192.dynamic.avangarddsl.ru) has quit (Remote host closed the connection)
+2016-10-27 10:29:51	-->	parapente (~nobody@unaffiliated/parapente) has joined #gentoo
+2016-10-27 10:29:56	<--	`VL (~vl@broadband-46-188-31-14.2com.net) has quit (Ping timeout: 256 seconds)
+2016-10-27 10:30:37	DingoSaar	sec... checking...
+2016-10-27 10:31:27	<--	dcosnet (~dcosnet@c-98-216-140-204.hsd1.ma.comcast.net) has quit (Quit: brb)
+2016-10-27 10:31:51	muffindrake	Is there a package I can install to remedy the common cold?
+2016-10-27 10:32:19	-->	julakali (~julakali@103-198-103-86.dynamic.dsl.tng.de) has joined #gentoo
+2016-10-27 10:32:27	-->	Bircoph (~Bircoph@46.148.226.169) has joined #gentoo
+2016-10-27 10:32:28	<--	Bircoph (~Bircoph@46.148.226.169) has quit (Changing host)
+2016-10-27 10:32:28	-->	Bircoph (~Bircoph@gentoo/developer/bircoph) has joined #gentoo
+2016-10-27 10:32:28	--	Mode #gentoo [+v Bircoph] by ChanServ
+2016-10-27 10:32:31	-->	`VL (~vl@broadband-46-188-31-14.2com.net) has joined #gentoo
+2016-10-27 10:33:36	DingoSaar	muffindrake, emerge -vat art-muppets/viva_la_sauna_svedese-2.2-r1::henson
+2016-10-27 10:33:50	DingoSaar	muffindrake, emerge -vat =art-muppets/viva_la_sauna_svedese-2.2-r1::henson
+2016-10-27 10:33:56	DingoSaar	(sorry for the typo)
+2016-10-27 10:33:56		[10:33]
+2016-10-27 10:33:58	<--	Ycarus (~ycarus@2a01:e34:eda7:b1f0:5e3d:ee40:8bba:20a1) has quit (Quit: Ycarus)
+2016-10-27 10:34:46	raffaele	Hi guys, got a problem compiling rb_libtorrent for both python2.7 and python3.4 After I install it, If I try to use the lib I got "ImportError: /usr/lib64/python3.4/site-packages/libtorrent.cpython-34.so: undefined symbol: _ZN5boost6python6detail11init_moduleER11PyModuleDefPFvvE"
+2016-10-27 10:35:05	+iamben	DingoSaar: does it work better if you activate gcc-5.4 as default?
+2016-10-27 10:35:12	<--	xmorph (~xt_@unaffiliated/xmorph) has quit (Quit: Konversation terminated!)
+2016-10-27 10:35:14	<--	hololeap (~hololeap@unaffiliated/hololeap) has quit (Quit: KVIrc 4.9.2 Aria http://www.kvirc.net/)
+2016-10-27 10:35:35	DingoSaar	iamben, no, tried that too... with all the gcc versions I have installed :-(
+2016-10-27 10:36:19	raffaele	reading on stackoverflow seems to be related to the module being compiled for 2.7 and used with 3.4. But I am confused here. I compiled for both and I am loading the 3.4 version. Should I give it a try compiling only for 3.4?
+2016-10-27 10:36:20	DingoSaar	I am about .3" from re-installing a stage-3 and re-compiling the world files from there...
+2016-10-27 10:36:46	-->	Relsak (~dragan@unaffiliated/kasler) has joined #gentoo
+2016-10-27 10:36:49	+iamben	i think this has to do with mixing versions of *something*
+2016-10-27 10:37:05	-->	blueness_ (~blueness@gentoo/developer/blueness) has joined #gentoo
+2016-10-27 10:37:05	--	Mode #gentoo [+v blueness_] by ChanServ
+2016-10-27 10:37:51	shuzzle	I need to know the place where openvpn placed its pidfile. Anyone happen to know this?
+2016-10-27 10:37:58	-->	a3Dman (~3Dman@unaffiliated/a3dman) has joined #gentoo
+2016-10-27 10:38:24	-->	lck (~Adium@178.71.178.115) has joined #gentoo
+2016-10-27 10:40:00	+iamben	raffaele: what rb_libtorrent version?
+2016-10-27 10:40:08	m_barteks2x	I did something wrong probably.. I installed i3 but it tells me that the status command is missing
+2016-10-27 10:40:36	-->	silverhom (~silverhom@c83-252-238-248.bredband.comhem.se) has joined #gentoo
+2016-10-27 10:41:04	+iamben	raffaele: bug 576910 may have fixed this, but im not sure it made it into older versions
+2016-10-27 10:41:06	willikins	iamben: https://bugs.gentoo.org/576910 "net-libs/rb_libtorrent-1.0.9[python]: python bindings are linked against wrong libboost_python version"; Gentoo Linux, Current packages; RESO, FIXE; gianluca.dallatorre:hwoarang
+2016-10-27 10:41:12	m_barteks2x	Does emerge install all dependencies?
+2016-10-27 10:41:47	+iamben	m_barteks2x: did you read the postinstall messages of i3?
+2016-10-27 10:42:09	jerichowasahoax	iamben: I got efifb to work, seems like my real problem is something to do with btrfs
+2016-10-27 10:42:14	jerichowasahoax	i think i smell a regression
+2016-10-27 10:42:18	stqn	shuzzle: I don’t think openvpn writes a pid file by default.
+2016-10-27 10:42:18	m_barteks2x	Probably no there was too much spam and I forgot that quiet option
+2016-10-27 10:42:20	<--	cheeseboy (~cheeseboy@66-189-30-56.dhcp.oxfr.ma.charter.com) has quit (Ping timeout: 260 seconds)
+2016-10-27 10:42:38	<--	lc23 (~lc23@74-95-140-213-Minnesota.hfc.comcastbusiness.net) has left #gentoo
+2016-10-27 10:42:53	maolang	m_barteks2x: if using --with-bdeps=y
+2016-10-27 10:42:59	<--	toralf (~toralf@x4e36821b.dyn.telefonica.de) has quit (Quit: Konversation terminated!)
+2016-10-27 10:43:11	<--	blueness_ (~blueness@gentoo/developer/blueness) has quit (Quit: blueness_)
+2016-10-27 10:43:30	-->	toralf (~toralf@x4e36821b.dyn.telefonica.de) has joined #gentoo
+2016-10-27 10:44:27	m_barteks2x	Even then it doesn't seem to install anything else
+2016-10-27 10:44:43	raffaele	iamben: 1.0.10, I will check the bug you mentioned
+2016-10-27 10:44:48	m_barteks2x	Is is possible to view these messages again?
+2016-10-27 10:45:06	-->	dev1990 (~dev@77-254-61-211.adsl.inetia.pl) has joined #gentoo
+2016-10-27 10:45:24	maolang	if you have not set unlimited scollback buffer in your terminal you could scroll back, but better use --quiet makes it easier
+2016-10-27 10:45:24	DingoSaar	iamben, could hardened-sources be a problem?
+2016-10-27 10:45:40	<--	julibert (~victorx@unaffiliated/victorx) has quit (Quit: KVIrc 4.9.2 Aria http://www.kvirc.net/)
+2016-10-27 10:45:57	+iamben	DingoSaar: it's possible but im leaning towards version mixing problems, read autogen's changelog at /var/tmp/portage/sys-devel/autogen-5.18.4/work/autogen-5.18.4/Changelog
+2016-10-27 10:46:13	+iamben	the 2013-11-16 entry is directly related to this
+2016-10-27 10:46:17	m_barteks2x	I don't think I have any buffet there
+2016-10-27 10:46:41	m_barteks2x	I'm still in tty
+2016-10-27 10:47:08	+iamben	m_barteks2x: /var/log/portage/elog/summary.log   dont ignore postinstall messages
+2016-10-27 10:47:21	+iamben	and dont blame the compile output, the postinstall messages are re-printed when emerge is done
+2016-10-27 10:47:36	maolang	m_barteks2x: this in your make.conf file would make it easier --> EMERGE_DEFAULT_OPTS="--alert=y --ask-enter-invalid --color=y --quiet --keep-going --verbose --verbose-conflicts"
+2016-10-27 10:48:30	-->	blueness_ (~blueness@gentoo/developer/blueness) has joined #gentoo
+2016-10-27 10:48:30	--	Mode #gentoo [+v blueness_] by ChanServ
+2016-10-27 10:48:34	leah_twoskin	hmmm
+2016-10-27 10:48:41	leah_twoskin	I think what I'll do is complain on the github page.
+2016-10-27 10:48:50	leah_twoskin	I can't make heads or tails of this problem.
+2016-10-27 10:50:09	+iamben	leah_twoskin: there are relatively few gentoo dracut users
+2016-10-27 10:50:09		[10:50]
+2016-10-27 10:50:18	m_barteks2x	Thanks that will probably help next time
+2016-10-27 10:50:48	maolang	m_barteks2x: these default will make it beep after long emerge scenario calculations, make it impossible to ust press enter when youhave used --ask do a more verbose output and where you see fopr example and 2 more like this etc as well as if a package fails building, it will try continuing the process with other packages and in any case anything failed will be listed at the end
+2016-10-27 10:51:49	leah_twoskin	iamben: I believe that.
+2016-10-27 10:52:02	m_barteks2x	Beep.... No. I'm in a room with a few other people and frequently doing stuff late at night.. It can't end well with beeps.
+2016-10-27 10:52:09	<--	tdy (~tdy@unaffiliated/tdy) has quit (Ping timeout: 256 seconds)
+2016-10-27 10:53:07	leah_twoskin	m_barteks2x: You could probably have it send a message to another TTY - one that you might be using while you wait for it to finish.
+2016-10-27 10:53:40	leah_twoskin	Though that doesn't help if you've left your computer.
+2016-10-27 10:53:48	maolang	m_barteks2x: its a single beep when you get the ask yes or no extra question, nothing more
+2016-10-27 10:54:11	raffaele	I will try to compile boost and libtorrent without the support for python2.7....this is the output of ldd on the so file for python 3.4 http://pastebin.com/AaALiuPN
+2016-10-27 10:54:20	m_barteks2x	You done realize how loud everything is when it's late
+2016-10-27 10:54:33	raffaele	it links against boost2.7
+2016-10-27 10:54:47	jerichowasahoax	m_barteks2x: you can remove the --alert=y to get everything minus beeps
+2016-10-27 10:54:49	maolang	m_barteks2x: :) as long as someone does not fall off his bed when it beeps..
+2016-10-27 10:55:19	jerichowasahoax	i'm not sure how i feel about --keep-going being in there, that should really be an opt-in choice
+2016-10-27 10:55:22	DingoSaar	oh, that was about me, I thought you talked to raffaele... TNX, will check that!
+2016-10-27 10:55:22	<--	julakali (~julakali@103-198-103-86.dynamic.dsl.tng.de) has quit (Quit: Leaving.)
+2016-10-27 10:55:43	<--	Bircoph (~Bircoph@gentoo/developer/bircoph) has quit (Ping timeout: 244 seconds)
+2016-10-27 10:55:52	m_barteks2x	Does it by default compile dependencies or not?
+2016-10-27 10:56:05	-->	FireBurn (~fireburnu@no-sources/fireburn) has joined #gentoo
+2016-10-27 10:56:46	m_barteks2x	It seems to do more than just that one package but I ale easy end up with incomplete i3 installation
+2016-10-27 10:57:02	maolang	jerichowasahoax: the keepgoing is actually nice, if a package fails it keeps going ofc if the failed package if so there was is needed by some down the line those wont be emerged, but when doing 100 or so its nice to come back and at worst have a list of what failed and then sort that out instead of going to sleep and come back to realise it failed on the 2nd package out of 400 :)
+2016-10-27 10:57:08	<--	nerdboy (~sarnold@gentoo/developer/nerdboy) has quit (Ping timeout: 245 seconds)
+2016-10-27 10:57:21	+iamben	m_barteks2x: it doesn't tend to install optional things like plugins, i3 should run fine without a status app
+2016-10-27 10:57:49	jerichowasahoax	maolang: I always include it with my world updates, it's just that for most other operations I would prefer Portage to halt and catch fire if something goes wrong
+2016-10-27 10:57:49	+iamben	for optional helper tools, it usually prints some info in postinst, just like this one
+2016-10-27 10:58:58	m_barteks2x	It loads.... But there is a red warning and no part of it that I remember works.. Hangup seems to have very broad definition of optional
+2016-10-27 10:59:02	maolang	jerichowasahoax: its just a personnal choice ofc, id rather burn through the list and sort out the fails after with a smaller picture to deal with
+2016-10-27 10:59:02	<--	iomonad (~iomonad@unaffiliated/iomonad) has quit (Quit: WeeChat 1.6)
+2016-10-27 10:59:14	m_barteks2x	*gentoo
+2016-10-27 10:59:18	-->	cheeseboy (~cheeseboy@66-189-30-56.dhcp.oxfr.ma.charter.com) has joined #gentoo
+2016-10-27 10:59:40	<--	blueness_ (~blueness@gentoo/developer/blueness) has quit (Quit: blueness_)
+2016-10-27 11:00:20	m_barteks2x	It can't even close itself
+2016-10-27 11:00:28	-->	InfoAddict (~infoaddic@CPE-121-208-136-116.eqmp1.cha.bigpond.net.au) has joined #gentoo
+2016-10-27 11:00:48	<--	FinboySlick (~shark@74.117.40.10) has quit (Quit: Leaving.)
+2016-10-27 11:02:20	<--	[LeON] (~leon@unaffiliated/leon-00001) has quit (Excess Flood)
+2016-10-27 11:02:21	<--	GurliGebis (~GurliGebi@gentoo/developer/gurligebis) has quit (Ping timeout: 256 seconds)
+2016-10-27 11:02:59	-->	[ui] (uid21688@gateway/web/irccloud.com/x-fmwhnlwivdwzoeej) has joined #gentoo
+2016-10-27 11:03:01	jerichowasahoax	m_barteks2x: you need to run i3 in combination with some other apps to get a functional desktop out of it
+2016-10-27 11:03:02	-->	[LeON] (~leon@unaffiliated/leon-00001) has joined #gentoo
+2016-10-27 11:03:12	jerichowasahoax	m_barteks2x: usually some form of bar and maybe a menu
+2016-10-27 11:03:57	m_barteks2x	I'm just used to getting everything needed when installing something
+2016-10-27 11:04:14	m_barteks2x	This thing is new to me
+2016-10-27 11:04:24	jerichowasahoax	the thing about gentoo is you'll need those things, but it doesn't want to assume choices for you
+2016-10-27 11:04:48	jerichowasahoax	for instance, maybe you want something more like OS X's dock, instead of a menu, so it doesn't install either by default
+2016-10-27 11:05:46	maolang	m_barteks2x: at the beginning gentoo is a lot harder overall than other distros to initially get up and running, but trust me when you will be up and running you will like it a lot more, its flexibility up the roof like no other distros
+2016-10-27 11:05:46		[11:05]
+2016-10-27 11:06:03	jerichowasahoax	m_barteks2x: i think the coolkids are using dmenu and/or i3status
+2016-10-27 11:06:48	m_barteks2x	I really thought it was part of i3 before
+2016-10-27 11:09:05	DingoSaar	iamben, TNX again... will come back tomorrow or the day after that, trying to fix it with your input now. n8
+2016-10-27 11:09:49	<--	lck (~Adium@178.71.178.115) has quit (Quit: Leaving.)
+2016-10-27 11:10:00	<--	dev1990 (~dev@77-254-61-211.adsl.inetia.pl) has quit (Quit: Konversation terminated!)
+2016-10-27 11:10:34	<--	alphis (~noone@unaffiliated/alphis) has quit (Ping timeout: 250 seconds)
+2016-10-27 11:10:56	-->	Turingtoast (~Tino@p4FEF59B7.dip0.t-ipconnect.de) has joined #gentoo
+2016-10-27 11:12:12	-->	alphis (~noone@unaffiliated/alphis) has joined #gentoo
+2016-10-27 11:13:18	<--	DingoSaar (~hagen@pD9E08C61.dip0.t-ipconnect.de) has quit (Quit: Leaving)
+2016-10-27 11:13:42	<--	xavier1 (~xavier@108-171-72-65.dr.cgocable.ca) has quit (Read error: Connection reset by peer)
+2016-10-27 11:14:16	-->	xavier1 (~xavier@108-171-72-65.dr.cgocable.ca) has joined #gentoo
+2016-10-27 11:17:50	m_barteks2x	Is there any terminal emulator other than gnome terminal that handles resizing window by re-wrapping the text?
+2016-10-27 11:17:58	<--	muffindrake (~muffindra@unaffiliated/muffindrake) has quit (Ping timeout: 245 seconds)
+2016-10-27 11:18:04	m_barteks2x	Penis it the only one?
+2016-10-27 11:18:08	m_barteks2x	F
+2016-10-27 11:18:12	m_barteks2x	Hatevthat
+2016-10-27 11:18:18	m_barteks2x	That damn keyboard
+2016-10-27 11:18:23	netz	m_barteks2x: I think most all do, assuming your shell supports it.
+2016-10-27 11:18:47	<--	cheeseboy (~cheeseboy@66-189-30-56.dhcp.oxfr.ma.charter.com) has quit (Ping timeout: 256 seconds)
+2016-10-27 11:18:50	m_barteks2x	I want editing messages on irc...
+2016-10-27 11:18:57	netz	Linux Sucks 2016 was a good talk
+2016-10-27 11:19:47	m_barteks2x	Autocorrect is evil sometimes
+2016-10-27 11:20:02	netz	m_barteks2x: autocorekt more like it.
+2016-10-27 11:22:35	m_barteks2x	So for these terminals most of them just cut off text after resizing window
+2016-10-27 11:22:35		[11:22]
+2016-10-27 11:22:55	m_barteks2x	The only one I found that doesn't is gnome terminal
+2016-10-27 11:23:27	-->	ilovekiruna (~ilovekiru@b2b-130-180-113-170.unitymedia.biz) has joined #gentoo
+2016-10-27 11:23:30	+iamben	m_barteks2x: konsole works, i bet xfce4-terminal does, and probably anything vte-based
+2016-10-27 11:23:36	+iamben	ie "all the modern ones"
+2016-10-27 11:23:55	m_barteks2x	Cuffs terminal didn't do that last time I used it
+2016-10-27 11:24:06	m_barteks2x	At least bourbon debian
+2016-10-27 11:24:15	m_barteks2x	Xfce...
+2016-10-27 11:24:15	netz	m_barteks2x: also there is the 'shopt -s checkwinsize' thingus
+2016-10-27 11:24:56	m_barteks2x	And what it does?
+2016-10-27 11:24:59	maolang	m_barteks2x: x11-terms/terminator / gnome based so might be quite a few dependencies through...
+2016-10-27 11:25:00	-->	KindOne_ (kindone@freenude/topless/kindone) has joined #gentoo
+2016-10-27 11:25:16	-->	metachr0n (~nobody@109.201.138.229) has joined #gentoo
+2016-10-27 11:25:24	<--	chr1stopher (~christoph@c-76-122-158-246.hsd1.mi.comcast.net) has quit (Quit: leaving)
+2016-10-27 11:25:47	<--	toralf (~toralf@x4e36821b.dyn.telefonica.de) has quit (Ping timeout: 252 seconds)
+2016-10-27 11:25:49	<--	KindOne (kindone@freenude/topless/kindone) has quit (Ping timeout: 276 seconds)
+2016-10-27 11:25:53	m_barteks2x	Any small browser that supports JavaScript enough to run web version of Skype?
+2016-10-27 11:26:07	netz	maolang: I think it needs to be set in bash for resizing to work properly. Also, termite is good, if you're looking for something lean and mean with some nice touches.
+2016-10-27 11:26:14	<--	Jawmare (~Jawmare@unaffiliated/jawmare) has quit (Read error: Connection reset by peer)
+2016-10-27 11:26:28	<--	REdOG (~REdOG@gentoo/user/redog) has quit (Remote host closed the connection)
+2016-10-27 11:26:54	<--	FroZnShiva (~FroZnShiv@46.59.225.64) has quit (Quit: So long and thanks for all the fish.)
+2016-10-27 11:27:13	m_barteks2x	I will try termite and see what it is
+2016-10-27 11:27:55	<--	xerox123 (xerox123@unaffiliated/xerox123) has quit (Quit: ZNC - http://znc.in)
