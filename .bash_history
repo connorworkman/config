@@ -525,3 +525,26 @@ modprobe -l nf*
 find /usr/lib/modules/ -name "nf*.ko.gz"
 _ modprobe nf_conntrack
 _ modprobe nf_conntrack
+_ modprobe nf_conntrack
+echo
+echo
+echo "
+test"
+< /etc/inputrc 
+cat /etc/inputrc 
+vim /etc/inputrc 
+vim /etc/inputrc 
+vim /etc/inputrc 
+vim /etc/inputrc 
+
+set -o vi
+echo
+echo
+echo
+echo
+echo
+echo
+set -o emacs
+echo
+echexit
+exit

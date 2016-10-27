@@ -3627,3 +3627,119 @@
 2016-10-26 14:31:57	<--	d0nn1e (~d0nn1e@cpe-104-138-218-156.triad.res.rr.com) has quit (Quit: ZNC - http://znc.in)
 2016-10-26 14:33:10	-->	d0nn1e (~d0nn1e@cpe-104-138-218-156.triad.res.rr.com) has joined ##sed
 2016-10-26 14:36:07	<--	d0nn1e (~d0nn1e@cpe-104-138-218-156.triad.res.rr.com) has quit (Client Quit)
+2016-10-26 14:39:36	-->	d0nn1e (~d0nn1e@cpe-104-138-218-156.triad.res.rr.com) has joined ##sed
+2016-10-26 14:45:00		[14:39]
+2016-10-26 14:46:48	<--	d0nn1e (~d0nn1e@cpe-104-138-218-156.triad.res.rr.com) has quit (Quit: ZNC - http://znc.in)
+2016-10-26 14:47:29	-->	d0nn1e (~d0nn1e@cpe-104-138-218-156.triad.res.rr.com) has joined ##sed
+2016-10-26 14:53:00		[14:47]
+2016-10-26 14:57:10	<--	d0nn1e (~d0nn1e@cpe-104-138-218-156.triad.res.rr.com) has quit (Quit: ZNC - http://znc.in)
+2016-10-26 14:57:52	-->	d0nn1e (~d0nn1e@cpe-104-138-218-156.triad.res.rr.com) has joined ##sed
+2016-10-26 14:59:29	<--	d0nn1e (~d0nn1e@cpe-104-138-218-156.triad.res.rr.com) has quit (Client Quit)
+2016-10-26 15:02:38	<--	al-damiri (uid142631@gateway/web/irccloud.com/x-ordkskvyiybdxfkt) has quit (Quit: Connection closed for inactivity)
+2016-10-26 15:03:19	-->	d0nn1e (~d0nn1e@cpe-104-138-218-156.triad.res.rr.com) has joined ##sed
+2016-10-26 15:08:52	-->	geggam (~geggam@ec2-107-20-130-165.compute-1.amazonaws.com) has joined ##sed
+2016-10-26 15:08:52		[15:08]
+2016-10-26 15:11:04	-->	denisk (~denisk@CPE-144-132-235-16.nsw.bigpond.net.au) has joined ##sed
+2016-10-26 15:15:14	-->	roboguy` (~roboguy_@205.59.124.24.cm.sunflower.com) has joined ##sed
+2016-10-26 15:21:00		[15:15]
+2016-10-26 15:23:35	<--	kingsley (~kingsley@174-21-72-212.tukw.qwest.net) has quit (Remote host closed the connection)
+2016-10-26 15:29:00		[15:23]
+2016-10-26 15:30:03	hiroki	Hi Folks. I'm having trouble getting my sed regex right -> echo 'set uhi_hld_bo garbage=great uhihp=trash' | sed --quiet 's/^set \(.*\) \(.*\)$/\1=\2/p'. This gives me 'uhi_hld_bo garbage=great=uhihp=trash' whereas i'm looking for 'uhi_hld_bo garbage=great uhihp=trash'. Any tips ?
+2016-10-26 15:30:05	-->	kingsley (~kingsley@174-21-72-212.tukw.qwest.net) has joined ##sed
+2016-10-26 15:30:59	<--	cyborg-one (~cyborg-on@188-115-191-178.broadband.tenet.odessa.ua) has quit (Quit: cyborg-one)
+2016-10-26 15:31:44	izalove	cut -d' ' -f2-
+2016-10-26 15:33:02	izalove	sed 's/set //'
+2016-10-26 15:33:26	izalove	ah i guess you want to exclude any other line as well
+2016-10-26 15:33:42	izalove	sed -n 's/set \(.*\) \(.*\)/\1 \2/p'
+2016-10-26 15:33:49	izalove	sed -n 's/^set \(.*\) \(.*\)/\1 \2/p'
+2016-10-26 15:34:10	izalove	like, literally just replace the = in your code with a space
+2016-10-26 15:34:25	hiroki	izalove: thanks, but the cut won't work considering the file it reads from contains more then 1 line -> http://pastebin.com/LwHEK9rF
+2016-10-26 15:35:27	hiroki	izalove: that's interesting, however i'm kind of bounded keeping the = in there as i'm doing an 'export $output_of_sed' to export it as a variable in BASH
+2016-10-26 15:35:52	izalove	what
+2016-10-26 15:35:56	izalove	that won't work
+2016-10-26 15:36:17	izalove	you need   eval "export $(sed ...)"
+2016-10-26 15:36:24	izalove	i think
+2016-10-26 15:36:28	hiroki	It does as long as the set lines only contain 3 items seperated by a space
+2016-10-26 15:36:58	hiroki	The trouble is when the set line contain 4 or more items
+2016-10-26 15:37:34	hiroki	Is there a way to have \1 only match the first word it comes across, instead of the last one (which is what it seems to be doing now) ?
+2016-10-26 15:38:57	izalove	that's not what's happening
+2016-10-26 15:39:06	izalove	you forgot that .* is greedy
+2016-10-26 15:39:10	izalove	so your first \(.
+2016-10-26 15:39:17	izalove	so your first \(.*\) eats up two words
+2016-10-26 15:40:30	hiroki	So i'm guessing that means I have to use a non-greedy regex. Is it possible to be non-greedy for the first match (\1) and greedy for the second match (\2) ?
+2016-10-26 15:42:33	izalove	no but you can use [^ ]* instead of .*
+2016-10-26 15:42:44	izalove	so it won't match a space
+2016-10-26 15:45:14	hiroki	izalove: 's/^set \([^ ]*\) \(.*\)$/\1=\2/p' seems to work. However, not quite getting yet what [^ ]* does. What space would it otherwise match, the last one in the line ?
+2016-10-26 15:45:14		[15:45]
+2016-10-26 15:45:46	izalove	set uhi_hld_bo garbage=great uhihp=trash
+2016-10-26 15:45:56	izalove	    ^^^^^^^^^^^^^^^^^^^^^^^^
+2016-10-26 15:46:00	izalove	all of that is \1
+2016-10-26 15:46:06	izalove	in your original code
+2016-10-26 15:47:55	hiroki	Right, so it'll only match now from ^ until the first space using [^ ]*
+2016-10-26 15:48:46	izalove	no, [^xyz] means "a character that's not a x or a y or a z
+2016-10-26 15:48:49	izalove	no, [^xyz] means "a character that's not a x or a y or a z"
+2016-10-26 15:50:10	hiroki	Ah, I get it, thanks for the explanation izalove !
+2016-10-26 15:51:55	hiroki	Looks like i'm still having issues getting where I want, but the original mis-match has been fixed now ! -> for i in $(cat /tmp/hello | sed --quiet 's/^set \([^ ]*\) \(.*\)$/\1=\2/p'); do echo export "$i"; done. Looks like any additional items on a line are treated seperately. Guess i'm going to fiddle a bit more..
+2016-10-26 15:57:00		[15:51]
+2016-10-26 16:06:55	hiroki	izalove: looks like I got it working, I was ignoring the fact a for loop splits on whitespaces by default. I'm using this now: while read i; do echo export "$i"; done < <(cat /tmp/hello | sed --quiet 's/^set \([^ ]*\) \(.*\)$/\1=\2/p')
+2016-10-26 16:07:11	izalove	y u no      export "$(sed ...)"
+2016-10-26 16:10:38	hiroki	izalove: does not seem to work ?
+2016-10-26 16:16:00		[16:10]
+2016-10-26 16:24:14	<--	denisk (~denisk@CPE-144-132-235-16.nsw.bigpond.net.au) has quit (Remote host closed the connection)
+2016-10-26 16:24:52	-->	denisk (~denisk@CPE-144-132-235-16.nsw.bigpond.net.au) has joined ##sed
+2016-10-26 16:29:13	<--	denisk (~denisk@CPE-144-132-235-16.nsw.bigpond.net.au) has quit (Ping timeout: 260 seconds)
+2016-10-26 16:35:00		[16:29]
+2016-10-26 17:00:36	-->	denisk (~denisk@pa49-181-168-44.pa.nsw.optusnet.com.au) has joined ##sed
+2016-10-26 17:00:36		[17:00]
+2016-10-26 17:06:18	<--	Nahra (~user@unaffiliated/nahra) has quit (Remote host closed the connection)
+2016-10-26 17:07:55	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined ##sed
+2016-10-26 17:07:55	--	Topic for ##sed is "The Stream EDitor | Paste at: http://sprunge.us (/msg greybot sprunge) | FAQ: http://sed.sf.net/sedfaq.html | Intro/Tutorial: http://xrl.us/sedintro#uh-0 | POSIX: http://xrl.us/sedstd | Reference: http://xrl.us/gnused | Regex: #regex | Do NOT try to parse markup (html, xml, etc) with sed! /msg greybot html | Please ask your question and be patient, someone will get to you soon"
+2016-10-26 17:07:55	--	Topic set by e36freak (~daniel.mi@auriga.kiwilight.com) on Wed, 21 Aug 2013 16:29:09
+2016-10-26 17:07:55	--	Channel ##sed: 124 nicks (0 ops, 0 voices, 124 normals)
+2016-10-26 17:09:40	<--	denisk (~denisk@pa49-181-168-44.pa.nsw.optusnet.com.au) has quit (Remote host closed the connection)
+2016-10-26 17:09:48	--	Channel created on Wed, 09 Sep 2009 05:53:00
+2016-10-26 17:09:49	--	Mode ##sed [+Ccnt]
+2016-10-26 17:09:49	--	Channel created on Wed, 09 Sep 2009 05:53:00
+2016-10-26 17:15:00		[17:09]
+2016-10-26 17:18:55	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined ##sed
+2016-10-26 17:18:55	--	Topic for ##sed is "The Stream EDitor | Paste at: http://sprunge.us (/msg greybot sprunge) | FAQ: http://sed.sf.net/sedfaq.html | Intro/Tutorial: http://xrl.us/sedintro#uh-0 | POSIX: http://xrl.us/sedstd | Reference: http://xrl.us/gnused | Regex: #regex | Do NOT try to parse markup (html, xml, etc) with sed! /msg greybot html | Please ask your question and be patient, someone will get to you soon"
+2016-10-26 17:18:55	--	Topic set by e36freak (~daniel.mi@auriga.kiwilight.com) on Wed, 21 Aug 2013 16:29:09
+2016-10-26 17:18:55	--	Channel ##sed: 123 nicks (0 ops, 0 voices, 123 normals)
+2016-10-26 17:20:49	--	Channel created on Wed, 09 Sep 2009 05:53:00
+2016-10-26 17:20:52	--	Mode ##sed [+Ccnt]
+2016-10-26 17:20:52	--	Channel created on Wed, 09 Sep 2009 05:53:00
+2016-10-26 17:22:34	-->	guiverc (~guiverc@ppp118-209-239-14.bras2.mel11.internode.on.net) has joined ##sed
+2016-10-26 17:28:00		[17:22]
+2016-10-26 17:51:19	-->	han-solo (~han-solo@101.56.29.28) has joined ##sed
+2016-10-26 17:51:19		[17:51]
+2016-10-26 17:54:55	<--	geggam (~geggam@ec2-107-20-130-165.compute-1.amazonaws.com) has quit (Ping timeout: 252 seconds)
+2016-10-26 18:00:00		[17:54]
+2016-10-26 18:11:41	-->	denisk (~denisk@CPE-144-132-235-16.nsw.bigpond.net.au) has joined ##sed
+2016-10-26 18:17:00		[18:11]
+2016-10-26 18:21:33	--	yitz_ is now known as yitz
+2016-10-26 18:27:00		[18:21]
+2016-10-26 18:31:42	<--	RadoQ (~cheater@unaffiliated/radoq) has quit (Remote host closed the connection)
+2016-10-26 18:37:00		[18:31]
+2016-10-26 18:45:25	<--	han-solo (~han-solo@101.56.29.28) has quit (Ping timeout: 256 seconds)
+2016-10-26 18:46:56	-->	han-solo (~han-solo@101.56.29.28) has joined ##sed
+2016-10-26 18:52:00		[18:46]
+2016-10-26 19:01:29	<--	nal (~nal@adsl-64-237-239-9.prtc.net) has quit (Quit: WeeChat 1.4)
+2016-10-26 19:05:17	<--	roboguy` (~roboguy_@205.59.124.24.cm.sunflower.com) has quit (Remote host closed the connection)
+2016-10-26 19:05:49	-->	roboguy` (~roboguy_@205.59.124.24.cm.sunflower.com) has joined ##sed
+2016-10-26 19:10:15	<--	roboguy` (~roboguy_@205.59.124.24.cm.sunflower.com) has quit (Ping timeout: 256 seconds)
+2016-10-26 19:10:15		[19:10]
+2016-10-26 19:28:34	-->	roboguy` (~roboguy_@205.59.124.24.cm.sunflower.com) has joined ##sed
+2016-10-26 19:28:34		[19:28]
+2016-10-26 19:33:07	<--	denisk (~denisk@CPE-144-132-235-16.nsw.bigpond.net.au) has quit (Remote host closed the connection)
+2016-10-26 19:33:43	-->	denisk (~denisk@CPE-144-132-235-16.nsw.bigpond.net.au) has joined ##sed
+2016-10-26 19:38:24	<--	denisk (~denisk@CPE-144-132-235-16.nsw.bigpond.net.au) has quit (Ping timeout: 260 seconds)
+2016-10-26 19:39:28	-->	denisk (~denisk@CPE-144-132-235-16.nsw.bigpond.net.au) has joined ##sed
+2016-10-26 19:45:00		[19:39]
+2016-10-26 20:05:46	<--	han-solo (~han-solo@101.56.29.28) has quit (Ping timeout: 250 seconds)
+2016-10-26 20:05:46		[20:05]
+2016-10-26 20:06:20	-->	han-solo (~han-solo@101.56.187.144) has joined ##sed
+2016-10-26 20:06:35	<--	roboguy` (~roboguy_@205.59.124.24.cm.sunflower.com) has quit
+2016-10-26 20:07:45	<--	han-solo (~han-solo@101.56.187.144) has quit (Client Quit)
+2016-10-26 20:08:08	-->	han-solo (~han-solo@101.56.187.144) has joined ##sed
+2016-10-26 20:13:43	<--	tinkersh (~TinkerSh@103.10.28.8) has quit (Read error: Connection reset by peer)
+2016-10-26 20:14:00	-->	tinkersh (~TinkerSh@103.10.28.8) has joined ##sed
