@@ -31,7 +31,7 @@ export PYTHONSTARTUP=${HOME}/.pyrc
 export ARCHFLAGS="-arch x86_64"
 export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
 ## SSH
-export SSH_KEY_PATH=.ssh/identity
+export SSH_KEY_PATH=${HOME}/.ssh/identity
 ## Add vim as default editor
 export EDITOR=vim
 export FCEDIT="${EDITOR}" VISUAL="${EDITOR}" SUDO_EDITOR="${EDITOR}" SYSTEMD_EDITOR="${EDITOR}"

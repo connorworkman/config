@@ -17,6 +17,9 @@ unalias {1..9} gg history c d h j s >/dev/null 2>&1 || true
 
 ## Custom aliases
 
+alias bsrv='sudo tar cvf /store/config/srvbak/$(date +"%Y-%d-%m").tar /srv '
+alias bhttpd='sudo tar cvf /store/config/srvbak/httpd-$(date +"%Y-%d-%m").tar /etc/httpd '
+alias bnginx='sudo tar cvf /store/config/srvbak/nginx-$(date +"%Y-%d-%m").tar /etc/nginx '
 alias em='emerge '
 alias ems='emerge -s '
 alias eq='equery '
@@ -1550,4 +1553,3 @@ sfs2() {
 	#xargs -t0 -I{} sudo umount "{}";
 	#ps aux | grep $mpid | grep -v grep
 }
-
