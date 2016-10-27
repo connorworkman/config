@@ -31008,3 +31008,300 @@
 2016-10-27 11:25:59	-->	Anderssen (~shadow007@p5DE41B13.dip0.t-ipconnect.de) has joined #bash
 2016-10-27 11:26:11	<--	hhee (~hhee@128-74-197-209.broadband.corbina.ru) has quit (Ping timeout: 244 seconds)
 2016-10-27 11:27:13	-->	periappi (5c921bfb@gateway/web/freenode/ip.92.146.27.251) has joined #bash
+2016-10-27 11:29:04	periappi	Hi, I was wondering how does applications manage to treat arguments when they are unified in one argument : ex: emerge -avp (it will treat it like emerge -a -v -p) ?
+2016-10-27 11:29:11	<--	Alex-SF (~Alex-SF@70-35-54-233.static.wiline.com) has quit (Quit: Alex-SF)
+2016-10-27 11:29:23	-->	kerframil (~kerframil@gentoo/user/kerframil) has joined #bash
+2016-10-27 11:29:30	--	KindOne_ is now known as KindOne
+2016-10-27 11:29:33	-->	firstdayonthejob (~firstdayo@cpc99346-croy26-2-0-cust153.19-2.cable.virginm.net) has joined #bash
+2016-10-27 11:29:37	geirha	they use getopt(3)
+2016-10-27 11:29:37	izalove	!getopts
+2016-10-27 11:29:37	greybot	while getopts ab: name; do case $name in a) a=1;; b) b=$OPTARG;; ?) echo invalid;; esac; done; shift $((OPTIND - 1)) # Tutorial: http://wiki.bash-hackers.org/howto/getopts_tutorial Examples: http://mywiki.wooledge.org/BashFAQ/035
+2016-10-27 11:30:09	osse	periappi: if the argument starts with only one dash, treat the remains characters as if they were separate arguments
+2016-10-27 11:30:26	osse	simplified
+2016-10-27 11:30:26		[11:30]
+2016-10-27 11:30:34	periappi	Hum, ok, thx :)
+2016-10-27 11:30:37	-->	iliv (~iliv@93.77.152.230) has joined #bash
+2016-10-27 11:31:04	osse	programs can treats arguments however they want.there is no black magic
+2016-10-27 11:31:18	<--	theshams (~thesha@124.40.246.86) has quit (Quit: Leaving)
+2016-10-27 11:31:21	<--	diogenese (diogenese@diogenese.velotech.net) has quit (Read error: Connection reset by peer)
+2016-10-27 11:32:29	twkm	and in fact there are some that use -all-here-is-one-thing.  sometimes they aren't truly options, e.g., find's various primaries.
+2016-10-27 11:32:31	-->	atmx (~atmx@atmx.co) has joined #bash
+2016-10-27 11:32:47	-->	PhatMac (~phatmac@167.220.25.70) has joined #bash
+2016-10-27 11:33:25	<--	afuentes (~kusanagi@201.165.35.37.dynamic.jazztel.es) has quit (Ping timeout: 256 seconds)
+2016-10-27 11:34:36	PhatMac	hello all
+2016-10-27 11:34:40	<--	vinrock (~vin@unaffiliated/vinrock) has quit (Quit: Leaving.)
+2016-10-27 11:34:55	<--	PhatMac (~phatmac@167.220.25.70) has left #bash
+2016-10-27 11:34:56	osse	and -fno-omit-frame-pointer
+2016-10-27 11:35:51	-->	edge226 (~quassel@unaffiliated/edge226) has joined #bash
+2016-10-27 11:35:53	sjohnson	-extreme-development
+2016-10-27 11:36:06	<--	REX (~quassel@quassel.zerofox.xyz) has quit (Remote host closed the connection)
+2016-10-27 11:36:15	alyptik	-screw-upstream
+2016-10-27 11:36:26	geirha	And then there is GNU, which adds yet another complication with optional arguments
+2016-10-27 11:36:27	-->	REX (~quassel@quassel.zerofox.xyz) has joined #bash
+2016-10-27 11:36:47	-->	diogenese (diogenese@diogenese.velotech.net) has joined #bash
+2016-10-27 11:36:59	<--	REX (~quassel@quassel.zerofox.xyz) has quit (Remote host closed the connection)
+2016-10-27 11:37:25	-->	blueness_ (~blueness@gentoo/developer/blueness) has joined #bash
+2016-10-27 11:37:30	osse	and dd, with its foo=bar shenanigans
+2016-10-27 11:37:39	alyptik	lol
+2016-10-27 11:37:51	osse	tar and ps... ewww
+2016-10-27 11:37:52	<--	ProjektGopher (~quassel@S0106c8d71920973b.vs.shawcable.net) has quit (Remote host closed the connection)
+2016-10-27 11:37:55	alyptik	did dd or tar come first
+2016-10-27 11:38:46	twkm	no, the chicken did.
+2016-10-27 11:38:47	-->	PhatMac (~phatmac@167.220.25.70) has joined #bash
+2016-10-27 11:38:47	sjohnson	if i had to guess, probably data duplicator.
+2016-10-27 11:38:48	phy1729	tar isn't bad
+2016-10-27 11:39:03	<--	PhatMac (~phatmac@167.220.25.70) has left #bash
+2016-10-27 11:39:03	geirha	yeah, but the chicken came from the egg, so ...
+2016-10-27 11:39:06	twkm	non-gnu tar isn't too bad at all...
+2016-10-27 11:39:11	phy1729	ps just has a weird split brain problem
+2016-10-27 11:39:13	alyptik	tar can do -opts too 
+2016-10-27 11:39:17	twkm	but it is dead.  pax baby!
+2016-10-27 11:39:28	-->	e14 (~e14@2601:184:4100:1ea6:e5ce:107f:c843:38c4) has joined #bash
+2016-10-27 11:39:52	alyptik	really? i would have guess tar since tape
+2016-10-27 11:40:01	alyptik	thought i guess data came before tape
+2016-10-27 11:40:05	twkm	posix tar is just tar key [file...].
+2016-10-27 11:40:18	<--	a3Dman (~3Dman@unaffiliated/a3dman) has quit (Ping timeout: 250 seconds)
+2016-10-27 11:40:20	sjohnson	fact of the day:  no one uses tape archives anymore.
+2016-10-27 11:40:26	alyptik	at last
+2016-10-27 11:40:34	phy1729	sjohnson: liar
+2016-10-27 11:40:46	osse	that's not what geirha said to me
+2016-10-27 11:40:47	twkm	not quite true, but they are indeed hen's teeth these days.
+2016-10-27 11:41:19	<--	Anderssen (~shadow007@p5DE41B13.dip0.t-ipconnect.de) has quit (Quit: Verlassend)
+2016-10-27 11:41:22	twkm	some places still have vast tape libraries, and rollerblades (no boards allowed, though the kidz seem to want to use them).
+2016-10-27 11:41:38	-->	tax (~tax@cpe-72-182-55-97.austin.res.rr.com) has joined #bash
+2016-10-27 11:41:46	twkm	err, roller{skat,blad}es.
+2016-10-27 11:41:56	<--	eivarv (~eivarv@cm-84.215.4.97.getinternet.no) has quit (Quit: Sleep)
+2016-10-27 11:41:59	<--	iliv (~iliv@93.77.152.230) has quit (Quit: Time to get some sleep... ZzZzZzZ)
+2016-10-27 11:42:02	-->	bigfondue (~bigfondue@c-69-137-134-106.hsd1.pa.comcast.net) has joined #bash
+2016-10-27 11:42:04	<--	diogenese (diogenese@diogenese.velotech.net) has quit (Read error: Connection reset by peer)
+2016-10-27 11:42:05	alyptik	where my A: at
+2016-10-27 11:42:09	-->	logan_e__ (uid164592@gateway/web/irccloud.com/x-tibmqmzgbkijzwqd) has joined #bash
+2016-10-27 11:42:11	phy1729	no boards? How else am I supposed to ride in and say "Never fear; I is here."
+2016-10-27 11:42:19	sjohnson	maybe tape drives will become "cool" again, for computer hipsters like with vinyl records.
+2016-10-27 11:42:22	osse	alyptik: as of Win 10, nowhere
+2016-10-27 11:42:33	alyptik	DAT tapes still pretty hipster
+2016-10-27 11:42:34	twkm	but instead of nearly every place you go having some kind of tape system, now it is far less frequent unless you inhabit certain circles.
+2016-10-27 11:42:55	-->	anuxivm (~anuxi@92.177.99.40) has joined #bash
+2016-10-27 11:42:58	sjohnson	then they can "tar" with that smug grin and say "guess what tar stands for?" to colleagues.
+2016-10-27 11:43:01	-->	polyzen (~poly@unaffiliated/polyzen) has joined #bash
+2016-10-27 11:43:11	alyptik	lol
+2016-10-27 11:43:14	-->	a3Dman_ (~3Dman@unaffiliated/a3dman) has joined #bash
+2016-10-27 11:43:28	-->	REX (~quassel@quassel.zerofox.xyz) has joined #bash
+2016-10-27 11:44:16	sjohnson	i do like how the save icon is still a 3.5" floppy disk though.
+2016-10-27 11:44:20	sjohnson	it's cute.
+2016-10-27 11:46:16	-->	JeanCarloMachado (~jean@189-10-225-172.cslce701.dsl.brasiltelecom.net.br) has joined #bash
+2016-10-27 11:46:16		[11:46]
+2016-10-27 11:47:21	-->	diogenese (diogenese@diogenese.velotech.net) has joined #bash
+2016-10-27 11:47:22	osse	yeah but you think everything's cute.
+2016-10-27 11:47:34	<--	REX (~quassel@quassel.zerofox.xyz) has quit (Remote host closed the connection)
+2016-10-27 11:47:44	sjohnson	true.
+2016-10-27 11:47:46	geirha	Typical 3M. "Let's cash in on that save icon!"
+2016-10-27 11:47:55	-->	oryman (~boris@cpe-188-129-105-245.dynamic.amis.hr) has joined #bash
+2016-10-27 11:48:16	<--	martin_langhoff (~martin@c-75-74-194-73.hsd1.fl.comcast.net) has quit (Ping timeout: 250 seconds)
+2016-10-27 11:48:27	-->	nilg (~user@77.70.2.229) has joined #bash
+2016-10-27 11:49:16	<--	Achylles (~Achylles@201-68-86-191.dsl.telesp.net.br) has quit (Ping timeout: 252 seconds)
+2016-10-27 11:49:28	<--	oryman (~boris@cpe-188-129-105-245.dynamic.amis.hr) has quit (Client Quit)
+2016-10-27 11:49:59	-->	col (~col@unaffiliated/col) has joined #bash
+2016-10-27 11:50:02	<--	col (~col@unaffiliated/col) has quit (Max SendQ exceeded)
+2016-10-27 11:50:25	-->	col (~col@unaffiliated/col) has joined #bash
+2016-10-27 11:50:40	<--	e14 (~e14@2601:184:4100:1ea6:e5ce:107f:c843:38c4) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-10-27 11:51:20	-->	oxhak (~OxHaK@unaffiliated/oxhak) has joined #bash
+2016-10-27 11:51:22	-->	oxhak_ (~OxHaK@219-132-190-109.isp.overthebox.ovh) has joined #bash
+2016-10-27 11:51:43	-->	cyborg-one (~cyborg-on@31.31.96.84) has joined #bash
+2016-10-27 11:51:52	sjohnson	osse, check out this technology: https://upload.wikimedia.org/wikipedia/commons/6/66/Usb_floppy_drive.jpg
+2016-10-27 11:52:06	<--	SuperG (~SuperG@176.26.97.155) has quit (Quit: My Mac has gone to sleep. ZZZzzz…)
+2016-10-27 11:54:01	<--	gagan662 (gagan662@gateway/shell/insomnia247/x-cufbhbhnkapwhowf) has quit (Ping timeout: 260 seconds)
+2016-10-27 11:54:59	<--	Keanu73 (~Keanu73@unaffiliated/keanu73) has quit (Quit: Gotta go to bed or something. See ya!)
+2016-10-27 11:55:49	<--	riemann (~riemann@ip-222-88.ists.pl) has quit (Quit: Leaving)
+2016-10-27 11:56:08	geirha	I have one of those
+2016-10-27 11:56:20	geirha	came with a CD with drivers
+2016-10-27 11:57:11	<--	oxhak (~OxHaK@unaffiliated/oxhak) has quit (Remote host closed the connection)
+2016-10-27 11:57:11	<--	oxhak_ (~OxHaK@219-132-190-109.isp.overthebox.ovh) has quit (Remote host closed the connection)
+2016-10-27 11:58:33	-->	kbdkode (~kbdkode@unaffiliated/kbdkode) has joined #bash
+2016-10-27 11:58:33	-->	e14 (~e14@2601:184:4100:1ea6:e5ce:107f:c843:38c4) has joined #bash
+2016-10-27 11:58:48	sjohnson	i should borrow it.  i have some disks at home but have no idea if the data has kept after all these years.
+2016-10-27 11:59:21	<--	elastix (~elastix@cpc85186-haye23-2-0-cust65.17-4.cable.virginm.net) has quit (Quit: Leaving)
+2016-10-27 11:59:24	geirha	My DOOM floppies had survived
+2016-10-27 12:01:53	<--	e14 (~e14@2601:184:4100:1ea6:e5ce:107f:c843:38c4) has quit (Client Quit)
+2016-10-27 12:01:53		[12:01]
+2016-10-27 12:02:19	-->	oxhak (~OxHaK@unaffiliated/oxhak) has joined #bash
+2016-10-27 12:02:21	-->	oxhak_ (~OxHaK@219-132-190-109.isp.overthebox.ovh) has joined #bash
+2016-10-27 12:02:25	-->	heurist`_` (heurist@unaffiliated/heurist) has joined #bash
+2016-10-27 12:02:26	-->	Geom (~Geom@122.52.67.105) has joined #bash
+2016-10-27 12:02:57	<--	21WAAH4RL (~enkeyz@2a01-036d-0200-29f3-c58a-c0a0-4e03-d997.pool6.digikabel.hu) has quit (Remote host closed the connection)
+2016-10-27 12:03:52	-->	martin_langhoff (~martin@c-75-74-194-73.hsd1.fl.comcast.net) has joined #bash
+2016-10-27 12:04:30	<--	periappi (5c921bfb@gateway/web/freenode/ip.92.146.27.251) has quit (Quit: Page closed)
+2016-10-27 12:05:13	<--	JeanCarloMachado (~jean@189-10-225-172.cslce701.dsl.brasiltelecom.net.br) has quit (Ping timeout: 260 seconds)
+2016-10-27 12:05:24	<--	heurist_ (heurist@unaffiliated/heurist) has quit (Ping timeout: 260 seconds)
+2016-10-27 12:05:41	-->	nilg` (~user@77.70.2.229) has joined #bash
+2016-10-27 12:06:08	-->	e14 (~e14@2601:184:4100:1ea6:e5ce:107f:c843:38c4) has joined #bash
+2016-10-27 12:06:31	-->	nomotif (~nomotif@c-98-207-81-55.hsd1.ca.comcast.net) has joined #bash
+2016-10-27 12:07:58	<--	jozwior (~jozwior@62.244.139.219) has quit (Ping timeout: 245 seconds)
+2016-10-27 12:08:03	<--	gentunian (~seba@unaffiliated/gentunian) has quit (Ping timeout: 244 seconds)
+2016-10-27 12:08:13	<--	e14 (~e14@2601:184:4100:1ea6:e5ce:107f:c843:38c4) has quit (Client Quit)
+2016-10-27 12:08:23	-->	SuperG (~SuperG@176.26.97.155) has joined #bash
+2016-10-27 12:08:23	<--	oxhak_ (~OxHaK@219-132-190-109.isp.overthebox.ovh) has quit (Ping timeout: 245 seconds)
+2016-10-27 12:08:28	<--	oxhak (~OxHaK@unaffiliated/oxhak) has quit (Ping timeout: 250 seconds)
+2016-10-27 12:14:00		[12:08]
+2016-10-27 12:14:35	-->	k__ (~iridos@unaffiliated/iridos) has joined #bash
+2016-10-27 12:15:00	<--	sarbs (~sarbs@c-67-182-146-128.hsd1.wa.comcast.net) has quit (Excess Flood)
+2016-10-27 12:15:07	<--	carmelo12341 (~carmelo12@190.234.67.207) has quit (Quit: Konversation terminated!)
+2016-10-27 12:15:09	<--	gniourf (~gniourf@pdm-l03.insa-lyon.fr) has quit (Ping timeout: 311 seconds)
+2016-10-27 12:15:24	<--	dino82 (~deeno@unaffiliated/dino82) has quit (Excess Flood)
+2016-10-27 12:15:24	-->	sarbs (~sarbs@2601:600:9001:69f0:2543:43ba:2ae5:c1a6) has joined #bash
+2016-10-27 12:15:32	<--	nilg` (~user@77.70.2.229) has quit (Read error: Connection reset by peer)
+2016-10-27 12:15:45	-->	dino82 (~deeno@unaffiliated/dino82) has joined #bash
+2016-10-27 12:15:55	<--	cdown (~cdown@199.201.64.135) has quit (Remote host closed the connection)
+2016-10-27 12:15:55	<--	CutMeOwnThroat (~iridos@unaffiliated/iridos) has quit (Remote host closed the connection)
+2016-10-27 12:16:46	<--	nilg (~user@77.70.2.229) has quit (Remote host closed the connection)
+2016-10-27 12:16:49	-->	gniourf (~gniourf@pdm-l03.insa-lyon.fr) has joined #bash
+2016-10-27 12:16:57	<--	spine55 (~spine@ip68-108-246-161.sb.sd.cox.net) has quit (Quit: WeeChat 1.3)
+2016-10-27 12:17:17	-->	cdown (~cdown@199.201.64.135) has joined #bash
+2016-10-27 12:19:14	<--	gniourf (~gniourf@pdm-l03.insa-lyon.fr) has quit (Max SendQ exceeded)
+2016-10-27 12:19:27	-->	tdy (~tdy@unaffiliated/tdy) has joined #bash
+2016-10-27 12:20:59	--	grumble is now known as zomble
+2016-10-27 12:21:05	-->	gniourf (~gniourf@pdm-l03.insa-lyon.fr) has joined #bash
+2016-10-27 12:21:51	-->	Kruppt (~Krupptus@50.111.39.27) has joined #bash
+2016-10-27 12:22:09	<--	niseak (~niseak@162.222.47.229) has quit (Quit: Leaving...)
+2016-10-27 12:22:37	<--	firstdayonthejob (~firstdayo@cpc99346-croy26-2-0-cust153.19-2.cable.virginm.net) has quit (Ping timeout: 252 seconds)
+2016-10-27 12:24:20	<--	mmazing (~mmazing@unaffiliated/mmazing) has quit (Quit: Leaving)
+2016-10-27 12:26:15	<--	Muzer (~muzer@tim32.org) has quit (Excess Flood)
+2016-10-27 12:26:28	<--	izalove (~izabera@unaffiliated/izabera) has quit (Excess Flood)
+2016-10-27 12:26:29	<--	sarbs (~sarbs@2601:600:9001:69f0:2543:43ba:2ae5:c1a6) has quit (Max SendQ exceeded)
+2016-10-27 12:26:39	<--	ac_slater (~weechat@uva.bbn.com) has quit (Write error: Broken pipe)
+2016-10-27 12:26:48	-->	sarbs (~sarbs@2601:600:9001:69f0:2543:43ba:2ae5:c1a6) has joined #bash
+2016-10-27 12:26:48	<--	dodobrain (~dodobrain@14-202-40-12.tpgi.com.au) has quit (Ping timeout: 260 seconds)
+2016-10-27 12:26:53	<--	AnD[a]LeS (~andales@122.52.69.221) has quit (Ping timeout: 311 seconds)
+2016-10-27 12:28:05	-->	izalove (~izabera@unaffiliated/izabera) has joined #bash
+2016-10-27 12:30:10	-->	Muzer (~muzer@cpc96772-rdng27-2-0-cust294.15-3.cable.virginm.net) has joined #bash
+2016-10-27 12:30:10		[12:30]
+2016-10-27 12:31:37	-->	star_prone (~sviatovig@5-12-143-129.residential.rdsnet.ro) has joined #bash
+2016-10-27 12:32:00	<--	anonymuse (~anonymuse@65.209.61.114) has quit (Remote host closed the connection)
+2016-10-27 12:32:04	-->	jozwior (~jozwior@62.244.139.219) has joined #bash
+2016-10-27 12:34:10	-->	PhatMac (~phatmac@167.220.25.70) has joined #bash
+2016-10-27 12:34:36	<--	PhatMac (~phatmac@167.220.25.70) has quit (Remote host closed the connection)
+2016-10-27 12:34:54	<--	SuperG (~SuperG@176.26.97.155) has quit (Quit: Textual IRC Client: www.textualapp.com)
+2016-10-27 12:35:02	-->	PhatMac (~phatmac@167.220.25.70) has joined #bash
+2016-10-27 12:36:07	<--	TanPy (~tanpy@tst-ext.thestreet.com) has quit
+2016-10-27 12:36:25	<--	star_prone (~sviatovig@5-12-143-129.residential.rdsnet.ro) has quit (Ping timeout: 256 seconds)
+2016-10-27 12:36:38	<--	Rapture (~textual@50-232-118-138-static.hfc.comcastbusiness.net) has quit (Quit: Textual IRC Client: www.textualapp.com)
+2016-10-27 12:36:57	<--	wildlander (~wild@unaffiliated/wildlander) has quit (Quit: Saliendo)
+2016-10-27 12:38:57	-->	twowheels (~twowheels@96-81-163-203-static.hfc.comcastbusiness.net) has joined #bash
+2016-10-27 12:39:13	<--	twowheels (~twowheels@96-81-163-203-static.hfc.comcastbusiness.net) has quit (Read error: Connection reset by peer)
+2016-10-27 12:39:55	<--	PhatMac (~phatmac@167.220.25.70) has quit (Ping timeout: 276 seconds)
+2016-10-27 12:41:01	--	You are now known as core3
+2016-10-27 12:41:15	--	You are now known as alyptik
+2016-10-27 12:42:05	<--	Bl4ck57rik3r (~Bl4ck57ri@kite.riseup.net) has quit (Ping timeout: 256 seconds)
+2016-10-27 12:43:00	<--	johnmilton (~johnmilto@96-58-242-186.res.bhn.net) has quit (Remote host closed the connection)
+2016-10-27 12:44:12	-->	Bl4ck57rik3r (~Bl4ck57ri@199.254.238.200) has joined #bash
+2016-10-27 12:44:31	<--	irc-5225225 (~weechat@unaffiliated/irc-5225225) has quit (Quit: WeeChat 1.6)
+2016-10-27 12:46:12	-->	Alex-SF (~Alex-SF@c-71-198-228-84.hsd1.ca.comcast.net) has joined #bash
+2016-10-27 12:46:12		[12:46]
+2016-10-27 12:46:27	<--	KingsQuest (~ident@unaffiliated/kingsquest) has quit (Quit: oldest Michael J Fox died last night out of cruelty test subject)
+2016-10-27 12:47:28	<--	TomyLobo (~TomyLobo@2a02:8109:87c0:20c:f550:f458:e3f7:4c8f) has quit (Ping timeout: 250 seconds)
+2016-10-27 12:47:32	<--	tobozo (~tobozo@2a01:e35:8a1a:c2b0:bc46:a0e4:3b28:f450) has quit (Quit: Leaving)
+2016-10-27 12:47:47	-->	Achylles (~Achylles@201-68-86-191.dsl.telesp.net.br) has joined #bash
+2016-10-27 12:49:34	-->	KingsQuest (~ident@unaffiliated/kingsquest) has joined #bash
+2016-10-27 12:52:47	<--	somis (~somis@149.56.153.179) has quit (Read error: Connection reset by peer)
+2016-10-27 12:53:39	-->	somis (~somis@149.56.153.177) has joined #bash
+2016-10-27 12:55:43	<--	[fre] (~fre]@unaffiliated/fre/x-8815405) has quit (Ping timeout: 250 seconds)
+2016-10-27 12:57:14	-->	polymorphisme (~Icedove@2a01:e35:2421:ea10:7627:eaff:fe50:a29b) has joined #bash
+2016-10-27 12:57:41	-->	node9 (~node9@CPE0c473dd24701-CM0c473dd24700.cpe.net.cable.rogers.com) has joined #bash
+2016-10-27 12:57:58	-->	e14 (~e14@2601:184:4100:1ea6:e5ce:107f:c843:38c4) has joined #bash
+2016-10-27 12:58:25	-->	irc-5225225 (~weechat@unaffiliated/irc-5225225) has joined #bash
+2016-10-27 12:58:28	<--	irc-5225225 (~weechat@unaffiliated/irc-5225225) has quit (Client Quit)
+2016-10-27 12:58:41	-->	REX (~quassel@quassel.zerofox.xyz) has joined #bash
+2016-10-27 12:58:44	-->	Recon0NE (~recon@li1253-45.members.linode.com) has joined #bash
+2016-10-27 13:00:41	<--	col (~col@unaffiliated/col) has quit (Ping timeout: 256 seconds)
+2016-10-27 13:01:14	<--	bizarro_1 (~bizarro_1@98.red-79-155-31.dynamicip.rima-tde.net) has quit (Quit: Leaving)
+2016-10-27 13:01:14		[13:01]
+2016-10-27 13:01:31	<--	REX (~quassel@quassel.zerofox.xyz) has quit (Remote host closed the connection)
+2016-10-27 13:01:41	<--	Limes (~Limes@2a00:23c4:2f82:4700:953e:a472:dc62:ca53) has quit (Ping timeout: 260 seconds)
+2016-10-27 13:02:25	-->	alex1a (~alex1a@a81-84-38-221.cpe.netcabo.pt) has joined #bash
+2016-10-27 13:02:37	<--	cisstrd (~cisstrd@unaffiliated/cisstrd) has quit (Quit: WeeChat 1.4)
+2016-10-27 13:02:56	-->	REX (~quassel@quassel.zerofox.xyz) has joined #bash
+2016-10-27 13:03:17	<--	REX (~quassel@quassel.zerofox.xyz) has quit (Remote host closed the connection)
+2016-10-27 13:03:30	<--	diytto (~diytto@2a01:4f8:162:124::2) has quit (Ping timeout: 250 seconds)
+2016-10-27 13:03:57	-->	irc-5225225 (~weechat@unaffiliated/irc-5225225) has joined #bash
+2016-10-27 13:04:49	-->	diytto (~diytto@2a01:4f8:162:124::2) has joined #bash
+2016-10-27 13:05:08	<--	misterpink (~misterpin@ool-44c52527.dyn.optonline.net) has quit (Read error: Connection reset by peer)
+2016-10-27 13:05:42	-->	Sasazuka (~Sasazuka@unaffiliated/sasazuka) has joined #bash
+2016-10-27 13:06:00	<--	tax (~tax@cpe-72-182-55-97.austin.res.rr.com) has quit (Quit: Leaving)
+2016-10-27 13:06:04	<--	jozwior (~jozwior@62.244.139.219) has quit (Remote host closed the connection)
+2016-10-27 13:06:31	<--	gniourf (~gniourf@pdm-l03.insa-lyon.fr) has quit (Read error: Connection timed out)
+2016-10-27 13:06:50	-->	tax (~tax@cpe-72-182-55-97.austin.res.rr.com) has joined #bash
+2016-10-27 13:09:44	<--	tecuani (~tecuani@dslb-178-011-220-208.178.011.pools.vodafone-ip.de) has quit (Ping timeout: 260 seconds)
+2016-10-27 13:11:45	<--	e14 (~e14@2601:184:4100:1ea6:e5ce:107f:c843:38c4) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-10-27 13:12:47	-->	e14 (~e14@2601:184:4100:1ea6:e5ce:107f:c843:38c4) has joined #bash
+2016-10-27 13:13:08	<--	talsamon (~talsamon@62-47-175-210.adsl.highway.telekom.at) has quit (Ping timeout: 244 seconds)
+2016-10-27 13:13:27	-->	talsamon (~talsamon@188-23-10-71.adsl.highway.telekom.at) has joined #bash
+2016-10-27 13:13:49	-->	\ni (~\ni@bl20-96-87.dsl.telepac.pt) has joined #bash
+2016-10-27 13:14:04	-->	Jameser (~textual@60.24.142.163) has joined #bash
+2016-10-27 13:14:20	<--	rigrassm (~rigrassm@grassmucks.com) has quit (Ping timeout: 250 seconds)
+2016-10-27 13:15:35	-->	MaxFrost (~MaxFrost@2601:444:0:1f4f:21ad:5c59:4147:86ba) has joined #bash
+2016-10-27 13:15:41	-->	Filystyn (~piotr@unaffiliated/filystyn) has joined #bash
+2016-10-27 13:16:20	-->	rigrassm (~rigrassm@5.9.84.167) has joined #bash
+2016-10-27 13:16:20		[13:16]
+2016-10-27 13:17:23	<--	e14 (~e14@2601:184:4100:1ea6:e5ce:107f:c843:38c4) has quit (Client Quit)
+2016-10-27 13:18:03	-->	dodobrain (~dodobrain@unaffiliated/freakabcd) has joined #bash
+2016-10-27 13:18:22	<--	elsewho (~elsewho@gna.informatik.tu-freiberg.de) has quit (Ping timeout: 256 seconds)
+2016-10-27 13:20:14	<--	bumbar_ (~bumbar@unaffiliated/bumbar) has quit (Quit: Leaving)
+2016-10-27 13:20:29	<--	Kruppt (~Krupptus@50.111.39.27) has quit (Quit: Leaving)
+2016-10-27 13:21:54	<--	kpease (~kpease@72.22.182.166) has quit (Quit: Textual IRC Client: www.textualapp.com)
+2016-10-27 13:21:55	<--	Jameser (~textual@60.24.142.163) has quit (Max SendQ exceeded)
+2016-10-27 13:22:10	<--	Darcidride (~Darcidrid@158.69.114.146) has quit (Ping timeout: 276 seconds)
+2016-10-27 13:22:40	-->	REX (~quassel@quassel.zerofox.xyz) has joined #bash
+2016-10-27 13:22:43	-->	Jameser (~textual@60.24.142.163) has joined #bash
+2016-10-27 13:22:51	<--	REX (~quassel@quassel.zerofox.xyz) has quit (Remote host closed the connection)
+2016-10-27 13:22:54	-->	elsewho (~elsewho@gna.informatik.tu-freiberg.de) has joined #bash
+2016-10-27 13:22:56	<--	Filystyn (~piotr@unaffiliated/filystyn) has quit (Quit: Konversation terminated!)
+2016-10-27 13:23:28	<--	keltim_ (~keltim@173.212.48.130) has quit (Ping timeout: 244 seconds)
+2016-10-27 13:23:48	<--	keltim (~keltim@173.212.48.130) has quit (Ping timeout: 260 seconds)
+2016-10-27 13:25:26	<--	tax (~tax@cpe-72-182-55-97.austin.res.rr.com) has quit (Read error: Connection reset by peer)
+2016-10-27 13:25:45	-->	tax (~tax@cpe-72-182-55-97.austin.res.rr.com) has joined #bash
+2016-10-27 13:25:55	-->	hpt (~hpt@61.48.208.16) has joined #bash
+2016-10-27 13:25:57	-->	knob (~knob@209.91.218.190) has joined #bash
+2016-10-27 13:26:35	<--	arossdotme (~zxy@host-78-151-194-192.as13285.net) has quit (Ping timeout: 244 seconds)
+2016-10-27 13:26:38	<--	polymorphisme (~Icedove@2a01:e35:2421:ea10:7627:eaff:fe50:a29b) has quit (Quit: À bientôt… :P)
+2016-10-27 13:26:54	<--	tax (~tax@cpe-72-182-55-97.austin.res.rr.com) has quit (Read error: Connection reset by peer)
+2016-10-27 13:26:55	<--	KingsQuest (~ident@unaffiliated/kingsquest) has quit (Quit: https://www.youtube.com/watch?v=ImI44EGIJ_0 holocaust 3.6, Catholic)
+2016-10-27 13:27:08	-->	strull_ (~strull@pD9F4BBD2.dip0.t-ipconnect.de) has joined #bash
+2016-10-27 13:27:11	-->	tax (~tax@cpe-72-182-55-97.austin.res.rr.com) has joined #bash
+2016-10-27 13:27:18	-->	xall_ (~xall@2600:8800:8885:eb00:308a:7a64:4f3e:e588) has joined #bash
+2016-10-27 13:27:38	<--	tax (~tax@cpe-72-182-55-97.austin.res.rr.com) has quit (Read error: Connection reset by peer)
+2016-10-27 13:27:55	-->	tax (~tax@cpe-72-182-55-97.austin.res.rr.com) has joined #bash
+2016-10-27 13:28:29	<--	stacks88 (~x@167.114.219.244) has quit
+2016-10-27 13:30:13	<--	Jameser (~textual@60.24.142.163) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-10-27 13:30:15	<--	strull (~strull@pD9F4B6D2.dip0.t-ipconnect.de) has quit (Ping timeout: 256 seconds)
+2016-10-27 13:30:21	<--	mikecmpbll (~mikecmpbl@ruby/staff/mikecmpbll) has quit (Quit: inabit. zz.)
+2016-10-27 13:30:34	<--	\ni (~\ni@bl20-96-87.dsl.telepac.pt) has quit (Quit: Leaving)
+2016-10-27 13:31:15	<--	blueness_ (~blueness@gentoo/developer/blueness) has quit (Quit: blueness_)
+2016-10-27 13:32:41	-->	moetuning (~Jean-luc@250.102.220.203.dial.dynamic.acc03-tull-pth.comindico.com.au) has joined #bash
+2016-10-27 13:32:41		[13:32]
+2016-10-27 13:33:43	-->	blueness_ (~blueness@gentoo/developer/blueness) has joined #bash
+2016-10-27 13:34:45	-->	Jameser (~textual@60.24.142.163) has joined #bash
+2016-10-27 13:34:55	-->	james41382_ (~james4138@unaffiliated/james41382) has joined #bash
+2016-10-27 13:34:58	<--	james41382 (~james4138@unaffiliated/james41382) has quit (Read error: Connection reset by peer)
+2016-10-27 13:35:24	<--	moetuned (~Jean-luc@14-202-190-120.tpgi.com.au) has quit (Ping timeout: 260 seconds)
+2016-10-27 13:36:27	<--	gelignite (~gelignite@x5ce491a0.dyn.telefonica.de) has quit (Quit: http://bit.ly/1kso8Ta)
+2016-10-27 13:38:52	-->	pokalyis (~nerium@banan.olf.sgsnet.se) has joined #bash
+2016-10-27 13:42:30	-->	Dohplay (~Dohplay@2601:246:4400:f10c:fd50:59bf:8749:4daf) has joined #bash
+2016-10-27 13:43:42	<--	d_t (~textual@83-244-233-135.cust-83.exponential-e.net) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-10-27 13:44:14	-->	cisstrd (~cisstrd@unaffiliated/cisstrd) has joined #bash
+2016-10-27 13:44:23	-->	REX (~quassel@quassel.zerofox.xyz) has joined #bash
+2016-10-27 13:44:24	<--	dennisw (~dennis@nat-168-7-215-190.rice.edu) has quit (Ping timeout: 265 seconds)
+2016-10-27 13:45:01	<--	pasteban (~pasteban@157.146.251.23.bc.googleusercontent.com) has quit (Remote host closed the connection)
+2016-10-27 13:46:08	-->	pasteban (~pasteban@157.146.251.23.bc.googleusercontent.com) has joined #bash
+2016-10-27 13:49:06	-->	plasticle (~plasticle@cpe-107-15-162-122.nc.res.rr.com) has joined #bash
+2016-10-27 13:49:06		[13:49]
+2016-10-27 13:49:07	<--	REX (~quassel@quassel.zerofox.xyz) has quit (Remote host closed the connection)
+2016-10-27 13:49:14	-->	justan0theruser (~justanoth@unaffiliated/justanotheruser) has joined #bash
+2016-10-27 13:49:51	-->	REX (~quassel@quassel.zerofox.xyz) has joined #bash
+2016-10-27 13:50:01	<--	checkbot (~checkbot@157.146.251.23.bc.googleusercontent.com) has quit (Remote host closed the connection)
+2016-10-27 13:50:38	-->	checkbot (~checkbot@157.146.251.23.bc.googleusercontent.com) has joined #bash
+2016-10-27 13:51:14	<--	justanotheruser (~justanoth@unaffiliated/justanotheruser) has quit (Ping timeout: 256 seconds)
+2016-10-27 13:51:16	-->	KingsQuest (~ident@unaffiliated/kingsquest) has joined #bash
+2016-10-27 13:51:28	<--	KingsQuest (~ident@unaffiliated/kingsquest) has quit (Read error: Connection reset by peer)
+2016-10-27 13:52:20	-->	afkk (~nf@ip-83-134-175-185.dsl.scarlet.be) has joined #bash
+2016-10-27 13:52:35	-->	e14 (~e14@2601:184:4100:1ea6:e5ce:107f:c843:38c4) has joined #bash
+2016-10-27 13:53:08	<--	davidfetter (~chatzilla@64.129.231.6) has quit (Quit: ChatZilla 0.9.92 [Firefox 49.0.2/20161019084923])
