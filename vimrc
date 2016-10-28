@@ -149,7 +149,7 @@ nnoremap <Leader>dp <Esc>:diffput<CR>
 vnoremap <Leader>dg <Esc>:'<,'>diffget<CR>
 vnoremap <Leader>dp <Esc>:'<,'>diffput<CR>
 nnoremap <Leader>dw <Esc>:wincmd p<CR>
-
+nnoremap <buffer> <Leader>py :call Pep8()<CR>
 " Allow saving of files as sudo when I forgot to start vim using sudo.
 cnoremap w!! silent w !sudo dd of=%
 "cnoremap w!! silent w !sudo tee %
@@ -179,7 +179,6 @@ map <Esc><F7> <M-F7>
 map <Esc><F8> <M-F8>
 map <Esc><F9> <M-F9>
 nnoremap <F2> <Esc>:tabp<CR>
-
 nnoremap <C-F2> ^
 nnoremap <M-F2> 0dw
 nnoremap <F3> <Esc>:tabn<CR>
@@ -193,6 +192,7 @@ nnoremap <F5> <C-d>
 nnoremap <C-F5> <Esc>:tabn<CR>
 nnoremap <M-F5> <Esc>:set noscb<CR>
 " Clipboard mappings
+"
 vmap <F6> "+y<Esc>:call system("xclip -i -selection clipboard", getreg("\""))
 \<CR>:call system("xclip -i", getreg("\""))<CR>
 vmap <C-F6> <F6>v`>
