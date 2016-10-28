@@ -7598,3 +7598,457 @@
 2016-10-27 21:20:31	-->	pitastrudl (~quassel@unaffiliated/pitastrudl) has joined #openvpn
 2016-10-27 21:20:34	pitastrudl	hello
 2016-10-27 21:20:43	speciality	hi
+2016-10-27 21:21:29	pitastrudl	so im on an airport wifi,can ping 8.8.8.8 no problem, im on my own IRC which is on the same server as the openvpn instance, but i cant browse any webpages
+2016-10-27 21:21:37	pitastrudl	im on a telekom hotstop
+2016-10-27 21:21:46	pitastrudl	otherwise the vpn works okay on normal access points
+2016-10-27 21:21:58	pitastrudl	im lost at what to look at
+2016-10-27 21:22:07	pitastrudl	or what the issue might be
+2016-10-27 21:22:21	pitastrudl	the only error i see in the output is ERROR: "Linux route add command failed: external program exited with error status: 2"
+2016-10-27 21:28:00		[21:22]
+2016-10-27 22:29:50	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined #openvpn
+2016-10-27 22:29:50		[22:29]
+2016-10-27 22:29:50	--	Topic for #openvpn is "OpenVPN Community Support Channel || PLEASE read entire /topic || Current Release: 2.3.12 (23 Aug 2016) || First time? Use !welcome and !goal || Access-Server? /join #openvpn-as || Your problem is probably firewall. Really || TAP/bridging is almost always a bad idea || Vulninfo: !heartbleed !poodle !ovpnuke !sweet32 || Patience is a virtue"
+2016-10-27 22:29:50	--	Topic set by danhunsaker (sid145261@openvpn/corp/danhunsaker) on Sun, 09 Oct 2016 21:20:15
+2016-10-27 22:29:50	--	Channel #openvpn: 235 nicks (7 ops, 4 voices, 224 normals)
+2016-10-27 22:29:50	***	Buffer Playback...
+2016-10-27 22:29:50	BlackBishop	[19:53:11] slypknot: nope. I don't even get to connect to it because it's not binding to the right interface :) [19:53:11]
+2016-10-27 22:29:50	BlackBishop	[19:53:21] the client I mean [19:53:21]
+2016-10-27 22:29:50	slypknot	[19:54:15] you could add a static route to the server via the interface of your choice [19:54:15]
+2016-10-27 22:29:50	BlackBishop	[19:55:47] true [19:55:47]
+2016-10-27 22:29:50	BlackBishop	[19:57:05] and that fixes binding too .. and the dynamic part [19:57:05]
+2016-10-27 22:29:50	slypknot	[20:01:25] if i understand your setup correcty, redirect-gateway will probably break the vpn tho .. but with 2.4 you can --pull-filter ignore things out and hand craft your routing .. it is a pain but it can be made to work [20:01:25]
+2016-10-27 22:29:50	BlackBishop	[20:02:44] slypknot: no need for redirect gateway :) the server the client is connecting to will expose an ip and I'll connect through that .. [20:02:44]
+2016-10-27 22:29:50	BlackBishop	[20:03:22] all I need is a backup connection out of band to it in case I mess something up routing on lan .. stuff like that [20:03:22]
+2016-10-27 22:29:50	slypknot	[20:03:48] it is your own server ? [20:03:48]
+2016-10-27 22:29:50	BlackBishop	[20:04:05] 0yep [20:04:05]
+2016-10-27 22:29:50	slypknot	[20:04:29] cool .. then it should be easy :) [20:04:29]
+2016-10-27 22:29:50	BlackBishop	[20:05:10] yep [20:05:10]
+2016-10-27 22:29:50	BlackBishop	[20:07:01] it's just a micro instance in google cloud for this specific backup scenario in case I mess the routers and stuff [20:07:01]
+2016-10-27 22:29:50	Vampire0	[23:34:34] Hm, is there no way to teach the OpenVPN client what the username is without writing the password as plaintext into a textfile? [23:34:34]
+2016-10-27 22:29:50	Vampire0	[23:34:38] It is ok if I type in the password each time, but I'd like it to remember my username [23:34:38]
+2016-10-27 22:29:50	cncr04s	[23:39:53] I just use certificates [23:39:53]
+2016-10-27 22:29:50	cncr04s	[23:40:06] for identity [23:40:06]
+2016-10-27 22:29:50	slypknot	[23:42:41] Vampire0: openvpn does support username in file only and then prompts for a password .. i believe you need to use the latest version 2.4_alpha but it may have been added to 2.3.12 .. sorry con't remember right now .. try it and see for yourself [23:42:41]
+2016-10-27 22:29:50	Vampire0	[23:45:21] cncr04s, disuss with our IT ;-) [23:45:21]
+2016-10-27 22:29:50	Vampire0	[23:46:02] slypknot, well, if I only put the username in there I see in the log that it tries to ask the password from stdin and fails of course as I started the GUI client [23:46:02]
+2016-10-27 22:29:50	Vampire0	[23:46:13] slypknot, is that what will be fixed in 2.4? [23:46:13]
+2016-10-27 22:29:50	slypknot	[23:46:42] *is* fixed [23:46:42]
+2016-10-27 22:29:50	cncr04s	[23:48:22] https://openvpn.net/index.php/open-source/documentation/howto.html has the instructions that I used. [23:48:22]
+2016-10-27 22:29:50	@vpnHelper	[23:48:24] Title: HOWTO (at openvpn.net) [23:48:24]
+2016-10-27 22:29:50	Vampire0	[23:48:56] slypknot, well I consider it "is fixed" as soon as 2.4 is released. I don't like using an alpha version of a security critical application like that when accessing our LAN [23:48:56]
+2016-10-27 22:29:50	Vampire0	[23:49:11] slypknot, do you have any idea when 2.4 will be released? [23:49:11]
+2016-10-27 22:29:50	slypknot	[23:49:15] try 2.3.12 [23:49:15]
+2016-10-27 22:29:50	Vampire0	[23:50:12] slypknot, that's what I downloaded about 6 hours ago and am using right now [23:50:12]
+2016-10-27 22:29:50	Vampire0	[23:50:50] cncr04s, good for you, but how does that help me in telling my IT that you thing they are using the Sophos UTM badly? [23:50:50]
+2016-10-27 22:29:50	slypknot	[23:50:57] ok .. well I am sure it will be included in 2.3.13, which is due soon [23:50:57]
+2016-10-27 22:29:50	Vampire0	[23:51:01] s/thing/think/ [23:51:01]
+2016-10-27 22:29:50	Vampire0	[23:51:11] slypknot, ah, nice, thx [23:51:11]
+2016-10-27 22:29:50	Vampire0	[23:51:21] That's great news for me [23:51:21]
+2016-10-27 22:29:50	slypknot	[23:51:35] ask again tomorrow when one of the top guys shows up [23:51:35]
+2016-10-27 22:29:50	Vampire0	[23:51:56] who would that be? [23:51:56]
+2016-10-27 22:29:50	slypknot	[23:52:08] @names'z [23:52:08]
+2016-10-27 22:29:50	slypknot	[23:52:39] dazo knows [23:52:39]
+2016-10-27 22:29:50	Vampire0	[00:35:20] Ah, I talked with dazo today already, couple of ours ago :-) [00:35:20]
+2016-10-27 22:29:50	tcpdump	[06:07:43] hey everyone [06:07:43]
+2016-10-27 22:29:50	tcpdump	[06:12:12] Im having an issue in which OpenVPN seems to be assigning duplicate IPs to different hosts. Heres my server conf: https://2048-bit.com/bin/?5ac544889bbc7deb#Bd77Gzq503NfjpMWlYt84F7aqAM48UjK2a0CmTMzjCo= [06:12:12]
+2016-10-27 22:29:50	@vpnHelper	[06:12:13] Title: 2048-Bit.com (at 2048-bit.com) [06:12:13]
+2016-10-27 22:29:50	tcpdump	[06:12:20] See anything that would cause that? [06:12:20]
+2016-10-27 22:29:50	pitastrudl	[07:20:34] hello [07:20:34]
+2016-10-27 22:29:50	speciality	[07:20:43] hi [07:20:43]
+2016-10-27 22:29:50	pitastrudl	[07:21:29] so im on an airport wifi,can ping 8.8.8.8 no problem, im on my own IRC which is on the same server as the openvpn instance, but i cant browse any webpages [07:21:29]
+2016-10-27 22:29:50	pitastrudl	[07:21:37] im on a telekom hotstop [07:21:37]
+2016-10-27 22:29:50	pitastrudl	[07:21:45] otherwise the vpn works okay on normal access points [07:21:45]
+2016-10-27 22:29:50	pitastrudl	[07:21:58] im lost at what to look at [07:21:58]
+2016-10-27 22:29:50	pitastrudl	[07:22:07] or what the issue might be [07:22:07]
+2016-10-27 22:29:50	pitastrudl	[07:22:21] the only error i see in the output is ERROR: "Linux route add command failed: external program exited with error status: 2" [07:22:21]
+2016-10-27 22:29:50	***	Playback Complete.
+2016-10-27 22:30:57	--	Channel created on Sat, 25 Nov 2006 20:42:40
+2016-10-27 22:36:00		[22:30]
+2016-10-27 22:52:26	-->	CaTtleyA (~CaTtleyA@16.146-14-84.ripe.coltfrance.com) has joined #openvpn
+2016-10-27 22:52:26		[22:52]
+2016-10-27 23:23:28	<--	shio (~shio@134.121.101.84.rev.sfr.net) has quit (Quit: Leaving)
+2016-10-27 23:23:28		[23:23]
+2016-10-27 23:30:17	<--	BrianBlaze420 (~blaze@unaffiliated/brianblaze) has quit (Ping timeout: 260 seconds)
+2016-10-27 23:32:12	-->	shio (~shio@134.121.101.84.rev.sfr.net) has joined #openvpn
+2016-10-27 23:32:52	-->	BrianBlaze420 (~blaze@unaffiliated/brianblaze) has joined #openvpn
+2016-10-27 23:33:00	<--	shio (~shio@134.121.101.84.rev.sfr.net) has quit (Client Quit)
+2016-10-27 23:34:01	-->	shio (~shio@134.121.101.84.rev.sfr.net) has joined #openvpn
+2016-10-27 23:40:00		[23:34]
+2016-10-27 23:45:09	-->	Geom (~Geom@122.52.67.105) has joined #openvpn
+2016-10-27 23:49:47	-->	sz0 (uid110435@gateway/web/irccloud.com/x-zkseewhqpgdyrhdy) has joined #openvpn
+2016-10-27 23:55:00		[23:49]
+2016-10-28 00:03:25	<--	skot (~skot@207.244.67.21) has quit (Ping timeout: 260 seconds)
+2016-10-28 00:08:56	-->	skylite (~skylite@5402F4FC.dsl.pool.telekom.hu) has joined #openvpn
+2016-10-28 00:12:02	-->	MikeDebian (~ML@a81-84-80-8.cpe.netcabo.pt) has joined #openvpn
+2016-10-28 00:12:02		[00:12]
+2016-10-28 00:15:03	<--	whoa (~whoa@unaffiliated/whoa) has quit (Quit: Leaving)
+2016-10-28 00:16:11	-->	jamesaxl (~jamesaxl@176.98.129.195) has joined #openvpn
+2016-10-28 00:22:00		[00:16]
+2016-10-28 00:26:52	<--	_FBi (~B@Aircrack-NG/User) has quit (Ping timeout: 260 seconds)
+2016-10-28 00:32:00		[00:26]
+2016-10-28 00:40:56	<--	Haxxa (~Harrison@120.147.48.206) has quit (Ping timeout: 260 seconds)
+2016-10-28 00:45:23	-->	Haxxa (~Harrison@120.147.48.206) has joined #openvpn
+2016-10-28 00:51:00		[00:45]
+2016-10-28 01:09:04	-->	qzio__ (~user@forskningsavd/qzio) has joined #openvpn
+2016-10-28 01:09:04		[01:09]
+2016-10-28 01:09:37	qzio__	Hi, I wonder if it's possible to execute a script or similar that runs a bunch of route commands *AFTER* the connection has been established. (openvpn cli)
+2016-10-28 01:09:53	qzio__	I found --up but that executes *BEFORE* the routes from the server has been setup up.
+2016-10-28 01:10:26	qzio__	My situation: The openvpn server I'm connecting to pushes route commands that eats all my traffic, not just for the ip's I need the VPN for...
+2016-10-28 01:10:56	@dazo	Vampire0_: you can just put the username in the auth-file on a single line and no password ... then it should ask for the password each time
+2016-10-28 01:16:00		[01:10]
+2016-10-28 01:21:03	<--	amgadpasha (~amgadpash@c-73-250-151-156.hsd1.dc.comcast.net) has quit (Remote host closed the connection)
+2016-10-28 01:22:26	@dazo	qzio__: I believe you can use --route-up for doing exactly that
+2016-10-28 01:23:07	@dazo	qzio__: I've used --route-up to NFS mount file shares after successful connection ... and --route-pre-down to umount them before the tunnel is taken down
+2016-10-28 01:23:26	-->	rich0_ (~quassel@gentoo/developer/rich0) has joined #openvpn
+2016-10-28 01:24:44	<--	rich0 (~quassel@gentoo/developer/rich0) has quit (Ping timeout: 244 seconds)
+2016-10-28 01:25:06	qzio__	dazo: oh, thanks!
+2016-10-28 01:25:25	qzio__	I found about --route-noexec This also works for me.
+2016-10-28 01:25:46	qzio__	so annoying when the server admins can't configure things properly... :(
+2016-10-28 01:27:09	@dazo	--route-noexec solves a different problem than what you vaguely described though .... but if you want to set up your own routes by yourself, well, then that's one reasonable approach
+2016-10-28 01:28:27	qzio__	dazo: yes; so for my use case where the server tries to eat all my traffic --route-noeexec + setting the routes myself is good-enough-for-me.
+2016-10-28 01:30:02	@dazo	qzio__: you can also consider to add an additional --route-up ... which filters out the routes you don't want and allows the other routes to be configured by the server
+2016-10-28 01:31:30	--	rich0_ is now known as rich0
+2016-10-28 01:31:30		[01:31]
+2016-10-28 01:36:29	-->	mrpops2ko (~mrpops2ko@88.202.224.88.adsl.inet-telecom.org) has joined #openvpn
+2016-10-28 01:42:00		[01:36]
+2016-10-28 01:45:46	-->	defsdoor (~andy@cpc35-sutt4-2-0-cust184.19-1.cable.virginm.net) has joined #openvpn
+2016-10-28 01:51:00		[01:45]
+2016-10-28 01:52:55	qzio__	dazo: there so many good options! I really like openvpn as compared to pptp and other broken stuff I have to use on a weekly basis.
+2016-10-28 01:54:30	qzio__	next question: Can I "inline" the commands I want to run in my --up or --route-up inside my config.ovpn file? (called with --config) or *must* it be a in a separate file?
+2016-10-28 01:54:56	@dazo	qzio__: heck ... anything is better than pptp .... even the enigma machine from WWII
+2016-10-28 01:56:24	@dazo	qzio__: no, inline is not supported for scripts   That could end up in a ugly disaster if you produce configs for more than one platform, as you'd need separate ones for Linux (per distro even), *BSD, OSX/macOS and Windows
+2016-10-28 02:00:29	qzio__	dazo: gotcha; good argument.
+2016-10-28 02:03:41	<--	CaTtleyA (~CaTtleyA@16.146-14-84.ripe.coltfrance.com) has quit (Remote host closed the connection)
+2016-10-28 02:06:16	slypknot	Vampire0_: it has been identified as a bug
+2016-10-28 02:06:16		[02:06]
+2016-10-28 02:07:36	-->	CaTtleyA (~CaTtleyA@16.146-14-84.ripe.coltfrance.com) has joined #openvpn
+2016-10-28 02:09:12	-->	ShadniX_ (dagger@p5DDFDBF8.dip0.t-ipconnect.de) has joined #openvpn
+2016-10-28 02:09:25	-->	themayor_ (~themayor@unaffiliated/themayor) has joined #openvpn
+2016-10-28 02:09:35	<--	Ryushin (chris@2001:470:4b:38f:a634:d9ff:feed:eb30) has quit (Ping timeout: 256 seconds)
+2016-10-28 02:10:02	<--	fractal (~fractal@unaffiliated/scounder) has quit (Ping timeout: 276 seconds)
+2016-10-28 02:10:02	<--	ShadniX (dagger@p5DDFDBF8.dip0.t-ipconnect.de) has quit (Ping timeout: 276 seconds)
+2016-10-28 02:10:02	<--	MrAlexandr0 (~MrAlexand@43.232.251.212.customer.cdi.no) has quit (Ping timeout: 276 seconds)
+2016-10-28 02:10:02	<--	themayor (~themayor@unaffiliated/themayor) has quit (Ping timeout: 276 seconds)
+2016-10-28 02:10:02	--	ShadniX_ is now known as ShadniX
+2016-10-28 02:10:03	<--	abra0 (moo@unaffiliated/abra0) has quit (Ping timeout: 276 seconds)
+2016-10-28 02:10:03	<--	eSgr (~eSgr@priv.is-infra.net) has quit (Ping timeout: 276 seconds)
+2016-10-28 02:11:05	-->	MrAlexandr0 (~MrAlexand@43.232.251.212.customer.cdi.no) has joined #openvpn
+2016-10-28 02:11:15	-->	dyce_ (~otr@ns3290920.ip-5-135-184.eu) has joined #openvpn
+2016-10-28 02:12:17	-->	netwoodle (~noodle@ec2-54-149-106-240.us-west-2.compute.amazonaws.com) has joined #openvpn
+2016-10-28 02:12:25	@dazo	slypknot: Vampire0_:  It is a bug when using a config with such a auth-file through the Windows GUI ... from command line or on non-Windows it works
+2016-10-28 02:18:00		[02:12]
+2016-10-28 02:20:44	<--	rich0 (~quassel@gentoo/developer/rich0) has quit (*.net *.split)
+2016-10-28 02:20:45	<--	Tenhi_ (~tenhi@static-ip-69-64-50-196.inaddr.ip-pool.com) has quit (*.net *.split)
+2016-10-28 02:20:45	<--	Nik05 (~Nik05@unaffiliated/nik05) has quit (*.net *.split)
+2016-10-28 02:20:45	<--	AlexRussia (~Alex@unaffiliated/alexrussia) has quit (*.net *.split)
+2016-10-28 02:20:45	<--	LaserAllan (~Burn@campnorthernlight.com) has quit (*.net *.split)
+2016-10-28 02:20:45	<--	uiyice (~uiyice@c-68-33-17-232.hsd1.md.comcast.net) has quit (*.net *.split)
+2016-10-28 02:20:45	<--	dograt_ (~dograt@unaffiliated/dograt) has quit (*.net *.split)
+2016-10-28 02:20:46	<--	rax- (~rax-@bnc.localh0st.co.uk) has quit (*.net *.split)
+2016-10-28 02:20:46	<--	Neighbour (neighbour@84-245-42-111.dsl.cambrium.nl) has quit (*.net *.split)
+2016-10-28 02:20:46	<--	jumpman (~jumpman@unaffiliated/jumpman) has quit (*.net *.split)
+2016-10-28 02:20:46	<--	noodle (~noodle@ec2-54-149-106-240.us-west-2.compute.amazonaws.com) has quit (*.net *.split)
+2016-10-28 02:20:46	<--	marlinc (~marlinc@1.0.0.127.13.204.167.185.in-addr.arpa) has quit (*.net *.split)
+2016-10-28 02:20:46	<--	imharvey (mimo@217-215-196-182-no236.tbcn.telia.com) has quit (*.net *.split)
+2016-10-28 02:20:50	--	netwoodle is now known as noodle
+2016-10-28 02:23:27	-->	marlinc (~marlinc@1.0.0.127.13.204.167.185.in-addr.arpa) has joined #openvpn
+2016-10-28 02:29:00		[02:23]
+2016-10-28 02:35:57	-->	skot (~skot@207.244.67.21) has joined #openvpn
+2016-10-28 02:35:59	-->	rich0 (~quassel@gentoo/developer/rich0) has joined #openvpn
+2016-10-28 02:36:01	-->	Nik05 (~Nik05@unaffiliated/nik05) has joined #openvpn
+2016-10-28 02:36:04	-->	Neighbour (neighbour@84-245-42-111.dsl.cambrium.nl) has joined #openvpn
+2016-10-28 02:36:05	-->	RAX (~rax-@bnc.localh0st.co.uk) has joined #openvpn
+2016-10-28 02:36:22	-->	uiyice (~uiyice@c-68-33-17-232.hsd1.md.comcast.net) has joined #openvpn
+2016-10-28 02:36:28	--	RAX is now known as rax-
+2016-10-28 02:36:36	-->	eSgr (~eSgr@priv.is-infra.net) has joined #openvpn
+2016-10-28 02:36:55	-->	dograt (~dograt@unaffiliated/dograt) has joined #openvpn
+2016-10-28 02:37:30	-->	Tenhi_ (~tenhi@static-ip-69-64-50-196.inaddr.ip-pool.com) has joined #openvpn
+2016-10-28 02:42:24	-->	abra0 (moo@unaffiliated/abra0) has joined #openvpn
+2016-10-28 02:43:30	-->	NoSleeves (uid180082@gateway/web/irccloud.com/x-vdgsefboeirkqpln) has joined #openvpn
+2016-10-28 02:49:00		[02:43]
+2016-10-28 02:51:43	-->	SkinnyMelon (~SkinnyMel@gw.jak.sulinet.hu) has joined #openvpn
+2016-10-28 02:52:04	<--	tapout (~tapout@unaffiliated/tapout) has quit (Ping timeout: 260 seconds)
+2016-10-28 02:53:00	<--	thib (~thib@wikimedia/Thibaut120094) has quit (Ping timeout: 260 seconds)
+2016-10-28 02:53:25	<--	K1rk (~Kirk@158.69.167.167) has quit (Ping timeout: 248 seconds)
+2016-10-28 02:57:40	-->	tapout (~tapout@unaffiliated/tapout) has joined #openvpn
+2016-10-28 02:58:01	-->	thib (~thib@wikimedia/Thibaut120094) has joined #openvpn
+2016-10-28 02:58:08	-->	K1rk (~Kirk@158.69.167.167) has joined #openvpn
+2016-10-28 03:00:17	-->	totus (~totus@2605:6000:66c0:8800:b867:fe36:b40c:541c) has joined #openvpn
+2016-10-28 03:06:00		[03:00]
+2016-10-28 03:17:13	-->	Ryushin (~Ryushin@50-203-182-130-static.hfc.comcastbusiness.net) has joined #openvpn
+2016-10-28 03:21:14	-->	imharvey (mimo@217-215-196-182-no236.tbcn.telia.com) has joined #openvpn
+2016-10-28 03:21:14		[03:21]
+2016-10-28 03:25:34	<--	luckman212 (~luckman21@unaffiliated/luckman212) has quit (Ping timeout: 250 seconds)
+2016-10-28 03:31:00		[03:25]
+2016-10-28 03:32:24	-->	iq (~iq@47.185.96.35) has joined #openvpn
+2016-10-28 03:34:12	-->	luckman212 (~luckman21@unaffiliated/luckman212) has joined #openvpn
+2016-10-28 03:35:38	<--	zulutango (~zulutango@d27-99-34-168.bla1.nsw.optusnet.com.au) has quit (Ping timeout: 252 seconds)
+2016-10-28 03:36:10	<--	SkinnyMelon (~SkinnyMel@gw.jak.sulinet.hu) has quit (Ping timeout: 256 seconds)
+2016-10-28 03:40:43	<--	APTX (~APTX@unaffiliated/aptx) has quit (Remote host closed the connection)
+2016-10-28 03:46:00		[03:40]
+2016-10-28 03:46:26	-->	APTX (~APTX@unaffiliated/aptx) has joined #openvpn
+2016-10-28 03:48:00	-->	ExoUNX (~textual@unaffiliated/exounx) has joined #openvpn
+2016-10-28 03:51:14	<--	KaliLinuxGR (~alexandro@unaffiliated/kalilinuxgr) has quit (Quit: Keep Hacking)
+2016-10-28 03:57:00		[03:51]
+2016-10-28 04:00:04	<--	AfroThundr (~AfroThund@2601:147:c000:177f:411d:b984:36c8:68dd) has quit (Read error: Connection reset by peer)
+2016-10-28 04:00:28	-->	AfroThundr (~AfroThund@2601:147:c000:177f:5cbe:f59:bd0f:9ba) has joined #openvpn
+2016-10-28 04:06:00		[04:00]
+2016-10-28 04:08:58	<--	qzio__ (~user@forskningsavd/qzio) has quit (Read error: Connection reset by peer)
+2016-10-28 04:09:15	-->	AlexRussia (~Alex@unaffiliated/alexrussia) has joined #openvpn
+2016-10-28 04:11:48	-->	fractal_ (fractal@unaffiliated/scounder) has joined #openvpn
+2016-10-28 04:17:00		[04:11]
+2016-10-28 04:17:42	tcpdump	hey everyone
+2016-10-28 04:17:48	tcpdump	yo dazo how are ya man?
+2016-10-28 04:21:16	ExoUNX	tcpdump good, yourself?
+2016-10-28 04:21:30	tcpdump	ExoUNX: not too bad.
+2016-10-28 04:22:02	ExoUNX	tcpdump good
+2016-10-28 04:22:46	tcpdump	Im trying to figure out why we're getting some duplicate IP addresses, so thats a bummer.
+2016-10-28 04:25:14	tcpdump	I have about 2000 remote clients, and we're using 5 OpenVPN servers to handle their connections. We're using an F5 to round robin incoming connections.   Out of the 2000 clients abut 25 of them are duplicated.
+2016-10-28 04:31:00		[04:25]
+2016-10-28 04:31:45	slypknot	tcpdump: 5 openvpn servers but you only pasted one server config .. do they all use the same server subnet ?
+2016-10-28 04:32:21	tcpdump	slypknot: they're identical except for the subnets they assign addresses for.
+2016-10-28 04:32:30	tcpdump	and all the servers are duping
+2016-10-28 04:32:54	tcpdump	again, with 2k + hosts its not a lot comparatively, but enough to cause issues.
+2016-10-28 04:34:25	slypknot	is there anything in the logs about it ?
+2016-10-28 04:39:38	slypknot	if i had to guess (which i do) i would say you your round robin is not counting right
+2016-10-28 04:39:52	tcpdump	slypknot: theres no errors in the logs.
+2016-10-28 04:40:04	tcpdump	Also, checking all the servers none of them are over their host limit.
+2016-10-28 04:40:24	tcpdump	So even of the balancer was unevenly distrubuting, as long as none of them are over their subnet limit it shouldnt do this?
+2016-10-28 04:41:08	tcpdump	is there a reliable way to show the number of hosts connected?
+2016-10-28 04:41:32	slypknot	i guess .. is openvpn  starting the pool over from the beginning or just random ips ?
+2016-10-28 04:42:52	tcpdump	https://2048-bit.com/bin/?fca9d0f2f9435871#33zC/i74zV5FOJiyLquahDnNnbJsNXx9zBfUkKIVPw4=
+2016-10-28 04:42:53	@vpnHelper	Title: 2048-Bit.com (at 2048-bit.com)
+2016-10-28 04:43:00	tcpdump	Heres my connected nodes, allegedly.
+2016-10-28 04:43:20	tcpdump	So, I see its broken down into clients and routing table.
+2016-10-28 04:43:52	tcpdump	i presume if Im wanting to count the connections I could look at one or the other, but not both?
+2016-10-28 04:44:45	slypknot	your 2048-bit.com URLs wrap .. its really annoying :/
+2016-10-28 04:46:31	<--	uictamale (4016a001@gateway/web/cgi-irc/kiwiirc.com/ip.64.22.160.1) has left #openvpn
+2016-10-28 04:46:31		[04:46]
+2016-10-28 04:47:50	slypknot	It seems openvpn does not keep track of the total number of clients in any way I have seen before
+2016-10-28 04:48:15	slypknot	I would write a little bach --client-connect & disconnect script to manage it
+2016-10-28 04:48:21	slypknot	bash*
+2016-10-28 04:49:19	slypknot	can you paste a server log @ verb 4 (remove your private details) ?
+2016-10-28 04:49:55	slypknot	i realise that will probably be quite a large file but i am prepared to take a look
+2016-10-28 04:50:23	tcpdump	sure, let me set verb 4
+2016-10-28 04:50:47	slypknot	set it in manmagement console and wait for a dupe
+2016-10-28 04:50:58	slypknot	no need to restart the server
+2016-10-28 04:51:36	tcpdump	OK, Im admittedly not familiar with the admin console so will take a second
+2016-10-28 04:52:05	slypknot	see --management ip (you have it set in your config)
+2016-10-28 04:52:07	tcpdump	Actually, its aleady at 4.
+2016-10-28 04:52:12	slypknot	cool :)
+2016-10-28 04:52:23	tcpdump	Anything i'd expect to see on a dup specifically?
+2016-10-28 04:52:30	tcpdump	any specific syntax?
+2016-10-28 04:52:41	tcpdump	As luck would have it, they run at 4, so I can grep old logs.
+2016-10-28 04:52:47	tcpdump	If I know what to look for.
+2016-10-28 04:53:41	slypknot	well some sort of message regarding 'duplictae' i would expect .. but maybe the server has lost count and does not even realise it has done it .. so not really sure what to actually grep for
+2016-10-28 04:53:47	<--	saybeano (~saybeano@unaffiliated/saybeano) has left #openvpn ("Leaving")
+2016-10-28 04:53:59	slypknot	perhaps timeouts
+2016-10-28 04:54:09	slypknot	or floats
+2016-10-28 04:54:37	 *	slypknot back in 20 mins
+2016-10-28 04:57:52	tcpdump	thanks slypknot   Im writing some code to count the ips
+2016-10-28 05:03:00		[04:57]
+2016-10-28 05:11:06	-->	SkinnyMelon (~SkinnyMel@51B7A401.dsl.pool.telekom.hu) has joined #openvpn
+2016-10-28 05:11:36	@dazo	tcpdump: Extact the PUSH_REPLY messages from the server logs where you have duplicated IPs, and see if you see a pattern between those .... should be possible to grep the duplicated IP + PUSH_REPLY .... you need to see this against the F5 IP:PORT and other unique client identification
+2016-10-28 05:12:03	@dazo	tcpdump: if I would guess ... I'd guess your pool is exhausted or that the F5 load balancer does something funky
+2016-10-28 05:12:29	tcpdump	dazo: so using the same CN on all hosts, shouldnt be suspect?
+2016-10-28 05:12:54	tcpdump	brb conf call.  Thanks for the tips.
+2016-10-28 05:14:51	slypknot	dazo
+2016-10-28 05:15:51	slypknot	dazo: it looks to me like, if tcpdump just increased his ip-pool a bit it would probably solve everything .. IE: server ip-pool is a bit larger than balancer expects ..
+2016-10-28 05:18:07	slypknot	room to maneuver
+2016-10-28 05:18:07		[05:18]
+2016-10-28 05:20:10	 *	slypknot was back in 20 mins and 14 seconds :D
+2016-10-28 05:25:08	-->	Noldorin (~noldorin@unaffiliated/noldorin) has joined #openvpn
+2016-10-28 05:29:16	slypknot	tcpdump: management console -> load-stats
+2016-10-28 05:29:25	slypknot	= number of connected clients
+2016-10-28 05:29:36	slypknot	forgot about that one ;)
+2016-10-28 05:30:47	<--	AlexRussia (~Alex@unaffiliated/alexrussia) has quit (Ping timeout: 268 seconds)
+2016-10-28 05:33:34	tcpdump	slypknot: dazo I finshed writing my script that counts connections
+2016-10-28 05:33:34		[05:33]
+2016-10-28 05:34:23	tcpdump	https://www.irccloud.com/pastebin/JAaMlwKf/
+2016-10-28 05:34:34	tcpdump	Looks like the F5 is balancing them pretty well.
+2016-10-28 05:34:44	tcpdump	Each one has a /23 SN
+2016-10-28 05:34:52	tcpdump	So I should be good there.
+2016-10-28 05:36:47	slypknot	tcpdump: management console -> load-stats
+2016-10-28 05:37:58	tcpdump	UNDEF,172.31.57.254:45684,792,5304,Fri Oct 28 10:35:14 2016
+2016-10-28 05:38:04	tcpdump	I do have that in my connection status
+2016-10-28 05:38:40	slypknot	load-stats will return :
+2016-10-28 05:38:43	<--	CaTtleyA (~CaTtleyA@16.146-14-84.ripe.coltfrance.com) has quit (Ping timeout: 268 seconds)
+2016-10-28 05:38:49	slypknot	load-stats
+2016-10-28 05:38:51	slypknot	SUCCESS: nclients=10,bytesin=41034400,bytesout=38331842
+2016-10-28 05:39:07	slypknot	that is a reliable way to count the clients
+2016-10-28 05:40:15	tcpdump	slypknot: thanks!
+2016-10-28 05:41:35	-->	AlexRussia (~Alex@unaffiliated/alexrussia) has joined #openvpn
+2016-10-28 05:42:24	slypknot	i think maybe your keep alive is to large .. 30 120 is the client the server will be 30 240 .. 240 is quite big
+2016-10-28 05:42:37	slypknot	see --keepalive
+2016-10-28 05:43:22	tcpdump	slypknot: could that cause dups?
+2016-10-28 05:43:24	slypknot	you could do --ping 30 / --ping-restart 120 (removing keepalive) and see if that helps
+2016-10-28 05:43:42	slypknot	i can defo see it contributing
+2016-10-28 05:44:35	slypknot	large timers (4 minutes) is a long time .. for a user that is like lunch time and they will probably try reconnecting
+2016-10-28 05:45:32	slypknot	you may find --explicit-exit-notify helps as well
+2016-10-28 05:46:30	slypknot	infact .. i am stacking my rep on it ! :)
+2016-10-28 05:46:49	 *	slypknot is getting a bit carried away there ;)
+2016-10-28 05:46:51	tcpdump	slypknot: on the ping or the eplicit-exit-notify?
+2016-10-28 05:47:00	tcpdump	or both?  :D
+2016-10-28 05:47:16	 *	tcpdump googles --explicit-exit-notify
+2016-10-28 05:47:23	slypknot	read up on them both and then try to imagine what a user does when their connection times out for whatever reason
+2016-10-28 05:48:00	slypknot	IE: remeber that video of the guy who smashed his computer to bits with a baseball bat
+2016-10-28 05:48:13	@dazo	!man
+2016-10-28 05:48:14	@vpnHelper	"man" is (#1) For man pages, see http://openvpn.net/index.php/open-source/documentation/manuals/, or (#2) the man pages are your friend!, or (#3) Protip: you can search the manpage for a specific --option (with dashes) to find it quicker
+2016-10-28 05:48:23	@dazo	tcpdump: ^^^ that's all you need
+2016-10-28 05:48:31	slypknot	oo nice
+2016-10-28 05:48:32	@dazo	(google will just confuse)
+2016-10-28 05:48:45	tcpdump	thx dazo
+2016-10-28 05:48:45		[05:48]
+2016-10-28 05:49:08	tcpdump	Im on 2.3.2
+2016-10-28 05:49:14	tcpdump	Any change 2.4 could help?
+2016-10-28 05:49:22	@dazo	tcpdump: regarding same CN ... as long as you use --duplicate-cn, it should be fine (not ideal, but for some use cases it's reasonable to use that approach)
+2016-10-28 05:50:17	@dazo	tcpdump: I'd rather recommend 2.3.12, if you're aiming for stable stuff .... 2.4_alpha2 is, well, an alpha release - so it might not be as solid - even though 2.4 may be fine for quite many
+2016-10-28 05:52:13	tcpdump	dazo: hmmm when i do upgrade in apt-get I dont show any updates?
+2016-10-28 05:52:31	tcpdump	this is ubuntu 14.04, is that a 16.04 package?
+2016-10-28 05:52:34	tcpdump	do you know?
+2016-10-28 05:52:58	@ecrist	tcpdump: you can download directly from openvpn site
+2016-10-28 05:53:06	slypknot	https://community.openvpn.net/openvpn/wiki/OpenvpnSoftwareRepos
+2016-10-28 05:53:06	@ecrist	we don't maintain packages for every distribution
+2016-10-28 05:53:08	@vpnHelper	Title: OpenvpnSoftwareRepos – OpenVPN Community (at community.openvpn.net)
+2016-10-28 05:53:59	slypknot	trusty is covered :)
+2016-10-28 05:55:51	tcpdump	ecrist: I just downlaoded and extracted the .tar - If I have the apt version installed will compiling it overwrite the apt version or install a dup instance of openvpn?
+2016-10-28 05:55:57	tcpdump	Also, will my config files persist?
+2016-10-28 05:56:43	slypknot	tcpdump: you can add the openvpn repo to your apt.sources and keep upto date with releases automatically
+2016-10-28 05:57:11	slypknot	and your configs will not be effected
+2016-10-28 05:58:08	tcpdump	echo "deb http://build.openvpn.net/debian/openvpn/testing trust main" > /etc/apt/sources.list.d/openvpn-aptrepo.list
+2016-10-28 05:58:10	@vpnHelper	Title: Index of /debian/openvpn/testing/ (at build.openvpn.net)
+2016-10-28 05:58:12	tcpdump	that should do it, huh?
+2016-10-28 05:58:28	tcpdump	wait, why's it say testing
+2016-10-28 05:58:29	tcpdump	1 sec
+2016-10-28 05:58:29	slypknot	read the whole page .. get the apt.key
+2016-10-28 05:58:53	tcpdump	stable
+2016-10-28 05:58:55	tcpdump	got it
+2016-10-28 06:00:08	tcpdump	you guys recommend stable or release/2.3?
+2016-10-28 06:00:35	-->	ElPasmo (~elpasmo@unaffiliated/elpasmo) has joined #openvpn
+2016-10-28 06:01:32	slypknot	stable would probably be best in your case
+2016-10-28 06:01:45	slypknot	2k users .. etc
+2016-10-28 06:02:02	ElPasmo	Hi all, I'm trying to establish an VPN connection to my server through USB tethering and I'm able to establish the VPN tunnel but, oddly, when I navigate, I do it outside the VPN... I'm using debian, no network manager...
+2016-10-28 06:02:24	tcpdump	  openssl openvpn python-msgpack python-samba python-sss shows in my update candidates now
+2016-10-28 06:02:30	tcpdump	So I think Im good.
+2016-10-28 06:03:01	slypknot	looks good :)
+2016-10-28 06:03:12	 *	slypknot back later .. adios
+2016-10-28 06:03:48	tcpdump	later slypknot
+2016-10-28 06:03:48		[06:03]
+2016-10-28 06:03:53	tcpdump	thanks for the help.
+2016-10-28 06:06:34	tcpdump	looks like --explicit-exit-notify  is a client side directive?
+2016-10-28 06:08:55	<--	leo2007 (~leo2007@2400:6180:0:d0::d83:5001) has left #openvpn ("rcirc on GNU Emacs 25.1.1")
+2016-10-28 06:10:20	<--	ElPasmo (~elpasmo@unaffiliated/elpasmo) has quit (Ping timeout: 260 seconds)
+2016-10-28 06:13:08	<--	shootbird (~quassel@beepbeep.serverpit.com) has quit (Ping timeout: 260 seconds)
+2016-10-28 06:16:04	-->	SCHAAP137 (~SCHAAP137@unaffiliated/schaap137) has joined #openvpn
+2016-10-28 06:17:40	<--	defsdoor (~andy@cpc35-sutt4-2-0-cust184.19-1.cable.virginm.net) has quit (Ping timeout: 265 seconds)
+2016-10-28 06:21:14	-->	shootbird (~quassel@205.185.122.214) has joined #openvpn
+2016-10-28 06:21:14		[06:21]
+2016-10-28 06:31:54	<--	rich0 (~quassel@gentoo/developer/rich0) has quit (Remote host closed the connection)
+2016-10-28 06:32:04	-->	gffa (~unknown@unaffiliated/gffa) has joined #openvpn
+2016-10-28 06:33:58	--	F2Knight[away] is now known as F2Knight
+2016-10-28 06:35:28	-->	rich0_ (~quassel@gentoo/developer/rich0) has joined #openvpn
+2016-10-28 06:38:06	<--	AfroThundr (~AfroThund@2601:147:c000:177f:5cbe:f59:bd0f:9ba) has quit (Read error: Connection reset by peer)
+2016-10-28 06:38:06		[06:38]
+2016-10-28 06:38:32	-->	AfroThundr (~AfroThund@2601:147:c000:177f:5cbe:f59:bd0f:9ba) has joined #openvpn
+2016-10-28 06:39:58	<--	tcpdump (sid47591@gateway/web/irccloud.com/x-xfrkendeclteaxhi) has quit (Read error: Network is unreachable)
+2016-10-28 06:39:59	<--	Amplificator (~quassel@unaffiliated/amplificator) has quit (Remote host closed the connection)
+2016-10-28 06:40:05	<--	XJR-9 (XJR-9@pdpc/supporter/active/xjr-9) has quit (Read error: Connection reset by peer)
+2016-10-28 06:40:56	skylite	so I can just increase replay-window 128 even more if I still have Authenticate/Decrypt packet error: bad packet ID... ?
+2016-10-28 06:41:07	-->	XJR-9 (sid2977@pdpc/supporter/active/xjr-9) has joined #openvpn
+2016-10-28 06:41:20	-->	tcpdump (sid47591@gateway/web/irccloud.com/x-sunavhmheqvrrtbx) has joined #openvpn
+2016-10-28 06:41:36	<--	batrick (batrick@nmap/developer/batrick) has quit (Ping timeout: 256 seconds)
+2016-10-28 06:41:38	-->	Amplificator (~quassel@unaffiliated/amplificator) has joined #openvpn
+2016-10-28 06:42:10	<--	BlackBishop (~dexter@ipv6.d3xt3r01.tk) has quit (Ping timeout: 256 seconds)
+2016-10-28 06:42:10	<--	ghormoon (~ghormoon@ghorland.net) has quit (Ping timeout: 256 seconds)
+2016-10-28 06:42:10	<--	bdmc (apin@drochaid.buadh-brath.com) has quit (Ping timeout: 256 seconds)
+2016-10-28 06:42:44	<--	sbraz (~sbraz@unaffiliated/drwx) has quit (Ping timeout: 256 seconds)
+2016-10-28 06:43:16	-->	fearnothing (~nothing@unaffiliated/fearnothing) has joined #openvpn
+2016-10-28 06:43:51	<--	luckman212 (~luckman21@unaffiliated/luckman212) has quit (Ping timeout: 256 seconds)
+2016-10-28 06:43:53	-->	WiuEmPe (~wmp@sored/admin/wmp) has joined #openvpn
+2016-10-28 06:45:19	-->	sbraz (~sbraz@unaffiliated/drwx) has joined #openvpn
+2016-10-28 06:45:35	-->	batrick (batrick@nmap/developer/batrick) has joined #openvpn
+2016-10-28 06:45:59	-->	BlackBishop (~dexter@ipv6.d3xt3r01.tk) has joined #openvpn
+2016-10-28 06:46:02	-->	luckman212 (~luckman21@unaffiliated/luckman212) has joined #openvpn
+2016-10-28 06:47:20	-->	ghormoon (~ghormoon@ghorland.net) has joined #openvpn
+2016-10-28 06:48:35	mrpops2ko	hey guys, is it possible to invert the logic of openvpn client, so that it routes only specific routes I give it, rather than everything?
+2016-10-28 06:54:00		[06:48]
+2016-10-28 06:55:53	@dazo	!redirect
+2016-10-28 06:55:54	@vpnHelper	"redirect" is (#1) to make all inet traffic flow through the vpn, you will need --redirect-gateway (see !def1), as well as IP forwarding (see !ipforward) and NAT (see !nat) enabled on the server., or (#2) you may need to use a different dns server when redirecting gateway, see !dns or !pushdns, or (#3) if using ipv6 try: route-ipv6 2000::/3, or (#4) Handy troubleshooting flowchart:
+2016-10-28 06:55:55	@vpnHelper	http://pekster.sdf.org/misc/redirect.png
+2016-10-28 06:55:58	@dazo	mrpops2ko: ^^^
+2016-10-28 06:56:22	@dazo	mrpops2ko: redirecting everything is NOT the default, it comes from the --redirect-gateway option
+2016-10-28 06:57:10	mrpops2ko	so if i drop that, no traffic will be routed, and then use the route command to push to the vpn?
+2016-10-28 06:57:34	@dazo	right
+2016-10-28 06:58:01	@dazo	or rather you add --route to your config, declaring which subnets you want to be routed over the VPN
+2016-10-28 06:59:42	mrpops2ko	aight cool going to play around with that then
+2016-10-28 07:00:44	<--	Naeil (~nzoueidi@ubuntu/member/na3il) has quit (Ping timeout: 256 seconds)
+2016-10-28 07:06:00		[07:00]
+2016-10-28 07:06:27	<--	deadhead9 (~deadhead@184.75.209.226) has quit (Read error: Connection reset by peer)
+2016-10-28 07:12:00		[07:06]
+2016-10-28 07:12:32	<--	j12t (~j12t@c-50-131-55-96.hsd1.ca.comcast.net) has quit (Read error: Connection reset by peer)
+2016-10-28 07:12:48	-->	j12t (~j12t@c-50-131-55-96.hsd1.ca.comcast.net) has joined #openvpn
+2016-10-28 07:12:54	-->	natarej_ (~natarej@101.188.54.14) has joined #openvpn
+2016-10-28 07:13:15	<--	johnny56 (~johnny56@unaffiliated/johnny56) has quit (Ping timeout: 246 seconds)
+2016-10-28 07:15:39	<--	natarej (~natarej@101.188.54.14) has quit (Ping timeout: 265 seconds)
+2016-10-28 07:17:02	-->	defsdoor (~andy@cpc35-sutt4-2-0-cust184.19-1.cable.virginm.net) has joined #openvpn
+2016-10-28 11:26:20	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined #openvpn
+2016-10-28 11:26:20		[11:26]
+2016-10-28 11:26:20	--	Topic for #openvpn is "OpenVPN Community Support Channel || PLEASE read entire /topic || Current Release: 2.3.12 (23 Aug 2016) || First time? Use !welcome and !goal || Access-Server? /join #openvpn-as || Your problem is probably firewall. Really || TAP/bridging is almost always a bad idea || Vulninfo: !heartbleed !poodle !ovpnuke !sweet32 || Patience is a virtue"
+2016-10-28 11:26:20	--	Topic set by danhunsaker (sid145261@openvpn/corp/danhunsaker) on Sun, 09 Oct 2016 21:20:15
+2016-10-28 11:26:20	--	Channel #openvpn: 237 nicks (7 ops, 3 voices, 227 normals)
+2016-10-28 11:26:20	***	Buffer Playback...
+2016-10-28 11:26:20	WebHostingFree	[20:33:29] латсшнч [20:33:29]
+2016-10-28 11:26:20	WebHostingFree	[20:33:31] платиш [20:33:31]
+2016-10-28 11:26:20	WebHostingFree	[20:33:32] Часы [20:33:32]
+2016-10-28 11:26:20	WebHostingFree	[20:33:34] --- [20:33:34]
+2016-10-28 11:26:20	WebHostingFree	[20:33:35] Watch - часы [20:33:35]
+2016-10-28 11:26:20	WebHostingFree	[20:33:37] латсшнч [20:33:37]
+2016-10-28 11:26:20	WebHostingFree	[20:33:38] платиш [20:33:38]
+2016-10-28 11:26:20	WebHostingFree	[20:33:40] Часы [20:33:40]
+2016-10-28 11:26:20	WebHostingFree	[20:33:41] --- [20:33:41]
+2016-10-28 11:26:20	WebHostingFree	[20:33:43] Watch - часы [20:33:43]
+2016-10-28 11:26:20	WebHostingFree	[20:33:44] латсшнч [20:33:44]
+2016-10-28 11:26:20	WebHostingFree	[20:33:46] платиш [20:33:46]
+2016-10-28 11:26:20	WebHostingFree	[20:33:47] Часы [20:33:47]
+2016-10-28 11:26:20	WebHostingFree	[20:33:49] --- [20:33:49]
+2016-10-28 11:26:20	WebHostingFree	[20:33:50] Watch - часы [20:33:50]
+2016-10-28 11:26:20	WebHostingFree	[20:33:52] латсшнч [20:33:52]
+2016-10-28 11:26:20	WebHostingFree	[20:33:53] платиш [20:33:53]
+2016-10-28 11:26:20	WebHostingFree	[20:33:55] Часы [20:33:55]
+2016-10-28 11:26:20	WebHostingFree	[20:33:56] --- [20:33:56]
+2016-10-28 11:26:20	WebHostingFree	[20:33:58] Watch - часы [20:33:58]
+2016-10-28 11:26:20	WebHostingFree	[20:33:59] латсшнч [20:33:59]
+2016-10-28 11:26:20	WebHostingFree	[20:34:01] платиш [20:34:01]
+2016-10-28 11:26:20	WebHostingFree	[20:34:02] Часы [20:34:02]
+2016-10-28 11:26:20	WebHostingFree	[20:34:04] --- [20:34:04]
+2016-10-28 11:26:20	WebHostingFree	[20:34:05] Watch - часы [20:34:05]
+2016-10-28 11:26:20	WebHostingFree	[20:34:07] латсшнч [20:34:07]
+2016-10-28 11:26:20	WebHostingFree	[20:34:08] платиш [20:34:08]
+2016-10-28 11:26:20	WebHostingFree	[20:34:10] Часы [20:34:10]
+2016-10-28 11:26:20	WebHostingFree	[20:34:11] --- [20:34:11]
+2016-10-28 11:26:20	WebHostingFree	[20:34:13] Watch - часы [20:34:13]
+2016-10-28 11:26:20	WebHostingFree	[20:34:14] латсшнч [20:34:14]
+2016-10-28 11:26:20	WebHostingFree	[20:34:16] платиш [20:34:16]
+2016-10-28 11:26:20	WebHostingFree	[20:34:17] Часы [20:34:17]
+2016-10-28 11:26:20	WebHostingFree	[20:34:19] --- [20:34:19]
+2016-10-28 11:26:20	WebHostingFree	[20:34:20] Watch - часы [20:34:20]
+2016-10-28 11:26:20	WebHostingFree	[20:34:22] латсшнч [20:34:22]
+2016-10-28 11:26:20	WebHostingFree	[20:34:23] платиш [20:34:23]
+2016-10-28 11:26:20	WebHostingFree	[20:34:25] Часы [20:34:25]
+2016-10-28 11:26:20	WebHostingFree	[20:34:26] --- [20:34:26]
+2016-10-28 11:26:20	WebHostingFree	[20:34:28] Watch - часы [20:34:28]
+2016-10-28 11:26:20	WebHostingFree	[20:34:29] латсшнч [20:34:29]
+2016-10-28 11:26:20	WebHostingFree	[20:34:31] платиш [20:34:31]
+2016-10-28 11:26:20	WebHostingFree	[20:34:32] Часы [20:34:32]
+2016-10-28 11:26:20	WebHostingFree	[20:34:34] --- [20:34:34]
+2016-10-28 11:26:20	WebHostingFree	[20:34:35] Watch - часы [20:34:35]
+2016-10-28 11:26:20	WebHostingFree	[20:34:37] латсшнч [20:34:37]
+2016-10-28 11:26:20	WebHostingFree	[20:34:38] платиш [20:34:38]
+2016-10-28 11:26:20	WebHostingFree	[20:34:40] translate [20:34:40]
+2016-10-28 11:26:20	--	Notice(ChanServ): [20:34:44] danhunsaker added WebHostingFree to the AKICK list. [20:34:44]
+2016-10-28 11:26:20	tcpdump	[21:17:58] thx danhunsaker [21:17:58]
+2016-10-28 11:26:20	***	Playback Complete.
+2016-10-28 11:27:27	--	Channel created on Sat, 25 Nov 2006 20:42:40
+2016-10-28 11:27:52	slypknot	tcpdump: any success with those changes ?
+2016-10-28 11:33:00		[11:27]
+2016-10-28 11:36:07	slypknot	tcpdump is staying up late ;)

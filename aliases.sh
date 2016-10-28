@@ -17,6 +17,7 @@ unalias {1..9} gg history c d h j s >/dev/null 2>&1 || true
 
 ## Custom aliases
 
+alias showcert='openssl s_client -connect $IP:$PORT -showcert '
 alias bsrv='sudo tar cvf /store/config/srvbak/$(date +"%Y-%d-%m").tar /srv '
 alias bhttpd='sudo tar cvf /store/config/srvbak/httpd-$(date +"%Y-%d-%m").tar /etc/httpd '
 alias bnginx='sudo tar cvf /store/config/srvbak/nginx-$(date +"%Y-%d-%m").tar /etc/nginx '
