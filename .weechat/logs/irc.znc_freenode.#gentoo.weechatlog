@@ -39261,3 +39261,761 @@
 2016-10-28 12:23:55	way218	iqubic: not really
 2016-10-28 12:24:01	<--	karolherbst (~karol@ip5f5be115.dynamic.kabel-deutschland.de) has quit (Ping timeout: 265 seconds)
 2016-10-28 12:24:05	way218	iqubic: when its compiling it is fine
+2016-10-28 12:28:12	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined #gentoo
+2016-10-28 12:28:12		[12:28]
+2016-10-28 12:28:12	--	Topic for #gentoo is "Gentoo Linux Support | Can't speak? /j #gentoo-ops | long pastes: dpaste.org | masked by license? http://x.vu/WgxYLs | firmware not loading? http://goo.gl/MzVLBN | perl conflicts? http://goo.gl/n1FMk8 | Be nice! http://xrl.us/kftd | portage-2.3.0_rc1 broken? "emerge -1 repoman" | php5-5 out, php5-6 in"
+2016-10-28 12:28:12	--	Topic set by rej (~jer@gentoo/developer/jer) on Thu, 25 Aug 2016 23:13:52
+2016-10-28 12:28:13	--	Channel #gentoo: 928 nicks (6 ops, 54 voices, 868 normals)
+2016-10-28 12:28:13	***	Buffer Playback...
+2016-10-28 12:28:13	maolang	[22:16:06] USE=.. emerge wont stick [22:16:06]
+2016-10-28 12:28:13	way218	[22:16:19] add it under use oder python_targets ? [22:16:19]
+2016-10-28 12:28:13	maolang	[22:16:36] so this way you enable your packages to use 3.5 [22:16:36]
+2016-10-28 12:28:13	maolang	[22:16:52] i show you my make.conf section for this part, hold a sec [22:16:52]
+2016-10-28 12:28:13	way218	[22:16:58] nice thanks [22:16:58]
+2016-10-28 12:28:13	iqubic	[22:17:18] Is it fine to stop an emerge compile in the middle with ctrl-c? [22:17:18]
+2016-10-28 12:28:13	way218	[22:17:35] i guess [22:17:35]
+2016-10-28 12:28:13	way218	[22:17:44] you may have to remove lock files afterwards [22:17:44]
+2016-10-28 12:28:13	TheReverend403	[22:17:56] Hmm. Adding a country-specific mirror to my repos.conf fixed my issue. Is rsync.gentoo.org no longer in use or something? [22:17:56]
+2016-10-28 12:28:13	maolang	[22:17:58] way218: look at my pythonuses line mostly --> http://dpaste.com/3BF3WRH [22:17:58]
+2016-10-28 12:28:13	way218	[22:18:18] this looks nice :)= [22:18:18]
+2016-10-28 12:28:13	maolang	[22:18:33] the easiest part of it, dont recopy whole uses i have in that line, is to just add the python_targets_3.5 [22:18:33]
+2016-10-28 12:28:13	iqubic	[22:18:37] I'm going to just stop this emerge compile now. What harm does that pes to my machine? [22:18:37]
+2016-10-28 12:28:13	iqubic	[22:18:41] *pose [22:18:41]
+2016-10-28 12:28:13	maolang	[22:19:00] as long s you stop while its emrgong its fine, not while its installing [22:19:00]
+2016-10-28 12:28:13	iqubic	[22:19:25] What's the difference? [22:19:25]
+2016-10-28 12:28:13	way218	[22:19:26] my guess: no harm, but if you are just in the middle of copying the files it may be shitty [22:19:26]
+2016-10-28 12:28:13	way218	[22:19:36] compiling happens in /var/tmp/portage [22:19:36]
+2016-10-28 12:28:13	way218	[22:19:47] when its done it installs the stuff to you file-system [22:19:47]
+2016-10-28 12:28:13	maolang	[22:19:48] to be able to use that whole line for me did invole a lot of tinkering, but right most entry is easiest, every package supporting it would be added the targets 3.5 [22:19:48]
+2016-10-28 12:28:13	way218	[22:20:00] if you kill this while its happening you may end up with a half installed package [22:20:00]
+2016-10-28 12:28:13	way218	[22:20:19] thats a nice make.conf [22:20:19]
+2016-10-28 12:28:13	way218	[22:20:34] one question: is the python_target just included to the use ? [22:20:34]
+2016-10-28 12:28:13	way218	[22:20:38] like the variable [22:20:38]
+2016-10-28 12:28:13	way218	[22:21:10] the one you are not using :) [22:21:10]
+2016-10-28 12:28:13	maolang	[22:21:18] if you do the right most entry yes, then every occurences in package use can go away unless it needs to be negated by a package [22:21:18]
+2016-10-28 12:28:13	maolang	[22:21:40] run this, should list you the packages that can be upgraded to 3.5 targets --> use="python_targets_python3_5" ; EIX_LIMIT=0  eix -Ixe --installed-without-use "$use" | grep -i "\[I\]" | sed 's/\[I\]\ //g' [22:21:40]
+2016-10-28 12:28:13	maolang	[22:22:07] it will list the packages which have a TARGETS 3.5 capacity but which is not activated [22:22:07]
+2016-10-28 12:28:13	barteks2x	[22:22:09] I have some weird graphical glitches and TTY just show a cursor and nothing else, can anyone help with that? [22:22:09]
+2016-10-28 12:28:13	iqubic	[22:22:55] So I can just stop this emerge right now? Even when I'm not sure what it's doing? [22:22:55]
+2016-10-28 12:28:13	maolang	[22:22:55] in that same full comand change the without part to xwith to see packages installed with targets 3.5 activated [22:22:55]
+2016-10-28 12:28:13	maolang	[22:23:04] with that was [22:23:04]
+2016-10-28 12:28:13	way218	[22:23:55] iqubic: not really [22:23:55]
+2016-10-28 12:28:13	way218	[22:24:05] iqubic: when its compiling it is fine [22:24:05]
+2016-10-28 12:28:13	way218	[22:24:17] iqubic: when it is in the phase of installing the shit (the very end) it is not fine [22:24:17]
+2016-10-28 12:28:13	iqubic	[22:24:32] I'm not sure what it's doing? How do I tell what it's doing? [22:24:32]
+2016-10-28 12:28:13	way218	[22:24:35] use top. if your cpu is busy compiling just kill it [22:24:35]
+2016-10-28 12:28:13	maolang	[22:24:43] way218: so if you want to push 3.5 targets for everythiong that supoorts it, add that right most targets part to your make.conf line then run [22:24:43]
+2016-10-28 12:28:13	way218	[22:24:59] i understand [22:24:59]
+2016-10-28 12:28:13	way218	[22:25:00] nice [22:25:00]
+2016-10-28 12:28:13	iqubic	[22:25:16] way218: I'm in a tty. I can only run one command ata time. [22:25:16]
+2016-10-28 12:28:13	maolang	[22:25:25] emerge --ask $(use="python_targets_python3_5" ; EIX_LIMIT=0  eix -Ixe --installed-without-use "$use" | grep -i "\[I\]" | sed 's/\[I\]\ //g') # this will emerge using your new use added everything that can be upgraded targets wise to 3.5 in one go [22:25:25]
+2016-10-28 12:28:13	iqubic	[22:25:54] Actually I just switched to another terminal. [22:25:54]
+2016-10-28 12:28:13	way218	[22:26:00] iqubic: install screen to not have this problem [22:26:00]
+2016-10-28 12:28:13	way218	[22:26:15] or press ctrl+alt+f2 [22:26:15]
+2016-10-28 12:28:13	way218	[22:26:22] when you are not remotly logged in [22:26:22]
+2016-10-28 12:28:13	iqubic	[22:26:32] So what does it mean when top says that portage is running cc1plus? [22:26:32]
+2016-10-28 12:28:13	way218	[22:26:40] compiling [22:26:40]
+2016-10-28 12:28:13	way218	[22:26:43] kill it [22:26:43]
+2016-10-28 12:28:13	maolang	[22:27:58] so see here when i run that same command with a with instead of without, list what i have with targets 3.5 --> http://dpaste.com/1RN64S8 [22:27:58]
+2016-10-28 12:28:13	***	Playback Complete.
+2016-10-28 12:28:15	way218	maolang: i rewrote my use in your style and i do an update newuse now
+2016-10-28 12:28:19	way218	lets see what is going to happen
+2016-10-28 12:28:22	maolang	no
+2016-10-28 12:28:23	-->	iterati (~vangelis@79.103.101.247.dsl.dyn.forthnet.gr) has joined #gentoo
+2016-10-28 12:28:31	maolang	dont go the normal way it wont be complete
+2016-10-28 12:29:08	iqubic	How does one exit out of ghci?
+2016-10-28 12:29:21	--	Channel created on Fri, 14 Sep 2001 17:15:36
+2016-10-28 12:29:52	iqubic	:quit
+2016-10-28 12:29:53	maolang	you need to use the long emerge line i posted, it will take care of every single packages that can be upgraded targets wise to 3.5 even if you do world deep withbdeps it will still miss some
+2016-10-28 12:29:57	-->	HedgeMage (HedgeMage@unaffiliated/hedgemage) has joined #gentoo
+2016-10-28 12:30:09	way218	ah ok
+2016-10-28 12:30:13	way218	sorry for missing that
+2016-10-28 12:30:44	iqubic	How long does firefox take to compile?
+2016-10-28 12:30:49	maolang	keep that line i posted to list the uses and you can change the with to without, its very practical for finding stuff
+2016-10-28 12:30:50	way218	long
+2016-10-28 12:30:54	way218	use firefox-bin
+2016-10-28 12:30:57	way218	just a download
+2016-10-28 12:30:58	way218	:)
+2016-10-28 12:31:15	iqubic	Why do web browsers take a long time to compile?
+2016-10-28 12:31:17	maolang	out of curiosity tell me how many packages you have to emerge?
+2016-10-28 12:31:31	HedgeMage	Okay, I realize that I'm lazywebbing here, but I hope that you all will take pity on me because it's in the name of good (prepping for a talk at O'Reilly Security Conference about NTPSec and saving infrastructure software, and one at Brooklyn OWASP about how to go from coder to serious software engineer to software security pro)...
+2016-10-28 12:32:03	way218	one: eix to get started :)
+2016-10-28 12:32:11	barteks2x	firefox doesn't take THAT long to compile, chromium is compiling 3+x longer alredy and still not done
+2016-10-28 12:32:32	<--	xmorph (~xt_@unaffiliated/xmorph) has quit (Quit: leaving)
+2016-10-28 12:32:59	wokko	iqubic: On a modern pc/laptop firefox only takes ~15 - 20 mins
+2016-10-28 12:33:02	HedgeMage	I bought a cheap chinese knockoff presentation remote so I'd have something better than the ones from my office @work.  It's mostly perfect, except that I expected it to send traditional pageup/pagedown key codes like most remotes do.  Instead it sends up-arrow/down-arrow
+2016-10-28 12:33:15	iqubic	Is it fine if I get chromium-bin?
+2016-10-28 12:33:28	-->	mackal (~mike@pool-96-237-144-12.bstnma.fios.verizon.net) has joined #gentoo
+2016-10-28 12:33:31	HedgeMage	How do I tell X (I asume with eudev rules?) that ONLY for this particular input device, it should remap those key codes?
+2016-10-28 12:33:35	way218	why not ?
+2016-10-28 12:34:02	Kelsar	iqubic: there is no chromium-bin...
+2016-10-28 12:34:11	iqubic	What is there?
+2016-10-28 12:34:20	HedgeMage	A quick web search did not provide me an easy RTFM and I'm somewhat time crunched. :(
+2016-10-28 12:34:23	way218	firefox-bin :)
+2016-10-28 12:34:32	barteks2x	if I stop compilation and reboot, will it compile from where it stopped or will it start from the beginning?
+2016-10-28 12:34:44	Kelsar	barteks2x: beginning of the package
+2016-10-28 12:34:51	HedgeMage	iqubic: there are binary packages for chrome and firefox, but not chromium. :(
+2016-10-28 12:34:59	barteks2x	I'm compiling chromium, already waiting 5 hours for it...
+2016-10-28 12:35:06	Kelsar	(it is possible to continue the build, by that needs a bit manual work)
+2016-10-28 12:35:10	iqubic	Is it fine if I get the chrome binary?
+2016-10-28 12:35:12	barteks2x	and I need to reboot to get audio working...
+2016-10-28 12:35:23	way218	if you like google, sure
+2016-10-28 12:35:25	HedgeMage	iqubic: depends on why you wanted chromium instead of chrome
+2016-10-28 12:35:25	wokko	iqubic: google-chrome
+2016-10-28 12:35:31	Kelsar	HedgeMage: binary chromium would be chrome anyways
+2016-10-28 12:35:42	maolang	way218: when i do to check TARGETS 3.5 enabled for my packages, thats what i come with --> http://dpaste.com/0BBZYT4 and 0 packages without
+2016-10-28 12:35:46	iqubic	Ah, right
+2016-10-28 12:36:16	barteks2x	Kelsar, would it work for sure or would it maybe-work?
+2016-10-28 12:36:51	way218	maolong: still updating eix
+2016-10-28 12:36:56	Kelsar	barteks2x: it can fail, usually with most packages it is not worth it
+2016-10-28 12:37:01	way218	maolong: it runs on a vserver which is not to fast
+2016-10-28 12:37:10	iqubic	CHrom is still going to take a while, cuz gnome base.
+2016-10-28 12:37:22	iqubic	Do I need gnome base for chrome?
+2016-10-28 12:37:22	maolang	ah ok, but that does seem pretty slowif its been going that long
+2016-10-28 12:37:34	maolang	iqubic: no
+2016-10-28 12:37:37	barteks2x	right now, I don't have audio, can't switch to TTY and have weird graphical glitches... great
+2016-10-28 12:37:40	HedgeMage	nobody's going to take pity on how much I suck at udev rules?
+2016-10-28 12:37:42	HedgeMage	:(
+2016-10-28 12:38:01	<--	DeviantPeer (~kvirc@541E60B8.cm-5-7b.dynamic.ziggo.nl) has quit (Ping timeout: 260 seconds)
+2016-10-28 12:38:17	iqubic	Crap. I thought gnome base was still compiling so I killed it. It was in the install phase when I killed it. What do I do?
+2016-10-28 12:38:20	Kelsar	HedgeMage: sound more like a job for xmodmap
+2016-10-28 12:38:34	-->	Alekti (~Alekti@cpe-70-120-86-202.satx.res.rr.com) has joined #gentoo
+2016-10-28 12:38:37	Kelsar	iqubic: rebuild
+2016-10-28 12:38:37	<--	barosan (~barosan@113-235-114-200.fibertel.com.ar) has quit (Quit: quit)
+2016-10-28 12:39:32	iqubic	How long does gnome base take?
+2016-10-28 12:39:36	iqubic	Not long.
+2016-10-28 12:39:47	HedgeMage	Kelsar: Can xmodmap only effect one specific keyboard?  I don't want to screw up the input from my built-in keyboard or docking station in the process of fixing my presentation remote.
+2016-10-28 12:39:49	iqubic	What is gnome base?
+2016-10-28 12:39:53	maolang	way its still calculating that was the combined emerge / eix line right, then that would be normal if it took some time to calculate
+2016-10-28 12:40:01	Kelsar	HedgeMage: dunno, never tried
+2016-10-28 12:40:18	-->	ribx (~ribx@x4db078ae.dyn.telefonica.de) has joined #gentoo
+2016-10-28 12:40:24	 *	HedgeMage contemplates returning this thing vs fighting with it
+2016-10-28 12:40:39	way218	maolong: he is not able to do this because he gets stuck with the PySocks problem again
+2016-10-28 12:41:00	iqubic	What the heck is gnome base?
+2016-10-28 12:42:03	Kelsar	HedgeMage: yes, xinput set-button-map $id $button-map
+2016-10-28 12:42:04	<--	Xavier|The_other (~Xavier@108-171-72-65.dr.cgocable.ca) has quit (Read error: Connection reset by peer)
+2016-10-28 12:42:10	Kelsar	https://unix.stackexchange.com/questions/38195/can-i-xmodmap-only-a-specific-device
+2016-10-28 12:42:36	-->	Xavier|The_other (~Xavier@108-171-72-65.dr.cgocable.ca) has joined #gentoo
+2016-10-28 12:42:36	-->	beatdown (beatdown@chainsawed.and.strangled.net) has joined #gentoo
+2016-10-28 12:43:39	<--	psymin (~psymin@host-69-146-8-222.static.bresnan.net) has quit (Quit: Leaving)
+2016-10-28 12:43:39		[12:43]
+2016-10-28 12:43:56	way218	maolong: i guess i ran in some kind of a bug. maybe it works in a couple of days
+2016-10-28 12:43:57	HedgeMage	score...thank you
+2016-10-28 12:44:34	way218	maolong: when i do the same stuff with 3.4 it works and i have to recompile basically my full system :)
+2016-10-28 12:44:46	iqubic	So I can mount a usb to just about anywhere, right?
+2016-10-28 12:45:37	wokko	iqubic: correct
+2016-10-28 12:46:19	iqubic	and whatever I put into the mounted place gets copied to the usb, and vice versa?
+2016-10-28 12:46:27	-->	Zucca (~zucca@85-76-146-20-nat.elisa-mobile.fi) has joined #gentoo
+2016-10-28 12:46:52	way218	iqubic: how long are you dancing with the penguin by now ?
+2016-10-28 12:47:04	-->	ptx0 (~cheesus_c@unaffiliated/ptx0) has joined #gentoo
+2016-10-28 12:47:13	way218	iqubic: the mounted place is the usb-stick -> so yes
+2016-10-28 12:47:21	iqubic	About a year with Linux. A week with gentoo.
+2016-10-28 12:47:26	way218	but sometimes it gets cached
+2016-10-28 12:47:30	way218	so make sure you unmount it
+2016-10-28 12:47:46	iqubic	I knew the answer to my last two questions before I asked them.
+2016-10-28 12:47:54	way218	gentoo has the best learning curve :)
+2016-10-28 12:48:11	iqubic	way218: I always unmount before removing drives.
+2016-10-28 12:48:21	way218	:)
+2016-10-28 12:48:33	iqubic	And before partitioning them too.
+2016-10-28 12:48:33	<--	CrowX- (~CrowX-@79.141.115.88) has quit (Quit: Leaving)
+2016-10-28 12:48:39	way218	just wrote that, because copying to a floppy can be surprisingly fast :)
+2016-10-28 12:48:58	wokko	iqubic: I like 'sync && umount' just to be safe
+2016-10-28 12:49:09	way218	what is the gain in sync ?
+2016-10-28 12:49:12	iqubic	what does the sync part do?
+2016-10-28 12:49:33	iqubic	and do you supply the name of the block device?
+2016-10-28 12:49:46	iqubic	Like type umount /dev/sca?
+2016-10-28 12:49:52	way218	yes
+2016-10-28 12:49:56	way218	or the location
+2016-10-28 12:50:16	<--	timahvo1 (~rogue@197.237.131.125) has quit (Ping timeout: 260 seconds)
+2016-10-28 12:50:31	way218	wokko: why to sync before unmount ?
+2016-10-28 12:50:48	<--	timahvo1_ (~rogue@197.237.131.125) has quit (Ping timeout: 260 seconds)
+2016-10-28 12:50:58	iqubic	Oh you can type umount /path/to/usb?
+2016-10-28 12:51:17	way218	yes
+2016-10-28 12:51:19	wokko	way218: always have from the usb 1.1 days so still do it
+2016-10-28 12:51:29	way218	k, thanks
+2016-10-28 12:52:12	-->	timahvo1 (~rogue@197.237.131.125) has joined #gentoo
+2016-10-28 12:52:43	-->	timahvo1_ (~rogue@197.237.131.125) has joined #gentoo
+2016-10-28 12:53:00	<--	silverhom (~silverhom@c83-252-238-248.bredband.comhem.se) has quit (Quit: Leaving)
+2016-10-28 12:53:06	iqubic	How does on check if a certain package is installed?
+2016-10-28 12:53:18	way218	emerge -s package name
+2016-10-28 12:53:59	iqubic	How does one run chrome from the command line?
+2016-10-28 12:54:19	way218	you mean on a terminal running on a xscreen ?
+2016-10-28 12:54:23	way218	like xterm?
+2016-10-28 12:54:26	iqubic	Yeah.
+2016-10-28 12:54:31	way218	just run it
+2016-10-28 12:54:39	barteks2x	google-chrome if it's the google one
+2016-10-28 12:55:03	iqubic	My tty is not letting me run chrome.
+2016-10-28 12:55:23	barteks2x	because TTY doesn't have X running
+2016-10-28 12:55:34	iqubic	I just wanted to see the error messages generated by running an X prgram in a tty.
+2016-10-28 12:55:47	iqubic	It just says command not found.
+2016-10-28 12:55:53	way218	can you print your command line please ?
+2016-10-28 12:56:06	way218	use google-chrome as mentioned by barteks2x
+2016-10-28 12:56:08	PickAndMix	google-chrome
+2016-10-28 12:56:11	PickAndMix	or google-chrome-stable
+2016-10-28 12:56:11	barteks2x	it will probably complain something about not being able to find screen
+2016-10-28 12:56:20	PickAndMix	googl [tab] and it should autocomplete if you have installed chrome.
+2016-10-28 12:56:25	way218	i guess he is using xterm not a tty
+2016-10-28 12:56:38	iqubic	never mind. No, I'm using a tty.
+2016-10-28 12:56:55	iqubic	I installed the beta version, so I had to run google-chrome-beta
+2016-10-28 12:57:19	iqubic	And apparently gtk can't open the display. That's what I expected.
+2016-10-28 12:57:49	-->	FL4SHK (~fl4shk@2601:486:2:9870:c685:8ff:fe26:89e1) has joined #gentoo
+2016-10-28 12:57:58	maolang	way218: has it started yet?
+2016-10-28 12:58:27	way218	maolong, pa1983: thanks for your patient help. i have not solved the problem but i learned some stuff and this is more valuable at all :)
+2016-10-28 12:58:52	maolang	knowledge and tricks is always good!
+2016-10-28 12:58:52		[12:58]
+2016-10-28 12:58:55	way218	maolang: i wrote long .... i guess that is why you have not seen it
+2016-10-28 12:59:00	iqubic	My biggest worry is sound. I'm not sure that my sound drivers and/or sound server will work with my system. I may have to fiddle around with that.
+2016-10-28 12:59:10	way218	maolang: he got stuck with the same pysocks problem
+2016-10-28 12:59:31	way218	i removed pip because this was the package actually pulling this guy and now he is happy
+2016-10-28 12:59:34	maolang	can you paste your emerge output for that problem, let lme look
+2016-10-28 12:59:42	maolang	good now then?
+2016-10-28 12:59:47	way218	it is almost my full system but everybody is going up to 3.5
+2016-10-28 13:00:01	<--	Khudher (~K@khudher.rocks) has quit (Ping timeout: 250 seconds)
+2016-10-28 13:00:03	PickAndMix	guys
+2016-10-28 13:00:06	PickAndMix	for gentoo users here
+2016-10-28 13:00:13	PickAndMix	you guys are using it for personal usage or work?
+2016-10-28 13:00:24	PickAndMix	how is it like to work with backend dev
+2016-10-28 13:00:26	way218	what is the difference ? </joke>
+2016-10-28 13:00:32	maolang	PickAndMix: all walks of life and type of usage i would say...
+2016-10-28 13:00:43	+kurly	PickAndMix: probably a better question for #gentoo-chat
+2016-10-28 13:00:57	iqubic	what's #gentoo-chat?
+2016-10-28 13:01:07	iqubic	How's it different from this channel?
+2016-10-28 13:01:16	+kurly	this is a support channel, and that's a chat channel
+2016-10-28 13:01:25	PickAndMix	kurly: noted :)
+2016-10-28 13:01:57	way218	maolang: he is working for the next hours i guess.
+2016-10-28 13:01:57	-->	Khudher (~K@khudher.rocks) has joined #gentoo
+2016-10-28 13:02:06	way218	maolang: all looking good so far
+2016-10-28 13:02:37	iqubic	Oh. So people come here with problems, and people go to gentoo-chat with things to talk about?
+2016-10-28 13:03:37	maolang	way218: some of those python emerge output errors on single targets and targets can be confusing, having rebuilt everything python on my system i ran into a few of those errors and then some, now have a much better idea on how to interpret those
+2016-10-28 13:03:45	@NeddySeagoon	iqubic: When this channel is busy, /topic is enforced.  -chat is much more laid back.
+2016-10-28 13:03:46	wokko	iqubic: and if you are naughty over at #gentoo-chat you can go to #gentoo-chat-exile
+2016-10-28 13:03:59	<--	tdy (~tdy@host-5-117.ilur711elm.urbana.il.us.clients.pavlovmedia.com) has quit (Ping timeout: 256 seconds)
+2016-10-28 13:04:02	iqubic	Is that a thing that exists?
+2016-10-28 13:04:09	iqubic	ANd what is /topic?
+2016-10-28 13:04:30	@NeddySeagoon	type  /topic  in your client
+2016-10-28 13:04:36	wokko	iqubic: type /topic in your irc client
+2016-10-28 13:04:46	<--	TheChance (~chance@wikipedia/Moralis) has quit (Quit: Lost terminal)
+2016-10-28 13:04:58	@NeddySeagoon	yes  #gentoo-chat-exile exists too
+2016-10-28 13:05:09	iqubic	I'm using the freenode webchat on windows 10. I can't do /topic
+2016-10-28 13:05:46	PickAndMix	iqubic: yep like #web / #web-social
+2016-10-28 13:05:57	-->	derek01 (derek01@cpe-74-79-12-174.twcny.res.rr.com) has joined #gentoo
+2016-10-28 13:06:03	iqubic	#web-social
+2016-10-28 13:06:08	iqubic	#web-social
+2016-10-28 13:06:18	iqubic	Nothing much is happening.
+2016-10-28 13:06:44	@NeddySeagoon	iqubic:   Its /join #gentoo-chat
+2016-10-28 13:06:47	way218	maolong: i am gladfull that you share your experience :)
+2016-10-28 13:07:08	iqubic	Oh. What does /topic do when enforced?
+2016-10-28 13:07:16	maolang	way218: thats the way it goes here, you learn and you share when you can, it helps you and others, its a win/win
+2016-10-28 13:07:49	@NeddySeagoon	iqubic: gets you a warning or a kick  if you discuss Off Topic things
+2016-10-28 13:07:58	iqubic	Oh.
+2016-10-28 13:08:01	iqubic	I see.
+2016-10-28 13:08:16	iqubic	So this is primarily a support channel only?
+2016-10-28 13:08:45	@NeddySeagoon	iqubic: This discussion we are having now really belongs in anoter channel as its not related to Gentoo support
+2016-10-28 13:08:46	way218	maolang: have a good night. i let my box work for me over night :)
+2016-10-28 13:08:57	@NeddySeagoon	iqubic: Yes.
+2016-10-28 13:09:16	iqubic	NeddySeagoon: Then we'll stop this disscussion right now.
+2016-10-28 13:09:41	<--	way218 (~way218@77.47.122.90.dynamic.cablesurf.de) has quit (Quit: Konversation terminated!)
+2016-10-28 13:10:37	@NeddySeagoon	iqubic: The rules can be relaxed when its quiet.
+2016-10-28 13:10:52	iqubic	Oh. Is it ever busy in here?
+2016-10-28 13:11:02	biberao	iqubic: it was minutes ago
+2016-10-28 13:11:14	iqubic	It didn't seem to busy.
+2016-10-28 13:11:15	@NeddySeagoon	It depends on the time of day and time of year
+2016-10-28 13:12:01	maolang	there are some quiet hour zones, but essentially if people are asking questions for everyone its easier if you dont have walls of text in between, for people asking / getting helped by others
+2016-10-28 13:12:20	@NeddySeagoon	After Christmas, when everyone has a new PC and time on their hands, it looks like they all jjry out Gentoo on the old PCs
+2016-10-28 13:12:33	-->	jtriley (~jtriley@209-6-38-104.c3-0.smr-ubr2.sbo-smr.ma.cable.rcn.com) has joined #gentoo
+2016-10-28 13:12:36	wokko	:)
+2016-10-28 13:12:40	maolang	lots of new emerger(s) lol!
+2016-10-28 13:12:58	iqubic	So the winter holidays are a busy time of year for this channel?
+2016-10-28 13:13:16	<--	jstein (~quassel@gentoo/developer/jstein) has quit (Read error: Connection reset by peer)
+2016-10-28 13:13:48	-->	PsyLok (~PsyLok@151.62.150.154) has joined #gentoo
+2016-10-28 13:13:49	<--	PsyLok (~PsyLok@151.62.150.154) has quit (Changing host)
+2016-10-28 13:13:49	-->	PsyLok (~PsyLok@unaffiliated/psylok) has joined #gentoo
+2016-10-28 13:14:21	wokko	iqubic: Yes it keeps your hands warm when typing so much :)
+2016-10-28 13:14:21		[13:14]
+2016-10-28 13:14:30	iqubic	LOL
+2016-10-28 13:14:49	-->	init_6 (~init_6@unaffiliated/init-6/x-6600008) has joined #gentoo
+2016-10-28 13:15:28	barteks2x	I'm wondering how long would compiling chromium take on my old laptop if it takes 5 hours on this one...
+2016-10-28 13:15:36	<--	pitelpan (~panagioti@unaffiliated/pitelpan) has quit (Ping timeout: 250 seconds)
+2016-10-28 13:16:07	<--	rx80 (~quassel@93-103-192-237.dynamic.t-2.net) has quit (Remote host closed the connection)
+2016-10-28 13:16:31	-->	rx80 (~quassel@93-103-192-237.dynamic.t-2.net) has joined #gentoo
+2016-10-28 13:16:52	iqubic	It was going for 6 hours on my laptop, and not even close to being done. I just terminated it and got a pre-compiled binary
+2016-10-28 13:16:56	<--	AntiSpamMeta (~MetaBot@AntiSpamMeta/.) has quit (Remote host closed the connection)
+2016-10-28 13:17:05	barteks2x	I meant >5 hours, its not done yet
+2016-10-28 13:17:09	-->	AntiSpamMeta (~MetaBot@AntiSpamMeta/.) has joined #gentoo
+2016-10-28 13:17:31	barteks2x	This has 2 cores, about 3GHz, but that one had a single 1.4GHz core...
+2016-10-28 13:17:46	barteks2x	And I wanted to install gentoo on that
+2016-10-28 13:18:24	maolang	a command to check to see emerged averages, you need to have emerged at least once package to see it in with timings --> qlop -t $(qlist -I) | sort -nk2
+2016-10-28 13:18:49	-->	r1k0 (~rik@d5152cdf5.static.telenet.be) has joined #gentoo
+2016-10-28 13:18:59	@NeddySeagoon	barteks2x: thats what distcc is for.  There are other ways of installing on CPU/RAM poor systems
+2016-10-28 13:19:29	@NeddySeagoon	maolang: genlop -t package
+2016-10-28 13:19:58	maolang	i know, but this was to sort everything from fastest emerge to longest  ;)
+2016-10-28 13:20:26	-->	kingkongmok (~kingkongm@n219077080053.netvigator.com) has joined #gentoo
+2016-10-28 13:20:31	barteks2x	it doesn'tsort this way
+2016-10-28 13:20:37	barteks2x	it sorts alphabetically by names
+2016-10-28 13:21:04	barteks2x	oh, wait
+2016-10-28 13:21:06	barteks2x	it doesn't
+2016-10-28 13:21:10	iqubic	Why does poweroff have to be run as SU?
+2016-10-28 13:21:11	maolang	by seconds...
+2016-10-28 13:21:11	barteks2x	It does sort by time
+2016-10-28 13:21:31	<--	Kelzier (~duka@79.175.84.119) has quit (Remote host closed the connection)
+2016-10-28 13:21:34	-->	pitelpan (~panagioti@79.103.243.187.dsl.dyn.forthnet.gr) has joined #gentoo
+2016-10-28 13:21:35	<--	pitelpan (~panagioti@79.103.243.187.dsl.dyn.forthnet.gr) has quit (Changing host)
+2016-10-28 13:21:35	-->	pitelpan (~panagioti@unaffiliated/pitelpan) has joined #gentoo
+2016-10-28 13:22:27	barteks2x	is it possible to get a bin package and still compilation running and let it replace the binary?
+2016-10-28 13:23:33	<--	rx80 (~quassel@93-103-192-237.dynamic.t-2.net) has quit (Remote host closed the connection)
+2016-10-28 13:24:02	iqubic	Why an't a regular user cd into the root directory?
+2016-10-28 13:24:02	@NeddySeagoon	barteks2x: not normally. The gentoo -bin and normal package are mutual blockers.  However, if you find a packace on a BINHOST, its trivial
+2016-10-28 13:24:17	netz	iqubic: what's the perms on /root ?
+2016-10-28 13:24:49	@NeddySeagoon	iqubic: /root is roots home.
+2016-10-28 13:24:52	iqubic	not sure. I can't run cd as "sudo cd" command not found.
+2016-10-28 13:24:54	<--	r1k0 (~rik@d5152cdf5.static.telenet.be) has quit (Remote host closed the connection)
+2016-10-28 13:25:05	barteks2x	cd is a builtin, you can't run it as sudo
+2016-10-28 13:25:09	-->	rx80 (~quassel@93-103-192-237.dynamic.t-2.net) has joined #gentoo
+2016-10-28 13:25:12	barteks2x	*with sudo
+2016-10-28 13:25:18	iqubic	I can cd into /
+2016-10-28 13:25:29	iqubic	That works just fine
+2016-10-28 13:25:41	netz	iqubic: in order to ls it (that is, read it's directory listing), you need r-- perms. to make files inside it you need -w- perms, and to enter it via cd you need --x perms :)
+2016-10-28 13:25:42	<--	t4bs_ (~Trevor@59.167.103.29) has quit (Quit: Leaving)
+2016-10-28 13:25:42	<--	wokko (~wokko@unaffiliated/wokko) has quit (Quit: leaving)
+2016-10-28 13:25:55	<--	mguillech (~mguillech@181.95.51.85) has quit (Remote host closed the connection)
+2016-10-28 13:25:59	-->	t4bs (~Trevor@59.167.103.29) has joined #gentoo
+2016-10-28 13:26:03	Kelsar	netz: iqubic for ls you need x permission not r
+2016-10-28 13:26:10	netz	Kelsar: no.
+2016-10-28 13:26:16	iqubic	Now, how do I create the default folders in my home folder with running a DE?
+2016-10-28 13:26:22	Kelsar	netz: yes...
+2016-10-28 13:26:26	<--	loriot (~tro0o0on@dslb-188-105-228-192.188.105.pools.vodafone-ip.de) has quit (Quit: Leaving.)
+2016-10-28 13:26:27	Kelsar	try without x
+2016-10-28 13:26:34	-->	mguillech (~mguillech@181.95.51.85) has joined #gentoo
+2016-10-28 13:26:39	<--	t4bs (~Trevor@59.167.103.29) has quit (Remote host closed the connection)
+2016-10-28 13:26:44	barteks2x	chromium colpilation errored...
+2016-10-28 13:26:48	barteks2x	with massive spam
+2016-10-28 13:27:01	-->	t4bs (~Trevor@59.167.103.29) has joined #gentoo
+2016-10-28 13:27:01	biberao	bbl
+2016-10-28 13:27:08	<--	jtriley (~jtriley@209-6-38-104.c3-0.smr-ubr2.sbo-smr.ma.cable.rcn.com) has quit (Ping timeout: 260 seconds)
+2016-10-28 13:27:28	netz	iqubic: the quick answer to your question is because only the root user has the perms to do so, /root being rwx------/700
+2016-10-28 13:27:33	-->	zread (~zread@pcd420228.netvigator.com) has joined #gentoo
+2016-10-28 13:27:41	maolang	iqubic: once you login in your desktop environment the first time, those folders should be created automatically
+2016-10-28 13:27:52	maolang	for the user login in..
+2016-10-28 13:28:02	barteks2x	this is what I got:  * ERROR: www-client/chromium-54.0.2840.59::gentoo failed (compile phase):
+2016-10-28 13:28:02	barteks2x	 *   (no error message)
+2016-10-28 13:28:02	barteks2x	 *
+2016-10-28 13:28:02	barteks2x	 * Call stack:
+2016-10-28 13:28:02	barteks2x	 *     ebuild.sh, line 115:  Called src_compile
+2016-10-28 13:28:03	<--	barteks2x (~barteks2x@car21.t17.ds.pwr.wroc.pl) has left #gentoo (requested by Zoidberg (Please don't spam. Use a pastebin: https://dpaste.de/ or emerge wgetpaste))
+2016-10-28 13:28:08	iqubic	maolang: I don't want a DE. I'm going to be running xmonad only.
+2016-10-28 13:28:33	-->	barteks2x (~barteks2x@car21.t17.ds.pwr.wroc.pl) has joined #gentoo
+2016-10-28 13:28:39	barteks2x	damn firefox...
+2016-10-28 13:28:42	iqubic	I'm not sure if xmonad will create the correct folders for me.
+2016-10-28 13:28:50	barteks2x	it doesn't select the URL when I click it
+2016-10-28 13:28:56	-->	cesnia (~cesnia@186.151.134.191) has joined #gentoo
+2016-10-28 13:29:02	barteks2x	and I pasted the whole message instead of link
+2016-10-28 13:29:11	barteks2x	http://pastebin.com/LxR5SbRH this is what I get
+2016-10-28 13:29:16	<--	glbevan (~glbevan@cpc80207-blbn11-2-0-cust212.10-1.cable.virginm.net) has quit (Ping timeout: 265 seconds)
+2016-10-28 13:29:19	Kelsar	barteks2x: read the message 1st and then get the correct information
+2016-10-28 13:29:24	<--	SylvieLorxu (~TheLastPr@541B7AAC.cm-5-4b.dynamic.ziggo.nl) has quit (Quit: ZNC - http://znc.in)
+2016-10-28 13:29:24		[13:29]
+2016-10-28 13:29:38	maolang	iqubic: if you then log in as you, you could run something like this --> mkdir ~/{Images,Downloads,Documents}}
+2016-10-28 13:29:46	barteks2x	environment, line 5211:  Called die
+2016-10-28 13:29:56	maolang	without the second } at the end
+2016-10-28 13:29:59	iqubic	yeah, I could just do that. I feel stupid
+2016-10-28 13:30:03	Kelsar	barteks2x: read line 11 and 12
+2016-10-28 13:30:07	netz	Kelsar: nope. mkdir test;touch test/foo; chmod test 644 (no execute bits), and you can list the contents.
+2016-10-28 13:30:09	Kelsar	10+11
+2016-10-28 13:30:11	@NeddySeagoon	iqubic: They are copied from /etc/skel when you create a new user
+2016-10-28 13:30:28	barteks2x	Kelsar, and? what does that mean?
+2016-10-28 13:30:56	Kelsar	netz: are you root?
+2016-10-28 13:30:59	netz	NeddySeagoon: for ~/{Downloads,Documents,Music...}
+2016-10-28 13:31:04	netz	Kelsar: nope, I'm me.
+2016-10-28 13:31:11	barteks2x	oh, wait, looking at wron g lines, I thought it's 13 and 14
+2016-10-28 13:31:11	iqubic	barteks2x: THis is literally from your paste:  If you need support, post the output of `emerge --info '=www-client/chromium-54.0.2840.59::gentoo'`,
+2016-10-28 13:31:13	<--	mguillech (~mguillech@181.95.51.85) has quit (Ping timeout: 260 seconds)
+2016-10-28 13:31:35	iqubic	Can you show us that file?
+2016-10-28 13:31:40	Kelsar	netz: https://dpaste.de/qG7D
+2016-10-28 13:31:43	netz	Kelsar: test is owned by netz:netz
+2016-10-28 13:31:49	@NeddySeagoon	netz: Ah ... I never use them.  I tought they were Windows leftovers
+2016-10-28 13:32:05	iqubic	NeddySeagoon: You never use what?
+2016-10-28 13:32:08	-->	zerobaud (53a0c7d3@gateway/web/freenode/ip.83.160.199.211) has joined #gentoo
+2016-10-28 13:32:12	netz	NeddySeagoon: those don't come from /etc/skel, methinks.
+2016-10-28 13:32:17	Kelsar	netz: your chmod is wrong, dunno if only in irc
+2016-10-28 13:32:41	netz	Kelsar: I don't follow what you mean by 'dunno if only in irc'
+2016-10-28 13:32:58	Kelsar	netz: the chmod command you put in here, is wrong
+2016-10-28 13:32:59	zerobaud	I want to provide diffrent use flags to diffrent clients using a portage bin host. I know there was some one who had a solution but forgot what it was called does anybody remember?
+2016-10-28 13:33:08	zerobaud	there was this guy developing something with slots or something
+2016-10-28 13:33:23	@NeddySeagoon	netz: Correct, unless root was to put them there
+2016-10-28 13:33:24	netz	Kelsar: but, my point is, you can see foo inside test (btw, I made foo as a regular empty file, not a dir)
+2016-10-28 13:33:37	Kelsar	netz: you can not, see my paste
+2016-10-28 13:33:47	netz	NeddySeagoon: yeah, I just mean in the usual way they get made
+2016-10-28 13:33:57	Kelsar	netz: ignore that the error is german...
+2016-10-28 13:34:02	netz	Kelsar: yes, you can. Do you not see the foo/ at the end of your own paste?
+2016-10-28 13:34:06	<--	twnqx (~twnqx@ip4d149b60.dynamic.kabel-deutschland.de) has quit (Ping timeout: 265 seconds)
+2016-10-28 13:34:10	netz	Kelsar: its cool, I can read some :P
+2016-10-28 13:34:33	netz	Kelsar: and yeah, you're right, I flipped the 644 and the test args, but you get what I meant :)
+2016-10-28 13:34:52	-->	_ohm (~research@unaffiliated/-ohm/x-0955948) has joined #gentoo
+2016-10-28 13:35:29	Kelsar	netz: well you get the filename, nothing else
+2016-10-28 13:36:17	netz	Kelsar: true, but my arguement was just that all you need to read the contents of a given dir is the write bits :)
+2016-10-28 13:36:23	netz	need execute to enter a dir.
+2016-10-28 13:36:34	ecormier	is portage messed up? I'm getting a few digest verification errors
+2016-10-28 13:36:46	netz	Kelsar: wanna try something that seems impossible, but isn't?
+2016-10-28 13:36:58	ecormier	gentoo-sources-4.8.5 for one
+2016-10-28 13:37:37	netz	Kelsar: In what circumstance can a non-root user delete a root-owned file?
+2016-10-28 13:37:58	Kelsar	netz: if it has o+w
+2016-10-28 13:38:05	barteks2x	emerge --info '=www-client/chromium-54.0.2840.59::gentoo': http://pastebin.com/VNkpiFTj, emerge -pqv '=www-client/chromium-54.0.2840.59::gentoo' http://pastebin.com/8U7QHcSy, the whole build log is >50MB so it will take a while to upload
+2016-10-28 13:38:10	netz	Kelsar: on the dir its in, correct!
+2016-10-28 13:38:37	Kelsar	netz: sure it is a operation on the directory inode, not the file
+2016-10-28 13:39:07	netz	its kinda odd, and cool, but, when you consider what directories actually are it makes sense. a little bit of *nix trivia :)
+2016-10-28 13:39:37	<--	maolang (~maolang@2a01:e35:2e6c:5620:c77e:c4ff:15e1:718) has quit (Ping timeout: 260 seconds)
+2016-10-28 13:39:46	Kelsar	netz: who do you make a file not even root can delete?
+2016-10-28 13:39:50	barteks2x	there, build log from chromium https://dl.dropboxusercontent.com/u/54602353/build.log
+2016-10-28 13:40:09	netz	Kelsar: ooooo, I don't know, sounds fun!
+2016-10-28 13:40:21	Kelsar	netz: give it the immutable flag
+2016-10-28 13:40:29	netz	Kelsar: +i ?
+2016-10-28 13:40:52	Kelsar	netz: with chattr yes
+2016-10-28 13:41:00	barteks2x	I was waiting 5 hours for it and it failed...
+2016-10-28 13:41:06	netz	Kelsar: but, can not root use chattr to remove the flag?
+2016-10-28 13:41:11	Kelsar	netz: sure
+2016-10-28 13:41:35	Kelsar	nut it is quiet handy, if you want to make a group directory, but don't want allow the group to remove it
+2016-10-28 13:41:40	netz	Kelsar: not as cool as I was hoping, but an interesting tidbit.
+2016-10-28 13:43:14	<--	emerald (~smaragd@p2E50431C.dip0.t-ipconnect.de) has quit
+2016-10-28 13:44:17	ecormier	barteks2x: you have harfbuzz intstalled with the icu flag on?
+2016-10-28 13:44:40	barteks2x	I have no idea
+2016-10-28 13:44:40		[13:44]
+2016-10-28 13:44:46	Kelsar	netz: with selinux you can make files really indestructible, as long as the kernel is in enforce mode
+2016-10-28 13:44:52	-->	TheteSigma (grqizpkt@cpe-76-184-216-92.tx.res.rr.com) has joined #gentoo
+2016-10-28 13:44:59	ecormier	barteks2x: check
+2016-10-28 13:45:05	barteks2x	I don't even know what harfbuzz is, I didn't install it by myself
+2016-10-28 13:45:08	netz	Kelsar: yeah, selinux is a fun bit.
+2016-10-28 13:45:21	netz	ecormier: harfbuzz is font-related, right?
+2016-10-28 13:45:41	-->	maolang (~maolang@2a01:e35:2e6c:5620:c77e:c4ff:15e1:718) has joined #gentoo
+2016-10-28 13:45:56	ecormier	barteks2x: it should be pulled in automatically, but I'm guessing it's installed with the icu flag disabled
+2016-10-28 13:46:09	ecormier	netz: no idea
+2016-10-28 13:46:11	<--	ribx (~ribx@x4db078ae.dyn.telefonica.de) has quit (Ping timeout: 265 seconds)
+2016-10-28 13:46:19	barteks2x	icu flag is in global USE flags for me (not sure if correctly)
+2016-10-28 13:46:58	ecormier	barteks2x: that does not mean that you have that package with that flag
+2016-10-28 13:47:25	ecormier	barteks2x: if the flag was added after it was installed, you need to recompile that
+2016-10-28 13:47:47	ecormier	barteks2x: have you done a 'emerge -aNDvu @world' recently
+2016-10-28 13:48:01	barteks2x	it almost definitely does because before installing chromium I ran something like this (this isn't the exact command but looked like this): emerge --ask --deep --changed-use @world
+2016-10-28 13:48:25	barteks2x	I added this flag for cinnamon
+2016-10-28 13:48:27	ecormier	you need to add -N (newuse)
+2016-10-28 13:48:53	-->	d34df00d (~d34df00d@pool-173-68-20-163.nycmny.fios.verizon.net) has joined #gentoo
+2016-10-28 13:48:58	d34df00d	Hi!
+2016-10-28 13:49:02	barteks2x	so I need to recompile chromium from the beginning?
+2016-10-28 13:49:17	d34df00d	I've rebuilt clang-9999 this morning and found it doesn't have clang-tidy. How could I get the latter one now?
+2016-10-28 13:49:42	ecormier	barteks2x: well yes, but before that make sure harfbuzz has icu enabled, that was what chromium was missing
+2016-10-28 13:50:34	ecormier	barteks2x: equery u harfbuzz
+2016-10-28 13:51:08	ecormier	make sure under the 'I' column that it is a +
+2016-10-28 13:51:12	barteks2x	 - - icu
+2016-10-28 13:51:19	ecormier	exactly
+2016-10-28 13:51:42	ecormier	so 'emerge -av1 harfbuzz'
+2016-10-28 13:51:56	<--	violetina (~quassel@unaffiliated/violetina) has quit (Ping timeout: 260 seconds)
+2016-10-28 13:52:02	<--	TheteSigma (grqizpkt@cpe-76-184-216-92.tx.res.rr.com) has left #gentoo
+2016-10-28 13:52:06	barteks2x	or I could do emerge -aNDvu @world to make sure it's up to date for everything
+2016-10-28 13:52:34	ecormier	barteks2x: if both columns have a minas, then the flag IS NOT set globally
+2016-10-28 13:53:03	ecormier	(or at all)
+2016-10-28 13:53:26	ecormier	s/minas/minus/
+2016-10-28 13:53:56	barteks2x	this is my make.conf: http://pastebin.com/facXvCZy
+2016-10-28 13:54:14	barteks2x	unless I got something wrong there, it should be set
+2016-10-28 13:55:18	ecormier	it isn't, and I can't help, I haven't seen that style of syntax
+2016-10-28 13:55:44	barteks2x	really? I see the same used for CFLAGS
+2016-10-28 13:55:56	ecormier	barteks2x: this is what mine looks like  https://paste.pound-python.org/show/wMEaob4EK4mHtFqs2nI1/
+2016-10-28 13:56:10	<--	Hydrogen (~hydrogen@amarok/developer/hydrogen) has quit (Remote host closed the connection)
+2016-10-28 13:56:34	-->	Hyoga (~ubuntu@181.223.120.44) has joined #gentoo
+2016-10-28 13:57:03	ecormier	barteks2x: yes, but on cflags, only one variable is being called, maybe by calling two, one is overwriting the other
+2016-10-28 13:57:07	meingtsla	USE="bindist ${USE_CINNNAMON} ${USE_AUDIO}"
+2016-10-28 13:57:14	meingtsla	USE_CINNAMON="icu pulseaudio gnome-keyring networkmanager"
+2016-10-28 13:57:19	barteks2x	what is wrong with that?
+2016-10-28 13:57:25	meingtsla	Might want to decide on a single spelling there.
+2016-10-28 13:57:34	ecormier	haha
+2016-10-28 13:57:39	ecormier	good catch
+2016-10-28 13:57:58	barteks2x	and that's why I wasted 5 hours... because of a stupid typo?
+2016-10-28 13:58:15	-->	CMEPTb (~CMEPTb@unaffiliated/cmeptb) has joined #gentoo
+2016-10-28 13:58:35	barteks2x	hell no, I'm installing chromium and JDK bin packages
+2016-10-28 13:58:54	ecormier	normally, portage would spit out a use-flag error
+2016-10-28 13:59:17	ecormier	just use google-chrome and be done in 5 minutes
+2016-10-28 13:59:49	barteks2x	I want to be able to simply copy over my chromium files from debian...
+2016-10-28 13:59:49		[13:59]
+2016-10-28 13:59:52	<--	Xavier|The_other (~Xavier@108-171-72-65.dr.cgocable.ca) has quit (Read error: Connection reset by peer)
+2016-10-28 14:00:05	<--	kingkongmok (~kingkongm@n219077080053.netvigator.com) has quit (Ping timeout: 256 seconds)
+2016-10-28 14:00:09	barteks2x	(these in $HOME)
+2016-10-28 14:00:30	ecormier	scp
+2016-10-28 14:00:37	-->	Xavier|The_other (~Xavier@108-171-72-65.dr.cgocable.ca) has joined #gentoo
+2016-10-28 14:00:44	barteks2x	but google-chrome has it a bit different
+2016-10-28 14:01:09	ecormier	so move the files to the google-chrome locations, it works
+2016-10-28 14:01:26	barteks2x	and I don't know exactly in what way different
+2016-10-28 14:01:42	ecormier	IIRC you just need to change the folder name
+2016-10-28 14:02:16	barteks2x	on debian I had both... does it mean I could just symlink one to the other and both woul dhave the same files?
+2016-10-28 14:02:26	ecormier	barteks2x: install google chrome, then replace the two directories it creates in .config and .cache
+2016-10-28 14:02:35	ecormier	yes
+2016-10-28 14:03:20	barteks2x	so install the google chrome downloaded from google?
+2016-10-28 14:03:22	ecormier	but I don't think I would try that in case there are config file differences between the two versions
+2016-10-28 14:03:25	ecormier	no
+2016-10-28 14:03:32	ecormier	emerge -av google-chrome
+2016-10-28 14:03:41	<--	khj (~Thunderbi@88.70.149.219) has quit (Quit: khj)
+2016-10-28 14:03:53	-->	TheteSigma (~TheteSi@2605:6000:1525:8119:f806:6dd0:f645:2ac5) has joined #gentoo
+2016-10-28 14:03:54	ecormier	there is a prebuilt version in portage
+2016-10-28 14:04:49	<--	Hyoga (~ubuntu@181.223.120.44) has quit (Quit: "Lutar sempre, vencer se poss�vel, desistir nunca." (www.cyberscript.org))
+2016-10-28 14:05:16	barteks2x	that change in make.conf could also explain why my TTYs stopped working (maybe)
+2016-10-28 14:05:26	ecormier	maybe?
+2016-10-28 14:06:12	barteks2x	I have black screen instead of TTYs,, maybe the change was related to this
+2016-10-28 14:06:21	-->	coffea (~coffea@2601:49:4101:cee8:c0ee:4367:5ba5:d5fa) has joined #gentoo
+2016-10-28 14:06:36	ecormier	who knows, I would say it seems unlikely
+2016-10-28 14:06:37	<--	TheteSigma (~TheteSi@2605:6000:1525:8119:f806:6dd0:f645:2ac5) has quit (Remote host closed the connection)
+2016-10-28 14:06:55	-->	TheteSigma (TheteSi@2605:6000:1525:8119:f806:6dd0:f645:2ac5) has joined #gentoo
+2016-10-28 14:07:06	ecormier	that sounds like a kernel framebuffer driver problem
+2016-10-28 14:07:38	barteks2x	and also have some graphical glitches sometimes
+2016-10-28 14:07:52	<--	CMoH (~cipi@unaffiliated/c-moh) has quit (Quit: Konversation terminated!)
+2016-10-28 14:08:24	barteks2x	but only with some programs and after switching to tty
+2016-10-28 14:08:31	ecormier	yes, but that could all be videocard misconfiguration
+2016-10-28 14:09:11	barteks2x	and is it possible to misconfigure it in such way that opengl still works but things break?
+2016-10-28 14:09:18	ecormier	yes
+2016-10-28 14:09:41	barteks2x	and how could I possibly figure out what is wrong?
+2016-10-28 14:09:58	netz	barteks2x: as far as my admittedly short experience with computers teaches me, things will break in ways that are really, really wierd :)
+2016-10-28 14:10:05	iqubic	How does one see what fonts are currently installed on their system?
+2016-10-28 14:10:41	barteks2x	like this: https://dl.dropboxusercontent.com/u/54602353/2016-10-29-013849_1366x768_scrot.png?raw=1 ?
+2016-10-28 14:10:51	ecormier	have you gone through everything here: https://wiki.gentoo.org/wiki/NVIDIA/Optimus
+2016-10-28 14:11:03	barteks2x	I didn't even get started on optimus
+2016-10-28 14:11:08	barteks2x	I'm on intel drivers now
+2016-10-28 14:11:18	ecormier	well that's your video card
+2016-10-28 14:11:23	<--	TheteSigma (TheteSi@2605:6000:1525:8119:f806:6dd0:f645:2ac5) has quit (Remote host closed the connection)
+2016-10-28 14:11:34	barteks2x	I use the intel integrated GPU now
+2016-10-28 14:11:41	-->	TheteSigma (TheteSi@2605:6000:1525:8119:f806:6dd0:f645:2ac5) has joined #gentoo
+2016-10-28 14:12:14	barteks2x	Optimus is just a way to use 2 GPUs at once as I understand it
+2016-10-28 14:12:16	ecormier	I wouldn't worry about video gliches until you actially get it set up properly
+2016-10-28 14:12:34	iqubic	How does someone install a font from git-hub.
+2016-10-28 14:12:58	ecormier	iqubic: download it and throw it in .fonts
+2016-10-28 14:13:06	ecormier	~/.fonts
+2016-10-28 14:13:29	iqubic	Can I use wgetpaste to install stuff from git, or do I need to emerge git?
+2016-10-28 14:13:41	ecormier	wgetpaste??
+2016-10-28 14:13:52	ecormier	that pastes stuff
+2016-10-28 14:13:54	iqubic	ecormier: I don't have a .fonts directory.
+2016-10-28 14:13:57	mrkgnao	how long will xorg take to emerge on an old dual-core Pentium?
+2016-10-28 14:13:59	ecormier	make it
+2016-10-28 14:14:00	mrkgnao	ballpark figure?
+2016-10-28 14:14:08	iqubic	ecormier: I mean wget.
+2016-10-28 14:14:31	ecormier	iqubic: sure, but you still need to unpack it
+2016-10-28 14:15:09	iqubic	Oh. Will git unpack stuff, if I were to emerge it?
+2016-10-28 14:15:09		[14:15]
+2016-10-28 14:15:22	ecormier	no
+2016-10-28 14:15:36	<--	nbags (~user@2a.06.01a8.ip4.static.sl-reverse.com) has quit (Quit: Leaving.)
+2016-10-28 14:15:42	ecormier	but git clone would be unpacked
+2016-10-28 14:16:00	iqubic	Yeah, that's what I want to do.
+2016-10-28 14:16:04	ecormier	sure
+2016-10-28 14:16:24	iqubic	if I emerge git, will it allow me to run git clone?
+2016-10-28 14:16:26	-->	tastytea (~tastytea@2a02:c200:1:10:3:1:605:acab) has joined #gentoo
+2016-10-28 14:16:29	ecormier	yes
+2016-10-28 14:16:51	-->	spectrum (~hierarch@121.99.100.93) has joined #gentoo
+2016-10-28 14:16:59	<--	tastytea (~tastytea@2a02:c200:1:10:3:1:605:acab) has left #gentoo
+2016-10-28 14:17:26	iqubic	Git will take a bit to emerge, right?
+2016-10-28 14:17:35	ecormier	shouldn't
+2016-10-28 14:17:48	<--	anuxivm (~anuxi@92.177.99.40) has left #gentoo
+2016-10-28 14:17:49	<--	_sfiguser (~sfigguser@95.237.96.249) has quit (Quit: Leaving)
+2016-10-28 14:17:50	ecormier	it's pretty lean
+2016-10-28 14:17:57	iqubic	It's taking a few minutes for me.
+2016-10-28 14:18:33	ecormier	depends on your cpu and your emerge options
+2016-10-28 14:19:35	iqubic	I have portage set to only run one job at a time. Helps prevent overheating.
+2016-10-28 14:19:57	ecormier	ahh, do you not have fans or something?
+2016-10-28 14:20:04	iqubic	No fans.
+2016-10-28 14:20:43	ecormier	that'll make everything a lot slower
+2016-10-28 14:20:46	-->	_sfiguser (~sfigguser@95.237.96.249) has joined #gentoo
+2016-10-28 14:21:02	<--	AntiSpamMeta (~MetaBot@AntiSpamMeta/.) has quit (Quit: Restart requested by ilbelkyr: bugfix)
+2016-10-28 14:21:18	-->	AntiSpamMeta (~MetaBot@AntiSpamMeta/.) has joined #gentoo
+2016-10-28 14:21:32	iqubic	ecormier: I'm aware. I'm fine with that.
+2016-10-28 14:21:44	ecormier	:)
+2016-10-28 14:21:46	-->	xavier1 (~xavier@108-171-72-65.dr.cgocable.ca) has joined #gentoo
+2016-10-28 14:22:02	xavier1	Is there a way to change the DPI of my razer mouse without installing razercfg?
+2016-10-28 14:22:04	iqubic	So I just take my font from git, with git clone and place it in my ~/.font directory?
+2016-10-28 14:22:30	--	aManHasNoName is now known as Azerthoth
+2016-10-28 14:22:34	ecormier	yes, or just git clone IN that directory
+2016-10-28 14:22:47	iqubic	ANd that install the font?
+2016-10-28 14:22:54	ecormier	yead
+2016-10-28 14:22:58	ecormier	yes
+2016-10-28 14:23:14	iqubic	is it .font, or is it .fonts?
+2016-10-28 14:23:17	-->	petteyg (~petteyg@cpe-72-178-209-134.austin.res.rr.com) has joined #gentoo
+2016-10-28 14:23:51	-->	schwab (~swb@ipservice-092-210-049-180.092.210.pools.vodafone-ip.de) has joined #gentoo
+2016-10-28 14:23:58	ecormier	you might have to remove the font directory from the git-clone-name folder into the root ~/.fonts folder
+2016-10-28 14:24:04	petteyg	Why would I want to use [0-3].gentoo.pool.ntp.org instead of [0-3].us.pool.ntp.org?
+2016-10-28 14:24:06	<--	zread (~zread@pcd420228.netvigator.com) has quit (Read error: Connection reset by peer)
+2016-10-28 14:24:19	ecormier	not sure how recursive things are
+2016-10-28 14:25:08	iqubic	How do install java and a java compiler?
+2016-10-28 14:25:15	-->	nabero1 (~nabero@ip-83-134-119-183.dsl.scarlet.be) has joined #gentoo
+2016-10-28 14:25:33	iqubic	Like so I can compile my own java programs? What's the portage package name for that?
+2016-10-28 14:26:03	<--	mrkgnao (~mrkgnao@150.129.67.51) has quit (Ping timeout: 268 seconds)
+2016-10-28 14:26:46	netz	iqubic: learn this: emerge --search :)
+2016-10-28 14:27:29	<--	nabero (~nabero@ip-83-134-121-244.dsl.scarlet.be) has quit (Ping timeout: 244 seconds)
+2016-10-28 14:27:30	iqubic	What does eselect java do?
+2016-10-28 14:27:45	netz	what does eselect normally do?
+2016-10-28 14:27:47	ecormier	sets the active java
+2016-10-28 14:27:54	ecormier	netz: :)
+2016-10-28 14:28:27	iqubic	And which of these 49 programs with java in their name do I want?
+2016-10-28 14:28:43	netz	ecormier: sometimes its just a matter of learning the right questions, instead of simply getting answers :)
+2016-10-28 14:28:54	ecormier	yes sir
+2016-10-28 14:28:56	netz	iqubic: dunno off-hand. but, pipe to less, and read :)
+2016-10-28 14:29:03	iqubic	I did that.
+2016-10-28 14:29:32	iqubic	https://wiki.gentoo.org/wiki/Java Suggest I get icedtea
+2016-10-28 14:30:00	iqubic	or I can just go with oracle java according to the wiki page.
+2016-10-28 14:30:08	ecormier	I just use the virtuals
+2016-10-28 14:30:17	netz	personally I prefer hot tea, but that is besides the point. Yep, as in all things in linux, you have a multitude of options :)
+2016-10-28 14:30:17		[14:30]
+2016-10-28 14:30:18	<--	BubbatheVTOG (~quassel@70.16.214.130) has quit (Ping timeout: 250 seconds)
+2016-10-28 14:30:44	iqubic	ecormier: what's the virtuals?
+2016-10-28 14:31:02	ecormier	read the first bit in that page you linked
+2016-10-28 14:31:46	-->	BubbatheVTOG (~quassel@pool-70-16-214-130.man.east.myfairpoint.net) has joined #gentoo
+2016-10-28 14:32:07	iqubic	So you use a java virtual machine?
+2016-10-28 14:32:38	netz	impossible to use a java program without a jvm :)
+2016-10-28 14:33:03	+chithead	gcj can compile java to native code
+2016-10-28 14:33:08	-->	Adbray (~Adbtay@2001:470:1f11:def:b04a:e482:af8e:f788) has joined #gentoo
+2016-10-28 14:33:09	iqubic	I know.
+2016-10-28 14:33:22	+chithead	some packages like pdftk make use of this
+2016-10-28 14:33:28	barteks2x	isn't gcj very outdated?
+2016-10-28 14:33:41	<--	TheteSigma (TheteSi@2605:6000:1525:8119:f806:6dd0:f645:2ac5) has quit (Quit: Leaving)
+2016-10-28 14:34:05	+chithead	yes it is. maybe google art will be able to replace it one day
+2016-10-28 14:34:24	<--	coffea (~coffea@2601:49:4101:cee8:c0ee:4367:5ba5:d5fa) has quit (Ping timeout: 260 seconds)
+2016-10-28 14:35:08	barteks2x	the ikind of nverse of gcj would be interesting... compiling C into jvm bytecode
+2016-10-28 14:36:01	petteyg	barteks2x: already exists.
+2016-10-28 14:36:02	-->	n11cky (6264c743@gateway/web/freenode/ip.98.100.199.67) has joined #gentoo
+2016-10-28 14:36:12	barteks2x	really? where? I may want to use it for something
+2016-10-28 14:36:46	petteyg	barteks2x: https://www.mtsystems.com/ if you want to pay for it
+2016-10-28 14:37:13	barteks2x	oh, then not so good...
+2016-10-28 14:38:44	xavier1	Why... would you want C to run on jvm?
+2016-10-28 14:38:47	xavier1	jw
+2016-10-28 14:39:04	n11cky	constant folding bro
+2016-10-28 14:39:14	barteks2x	to integrate something written in C into java code without running it as external program of courrse
+2016-10-28 14:39:28	n11cky	xavier1: https://twitter.com/chrisgseaton/status/619885182104043520
+2016-10-28 14:39:35	+chithead	there is jni for that
+2016-10-28 14:40:34	-->	fstd_ (~fstd@x4e30d3da.dyn.telefonica.de) has joined #gentoo
+2016-10-28 14:40:37	<--	fstd (~fstd@unaffiliated/fisted) has quit (Read error: Connection reset by peer)
+2016-10-28 14:40:37	<--	fstd_ (~fstd@x4e30d3da.dyn.telefonica.de) has quit (Changing host)
+2016-10-28 14:40:37	-->	fstd_ (~fstd@unaffiliated/fisted) has joined #gentoo
+2016-10-28 14:40:55	--	fstd_ is now known as fstd
+2016-10-28 14:41:12	iqubic	So what pacakge should I get to run and compile java programs/
+2016-10-28 14:41:17	iqubic	??
+2016-10-28 14:41:50	netz	iqubic: when you're programming, what do you call it? development. in this case, java development.
+2016-10-28 14:42:10	barteks2x	^same question, I need JDK8 and JDK7
+2016-10-28 14:42:27	iqubic	yeah, but there are may different versions of the java jdk
+2016-10-28 14:43:05	n11cky	https://wiki.gentoo.org/wiki/Java
+2016-10-28 14:43:10	barteks2x	as long as it's not some rarely used exotick jvm - I'm fine with it
+2016-10-28 14:43:13	netz	iqubic: yep. which one you chose is up to you, and the wiki covers it rather well.
+2016-10-28 14:43:19	<--	Lowl3v3l (~Lowl3v3l@dslb-188-107-138-032.188.107.pools.vodafone-ip.de) has quit (Remote host closed the connection)
+2016-10-28 14:44:21	iqubic	I'm going with icedtea
+2016-10-28 14:44:30	iqubic	Will that work?
+2016-10-28 14:45:06	n11cky	if the license doesn't bother you, you're better off just going with oracle.
+2016-10-28 14:45:24	iqubic	How do I accept the license?
+2016-10-28 14:45:24		[14:45]
+2016-10-28 14:45:31	<--	mackal (~mike@pool-96-237-144-12.bstnma.fios.verizon.net) has quit (Quit: BE VIGILANT.)
+2016-10-28 14:45:53	barteks2x	it's the first time I see where it may be beter to go with oracle VM...
+2016-10-28 14:46:01	barteks2x	(at least on linux)
+2016-10-28 14:46:22	barteks2x	almost always installing openjdk is much  easier than oracle JVM
+2016-10-28 14:46:40	-->	emmett1 (~emmett@60.53.115.212) has joined #gentoo
+2016-10-28 14:46:56	iqubic	yeah. I know. Gentoo doesn't see to have openjdk in the repos
+2016-10-28 14:47:04	sheep	`it's in the repos
+2016-10-28 14:47:16	barteks2x	I thought icedtea dna openjdk are different name for the same thing
+2016-10-28 14:47:55	iqubic	Java wants me to install stuff online. I don't  want to.
+2016-10-28 14:48:00	<--	tholin (~tholin@c-9fa0d954.501201651104-0-757473696b74.cust.bredbandsbolaget.se) has quit
+2016-10-28 14:48:04	-->	SamWeasley (~user@177.99.142.50) has joined #gentoo
+2016-10-28 14:48:18	SamWeasley	Hello everyone
+2016-10-28 14:48:25	iqubic	I mean Oracle's java does.
+2016-10-28 14:48:29	SamWeasley	I'm with problems emerging jasper
+2016-10-28 14:48:38	SamWeasley	https://paste.pound-python.org/show/MgYJwih8Nn5EZWEl4QbS/
+2016-10-28 14:48:48	SamWeasley	Build log
+2016-10-28 14:48:57	<--	beatdown (beatdown@chainsawed.and.strangled.net) has quit (Quit: ZNC 1.6.1 - http://znc.in)
+2016-10-28 14:49:16	SamWeasley	https://paste.pound-python.org/show/n3zwlywjbqs2Nm7HapgL/ - env
+2016-10-28 14:49:23	barteks2x	is it a good idea to add global java flag?
+2016-10-28 14:49:30	SamWeasley	Trying to do my @world rebuild
+2016-10-28 14:49:50	SamWeasley	@world update
+2016-10-28 14:50:02	barteks2x	or is it going to cause issues/is not recommended?
+2016-10-28 14:50:22	-->	zugz_ (~zugz@x4d039280.dyn.telefonica.de) has joined #gentoo
+2016-10-28 14:51:01	<--	pengu (~pengu@2a01:c22:a401:ce00:dc25:5b46:ea06:61f9) has quit (Ping timeout: 260 seconds)
+2016-10-28 14:51:01	-->	beatdown (beatdown@chainsawed.and.strangled.net) has joined #gentoo
+2016-10-28 14:51:42	<--	beatdown (beatdown@chainsawed.and.strangled.net) has left #gentoo
+2016-10-28 14:51:49	n11cky	SamWeasley: "error: C++ style comments are not allowed in ISO C90"
+2016-10-28 14:51:55	iqubic	Why the hell is icedtea giving me circular dependicies??
+2016-10-28 14:52:21	maolang	barteks2x: use this to find out what would be affected from installed packages, change the change-me between quotes with the use you are looking for use="change-me" ; [ ! $use = "" ] && EIX_LIMIT=0  eix -Ixle --installed-without-use "$use"
+2016-10-28 14:53:14	Kelsar	iqubic: because you need java to build it
+2016-10-28 14:53:21	SamWeasley	n11cky - found a solution at the forum, thx. :)
+2016-10-28 14:53:25	Kelsar	iqubic: install icedtea-bin 1st
+2016-10-28 14:53:36	barteks2x	I don't have eix installed...
+2016-10-28 14:53:49	<--	zugz (~zugz@x4d038db8.dyn.telefonica.de) has quit (Ping timeout: 260 seconds)
+2016-10-28 14:53:52	iqubic	Merging icedtea-bin now.
+2016-10-28 14:53:55	maolang	you should its a great tool for portage :)
+2016-10-28 14:54:13	iqubic	what is eix? how long does it take to merge?
+2016-10-28 14:54:28	maolang	its a portage tool for packages and uses
+2016-10-28 14:54:36	n11cky	SamWeasley: I'm curious how std=c90 ended up somewhere in your CFLAGS
+2016-10-28 14:54:38	barteks2x	merging it now
+2016-10-28 14:54:46	ecormier	and eix-sync is so good
+2016-10-28 14:55:00	n11cky	SamWeasley: np, glad to help.
+2016-10-28 14:55:09	maolang	emerge --ask app-portage/eix # there it is :)
+2016-10-28 14:55:12	iqubic	is that part of the standard exi package?
+2016-10-28 14:55:30	ecormier	yep
+2016-10-28 14:55:37	maolang	yes
+2016-10-28 14:55:47	n11cky	SamWeasley: also... https://bugs.gentoo.org/buglist.cgi?quicksearch=media-libs%2Fjasper
+2016-10-28 14:55:49	n11cky	look at all them vulns
+2016-10-28 14:56:20	maolang	barteks2x: iqubic description : Search and query ebuilds, portage incl. local settings, ext. overlays and more
+2016-10-28 14:56:35	iqubic	that sounds really good to have.
+2016-10-28 14:56:54	iqubic	I'll merge that after icedtea finishes.
+2016-10-28 14:57:17	maolang	while at it also do this one --> app-portage/pfl
+2016-10-28 14:57:50	sheep	what's pfl?
+2016-10-28 14:58:03	barteks2x	the wiki doesn't really say that, how to install java 7 and java 8 at once?
+2016-10-28 14:58:04	ecormier	search package by file name
+2016-10-28 14:58:33	barteks2x	pfl = Package File Name?
+2016-10-28 14:58:37	n11cky	Does anyone here have an opinion on (libvirt + lxc) vs (lxc) vs (lxd) vs (docker) vs (rkt) vs (openvz) vs (etc.)?
+2016-10-28 14:58:49	ecormier	barteks2x: portagefilelist?
+2016-10-28 14:58:55	n11cky	Played around with LXD. Was underwhelmed.
+2016-10-28 14:59:09	n11cky	Add systemd-nspawn to that list.
+2016-10-28 14:59:33	maolang	barteks2x: read up ...
+2016-10-28 15:00:08	-->	durzing (~durzing@gateway/tor-sasl/durzing) has joined #gentoo
+2016-10-28 15:00:21	ecormier	maolang: is the documentation better these days? info was sparse when I started
+2016-10-28 15:01:00	<--	schwab (~swb@ipservice-092-210-049-180.092.210.pools.vodafone-ip.de) has quit (Quit: Leaving)
+2016-10-28 15:01:00		[15:01]
+2016-10-28 15:01:05	ecormier	oh, it is better
+2016-10-28 15:01:17	<--	blueness_ (~blueness@gentoo/developer/blueness) has quit (Excess Flood)
+2016-10-28 15:01:40	<--	spectrum (~hierarch@121.99.100.93) has quit (Quit: Oh Shidd)
+2016-10-28 15:01:45	maolang	have not really used docs for pfl, mostly just using man
+2016-10-28 15:02:03	Kelsar	n11cky: more a topic for #gentoo-chat
+2016-10-28 15:02:13	zerobaud	I want the portage user to have its own SSH key so I can use a SSH binhost and exports portage's pub key to the binhost, but I cant su into the account...
+2016-10-28 15:02:15	ecormier	maolang: man pfl doesn't work ;)
+2016-10-28 15:02:19	zerobaud	is it safe to delete it and recreate it?
+2016-10-28 15:02:27	<--	Cirrus_Minor (~Cirrus_Mi@CAcert/Cirrus-Minor) has quit (Quit: WeeChat 1.6)
+2016-10-28 15:02:38	zerobaud	*note I cant su into it since its not meant to be logged in with, no home, no shell
+2016-10-28 15:02:42	maolang	ecormier its the package name, you want to man whats inside the package bin apps :)
+2016-10-28 15:03:09	ecormier	yep, I know
+2016-10-28 15:03:33	barteks2x	I've never seen emerge download any source code... when does it do that?
+2016-10-28 15:03:47	-->	Rr4sT (uid100308@gateway/web/irccloud.com/x-anyrcldwgmucwscn) has joined #gentoo
+2016-10-28 15:03:50	ecormier	barteks2x: as it's going
+2016-10-28 15:04:19	maolang	barteks2x: its usually in packaged / compressed format, emerge decompresses and readies it to run its whole process etc
+2016-10-28 15:05:13	barteks2x	I know source code can get quite big... but even for cinnamon I didn't see it download the code
+2016-10-28 15:06:02	ecormier	it's downloading while it compiles other packages
+2016-10-28 15:06:25	_andyj_	barteks2x: you can look in /usr/portage/distfiles at all the tar balls used to build your system
+2016-10-28 15:06:31	barteks2x	that's great, this way compilation is limited by cpu speed even on slow network
+2016-10-28 15:06:43	maolang	barteks2x: split a secondary terminal and run this you will see what it does in the background --> tail -f /var/log/emerge-fetch.log
+2016-10-28 15:06:47	<--	cdown (~cdown@199.201.64.135) has quit (Ping timeout: 252 seconds)
+2016-10-28 15:07:39	iqubic	How long should an average icedtea emerge take?
+2016-10-28 15:07:48	barteks2x	on debian I was used to waiting for download, here I'm waiting for compilation, no more complaining about internet connection for me
+2016-10-28 15:08:23	maolang	iqubic: its an imposible quiestion to really answer, differe,nt hardware cpu speed and many other factors...
+2016-10-28 15:09:42	iqubic	I'm just all of everything to work itself out.
+2016-10-28 15:09:57	barteks2x	I got jdk8 running, for now it's enough, I will install jdk7 when I actually need it (and hope I won't need jdk6...)
+2016-10-28 15:10:08	iqubic	How much memory does portage take when running it the background?
+2016-10-28 15:10:30	maolang	barteks2x: emerge is smart, it will download the first packages, then start building it while this runs it will keep fetching downloads for remainder of the packages that will be installed
+2016-10-28 15:10:53	maolang	iqubic: same answer before, very generic hard to really answer questions...
+2016-10-28 15:11:24	iqubic	I'm just trying to figure out how gentoo works.
+2016-10-28 15:11:33	<--	Kryptron_ (~Kryptron@unaffiliated/kryptron) has quit (Quit: WeeChat 1.5)
+2016-10-28 15:11:53	-->	trumee (~trumee@c-73-155-87-64.hsd1.tx.comcast.net) has joined #gentoo
+2016-10-28 15:12:07	trumee	Anybody using kdeconnect?
+2016-10-28 15:12:08	ecormier	I've run out of memory a few times
+2016-10-28 15:12:30	ecormier	chromium is a likely culprit
+2016-10-28 15:12:39	-->	TheteSigma (TheteSi@2605:6000:1525:8119:f806:6dd0:f645:2ac5) has joined #gentoo
+2016-10-28 15:12:55	maolang	iqubic: for a lot of those more detailed answers, is best to explore the gentoo wiki, portage and a lot of all those base questions are answered and explained there
+2016-10-28 15:13:05	trumee	kdeconnect doesnt find my android device.
+2016-10-28 15:13:11	<--	Viperlin (~Viperlin@conky/user/viperlin) has quit (Ping timeout: 265 seconds)
+2016-10-28 15:13:19	zerobaud	I want to export the SSH key of portage like described in "https://wiki.gentoo.org/wiki/Binary_package_guide#Creating_binary_packages" but I cant seem to create a SSH key for the protage user, neither do I know where to save it on the non binhost box
+2016-10-28 15:14:13	zerobaud	Does anybody know how to accomplish this? portage home is /var/tmp/portage, If I create ".ssh" and trowh a random key in there
+2016-10-28 15:14:15	zerobaud	will it work?
+2016-10-28 15:14:36	ecormier	that's not portage home
+2016-10-28 15:14:49	ecormier	that's the temp build folder
+2016-10-28 15:15:04	zerobaud	ah yeah, it was a the GECOS field I was looking at...
+2016-10-28 15:15:46	zerobaud	huh, it actually is the home
+2016-10-28 15:16:19	-->	mazes_80 (~mazes_80@mur31-4-78-210-220-201.fbx.proxad.net) has joined #gentoo
+2016-10-28 15:16:19		[15:16]
+2016-10-28 15:16:24	zerobaud	anyway, how would I go about doing this? Its described in the linked article as tho its self explanatory but I am having some difficulties.
+2016-10-28 15:16:40	ecormier	read up on ssh
+2016-10-28 15:17:55	zerobaud	ehm, SSH will get the key from $HOME/.ssh/id_rsa
+2016-10-28 15:18:24	zerobaud	what else is there to know?
+2016-10-28 15:18:43	barteks2x	if I want the cinnamon mouse/touchpad config gui to work, what would I need to change?

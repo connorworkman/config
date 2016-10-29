@@ -4507,3 +4507,89 @@
 2016-10-28 12:14:43	<--	Kurvivor (~user@128-68-165-3.broadband.corbina.ru) has quit (Remote host closed the connection)
 2016-10-28 12:17:38	geirha	Good. I suspected that "newlines" was probably "lines"
 2016-10-28 12:19:58	-->	fbsd (~fbsd@a89-154-153-39.cpe.netcabo.pt) has joined ##sed
+2016-10-28 12:28:11	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined ##sed
+2016-10-28 12:28:11		[12:28]
+2016-10-28 12:28:11	--	Topic for ##sed is "The Stream EDitor | Paste at: http://sprunge.us (/msg greybot sprunge) | FAQ: http://sed.sf.net/sedfaq.html | Intro/Tutorial: http://xrl.us/sedintro#uh-0 | POSIX: http://xrl.us/sedstd | Reference: http://xrl.us/gnused | Regex: #regex | Do NOT try to parse markup (html, xml, etc) with sed! /msg greybot html | Please ask your question and be patient, someone will get to you soon"
+2016-10-28 12:28:11	--	Topic set by e36freak (~daniel.mi@auriga.kiwilight.com) on Wed, 21 Aug 2013 16:29:09
+2016-10-28 12:28:11	--	Channel ##sed: 122 nicks (0 ops, 0 voices, 122 normals)
+2016-10-28 12:28:11	***	Buffer Playback...
+2016-10-28 12:28:11	Soliton	[14:37:46] it just groups the commands. [14:37:46]
+2016-10-28 12:28:11	ash_workz	[14:39:48] I still need to read up on it... my understanding is very rudimentary... [14:39:48]
+2016-10-28 12:28:11	ash_workz	[14:46:31] are '-e' flags  just like ';'s ? [14:46:31]
+2016-10-28 12:28:11	Petter	[14:57:55] Pretty much. Though commands that takes a filename or text argument will not end the argument on a ; [14:57:55]
+2016-10-28 12:28:11	ash_workz	[15:02:31] I see. [15:02:31]
+2016-10-28 12:28:11	Petter	[15:03:47] # printf '%s\n' line | sed 'a extra line; s/$/\\/;' [15:03:47]
+2016-10-28 12:28:11	shbot	[15:03:48] Petter: line [15:03:48]
+2016-10-28 12:28:11	shbot	[15:03:48] Petter: extra line; s/$/\/; [15:03:48]
+2016-10-28 12:28:11	Petter	[15:04:02] # printf '%s\n' line | sed -e 'a extra line' -e 's/$/\\/;' [15:04:02]
+2016-10-28 12:28:11	shbot	[15:04:02] Petter: line\ [15:04:02]
+2016-10-28 12:28:11	shbot	[15:04:03] Petter: extra line [15:04:03]
+2016-10-28 12:28:11	ash_workz	[15:05:41] briefly reading, about the pattern space makes geirha's answer all the more straight-forward. I thought one might be able to execute the logic, "print from the _following_ line of each line starting at /a/ until the line _prior_ to /b/" -- but that seems a lot more convoluted for no reason I guess [15:05:41]
+2016-10-28 12:28:11	Soliton	[15:09:19] one could imagine /b/-1 as an address but then sed would have to go back a line once it matches /b/. not good for a stream editor... [15:09:19]
+2016-10-28 12:28:11	Soliton	[15:09:33] ed can do that though. [15:09:33]
+2016-10-28 12:28:11	ash_workz	[15:34:57] Soliton: well, I was thinking you could use a capital letter as something of a "lookahead" to check for the pattern in the next line and the *screech* stop [15:34:57]
+2016-10-28 12:28:11	Soliton	[15:38:45] so depending on whether it's -1, -2, -9999... sed has to wait for that many lines to read before it can do anything. sure, no question that it can be done. my point was that it doesn't fit a stream editor. [15:38:45]
+2016-10-28 12:28:11	ash_workz	[15:47:43] I clearly don't understand the mechanics well enough to appreciate your input :\... I just though you could look at n+1 for each line for a match and delete/quit (else, print n+1) [15:47:43]
+2016-10-28 12:28:11	Diplomat	[16:45:42] Hey guys, I have a file ~1GB that has 1 row of json objects.. separated by comma but when I run: sed 's/}, {/}\n{/g' raw_requests.cleaned.json it tells me: sed: couldn't re-allocate memory .. I have 2GB+ RAM left [16:45:42]
+2016-10-28 12:28:11	Diplomat	[16:45:50] Any ideas what I should try to get it working ? [16:45:50]
+2016-10-28 12:28:11	Soliton	[16:48:42] what's the exact command and the exact error message? [16:48:42]
+2016-10-28 12:28:11	Diplomat	[16:49:05] sed 's/}, {/}\n{/g' raw_requests.cleaned.json [16:49:05]
+2016-10-28 12:28:11	Diplomat	[16:49:10] sed: couldn't re-allocate memory [16:49:10]
+2016-10-28 12:28:11	Soliton	[16:49:31] is that file all one line? [16:49:31]
+2016-10-28 12:28:11	Diplomat	[16:49:54] yup [16:49:54]
+2016-10-28 12:28:11	Soliton	[16:50:09] split it up some way first. [16:50:09]
+2016-10-28 12:28:11	Soliton	[16:50:55] or use a different tool. [16:50:55]
+2016-10-28 12:28:11	Soliton	[16:51:08] i doubt you can make that work with sed. [16:51:08]
+2016-10-28 12:28:11	Diplomat	[16:51:13] I tried tr too [16:51:13]
+2016-10-28 12:28:11	Diplomat	[16:51:19] tr '}, {' '}\n{' < raw_requests.cleaned.json [16:51:19]
+2016-10-28 12:28:11	Diplomat	[16:51:30] but its obviously a bit wrong because it tried to replace every } , { [16:51:30]
+2016-10-28 12:28:11	Soliton	[16:51:48] that's not how tr works. [16:51:48]
+2016-10-28 12:28:11	Soliton	[16:51:58] it replaces single characters. [16:51:58]
+2016-10-28 12:28:11	Diplomat	[16:52:07] unfortunately yes [16:52:07]
+2016-10-28 12:28:11	waldner	[16:53:03] jq . file.json [16:53:03]
+2016-10-28 12:28:11	Diplomat	[17:28:15] waldner: it would work, but those objects are comma separated [17:28:15]
+2016-10-28 12:28:11	Diplomat	[17:28:29] {"something":"random"}, {"goes:"here"}, {"just":"for"}, {"an":"example"} [17:28:29]
+2016-10-28 12:28:11	Diplomat	[17:29:10] why is why i want to split it at }, { [17:29:10]
+2016-10-28 12:28:11	Diplomat	[17:29:23] or just }, and add }\n [17:29:23]
+2016-10-28 12:28:11	Diplomat	[17:37:41] http://paste.ofcode.org/BpEc8AnHKvsZrAtJ3Z4BWs <-- just did this and it works perfectly [17:37:41]
+2016-10-28 12:28:11	Kurvivor	[21:08:03] hello! [21:08:03]
+2016-10-28 12:28:11	Kurvivor	[21:09:34] can one search for a "line looking like A that is close to line looking like B"? [21:09:34]
+2016-10-28 12:28:11	geirha	[21:13:12] depends on what "close" means [21:13:12]
+2016-10-28 12:28:11	Kurvivor	[21:25:10] 'separated by no more then 3 newlines' [21:25:10]
+2016-10-28 12:28:11	geirha	[21:26:08] so you're looking for one of these three cases  A\nB, A\n\nB or A\n\n\nB [21:26:08]
+2016-10-28 12:28:11	Petter	[21:51:32] Can B be on one of the lines before A as well as after? [21:51:32]
+2016-10-28 12:28:11	Kurvivor	[22:11:20] well, lines between them do not have to be empty [22:11:20]
+2016-10-28 12:28:11	Kurvivor	[22:11:23] i am sorry [22:11:23]
+2016-10-28 12:28:11	Kurvivor	[22:11:36] i will rethink, sleep and ask again, properly [22:11:36]
+2016-10-28 12:28:11	nal	[22:11:58] night [22:11:58]
+2016-10-28 12:28:11	geirha	[22:17:38] Good. I suspected that "newlines" was probably "lines" [22:17:38]
+2016-10-28 12:28:11	***	Playback Complete.
+2016-10-28 12:28:55	--	Channel created on Wed, 09 Sep 2009 05:53:00
+2016-10-28 12:34:00		[12:28]
+2016-10-28 12:38:40	<--	riemann (~riemann@ip-222-88.ists.pl) has quit (Quit: Leaving)
+2016-10-28 12:44:00		[12:38]
+2016-10-28 12:55:05	<--	sumark (~sumark@apache2-kant.caprisun.dreamhost.com) has quit (Remote host closed the connection)
+2016-10-28 13:00:17	-->	sumark (~sumark@apache2-kant.caprisun.dreamhost.com) has joined ##sed
+2016-10-28 13:00:17		[13:00]
+2016-10-28 13:02:51	<--	cyborg-one (~cyborg-on@31.31.96.84) has quit (Ping timeout: 252 seconds)
+2016-10-28 13:08:00		[13:02]
+2016-10-28 13:13:19	<--	talsamon (~talsamon@188-23-10-71.adsl.highway.telekom.at) has quit (Ping timeout: 265 seconds)
+2016-10-28 13:13:46	-->	talsamon (~talsamon@80-121-121-96.adsl.highway.telekom.at) has joined ##sed
+2016-10-28 13:19:00		[13:13]
+2016-10-28 13:33:10	Petter	Tricky.. this is what I came up with:
+2016-10-28 13:33:17	Petter	# printf '%s\n' Ano A1 foo B A2 A3 Ano | sed -n '1N; $!N; :a; /B/{ /[^\n]*A[^\n]*/{ h; s///; x; s//\x1&\x2/; s/.*\x1//; s/\x2.*//; p; x; ba; }; }; D;'
+2016-10-28 13:33:18	shbot	Petter: A1
+2016-10-28 13:33:19	shbot	Petter: A2
+2016-10-28 13:33:19	shbot	Petter: A3
+2016-10-28 13:39:00		[13:33]
+2016-10-28 13:42:32	<--	johnmilton (~johnmilto@96-58-242-186.res.bhn.net) has quit (Ping timeout: 244 seconds)
+2016-10-28 13:48:00		[13:42]
+2016-10-28 14:11:22	-->	pyios (~andy@39.155.184.133) has joined ##sed
+2016-10-28 14:11:22		[14:11]
+2016-10-28 14:42:39	<--	al-damiri (uid142631@gateway/web/irccloud.com/x-axkjyypxzzwzwnzq) has quit (Quit: Connection closed for inactivity)
+2016-10-28 14:42:39		[14:42]
+2016-10-28 14:58:43	<--	oskarkv (~oskar@c213-89-225-149.bredband.comhem.se) has quit (Remote host closed the connection)
+2016-10-28 14:58:43		[14:58]
+2016-10-28 15:14:00	-->	tinkersh (~TinkerSh@103.10.28.8) has joined ##sed
+2016-10-28 15:14:00		[15:14]
+2016-10-28 15:14:06	<--	tinkersh_ (~TinkerSh@103.10.28.8) has quit (Read error: Connection reset by peer)

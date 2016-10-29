@@ -17,6 +17,7 @@ unalias {1..9} gg history c d h j s >/dev/null 2>&1 || true
 
 ## Custom aliases
 
+alias fem="find /etc -name '._cfg????_*' "
 alias showcert='openssl s_client -connect $IP:$PORT -showcerts '
 alias bsrv='sudo tar cvf /store/config/srvbak/$(date +"%Y-%d-%m").tar /srv '
 alias bhttpd='sudo tar cvf /store/config/srvbak/httpd-$(date +"%Y-%d-%m").tar /etc/httpd '
