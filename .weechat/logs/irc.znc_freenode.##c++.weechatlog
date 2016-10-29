@@ -36683,3 +36683,241 @@
 2016-10-28 21:45:02	-->	mss_cyclist (~MSe@86.92.5.231) has joined ##c++
 2016-10-28 21:45:10	-->	vitimiti (~Celtor@unaffiliated/vitimiti) has joined ##c++
 2016-10-28 21:45:23	-->	rcalnn (18cda4e8@gateway/web/freenode/ip.24.205.164.232) has joined ##c++
+2016-10-28 21:46:54	-->	sssilver (~sssilver@2605:6000:ee54:b500:69a9:50fa:7e62:e0ae) has joined ##c++
+2016-10-28 21:48:15	<--	rcalnn (18cda4e8@gateway/web/freenode/ip.24.205.164.232) has left ##c++
+2016-10-28 21:48:49	<--	CEnnis91 (uid3543@gateway/web/irccloud.com/x-jehcearcdwqslzly) has quit (Quit: Connection closed for inactivity)
+2016-10-28 21:48:49		[21:48]
+2016-10-28 21:49:50	-->	rcalnn (18cda4e8@gateway/web/freenode/ip.24.205.164.232) has joined ##c++
+2016-10-28 21:51:01	<--	zwliew (uid161395@gateway/web/irccloud.com/x-ttkopaboyyyjrkml) has quit (Quit: Connection closed for inactivity)
+2016-10-28 21:51:17	<--	rcalnn (18cda4e8@gateway/web/freenode/ip.24.205.164.232) has quit (Client Quit)
+2016-10-28 21:52:32	-->	josef__k (~jeremy@59-102-26-159.tpgi.com.au) has joined ##c++
+2016-10-28 21:53:19	-->	rendar (~I@host63-182-dynamic.37-79-r.retail.telecomitalia.it) has joined ##c++
+2016-10-28 21:55:24	--	irc: disconnected from server
+2016-10-28 22:16:37	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined ##c++
+2016-10-28 22:16:37		[22:16]
+2016-10-28 22:16:37	--	Topic for ##c++ is "##C++ is a topical channel for discussing standard C++ specifications and code. || Current standard: ISO/IEC 14882:2014 (a.k.a. C++14) || https://isocpp.org/faq || pastes: http://melpon.org/wandbox"
+2016-10-28 22:16:37	--	Topic set by V-ille (~ville@81-175-149-170.bb.dnainternet.fi) on Fri, 18 Sep 2015 07:13:01
+2016-10-28 22:16:38	--	Channel ##c++: 912 nicks (0 ops, 0 voices, 912 normals)
+2016-10-28 22:16:38	***	Buffer Playback...
+2016-10-28 22:16:38	xaxxon	[07:26:30] http://en.cppreference.com/w/cpp/language/static_cast  -- I think that's what I need to do [07:26:30]
+2016-10-28 22:16:38	KrzaQ	[07:27:27] yeah [07:27:27]
+2016-10-28 22:16:38	KrzaQ	[07:30:10] gah [07:30:10]
+2016-10-28 22:16:38	KrzaQ	[07:30:10] { auto f = static_cast<int const&(vector<int>::*)(size_t) const>(&vector<int>::operator[]); vector<int> x{1,2}; cout << (x.*f)(1); } [07:30:10]
+2016-10-28 22:16:38	geordi	[07:30:11] 2 [07:30:11]
+2016-10-28 22:16:38	KrzaQ	[07:30:15] this syntax is ugly [07:30:15]
+2016-10-28 22:16:38	 *	KrzaQ [07:30:26] pokes xaxxon [07:30:26]
+2016-10-28 22:16:38	 *	xaxxon [07:30:51] is poked [07:30:51]
+2016-10-28 22:16:38	xaxxon	[07:31:09] yep, that's what I ended up with ,too [07:31:09]
+2016-10-28 22:16:38	KrzaQ	[07:31:34] hm [07:31:34]
+2016-10-28 22:16:38	KrzaQ	[07:31:40] << TYPE(int) [07:31:40]
+2016-10-28 22:16:38	geordi	[07:31:40] error: template argument 1 is invalid [07:31:40]
+2016-10-28 22:16:38	KrzaQ	[07:31:45] << TYPE_DESC(int) [07:31:45]
+2016-10-28 22:16:38	geordi	[07:31:46] Same error. [07:31:46]
+2016-10-28 22:16:38	xaxxon	[07:31:55] << TYPE<int> [07:31:55]
+2016-10-28 22:16:38	geordi	[07:31:56] int [07:31:56]
+2016-10-28 22:16:38	KrzaQ	[07:32:04] ah [07:32:04]
+2016-10-28 22:16:38	KrzaQ	[07:32:29] << TYPE<decltype<&V::operator[]>>; using V = vector<int>; [07:32:29]
+2016-10-28 22:16:38	geordi	[07:32:29] error: parse error in template argument list [07:32:29]
+2016-10-28 22:16:38	KrzaQ	[07:32:39] << TYPE<decltype(&V::operator[])>; using V = vector<int>; [07:32:39]
+2016-10-28 22:16:38	geordi	[07:32:39] error: decltype cannot resolve address of overloaded function [07:32:39]
+2016-10-28 22:16:38	w3z	[07:32:40] thats why you use an alias [07:32:40]
+2016-10-28 22:16:38	KrzaQ	[07:32:52] certainly, I've yet to wake up [07:32:52]
+2016-10-28 22:16:38	KrzaQ	[07:33:33] hm, but this is interesting [07:33:33]
+2016-10-28 22:16:38	KrzaQ	[07:33:36] << TYPE<decltype(&V::operator[])>; using V = const vector<int>; [07:33:36]
+2016-10-28 22:16:38	geordi	[07:33:36] Same error. [07:33:36]
+2016-10-28 22:16:38	KrzaQ	[07:33:43] I'd expect this to be unambiguous [07:33:43]
+2016-10-28 22:16:38	w3z	[07:34:11] why ...it does that for all kinds of overloads [07:34:11]
+2016-10-28 22:16:38	KrzaQ	[07:34:32] well, I expected it to magically discard non const overloads for a const vector<int> [07:34:32]
+2016-10-28 22:16:38	KrzaQ	[07:34:57] I guess it doesn't check if the function is viable at this point [07:34:57]
+2016-10-28 22:16:38	keur	[08:03:27] if i have a function that's going to fill a vector, is it preferable to pass a reference of the vector to the function or return it by value ? thx [08:03:27]
+2016-10-28 22:16:38	cata-doxas	[08:03:49] can i use an enum in a class constructor? if so how would I call the constructor, could I just do a myclass( case1, arguments); ? [08:03:49]
+2016-10-28 22:16:38	xaxxon	[08:08:03] how do you do sfinae for templated class T doesn't have a T::SOME_OTHER_TYPE?   https://godbolt.org/g/oGrKOI [08:08:03]
+2016-10-28 22:16:38	xaxxon	[08:08:19] I got the "only if it DOES have T::SOME_OTHER_TYPE" but don't know how to invert it [08:08:19]
+2016-10-28 22:16:38	KrzaQ	[08:10:19] make a trait? [08:10:19]
+2016-10-28 22:16:38	xaxxon	[08:10:41] isn't a trait a "sfinae library"? [08:10:41]
+2016-10-28 22:16:38	xaxxon	[08:11:03] which is what I don't know how to do [08:11:03]
+2016-10-28 22:16:38	KrzaQ	[08:11:48] sec [08:11:48]
+2016-10-28 22:16:38	xaxxon	[08:13:32] I need to do something where a function can return a proxy, but if it returns the proxy, I need to know what it's a proxy for and actually do something with that type [08:13:32]
+2016-10-28 22:16:38	xaxxon	[08:14:15] if it returns string& then I just use string.  if it returns proxy<string> (where proxy isn't a specific type, I need some way of letting it say it's a proxy type) [08:14:15]
+2016-10-28 22:16:38	KrzaQ	[08:14:34] https://godbolt.org/g/lCc9Kh [08:14:34]
+2016-10-28 22:16:38	KrzaQ	[08:14:48] maybe it can be prettier [08:14:48]
+2016-10-28 22:16:38	xaxxon	[08:15:12] ok,but then how do I get line 31 uncommented? [08:15:12]
+2016-10-28 22:16:38	KrzaQ	[08:15:30] delete or backspace should do the job just fine ;) [08:15:30]
+2016-10-28 22:16:38	KrzaQ	[08:15:42] I'm not sure what you're actually asking [08:15:42]
+2016-10-28 22:16:38	xaxxon	[08:15:49] https://godbolt.org/g/qab6O6 [08:15:49]
+2016-10-28 22:16:38	xaxxon	[08:16:00] it doesn't compile with line 31 uncommented [08:16:00]
+2016-10-28 22:16:38	KrzaQ	[08:16:03] yeah, it doesn't compile [08:16:03]
+2016-10-28 22:16:38	KrzaQ	[08:16:18] thought that was what you wanted [08:16:18]
+2016-10-28 22:16:38	KrzaQ	[08:16:34] well, anyway [08:16:34]
+2016-10-28 22:16:38	***	Playback Complete.
+2016-10-28 22:16:48	KrzaQ	just overload go_impl for true_type
+2016-10-28 22:16:48	xaxxon	I nee a goimpl that takes a true?
+2016-10-28 22:16:48	xaxxon	ok
+2016-10-28 22:16:48	<--	vikaton (uid59278@gateway/web/irccloud.com/x-tauhstygpmrrfztx) has quit (Quit: Connection closed for inactivity)
+2016-10-28 22:16:48	--	Channel created on Fri, 14 Sep 2001 17:15:35
+2016-10-28 22:17:09	xaxxon	cool, thank you.
+2016-10-28 22:17:14	-->	firstdayonthejob (~firstdayo@cpc99346-croy26-2-0-cust153.19-2.cable.virginm.net) has joined ##c++
+2016-10-28 22:17:29	KrzaQ	hm
+2016-10-28 22:18:09	<--	josef__k (~jeremy@59-102-26-159.tpgi.com.au) has quit
+2016-10-28 22:18:21	-->	josef__k (~jeremy@59-102-26-159.tpgi.com.au) has joined ##c++
+2016-10-28 22:18:53	<--	josef__k (~jeremy@59-102-26-159.tpgi.com.au) has quit (Read error: Connection reset by peer)
+2016-10-28 22:18:56	xaxxon	What I was missing is that calling a function doesn't care which is more specific, but instantiating a class does
+2016-10-28 22:19:06	-->	josef__k (~jeremy@59-102-26-159.tpgi.com.au) has joined ##c++
+2016-10-28 22:19:33	xaxxon	I basically tried what you did with functions and couldn't make it work because the functino calls were ambiguous
+2016-10-28 22:19:54	KrzaQ	ah, yeah
+2016-10-28 22:21:06	KrzaQ	I guess you could make go_impl a static function of the trait, (not sure whether this is a good idea, but it's there)
+2016-10-28 22:21:55	xaxxon	I'll mess with it.  I just needed the hint in the right direction.   thank you
+2016-10-28 22:25:42	--	irc: disconnected from server
+2016-10-28 22:29:29	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined ##c++
+2016-10-28 22:29:29		[22:29]
+2016-10-28 22:29:29	--	Topic for ##c++ is "##C++ is a topical channel for discussing standard C++ specifications and code. || Current standard: ISO/IEC 14882:2014 (a.k.a. C++14) || https://isocpp.org/faq || pastes: http://melpon.org/wandbox"
+2016-10-28 22:29:29	--	Topic set by V-ille (~ville@81-175-149-170.bb.dnainternet.fi) on Fri, 18 Sep 2015 07:13:01
+2016-10-28 22:29:29	--	Channel ##c++: 915 nicks (0 ops, 0 voices, 915 normals)
+2016-10-28 22:29:29	***	Buffer Playback...
+2016-10-28 22:29:29	KrzaQ	[07:32:52] certainly, I've yet to wake up [07:32:52]
+2016-10-28 22:29:29	KrzaQ	[07:33:33] hm, but this is interesting [07:33:33]
+2016-10-28 22:29:29	KrzaQ	[07:33:36] << TYPE<decltype(&V::operator[])>; using V = const vector<int>; [07:33:36]
+2016-10-28 22:29:29	geordi	[07:33:36] Same error. [07:33:36]
+2016-10-28 22:29:29	KrzaQ	[07:33:43] I'd expect this to be unambiguous [07:33:43]
+2016-10-28 22:29:29	w3z	[07:34:11] why ...it does that for all kinds of overloads [07:34:11]
+2016-10-28 22:29:29	KrzaQ	[07:34:32] well, I expected it to magically discard non const overloads for a const vector<int> [07:34:32]
+2016-10-28 22:29:29	KrzaQ	[07:34:57] I guess it doesn't check if the function is viable at this point [07:34:57]
+2016-10-28 22:29:29	keur	[08:03:27] if i have a function that's going to fill a vector, is it preferable to pass a reference of the vector to the function or return it by value ? thx [08:03:27]
+2016-10-28 22:29:29	cata-doxas	[08:03:49] can i use an enum in a class constructor? if so how would I call the constructor, could I just do a myclass( case1, arguments); ? [08:03:49]
+2016-10-28 22:29:29	xaxxon	[08:08:03] how do you do sfinae for templated class T doesn't have a T::SOME_OTHER_TYPE?   https://godbolt.org/g/oGrKOI [08:08:03]
+2016-10-28 22:29:29	xaxxon	[08:08:19] I got the "only if it DOES have T::SOME_OTHER_TYPE" but don't know how to invert it [08:08:19]
+2016-10-28 22:29:29	KrzaQ	[08:10:19] make a trait? [08:10:19]
+2016-10-28 22:29:29	xaxxon	[08:10:41] isn't a trait a "sfinae library"? [08:10:41]
+2016-10-28 22:29:29	xaxxon	[08:11:03] which is what I don't know how to do [08:11:03]
+2016-10-28 22:29:29	KrzaQ	[08:11:48] sec [08:11:48]
+2016-10-28 22:29:29	xaxxon	[08:13:32] I need to do something where a function can return a proxy, but if it returns the proxy, I need to know what it's a proxy for and actually do something with that type [08:13:32]
+2016-10-28 22:29:29	xaxxon	[08:14:15] if it returns string& then I just use string.  if it returns proxy<string> (where proxy isn't a specific type, I need some way of letting it say it's a proxy type) [08:14:15]
+2016-10-28 22:29:29	KrzaQ	[08:14:34] https://godbolt.org/g/lCc9Kh [08:14:34]
+2016-10-28 22:29:29	KrzaQ	[08:14:48] maybe it can be prettier [08:14:48]
+2016-10-28 22:29:29	xaxxon	[08:15:12] ok,but then how do I get line 31 uncommented? [08:15:12]
+2016-10-28 22:29:29	KrzaQ	[08:15:30] delete or backspace should do the job just fine ;) [08:15:30]
+2016-10-28 22:29:29	KrzaQ	[08:15:42] I'm not sure what you're actually asking [08:15:42]
+2016-10-28 22:29:29	xaxxon	[08:15:49] https://godbolt.org/g/qab6O6 [08:15:49]
+2016-10-28 22:29:29	xaxxon	[08:16:00] it doesn't compile with line 31 uncommented [08:16:00]
+2016-10-28 22:29:29	KrzaQ	[08:16:03] yeah, it doesn't compile [08:16:03]
+2016-10-28 22:29:29	KrzaQ	[08:16:18] thought that was what you wanted [08:16:18]
+2016-10-28 22:29:29	KrzaQ	[08:16:34] well, anyway [08:16:34]
+2016-10-28 22:29:29	KrzaQ	[08:16:41] just overload go_impl for true_type [08:16:41]
+2016-10-28 22:29:29	xaxxon	[08:16:43] I nee a goimpl that takes a true? [08:16:43]
+2016-10-28 22:29:29	xaxxon	[08:16:43] ok [08:16:43]
+2016-10-28 22:29:29	xaxxon	[08:17:09] cool, thank you. [08:17:09]
+2016-10-28 22:29:29	KrzaQ	[08:17:29] hm [08:17:29]
+2016-10-28 22:29:29	xaxxon	[08:18:56] What I was missing is that calling a function doesn't care which is more specific, but instantiating a class does [08:18:56]
+2016-10-28 22:29:29	xaxxon	[08:19:33] I basically tried what you did with functions and couldn't make it work because the functino calls were ambiguous [08:19:33]
+2016-10-28 22:29:29	KrzaQ	[08:19:54] ah, yeah [08:19:54]
+2016-10-28 22:29:29	KrzaQ	[08:21:06] I guess you could make go_impl a static function of the trait, (not sure whether this is a good idea, but it's there) [08:21:06]
+2016-10-28 22:29:29	xaxxon	[08:21:55] I'll mess with it.  I just needed the hint in the right direction.   thank you [08:21:55]
+2016-10-28 22:29:29	xaxxon	[08:22:27] I just need to know if I got a proxy, what is it a proxy for.   and I'm defining proxy as "has OTHER" [08:22:27]
+2016-10-28 22:29:29	xaxxon	[08:22:44] at least that's the corellary to the test case [08:22:44]
+2016-10-28 22:29:29	xaxxon	[08:26:22] KrzaQ, This is what I really wanted to do: https://godbolt.org/g/wnrfJP [08:26:22]
+2016-10-28 22:29:29	xaxxon	[08:26:46] KrzaQ, thanks again :) [08:26:46]
+2016-10-28 22:29:29	KrzaQ	[08:26:53] no problem [08:26:53]
+2016-10-28 22:29:29	KrzaQ	[08:27:07] I'd put RealT as a using declaration inside go though [08:27:07]
+2016-10-28 22:29:29	KrzaQ	[08:27:41] unless you want to be able to use a specific type that's not consistent with the trait [08:27:41]
+2016-10-28 22:29:29	AxldenieD	[08:27:54] hello :) [08:27:54]
+2016-10-28 22:29:29	KrzaQ	[08:28:00] i.e go<Bar,Foo>() [08:28:00]
+2016-10-28 22:29:29	KrzaQ	[08:29:15] xaxxon: https://godbolt.org/g/lHfqQX [08:29:15]
+2016-10-28 22:29:29	KrzaQ	[08:29:23] I guess this makes it a little verbose for C++11 though [08:29:23]
+2016-10-28 22:29:29	xaxxon	[08:29:26] you dirty little auto cheater [08:29:26]
+2016-10-28 22:29:29	***	Playback Complete.
+2016-10-28 22:29:34	xaxxon	:)
+2016-10-28 22:29:35	xaxxon	AxldenieD, hi
+2016-10-28 22:29:39	xaxxon	!hi
+2016-10-28 22:29:41	nolyc	Hi and welcome to ##C++! This channel is for the discussion of standard C++. For algorithms, libraries, platforms and tools, go to ##C++-general. Beginner questions might get more appropriate responses in ##C++-basic.
+2016-10-28 22:29:59	-->	Jackneill_ (~Jackneill@unaffiliated/jackneill) has joined ##c++
+2016-10-28 22:30:04	--	Channel created on Fri, 14 Sep 2001 17:15:35
+2016-10-28 22:30:04	xaxxon	KrzaQ, turns out "go" is just for testcase purposes, too
+2016-10-28 22:30:07	KrzaQ	yeah, -> typename has_OTHER<T>::PROXY_TYPE is a thing I'm happy to live without
+2016-10-28 22:31:09	<--	navidr (uid112413@gateway/web/irccloud.com/x-vtwfnxugkzsqtuof) has quit (Quit: Connection closed for inactivity)
+2016-10-28 22:31:46	<--	Fatbag (~quassel@nat-128-62-73-246.public.utexas.edu) has quit (Ping timeout: 256 seconds)
+2016-10-28 22:32:00	-->	zagabar (~zagabar@unaffiliated/zagabar) has joined ##c++
+2016-10-28 22:33:11	-->	przemkovv-bis (~przemkovv@psocoptera.cie.put.poznan.pl) has joined ##c++
+2016-10-28 22:33:17	w3z	you cuold use if constexpr there instead of nesting the type in your trait
+2016-10-28 22:33:23	w3z	could
+2016-10-28 22:33:30	KrzaQ	in a year or two ;)
+2016-10-28 22:34:00	-->	Kirrahe (~kirrahe@ip51cc4257.adsl-surfen.hetnet.nl) has joined ##c++
+2016-10-28 22:34:28	w3z	anyway, once you have the trait you can implement go in a number of different ways
+2016-10-28 22:34:41	<--	uuplusu (~uuplusu@218.108.29.107) has quit (Remote host closed the connection)
+2016-10-28 22:34:52	KrzaQ	indeed
+2016-10-28 22:34:58	w3z	youre using void_t, which you sholdnt have yet either btw :)
+2016-10-28 22:35:15	KrzaQ	you can backport void_t all the way back to C++11
+2016-10-28 22:35:32	KrzaQ	it's a bit more difficult with if constexpr :P
+2016-10-28 22:35:41	-->	iwakura (~Shino@user-31-175-95-254.play-internet.pl) has joined ##c++
+2016-10-28 22:36:20	KrzaQ	I wrote an ugly hack for this in 14
+2016-10-28 22:37:51	KrzaQ	http://melpon.org/wandbox/permlink/Ul4eHY6gaWCPSIU4
+2016-10-28 22:38:35	-->	Anodl (~Anodl@p2003007A2F1E4D00911804AB950B7E42.dip0.t-ipconnect.de) has joined ##c++
+2016-10-28 22:38:50	<--	Anodl (~Anodl@p2003007A2F1E4D00911804AB950B7E42.dip0.t-ipconnect.de) has quit (Client Quit)
+2016-10-28 22:41:58	-->	Defaultti (defaultti@lakka.kapsi.fi) has joined ##c++
+2016-10-28 22:42:13	<--	ferdna (~ferdna@cpe-69-23-141-130.elp.res.rr.com) has quit (Quit: Leaving)
+2016-10-28 22:43:52	-->	ViktorGordo (~viktor@unaffiliated/viktorgordo) has joined ##c++
+2016-10-28 22:43:55	-->	ReverseBlade (~user@213.74.212.180) has joined ##c++
+2016-10-28 22:45:59	<--	xaxxon (~xaxxon@2601:602:9d00:d58b:c029:8133:555a:509c) has quit (Quit: Leaving)
+2016-10-28 22:45:59		[22:45]
+2016-10-28 22:48:02	-->	uuplusu (~uuplusu@218.108.29.107) has joined ##c++
+2016-10-28 22:48:14	-->	fred (~fred@2804:7f2:581:adf:864e:917e:5926:5e53) has joined ##c++
+2016-10-28 22:48:17	<--	uuplusu (~uuplusu@218.108.29.107) has quit (Remote host closed the connection)
+2016-10-28 22:48:37	--	fred is now known as Guest61823
+2016-10-28 22:48:57	<--	match_ita (~Giovanni@dynamic-adsl-78-14-227-29.clienti.tiscali.it) has quit (Quit: It 's better to be optimistic and be wrong , than to be pessimistic and to be right - Albert Einstein)
+2016-10-28 22:51:34	-->	Lillia7 (~lillia7@d3079310.t-net.ne.jp) has joined ##c++
+2016-10-28 22:53:05	<--	ReverseBlade (~user@213.74.212.180) has quit (Ping timeout: 260 seconds)
+2016-10-28 22:54:19	-->	Lowl3v3l (~Lowl3v3l@dslb-188-107-138-032.188.107.pools.vodafone-ip.de) has joined ##c++
+2016-10-28 22:55:13	-->	zwliew (uid161395@gateway/web/irccloud.com/x-ppfvxzlhbqklzdbm) has joined ##c++
+2016-10-28 22:56:32	-->	symm- (~symm-@95.65.81.202) has joined ##c++
+2016-10-28 22:56:44	-->	xaxxon (~xaxxon@c-24-18-184-142.hsd1.wa.comcast.net) has joined ##c++
+2016-10-28 22:56:49	<--	xaxxon (~xaxxon@c-24-18-184-142.hsd1.wa.comcast.net) has left ##c++
+2016-10-28 22:59:22	-->	Nilesh_ (uid116340@gateway/web/irccloud.com/x-vrkkulszoxkkwgwk) has joined ##c++
+2016-10-28 23:01:07	<--	Guest61823 (~fred@2804:7f2:581:adf:864e:917e:5926:5e53) has left ##c++
+2016-10-28 23:01:07		[23:01]
+2016-10-28 23:01:19	-->	uuplusu (~uuplusu@218.108.29.107) has joined ##c++
+2016-10-28 23:03:13	<--	Cohedrin (~textual@c-73-170-239-253.hsd1.ca.comcast.net) has quit (Quit: My Mac has gone to sleep. ZZZzzz…)
+2016-10-28 23:04:03	<--	Codaraxis (~Codaraxis@ip72-197-1-54.sd.sd.cox.net) has quit (Ping timeout: 268 seconds)
+2016-10-28 23:05:54	<--	przemkovv-bis (~przemkovv@psocoptera.cie.put.poznan.pl) has quit (Ping timeout: 268 seconds)
+2016-10-28 23:06:45	<--	uuplusu (~uuplusu@218.108.29.107) has quit (Remote host closed the connection)
+2016-10-28 23:07:11	<--	vitimiti (~Celtor@unaffiliated/vitimiti) has quit (Quit: Konversation terminated!)
+2016-10-28 23:07:17	-->	prehensileNipple (~nooblet@124.197.62.6) has joined ##c++
+2016-10-28 23:07:25	-->	kimundi (~Kimundi@p4FE2E3C4.dip0.t-ipconnect.de) has joined ##c++
+2016-10-28 23:07:28	<--	prehensileNipple (~nooblet@124.197.62.6) has quit (Client Quit)
+2016-10-28 23:09:31	<--	RajRajRaj (uid72176@gateway/web/irccloud.com/x-moqxhqnjlarrarlw) has quit
+2016-10-28 23:14:19	-->	Cohedrin (~textual@192.77.237.205) has joined ##c++
+2016-10-28 23:15:04	-->	xalspaero (~xalspaero@c-98-232-8-80.hsd1.wa.comcast.net) has joined ##c++
+2016-10-28 23:21:00		[23:15]
+2016-10-28 23:21:47	i666666pong	what hapen if i have template and i don't overloard operator and one of my function adds two objects ???
+2016-10-28 23:22:43	i666666pong	my function ..................... Sally a + sally b ... ok... but i didn't overload the + operator for the sally class ....
+2016-10-28 23:22:52	i666666pong	but for my other stuff like ints, the + is defined so it will work
+2016-10-28 23:22:55	i666666pong	but what happens for sally ?
+2016-10-28 23:23:05	i666666pong	i want to try but i am not with a compiler on this computer
+2016-10-28 23:23:16	-->	RebelCoder (~Yuriy@cpc74579-lewi13-2-0-cust201.2-4.cable.virginm.net) has joined ##c++
+2016-10-28 23:23:49	Eelis	you get a compiler error
+2016-10-28 23:23:50	Eelis	geordi: class Sally {}; int main() { Sally a, b; a+b; }
+2016-10-28 23:23:50	geordi	error: no match for 'operator+' in 'a + b' (operand types are 'Sally' and 'Sally')
+2016-10-28 23:24:04	Eelis	you can try things with geordi in private or #geordi or use an online paste site that compiles
+2016-10-28 23:24:06	-->	josef_k (~jeremy@59-102-26-159.tpgi.com.au) has joined ##c++
+2016-10-28 23:24:06	i666666pong	ok i see i didnt know compiler checked that in real time
+2016-10-28 23:24:21	<--	josef__k (~jeremy@59-102-26-159.tpgi.com.au) has quit (Ping timeout: 260 seconds)
+2016-10-28 23:24:22	i666666pong	thank u Eelis .. +rep
+2016-10-28 23:24:25	i666666pong	+rep Eelis
+2016-10-28 23:24:53	-->	bumbar_ (~bumbar@unaffiliated/bumbar) has joined ##c++
+2016-10-28 23:25:12	Eelis	we don't have silly reputation/karma bots here, but yw
+2016-10-28 23:27:46	-->	uuplusu (~uuplusu@218.108.29.107) has joined ##c++
+2016-10-28 23:28:23	KrzaQ	heh
+2016-10-28 23:28:33	KrzaQ	If only that could be checked at runtime
+2016-10-28 23:29:33	-->	ReverseBlade (~user@213.74.212.180) has joined ##c++
+2016-10-28 23:30:12	i666666pong	c++ is easy guys ))
+2016-10-28 23:30:23	i666666pong	dont know why some body said hard language to learn hehe :)
+2016-10-28 23:30:31	i666666pong	wat next to learn after template.. ?
+2016-10-28 23:30:42	 *	EricWF also likes sarcasm.
+2016-10-28 23:31:02	i666666pong	the new boston ... youtube :) very good teacher
+2016-10-28 23:31:02	-->	mra9776 (~mra9776@5.220.58.218) has joined ##c++
+2016-10-28 23:31:08	i666666pong	ok good day all ty guys
+2016-10-28 23:31:23	EricWF	i666666pong: Obviously once you know templates you should move onto initialization semantics.
+2016-10-28 23:31:36	-->	satifant (~sati@unaffiliated/satifant) has joined ##c++
+2016-10-28 23:31:43	-->	Gluesticky (~nobody@unaffiliated/gluesticky) has joined ##c++
+2016-10-28 23:33:06	<--	uuplusu (~uuplusu@218.108.29.107) has quit (Remote host closed the connection)
+2016-10-28 23:33:07	-->	wowsuchnamaste (~wowsuchna@80-110-89-160.cgn.dynamic.surfer.at) has joined ##c++
+2016-10-28 23:33:33	i666666pong	ok
+2016-10-28 23:33:38	i666666pong	ty EricWF

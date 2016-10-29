@@ -8582,3 +8582,159 @@
 2016-10-28 21:41:19	-->	Noldorin (~noldorin@unaffiliated/noldorin) has joined #openvpn
 2016-10-28 21:41:47	<--	klow (~textual@c-98-247-49-57.hsd1.wa.comcast.net) has quit (Client Quit)
 2016-10-28 21:42:00	-->	jamesaxl (~jamesaxl@176.98.129.195) has joined #openvpn
+2016-10-28 21:46:21	<--	Noldorin (~noldorin@unaffiliated/noldorin) has quit (Ping timeout: 260 seconds)
+2016-10-28 21:46:37	-->	klow (~textual@c-98-247-49-57.hsd1.wa.comcast.net) has joined #openvpn
+2016-10-28 21:47:52	-->	j12t (~j12t@c-50-131-55-96.hsd1.ca.comcast.net) has joined #openvpn
+2016-10-28 21:49:48	-->	fearnothing (~nothing@unaffiliated/fearnothing) has joined #openvpn
+2016-10-28 21:51:04	<--	allizom (~Thunderbi@host56-165-dynamic.247-95-r.retail.telecomitalia.it) has quit (Quit: allizom)
+2016-10-28 21:55:25	--	irc: disconnected from server
+2016-10-28 21:55:25		[21:55]
+2016-10-28 22:16:44	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined #openvpn
+2016-10-28 22:16:44		[22:16]
+2016-10-28 22:16:44	--	Topic for #openvpn is "OpenVPN Community Support Channel || PLEASE read entire /topic || Current Release: 2.3.12 (23 Aug 2016) || First time? Use !welcome and !goal || Access-Server? /join #openvpn-as || Your problem is probably firewall. Really || TAP/bridging is almost always a bad idea || Vulninfo: !heartbleed !poodle !ovpnuke !sweet32 || Patience is a virtue"
+2016-10-28 22:16:44	--	Topic set by danhunsaker (sid145261@openvpn/corp/danhunsaker) on Sun, 09 Oct 2016 21:20:15
+2016-10-28 22:16:45	--	Channel #openvpn: 235 nicks (7 ops, 3 voices, 225 normals)
+2016-10-28 22:16:45	***	Buffer Playback...
+2016-10-28 22:16:45	@vpnHelper	[01:58:05] (help [<plugin>] [<command>]) -- This command gives a useful description of what <command> does. <plugin> is only necessary if the command is in more than one plugin. [01:58:05]
+2016-10-28 22:16:45	slypknot	[01:58:14] !proto [01:58:14]
+2016-10-28 22:16:45	slypknot	[01:58:19] meh [01:58:19]
+2016-10-28 22:16:45	tcpdump	[02:03:13] I need to understand it, and make a diagram for others haha [02:03:13]
+2016-10-28 22:16:45	flacks	[03:00:09] slypknot, without that option, all the NAT clients can still reach the OpenVPN server through the VPN server IP, 10.8.0.1. With the redirect-gateway option, the same, NAT clients *can* access the VPN IP. It's NAT clients accessing the [03:00:09]
+2016-10-28 22:16:45	flacks	[03:00:49] VPN server's *public* IP where problems start [03:00:49]
+2016-10-28 22:16:45	tannercollin	[04:29:30] How do I port forward with OpenVPN? Say I have a server running sshd on my vpn, how would I connect to it outside my vpn using my vpn's IP? [04:29:30]
+2016-10-28 22:16:45	@krzee	[04:37:14] tannercollin: you can only forward the port to a single client, so i suggest using a static vpn ip, alternately you may dynamically assign firewall rules using a learn-address script [04:37:14]
+2016-10-28 22:16:45	@krzee	[04:37:20] !dnat [04:37:20]
+2016-10-28 22:16:45	@krzee	[04:37:30] !factoids search dnat [04:37:30]
+2016-10-28 22:16:45	@vpnHelper	[04:37:31] 'bsdnat', 'fbsdnat', 'freebsdnat', 'obsdnat', and 'openbsdnat' [04:37:31]
+2016-10-28 22:16:45	@krzee	[04:37:48] !factoids search --values dnat [04:37:48]
+2016-10-28 22:16:45	@vpnHelper	[04:37:49] 'freebsdnat', 'bsdnat', 'linportforward', 'openbsdnat', 'nat', and 'frozentux' [04:37:49]
+2016-10-28 22:16:45	@krzee	[04:37:59] !linportforward [04:37:59]
+2016-10-28 22:16:45	@vpnHelper	[04:38:01] "linportforward" is (#1) to forward port 80 tcp to a vpn client, use this (replacing <SERVERIP> with the real ip of the server, and <VPNIP> with the clients VPN ip), or (#2) iptables -t nat -A PREROUTING -i eth0 -d <SERVERIP> -p tcp --dport 80 -j DNAT --to <VPNIP>, or (#3) iptables -A FORWARD -m state --state NEW,ESTABLISHED,RELATED -i eth0 -p tcp --dport 80 -j ACCEPT [04:38:01]
+2016-10-28 22:16:45	tannercollin	[04:38:15] Yeah, that's fine. My ISP doesn't let me forward ports 80 and 443, so I am connecting my media server to my VPN and have it forward the ports through there. [04:38:15]
+2016-10-28 22:16:45	@krzee	[04:42:35] !static [04:42:35]
+2016-10-28 22:16:45	@vpnHelper	[04:42:35] "static" is (#1) use --ifconfig-push in a ccd entry for a static ip for the vpn client, or (#2) example in net30 (default): ifconfig-push 10.8.0.6 10.8.0.5 example in subnet (see !topology) or tap (see !tunortap): ifconfig-push 10.8.0.5 255.255.255.0, or (#3) also see !ccd and !iporder, or (#4) with static IPs, limit your --ifconfig-pool to exclude the static range, or (#5) See also: !addressing [04:42:35]
+2016-10-28 22:16:45	wallbroken	[04:42:44] krzee, what "learn address script" does? [04:42:44]
+2016-10-28 22:16:45	tannercollin	[04:44:03] Can I assign it a static IP in my /etc/network/interfaces file? [04:44:03]
+2016-10-28 22:16:45	tannercollin	[04:44:16] On the server running sshd. [04:44:16]
+2016-10-28 22:16:45	@krzee	[04:52:59] no, openvpn assigns the tun ip [04:52:59]
+2016-10-28 22:16:45	@krzee	[04:53:24] if you have an entire subnet routed to you then you may assign the subnet directly in --server [04:53:24]
+2016-10-28 22:16:45	@krzee	[04:53:32] but if you dont know, then i am sure you dont [04:53:32]
+2016-10-28 22:16:45	tannercollin	[04:53:49] okay, I'm looking at the ifconfig-push flag. I'm confused about the remote-netmask part. what should I set it to? [04:53:49]
+2016-10-28 22:16:45	@krzee	[04:54:08] are you using tun, and topology subnet? [04:54:08]
+2016-10-28 22:16:45	tannercollin	[04:55:00] Yes, using tun and these subnet settings: server 10.8.0.0 255.255.255.0 [04:55:00]
+2016-10-28 22:16:45	tannercollin	[04:55:28] the example in the config has this: ifconfig-push 10.9.0.1 10.9.0.2 [04:55:28]
+2016-10-28 22:16:45	@krzee	[04:55:41] thats for net30 [04:55:41]
+2016-10-28 22:16:45	tannercollin	[04:55:48] 10.9.0.2 is the remote-netmask and it doesn't look very much like a netmask. [04:55:48]
+2016-10-28 22:16:45	@krzee	[04:55:49] if you have topology subnet then it would be like [04:55:49]
+2016-10-28 22:16:45	@krzee	[04:56:08] ifconfig-push 10.8.0.250 255.255.255.0 [04:56:08]
+2016-10-28 22:16:45	wallbroken	[04:56:16] tannercollin, look for "static routing" [04:56:16]
+2016-10-28 22:16:45	@krzee	[04:56:18] inside a ccd entry for the client [04:56:18]
+2016-10-28 22:16:45	@krzee	[04:56:20] !ccd [04:56:20]
+2016-10-28 22:16:45	@vpnHelper	[04:56:21] "ccd" is (#1) entries that are basically included into server.conf, but only for the specified client based on common-name. use --client-config-dir <dir> to enable it, then put the config options for the client in <dir>/common-name, or (#2) the ccd file is parsed each time the client connects. [04:56:21]
+2016-10-28 22:16:45	tannercollin	[04:56:58] Ahh, I guess I am using net30 right now [04:56:58]
+2016-10-28 22:16:45	tannercollin	[04:57:38] Yeah, I'm editing my ccd right now, but I don't know what to put for the second parameter for ifconfig-push [04:57:38]
+2016-10-28 22:16:45	@krzee	[05:00:56] put topology subnet in your server config [05:00:56]
+2016-10-28 22:16:45	@krzee	[05:01:05] and then put what i said in that ccd entry [05:01:05]
+2016-10-28 22:16:45	tannercollin	[05:10:25] What's the common name that I name my ccd file? is that just the client's /etc/hostname? [05:10:25]
+2016-10-28 22:16:45	@krzee	[05:11:09] !easy-rsa [05:11:09]
+2016-10-28 22:16:45	@vpnHelper	[05:11:11] "easy-rsa" is (#1) easy-rsa is a certificate generation utility., or (#2) Download here: https://github.com/OpenVPN/easy-rsa/releases, or (#3) Tutorial here: https://community.openvpn.net/openvpn/wiki/EasyRSA [05:11:11]
+2016-10-28 22:16:45	@krzee	[05:11:29] its the name of the client when you make the cert [05:11:29]
+2016-10-28 22:16:45	tannercollin	[05:12:45] Damn, I'm using the same cert for all my clients [05:12:45]
+2016-10-28 22:16:45	@krzee	[05:12:55] why? [05:12:55]
+2016-10-28 22:16:45	tannercollin	[05:14:15] lazyness I guess. Let's me just move around one .ovpn file. [05:14:15]
+2016-10-28 22:16:45	@krzee	[05:26:15] well for your new goal you get to fix that [05:26:15]
+2016-10-28 22:16:45	tannercollin	[05:26:27] Haha fair enough [05:26:27]
+2016-10-28 22:16:45	tannercollin	[05:26:43] First I am going to try and prove that this works just using its curreny dhcp address [05:26:43]
+2016-10-28 22:16:45	***	Playback Complete.
+2016-10-28 22:16:48	-->	uiyice (~uiyice@c-68-33-17-232.hsd1.md.comcast.net) has joined #openvpn
+2016-10-28 22:17:52	--	Channel created on Sat, 25 Nov 2006 20:42:40
+2016-10-28 22:21:07	-->	klow (~textual@c-98-247-49-57.hsd1.wa.comcast.net) has joined #openvpn
+2016-10-28 22:25:43	--	irc: disconnected from server
+2016-10-28 22:29:33	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined #openvpn
+2016-10-28 22:29:33		[22:29]
+2016-10-28 22:29:33	--	Topic for #openvpn is "OpenVPN Community Support Channel || PLEASE read entire /topic || Current Release: 2.3.12 (23 Aug 2016) || First time? Use !welcome and !goal || Access-Server? /join #openvpn-as || Your problem is probably firewall. Really || TAP/bridging is almost always a bad idea || Vulninfo: !heartbleed !poodle !ovpnuke !sweet32 || Patience is a virtue"
+2016-10-28 22:29:33	--	Topic set by danhunsaker (sid145261@openvpn/corp/danhunsaker) on Sun, 09 Oct 2016 21:20:15
+2016-10-28 22:29:33	--	Channel #openvpn: 238 nicks (7 ops, 3 voices, 228 normals)
+2016-10-28 22:29:33	***	Buffer Playback...
+2016-10-28 22:29:33	@vpnHelper	[01:58:05] (help [<plugin>] [<command>]) -- This command gives a useful description of what <command> does. <plugin> is only necessary if the command is in more than one plugin. [01:58:05]
+2016-10-28 22:29:33	slypknot	[01:58:14] !proto [01:58:14]
+2016-10-28 22:29:33	slypknot	[01:58:19] meh [01:58:19]
+2016-10-28 22:29:33	tcpdump	[02:03:13] I need to understand it, and make a diagram for others haha [02:03:13]
+2016-10-28 22:29:33	flacks	[03:00:09] slypknot, without that option, all the NAT clients can still reach the OpenVPN server through the VPN server IP, 10.8.0.1. With the redirect-gateway option, the same, NAT clients *can* access the VPN IP. It's NAT clients accessing the [03:00:09]
+2016-10-28 22:29:33	flacks	[03:00:49] VPN server's *public* IP where problems start [03:00:49]
+2016-10-28 22:29:33	tannercollin	[04:29:30] How do I port forward with OpenVPN? Say I have a server running sshd on my vpn, how would I connect to it outside my vpn using my vpn's IP? [04:29:30]
+2016-10-28 22:29:33	@krzee	[04:37:14] tannercollin: you can only forward the port to a single client, so i suggest using a static vpn ip, alternately you may dynamically assign firewall rules using a learn-address script [04:37:14]
+2016-10-28 22:29:33	@krzee	[04:37:20] !dnat [04:37:20]
+2016-10-28 22:29:33	@krzee	[04:37:30] !factoids search dnat [04:37:30]
+2016-10-28 22:29:33	@vpnHelper	[04:37:31] 'bsdnat', 'fbsdnat', 'freebsdnat', 'obsdnat', and 'openbsdnat' [04:37:31]
+2016-10-28 22:29:33	@krzee	[04:37:48] !factoids search --values dnat [04:37:48]
+2016-10-28 22:29:33	@vpnHelper	[04:37:49] 'freebsdnat', 'bsdnat', 'linportforward', 'openbsdnat', 'nat', and 'frozentux' [04:37:49]
+2016-10-28 22:29:33	@krzee	[04:37:59] !linportforward [04:37:59]
+2016-10-28 22:29:33	@vpnHelper	[04:38:01] "linportforward" is (#1) to forward port 80 tcp to a vpn client, use this (replacing <SERVERIP> with the real ip of the server, and <VPNIP> with the clients VPN ip), or (#2) iptables -t nat -A PREROUTING -i eth0 -d <SERVERIP> -p tcp --dport 80 -j DNAT --to <VPNIP>, or (#3) iptables -A FORWARD -m state --state NEW,ESTABLISHED,RELATED -i eth0 -p tcp --dport 80 -j ACCEPT [04:38:01]
+2016-10-28 22:29:33	tannercollin	[04:38:15] Yeah, that's fine. My ISP doesn't let me forward ports 80 and 443, so I am connecting my media server to my VPN and have it forward the ports through there. [04:38:15]
+2016-10-28 22:29:33	@krzee	[04:42:35] !static [04:42:35]
+2016-10-28 22:29:33	@vpnHelper	[04:42:35] "static" is (#1) use --ifconfig-push in a ccd entry for a static ip for the vpn client, or (#2) example in net30 (default): ifconfig-push 10.8.0.6 10.8.0.5 example in subnet (see !topology) or tap (see !tunortap): ifconfig-push 10.8.0.5 255.255.255.0, or (#3) also see !ccd and !iporder, or (#4) with static IPs, limit your --ifconfig-pool to exclude the static range, or (#5) See also: !addressing [04:42:35]
+2016-10-28 22:29:33	wallbroken	[04:42:44] krzee, what "learn address script" does? [04:42:44]
+2016-10-28 22:29:33	tannercollin	[04:44:03] Can I assign it a static IP in my /etc/network/interfaces file? [04:44:03]
+2016-10-28 22:29:33	tannercollin	[04:44:16] On the server running sshd. [04:44:16]
+2016-10-28 22:29:33	@krzee	[04:52:59] no, openvpn assigns the tun ip [04:52:59]
+2016-10-28 22:29:33	@krzee	[04:53:24] if you have an entire subnet routed to you then you may assign the subnet directly in --server [04:53:24]
+2016-10-28 22:29:33	@krzee	[04:53:32] but if you dont know, then i am sure you dont [04:53:32]
+2016-10-28 22:29:33	tannercollin	[04:53:49] okay, I'm looking at the ifconfig-push flag. I'm confused about the remote-netmask part. what should I set it to? [04:53:49]
+2016-10-28 22:29:33	@krzee	[04:54:08] are you using tun, and topology subnet? [04:54:08]
+2016-10-28 22:29:33	tannercollin	[04:55:00] Yes, using tun and these subnet settings: server 10.8.0.0 255.255.255.0 [04:55:00]
+2016-10-28 22:29:33	tannercollin	[04:55:28] the example in the config has this: ifconfig-push 10.9.0.1 10.9.0.2 [04:55:28]
+2016-10-28 22:29:33	@krzee	[04:55:41] thats for net30 [04:55:41]
+2016-10-28 22:29:33	tannercollin	[04:55:48] 10.9.0.2 is the remote-netmask and it doesn't look very much like a netmask. [04:55:48]
+2016-10-28 22:29:33	@krzee	[04:55:49] if you have topology subnet then it would be like [04:55:49]
+2016-10-28 22:29:33	@krzee	[04:56:08] ifconfig-push 10.8.0.250 255.255.255.0 [04:56:08]
+2016-10-28 22:29:33	wallbroken	[04:56:16] tannercollin, look for "static routing" [04:56:16]
+2016-10-28 22:29:33	@krzee	[04:56:18] inside a ccd entry for the client [04:56:18]
+2016-10-28 22:29:33	@krzee	[04:56:20] !ccd [04:56:20]
+2016-10-28 22:29:33	@vpnHelper	[04:56:21] "ccd" is (#1) entries that are basically included into server.conf, but only for the specified client based on common-name. use --client-config-dir <dir> to enable it, then put the config options for the client in <dir>/common-name, or (#2) the ccd file is parsed each time the client connects. [04:56:21]
+2016-10-28 22:29:33	tannercollin	[04:56:58] Ahh, I guess I am using net30 right now [04:56:58]
+2016-10-28 22:29:33	tannercollin	[04:57:38] Yeah, I'm editing my ccd right now, but I don't know what to put for the second parameter for ifconfig-push [04:57:38]
+2016-10-28 22:29:33	@krzee	[05:00:56] put topology subnet in your server config [05:00:56]
+2016-10-28 22:29:33	@krzee	[05:01:05] and then put what i said in that ccd entry [05:01:05]
+2016-10-28 22:29:33	tannercollin	[05:10:25] What's the common name that I name my ccd file? is that just the client's /etc/hostname? [05:10:25]
+2016-10-28 22:29:33	@krzee	[05:11:09] !easy-rsa [05:11:09]
+2016-10-28 22:29:33	@vpnHelper	[05:11:11] "easy-rsa" is (#1) easy-rsa is a certificate generation utility., or (#2) Download here: https://github.com/OpenVPN/easy-rsa/releases, or (#3) Tutorial here: https://community.openvpn.net/openvpn/wiki/EasyRSA [05:11:11]
+2016-10-28 22:29:33	@krzee	[05:11:29] its the name of the client when you make the cert [05:11:29]
+2016-10-28 22:29:33	tannercollin	[05:12:45] Damn, I'm using the same cert for all my clients [05:12:45]
+2016-10-28 22:29:33	@krzee	[05:12:55] why? [05:12:55]
+2016-10-28 22:29:33	tannercollin	[05:14:15] lazyness I guess. Let's me just move around one .ovpn file. [05:14:15]
+2016-10-28 22:29:33	@krzee	[05:26:15] well for your new goal you get to fix that [05:26:15]
+2016-10-28 22:29:33	tannercollin	[05:26:27] Haha fair enough [05:26:27]
+2016-10-28 22:29:33	tannercollin	[05:26:43] First I am going to try and prove that this works just using its curreny dhcp address [05:26:43]
+2016-10-28 22:29:33	***	Playback Complete.
+2016-10-28 22:30:50	--	Channel created on Sat, 25 Nov 2006 20:42:40
+2016-10-28 22:31:09	<--	navidr (uid112413@gateway/web/irccloud.com/x-vtwfnxugkzsqtuof) has quit (Quit: Connection closed for inactivity)
+2016-10-28 22:37:00		[22:31]
+2016-10-28 22:46:54	<--	tannercollin (32638cb4@gateway/web/freenode/ip.50.99.140.180) has quit (Quit: Page closed)
+2016-10-28 22:47:43	-->	gffa (~unknown@unaffiliated/gffa) has joined #openvpn
+2016-10-28 22:50:12	<--	fearnothing (~nothing@unaffiliated/fearnothing) has quit (Ping timeout: 244 seconds)
+2016-10-28 22:56:00		[22:50]
+2016-10-28 23:03:00	<--	j12t (~j12t@c-50-131-55-96.hsd1.ca.comcast.net) has quit (Ping timeout: 260 seconds)
+2016-10-28 23:04:12	speciality	I am getting RTNETLINK answers: Permission denied
+2016-10-28 23:04:20	speciality	on ubuntu 14.04 when I connect to VPN serer
+2016-10-28 23:04:40	skyroveRR	Use sudo..
+2016-10-28 23:04:56	speciality	did still the same issue
+2016-10-28 23:05:25	skyroveRR	sudo su; then run the command to bring up the damn VPN.
+2016-10-28 23:07:54	-->	Envil (~envil@x4db396d5.dyn.telefonica.de) has joined #openvpn
+2016-10-28 23:10:56	-->	davimore_ (~davimore@static.88-198-41-86.clients.your-server.de) has joined #openvpn
+2016-10-28 23:11:12	speciality	sudo -s
+2016-10-28 23:11:12		[23:11]
+2016-10-28 23:11:17	speciality	is not correct??
+2016-10-28 23:11:28	skyroveRR	Do you know the root password?
+2016-10-28 23:11:32	skyroveRR	Then just "su"
+2016-10-28 23:11:36	skyroveRR	And then run the VPN
+2016-10-28 23:12:01	speciality	but ubuntu don't have root
+2016-10-28 23:12:05	skyroveRR	It does.
+2016-10-28 23:13:44	speciality	k
+2016-10-28 23:13:57	<--	davimore (~davimore@static.88-198-41-86.clients.your-server.de) has quit (Ping timeout: 268 seconds)
+2016-10-28 23:16:09	-->	SkinnyMelon (~SkinnyMel@51B61ADB.dsl.pool.telekom.hu) has joined #openvpn
+2016-10-28 23:18:47	<--	_KaszpiR_ (quasselcor@unaffiliated/kaszpir/x-3157048) has left #openvpn
+2016-10-28 23:19:58	<--	MacDefender (~macdefend@ip1f11db06.dynamic.kabel-deutschland.de) has quit (Quit: Textual IRC Client: www.textualapp.com)
+2016-10-28 23:25:00		[23:19]
+2016-10-28 23:29:50	-->	j12t (~j12t@c-50-131-55-96.hsd1.ca.comcast.net) has joined #openvpn
+2016-10-28 23:35:00		[23:29]
