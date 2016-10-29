@@ -757,12 +757,14 @@ compdef _scrs scrs3
 # #d# start
 #example:
 #hash -d store=/store
+hash -d srv=/srv/http
+hash -d nginx=/etc/nginx
 hash -d zsh=${ZSH}
 hash -d plugins=${ZSH}/plugins
 hash -d calibre=/store/calibre
 hash -d efi=/boot/efi/EFI
-#hash -d bin=${HOME}/bin
-hash -d bin=/store/scripts
+hash -d bin=${HOME}/bin
+hash -d scripts=/store/scripts
 #hash -d aur=${HOME}/code/aur
 hash -d code=${HOME}/code
 hash -d git=${HOME}/code/git
