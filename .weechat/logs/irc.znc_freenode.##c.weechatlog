@@ -34777,3 +34777,402 @@
 2016-10-28 23:33:08	mazeto	which irc clients you guys use?
 2016-10-28 23:33:20	TheOtherGuy	Agiofws
 2016-10-28 23:33:32	-->	titodrew (~titodrew@dsl-246-99-162.telkomadsl.co.za) has joined ##C
+2016-10-28 23:35:36	Xanather	hexchat
+2016-10-28 23:35:36		[23:35]
+2016-10-28 23:36:46	Xanather	#define STRUCT_TYPE LIST_TYPE_PREFIX ## List
+2016-10-28 23:36:54	Xanather	this defines STRUCT_TYPE as LIST_TYPE_PREFIXList rather than resolving what LIST_TYPE_PREFIX then appending List, any way around that?
+2016-10-28 23:37:21	TheOtherGuy	The flaw in the logic is that there is no logic.
+2016-10-28 23:37:46	-->	jozwior (~jozwior@62.244.139.219) has joined ##C
+2016-10-28 23:38:32	-->	zfm (02f24a1f@gateway/web/freenode/ip.2.242.74.31) has joined ##C
+2016-10-28 23:39:11	Xanather	every time..
+2016-10-28 23:39:25	zfm	Why does "const long foo = sysconf(...)" compile in C? I thought const is supposed to mean compile-time knowledge of the value.
+2016-10-28 23:39:26	Xanather	Just as I ask I figure it out (needed to use a parameter for the macro)
+2016-10-28 23:39:29	Agiofws	hexchar
+2016-10-28 23:39:44	Agiofws	hexchat
+2016-10-28 23:39:47	Agiofws	TheOtherGuy,
+2016-10-28 23:39:54	TheOtherGuy	The problem must be broken down into separate stages, which must happen in order. It is impossible to replace the characters as they are still being counted.
+2016-10-28 23:40:40	Agiofws	so first count the spaces (if there are any) and the proceed to putchar outside the loop ? TheOtherGuy ?
+2016-10-28 23:43:24	Agiofws	?
+2016-10-28 23:44:10	-->	centrinia (~centrinia@107-208-218-105.lightspeed.tukrga.sbcglobal.net) has joined ##C
+2016-10-28 23:46:03	TheOtherGuy	I would step through the bytes one at a time, and use the information to build a second string which will be output at the end.
+2016-10-28 23:50:04	Agiofws	how would you do that?
+2016-10-28 23:52:14	-->	var (~var@x1-6-10-5f-49-76-8e-f8.cpe.webspeed.dk) has joined ##C
+2016-10-28 23:52:14		[23:52]
+2016-10-28 23:53:59	var	Hi, is there a way to convert an hex value into a char symbol using the c preprocessor? what i need is something like convert 0x70 to p and concatenate it with other chars to end up with a function name like puts :O
+2016-10-28 23:54:36	TheOtherGuy	Define another variable, and at each step copy the contents of your input into that variable whenever the input is not a space character. That would be a good start. From there you can add if statements to count spaces and decide whether to copy the current byte into your new string.
+2016-10-28 23:55:49	TheOtherGuy	For this to work you will need to use an array.
+2016-10-28 23:56:09	<--	zfm (02f24a1f@gateway/web/freenode/ip.2.242.74.31) has quit (Quit: Page closed)
+2016-10-28 23:56:33	Agiofws	i can understand that bu the difficult part is to translate it into C and by the way K&R until now has not introduced arrays yet
+2016-10-28 23:56:37	<--	hyphenated (~hyphenate@103.26.17.55) has quit (Quit: hyphenated)
+2016-10-28 23:56:50	Pessimist	var, sprintf
+2016-10-28 23:56:59	Pessimist	var, oh, preprocessor. Why?
+2016-10-28 23:57:15	var	Pessimist, i am trying to  train into obfuscated c :D
+2016-10-28 23:57:21	-->	rtkt (~rtkt@ptr-2hj4tbw74k45r8v1gbcevqc7o.ip6.access.telenet.be) has joined ##C
+2016-10-28 23:57:24	var	just for fun :O
+2016-10-28 23:58:02	Agiofws	http://codepad.org/Hg3jSieH TheOtherGuy its still wrong
+2016-10-28 23:58:14	<--	narann (~narann@2a01:e34:ee2e:4830:7c3b:db67:b777:e350) has quit (Ping timeout: 250 seconds)
+2016-10-28 23:59:41	var	uhm maybe i didnt write it well, sorry my english is bad :( i am trying something like this
+2016-10-28 23:59:42	var	https://codepaste.net/jdbsmf
+2016-10-29 00:00:06	var	in the end H must be equal printf
+2016-10-29 00:00:54	var	i am just not sure if i can translate that 0x70 into a p in any way
+2016-10-29 00:01:51	var	i was only wondering if it would be doable :)
+2016-10-29 00:02:04	-->	drozdziak1 (~drozdziak@89-70-116-45.dynamic.chello.pl) has joined ##C
+2016-10-29 00:02:16	-->	hyphenated (~hyphenate@103.26.17.55) has joined ##C
+2016-10-29 00:03:15	<--	hyphenated (~hyphenate@103.26.17.55) has quit (Client Quit)
+2016-10-29 00:03:55	<--	lonejack (~claudio@151.82.99.22) has quit (Quit: Ex-Chat)
+2016-10-29 00:03:58	-->	hyphenated (~hyphenate@103.26.17.55) has joined ##C
+2016-10-29 00:04:40	<--	benderB787 (~bender@2404:e800:e61a:41d:d90f:c92f:cdb9:28a7) has quit (Ping timeout: 260 seconds)
+2016-10-29 00:07:23	var	anyway thank you everyone for trying to help :D
+2016-10-29 00:07:23		[00:07]
+2016-10-29 00:07:24	TheOtherGuy	Agiofws, if you must produce your output one byte at a time, as the input is still being interpreted, then you will need to create a state machine in your code.
+2016-10-29 00:08:47	TheOtherGuy	Start in state zero. While in state zero, if the input is not a space just send it to output. If it is a space, enter state 1.
+2016-10-29 00:10:07	TheOtherGuy	While in state 1, if the input is not a space, output a space, output the current input, enter state 0.
+2016-10-29 00:10:29	<--	Cohedrin (~textual@192.77.237.205) has quit (Quit: My Mac has gone to sleep. ZZZzzz…)
+2016-10-29 00:13:24	<--	jamesaxl (~jamesaxl@176.98.129.195) has quit (Ping timeout: 250 seconds)
+2016-10-29 00:13:53	Agiofws	TheOtherGuy,  no reference to state machine in K&R up to now... does it have anything to do with if a program fails or not ?
+2016-10-29 00:14:38	TheOtherGuy	A simple state machine can be achieved using nested if statements.
+2016-10-29 00:15:22	-->	snyp (~Snyp@150.129.132.52) has joined ##C
+2016-10-29 00:17:50	-->	antilogic (~antilogic@85.206.109.17) has joined ##C
+2016-10-29 00:18:19	TheOtherGuy	Here's a bit of pseudo code for you:   If State = 0 & input != " " then output = input   ;   else if state = 0 & input = " " then state = 1
+2016-10-29 00:19:22	TheOtherGuy	Use a variable called state to keep track of what part of your process you are in.
+2016-10-29 00:20:32	TheOtherGuy	if state = 1 & input != " " then output = " "
+2016-10-29 00:23:04	<--	deflected (~recursive@37-143-218-237.sf.ddns.bulsat.com) has quit (Remote host closed the connection)
+2016-10-29 00:23:04		[00:23]
+2016-10-29 00:23:23	Agiofws	& stands for and ?
+2016-10-29 00:23:50	<--	TikityTik (~TikityTik@162.223.44.49) has quit (Read error: Connection reset by peer)
+2016-10-29 00:24:25	Love4Boobies	If statements alone aren't powerful enough to express the class of state machines.
+2016-10-29 00:24:32	-->	anton02 (~quassel@lal1651212.lnk.telstra.net) has joined ##C
+2016-10-29 00:26:18	<--	RebelCoder (~Yuriy@cpc74579-lewi13-2-0-cust201.2-4.cable.virginm.net) has quit (Ping timeout: 244 seconds)
+2016-10-29 00:26:24	TheOtherGuy	yeah Agiofws
+2016-10-29 00:27:26	<--	firstdayonthejob (~firstdayo@cpc99346-croy26-2-0-cust153.19-2.cable.virginm.net) has quit (Ping timeout: 252 seconds)
+2016-10-29 00:27:34	-->	chiken (~chiken@60-242-215-61.static.tpgi.com.au) has joined ##C
+2016-10-29 00:27:44	<--	Feren^IRCCloud (sid180023@gateway/web/irccloud.com/x-mvniymfsiaqkxizu) has quit
+2016-10-29 00:28:06	-->	Feren^IRCCloud (sid180023@gateway/web/irccloud.com/x-oafuqyhiavfgmkhm) has joined ##C
+2016-10-29 00:28:30	<--	Zialus (~RMF@117.26.60.94.rev.vodafone.pt) has quit (Ping timeout: 256 seconds)
+2016-10-29 00:29:04	-->	xux (~xux@unaffiliated/xux) has joined ##C
+2016-10-29 00:29:31	-->	Zialus (~RMF@117.26.60.94.rev.vodafone.pt) has joined ##C
+2016-10-29 00:29:45	-->	Rainb (~Rainb@200.89.239.231) has joined ##C
+2016-10-29 00:31:17	TheOtherGuy	Love4Boobies, Anything is possible with enough if statements and variables.
+2016-10-29 00:31:30	-->	RebelCoder (~Yuriy@cpc74579-lewi13-2-0-cust201.2-4.cable.virginm.net) has joined ##C
+2016-10-29 00:31:34	chiken	^
+2016-10-29 00:31:43	-->	King_Hual (~failed@unaffiliated/king-hual/x-1207580) has joined ##C
+2016-10-29 00:32:46	Love4Boobies	That's not true.
+2016-10-29 00:32:51	<--	X-Scale (~ARM@2001:0:53aa:64c:0:d51c:b176:2199) has quit (Quit:  HydraIRC -> http://www.hydrairc.com <-)
+2016-10-29 00:33:53	Love4Boobies	Consider a FSM that parses an arbitrary amount of input. How are you going to implement that with only if statements?
+2016-10-29 00:34:11	Love4Boobies	You need loops.
+2016-10-29 00:34:24	<--	Rainb (~Rainb@200.89.239.231) has quit (Ping timeout: 252 seconds)
+2016-10-29 00:35:03	Love4Boobies	Or something like "flip a coin until it turns heads".
+2016-10-29 00:35:37	<--	nan2 (~nan2@14.147.30.116) has quit (Quit: Leaving)
+2016-10-29 00:35:43	TheOtherGuy	I did say "with enough" of them. Suppose we have an infinite memory to work with.
+2016-10-29 00:36:32	Love4Boobies	Then how the hell is that a FINITE state machine?
+2016-10-29 00:36:54	TheOtherGuy	I never mentioned anything about finite.
+2016-10-29 00:37:13	Love4Boobies	State machine is just shorthand for finite state machine.
+2016-10-29 00:37:14	<--	jozwior (~jozwior@62.244.139.219) has quit (Ping timeout: 265 seconds)
+2016-10-29 00:37:34	Love4Boobies	Type-3 languages on the chomsky hierarchy.
+2016-10-29 00:37:54	Love4Boobies	Or regular languages, if you want.
+2016-10-29 00:38:52	Love4Boobies	And, at any rate, how do you even define something that has infinite arbitrary states?
+2016-10-29 00:38:52		[00:38]
+2016-10-29 00:39:25	Love4Boobies	(With a loop, maybe?)
+2016-10-29 00:39:51	<--	rtkt (~rtkt@ptr-2hj4tbw74k45r8v1gbcevqc7o.ip6.access.telenet.be) has quit (Ping timeout: 250 seconds)
+2016-10-29 00:41:35	<--	chandu20 (~quassel@124.123.81.196) has quit (Ping timeout: 265 seconds)
+2016-10-29 00:41:43	TheOtherGuy	A loop certainly does make it more practical on machines which have a finite amount of memory.
+2016-10-29 00:43:03	-->	techno_under-grn (~technoknx@24-158-120-118.dhcp.kgpt.tn.charter.com) has joined ##C
+2016-10-29 00:43:54	Love4Boobies	No, it makes it practical, not possible.
+2016-10-29 00:44:09	Love4Boobies	Read a book on computability or on automata theory. This conversation is boring.
+2016-10-29 00:44:19	Love4Boobies	err, possible rather than practical*
+2016-10-29 00:44:55	Naan	I can't find my segfault in function "explore" https://gist.github.com/HY89/a767f66ce74fecd57ae379bd186abfb1
+2016-10-29 00:45:07	Naan	any hints would be much appreciated
+2016-10-29 00:45:33	Love4Boobies	What you are describing is so ill-defined that you can't know what such a machine does because it can never be described.
+2016-10-29 00:45:44	Love4Boobies	It's worse than undecidability.
+2016-10-29 00:46:17	Love4Boobies	Or, it can be described and you are describing it wrong, in which case it has loops.
+2016-10-29 00:46:29	-->	Suchorski (regex@unaffiliated/suchorski) has joined ##C
+2016-10-29 00:49:33	<--	UnlikeSuika (~UnlikeSui@175.206.228.3) has quit (Ping timeout: 244 seconds)
+2016-10-29 00:54:15	-->	hanshenrik (~hanshenri@ti0016a400-3633.bb.online.no) has joined ##C
+2016-10-29 00:54:15		[00:54]
+2016-10-29 00:54:51	-->	dogman (~dog.marle@2601:84:8780:4ebb:bcda:778:b7d3:7caa) has joined ##C
+2016-10-29 00:55:42	<--	hyphenated (~hyphenate@103.26.17.55) has quit (Quit: hyphenated)
+2016-10-29 00:56:21	<--	techno_under-grn (~technoknx@24-158-120-118.dhcp.kgpt.tn.charter.com) has quit (Quit: Leaving)
+2016-10-29 00:56:23	-->	chandu20 (~quassel@124.123.81.196) has joined ##C
+2016-10-29 00:58:10	<--	centrinia (~centrinia@107-208-218-105.lightspeed.tukrga.sbcglobal.net) has quit (Quit: Leaving)
+2016-10-29 00:59:07	-->	rtkt (~rtkt@ptr-2hj4tbw74k45r8v1gbcevqc7o.ip6.access.telenet.be) has joined ##C
+2016-10-29 00:59:33	-->	Gathis (~TheBlack@unaffiliated/gathis) has joined ##C
+2016-10-29 01:02:05	<--	chiken (~chiken@60-242-215-61.static.tpgi.com.au) has left ##C ("Leaving")
+2016-10-29 01:02:08	<--	Devastator (~devas@unaffiliated/devastator) has quit (Ping timeout: 245 seconds)
+2016-10-29 01:02:25	-->	modf (~gene@124.40.246.86) has joined ##C
+2016-10-29 01:02:55	-->	P6hjakonn (~Tinker@5015-6f3d-8966-3198-2d80-8a2c-07d0-2001.dyn.estpak.ee) has joined ##C
+2016-10-29 01:03:19	-->	sametsisartenep (~sametsisa@106.pool85-53-34.dynamic.orange.es) has joined ##C
+2016-10-29 01:03:51	-->	Motoko11 (~Rob@unaffiliated/moto-chan) has joined ##C
+2016-10-29 01:05:20	<--	Akahige (~Rob@unaffiliated/moto-chan) has quit (Ping timeout: 260 seconds)
+2016-10-29 01:08:18	atk	,tell Naan about duffing
+2016-10-29 01:08:18	@candide	Naan: duffing is writing code from top to bottom, as opposed to horizontally. See http://iq0.com/notes/deep.nesting.html
+2016-10-29 01:08:23	atk	,tell Naan about dontcastmalloc
+2016-10-29 01:08:33	Naan	my teacher insists i cast malloc
+2016-10-29 01:08:39	Naan	we've had the debate
+2016-10-29 01:08:40	Naan	I know about it
+2016-10-29 01:08:54	atk	well read the other article anyway
+2016-10-29 01:08:58	Naan	will do thanks
+2016-10-29 01:09:08	@candide	Naan: There is no need to cast the result of library functions that return void *; it makes your code hard to read, adds no value, and can hide a bug if you don't have a valid prototype in scope. See http://c-faq.com/malloc/mallocnocast.html
+2016-10-29 01:09:32	<--	Kingsquee (~kingsley@206.116.124.155) has quit (Quit: Konversation terminated!)
+2016-10-29 01:09:32		[01:09]
+2016-10-29 01:10:23	-->	Endarked (~endarked@2a01:11bf:5b1:b300:16dd:a9ff:fe11:99a2) has joined ##C
+2016-10-29 01:11:30	<--	maz2 (~maz@177.81.218.14) has left ##C
+2016-10-29 01:12:33	<--	TheOtherGuy (18f70345@gateway/web/cgi-irc/kiwiirc.com/ip.24.247.3.69) has left ##C
+2016-10-29 01:14:20	<--	beatdown (beatdown@chainsawed.and.strangled.net) has quit (Quit: ZNC 1.6.1 - http://znc.in)
+2016-10-29 01:16:43	<--	creat (~creat@unaffiliated/creat) has quit (Ping timeout: 245 seconds)
+2016-10-29 01:17:06	-->	Feren^Work (~Feren^Wor@118.35.135.168) has joined ##C
+2016-10-29 01:17:50	-->	JeanCarloMachado (~jean@189-10-225-172.cslce701.dsl.brasiltelecom.net.br) has joined ##C
+2016-10-29 01:18:20	Naan	atk which part of my code did your advice apply to? when i use multiple ifs to explore neighbour cells?
+2016-10-29 01:18:27	-->	lompik (~lompik@2001:19f0:6800:1522:5400:ff:fe21:fd3d) has joined ##C
+2016-10-29 01:18:33	atk	I am annotating it to point out what I mean.
+2016-10-29 01:18:42	Naan	thanks
+2016-10-29 01:19:45	<--	code_zombie (~code_zomb@2605:a601:aa1:5c00:90f2:3b41:3976:99bd) has quit (Quit: Leaving)
+2016-10-29 01:20:38	atk	oh, and:
+2016-10-29 01:20:42	atk	,mallocidiom
+2016-10-29 01:20:42	@candide	T *p = malloc(sizeof *p) is a much more robust idiom than T *p = malloc(sizeof (T)) because there is no chance of the sizeof (T) failing to match up with the T that was used to declare p. It's also more concise and easier to read.
+2016-10-29 01:20:58	atk	(unless your prof also complains about this too)
+2016-10-29 01:23:23	Naan	no that's just me :P
+2016-10-29 01:23:51	-->	polydo_s (~polydo_s@2402:f000:2:e001:9027:a404:b26:ebd2) has joined ##C
+2016-10-29 01:24:51	-->	reDRub (~mentat@151.41.135.153) has joined ##C
+2016-10-29 01:24:51		[01:24]
+2016-10-29 01:25:48	Naan	so I should use grid[0] and grid [0][0] instead of int* and int ?
+2016-10-29 01:26:21	--	m1santr0p is now known as fbred
+2016-10-29 01:26:23	atk	You'll see what I've done, but that's not a bad idea, for consistency I use *grid and *grid[i]
+2016-10-29 01:26:50	Naan	I understand
+2016-10-29 01:27:07	-->	benderB787 (~bender@2404:e800:e61a:41d:5876:6381:6c62:a7d2) has joined ##C
+2016-10-29 01:27:31	-->	nelder (~noname@unaffiliated/nelder) has joined ##C
+2016-10-29 01:27:35	Naan	also syntax and code style aside this algorithm is actually failing on so many levels because i never reset the path markers.. trying to work that out
+2016-10-29 01:27:58	atk	Yeah, I really don't know what explore is supposed to do.
+2016-10-29 01:28:57	Naan	it's meant to count how many paths there are of pathsize 9, so like when you lock your android phone, given a size * size square and starting point (sx, sy)
+2016-10-29 01:30:08	Naan	(i don't actually have an android phone but pretty sure they have this feature)
+2016-10-29 01:30:23	atk	Naan: I cleaned the code up a bit and annotated it for you: http://sprunge.us/eVIL
+2016-10-29 01:30:51	<--	dogman (~dog.marle@2601:84:8780:4ebb:bcda:778:b7d3:7caa) has quit (Quit: My machine has gone to sleep. ZZZzzz…)
+2016-10-29 01:30:54	atk	(I forgot to comment explore, mainly because I have no idea what exactly it's trying to do :P
+2016-10-29 01:31:27	-->	bender_ (uid106562@gateway/web/irccloud.com/x-xrwazxilzaaflshj) has joined ##C
+2016-10-29 01:31:32	atk	Ah, I see what the explore function is supposed to do
+2016-10-29 01:31:52	atk	indeed, to do this correctly you would need to keep track of the state of the grid at each iteration
+2016-10-29 01:32:19	atk	also, those lock screens do not require the connections to be made to adjecent dots.
+2016-10-29 01:33:54	<--	reDRub (~mentat@151.41.135.153) has quit (Quit: Leaving)
+2016-10-29 01:34:32	Naan	atk that's awesome your comments are really helpful !
+2016-10-29 01:34:57	Naan	ah ok our exercise assumes the connections have to be adjacent and no diagonals
+2016-10-29 01:35:08	atk	I see.
+2016-10-29 01:36:18	atk	(I didn't explain the enum at the beginning, it's simply a neat way to replace #defines with something more predictable while still being able to take advantage of the fact that enumeration constants are "constant" (something const int PATHSIZE = 9; would not provide)
+2016-10-29 01:36:44	<--	polydo_s (~polydo_s@2402:f000:2:e001:9027:a404:b26:ebd2) has quit (Remote host closed the connection)
+2016-10-29 01:37:59	Naan	got it. I understand what you mean by duffing now too. One question, I never check if grid[i+-1][j+-1] is in the grid, but would that lead to a segfault if I never dereference it? because it should halt as soon as explore is called with the new i or j
+2016-10-29 01:38:14	atk	(To give an example: struct s { int a[PATHSIZE]; }; requires that PATHSIZE is a constant, #define PATHSIZE 9 and enum { PATHSIZE = 9 }; both would work, but const int PATHSIZE = 9; would not.
+2016-10-29 01:38:54	atk	well you do try to read the value of grid at grid[i+-1][j+-1];
+2016-10-29 01:38:58	atk	just before you make the call
+2016-10-29 01:39:10	atk	you check if the grid at that point is 0
+2016-10-29 01:39:18	<--	Feren^Work (~Feren^Wor@118.35.135.168) has quit (Quit: leaving)
+2016-10-29 01:39:33	-->	renn0xtk9 (~max@2a02:8071:2e80:8f00:586:2da:4913:b919) has joined ##C
+2016-10-29 01:39:34	Naan	oh right so you do dereference it. I think the distinction is I thought it's ok to read out of bounds but not write
+2016-10-29 01:39:41	<--	Tims_Tech (~Tims_Tech@unaffiliated/tims-tech) has quit (Quit: bye)
+2016-10-29 01:40:03	<--	dreamon (~dreamon@unaffiliated/dreamon) has quit (Ping timeout: 245 seconds)
+2016-10-29 01:40:03		[01:40]
+2016-10-29 01:40:05	atk	They're both considered to be undefined behaviour.
+2016-10-29 01:40:28	<--	hanshenrik (~hanshenri@ti0016a400-3633.bb.online.no) has quit (Ping timeout: 256 seconds)
+2016-10-29 01:41:26	-->	Feren^Work (~Feren^Wor@118.35.135.168) has joined ##C
+2016-10-29 01:45:00	<--	Zialus (~RMF@117.26.60.94.rev.vodafone.pt) has quit (Ping timeout: 256 seconds)
+2016-10-29 01:45:45	<--	Suchorski (regex@unaffiliated/suchorski) has quit
+2016-10-29 01:47:06	<--	mazeto (~maz@177.81.218.14) has left ##C
+2016-10-29 01:47:08	-->	Zialus (~RMF@117.26.60.94.rev.vodafone.pt) has joined ##C
+2016-10-29 01:47:52	-->	mazeto (~maz@177.81.218.14) has joined ##C
+2016-10-29 01:48:24	-->	ZyX-I (~ZyX-I@broadband-77-37-230-77.nationalcablenetworks.ru) has joined ##C
+2016-10-29 01:49:46	<--	JeanCarloMachado (~jean@189-10-225-172.cslce701.dsl.brasiltelecom.net.br) has quit (Ping timeout: 250 seconds)
+2016-10-29 01:49:59	-->	phao (~phao@177.129.48.61) has joined ##C
+2016-10-29 01:54:05	-->	b (~coffee@unaffiliated/ridout) has joined ##C
+2016-10-29 01:54:22	-->	Kingsquee (~kingsley@d206-116-124-155.bchsia.telus.net) has joined ##C
+2016-10-29 01:55:00	<--	QwertyDragon (~QwertyDra@pool-98-118-51-122.bstnma.fios.verizon.net) has quit (Quit: Leaving)
+2016-10-29 01:55:49	-->	Spart (~Spart@ACaen-654-1-129-159.w81-48.abo.wanadoo.fr) has joined ##C
+2016-10-29 01:55:49		[01:55]
+2016-10-29 01:57:55	-->	nilof (~saolof@92-32-80-134.tn.glocalnet.net) has joined ##C
+2016-10-29 01:58:03	-->	KidBeta (~textual@106-69-210-62.dyn.iinet.net.au) has joined ##C
+2016-10-29 01:58:35	-->	JeanCarloMachado (~jean@189-10-225-172.cslce701.dsl.brasiltelecom.net.br) has joined ##C
+2016-10-29 01:58:55	-->	freakyfidlers (~freakyfid@ool-435018c7.dyn.optonline.net) has joined ##C
+2016-10-29 01:59:44	<--	Kingsquee (~kingsley@d206-116-124-155.bchsia.telus.net) has quit (Quit: Konversation terminated!)
+2016-10-29 02:00:00	<--	abcrawf (~abcrawf@apollo.acrawford.com) has quit (Remote host closed the connection)
+2016-10-29 02:00:14	-->	Tims_Tech (~Tims_Tech@unaffiliated/tims-tech) has joined ##C
+2016-10-29 02:00:55	-->	gagbo (~gagbo@unaffiliated/gagbo) has joined ##C
+2016-10-29 02:01:58	-->	deflected (~recursive@37-143-218-237.sf.ddns.bulsat.com) has joined ##C
+2016-10-29 02:02:19	-->	anuxivm (~anuxi@92.177.99.40) has joined ##C
+2016-10-29 02:03:00	-->	abcrawf (~abcrawf@apollo.acrawford.com) has joined ##C
+2016-10-29 02:03:04	-->	creat (~creat@unaffiliated/creat) has joined ##C
+2016-10-29 02:06:55	<--	creat (~creat@unaffiliated/creat) has quit (Max SendQ exceeded)
+2016-10-29 02:08:10	-->	creat (~creat@unaffiliated/creat) has joined ##C
+2016-10-29 02:08:19	<--	anuxivm (~anuxi@92.177.99.40) has left ##C
+2016-10-29 02:08:20	-->	jamesaxl (~jamesaxl@176.98.129.195) has joined ##C
+2016-10-29 02:09:44	-->	DearVolt (~DearVolt@169-0-208-125.ip.afrihost.co.za) has joined ##C
+2016-10-29 02:10:54	-->	anuxivm (~anuxi@92.177.99.40) has joined ##C
+2016-10-29 02:10:54		[02:10]
+2016-10-29 02:13:13	<--	ShekharReddy (uid132367@gateway/web/irccloud.com/x-zofmhtqtcdadrlxh) has quit
+2016-10-29 02:13:17	<--	KindOne (kindone@freenude/topless/kindone) has quit (Ping timeout: 240 seconds)
+2016-10-29 02:14:48	--	xux is now known as yehai
+2016-10-29 02:14:52	--	yehai is now known as xux
+2016-10-29 02:16:01	-->	deekej (deekej@nat/redhat/x-hkgrmxhfxkzibyac) has joined ##C
+2016-10-29 02:17:01	<--	kstolen (~kStolen@2a00:fa40:2aaa:1::539:82de) has quit (Ping timeout: 260 seconds)
+2016-10-29 02:20:31	-->	_d3x0r (~d3x0r@ip72-193-17-27.lv.lv.cox.net) has joined ##C
+2016-10-29 02:20:45	<--	d3x0r (~d3x0r@ip72-193-17-27.lv.lv.cox.net) has quit (Read error: Connection reset by peer)
+2016-10-29 02:21:05	-->	treehug88 (~textual@cpe-68-173-227-135.nyc.res.rr.com) has joined ##C
+2016-10-29 02:21:14	<--	gagbo (~gagbo@unaffiliated/gagbo) has quit (Ping timeout: 250 seconds)
+2016-10-29 02:21:16	-->	kstolen (~kStolen@2a00:fa40:2aaa:1::539:82de) has joined ##C
+2016-10-29 02:22:21	-->	MyCuriosity (~MyCuriosi@unaffiliated/mycuriosity) has joined ##C
+2016-10-29 02:24:04	-->	codfection (~codfectio@unaffiliated/codfection) has joined ##C
+2016-10-29 02:24:41	-->	psychicist__ (~psychicis@ip127-8-212-87.adsl2.static.versatel.nl) has joined ##C
+2016-10-29 02:26:36	<--	JeanCarloMachado (~jean@189-10-225-172.cslce701.dsl.brasiltelecom.net.br) has quit (Ping timeout: 250 seconds)
+2016-10-29 02:26:36		[02:26]
+2016-10-29 02:28:11	<--	CyberStorm2 (~Eugene@c-73-138-170-62.hsd1.fl.comcast.net) has quit (Quit: Lost terminal)
+2016-10-29 02:29:25	 *	pragma- is away.
+2016-10-29 02:31:20	-->	BerryWhite (~BerryWhit@109.128.96.209) has joined ##C
+2016-10-29 02:31:42	 *	pragma- is away.
+2016-10-29 02:33:30	<--	BerryWhite (~BerryWhit@109.128.96.209) has quit (Client Quit)
+2016-10-29 02:33:47	-->	BerryWhite (~BerryWhit@109.128.96.209) has joined ##C
+2016-10-29 02:34:48	izalove	//nick pragma-away
+2016-10-29 02:34:56	-->	UnlikeSuika (~UnlikeSui@106.249.245.30) has joined ##C
+2016-10-29 02:36:28	<--	ARCADIVS (~RMM@24-179-11-74.dhcp.leds.al.charter.com) has quit (Quit: ARCADIVS)
+2016-10-29 02:36:58	-->	super_bender (~bender@2404:e800:e61a:41d:9d1a:4a9a:9717:4b23) has joined ##C
+2016-10-29 02:37:26	atk	pragma-: suck
+2016-10-29 02:37:31	atk	pragma-: fix plz
+2016-10-29 02:38:40	<--	benderB787 (~bender@2404:e800:e61a:41d:5876:6381:6c62:a7d2) has quit (Ping timeout: 260 seconds)
+2016-10-29 02:38:53	-->	mazeto_ (~maz@177.81.218.14) has joined ##C
+2016-10-29 02:42:00	-->	frostschutz (~frostschu@x2f67f3e.dyn.telefonica.de) has joined ##C
+2016-10-29 02:42:00		[02:42]
+2016-10-29 02:42:02	-->	oxygene (~fred@ALille-652-1-115-76.w2-5.abo.wanadoo.fr) has joined ##C
+2016-10-29 02:42:55	<--	bitvijays (~bitvijays@unaffiliated/bitvijays) has quit (Ping timeout: 256 seconds)
+2016-10-29 02:44:53	-->	bitvijays (~bitvijays@unaffiliated/bitvijays) has joined ##C
+2016-10-29 02:45:16	pragma-	atk: I did fix it.
+2016-10-29 02:45:31	-->	pokit (~pokit@2001:da8:2002:4100:e2db:55ff:feac:afd5) has joined ##C
+2016-10-29 02:46:22	<--	nelder (~noname@unaffiliated/nelder) has quit (Quit: Leaving)
+2016-10-29 02:46:35	pragma-	atk: I bet you don't believe me.
+2016-10-29 02:46:51	-->	GenteelBen (~GenteelBe@cpc70133-lutn12-2-0-cust324.9-3.cable.virginm.net) has joined ##C
+2016-10-29 02:47:24	<--	Lowl3v3l (~Lowl3v3l@dslb-188-107-138-032.188.107.pools.vodafone-ip.de) has quit (Remote host closed the connection)
+2016-10-29 02:48:55	<--	noethics_ (~noethics@gateway/vpn/privateinternetaccess/ebonics) has quit (Ping timeout: 244 seconds)
+2016-10-29 02:49:02	pragma-	atk: I dare you to /me is away
+2016-10-29 02:49:14	-->	Lowl3v3l (~Lowl3v3l@dslb-188-107-138-032.188.107.pools.vodafone-ip.de) has joined ##C
+2016-10-29 02:49:48	pragma-	atk: I triple dog double dare you with fries. there, now you HAVE to do it.  it's in the rules.
+2016-10-29 02:50:03	-->	pirate21994 (~pirate219@117.207.2.162) has joined ##C
+2016-10-29 02:50:10	<--	Lowl3v3l (~Lowl3v3l@dslb-188-107-138-032.188.107.pools.vodafone-ip.de) has quit (Remote host closed the connection)
+2016-10-29 02:50:50	-->	dhk (~dhk@138.59.24.18) has joined ##C
+2016-10-29 02:51:11	<--	Tims_Tech (~Tims_Tech@unaffiliated/tims-tech) has quit (Quit: bye)
+2016-10-29 02:51:13	-->	italys (~bmsking@71-222-77-117.ptld.qwest.net) has joined ##C
+2016-10-29 02:51:28	<--	italys (~bmsking@71-222-77-117.ptld.qwest.net) has left ##C
+2016-10-29 02:52:35	-->	Rainb (~Rainb@200.89.239.231) has joined ##C
+2016-10-29 02:52:58	-->	Tims_Tech (~Tims_Tech@unaffiliated/tims-tech) has joined ##C
+2016-10-29 02:54:58	-->	junaidnaseer2 (~junaid@ip5f5bf919.dynamic.kabel-deutschland.de) has joined ##C
+2016-10-29 02:56:12	<--	oxygene (~fred@ALille-652-1-115-76.w2-5.abo.wanadoo.fr) has quit (Quit: Quitte)
+2016-10-29 02:56:51	-->	Lowl3v3l (~Lowl3v3l@dslb-188-107-138-032.188.107.pools.vodafone-ip.de) has joined ##C
+2016-10-29 02:57:23	pragma-	,kick atk
+2016-10-29 02:57:23		[02:57]
+2016-10-29 02:57:24	<--	candide has kicked atk (You're not stupid... just possessed by a retarded ghost. )
+2016-10-29 02:57:33	<--	j605 (~j605@unaffiliated/j605) has quit (Ping timeout: 245 seconds)
+2016-10-29 02:58:13	-->	RajRajRaj (uid72176@gateway/web/irccloud.com/x-blgimqkxfqqlwgld) has joined ##C
+2016-10-29 02:58:26	scai	that'll teach him
+2016-10-29 02:58:38	 *	pragma- nods.
+2016-10-29 02:58:59	pragma-	he done got learned.
+2016-10-29 02:59:35	<--	chandu20 (~quassel@124.123.81.196) has quit (Ping timeout: 252 seconds)
+2016-10-29 03:00:51	<--	netj (~netj@c-50-174-63-93.hsd1.ca.comcast.net) has quit (Ping timeout: 268 seconds)
+2016-10-29 03:01:20	-->	netj (~netj@c-50-174-63-93.hsd1.ca.comcast.net) has joined ##C
+2016-10-29 03:02:06	<--	junaidnaseer2 (~junaid@ip5f5bf919.dynamic.kabel-deutschland.de) has quit (Remote host closed the connection)
+2016-10-29 03:03:20	-->	palms (~rizo@99-103-21-200.lightspeed.cicril.sbcglobal.net) has joined ##C
+2016-10-29 03:03:38	-->	kapitalist (kapitalist@78-73-113-101-no162.tbcn.telia.com) has joined ##C
+2016-10-29 03:04:13	<--	maroloccio (~weechat@2001:b07:6443:b979:d19f:f72b:8a7:25db) has quit (Quit: WeeChat 1.6)
+2016-10-29 03:05:27	-->	xall_ (~xall@ip98-167-206-11.ph.ph.cox.net) has joined ##C
+2016-10-29 03:05:40	<--	UnlikeSuika (~UnlikeSui@106.249.245.30) has quit (Quit: RIP)
+2016-10-29 03:05:59	-->	nullptr| (~NullPtr|@178.253.154.158) has joined ##C
+2016-10-29 03:06:02	-->	UnlikeSuika (~UnlikeSui@106.249.245.30) has joined ##C
+2016-10-29 03:06:30	<--	UnlikeSuika (~UnlikeSui@106.249.245.30) has quit (Client Quit)
+2016-10-29 03:06:50	 *	pragma- is away.
+2016-10-29 03:06:51	--	Mode ##C [+o candide] by ChanServ
+2016-10-29 03:07:05	<--	titodrew (~titodrew@dsl-246-99-162.telkomadsl.co.za) has quit (Ping timeout: 260 seconds)
+2016-10-29 03:08:32	<--	fr0gRIP (~fr0gRIP@2a01:e35:243f:6d60:626d:c7ff:fe04:bcab) has quit (Ping timeout: 260 seconds)
+2016-10-29 03:08:47	-->	Retr0id (~null@31.205.174.14) has joined ##C
+2016-10-29 03:09:00	<--	phao (~phao@177.129.48.61) has quit (Ping timeout: 265 seconds)
+2016-10-29 03:09:07	-->	okra (~stephen@enlightenment/developer/okra) has joined ##C
+2016-10-29 03:09:26	-->	nelder (~noname@unaffiliated/nelder) has joined ##C
+2016-10-29 03:09:44	-->	hck89 (~textual@92-223-148-10.ip274.fastwebnet.it) has joined ##C
+2016-10-29 03:09:52	<--	palms (~rizo@99-103-21-200.lightspeed.cicril.sbcglobal.net) has quit (Ping timeout: 260 seconds)
+2016-10-29 03:09:56	<--	xall_ (~xall@ip98-167-206-11.ph.ph.cox.net) has quit (Ping timeout: 250 seconds)
+2016-10-29 03:11:09	-->	y00fie (~chatzilla@174-84-234-86.res.bhn.net) has joined ##C
+2016-10-29 03:11:53	--	Mode ##C [+o candide] by ChanServ
+2016-10-29 03:12:34	<--	Yoofie (~chatzilla@174-84-234-86.res.bhn.net) has quit (Ping timeout: 268 seconds)
+2016-10-29 03:12:34		[03:12]
+2016-10-29 03:13:21	<--	snyp (~Snyp@150.129.132.52) has quit (Quit: WeeChat 1.6)
+2016-10-29 03:15:47	-->	Superlokkus (~Superlokk@wj0651.dip.tu-dresden.de) has joined ##C
+2016-10-29 03:15:47	<--	candide (~pbot3@unaffiliated/pragmatic-chaos/bot/candide) has quit (Remote host closed the connection)
+2016-10-29 03:16:06	-->	candide (~pbot3@unaffiliated/pragmatic-chaos/bot/candide) has joined ##C
+2016-10-29 03:16:06	--	Mode ##C [+o candide] by ChanServ
+2016-10-29 03:18:52	<--	Rainb (~Rainb@200.89.239.231) has quit (Ping timeout: 250 seconds)
+2016-10-29 03:19:11	<--	harukomoto (~harukomot@93-41-21-101.ip79.fastwebnet.it) has quit (Ping timeout: 256 seconds)
+2016-10-29 03:19:14	-->	xocket (~xocket@unaffiliated/xocket) has joined ##C
+2016-10-29 03:19:24	<--	pirate21994 (~pirate219@117.207.2.162) has quit (Quit: Leaving)
+2016-10-29 03:21:47	-->	gagbo (~gagbo@unaffiliated/gagbo) has joined ##C
+2016-10-29 03:22:15	<--	hck89 (~textual@92-223-148-10.ip274.fastwebnet.it) has quit (Read error: Connection reset by peer)
+2016-10-29 03:23:43	-->	hck89 (~textual@92-223-148-10.ip274.fastwebnet.it) has joined ##C
+2016-10-29 03:24:34	<--	jervis (~jervis@unaffiliated/jervis) has quit (Ping timeout: 244 seconds)
+2016-10-29 03:24:46	-->	wildlander (~wild@unaffiliated/wildlander) has joined ##C
+2016-10-29 03:25:36	<--	xocket (~xocket@unaffiliated/xocket) has quit (Quit: Leaving)
+2016-10-29 03:26:16	<--	shookees (~Paulius@unaffiliated/doublestring) has quit (Ping timeout: 260 seconds)
+2016-10-29 03:26:43	-->	jervis (~jervis@0x00.nasarok.de) has joined ##C
+2016-10-29 03:26:44	<--	jervis (~jervis@0x00.nasarok.de) has quit (Changing host)
+2016-10-29 03:26:44	-->	jervis (~jervis@unaffiliated/jervis) has joined ##C
+2016-10-29 03:26:46	-->	nktn (~nktn___@181.46.158.157) has joined ##C
+2016-10-29 03:27:25	-->	xocket (~xocket@unaffiliated/xocket) has joined ##C
+2016-10-29 03:28:49	<--	Maxdamantus (~Maxdamant@unaffiliated/maxdamantus) has quit (Ping timeout: 245 seconds)
+2016-10-29 03:28:49		[03:28]
+2016-10-29 03:29:34	<--	SunnyD (~SunnyD@cpe-72-178-78-211.hot.res.rr.com) has quit (Quit: ChatZilla 0.9.90.1 [Firefox 30.0/20140605174243])
+2016-10-29 03:30:12	-->	Maxdamantus (~Maxdamant@unaffiliated/maxdamantus) has joined ##C
+2016-10-29 03:30:28	<--	sneakerhax (~sneakers@unaffiliated/sneakerhead) has quit (Ping timeout: 260 seconds)
+2016-10-29 03:32:06	<--	Zialus (~RMF@117.26.60.94.rev.vodafone.pt) has quit (Ping timeout: 256 seconds)
+2016-10-29 03:32:41	<--	dinfuehr (~dinfuehr@188-23-184-109.adsl.highway.telekom.at) has quit (Ping timeout: 265 seconds)
+2016-10-29 03:33:25	-->	titodrew (~titodrew@41.148.46.138) has joined ##C
+2016-10-29 03:34:07	-->	dinfuehr (~dinfuehr@194.166.185.75) has joined ##C
+2016-10-29 03:34:08	<--	psychicist__ (~psychicis@ip127-8-212-87.adsl2.static.versatel.nl) has quit (Ping timeout: 260 seconds)
+2016-10-29 03:34:19	<--	Superlokkus (~Superlokk@wj0651.dip.tu-dresden.de) has quit (Quit: Linkinus - http://linkinus.com)
+2016-10-29 03:34:46	<--	y00fie (~chatzilla@174-84-234-86.res.bhn.net) has quit (Ping timeout: 268 seconds)
+2016-10-29 03:34:48	-->	Zialus (~RMF@117.26.60.94.rev.vodafone.pt) has joined ##C
+2016-10-29 03:34:53	-->	Superlokkus (~Superlokk@wj0651.dip.tu-dresden.de) has joined ##C
+2016-10-29 03:34:53	-->	psychicist__ (~psychicis@ip127-8-212-87.adsl2.static.versatel.nl) has joined ##C
+2016-10-29 03:35:39	<--	anton02 (~quassel@lal1651212.lnk.telstra.net) has quit (Remote host closed the connection)
+2016-10-29 03:35:44	-->	jan64_ (~jan64@dou218.neoplus.adsl.tpnet.pl) has joined ##C
+2016-10-29 03:36:09	-->	Yoofie (~chatzilla@174-84-234-86.res.bhn.net) has joined ##C
+2016-10-29 03:36:37	-->	enemy99 (~enemy99@78.129.174.102) has joined ##C
+2016-10-29 03:37:22	-->	polydo_s (~polydo_s@183.172.225.251) has joined ##C
+2016-10-29 03:38:08	<--	rahtgaz (~rahtgaz@unaffiliated/rahtgaz) has quit (Quit: WeeChat 1.6)
+2016-10-29 03:38:52	<--	jan64 (~jan64@abbf138.neoplus.adsl.tpnet.pl) has quit (Ping timeout: 260 seconds)
+2016-10-29 03:42:00	-->	anotherguy (2ec5b8ed@gateway/web/freenode/ip.46.197.184.237) has joined ##C
+2016-10-29 03:43:07	<--	relaxed (~relaxed@unaffiliated/relaxed) has quit (Quit: ⠠⠵)
+2016-10-29 03:44:25	-->	sickn3ss (~textual@unaffiliated/sickn3ss) has joined ##C
+2016-10-29 03:44:25		[03:44]
+2016-10-29 03:44:59	-->	obsrwr_home (~obsrwr@188.24.235.167) has joined ##C
+2016-10-29 03:47:57	<--	psychicist__ (~psychicis@ip127-8-212-87.adsl2.static.versatel.nl) has quit (Remote host closed the connection)
+2016-10-29 03:48:23	<--	nktn (~nktn___@181.46.158.157) has quit (Quit: Leaving)
+2016-10-29 03:50:14	<--	freakyfidlers (~freakyfid@ool-435018c7.dyn.optonline.net) has quit (Ping timeout: 250 seconds)
+2016-10-29 03:50:43	<--	Hun1 (~Hun@x4d07638b.dyn.telefonica.de) has quit (Read error: Connection reset by peer)
+2016-10-29 03:51:01	<--	Rr4sT (uid100308@gateway/web/irccloud.com/x-anyrcldwgmucwscn) has quit (Quit: Connection closed for inactivity)
+2016-10-29 03:52:01	-->	Hun (~Hun@x4d07638b.dyn.telefonica.de) has joined ##C
+2016-10-29 03:52:05	-->	dreamon (~dreamon@unaffiliated/dreamon) has joined ##C
+2016-10-29 03:52:29	<--	nelder (~noname@unaffiliated/nelder) has quit (Quit: Leaving)
+2016-10-29 03:53:02	<--	okra (~stephen@enlightenment/developer/okra) has quit (Remote host closed the connection)
+2016-10-29 03:53:06	-->	psychicist__ (~psychicis@ip127-8-212-87.adsl2.static.versatel.nl) has joined ##C
+2016-10-29 03:53:51	<--	Feren^Work (~Feren^Wor@118.35.135.168) has quit (Quit: leaving)
+2016-10-29 03:54:50	<--	forgottenone (~forgotten@176.234.123.189) has quit (Ping timeout: 250 seconds)
+2016-10-29 03:55:07	-->	SilverWhitefish (~hidden@68-200-107-197.res.bhn.net) has joined ##C
+2016-10-29 03:55:17	<--	psychicist__ (~psychicis@ip127-8-212-87.adsl2.static.versatel.nl) has quit (Client Quit)
+2016-10-29 03:55:38	-->	psychicist__ (~psychicis@ip127-8-212-87.adsl2.static.versatel.nl) has joined ##C
+2016-10-29 03:56:37	<--	Miblo (~matt@36.129.159.143.dyn.plus.net) has quit (Quit: WeeChat 1.6)
+2016-10-29 03:57:58	<--	super_bender (~bender@2404:e800:e61a:41d:9d1a:4a9a:9717:4b23) has quit (Ping timeout: 245 seconds)
+2016-10-29 03:58:25	-->	Learath2 (~learath2@unaffiliated/learath2) has joined ##C
+2016-10-29 03:58:33	<--	bneo99 (~bneo99@115.135.156.177) has quit (Remote host closed the connection)
+2016-10-29 03:58:49	-->	Miblo (~matt@36.129.159.143.dyn.plus.net) has joined ##C
+2016-10-29 03:58:59	<--	hck89 (~textual@92-223-148-10.ip274.fastwebnet.it) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-10-29 04:00:02	-->	hck89 (~textual@92-223-148-10.ip274.fastwebnet.it) has joined ##C
+2016-10-29 04:00:02		[04:00]
+2016-10-29 04:04:51	-->	nelder (~noname@unaffiliated/nelder) has joined ##C
+2016-10-29 04:10:00		[04:04]
+2016-10-29 04:11:02	<--	enemy99 (~enemy99@78.129.174.102) has quit (Ping timeout: 250 seconds)
+2016-10-29 04:11:15	-->	CAPITANOOO (~CAPITANOO@host122-156-static.117-2-b.business.telecomitalia.it) has joined ##C
+2016-10-29 04:11:56	-->	DrNick42 (~DrNick42@w-250.cust-u527.ip.static.uno.uk.net) has joined ##C
+2016-10-29 04:12:11	-->	Sheilong (~sheilong@unaffiliated/sheilong) has joined ##C
+2016-10-29 04:13:06	<--	DrNick42 (~DrNick42@w-250.cust-u527.ip.static.uno.uk.net) has quit (Client Quit)
+2016-10-29 04:13:37	<--	CAPITANOOO (~CAPITANOO@host122-156-static.117-2-b.business.telecomitalia.it) has quit (Client Quit)
+2016-10-29 04:14:38	<--	polydo_s (~polydo_s@183.172.225.251) has quit (Quit: Leaving...)
+2016-10-29 04:16:44	<--	Love4Boobies (~love4boob@unaffiliated/l4b) has quit (Ping timeout: 245 seconds)
+2016-10-29 04:19:25	<--	xocket (~xocket@unaffiliated/xocket) has quit (Disconnected by services)
