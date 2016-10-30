@@ -36949,3 +36949,120 @@
 2016-10-29 21:12:44	<--	QwertyDragon (~QwertyDra@pool-98-118-51-122.bstnma.fios.verizon.net) has quit (Quit: Leaving)
 2016-10-29 21:12:53	-->	majikman (~achou@73.95.135.71) has joined ##C
 2016-10-29 21:12:57	ssarah	Xgc, the initializer?
+2016-10-29 21:13:11	Xgc	ssarah: int k = 5;  5 is the initializer.
+2016-10-29 21:13:44	Xgc	ssarah: You used msg_buf to initialize ptr.  You don't need or want that.
+2016-10-29 21:13:51	ssarah	done
+2016-10-29 21:13:59	Xgc	ssarah: Better.
+2016-10-29 21:14:18	ssarah	but now Im not working on the msg_buf that the caller is using
+2016-10-29 21:14:23	ssarah	right?
+2016-10-29 21:14:34	ssarah	line 27
+2016-10-29 21:14:34	Xgc	ssarah: One additional note.  You allocated a buffer.  Do you need to know the start of the initial buffer?
+2016-10-29 21:15:00	Xgc	ssarah: Focus on my questions first.
+2016-10-29 21:15:40	<--	Forlorn_ (~Forlorn@unaffiliated/forlorn) has quit (Quit: leaving)
+2016-10-29 21:15:41	Xgc	ssarah: If you allocate:  int *p = malloc(..);   and then you reassign or change p, how will you know where the start of the allocated buffer is?
+2016-10-29 21:16:10	-->	Forlorn (~Forlorn@unaffiliated/forlorn) has joined ##C
+2016-10-29 21:16:10		[21:16]
+2016-10-29 21:16:19	ssarah	you need to keep a pointer to that pointer?
+2016-10-29 21:16:57	-->	ryaeng (~ryaeng@66.129.64.221) has joined ##C
+2016-10-29 21:17:07	Xgc	ssarah: That's probably a good idea, so that you know where the original buffer started.
+2016-10-29 21:17:29	-->	Elish (~jDrFCBuF@unaffiliated/elish) has joined ##C
+2016-10-29 21:17:37	Xgc	ssarah: Otherwise, you can't easily tell the caller where that buffer starts or easily free it later.
+2016-10-29 21:17:52	<--	Forlorn (~Forlorn@unaffiliated/forlorn) has quit (Client Quit)
+2016-10-29 21:18:09	<--	aapaaal (~aapaaal@213.233.84.91) has quit
+2016-10-29 21:19:14	-->	Forlorn (~Forlorn@unaffiliated/forlorn) has joined ##C
+2016-10-29 21:19:20	klys	it worked when I changed line 4 to *msg_buf = malloc( buffer_size ); // https://gist.github.com/fullmooninu/883849460cebeb5e9c9311d9f023a49b // 00:55 < klys> 4 *msg_buf = malloc( buffer_size )
+2016-10-29 21:19:37	Xgc	klys: Stop trying to blurt out answers.
+2016-10-29 21:19:45	klys	I could paste it
+2016-10-29 21:20:18	Xgc	klys: The goal is not o just give the code, but to help ssarah understand how to develop the code.
+2016-10-29 21:20:28	klys	I was not incorrect, this whole time.
+2016-10-29 21:20:42	Xgc	klys: Yes. You were.  That was never your suggestion.
+2016-10-29 21:20:43	klys	"the proof is in the pudding."
+2016-10-29 21:21:24	Xgc	klys: It was a small mistake, but important.
+2016-10-29 21:21:51	klys	I had you guys 35 min. ago
+2016-10-29 21:21:55	klys	that will be all
+2016-10-29 21:22:12	ssarah	tyvm klys. :)
+2016-10-29 21:22:12	--	Mode ##C [+o Xgc] by ChanServ
+2016-10-29 21:22:18	--	Mode ##C [+b klys!*@*] by Xgc
+2016-10-29 21:22:22	ssarah	Xgc, char** buffer_ptr = &buffer; <- this?
+2016-10-29 21:22:22	--	Mode ##C [-o Xgc] by Xgc
+2016-10-29 21:22:26	Xgc	That's enough noise.
+2016-10-29 21:22:44	Xgc	ssarah: Sorry.  Where is that?
+2016-10-29 21:22:59	ssarah	i'm to make a pointer to the pointer. But that doesnt seem right.
+2016-10-29 21:23:14	Xgc	ssarah: It's not.  You need to complete what I asked above first.
+2016-10-29 21:24:01	<--	Cohedrin (~textual@c-73-170-239-253.hsd1.ca.comcast.net) has quit (Quit: My Mac has gone to sleep. ZZZzzz…)
+2016-10-29 21:24:06	Xgc	ssarah: Update the paste so that I can see where you are.
+2016-10-29 21:25:07	Xgc	ssarah: If you're stuck, just ask.
+2016-10-29 21:25:33	ssarah	https://gist.github.com/fullmooninu/883849460cebeb5e9c9311d9f023a49b <- i dont understand how to tell the caller where the buffer starts
+2016-10-29 21:25:40	<--	majikman (~achou@73.95.135.71) has quit (Ping timeout: 260 seconds)
+2016-10-29 21:25:45	ssarah	it's not a pointer to a pointer then?
+2016-10-29 21:26:16	-->	creat (~creat@unaffiliated/creat) has joined ##C
+2016-10-29 21:26:59	Xgc	ssarah: I didn't ask you to do that.  I only asked you to save the orignal allocated address, so that you would not lose that pointer when you adjust ptr as you fill the buffer.
+2016-10-29 21:27:40	Xgc	ssarah: It was a small change.  Don't get ahead.  You're almost done.
+2016-10-29 21:27:59	ssarah	Ok, what else is missing?
+2016-10-29 21:28:24	ssarah	(you're being very helpful Xgc, tyvm)
+2016-10-29 21:28:26	Xgc	ssarah: First, remove the type** thing you added.  I don't know why you did that.
+2016-10-29 21:28:48	<--	sirosirian (~theosiria@177.16.50.68) has quit (Read error: Connection reset by peer)
+2016-10-29 21:28:50	ssarah	Done.
+2016-10-29 21:28:56	Xgc	ssarah: Oh. I see. You just misunderstood.
+2016-10-29 21:29:38	Xgc	ssarah: I only asked you to save the malloc'd address somewhere.
+2016-10-29 21:30:01	<--	raycoll (~raycoll@c-50-181-214-8.hsd1.wa.comcast.net) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-10-29 21:30:18	Xgc	ssarah: ptr does that.  But you will be changing ptr while populating the buffer.  So you need an extra place to save that allocated address.
+2016-10-29 21:30:22	-->	dogman (~dog.marle@2601:84:8780:4ebb:a:d252:279e:8817) has joined ##C
+2016-10-29 21:31:42	Xgc	ssarah: If you need to save the value of an int for later use, what type would you use?
+2016-10-29 21:31:42		[21:31]
+2016-10-29 21:31:58	ssarah	another int
+2016-10-29 21:32:19	Xgc	ssarah: If you need to save the value of char *ptr;  for later use, what type would you use?
+2016-10-29 21:33:03	ssarah	Altered. Like so?
+2016-10-29 21:33:12	Love4Boobies	Your previous question makes it very clear:
+2016-10-29 21:33:15	Love4Boobies	Another int.
+2016-10-29 21:33:17	Xgc	ssarah: Sure.
+2016-10-29 21:33:19	 *	Love4Boobies flies away.
+2016-10-29 21:33:42	Xgc	ssarah: Now are you happy with the way you filled the allocated buffer?
+2016-10-29 21:33:48	<--	werdfriek (~chatzilla@2601:602:c205:ac40:a15d:5d58:5be7:3738) has quit (Ping timeout: 245 seconds)
+2016-10-29 21:34:55	ssarah	Hmm, kind of. Still not understanding how I am actually altering the **msg_buf .
+2016-10-29 21:34:55	Xgc	ssarah: You have one last thing to do, (apart from error checking that you forgot).
+2016-10-29 21:35:14	Xgc	ssarah: You aren't yet.  That's the intent, until this point.
+2016-10-29 21:35:40	Xgc	ssarah: You've filled *a buffer*, but have not notified the caller of the address, yet.
+2016-10-29 21:35:55	-->	Envil (~envil@x4db333ff.dyn.telefonica.de) has joined ##C
+2016-10-29 21:35:56	<--	ryaeng (~ryaeng@66.129.64.221) has quit (Ping timeout: 260 seconds)
+2016-10-29 21:36:06	Xgc	ssarah: Are you ready for that step?
+2016-10-29 21:36:55	ssarah	Xgc, lhttps://gist.github.com/fullmooninu/883849460cebeb5e9c9311d9f023a49b <- like so?
+2016-10-29 21:37:15	Xgc	ssarah: Nope.
+2016-10-29 21:37:25	-->	scai (~scai@p4FF0E7E4.dip0.t-ipconnect.de) has joined ##C
+2016-10-29 21:37:27	Xgc	ssarah: It's ok.  This is a tough step for some.
+2016-10-29 21:37:58	Xgc	ssarah: If the caller had passed an int *val as a parameter, and you had calculated an int to return to the caller, how would you pass that back now?
+2016-10-29 21:38:11	-->	gagbo (~gagbo@unaffiliated/gagbo) has joined ##C
+2016-10-29 21:38:52	-->	Cohedrin (~textual@192.77.237.205) has joined ##C
+2016-10-29 21:39:07	ssarah	Xgc, as a ptr to my calculated int?
+2016-10-29 21:39:51	Xgc	ssarah: No. Just pass back the int, not the pointer to int.
+2016-10-29 21:40:14	-->	xormor (~xormor@unaffiliated/xormor) has joined ##C
+2016-10-29 21:40:21	-->	LuckyRawApe (~LuckyRawA@ppp118-209-235-122.bras2.mel11.internode.on.net) has joined ##C
+2016-10-29 21:40:28	Xgc	ssarah: The caller passes the address of an int for you to populate.  Changing the pointer (parameter) is not going to pass back the int.
+2016-10-29 21:41:27	Xgc	ssarah: Maybe you should try that test first.  Write a function that takes an int pointer and then passes back a calculated int.
+2016-10-29 21:41:52	-->	jan64_ (~jan64@dou218.neoplus.adsl.tpnet.pl) has joined ##C
+2016-10-29 21:42:24	Xgc	ssarah: This is an important point.  It'll likely shine a light on your current issue.
+2016-10-29 21:46:06	-->	vdamewood (~vdamewood@unaffiliated/vdamewood) has joined ##C
+2016-10-29 21:46:31	Xgc	ssarah: You don't really need to call a function to play with these things.
+2016-10-29 21:46:52	-->	LoneHermit (~lonehermi@199.231.245.197) has joined ##C
+2016-10-29 21:46:52		[21:46]
+2016-10-29 21:47:03	Xgc	ssarah: int k = 5;  int *p = &k;    How would you change k to 10, through p?
+2016-10-29 21:47:06	--	Hardstylez is now known as FTTC
+2016-10-29 21:47:17	ssarah	https://gist.github.com/fullmooninu/5ff2c4611f0992275cfc36b406fdf3ae <- im trying to build it
+2016-10-29 21:47:58	Xgc	ssarah: Nice try.  But not correct.
+2016-10-29 21:48:09	<--	Rainb (~Rainb@200.89.239.231) has quit (Ping timeout: 244 seconds)
+2016-10-29 21:48:14	Xgc	ssarah: Can you answer my last question?
+2016-10-29 21:48:17	-->	newhotness (18f361d5@gateway/web/freenode/ip.24.243.97.213) has joined ##C
+2016-10-29 21:49:07	Xgc	ssarah: All you did was to change the pointer parameter, which has no impact on the caller.
+2016-10-29 21:49:38	<--	izalove (~izabera@unaffiliated/izabera) has quit (Ping timeout: 245 seconds)
+2016-10-29 21:49:55	Xgc	ssarah: Parameters to a function are seen as local to the function.  You can assigned values to (change) them, but that does not touch the caller.
+2016-10-29 21:51:29	Xgc	ssarah: int k = 5;  int *p;  p = &k;   Note that the last statement has no impact on k.  It just changes p, to point to k.  In your example, you only changed the parameter myInt, to point to your local n.
+2016-10-29 21:51:54	-->	MyCuriosity (~MyCuriosi@unaffiliated/mycuriosity) has joined ##C
+2016-10-29 21:52:12	<--	LoneHermit (~lonehermi@199.231.245.197) has quit (Ping timeout: 260 seconds)
+2016-10-29 21:52:21	Xgc	ssarah: When you test, initialize n to some known value so that you can see if it is changed.
+2016-10-29 21:52:28	ssarah	I see...
+2016-10-29 21:52:32	<--	gagbo (~gagbo@unaffiliated/gagbo) has quit (Ping timeout: 250 seconds)
+2016-10-29 21:52:37	ssarah	Trying.
+2016-10-29 21:52:38	-->	melita (~melita@2601:645:4001:fe20:2acf:e9ff:fe14:2645) has joined ##C
+2016-10-29 21:52:41	newhotness	Pointers are always tricky.
+2016-10-29 21:53:56	Xgc	ssarah: Add printf statements to display information of interest, like n before and after the call.
+2016-10-29 21:54:58	Xgc	ssarah: You might also want to keep your variable names distinct, even between functions during tests.  It can get confusing to discuss n when you have several instances of that name used for different objects.
