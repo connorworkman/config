@@ -12817,3 +12817,145 @@
 2016-10-29 13:30:39	-->	KidBeta (~textual@106-69-210-62.dyn.iinet.net.au) has joined ##asm
 2016-10-29 13:33:57	<--	rgrinberg (~rgrinberg@blk-212-79-74.eastlink.ca) has quit (Ping timeout: 265 seconds)
 2016-10-29 13:39:00		[13:33]
+2016-10-29 18:39:15	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined ##asm
+2016-10-29 18:39:15		[18:39]
+2016-10-29 18:39:15	--	Topic for ##asm is "Assembly programming channel, all architectures welcome (please specify). Don't ask to ask! Use a pastebin if appropriate! Check your manuals! *** AT&T vs Intel flamers will be banned."
+2016-10-29 18:39:15	--	Topic set by Jester01 (~Jester01@62.100.244.69) on Fri, 30 Sep 2016 06:54:51
+2016-10-29 18:39:15	--	Channel ##asm: 289 nicks (0 ops, 0 voices, 289 normals)
+2016-10-29 18:39:15	***	Buffer Playback...
+2016-10-29 18:39:15	Jester02	[21:44:50] line 21 should be just unconditional back [21:44:50]
+2016-10-29 18:39:15	emihir0	[21:45:04] yes, the check is not needed now [21:45:04]
+2016-10-29 18:39:15	emihir0	[21:45:17] as it's already checked in 18, makes sense [21:45:17]
+2016-10-29 18:39:15	emihir0	[21:47:20] the problem is that when now I call beqz	$a0, exit [21:47:20]
+2016-10-29 18:39:15	emihir0	[21:47:22] it goes: [21:47:22]
+2016-10-29 18:39:15	emihir0	[21:47:26] exit: jr	$ra [21:47:26]
+2016-10-29 18:39:15	emihir0	[21:47:33] but this exit just exits the loop [21:47:33]
+2016-10-29 18:39:15	emihir0	[21:47:35] not actual print_s [21:47:35]
+2016-10-29 18:39:15	Jester02	[21:47:35] yeah [21:47:35]
+2016-10-29 18:39:15	Jester02	[21:47:41] you need to save $ra [21:47:41]
+2016-10-29 18:39:15	Jester02	[21:47:58] because jal overwrites it [21:47:58]
+2016-10-29 18:39:15	emihir0	[21:48:14] hmm, makes sense [21:48:14]
+2016-10-29 18:39:15	emihir0	[21:48:45] hmm, is it a "good practise" to actually call print_c? i mean, we could just replicate the print_c exact behaviour inside the print_s [21:48:45]
+2016-10-29 18:39:15	emihir0	[21:48:50] that way print_c woulnd' thave to be called [21:48:50]
+2016-10-29 18:39:15	Jester02	[21:48:52] sure [21:48:52]
+2016-10-29 18:39:15	Jester02	[21:49:06] but in general you should know how to write non-leaf functions :) [21:49:06]
+2016-10-29 18:39:15	emihir0	[21:49:24] non-leaf? [21:49:24]
+2016-10-29 18:39:15	Insentience	[21:49:31] HEY I HAVE A QUESTION ABOUT MIPS, IS ANYONE HERE FAMILIAR WITH MIPS ARCHITECTURE [21:49:31]
+2016-10-29 18:39:15	Jester02	[21:49:34] functions that call ohter functions [21:49:34]
+2016-10-29 18:39:15	Insentience	[21:49:36] Oh god, sorry for caps [21:49:36]
+2016-10-29 18:39:15	emihir0	[21:49:40] :D [21:49:40]
+2016-10-29 18:39:15	Jester02	[21:49:50] hey emihir0 do you know mips?:D [21:49:50]
+2016-10-29 18:39:15	emihir0	[21:50:22] I mean, technically no [21:50:22]
+2016-10-29 18:39:15	emihir0	[21:50:36] practically, I am a fast learner :D [21:50:36]
+2016-10-29 18:39:15	emihir0	[21:52:53] I mean, I did this at the begining of print_s (just where I also saved $a0 to $t1) - la	$t2, ($ra), then at exit label I called jr $t2 instead of jr $ra [21:52:53]
+2016-10-29 18:39:15	emihir0	[21:53:11] it works now, but I don't know if I did it in the proper (best practises) way [21:53:11]
+2016-10-29 18:39:15	Jester02	[21:55:06] well in general you need to use the stack [21:55:06]
+2016-10-29 18:39:15	Jester02	[21:56:36] you typically follow a calling convention that says which registers are caller and callee saved [21:56:36]
+2016-10-29 18:39:15	emihir0	[22:28:20] Jester02 - kind of unrelated to asm, but maybe you can help me out. When I tokenise my C file, and I encounter something like '\n' - I make this a literal new line token (ie. when printed, it prints new line, not \n). However, now when I am turning tokens into MIPS, I want to print '\n' instead of '<new line>'. Any idea on how I can check if a given char is escaped char, and if it is, escape it? [22:28:20]
+2016-10-29 18:39:15	emihir0	[22:28:29] ie. so I turn literal new line back to \n [22:28:29]
+2016-10-29 18:39:15	Jester02	[22:39:52] not sure what causes you problem with that [22:39:52]
+2016-10-29 18:39:15	Jester02	[22:39:55] many ways to do it [22:39:55]
+2016-10-29 18:39:15	emihir0	[23:02:40] Jester02 I mean, I can make a big table containing all the combinations, but that's kinda "hackish" solution I think? Surely there must be a way to determine whether a character is escaped or not within java... [23:02:40]
+2016-10-29 18:39:15	Jester02	[23:03:13] there wasn't a single mention of "java" in your question ;) [23:03:13]
+2016-10-29 18:39:15	emihir0	[23:03:36] oh, my bad =) [23:03:36]
+2016-10-29 18:39:15	emihir0	[23:05:50] basically, we have C code string, e.g. "abc\n", this I turn into StringToken, which when printed (toString()), it prints abc and a literal new line, e.g. if it were "a\nb", the b would be on a new line. This was part of our requirement (to make it behave this way...) [23:05:50]
+2016-10-29 18:39:15	zid	[23:06:21] so it's.. a string [23:06:21]
+2016-10-29 18:39:15	emihir0	[23:06:27] now however, when I want to use this string in mips, I want it back to the original form, ie. "abc\n" (or rather, this would relate only to chars, so '\n')... but I'm not sure what's the best way to do it [23:06:27]
+2016-10-29 18:39:15	zid	[23:06:36] you want to escape a string, then [23:06:36]
+2016-10-29 18:39:15	emihir0	[23:06:39] yes, it's a string that has some escaped chars [23:06:39]
+2016-10-29 18:39:15	zid	[23:06:52] https://www.google.co.uk/?gfe_rd=cr&ei=fisVWP2-Ccrv8Af10LagCA#q=java+escape+string [23:06:52]
+2016-10-29 18:39:15	kaos	[23:07:49] how is this asm [23:07:49]
+2016-10-29 18:39:15	Jester02	[23:08:28] he added an "off topic" disclaimer :) [23:08:28]
+2016-10-29 18:39:15	emihir0	[23:08:30] ... sorry, I got carried away and explained a problem to more detail than I should have (in an asm chat) :P [23:08:30]
+2016-10-29 18:39:15	emihir0	[23:08:50] thanks btw @zid, had no idea about that library [23:08:50]
+2016-10-29 18:39:15	zid	[23:09:03] google is a library? [23:09:03]
+2016-10-29 18:39:15	emihir0	[23:09:40] no, I meant the specific class StringEscapeUtils [23:09:40]
+2016-10-29 18:39:15	emihir0	[23:10:20] I was trying to google it before mentioning it here, trust me, I was just googling wrong phrases... [23:10:20]
+2016-10-29 18:39:15	zid	[23:10:58] I recommend "offtopic, but can someone please tell me what the word is for turning literal characters into things like \n" [23:10:58]
+2016-10-29 18:39:15	Amun_Ra	[02:07:18] zid: escaping characters? [02:07:18]
+2016-10-29 18:39:15	***	Playback Complete.
+2016-10-29 18:39:22	--	Channel created on Sun, 27 May 2007 05:31:12
+2016-10-29 18:40:19	--	Guest47730 is now known as Boohbah
+2016-10-29 18:43:12	<--	kbw (~KeyboardW@104-178-145-79.lightspeed.tukrga.sbcglobal.net) has quit (Quit: My MacBook Air has gone to sleep. ZZZzzz…)
+2016-10-29 18:49:00		[18:43]
+2016-10-29 18:49:26	-->	kbw (~KeyboardW@104-178-145-79.lightspeed.tukrga.sbcglobal.net) has joined ##asm
+2016-10-29 18:52:05	<--	sneakerhax (~sneakers@unaffiliated/sneakerhead) has quit (Read error: Connection reset by peer)
+2016-10-29 18:56:10	-->	xchasdsfsd (~x@unaffiliated/sdfgsdfg) has joined ##asm
+2016-10-29 18:57:10	-->	horny-sama (~mr-fool@unaffiliated/horny-sama) has joined ##asm
+2016-10-29 18:59:58	<--	nine_milli (~nine_mill@32.211.52.104) has quit (Quit: nine_milli)
+2016-10-29 19:01:27	<--	daltonx (~daltonx@r179-24-88-155.dialup.adsl.anteldata.net.uy) has quit (Remote host closed the connection)
+2016-10-29 19:02:52	-->	SwiftMatt (~Objective@162.242.95.244) has joined ##asm
+2016-10-29 19:06:58	-->	nine_milli (~nine_mill@32.211.52.104) has joined ##asm
+2016-10-29 19:06:58		[19:06]
+2016-10-29 19:17:31	KidBeta	does anyone know a good tut / guide for reverse engineering Objective C OSX applications im kinda okay at Windows C++/C apps but im stuck on how some of the more advanced stuff in Objective-C works under the covers at the ASM layer, I know this is only tangentially related to ASM but the guys in #RE are kinda take the whole silence thing seriously.
+2016-10-29 19:21:12	klys	kidbeta, would clang/llvm's assembler have something like binutils' objdump -d ?
+2016-10-29 19:21:56	KidBeta	im using hopper at the moment (which is like a poor mans IDA for OSX) and I get some of the stuff its just stuff like msgsend is breaking my brain. Ill have a look at see if I can make more sense of it using objdump
+2016-10-29 19:22:28	klys	it's just a disassembly listing
+2016-10-29 19:22:28		[19:22]
+2016-10-29 19:23:19	-->	Beetny (~Beetny@14-202-48-200.tpgi.com.au) has joined ##asm
+2016-10-29 19:24:29	KidBeta	ive got the disassembly what im having trouble with is tracking down a function and specifically working out what one does
+2016-10-29 19:24:52	KidBeta	luckily ObjC has very descriptive function names (at least in this case) but the function doesnt seem to do anything ?
+2016-10-29 19:25:56	-->	ararob (~yaaic@c-f78472d5.043-274-73746f25.cust.bredbandsbolaget.se) has joined ##asm
+2016-10-29 19:25:57	<--	ararob (~yaaic@c-f78472d5.043-274-73746f25.cust.bredbandsbolaget.se) has quit (Changing host)
+2016-10-29 19:25:57	-->	ararob (~yaaic@unaffiliated/ararob) has joined ##asm
+2016-10-29 19:27:53	KidBeta	http://pastebin.com/uHY5M27W is the function, the random leave halfway through the function is kinda tripping me out
+2016-10-29 19:28:28	<--	jack_rabbit (~jack_rabb@c-50-179-163-66.hsd1.il.comcast.net) has quit (Ping timeout: 260 seconds)
+2016-10-29 19:29:14	<--	sarbs (~sarbs@2601:600:9001:69f0:2543:43ba:2ae5:c1a6) has quit (Ping timeout: 245 seconds)
+2016-10-29 19:34:20	<--	SunnyD (~SunnyD@cpe-72-178-78-211.hot.res.rr.com) has quit (Quit: ChatZilla 0.9.90.1 [Firefox 30.0/20140605174243])
+2016-10-29 19:37:22	klys	kidbeta, you know the value is returned in eax right, and you know what imul does?
+2016-10-29 19:38:11	<--	Judge_Dredd (~Judge_Dre@unaffiliated/judge-dredd/x-2170742) has quit (Quit: Leaving.)
+2016-10-29 19:38:11		[19:38]
+2016-10-29 19:40:50	<--	crankslider (~slidercra@unaffiliated/slidercrank) has quit (Ping timeout: 264 seconds)
+2016-10-29 19:46:00		[19:40]
+2016-10-29 19:50:59	-->	ndut2 (~ndut2@unaffiliated/ndut2) has joined ##asm
+2016-10-29 19:52:21	<--	Heasummn (~Heasummn@c-73-73-21-171.hsd1.il.comcast.net) has quit (Ping timeout: 260 seconds)
+2016-10-29 19:55:47	<--	king_jah (~jah@S0106503955715ed3.ss.shawcable.net) has quit (Ping timeout: 265 seconds)
+2016-10-29 19:56:47	-->	The_Real_Donald (~HagerTheH@h081217214054.dyn.cm.kabsi.at) has joined ##asm
+2016-10-29 19:57:15	<--	nktn (~nktn___@181.46.158.157) has quit (Quit: Leaving)
+2016-10-29 19:58:52	<--	The_Donald (~HagerTheH@h081217214054.dyn.cm.kabsi.at) has quit (Ping timeout: 260 seconds)
+2016-10-29 19:59:27	<--	kbw (~KeyboardW@104-178-145-79.lightspeed.tukrga.sbcglobal.net) has quit (Quit: My MacBook Air has gone to sleep. ZZZzzz…)
+2016-10-29 20:01:10	<--	The_Real_Donald (~HagerTheH@h081217214054.dyn.cm.kabsi.at) has quit (Read error: Connection reset by peer)
+2016-10-29 20:01:10		[20:01]
+2016-10-29 20:02:12	<--	Puhe (~Puhe@ool-18bf15a1.dyn.optonline.net) has quit (Ping timeout: 250 seconds)
+2016-10-29 20:08:00		[20:02]
+2016-10-29 20:11:38	-->	kbw (~KeyboardW@104-178-145-79.lightspeed.tukrga.sbcglobal.net) has joined ##asm
+2016-10-29 20:15:15	-->	Coldseeker (~Frosty@adsl-mel-4-177.ozonline.com.au) has joined ##asm
+2016-10-29 20:16:45	KidBeta	klys yeah man :) its just that i kinda expected a lot more code for a function thats meant to flash the firmware on a HDD.
+2016-10-29 20:17:29	klys	kidbeta, I'm sure the function that does that is somewhere else
+2016-10-29 20:17:41	KidBeta	That was my suspicion too once I saw it
+2016-10-29 20:18:05	KidBeta	Theres a couple others that look like they might but I cant see anything that seems to issue commands that would do something like flash firmware
+2016-10-29 20:19:44	-->	jackbrown (~se@unaffiliated/jackbrown) has joined ##asm
+2016-10-29 20:20:12	KidBeta	http://pastebin.com/DPtVSVxz was my other thought for what did the actual update, the only problem is I have no idea how to follow the sendmsg calls to find the actual functions its using.
+2016-10-29 20:21:59	--	L4B is now known as Love4Boobies
+2016-10-29 20:22:31	<--	KidBeta (~textual@106-69-210-62.dyn.iinet.net.au) has quit (Changing host)
+2016-10-29 20:22:31	-->	KidBeta (~textual@hpavc/kidbeta) has joined ##asm
+2016-10-29 20:22:59	Love4Boobies	Someone please ban ndut2 for spamming us both in the channel and in private.
+2016-10-29 20:23:22	Love4Boobies	He's probably a 10yo trying to make an IRC channel for "hackers".
+2016-10-29 20:23:22		[20:23]
+2016-10-29 20:23:25	ndut2	just invitation
+2016-10-29 20:23:32	Love4Boobies	You are very aggressive.
+2016-10-29 20:23:33	ndut2	.........
+2016-10-29 20:23:41	Love4Boobies	I got that invitation at least 10 times in the last day.
+2016-10-29 20:23:44	Love4Boobies	Stop it already.
+2016-10-29 20:23:46	klys	kidbeta, that's most assuredly doing the update
+2016-10-29 20:23:48	Love4Boobies	No one cares.
+2016-10-29 20:24:03	Love4Boobies	If they didn't join the first time, they won't join the 20th time.
+2016-10-29 20:24:52	KidBeta	once you know the syntax it looks like ObjC gives away ALOT of details in the binary assuming this isnt an accidental debug build
+2016-10-29 20:27:43	<--	nine_milli (~nine_mill@32.211.52.104) has quit (Quit: nine_milli)
+2016-10-29 20:28:10	-->	Trashlord (~trash@wikipedia/Sentient-Planet) has joined ##asm
+2016-10-29 20:34:00		[20:28]
+2016-10-29 20:36:40	<--	horny-sama (~mr-fool@unaffiliated/horny-sama) has quit (Quit: Leaving)
+2016-10-29 20:39:41	<--	ndut2 (~ndut2@unaffiliated/ndut2) has quit (Changing host)
+2016-10-29 20:39:41	-->	ndut2 (~ndut2@unaffiliated/skraito-0x71) has joined ##asm
+2016-10-29 20:41:27	<--	Goplat (~goplat@reactos/developer/Goplat) has quit (Remote host closed the connection)
+2016-10-29 20:41:59	<--	safe (~safe@unaffiliated/safe) has quit (Read error: Connection reset by peer)
+2016-10-29 20:42:56	<--	ararob (~yaaic@unaffiliated/ararob) has quit (Ping timeout: 252 seconds)
+2016-10-29 20:46:40	-->	ctxz (~ctxz@pax.operations.onair.aero) has joined ##asm
+2016-10-29 20:52:00		[20:46]
+2016-10-29 20:52:10	ctxz	I know the 8259A Is a bit dated by now, but I've gotten seriously into interrupts, specifically Hardware Interrupts and I can't seem to get one thing clear. AFAIK the 8259A can handle multiple interrupt requests (8 to be precise if there is no slave). Now what I don't get is 1. How exactly does data inside the ISR look like after passing the priority resolver, and 2. If there are multiple interrupts, the most
+2016-10-29 20:52:18	ctxz	prioritised gets chosen, what happends with the other interrupts?
+2016-10-29 20:52:42	-->	slash^ (~unknown@2001:a61:11d1:801:6475:60a9:6b4e:f66c) has joined ##asm
+2016-10-29 20:53:47	edcba	they wait for EOI ?
+2016-10-29 20:55:13	ctxz	They don't get passed to the CPU one by one?
+2016-10-29 20:55:38	<--	kbw (~KeyboardW@104-178-145-79.lightspeed.tukrga.sbcglobal.net) has quit (Quit: My MacBook Air has gone to sleep. ZZZzzz…)
+2016-10-29 20:58:34	<--	SwiftMatt (~Objective@162.242.95.244) has quit (Quit: My MacBook Pro has gone to sleep. ZZZzzz…)

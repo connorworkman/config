@@ -9091,3 +9091,89 @@
 2016-10-29 13:27:51	<--	badloop (~badloop@unaffiliated/fiveiron) has left #openvpn ("WeeChat 1.0.1")
 2016-10-29 13:33:00		[13:27]
 2016-10-29 13:44:50	-->	Ryushin (chris@2001:470:4b:38f:a634:d9ff:feed:eb30) has joined #openvpn
+2016-10-29 18:39:20	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined #openvpn
+2016-10-29 18:39:20		[18:39]
+2016-10-29 18:39:20	--	Topic for #openvpn is "OpenVPN Community Support Channel || PLEASE read entire /topic || Current Release: 2.3.12 (23 Aug 2016) || First time? Use !welcome and !goal || Access-Server? /join #openvpn-as || Your problem is probably firewall. Really || TAP/bridging is almost always a bad idea || Vulninfo: !heartbleed !poodle !ovpnuke !sweet32 || Patience is a virtue"
+2016-10-29 18:39:20	--	Topic set by danhunsaker (sid145261@openvpn/corp/danhunsaker) on Sun, 09 Oct 2016 21:20:15
+2016-10-29 18:39:20	--	Channel #openvpn: 236 nicks (7 ops, 3 voices, 226 normals)
+2016-10-29 18:39:20	***	Buffer Playback...
+2016-10-29 18:39:20	chancey	[21:34:19] This connection will only ever have one client, but probably that doesn't matter [21:34:19]
+2016-10-29 18:39:20	SviMik	[21:35:37] but, as I remember, the multicast has a workaround to pass swithes - it has broadcast MAC, so swith that can't understand IGMP will simply forward it to all ports. the same should do tap. [21:35:37]
+2016-10-29 18:39:20	SviMik	[21:36:23] so tap will have opposite problem - ALL clients will receive it :) [21:36:23]
+2016-10-29 18:39:20	@dazo	[21:36:29] right [21:36:29]
+2016-10-29 18:39:20	chancey	[21:36:31] @dazo: I can capture the traffic on both ends, but it just looks like two independent IGMP conversations [21:36:31]
+2016-10-29 18:39:20	@dazo	[21:36:32] r [21:36:32]
+2016-10-29 18:39:20	SviMik	[21:36:40] (but it will work, at least) [21:36:40]
+2016-10-29 18:39:20	chancey	[21:36:43] ooh, that would be OK for my setup [21:36:43]
+2016-10-29 18:39:20	@dazo	[21:37:40] TAP does have other challenges as well .... but for mcast, it might be the functional solution as of now [21:37:40]
+2016-10-29 18:39:20	SviMik	[21:39:01] dazo I guess it is quite possible to add IGMP support to openvpn for tap, so it could route the iptv traffic correctly (not flooding to all ports, as it does right now) [21:39:01]
+2016-10-29 18:39:20	@dazo	[21:39:43] Should be possible to add that support for TUN as well [21:39:43]
+2016-10-29 18:39:20	@dazo	[21:39:55] it just needs to know what to look for and how it should distribute/route the packets [21:39:55]
+2016-10-29 18:39:20	SviMik	[21:39:56] dazo but I'm not sure, is it even possible that such patch could be accepted? [21:39:56]
+2016-10-29 18:39:20	@dazo	[21:40:16] I think that would be a reasonable patch to consider ... IGMP is essential [21:40:16]
+2016-10-29 18:39:20	SviMik	[21:42:18] dazo I have already created a broadcast filter for tap (with peers whitelist), and arp filter to sort arp requests out. but never published it, because it's quite specific case [21:42:18]
+2016-10-29 18:39:20	@dazo	[21:42:53] broadcast/arp filtering .... that would be the job of ebtables, wouldn't it? [21:42:53]
+2016-10-29 18:39:20	SviMik	[21:43:45] dazo not really. if a packet come from remote client - it will be forwarded to the host AND to all other clients connected [21:43:45]
+2016-10-29 18:39:20	@dazo	[21:43:54] The challenge with IGMP support patches would be to get the right people to review it .... but file a trac ticket on IGMP support, and describe a path forward to patch openvpn ... and there might be enough positive feedback to really consider doing it [21:43:54]
+2016-10-29 18:39:20	SviMik	[21:44:54] dazo ebtables has control over the traffic which goes from the openvpn's tap adapter, but not which is routed inside openvpn itself [21:44:54]
+2016-10-29 18:39:20	@dazo	[21:46:51] SviMik: using --client-to-client? [21:46:51]
+2016-10-29 18:39:20	SviMik	[21:47:00] sure [21:47:00]
+2016-10-29 18:39:20	SviMik	[21:47:52] but I also use packet filter, so I have full control over traffic between clients [21:47:52]
+2016-10-29 18:39:20	@dazo	[21:48:03] SviMik: I thought that was a TUN only option ... I might remember wrong .... but the built-in PF should be able to kill broadcast traffic though [21:48:03]
+2016-10-29 18:39:20	SviMik	[21:48:27] the pf will kill all p2p traffic [21:48:27]
+2016-10-29 18:39:20	@dazo	[21:48:49] http://backreference.org/2010/06/18/openvpns-built-in-packet-filter/  << this guy used to be quite active in our community, so I trust this ... even discussed this stuff with him [21:48:49]
+2016-10-29 18:39:20	SviMik	[21:48:49] it doesn't separate broadcast, multicast, etc [21:48:49]
+2016-10-29 18:39:20	SviMik	[21:50:47] dazo I use pf since 2011, and even found a bug there https://community.openvpn.net/openvpn/ticket/163 [21:50:47]
+2016-10-29 18:39:20	@vpnHelper	[21:50:48] Title: #163 (Segfault in PF) – OpenVPN Community (at community.openvpn.net) [21:50:48]
+2016-10-29 18:39:20	@dazo	[21:53:32] right ... that got fixed and released quite a long time ago .... I just barely remember this [21:53:32]
+2016-10-29 18:39:20	SviMik	[21:54:04] yep [21:54:04]
+2016-10-29 18:39:20	 *	SviMik [21:55:51] � fixing openvpn since 2011 [21:55:51]
+2016-10-29 18:39:20	velocity11	[00:49:50] Hi everyone [00:49:50]
+2016-10-29 18:39:20	velocity11	[00:50:40] Is it in any way possible, given a certain OpenVPN server IP, to find out a list of IP addresses it can assign? [00:50:40]
+2016-10-29 18:39:20	SviMik	[01:06:45] velocity11 no. ask the server administrator [01:06:45]
+2016-10-29 18:39:20	velocity11	[01:14:19] @SviMik any way to brute force different IPs? I have no idea how the protocol works but I'm trying to build a list of IPs from a VPN host that I do not own yet can access [01:14:19]
+2016-10-29 18:39:20	SviMik	[01:31:12] velocity11 if you can connect to the server as a client, you can try nmap. but most servers has client-to-client traffic blocked, so this may not work. and even if it works - 1) you can only get the list of connected clients, and still no idea where the IP range ends 2) you can hit IP addresses of network behind the server, which has nothing to do with your question. [01:31:12]
+2016-10-29 18:39:20	velocity11	[01:41:53] Thanks @SviMik, that does shed some light [01:41:53]
+2016-10-29 18:39:20	spyke581	[02:23:33] Trying to setup an OpenVPN server on pfsense but my client does not connect to the Server from the internet. it will connect from inside the LAN though. I have confirmed that the interface is set to WAN and the automatic firewall rules are enabled. [02:23:33]
+2016-10-29 18:39:20	subzero79	[02:39:11] spyke581 do you have a rule in the wan interface for the server port? [02:39:11]
+2016-10-29 18:39:20	spyke581	[02:40:09] subzero79 yes [02:40:09]
+2016-10-29 18:39:20	subzero79	[02:40:56] then increase verbosity on the server and see if the logs show the client connecting [02:40:56]
+2016-10-29 18:39:20	subzero79	[02:41:01] the server logs [02:41:01]
+2016-10-29 18:39:20	subzero79	[02:42:09] also make sure allow all rule in the vpn interface [02:42:09]
+2016-10-29 18:39:20	sfrique	[03:31:07] hello, does anyone know what this error means?  "Sat Oct 29 14:08:34 2016 write to TUN/TAP : Input/output error (code=5)"   ARchlinux connecting to openwrt using TAP when using TUN it works. [03:31:07]
+2016-10-29 18:39:20	@krzee	[04:37:39] spyke581: [04:37:39]
+2016-10-29 18:39:20	@krzee	[04:37:41] !timeout [04:37:41]
+2016-10-29 18:39:20	@vpnHelper	[04:37:42] "timeout" is if you see TLS Error: TLS key negotiation failed to occur within 60 seconds (check your network connectivity) then your problem is likely one of the following: either the server isnt running, your client is connecting to the wrong ip/port/protocol, the server's firewall/nat has an issue, or one of the ISPs blocks it [04:37:42]
+2016-10-29 18:39:20	@krzee	[04:38:13] sfrique: is openwrt also set to tap when trying? [04:38:13]
+2016-10-29 18:39:20	sfrique	[04:39:00] krzee: yes. It it the server, so always on [04:39:00]
+2016-10-29 18:39:20	sfrique	[04:39:05] up* [04:39:05]
+2016-10-29 18:39:20	***	Playback Complete.
+2016-10-29 18:40:38	--	Channel created on Sat, 25 Nov 2006 20:42:40
+2016-10-29 18:43:21	@krzee	right but you can only use tun with tun and tap with tap
+2016-10-29 18:43:33	@krzee	if the server is running tun you must connect using tun
+2016-10-29 18:43:38	@krzee	!tunortap
+2016-10-29 18:43:39	@vpnHelper	"tunortap" is (#1) you ONLY want tap if you need to pass layer2 traffic over the vpn (traffic destined for a MAC address). If you are using IP traffic you want tun., or (#2) and if your reason for wanting tap is windows shares, see !wins or use DNS, or (#3) remember layer2 has no security, arp poisoning works over tap vpns, or (#4) lan gaming? use tap!, or (#5) Normal Android/iOS devices (not
+2016-10-29 18:43:40	@vpnHelper	rooted/jailbroken) support only tun
+2016-10-29 18:49:00		[18:43]
+2016-10-29 18:49:33	sfrique	krzee: i have two vpn servers. one with TUN and one TAP
+2016-10-29 18:49:44	sfrique	the TAP is not working, the TUN is working
+2016-10-29 18:50:17	sfrique	when using client TAP to TAP (i get that error)
+2016-10-29 18:50:37	sfrique	when using client TUN to TUN it works.. they listen on different ports
+2016-10-29 18:51:08	<--	flugger (~flugger@c-71-239-39-156.hsd1.il.comcast.net) has quit (Ping timeout: 268 seconds)
+2016-10-29 18:51:10	sfrique	first i tried only with tap, and did not work, so i went to try using tun just to make sure it was working (the keys and etc) and it was
+2016-10-29 18:52:00	<--	spyke581 (~chris@47.196.135.174) has quit (Quit: Leaving)
+2016-10-29 18:52:08	<--	totus (~totus@2605:6000:66c0:8800:b1ae:818d:b4e1:5250) has quit (Ping timeout: 245 seconds)
+2016-10-29 18:55:45	-->	totus (~totus@cpe-24-160-136-100.satx.res.rr.com) has joined #openvpn
+2016-10-29 18:56:34	<--	natarej_ (~natarej@101.188.54.14) has quit (Read error: Connection reset by peer)
+2016-10-29 18:59:04	<--	CaTtleyA (~CaTtleyA@lfbn-1-3377-77.w90-127.abo.wanadoo.fr) has quit (Ping timeout: 268 seconds)
+2016-10-29 19:05:00		[18:59]
+2016-10-29 19:06:09	-->	flugger (~flugger@46.166.138.171) has joined #openvpn
+2016-10-29 19:08:56	<--	ShadniX (dagger@p5DDFF17F.dip0.t-ipconnect.de) has quit (Ping timeout: 260 seconds)
+2016-10-29 19:10:23	<--	flugger (~flugger@46.166.138.171) has quit (Client Quit)
+2016-10-29 19:10:59	-->	ShadniX (dagger@p5DDFFFAB.dip0.t-ipconnect.de) has joined #openvpn
+2016-10-29 19:16:00		[19:10]
+2016-10-29 20:19:00	-->	jackbrown (~se@unaffiliated/jackbrown) has joined #openvpn
+2016-10-29 20:19:00		[20:19]
+2016-10-29 20:29:45	-->	klow (~textual@c-98-247-49-57.hsd1.wa.comcast.net) has joined #openvpn
+2016-10-29 20:34:14	<--	THX1138` (~THX1138@unaffiliated/zzyzx) has quit (Ping timeout: 245 seconds)
+2016-10-29 20:34:14		[20:34]
