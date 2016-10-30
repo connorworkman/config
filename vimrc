@@ -328,8 +328,8 @@ set omnifunc=syntaxcomplete#Complete
 set nocp
 set background=dark
 set mouse=a
-set tabstop=8
-set softtabstop=8
+set tabstop=4
+set softtabstop=4
 set shiftwidth=8
 "set shiftwidth=4
 set noexpandtab

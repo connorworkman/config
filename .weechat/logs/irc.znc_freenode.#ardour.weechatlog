@@ -10317,3 +10317,66 @@
 2016-10-30 12:07:11	-->	_FrnchFrgg_ (~Icedove@cap69-1-82-233-38-63.fbx.proxad.net) has joined #ardour
 2016-10-30 12:10:29	-->	dsr1204 (~dsr1204@99-111-235-130.lightspeed.cicril.sbcglobal.net) has joined #ardour
 2016-10-30 12:15:40	<--	Caterpillar (~caterpill@unaffiliated/caterpillar) has quit (Quit: You were not made to live as brutes, but to follow virtue and knowledge.)
+2016-10-30 12:21:00		[12:15]
+2016-10-30 12:26:51	-->	naught101 (~naught101@14-202-176-150.static.tpgi.com.au) has joined #ardour
+2016-10-30 12:32:00		[12:26]
+2016-10-30 12:33:50	-->	Stuzz (~Stuzz@124-149-91-204.dyn.iinet.net.au) has joined #ardour
+2016-10-30 12:39:00		[12:33]
+2016-10-30 12:41:25	-->	tweed (~Thunderbi@d118-75-67-2.try.wideopenwest.com) has joined #ardour
+2016-10-30 12:41:49	--	tweed is now known as Guest67589
+2016-10-30 12:47:00		[12:41]
+2016-10-30 12:53:40	blotchy	can i feed one calf plugin output to another calf plugin input.  i'm assuming that's a big yes
+2016-10-30 12:54:49	rgareus	you can add any number of plugins in sequence in ardour's mixer strip
+2016-10-30 12:55:09	rgareus	effectively only limited by CPU power.
+2016-10-30 12:55:30	<--	oofus_lt (~quassel@APuteaux-151-1-44-30.w82-124.abo.wanadoo.fr) has quit (Read error: Connection reset by peer)
+2016-10-30 12:56:46	blotchy	i use the alt-P connection hookup thingy, not the mixer strip
+2016-10-30 12:57:33	blotchy	actually i use a netbook that i don't think can show the mixer because of the smalll screen size, but if it comes to it i'll start using a real laptop
+2016-10-30 13:00:31	<--	Headwar (~edouard@2a01cb00054ce4009099a346a02e9345.ipv6.abo.wanadoo.fr) has quit (Quit: Leaving)
+2016-10-30 13:02:40	<--	son0p (~ff@181.134.22.152) has quit (Ping timeout: 260 seconds)
+2016-10-30 13:02:40		[13:02]
+2016-10-30 13:05:23	the_CLA	rgareus: To be expected crash with the new avl thing? http://paste.debian.net/hidden/74e94b90/
+2016-10-30 13:05:38	-->	dbolton (~Thunderbi@50-83-92-171.client.mchsi.com) has joined #ardour
+2016-10-30 13:05:39	rgareus	blotchy:  a workaround is to set the environment variable    ARDOUR_LOVES_STUPID_TINY_SCREENS=1  
+2016-10-30 13:07:35	blotchy	are you messing with me? ;)
+2016-10-30 13:07:41	blotchy	i'm just gullible enough to try
+2016-10-30 13:08:55	rgareus	blotchy: heh, no. it's true.   https://github.com/Ardour/ardour/blob/master/gtk2_ardour/editor_mixer.cc#L97
+2016-10-30 13:09:10	blotchy	well that'll be entertaining, i'll see what it buys me
+2016-10-30 13:09:12	rgareus	the_CLA: what were you doing to trigger this?
+2016-10-30 13:09:31	the_CLA	rgareus: Just adding a new midi track with the red zeppelin plugin.
+2016-10-30 13:10:06	rgareus	the_CLA: latest version of ardour + avldrums?
+2016-10-30 13:10:16	the_CLA	rgareus: Yes.
+2016-10-30 13:10:26	rgareus	the_CLA: I did change the API of the LV2 extension earlier today,..
+2016-10-30 13:11:39	rgareus	the_CLA: hmm.  I can't reproduce it.
+2016-10-30 13:11:47	the_CLA	rgareus: Seems it can't find the soundfont.
+2016-10-30 13:12:32	rgareus	aah if the plugin instantiation failed.. yes that would explain the issue
+2016-10-30 13:12:39	the_CLA	When trying to add manually to a midi track...
+2016-10-30 13:12:42	the_CLA	[ERROR]: avldrums.lv2: Cannot find drumkit soundfont: '/home/axel/local/installs/lib/lv2/avldrums.lv2//Red_Zeppelin_4-1.1.sf2'
+2016-10-30 13:12:49	the_CLA	[ERROR]: LV2: Failed to instantiate plugin http://gareus.org/oss/lv2/avldrums#RedZeppelin
+2016-10-30 13:13:21	the_CLA	rgareus: Seems that "make install" misses to install the soundfonts.
+2016-10-30 13:13:22	rgareus	good call.  we don't catch failed instantiation when creating a track + adding the plugin
+2016-10-30 13:13:35	rgareus	the_CLA: correct
+2016-10-30 13:15:17	rgareus	the_CLA: reproduced it (after deleting the .sf2)
+2016-10-30 13:21:00		[13:15]
+2016-10-30 13:21:19	-->	lost_boy (c9192e10@gateway/web/freenode/ip.201.25.46.16) has joined #ardour
+2016-10-30 13:21:25	lost_boy	hello? 
+2016-10-30 13:21:53	lost_boy	New user here. I really don't know where's my processor box. Can someone just tell me how to find it?
+2016-10-30 13:22:12	OvenWerks	lost_boy: do you have the mixer window open?
+2016-10-30 13:22:48	OvenWerks	or the mixer strip enabled in the editor window
+2016-10-30 13:23:09	lost_boy	@OvenWerks ok, now I see it. Is there any way to clip it?
+2016-10-30 13:23:26	OvenWerks	Not sure what you mean by clip it
+2016-10-30 13:23:50	lost_boy	Sorry. I mean just to stop making it float
+2016-10-30 13:24:34	lost_boy	I want to lock it! 
+2016-10-30 13:25:06	<--	_FrnchFrgg_ (~Icedove@cap69-1-82-233-38-63.fbx.proxad.net) has quit (Ping timeout: 265 seconds)
+2016-10-30 13:25:08	OvenWerks	I am getting more confused not less :)
+2016-10-30 13:25:32	OvenWerks	which version of Ardour do you have?
+2016-10-30 13:25:57	lost_boy	Ok, let me explain it better: the mixer window is floating in a different window, I want it to be in the same window as the main interface... Does that make sense? 
+2016-10-30 13:26:22	OvenWerks	do you have Ardour 5? or 4
+2016-10-30 13:26:23	lost_boy	I have ardour 2.8.16... That seems old.... 
+2016-10-30 13:26:26	<--	dsr1204 (~dsr1204@99-111-235-130.lightspeed.cicril.sbcglobal.net) has quit (Ping timeout: 256 seconds)
+2016-10-30 13:26:42	OvenWerks	really old, you shouldn't use that
+2016-10-30 13:27:04	lost_boy	Ok, I'm really starting with Linux. Do you think I can get my version updated within the terminal?
+2016-10-30 13:27:16	the_CLA	Panning on the Red Zeppelin is really weird...
+2016-10-30 13:27:28	OvenWerks	which OS or distro do you have?
+2016-10-30 13:27:43	OvenWerks	lost_boy: ^^
+2016-10-30 13:27:49	lost_boy	Elementary OS Freya
+2016-10-30 13:29:27	OvenWerks	I am not familiar with that, how old is it? ardour 2 is over 6 yearsa old
