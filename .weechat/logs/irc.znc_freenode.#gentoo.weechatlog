@@ -42162,3 +42162,1456 @@
 2016-10-29 05:58:18	<--	tirej (~tirej@unaffiliated/tirej) has quit (Ping timeout: 256 seconds)
 2016-10-29 05:58:32	-->	Caplain (~shayne@d14-69-32-57.try.wideopenwest.com) has joined #gentoo
 2016-10-29 05:58:44	-->	mguillech (~mguillech@181.95.51.85) has joined #gentoo
+2016-10-29 05:59:59	<--	samaelkishi (~samaelkis@71-217-67-1.tukw.qwest.net) has quit (Ping timeout: 252 seconds)
+2016-10-29 06:00:55	-->	e^1 (~e^0@unaffiliated/e0/x-7387528) has joined #gentoo
+2016-10-29 06:01:17	e^1	i did setup a bridge interface but it can't connect to the internet, what i am suppose to do ? when i execute dhcpcd it get connected
+2016-10-29 06:01:59	tdr	e^1, is your bridge interface configured in your net configs or you doing it on the fly?
+2016-10-29 06:02:44	e^1	in /etc/conf.d/net
+2016-10-29 06:03:03	tdr	e^1, openrc or systemd?
+2016-10-29 06:03:04	e^1	copied the code from here https://wiki.gentoo.org/wiki/QEMU/Options#Network_bridge
+2016-10-29 06:03:07	e^1	openrc
+2016-10-29 06:03:08	-->	railssmith (~railssmit@c-73-189-177-212.hsd1.ca.comcast.net) has joined #gentoo
+2016-10-29 06:03:27	tdr	e^1, did you make a /etc/init.d/net.br0 or whatever your device is named?
+2016-10-29 06:03:54	e^1	eah net.br0; net.tap0 and net.eth0
+2016-10-29 06:04:08	e^1	may be i don't need net.eth0 after creating a bridge i guess
+2016-10-29 06:04:21	tdr	and config_br0="dhcp is in your conf.d/net ?
+2016-10-29 06:04:40	e^1	yes it's there..
+2016-10-29 06:04:59	-->	sirlark (~sirlark@hecadrena.net.afrihost.co.za) has joined #gentoo
+2016-10-29 06:05:26	-->	ribx (~ribx@x590e64ea.dyn.telefonica.de) has joined #gentoo
+2016-10-29 06:05:43	tdr	e^1, hrm, dhcp isn't running on any of the slave devices of the bridge?
+2016-10-29 06:06:06	sirlark	Hi, I'm trying to emerge -uND and several packages are failing digest verification due to filesize mismatch
+2016-10-29 06:06:13	sirlark	sync error?
+2016-10-29 06:06:43	tdr	sirlark, i had some of those problems yesterday.  another sync fixed it
+2016-10-29 06:06:58	<--	`VL (~Real@31.173.81.170) has quit (Remote host closed the connection)
+2016-10-29 06:06:58		[06:06]
+2016-10-29 06:07:21	<--	Learath2 (~learath2@unaffiliated/learath2) has quit (Ping timeout: 265 seconds)
+2016-10-29 06:07:32	-->	Learath2 (~learath2@unaffiliated/learath2) has joined #gentoo
+2016-10-29 06:08:30	e^1	tdr: slave devices of the bridge means ?
+2016-10-29 06:08:43	<--	LiMp^ (~LiMp^@d24-141-241-49.home.cgocable.net) has quit (Remote host closed the connection)
+2016-10-29 06:08:44	e^1	by simply executing dhcpcd internet starts working
+2016-10-29 06:08:59	-->	LiMp^ (~LiMp^@d24-141-241-49.home.cgocable.net) has joined #gentoo
+2016-10-29 06:09:19	-->	lifeai (~lifeai@222.18.127.28) has joined #gentoo
+2016-10-29 06:09:29	<--	LiMp^ (~LiMp^@d24-141-241-49.home.cgocable.net) has quit (Remote host closed the connection)
+2016-10-29 06:09:38	<--	bifidotftw (~bifidotft@p5792DF61.dip0.t-ipconnect.de) has quit (Quit: Lost terminal)
+2016-10-29 06:09:43	-->	LiMp^ (~LiMp^@d24-141-241-49.home.cgocable.net) has joined #gentoo
+2016-10-29 06:09:44	tdr	e^1, yes of the bridge, your devices your adding to the bridge shouldnt do dhcp by themselves
+2016-10-29 06:10:34	e^1	there are other interfaces like vnet0, virbr0-nic virbr0
+2016-10-29 06:12:07	-->	doc235 (~Blain@gentoo/contributor/doc235) has joined #gentoo
+2016-10-29 06:12:29	e^1	really having no clue what to do
+2016-10-29 06:12:46	tdr	e^1, i read over that guide, it looks like it should work
+2016-10-29 06:13:36	<--	leat2 (~leat@198.199.127.213) has quit (Ping timeout: 256 seconds)
+2016-10-29 06:13:53	e^1	may be let me remove net.eth0
+2016-10-29 06:13:54	-->	kyan (~kyan@cpe-74-78-187-9.maine.res.rr.com) has joined #gentoo
+2016-10-29 06:13:56	<--	Venusaur (~wdwrwf@wikipedia/Antonio-Lopez) has quit (Ping timeout: 252 seconds)
+2016-10-29 06:14:27	kyan	Hi! Some of my files are the right length but all null bytes. Any idea what that's about?
+2016-10-29 06:14:33	<--	hotaronohanako (~user@unaffiliated/hotaronohanako) has quit (Ping timeout: 260 seconds)
+2016-10-29 06:15:01	<--	railssmith (~railssmit@c-73-189-177-212.hsd1.ca.comcast.net) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-10-29 06:17:25	e^1	tdr: other than /etc/conf.d/net what other files i should  chk ?
+2016-10-29 06:17:55	-->	hasues (~hasues@108-236-232-243.lightspeed.knvltn.sbcglobal.net) has joined #gentoo
+2016-10-29 06:18:03	<--	hasues (~hasues@108-236-232-243.lightspeed.knvltn.sbcglobal.net) has left #gentoo
+2016-10-29 06:18:16	<--	CMoH (~cipi@unaffiliated/c-moh) has quit (Quit: Konversation terminated!)
+2016-10-29 06:18:34	-->	blueness_ (~blueness@gentoo/developer/blueness) has joined #gentoo
+2016-10-29 06:18:34	--	Mode #gentoo [+v blueness_] by ChanServ
+2016-10-29 06:19:08	-->	Guest56226 (crazyed@wrongplanet/CrazyEddy) has joined #gentoo
+2016-10-29 06:21:54	tdr	hrm, things building today that wouldnt yesterday, must be getting the glitches out
+2016-10-29 06:23:27	<--	methylherd (~quassel@p5DEB5207.dip0.t-ipconnect.de) has quit (Ping timeout: 252 seconds)
+2016-10-29 06:23:27		[06:23]
+2016-10-29 06:23:32	<--	e^1 (~e^0@unaffiliated/e0/x-7387528) has quit (Ping timeout: 260 seconds)
+2016-10-29 06:24:01	-->	zyxelthrone (~nepgear@2601:18a:c500:95c0:b9a8:7b2:6bc2:85da) has joined #gentoo
+2016-10-29 06:24:17	-->	andrewammerlaan (~Thunderbi@ip545766d3.direct-adsl.nl) has joined #gentoo
+2016-10-29 06:24:30	-->	Venusaur (~wdwrwf@wikipedia/Antonio-Lopez) has joined #gentoo
+2016-10-29 06:24:34	-->	e^1 (~e^0@unaffiliated/e0/x-7387528) has joined #gentoo
+2016-10-29 06:25:05	e^1	tdr: did you replied ? i got disconnected
+2016-10-29 06:25:35	<--	DeviantPeer (~kvirc@541E60B8.cm-5-7b.dynamic.ziggo.nl) has quit (Quit: KVIrc 4.9.2 Aria http://www.kvirc.net/)
+2016-10-29 06:25:56	-->	PsyLok (~PsyLok@151.62.150.154) has joined #gentoo
+2016-10-29 06:25:57	<--	PsyLok (~PsyLok@151.62.150.154) has quit (Changing host)
+2016-10-29 06:25:57	-->	PsyLok (~PsyLok@unaffiliated/psylok) has joined #gentoo
+2016-10-29 06:26:16	-->	_0bitcount (~Big_Byte@92.176.142.156) has joined #gentoo
+2016-10-29 06:27:06	<--	sirlark (~sirlark@hecadrena.net.afrihost.co.za) has left #gentoo
+2016-10-29 06:29:49	-->	DeviantPeer (~kvirc@541E60B8.cm-5-7b.dynamic.ziggo.nl) has joined #gentoo
+2016-10-29 06:30:15	e^1	tdr: from where can i get default sysctl.conf file ?
+2016-10-29 06:31:42	<--	cdown (~cdown@12.37.166.67) has quit (Ping timeout: 250 seconds)
+2016-10-29 06:32:50	Kelsar	e^1: 	by default everything is commented out afaik
+2016-10-29 06:32:53	<--	Nighils (~Nyjyls@74-209-15-109.dsl.dynamic.casstel.net) has left #gentoo ("Leaving")
+2016-10-29 06:33:55	e^1	Kelsar: okay
+2016-10-29 06:33:59	<--	xmorph (~xt_@unaffiliated/xmorph) has quit (Quit: leaving)
+2016-10-29 06:34:08	e^1	configuring network is sometimes troublesome work on gentoo :/
+2016-10-29 06:34:29	Kelsar	way easier then on any other distribution
+2016-10-29 06:34:29	e^1	Kelsar: need your advice bro
+2016-10-29 06:34:38	e^1	pls guide me than
+2016-10-29 06:34:45	e^1	i am running gentoo as my host machine
+2016-10-29 06:35:10	e^1	and on top of it running vms, out of which one vm is running openvpn such that i can access all my stuff remotely
+2016-10-29 06:35:24	-->	sdlarsen (~sdlarsen@77.68.185.196) has joined #gentoo
+2016-10-29 06:35:28	e^1	but sad part is that i can't access the host machine when using openvpn
+2016-10-29 06:35:40	e^1	i tried nat, macvtap, bridge everything but it fails each time
+2016-10-29 06:36:27	Kelsar	most likely your default route gets messed up
+2016-10-29 06:36:44	e^1	how to fix that ?
+2016-10-29 06:36:58	-->	`VL (~Real@31.173.80.195) has joined #gentoo
+2016-10-29 06:37:48	e^1	or what kind of setup i should have ?
+2016-10-29 06:37:54	-->	xmorph (~xt_@unaffiliated/xmorph) has joined #gentoo
+2016-10-29 06:39:16	sdlarsen	aranea: just tried with fluxbox to rule out Xfce issues. Same issue. Now.. next up is slim ...
+2016-10-29 06:39:16		[06:39]
+2016-10-29 06:41:02	-->	mrkgnao (~mrkgnao@150.129.67.51) has joined #gentoo
+2016-10-29 06:41:22	<--	mrkgnao (~mrkgnao@150.129.67.51) has quit (Client Quit)
+2016-10-29 06:42:15	aranea	sdlarsen: Good luck :)
+2016-10-29 06:42:53	aranea	Back when I was using slim, I encountered the weirdest bugs, too.
+2016-10-29 06:43:05	-->	railssmith (~railssmit@c-73-189-177-212.hsd1.ca.comcast.net) has joined #gentoo
+2016-10-29 06:43:18	-->	Masterkatze (~masterkat@2.132.1.22) has joined #gentoo
+2016-10-29 06:43:37	sdlarsen	aranea: lightdm?
+2016-10-29 06:43:44	aranea	Btw, slim isn't being developed anymore, so you might want to look for a replacement in the long term.
+2016-10-29 06:45:09	<--	apero (~apero@gateway/tor-sasl/apero) has quit (Ping timeout: 245 seconds)
+2016-10-29 06:45:48	aranea	Ick. Tried setting that up once. After scrolling through several hundred lines of default config, I had to emerge -c it, shut down the computer and go down to the sea in order to cool down. :/
+2016-10-29 06:46:22	aranea	Nowadays, I don't have any login manager on my computers anymore.
+2016-10-29 06:46:31	e^1	Kelsar: tdr is it safe that i access my virt-manager using ssh remotely or do i need to have sasl/tls certs ?
+2016-10-29 06:46:38	sdlarsen	Oh, that's of course a very light option :)
+2016-10-29 06:46:42	e^1	 don't think i must spend much more time after this
+2016-10-29 06:46:53	grawity	ssh is safe
+2016-10-29 06:47:06	-->	gattler (~gattler@x4e358be5.dyn.telefonica.de) has joined #gentoo
+2016-10-29 06:48:15	e^1	ok than configuring ssh, but in the end it forfeits the idea of only using openvpn to access your infrastructure completely :(
+2016-10-29 06:49:58	<--	sdlarsen (~sdlarsen@77.68.185.196) has quit (Quit: WeeChat 1.6)
+2016-10-29 06:50:43	-->	M_n_K (~M_n_K@unaffiliated/m-n-k/x-5820698) has joined #gentoo
+2016-10-29 06:51:08	-->	shiru (~Shiru@p2735207-ipngn200906osakachuo.osaka.ocn.ne.jp) has joined #gentoo
+2016-10-29 06:51:08	-->	futurefutura (4db060cb@gateway/web/freenode/ip.77.176.96.203) has joined #gentoo
+2016-10-29 06:51:24	<--	shiru (~Shiru@p2735207-ipngn200906osakachuo.osaka.ocn.ne.jp) has left #gentoo
+2016-10-29 06:52:01	futurefutura	Question: inside /etc , i renamed every "runscript" into "openrc-run" .still i got the message "rc is deprecated please use openrc instead" on runlevel changes. ideas ?
+2016-10-29 06:53:13	kyan	Oh well, I'll just fsck it. Thanks :)
+2016-10-29 06:53:20	<--	`VL (~Real@31.173.80.195) has quit (Remote host closed the connection)
+2016-10-29 06:53:31	<--	kyan (~kyan@cpe-74-78-187-9.maine.res.rr.com) has quit (Quit: Leaving)
+2016-10-29 06:53:36	-->	`VL (~Real@31.173.80.195) has joined #gentoo
+2016-10-29 06:55:07	Unode	hi everyone.
+2016-10-29 06:55:07		[06:55]
+2016-10-29 06:55:10	Captain_Beezay	I was writing a local.d script that prompts user to change the root and normal user passwords on boot.
+2016-10-29 06:55:21	Captain_Beezay	as far as I can tell it sort of works, but I can't get it to show a prompt
+2016-10-29 06:55:37	Captain_Beezay	I blindly have to guess what is being prompted (if that makes sense)
+2016-10-29 06:55:38	-->	Bigbrother (b02b410b@gateway/web/freenode/ip.176.43.65.11) has joined #gentoo
+2016-10-29 06:55:47	Captain_Beezay	I tried using "echo" and "ebegin"
+2016-10-29 06:55:52	<--	Shentino (~Shentino@gentoo/contributor/shentino) has quit (Read error: Connection reset by peer)
+2016-10-29 06:56:00	Bigbrother	lmfo i miss irc
+2016-10-29 06:56:25	Captain_Beezay	how can get local.d or openrc to display the stdout/stderr of a local.d/ script?
+2016-10-29 06:56:34	futurefutura	http://bpaste.net/show/b8c9b99edcd4
+2016-10-29 06:56:58	Captain_Beezay	Bigbrother: are you watching us? :P
+2016-10-29 06:57:08	Unode	Finally updated my system but now have an issue to solve with conky. From what I can understand newer versions of nvidia-driver now include nvidia-settings making media-video/nvidia-settings obsolete and a conflict with nvidia-drivers. This is all fine. However conky currently depends on nvidia-settings. Which force installation of an older nvidia-driver. Any way to go around fixing this?
+2016-10-29 06:57:54	Captain_Beezay	I did not want to write an init script because this isn't a service, just something that runs at first boot.
+2016-10-29 06:58:08	<--	PichuChen (~PichuChen@2001:b011:30e0:1431:b94e:a96a:c2c2:95f9) has quit (Ping timeout: 260 seconds)
+2016-10-29 06:58:25	--	Bigbrother is now known as brotherbig
+2016-10-29 06:58:46	Captain_Beezay	err my bad, I think I just figured it out :P
+2016-10-29 06:58:51	Unode	Captain_Beezay: with local.d the output will go to stdout, you should pipe it to syslog if you want.
+2016-10-29 06:59:10	Captain_Beezay	Unode: no, I need to set rc_verbose
+2016-10-29 06:59:24	Unode	that will make the output visible on screen
+2016-10-29 06:59:54	Captain_Beezay	one more , question, I asked this a few times last week and nobody answered me, how can I set a "single user mode" password? I googled this plenty with no luck.
+2016-10-29 07:00:08	-->	apero (~apero@gateway/tor-sasl/apero) has joined #gentoo
+2016-10-29 07:00:15	Captain_Beezay	Unode: yeah,that's what I want, I want my script to ask the user during boot "Please change password for user X"
+2016-10-29 07:00:20	 *	Unode hasn't used single mode in years
+2016-10-29 07:00:26	<--	brotherbig (b02b410b@gateway/web/freenode/ip.176.43.65.11) has quit (Quit: Page closed)
+2016-10-29 07:00:47	Captain_Beezay	Unode: it's for hardening, I don't need to use it either.
+2016-10-29 07:00:53	Unode	Captain_Beezay: that's an unusual boot service
+2016-10-29 07:00:55	tdr	Captain_Beezay, wouldnt it be easier to set an expriration policy so it needs changed every X days?
+2016-10-29 07:01:13	Captain_Beezay	Unode: for automated deployments, I can't hardcode passwords :)
+2016-10-29 07:01:43	tdr	Captain_Beezay, no but you could ship with authorized_keys
+2016-10-29 07:01:59	Captain_Beezay	tdr: that's for ssh only though
+2016-10-29 07:02:06	Unode	or a "phone home" functionality
+2016-10-29 07:02:15	tdr	Captain_Beezay, oh so you're wanting it to run on like "firstboot" or something?
+2016-10-29 07:02:31	Captain_Beezay	tdr: how about the root password? and I can't  allow root login on ssh anyways (plus it supports X11 as well)
+2016-10-29 07:02:35	Captain_Beezay	tdr: yup
+2016-10-29 07:03:06	tdr	Captain_Beezay, distros like RHEL actually have a "firstboot" service that runs once and then disables itself
+2016-10-29 07:03:20	Unode	Captain_Beezay: you could leave root without password and only grant access via sudo, if this is something that fits your needs.
+2016-10-29 07:03:37	Captain_Beezay	my current default root password is "changemeplease" ,my script is still under dev so that's fine, I can change it manually. but I'm trying to have it so unless the password is changed a local.d script will always ask for a change and never exit.
+2016-10-29 07:03:41	tdr	or setup an ldap/kerberos box :)
+2016-10-29 07:04:14	<--	PurpleAlien (~jd@3e48e525.adsl.multi.fi) has quit (Quit: Leaving)
+2016-10-29 07:04:26	Captain_Beezay	tdr: it should be simple enough with a local.d script that removes itself after a password change.
+2016-10-29 07:04:48	tdr	Captain_Beezay, same as having it an init script that just rc removes itself
+2016-10-29 07:04:59	<--	railssmith (~railssmit@c-73-189-177-212.hsd1.ca.comcast.net) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-10-29 07:05:32	Captain_Beezay	https://bpaste.net/show/341c9215bf94 that's what I have until now.
+2016-10-29 07:05:44	<--	lethu (~lethu@unaffiliated/lethu) has quit (Ping timeout: 256 seconds)
+2016-10-29 07:06:01	<--	iterati (~vangelis@79.103.101.247.dsl.dyn.forthnet.gr) has quit (Remote host closed the connection)
+2016-10-29 07:06:08	tdr	Captain_Beezay, you could just have it give you a scrambled password that securely emails /hands off itself to you.
+2016-10-29 07:06:15	-->	PichuChen (~PichuChen@111-248-167-178.dynamic.hinet.net) has joined #gentoo
+2016-10-29 07:07:30	<--	mlyszczek (~mlyszczek@078088248086.wroclaw.vectranet.pl) has quit (Quit: WeeChat 1.4)
+2016-10-29 07:07:32	-->	piling (~piling@unaffiliated/piling) has joined #gentoo
+2016-10-29 07:07:38	-->	mlyszczek (~mlyszczek@078088248086.wroclaw.vectranet.pl) has joined #gentoo
+2016-10-29 07:07:43	-->	lethu (~lethu@unaffiliated/lethu) has joined #gentoo
+2016-10-29 07:07:54	Unode	^ phone home
+2016-10-29 07:07:57	-->	iterati (~vangelis@79.103.101.247.dsl.dyn.forthnet.gr) has joined #gentoo
+2016-10-29 07:08:01	Captain_Beezay	nah,too many security issues with that, I'll have to encrypt the password and have a master password to decrypt the emailed password. and keep track of every deployments emails,etc... :P
+2016-10-29 07:08:37	Unode	Captain_Beezay: don't you have to keep track anways?
+2016-10-29 07:08:43	Captain_Beezay	anyways,thanks :) . what I'm really stumped with,is the single user mode password thingy. the lynis audit script complains about it, and I am concerned a bit.
+2016-10-29 07:08:49	Unode	or are you planning to use one-password-for-all ?
+2016-10-29 07:09:00	-->	Accelarion (~Accelario@cpc12-bmly9-2-0-cust898.2-3.cable.virginm.net) has joined #gentoo
+2016-10-29 07:09:11	tdr	Captain_Beezay, do you have ldap or anything?
+2016-10-29 07:09:13	Captain_Beezay	Unode: emails? nope.
+2016-10-29 07:09:26	Captain_Beezay	tdr: nope,even if I did I wouldn't put root on it
+2016-10-29 07:09:28	Unode	Captain_Beezay: it doesn't have to be emails
+2016-10-29 07:09:31	Captain_Beezay	root user*
+2016-10-29 07:09:50	Unode	Sounds like you are over complicating things a bit.
+2016-10-29 07:10:00	-->	Judge_Dredd (~Judge_Dre@unaffiliated/judge-dredd/x-2170742) has joined #gentoo
+2016-10-29 07:10:14	-->	cdown (~cdown@166.170.42.31) has joined #gentoo
+2016-10-29 07:10:14		[07:10]
+2016-10-29 07:11:18	<--	gattuso (~gattuso@gruppoculturale.it) has quit (Remote host closed the connection)
+2016-10-29 07:11:21	<--	grawity (grawity@virgule.cluenet.org) has quit (Remote host closed the connection)
+2016-10-29 07:11:29	<--	PichuChen (~PichuChen@111-248-167-178.dynamic.hinet.net) has quit (Ping timeout: 260 seconds)
+2016-10-29 07:11:33	futurefutura	is it safe to unemerge appshells/rc and emerge sys-apps/openrc then restart ?
+2016-10-29 07:11:40	Captain_Beezay	Unode: not really,just changing the root and user password on boot works good enough for me. I'd like to separate the management of the password (maybe using a passwordsafe like pass) independent of the provisioning script. I need to manually login and read portage's messages,initial system audit results,etc... before considering the deployment usable.
+2016-10-29 07:11:55	-->	grawity (grawity@virgule.cluenet.org) has joined #gentoo
+2016-10-29 07:12:28	-->	svslv (~user1@node-93-182-35-212.domolink.tula.net) has joined #gentoo
+2016-10-29 07:12:33	-->	gattuso (~gattuso@gruppoculturale.it) has joined #gentoo
+2016-10-29 07:13:18	<--	karolherbst (~karol@2a02:8108:453f:d1a0:7774:afcd:453f:80e2) has quit (Quit: gone!)
+2016-10-29 07:13:30	-->	f4c3m3l70r (~f4c3m3l70@x2f7f26e.dyn.telefonica.de) has joined #gentoo
+2016-10-29 07:13:55	<--	gattler (~gattler@x4e358be5.dyn.telefonica.de) has quit (Quit: WeeChat 1.6)
+2016-10-29 07:13:58	-->	railssmith (~railssmit@c-73-189-177-212.hsd1.ca.comcast.net) has joined #gentoo
+2016-10-29 07:14:24	-->	gattler (~gattler@x4e358be5.dyn.telefonica.de) has joined #gentoo
+2016-10-29 07:15:20	svslv	I've moved my system to SSD named /dev/sda. Now I can't update kernel. It's still 4.4.21-gentoo. But I removed 4.4.21-gentoo from /boot. There is 4.4.26 only.
+2016-10-29 07:15:29	-->	karolherbst (~karol@ip5f5be115.dynamic.kabel-deutschland.de) has joined #gentoo
+2016-10-29 07:15:45	svslv	What should I do?
+2016-10-29 07:16:20	-->	leat2 (~leat@198.199.127.213) has joined #gentoo
+2016-10-29 07:17:03	<--	m0u (~m0u@27.red-79-159-200.dynamicip.rima-tde.net) has quit (Ping timeout: 244 seconds)
+2016-10-29 07:17:08	+bonsaikitten	svslv: build new kernel
+2016-10-29 07:18:16	<--	Tobit (~Tobit@2605:a000:7fc0:1e:1c62:4076:1a7a:a328) has quit (Remote host closed the connection)
+2016-10-29 07:18:43	<--	shock- (~shock@5400D20E.dsl.pool.telekom.hu) has quit (Write error: Connection reset by peer)
+2016-10-29 07:18:43	svslv	bonsaikitten: I've builded 4.4.26 and have it at /boot. GRUB2 see only 4.4.21 but I've removed it
+2016-10-29 07:18:51	<--	willikins (~rbot@gentoo/bot/Willikins) has quit (Quit: seeya)
+2016-10-29 07:19:06	+bonsaikitten	svslv: did you run grub-mkconfig or equivalent to generate an updated config?
+2016-10-29 07:19:11	tdr	svslv, so you odidn't up date your config?
+2016-10-29 07:19:26	<--	SkunkyFone (~skunky@unaffiliated/skunky) has quit (Remote host closed the connection)
+2016-10-29 07:20:11	futurefutura	Question: is it safe to unemerge emerge, then emerge open-rc ?
+2016-10-29 07:20:29	futurefutura	*unemerge rc
+2016-10-29 07:20:40	<--	lifeai (~lifeai@222.18.127.28) has quit (Quit: WeeChat 1.5)
+2016-10-29 07:20:56	-->	Shentino (~Shentino@gentoo/contributor/shentino) has joined #gentoo
+2016-10-29 07:21:11	wokko	svslv: in grub menu just edit the kernel line and change the kernel version 4.4.21 to 4.4.26, then you can boot and fix it.
+2016-10-29 07:21:31	<--	Accelarion (~Accelario@cpc12-bmly9-2-0-cust898.2-3.cable.virginm.net) has quit (Quit: Lost terminal)
+2016-10-29 07:21:35	svslv	bonsaikitten: Yes I did grub-mkconfig. I boot there is 4.4.21 only in grub menu. It probably loaded from /dev/sdb
+2016-10-29 07:22:43	futurefutura	pls check: https://bpaste.net/show/b8c9b99edcd4
+2016-10-29 07:24:33	svslv	wokko: There isn't 4.4.21 in grub menu. There is 4.4.26 only.
+2016-10-29 07:26:02	-->	willikins (~rbot@gentoo/bot/Willikins) has joined #gentoo
+2016-10-29 07:26:02		[07:26]
+2016-10-29 07:27:01	-->	shock- (~shock@5400D20E.dsl.pool.telekom.hu) has joined #gentoo
+2016-10-29 07:27:11	<--	railssmith (~railssmit@c-73-189-177-212.hsd1.ca.comcast.net) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-10-29 07:28:04	<--	svslv (~user1@node-93-182-35-212.domolink.tula.net) has quit (Quit: Konversation terminated!)
+2016-10-29 07:28:16	wokko	svslv: so boot 4.4.26 then ?
+2016-10-29 07:28:34	<--	albertus1 (~seb@x4e32de22.dyn.telefonica.de) has quit (Quit: Leaving.)
+2016-10-29 07:28:37	<--	`VL (~Real@31.173.80.195) has quit (Remote host closed the connection)
+2016-10-29 07:28:59	-->	cesnia (~cesnia@186.151.38.217) has joined #gentoo
+2016-10-29 07:29:42	<--	sg1311 (~sg1331@12.203.168.194) has quit (Quit: Leaving)
+2016-10-29 07:30:12	<--	gattler (~gattler@x4e358be5.dyn.telefonica.de) has quit (Quit: WeeChat 1.6)
+2016-10-29 07:30:33	-->	sg1311 (~sg1331@12.203.168.194) has joined #gentoo
+2016-10-29 07:30:40	-->	gattler (~gattler@x4e358be5.dyn.telefonica.de) has joined #gentoo
+2016-10-29 07:31:07	-->	Naeil (~nzoueidi@ubuntu/member/na3il) has joined #gentoo
+2016-10-29 07:32:57	-->	PichuChen (~PichuChen@2001:b011:30e0:1431:6855:e8f2:cb1c:bd2d) has joined #gentoo
+2016-10-29 07:32:57	<--	tdr (~tdr@unaffiliated/tdr) has quit (Ping timeout: 260 seconds)
+2016-10-29 07:34:00	<--	kingkongmok (~kingkongm@n219077080053.netvigator.com) has quit (Read error: Connection reset by peer)
+2016-10-29 07:34:13	<--	PichuChen (~PichuChen@2001:b011:30e0:1431:6855:e8f2:cb1c:bd2d) has quit (Client Quit)
+2016-10-29 07:36:45	<--	korans (~korans@46.254.252.243) has quit (Quit: Lost terminal)
+2016-10-29 07:37:43	<--	maolang (~maolang@2a01:e35:2e6c:5620:c77e:c4ff:15e1:718) has quit (Remote host closed the connection)
+2016-10-29 07:38:14	-->	PichuChen (~PichuChen@2001:b011:30e0:1431:54e0:e12:bf78:721a) has joined #gentoo
+2016-10-29 07:39:00	-->	albertus1 (~seb@x4e32de22.dyn.telefonica.de) has joined #gentoo
+2016-10-29 07:39:41	-->	maolang (~maolang@2a01:e35:2e6c:5620:c77e:c4ff:15e1:718) has joined #gentoo
+2016-10-29 07:40:34	<--	sukbeom (~sukbeom@211.222.85.112) has quit (Quit: WeeChat 1.4)
+2016-10-29 07:42:00	-->	caveman (~al-cavema@unaffiliated/mahmoud) has joined #gentoo
+2016-10-29 07:42:00		[07:42]
+2016-10-29 07:42:11	-->	qpdb (~qpdb@unaffiliated/qpdb) has joined #gentoo
+2016-10-29 07:42:21	<--	[LeON] (~leon@unaffiliated/leon-00001) has quit (Excess Flood)
+2016-10-29 07:42:33	-->	[LeON] (~leon@unaffiliated/leon-00001) has joined #gentoo
+2016-10-29 07:43:53	<--	toralf (~toralf@x4e369e27.dyn.telefonica.de) has quit (Quit: Konversation terminated!)
+2016-10-29 07:44:11	-->	toralf (~toralf@x4e369e27.dyn.telefonica.de) has joined #gentoo
+2016-10-29 07:45:34	<--	gattler (~gattler@x4e358be5.dyn.telefonica.de) has quit (Quit: WeeChat 1.6)
+2016-10-29 07:45:53	-->	gattler (~gattler@x4e358be5.dyn.telefonica.de) has joined #gentoo
+2016-10-29 07:46:48	-->	strixdio (~brian@ool-18bf73c9.dyn.optonline.net) has joined #gentoo
+2016-10-29 07:47:04	maolang	morning everyone
+2016-10-29 07:47:16	-->	railssmith (~railssmit@c-73-189-177-212.hsd1.ca.comcast.net) has joined #gentoo
+2016-10-29 07:47:28	-->	spareproject (~bob@gateway/tor-sasl/spareproject) has joined #gentoo
+2016-10-29 07:50:27	-->	Ordog_by (~ordog@93.85.179.43) has joined #gentoo
+2016-10-29 07:50:52	<--	Naeil (~nzoueidi@ubuntu/member/na3il) has quit (Ping timeout: 260 seconds)
+2016-10-29 07:51:07	-->	Naeil (~nzoueidi@ubuntu/member/na3il) has joined #gentoo
+2016-10-29 07:51:08	-->	svslv (~user1@node-236-232-28-94.domolink.tula.net) has joined #gentoo
+2016-10-29 07:51:22	-->	rpifan (~rpi@73.106.74.192) has joined #gentoo
+2016-10-29 07:51:50	-->	kingkongmok (~kingkongm@n219077080053.netvigator.com) has joined #gentoo
+2016-10-29 07:52:24	<--	Colti (Miramar-FL@2a00:c1e0:0:2:0:1:208:ab5e) has quit (Excess Flood)
+2016-10-29 07:52:28	<--	cyphase (~cyphase@unaffiliated/cyphase) has quit (Ping timeout: 250 seconds)
+2016-10-29 07:52:47	-->	BjH (~bjh@p5784C1AC.dip0.t-ipconnect.de) has joined #gentoo
+2016-10-29 07:53:10	<--	f4c3m3l70r (~f4c3m3l70@x2f7f26e.dyn.telefonica.de) has quit (Quit: Bye)
+2016-10-29 07:53:58	-->	Colti (Miramar-FL@2a00:c1e0:0:2:0:1:208:ab5e) has joined #gentoo
+2016-10-29 07:54:11	-->	tirej (~tirej@195.142.179.36) has joined #gentoo
+2016-10-29 07:55:11	-->	kzvezdarov (~kzvezdaro@208.167.254.20) has joined #gentoo
+2016-10-29 07:55:21	svslv	I unable to boot 4.4.26 kernel it says Unable to mount root fs. Here is my  /boot/grub/grub.cfg: https://paste.pound-python.org/show/6f7d4GGgkDmkjQnXwck6/
+2016-10-29 07:55:34	svslv	4.4.21 starts OK
+2016-10-29 07:55:48	<--	gattler (~gattler@x4e358be5.dyn.telefonica.de) has quit (Quit: WeeChat 1.6)
+2016-10-29 07:56:19	-->	gattler (~gattler@x4e358be5.dyn.telefonica.de) has joined #gentoo
+2016-10-29 07:57:08	svslv	I have EXT4_FS = y
+2016-10-29 07:57:08		[07:57]
+2016-10-29 07:57:54	-->	TIE-Fighter (~TIE-Fight@p508D784A.dip0.t-ipconnect.de) has joined #gentoo
+2016-10-29 07:58:24	maolang	svslv: without looking at your grub, was kernel built from 4.4.2.1 with no changes from your part?
+2016-10-29 07:58:55	-->	cyphase (~cyphase@unaffiliated/cyphase) has joined #gentoo
+2016-10-29 07:59:10	-->	tdr (~tdr@unaffiliated/tdr) has joined #gentoo
+2016-10-29 07:59:12	-->	barteks2x (~barteks2x@host2165.robnet.pl) has joined #gentoo
+2016-10-29 07:59:30	<--	wokko (~wokko@unaffiliated/wokko) has quit (Quit: leaving)
+2016-10-29 07:59:59	barteks2x	I moved to a different place (different router) and wifi stopped working completely. WHY?
+2016-10-29 08:00:08	-->	serg_ (~serg@hdhog.ru) has joined #gentoo
+2016-10-29 08:00:12	--	serg_ is now known as hdhog
+2016-10-29 08:00:43	<--	anuxivm (~anuxi@92.177.99.40) has left #gentoo
+2016-10-29 08:01:33	svslv	here is my grub for 4.4.2.1 from old hdd: https://paste.pound-python.org/show/ULybS6m40l4HpB0AJ2Ka/
+2016-10-29 08:01:34	<--	stelf (~TIE-Fight@p508D528D.dip0.t-ipconnect.de) has quit (Ping timeout: 250 seconds)
+2016-10-29 08:01:42	svslv	Now I moved system to SSD
+2016-10-29 08:02:29	tdr	svslv, how did you move over to the ssd?  did you clone the drive or tar it up or rsync or ?
+2016-10-29 08:02:36	maolang	svslv: did the UUID of the root fs stay the same or change?
+2016-10-29 08:02:48	tdr	svslv, what I'm getting at is weither the PARTUID stayed the same
+2016-10-29 08:03:08	-->	Atomic_RY6dh (~atomic@host86-140-115-147.range86-140.btcentralplus.com) has joined #gentoo
+2016-10-29 08:03:18	<--	cdown (~cdown@166.170.42.31) has quit (Ping timeout: 250 seconds)
+2016-10-29 08:03:21	<--	piling (~piling@unaffiliated/piling) has quit (Ping timeout: 265 seconds)
+2016-10-29 08:03:29	nolimitsoyalap_	testing tree has distfile size mismatches on at least gentoo-sources-4.4.28, audiofile-0.3.6-r2, libwps-0.4.4, tar-1.29-r1, qca-2.1.1-r1, m2crypto-0.25.1-r1, aspell-0.60.6.1-r4, mupdf-1.9a, cups-filters-1.11.5 and bluez-5.43. all related to their respective Changelog.
+2016-10-29 08:03:39	svslv	tdr: I did rsync for system dirs
+2016-10-29 08:03:49	<--	Atomic_RY6dh (~atomic@host86-140-115-147.range86-140.btcentralplus.com) has left #gentoo
+2016-10-29 08:03:50	tdr	svslv, ok then your UUID for the partitions would have changed.
+2016-10-29 08:04:12	nolimitsoyalap_	*file, not distfile
+2016-10-29 08:04:16	maolang	syslv verify your fstab
+2016-10-29 08:04:19	tdr	svslv, prob the easiest way to adjust those is boot a lived/media and find the new blkids for partitions
+2016-10-29 08:04:42	svslv	maolang: Here is my fstab: https://paste.pound-python.org/show/bJrjXmDPX1FvgO8rz6bs/
+2016-10-29 08:05:15	<--	spareproject (~bob@gateway/tor-sasl/spareproject) has quit (Remote host closed the connection)
+2016-10-29 08:05:23	tdr	svslv, ok you're using block device names in fstab, your grab has partition IDs for it though
+2016-10-29 08:05:29	<--	kzvezdarov (~kzvezdaro@208.167.254.20) has quit (Ping timeout: 268 seconds)
+2016-10-29 08:05:39	tdr	s/grab/grub
+2016-10-29 08:05:44	<--	ribx (~ribx@x590e64ea.dyn.telefonica.de) has quit (Ping timeout: 250 seconds)
+2016-10-29 08:06:35	-->	coffea (~coffea@2601:49:4101:cee8:c0ee:4367:5ba5:d5fa) has joined #gentoo
+2016-10-29 08:06:52	<--	coffea (~coffea@2601:49:4101:cee8:c0ee:4367:5ba5:d5fa) has quit (Client Quit)
+2016-10-29 08:07:10	-->	coffea (~coffea@c-69-249-72-124.hsd1.pa.comcast.net) has joined #gentoo
+2016-10-29 08:08:22	svslv	tdr: what means s/grab/grub?
+2016-10-29 08:08:40	tdr	svslv, means i typed grab rather than "grub"
+2016-10-29 08:08:40	-->	piling (~piling@unaffiliated/piling) has joined #gentoo
+2016-10-29 08:08:47	maolang	syslv you need to verify your fstab, from live media --> lsblk --fs # make sure of the /dev/sdX path and rebuild the grub while chrooted in your install from the live media and or change /dev/sdX etc to UUID=the uid from the / partition
+2016-10-29 08:09:03	-->	xavier1 (~xaviergma@108-171-72-65.dr.cgocable.ca) has joined #gentoo
+2016-10-29 08:09:04	xavier1	Hm
+2016-10-29 08:09:10	xavier1	youtube servers down for anyone else? lol
+2016-10-29 08:09:25	tdr	maolang, with grub probing based on UIDs, its not going to find them to even get to fstab
+2016-10-29 08:09:26	svslv	Thanks, I got it
+2016-10-29 08:10:03	<--	iskatu (~iskatu@p2003006B0E349178DC405790773520C4.dip0.t-ipconnect.de) has quit (Ping timeout: 245 seconds)
+2016-10-29 08:10:15	maolang	tdr i did mean UUID just mysstyped a letter
+2016-10-29 08:10:18	tdr	svslv, what exactly happens when you boot, where does it hang/crash, do you get  grub menu or does it start to boot etc?
+2016-10-29 08:10:21	<--	coffea (~coffea@c-69-249-72-124.hsd1.pa.comcast.net) has quit (Client Quit)
+2016-10-29 08:11:13	tdr	maolang, if the drives are in the right order, having block names in fstab is fine, the grub.conf pasted here shows its probing on ids that are probably the old ones:  https://paste.pound-python.org/show/ULybS6m40l4HpB0AJ2Ka
+2016-10-29 08:11:43	tdr	ok i misread what you wrote, well misinterpreted it, we're on the same page:  grub needs fixed
+2016-10-29 08:12:08	maolang	tdr did say 'or' :)
+2016-10-29 08:12:08		[08:12]
+2016-10-29 08:12:09	tdr	wouldnt bother even messing with fstab
+2016-10-29 08:12:15	svslv	tdr: I always get grub menu. Kernel crashes when it starts. Kernel panic not syncing VFS Unable to mount rootfs on unknown-block(0,0)
+2016-10-29 08:12:44	tdr	svslv, unknown block 0,0 sounds like missing scsi/sata drivers
+2016-10-29 08:13:00	tdr	thats what you get when it cant even read your partitions
+2016-10-29 08:13:05	tdr	(or your disk)
+2016-10-29 08:13:08	-->	larzen (~Adium@node-1w7jr9y87lsmdeqk85a6b38ad.ipv6.telus.net) has joined #gentoo
+2016-10-29 08:13:22	maolang	is the / still ext4... on the target partition..
+2016-10-29 08:13:30	xavier1	I'd bet for missing  partition type drivers
+2016-10-29 08:13:37	svslv	what driver should be used for SSD?
+2016-10-29 08:13:48	xavier1	and/or are you using initramfs
+2016-10-29 08:13:54	<--	gattler (~gattler@x4e358be5.dyn.telefonica.de) has quit (Quit: WeeChat 1.6)
+2016-10-29 08:14:00	tdr	svslv, its not for yoru ssd, its for your sata ports themselves
+2016-10-29 08:14:04	svslv	i don't use initramfs at all
+2016-10-29 08:14:07	tdr	svslv, should probably just be ahci
+2016-10-29 08:14:08	-->	coffea (~coffea@2601:49:4101:cee8:c0ee:4367:5ba5:d5fa) has joined #gentoo
+2016-10-29 08:14:26	-->	gattler (~gattler@x4e358be5.dyn.telefonica.de) has joined #gentoo
+2016-10-29 08:14:31	tdr	svslv, but sata stack needs scsi disk support enabled too (sata runs under scsi stack)
+2016-10-29 08:14:40	<--	barteks2x (~barteks2x@host2165.robnet.pl) has quit (Ping timeout: 260 seconds)
+2016-10-29 08:15:20	maolang	syslv is that onboard intel / amd sata, not third party like silicon/ promise sata etc?
+2016-10-29 08:15:27	-->	barteks2x (~barteks2x@host2165.robnet.pl) has joined #gentoo
+2016-10-29 08:15:39	<--	andrewammerlaan (~Thunderbi@ip545766d3.direct-adsl.nl) has quit (Remote host closed the connection)
+2016-10-29 08:15:39	tdr	svslv, no suboptions under specific scsi stuff, just "scsci disk support" (and scsi cdrom is you have optical)
+2016-10-29 08:15:48	-->	iskatu (~iskatu@p57A54786.dip0.t-ipconnect.de) has joined #gentoo
+2016-10-29 08:16:14	<--	railssmith (~railssmit@c-73-189-177-212.hsd1.ca.comcast.net) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-10-29 08:16:15	tdr	svslv, lspci -k from the livecd will tell you which driver is used for your SATA chip
+2016-10-29 08:16:36	barteks2x	I can't get network-manager to find any wifi networks, any idea what may cause that?
+2016-10-29 08:16:56	svslv	tdr: I have SCSI disk support
+2016-10-29 08:17:01	tdr	barteks2x, what kind of card do you have and does dmesg show it loading firmware when it loads the driver
+2016-10-29 08:17:14	tdr	svslv, ok then check lspci -k  for to get your SATA driver name
+2016-10-29 08:17:33	<--	larzen (~Adium@node-1w7jr9y87lsmdeqk85a6b38ad.ipv6.telus.net) has quit (Ping timeout: 245 seconds)
+2016-10-29 08:17:49	<--	niconiconi (~gaizi@fsf/member/biergaizi) has quit (Remote host closed the connection)
+2016-10-29 08:18:06	<--	julakali (~julakali@84-196-103-86.dynamic.dsl.tng.de) has quit (Quit: Leaving.)
+2016-10-29 08:18:17	-->	niconiconi (~gaizi@fsf/member/biergaizi) has joined #gentoo
+2016-10-29 08:18:35	svslv	tdr: IDE interface: NVIDIA Corporation MCP55 SATA Controller
+2016-10-29 08:18:41	<--	keetrainchild (~keet@c-24-34-44-116.hsd1.nh.comcast.net) has quit (Ping timeout: 260 seconds)
+2016-10-29 08:18:50	tdr	svslv, the -k should make it give you a "driver in use" line for each device
+2016-10-29 08:19:23	barteks2x	tdr, iwlwifi is loaded, it worked without network-manager before, but then I moved here with different router and it stopped working completely.
+2016-10-29 08:19:44	svslv	tdr: Kernel driver in use: sata_nv
+2016-10-29 08:19:46	barteks2x	actually, dmesg shows [    3.646971] iwlwifi 0000:09:00.0: Direct firmware load for iwlwifi-7260-17.ucode failed with error -2
+2016-10-29 08:20:11	tdr	svslv, ok so make sure thats on under sata
+2016-10-29 08:20:15	-->	glop102 (44018031@gateway/web/freenode/ip.68.1.128.49) has joined #gentoo
+2016-10-29 08:20:24	-->	keetrainchild (~keet@c-24-34-44-116.hsd1.nh.comcast.net) has joined #gentoo
+2016-10-29 08:20:27	+kensington	what might cause ~/.xsession_errors to not be written to?
+2016-10-29 08:20:36	tdr	svslv, if that's all good, then the problem goes right back to the UUIDs from your grub.conf
+2016-10-29 08:21:41	tdr	kensington, depends.  if it crashes just starting, the /var/log/Xorg.0.log would be a better place to look.  if it's apps having X issues, then the .xsession-errors gets used
+2016-10-29 08:21:54	<--	PsyLok (~PsyLok@unaffiliated/psylok) has quit (Remote host closed the connection)
+2016-10-29 08:22:18	+kensington	tdr: everything runs as normal, and ~/.xsession_errors used to get written to just fine - now it's empty
+2016-10-29 08:22:34	-->	davidk_ (~davidk@c-e13672d5.021-482-7570702.cust.bredbandsbolaget.se) has joined #gentoo
+2016-10-29 08:22:45	tdr	kensington, mine has a - not a _ ... otherwise, check its permissions etc
+2016-10-29 08:22:51	barteks2x	network device wlp9s0 is there, but netowk manager doesn't find any networks, and when I many ally enter ssid - it still doesn't connect
+2016-10-29 08:22:53	-->	railssmith (~railssmit@c-73-189-177-212.hsd1.ca.comcast.net) has joined #gentoo
+2016-10-29 08:23:11	tdr	barteks2x, does wpa-gui (run as root) work?
+2016-10-29 08:23:19	+kensington	tdr: I have neither
+2016-10-29 08:23:24	svslv	Search in kernel config forund: Symbol: SATA_NV [=n]
+2016-10-29 08:23:38	barteks2x	tdr, command not found
+2016-10-29 08:23:48	-->	methylherd (~quassel@p5DEB5207.dip0.t-ipconnect.de) has joined #gentoo
+2016-10-29 08:23:50	davidk_	is there a way to make the patch linked in bug 598312 happen, or should I just apply it in a local overlay?
+2016-10-29 08:23:54	willikins	davidk_: https://bugs.gentoo.org/598312 "sys-block/targetcli-fb-2.1.44 :  * ERROR: sys-block/targetcli-fb-2.1.44::gentoo failed (install phase):"; Gentoo Linux, Current packages; CONF; toralf.foerster:sir.suriv
+2016-10-29 08:24:02	tdr	barteks2x, might be wpa_gui   ... it comes with wpa-supplicant
+2016-10-29 08:24:20	<--	PichuChen (~PichuChen@2001:b011:30e0:1431:54e0:e12:bf78:721a) has quit
+2016-10-29 08:24:53	tdr	svslv, device drivers -> Serial ATA and Parallel ATA drivers -> NVIDIA SATA support (need to enable  ATA BMDMA support to see that option)
+2016-10-29 08:25:07	tdr	svslv, dont just enable it in the config, use menuconfig
+2016-10-29 08:25:24	barteks2x	tdr: it finds the network, but i'm not exactly sure if it connects to it
+2016-10-29 08:26:00	tdr	barteks2x, ok oh.  so its "working" but you cant tell conenction status.  check dmesg or /var/log/messages, one of them should show you connect
+2016-10-29 08:26:00	svslv	tdr: I use menuconfit. I set NVIDIA SATA support. Looking for ATA BMDMA
+2016-10-29 08:26:17	tdr	svslv, its above it.  that nvidia sata doesn't even show up if its off
+2016-10-29 08:26:43	tdr	svslv, making that driver * not M too right?
+2016-10-29 08:27:15	svslv	tdr: I found that my ATA BMDA is always on
+2016-10-29 08:27:15		[08:27]
+2016-10-29 08:27:29	tdr	svslv, alot of other drivers depend on it and would enable it
+2016-10-29 08:27:54	svslv	I have * for ATA BMDAT and set * to NVIDIA SATA support
+2016-10-29 08:28:07	tdr	svslv, that should fix up the unknown block error
+2016-10-29 08:28:08	<--	coffea (~coffea@2601:49:4101:cee8:c0ee:4367:5ba5:d5fa) has quit (Remote host closed the connection)
+2016-10-29 08:28:14	+kensington	davidk_: i'm merging the PR now
+2016-10-29 08:28:29	tdr	svslv, you're still going to want to fix your grub.conf if you didn't update it since you moved drives though
+2016-10-29 08:28:57	roundtrip	So, I might just be doin' it wrong, but media-libs/gexiv2-0.10.4, when using python, fails with "ImportError: cannot import name GExiv2, introspection typelib not found"
+2016-10-29 08:29:06	davidk_	kensington: many thanks
+2016-10-29 08:29:07	barteks2x	tdr: status is scanning, and since I'm on wired connection now - I can't check it directly. dmesg just spams a lot of the same repeated messages. Somehow I don't have DNS server now
+2016-10-29 08:29:08	roundtrip	when downgrading to 0.10.3 it works like a charm
+2016-10-29 08:29:08	tdr	svslv, without that sata driver on, it can't even read a disks' partition table.  but grub also needs to be able to find your partitions using their UUID
+2016-10-29 08:29:09	roundtrip	:|
+2016-10-29 08:29:21	barteks2x	so I can't really upload it to pastebin
+2016-10-29 08:29:26	+kensington	<gentoovcs> kensington → repo/gentoo (sys-block/targetcli-fb/) sys-block/targetcli-fb-2.1.44: fix install
+2016-10-29 08:30:14	tdr	barteks2x, ok i'm terrible at networkmanager itself (I dont use it), i was just making sure your device *could* scan and see networks
+2016-10-29 08:30:35	barteks2x	it can see it, but can't conect to it using wpa_gui
+2016-10-29 08:30:41	tdr	barteks2x, if you're on openrc:  echo "nameserver 8.8.8.8" > /etc/resolv.conf
+2016-10-29 08:31:12	tdr	barteks2x, wpa_gui will connect you but not get an ip, you'd have to run  your dhcp command in a shell to get an IP
+2016-10-29 08:31:24	<--	gattler (~gattler@x4e358be5.dyn.telefonica.de) has quit (Ping timeout: 260 seconds)
+2016-10-29 08:31:36	tdr	barteks2x, at least thats how i do it with wpa_gui.
+2016-10-29 08:31:47	barteks2x	it just endlessly shows "scanning" status
+2016-10-29 08:31:56	svslv	tdr: grub see my partitions cause it starts kernel
+2016-10-29 08:31:58	barteks2x	and sometimes switching to "disconnected
+2016-10-29 08:32:00	barteks2x	"
+2016-10-29 08:32:22	<--	railssmith (~railssmit@c-73-189-177-212.hsd1.ca.comcast.net) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-10-29 08:32:25	tdr	svslv, ok but then it will also probe for your / partition based on a UUID too, so you may end up with another crash point
+2016-10-29 08:32:37	tdr	svslv, i've got to head out to a LUG meeting, but good luck
+2016-10-29 08:33:14	<--	methylherd (~quassel@p5DEB5207.dip0.t-ipconnect.de) has quit (Remote host closed the connection)
+2016-10-29 08:33:25	davidk_	how long does it usually take from git to rsync mirrors?
+2016-10-29 08:33:44	<--	tdr (~tdr@unaffiliated/tdr) has quit (Remote host closed the connection)
+2016-10-29 08:34:02	barteks2x	this is what dmesg shows: http://pastebin.com/XkM7VL38
+2016-10-29 08:34:06	barteks2x	there is a lot of that
+2016-10-29 08:34:07	-->	N8Fear (~n8fear@p54A048BD.dip0.t-ipconnect.de) has joined #gentoo
+2016-10-29 08:36:07	-->	railssmith (~railssmit@c-73-189-177-212.hsd1.ca.comcast.net) has joined #gentoo
+2016-10-29 08:36:29	-->	iomonad (~iomonad@188.122.86.254) has joined #gentoo
+2016-10-29 08:36:29	<--	iomonad (~iomonad@188.122.86.254) has quit (Changing host)
+2016-10-29 08:36:29	-->	iomonad (~iomonad@unaffiliated/iomonad) has joined #gentoo
+2016-10-29 08:36:56	<--	N8Fear_ (~n8fear@p5DC5DE46.dip0.t-ipconnect.de) has quit (Ping timeout: 250 seconds)
+2016-10-29 08:37:02	<--	svslv (~user1@node-236-232-28-94.domolink.tula.net) has quit (Quit: Konversation terminated!)
+2016-10-29 08:38:29	-->	KWhat4 (~kwhat@47.150.72.111) has joined #gentoo
+2016-10-29 08:38:54	<--	mackal (~mike@pool-96-237-144-12.bstnma.fios.verizon.net) has quit (Quit: BE VIGILANT.)
+2016-10-29 08:38:56	KWhat4	hi, I am getting a required use flags for llvm: multitarget? ( llvm_targets_AArch64 llvm_targets_ARM llvm_targets_Hexagon llvm_targets_Mips llvm_targets_MSP430 llvm_targets_PowerPC llvm_targets_Sparc llv
+2016-10-29 08:38:56	KWhat4	m_targets_SystemZ llvm_targets_XCore )  Are there new use flags for llvm?
+2016-10-29 08:39:07	-->	barteks2x_ (~barteks2x@host2165.robnet.pl) has joined #gentoo
+2016-10-29 08:39:24	<--	parapente (~nobody@unaffiliated/parapente) has quit (Ping timeout: 268 seconds)
+2016-10-29 08:40:00	barteks2x_	netowrkmanager suddenly decided that it will start working after I stopped wpa_gui. WTF? And how am I supposed to not see wifi on linux as magic...
+2016-10-29 08:40:21	<--	sg1311 (~sg1331@12.203.168.194) has quit (Quit: Leaving)
+2016-10-29 08:40:53	barteks2x_	anyway, now back to my original problem: getting external sound card to work
+2016-10-29 08:42:33	<--	rpifan (~rpi@73.106.74.192) has quit (Remote host closed the connection)
+2016-10-29 08:42:33		[08:42]
+2016-10-29 08:42:53	-->	rpifan (~rpi@73.106.74.192) has joined #gentoo
+2016-10-29 08:42:57	<--	barteks2x (~barteks2x@host2165.robnet.pl) has quit (Ping timeout: 260 seconds)
+2016-10-29 08:43:23	<--	asurace (~asurace@131.228.182.248) has quit (Ping timeout: 245 seconds)
+2016-10-29 08:43:37	--	barteks2x_ is now known as barteks2x
+2016-10-29 08:46:09	<--	Zucca (~zucca@85-76-146-20-nat.elisa-mobile.fi) has quit (Ping timeout: 256 seconds)
+2016-10-29 08:46:51	KWhat4	anyone know what aarch64 is?
+2016-10-29 08:47:53	maolang	barteks2x: usb sound card?
+2016-10-29 08:48:06	davidk_	KWhat4: https://en.wikipedia.org/wiki/ARM_architecture
+2016-10-29 08:48:33	barteks2x	maolang, actually USB headphones
+2016-10-29 08:49:03	barteks2x	lsusb shows it's CM108 Audio Controller, I think I should be able to find it in kernel config
+2016-10-29 08:49:08	<--	creat (~creat@unaffiliated/creat) has quit (Ping timeout: 260 seconds)
+2016-10-29 08:49:25	maolang	barteks2x: in kernel device drivers, probably looking under /device drivers/muletimedia or usb devices
+2016-10-29 08:50:26	barteks2x	I think it would be Sound card support
+2016-10-29 08:51:02	-->	nE0sIghT (~Thunderbi@unaffiliated/ne0sight) has joined #gentoo
+2016-10-29 08:51:34	maolang	since its usb, though it either is a subsection or usb stuff, there is a whole library of themin there,  i got my external headphones this way as well
+2016-10-29 08:52:13	-->	barosan (~barosan@113-235-114-200.fibertel.com.ar) has joined #gentoo
+2016-10-29 08:52:47	-->	Nuc1eoN (~nuc@lak-39-4.wohnheime.ruhr-uni-bochum.de) has joined #gentoo
+2016-10-29 08:52:56	-->	netz (~netz@unaffiliated/ntzrmtthihu777) has joined #gentoo
+2016-10-29 08:53:11	maolang	when you change kernel options, if you change something that requires a kernel rebuild and you just run make -j4 for example it will detect and build full kernel if needed right?
+2016-10-29 08:54:56	barteks2x	I just redo the same stepsas in the installation instructions - make && make install_modules and them make install
+2016-10-29 08:55:59	maolang	then rebuild grub, it will move the kernel to .old and the newest default will be the newly built one barteks2x
+2016-10-29 08:56:30	xavier1	why rebuild grub vs grub-mkconfig
+2016-10-29 08:56:53	barteks2x	i'm still not exactly sure which option would work with my usb headphones
+2016-10-29 08:57:14	maolang	xavier1: did not mean like create from scratch, just update...
+2016-10-29 08:57:47	xavier1	maolang: using emerge --update grub?
+2016-10-29 08:57:47		[08:57]
+2016-10-29 08:57:57	xavier1	Reason why I'm asking is because I don't know
+2016-10-29 08:58:19	maolang	xavier1: update grub as in run it to update and scan for new kernels and add it to the boot menu etc
+2016-10-29 08:58:47	barteks2x	google isn't very helpful with that, lsusb shows 0d8c:013c C-Media Electronics, Inc. CM108 Audio Controller for these headphones
+2016-10-29 08:59:18	barteks2x	and I have no idea which kernel module would help
+2016-10-29 08:59:43	maolang	barteks2x: let me look with you
+2016-10-29 09:00:20	<--	rullie (~rullie@dhcp-108-168-106-227.cable.user.start.ca) has quit (Ping timeout: 256 seconds)
+2016-10-29 09:00:57	barteks2x	could just SND_USB_AUDIO work?
+2016-10-29 09:03:48	maolang	could but dont know, here look in that path --> /device drivers/ either one of (Sound Card Support, HID support, USB Support)
+2016-10-29 09:04:14	barteks2x	I will try with just that
+2016-10-29 09:04:15	<--	daey (~Flutterba@unaffiliated/day) has quit (Ping timeout: 265 seconds)
+2016-10-29 09:04:26	<--	DeviantPeer (~kvirc@541E60B8.cm-5-7b.dynamic.ziggo.nl) has quit (Ping timeout: 252 seconds)
+2016-10-29 09:04:41	maolang	and under USB support near the bottom like in physical layers and usb gadgets
+2016-10-29 09:05:25	<--	barteks2x (~barteks2x@host2165.robnet.pl) has quit (Remote host closed the connection)
+2016-10-29 09:05:28	maolang	there is an audio class driver for usb in gadget section
+2016-10-29 09:06:01	doc235	use the search feature of menuconfig and look for cm108. maybe that will help
+2016-10-29 09:06:13	maolang	you will likely as well need some audio codecs for playback of audio
+2016-10-29 09:06:22	maolang	doc235: already did ;(
+2016-10-29 09:07:02	doc235	:/
+2016-10-29 09:08:22	maolang	when first running and hunting down items in the kernel, it feels like you are almost searching for a specific piece of sand dust in the sahara :)
+2016-10-29 09:08:28	-->	barteks2x (~barteks2x@host2165.robnet.pl) has joined #gentoo
+2016-10-29 09:08:55	barteks2x	the soud card works with just that one option, but ifi still behaves in weird ways
+2016-10-29 09:09:06	maolang	at first in any case :)
+2016-10-29 09:09:21	maolang	so you got the usb sound working then good
+2016-10-29 09:09:28	barteks2x	to get netowrk manager to work, I have to first start wpa_gui and scan and then close it, only then network manager will connet
+2016-10-29 09:09:38	KWhat4	anyone one have a ton of checksum errors today?
+2016-10-29 09:09:42	maolang	in my case i needed a HD codec, the sound class and the module
+2016-10-29 09:10:15	barteks2x	any idea why network manager would work in such weird way?
+2016-10-29 09:10:29	barteks2x	after the wpa_gui trick it works fine until reboot
+2016-10-29 09:10:33	maolang	is it starting automatically barteks2x ?
+2016-10-29 09:10:42	maolang	are you on systemd or openrc?
+2016-10-29 09:10:57	<--	Naeil (~nzoueidi@ubuntu/member/na3il) has quit (Ping timeout: 260 seconds)
+2016-10-29 09:10:57	barteks2x	I have to start networkManager manually now because  I didn' make it start automatically yet
+2016-10-29 09:11:04	barteks2x	and I use openrc
+2016-10-29 09:11:23	maolang	you configured dhcpd or something like this?
+2016-10-29 09:12:11	maolang	have the procedure to start all ok but under systemd
+2016-10-29 09:12:25	barteks2x	I might have dhcpd, I see it at boot time (when I don't have ethernnet plugged in it just waites a few seconds when booting...)
+2016-10-29 09:12:42	-->	latenite (~latenite@p549FD024.dip0.t-ipconnect.de) has joined #gentoo
+2016-10-29 09:13:08	-->	PichuChen (~PichuChen@2001:b011:30e0:1431:2c8c:e9c3:9210:8f99) has joined #gentoo
+2016-10-29 09:13:08		[09:13]
+2016-10-29 09:13:16	barteks2x	accordint to the wiki I should run this: rc-update del dhcpcd default but when I do that I get  * rc-update: service `dhcpcd' is not in the runlevel `default'
+2016-10-29 09:14:09	barteks2x	note: i'm following this page https://wiki.gentoo.org/wiki/NetworkManager
+2016-10-29 09:14:19	maolang	roughly here is what i have for systemd: dhcpd with this to match all network cards with * --> http://dpaste.com/0KFQ3YY
+2016-10-29 09:14:30	maolang	there will be a similar file for openrc
+2016-10-29 09:14:59	barteks2x	except that I have no idea where :(
+2016-10-29 09:15:31	<--	blueness_ (~blueness@gentoo/developer/blueness) has quit (Quit: blueness_)
+2016-10-29 09:15:49	maolang	i have as well networkd to take care of resolv dns
+2016-10-29 09:16:07	maolang	and wpa supplecant
+2016-10-29 09:16:33	maolang	then i got auto starting network manager and network manager wait online services
+2016-10-29 09:16:34	<--	rpifan (~rpi@73.106.74.192) has quit (Remote host closed the connection)
+2016-10-29 09:16:46	barteks2x	doesn't network-manager take care of resolv.conf?
+2016-10-29 09:17:14	shuzzle	It should...
+2016-10-29 09:17:18	maolang	via dependent services etc
+2016-10-29 09:17:37	barteks2x	i added network manager properly nw, will reboot to test
+2016-10-29 09:17:40	<--	barteks2x (~barteks2x@host2165.robnet.pl) has quit (Remote host closed the connection)
+2016-10-29 09:18:02	maolang	now for me all my network wired or wifi is A1 with what i described
+2016-10-29 09:18:34	-->	barteks2x (~barteks2x@host2165.robnet.pl) has joined #gentoo
+2016-10-29 09:18:48	barteks2x	it works fine now, I guess it was justa problem with some existing service
+2016-10-29 09:18:59	maolang	dhcpd * for network interfaces so all dhcp, networkd, network manager, wpa supp. and network wait online
+2016-10-29 09:18:59	<--	aranea (~aranea@wikimedia/FalconL) has quit (Quit: leaving)
+2016-10-29 09:19:31	<--	Nuc1eoN (~nuc@lak-39-4.wohnheime.ruhr-uni-bochum.de) has quit (Quit: Konversation terminated!)
+2016-10-29 09:19:47	-->	Nuc1eoN (~nuc@lak-39-4.wohnheime.ruhr-uni-bochum.de) has joined #gentoo
+2016-10-29 09:20:01	maolang	i believe the network wait online one is for when you plug and unplug a lan wire so it gets it back automatically
+2016-10-29 09:20:16	barteks2x	and a small issue: when startig, chrome asks me for keyring password, and whatever I input it ssays it's incorrect. I think I incorrectly typed it in the first time, how to delete it and start over?
+2016-10-29 09:20:58	-->	geetar (~geetar@75-137-122-153.dhcp.gnvl.sc.charter.com) has joined #gentoo
+2016-10-29 09:21:04	--	Captain_Beezay is now known as Captain_beezay_
+2016-10-29 09:21:45	barteks2x	found it
+2016-10-29 09:21:55	maolang	what was the name you looked for?
+2016-10-29 09:22:21	--	Captain_beezay_ is now known as Captain_beezay
+2016-10-29 09:22:39	-->	blueness_ (~blueness@gentoo/developer/blueness) has joined #gentoo
+2016-10-29 09:22:39	--	Mode #gentoo [+v blueness_] by ChanServ
+2016-10-29 09:22:45	geetar	Question:  can someone help me setting up two displays on gentoo?
+2016-10-29 09:23:06	geetar	My motherboard display card works.
+2016-10-29 09:23:32	geetar	When I install another card in a PCI slot it takes over and my motherboard display does not work.
+2016-10-29 09:24:06	tina	geetar: more a bios thing i guess
+2016-10-29 09:24:14	maolang	geetar: has it ever worked onboard and pci at the same time, in some cases its disabled once you plug another display card in...
+2016-10-29 09:24:31	doc235	i would think that is a bios thing geetar
+2016-10-29 09:24:35	maolang	perhaps video card use order in bios...
+2016-10-29 09:24:51	<--	natmal (~asdf@cpe-67-240-180-41.rochester.res.rr.com) has quit
+2016-10-29 09:25:02	tina	geetar: my mainboard not alows that , can have only one here :|
+2016-10-29 09:25:17	--	Captain_beezay is now known as Captain_beezay_
+2016-10-29 09:25:38	maolang	had same in the says with my i815 onboard could not get it at same time as my nvidia
+2016-10-29 09:25:50	geetar	thanks all - I will check bios.
+2016-10-29 09:26:39	<--	wakeful (~adrian@ht.48k.io) has quit (Quit: leaving)
+2016-10-29 09:26:47	geetar	tina: this is a used/built computer.  Do you know how I can figure out of my computer allows it?
+2016-10-29 09:27:35	maolang	google and check bios, not much more i can say on that...
+2016-10-29 09:29:01	geetar	Interestingly, my ethernet did not work with the PCI card installed.  Does that make sense to anyone?
+2016-10-29 09:29:01		[09:29]
+2016-10-29 09:29:02	maolang	but very likely onboard is disabled when you plug in an extra video card, unless you have some video card use order but even that may be to use a PCI vefore agp etc
+2016-10-29 09:29:08	--	Captain_beezay_ is now known as Captain_Beezay
+2016-10-29 09:29:31	maolang	geetar pci irq conflicts, might need adjusting in bios or a differe,t pci slot combination...
+2016-10-29 09:29:52	geetar	thanks
+2016-10-29 09:30:12	<--	piling (~piling@unaffiliated/piling) has quit (Quit: leaving)
+2016-10-29 09:31:01	maolang	in any case make sure bios is latest version...
+2016-10-29 09:31:05	-->	jtriley (~jtriley@209-6-38-104.c3-0.smr-ubr2.sbo-smr.ma.cable.rcn.com) has joined #gentoo
+2016-10-29 09:32:44	maolang	in my case bios latest version  is from 2011 and to add a specific feature,  i had to hack / modify a bios module to activate the AES intel cpu flag which was disabled in bios but existing on the cpu i have onit
+2016-10-29 09:33:05	maolang	and had no enable / disable option for it in bios
+2016-10-29 09:33:25	<--	blackflow (~blackflow@freebsd/contributor/blackflow) has quit (Quit: leaving)
+2016-10-29 09:33:37	<--	hadadat_ (hadadat@gateway/vpn/mullvad/x-bkscnkcdlhgnlnxw) has quit (Quit: leaving)
+2016-10-29 09:33:45	<--	mguillech (~mguillech@181.95.51.85) has quit (Remote host closed the connection)
+2016-10-29 09:33:54	-->	hadadat (hadadat@gateway/vpn/mullvad/x-abvegfqfjpcsyomv) has joined #gentoo
+2016-10-29 09:34:20	<--	maolang (~maolang@2a01:e35:2e6c:5620:c77e:c4ff:15e1:718) has quit (Remote host closed the connection)
+2016-10-29 09:34:21	<--	iflema (~ian@2001:8003:210f:1a00:6c76:930a:1de5:ee9b) has quit (Read error: Connection reset by peer)
+2016-10-29 09:35:10	-->	iflema (~ian@2001:8003:210f:1a00:6c76:930a:1de5:ee9b) has joined #gentoo
+2016-10-29 09:35:15	barteks2x	the file I looked for was ~/.local/share/keyrings/login.keyring
+2016-10-29 09:35:58	<--	fhede (~fhede@h83-209-50-149.cust.se.alltele.net) has quit (Read error: Connection reset by peer)
+2016-10-29 09:36:17	geetar	maolang: I will check into it.  Thanks all.
+2016-10-29 09:36:21	-->	maolang (~maolang@2a01:e35:2e6c:5620:4a5d:60ff:fecc:e4a1) has joined #gentoo
+2016-10-29 09:37:05	<--	geetar (~geetar@75-137-122-153.dhcp.gnvl.sc.charter.com) has quit (Remote host closed the connection)
+2016-10-29 09:40:11	strixdio	Trying to follow this guide: https://wiki.gentoo.org/wiki/Docker but "Bridged IP/ARP packets filtering" isn't an option in the section it says... What am I missing, or should I be doing?
+2016-10-29 09:42:21	-->	petteyg (~petteyg@cpe-72-178-209-134.austin.res.rr.com) has joined #gentoo
+2016-10-29 09:42:42	petteyg	KDE plasmashell is eating 1.25 cpu cores today. Lots of references on Google, no apparent fixes. Anybody run into this and fixed it?
+2016-10-29 09:43:15	<--	Pent (~pant@S01061c1b689d60c9.cg.shawcable.net) has quit (Quit: Leaving)
+2016-10-29 09:44:56	-->	[ui] (uid21688@gateway/web/irccloud.com/x-gqwsncnkdqluzsvt) has joined #gentoo
+2016-10-29 09:44:56		[09:44]
+2016-10-29 09:45:14	<--	jalan (~jalan@pool-71-163-164-190.washdc.fios.verizon.net) has quit (Quit: Quit)
+2016-10-29 09:46:03	<--	iomonad (~iomonad@unaffiliated/iomonad) has quit (Quit: WeeChat 1.6)
+2016-10-29 09:47:05	DopeMeston	i have Fluxbox installed but i want to adjust the mouse speed. i looked around and found that i have to do 'xset mouse 5 4', when i run this i get 'xset:  unable to open display ":0"' even though i have $DISPLAY set to :0. i'm wondering if anyone can help me?
+2016-10-29 09:47:40	-->	iomonad (~iomonad@31.204.154.167) has joined #gentoo
+2016-10-29 09:47:41	<--	iomonad (~iomonad@31.204.154.167) has quit (Changing host)
+2016-10-29 09:47:41	-->	iomonad (~iomonad@unaffiliated/iomonad) has joined #gentoo
+2016-10-29 09:47:43	BtbN	seems like your display is not :0 then
+2016-10-29 09:47:55	BtbN	Or X is simply not running
+2016-10-29 09:48:02	-->	fhede (~fhede@h83-209-50-149.cust.se.alltele.net) has joined #gentoo
+2016-10-29 09:48:20	maolang	petteyg: is it possible it is the baloo indexer keeping a lot of business indexing stuff you dont want to index?
+2016-10-29 09:48:38	DopeMeston	X is not running, i am in the terminal
+2016-10-29 09:48:52	BtbN	well, so of course it can't connect to it.
+2016-10-29 09:48:54	-->	ccxQ (ccx@first.blesmrt.net) has joined #gentoo
+2016-10-29 09:49:43	DopeMeston	ah i see. i need to download a terminal to use in Fluxbox, then i will try it agian. thanks for the help
+2016-10-29 09:50:03	petteyg	maolang: No, not possible, because baloo is an entirely different process
+2016-10-29 09:50:05	<--	tirej (~tirej@195.142.179.36) has quit (Ping timeout: 256 seconds)
+2016-10-29 09:50:44	maolang	ok had to check had a 25% cpu when my indexer was running in plasma or the same counterpart in gnome
+2016-10-29 09:52:02	<--	ropotamo (~ropotamo@cst-prg-5-14.cust.vodafone.cz) has quit (Remote host closed the connection)
+2016-10-29 09:52:26	<--	blueness_ (~blueness@gentoo/developer/blueness) has quit (Quit: blueness_)
+2016-10-29 09:53:04	<--	KWhat4 (~kwhat@47.150.72.111) has quit (Ping timeout: 260 seconds)
+2016-10-29 09:53:39	barteks2x	it's a bit general question, not specifically about gentoo, but what would be a good place to put my own custom scripts and files they use? (like their .jar files if they use java)
+2016-10-29 09:53:39	Nuc1eoN	hi guys, I have tried to setup vagrant, but it says it cannot find the default provider (in my case virtualbox)
+2016-10-29 09:53:50	Nuc1eoN	however it is installed, any ideas?
+2016-10-29 09:54:03	Nuc1eoN	do I need virtualbox extensions?
+2016-10-29 09:54:34	barteks2x	on other installation I had a bit of a mess with that, some in /opt, some in /usr/local/bin and some in $HOME/bin
+2016-10-29 09:54:50	<--	Shentino (~Shentino@gentoo/contributor/shentino) has quit (Read error: Connection reset by peer)
+2016-10-29 09:56:53	<--	LiMp^ (~LiMp^@d24-141-241-49.home.cgocable.net) has quit (Remote host closed the connection)
+2016-10-29 09:59:16	petteyg	barteks2x: /usr/local/bin is widely used.
+2016-10-29 09:59:35	barteks2x	petteyg, and where would I for example put .jar files these scripts need?
+2016-10-29 09:59:43	BtbN	write an ebuild for the stuff you want to install.
+2016-10-29 10:00:02	BtbN	everything else just ends in a mess in the long run
+2016-10-29 10:00:02		[10:00]
+2016-10-29 10:00:05	petteyg	barteks2x: /usr/local/lib if it's a library, bin if it's an executable jar, and so on.
+2016-10-29 10:00:11	petteyg	But yes, write an ebuild.
+2016-10-29 10:00:15	barteks2x	how...?
+2016-10-29 10:00:24	BtbN	with your favourite text editor!
+2016-10-29 10:00:31	petteyg	/usr/local is there to throw trash in, but avoid trash if you can :)
+2016-10-29 10:00:54	barteks2x	then I also have a few things like intellij idea or eclipse or netbans that are packaged windows-style
+2016-10-29 10:00:58	petteyg	barteks2x: See $PORTDIR/skel.ebuild
+2016-10-29 10:01:06	BtbN	isn't intellij even in portage?
+2016-10-29 10:01:16	barteks2x	I usually need specific version
+2016-10-29 10:01:23	petteyg	barteks2x: Use the toolbox app for JetBrains stuff.
+2016-10-29 10:01:37	barteks2x	idea is the only intellij thing I use
+2016-10-29 10:02:14	barteks2x	previously I had all that stuff installed in /upt with executable symlinks in /usr/local/bin
+2016-10-29 10:02:18	barteks2x	*/opt
+2016-10-29 10:02:26	petteyg	barteks2x: Use the toolbox app anyway. It'll keep things in home.
+2016-10-29 10:03:17	barteks2x	If this is what I think it is - I hate this kind of stuff.
+2016-10-29 10:03:36	petteyg	barteks2x: Why?
+2016-10-29 10:03:43	-->	TwistedFate (~TwistedFa@unaffiliated/twistedfate) has joined #gentoo
+2016-10-29 10:04:10	barteks2x	the same reason I hate printer drivers on windows
+2016-10-29 10:04:27	<--	Cube8 (~Cube@151.30.54.29) has quit (Quit: Leaving)
+2016-10-29 10:04:44	bpkent	barteks2x: for idea maybe use dev-util/idea-ultimate
+2016-10-29 10:04:53	barteks2x	which version is that?
+2016-10-29 10:05:43	bpkent	barteks2x:: https://packages.gentoo.org/packages/dev-util/idea-ultimate
+2016-10-29 10:06:02	-->	echoSMILE (bcfa24d8@gateway/web/freenode/ip.188.250.36.216) has joined #gentoo
+2016-10-29 10:06:05	-->	Shentino (~Shentino@gentoo/contributor/shentino) has joined #gentoo
+2016-10-29 10:06:07	barteks2x	it looks like it's 2016.1.X, I need 2016.2.X
+2016-10-29 10:06:39	petteyg	barteks2x: Again, use the toolbox app.
+2016-10-29 10:07:18	barteks2x	is the toolbox app in portage?
+2016-10-29 10:07:30	petteyg	barteks2x: No. It's a "fuse app" or something.
+2016-10-29 10:07:54	barteks2x	what does it even mean?
+2016-10-29 10:08:00	<--	xmorph (~xt_@unaffiliated/xmorph) has quit (Quit: Konversation terminated!)
+2016-10-29 10:08:03	petteyg	barteks2x: Sort of like snap packages.
+2016-10-29 10:08:07	iomonad	What is the "Cyclomatic Complexity" output when recompiling kernel. This is new since 4.8 gentoo-kernel ?
+2016-10-29 10:08:15	<--	maolang (~maolang@2a01:e35:2e6c:5620:4a5d:60ff:fecc:e4a1) has quit (Remote host closed the connection)
+2016-10-29 10:08:18	echoSMILE	"Be aware AMD has dropped the support for closed source fglrx (Catalyst) drivers. The fglrx drivers only work with certain versions of the X server. " The certain versions of the X are the new ones? I want to enable opengl on my gentoo, I need this driver os the 'radeon' just work?
+2016-10-29 10:08:38	echoSMILE	s/os/or
+2016-10-29 10:08:54	-->	bharathc[m] (bharathcma@gateway/shell/matrix.org/x-jkjbhhaqywnaefrz) has joined #gentoo
+2016-10-29 10:08:55	petteyg	barteks2x: A FUSE filesystem image including its dependent libraries so it works across different distributions with their varying levels of keeping crap up to date.
+2016-10-29 10:09:05	barteks2x	I'm installing the one from portage... *maybe* that plugin will work with 2016.1
+2016-10-29 10:09:32	petteyg	echoSMILE: VIDEO_CARDS="radeon".
+2016-10-29 10:09:45	petteyg	echoSMILE: If your card is relatively new, add amdgpu in there.
+2016-10-29 10:10:14	petteyg	echoSMILE: ati-drivers is dead unless you want to be limited to ancient xorg-server.
+2016-10-29 10:10:20	-->	maolang (~maolang@2a01:e35:2e6c:5620:4a5d:60ff:fecc:e4a1) has joined #gentoo
+2016-10-29 10:10:21	barteks2x	anyway, I still need some good place for scripts that are going to just start some .jar files
+2016-10-29 10:10:34	-->	nyo (~nyo@host106-192-dynamic.49-79-r.retail.telecomitalia.it) has joined #gentoo
+2016-10-29 10:10:35	echoSMILE	petteyg: I want to enable opengl, radeon works for that?
+2016-10-29 10:10:40	-->	iomonads (~iomonad@217.23.15.116) has joined #gentoo
+2016-10-29 10:10:41	petteyg	Yes.
+2016-10-29 10:10:51	barteks2x	and "making an ebuild" seems quite complicated formsomething like that
+2016-10-29 10:10:59	<--	petteyg (~petteyg@cpe-72-178-209-134.austin.res.rr.com) has quit (Quit: leaving)
+2016-10-29 10:11:03	echoSMILE	petteyg: but is will use GPU or opengl by software?
+2016-10-29 10:11:20	echoSMILE	s/is/it
+2016-10-29 10:12:06	-->	xmorph (~xt_@unaffiliated/xmorph) has joined #gentoo
+2016-10-29 10:13:44	<--	iomonad (~iomonad@unaffiliated/iomonad) has quit (Ping timeout: 252 seconds)
+2016-10-29 10:13:52	<--	lenrek (~lenrek@2604:2d80:c027:c959:84bf:a956:faf6:25bd) has quit (Quit: leaving)
+2016-10-29 10:14:16	<--	pro_z (~pro_z@nat4-minsk-pool-46-53-179-89.telecom.by) has quit (Ping timeout: 244 seconds)
+2016-10-29 10:14:50	nyo	hello I need help with slim, I always get a blank screen on /etc/xinit.d/xdm start. I have dbus, consolekit installed http://pastebin.com/JKBv0wdN
+2016-10-29 10:15:00	-->	svslv (~user1@node-206-250-139-95.domolink.tula.net) has joined #gentoo
+2016-10-29 10:16:00	<--	M_n_K (~M_n_K@unaffiliated/m-n-k/x-5820698) has quit (Ping timeout: 260 seconds)
+2016-10-29 10:16:00		[10:16]
+2016-10-29 10:16:12	svslv	make modules_install says nvidia.ko needs unknown symbols: https://paste.pound-python.org/show/lLyAG03078lB432B2ns7/
+2016-10-29 10:16:14	-->	lenrek (~lenrek@2604:2d80:c027:c959:a004:5088:e397:fb4a) has joined #gentoo
+2016-10-29 10:16:23	svslv	But all works
+2016-10-29 10:18:10	-->	natmal (~asdf@cpe-67-240-180-41.rochester.res.rr.com) has joined #gentoo
+2016-10-29 10:19:30	barosan	hi, I installed mailx to send mail only locally between users in the same computer, it doesn't work ootb, do I need postfix or similar even though I don't want to send mail externally?
+2016-10-29 10:19:38	<--	BlackBishop (~dexter@ipv6.d3xt3r01.tk) has quit (Ping timeout: 245 seconds)
+2016-10-29 10:19:58	zyliwax	what exactly does CONFIG_GENTOO_LINUX do for kernel configuration?
+2016-10-29 10:21:24	<--	enki (~enki@dynamic-78-30-156-27.adsl.eunet.rs) has quit (Quit: .)
+2016-10-29 10:21:34	svslv	 zyliwax: sets various required configuration options for typical installations: https://wiki.gentoo.org/wiki/Kernel/Configuration
+2016-10-29 10:21:42	barteks2x	is there intellij idea community edition available in gentoo?
+2016-10-29 10:21:46	<--	netz (~netz@unaffiliated/ntzrmtthihu777) has quit (Ping timeout: 268 seconds)
+2016-10-29 10:23:19	strixdio	https://wiki.gentoo.org/wiki/Docker >  kernel "security options > diffie-hellman" doesn't exist
+2016-10-29 10:23:20	<--	maolang (~maolang@2a01:e35:2e6c:5620:4a5d:60ff:fecc:e4a1) has quit (Remote host closed the connection)
+2016-10-29 10:23:58	-->	maolang (~maolang@2a01:e35:2e6c:5620:4a5d:60ff:fecc:e4a1) has joined #gentoo
+2016-10-29 10:24:04	zyliwax	huh, seems rather minimal, i already have tmpfs support by my own hand, i see no harm in enabling it
+2016-10-29 10:24:12	-->	blueness_ (~blueness@gentoo/developer/blueness) has joined #gentoo
+2016-10-29 10:24:12	--	Mode #gentoo [+v blueness_] by ChanServ
+2016-10-29 10:24:50	-->	catpig (~catpig@p54BD6DC4.dip0.t-ipconnect.de) has joined #gentoo
+2016-10-29 10:24:50	-->	pseudonymous (~gentoo@1903ds5-suoe.0.fullrate.ninja) has joined #gentoo
+2016-10-29 10:25:50	<--	maolang (~maolang@2a01:e35:2e6c:5620:4a5d:60ff:fecc:e4a1) has quit (Remote host closed the connection)
+2016-10-29 10:26:06	-->	Sazpaimon (~wat@unaffiliated/Sazpaimon) has joined #gentoo
+2016-10-29 10:26:30	Sazpaimon	does anybody know if this smartctl output means the drive is bad and needs replacing? http://pastebin.com/rHngt2V1
+2016-10-29 10:26:44	<--	glop102 (44018031@gateway/web/freenode/ip.68.1.128.49) has quit (Quit: Page closed)
+2016-10-29 10:26:49	-->	netz (~netz@unaffiliated/ntzrmtthihu777) has joined #gentoo
+2016-10-29 10:26:56	-->	JeffATL (~FYRD@99-157-54-155.lightspeed.tukrga.sbcglobal.net) has joined #gentoo
+2016-10-29 10:27:42	<--	natmal (~asdf@cpe-67-240-180-41.rochester.res.rr.com) has quit
+2016-10-29 10:28:07	<--	bocaneri (~bocaneri@about/linux/staff/sauvin) has quit (Read error: Connection reset by peer)
+2016-10-29 10:28:55	-->	yenien (~yenien@unaffiliated/frangor) has joined #gentoo
+2016-10-29 10:30:59	<--	echoSMILE (bcfa24d8@gateway/web/freenode/ip.188.250.36.216) has quit (Quit: Page closed)
+2016-10-29 10:31:09	Kelsar	Sazpaimon: if the drive sent that data it is broken, but maybe check cables and controller 1st
+2016-10-29 10:31:09		[10:31]
+2016-10-29 10:32:06	Sazpaimon	this server is only a few months old so I'd be surprised, but not very, if the drive is broken
+2016-10-29 10:32:11	<--	nyo (~nyo@host106-192-dynamic.49-79-r.retail.telecomitalia.it) has quit (Remote host closed the connection)
+2016-10-29 10:33:12	Hoolootwo	if something says the drive is bad, always do backups/raid, and never be surprised if it goes down
+2016-10-29 10:33:30	Sazpaimon	it's already a second drive in a raid1 array
+2016-10-29 10:34:02	Sazpaimon	sda seems to be chugging along just fine
+2016-10-29 10:34:12	-->	maolang (~denis@2a01:e35:2e6c:5620:4a5d:60ff:fecc:e4a1) has joined #gentoo
+2016-10-29 10:34:21	-->	mguillech (~mguillech@181.95.51.85) has joined #gentoo
+2016-10-29 10:34:35	Sazpaimon	and i dont think its the cables unless they somehow fell out in the last few months
+2016-10-29 10:34:55	Kelsar	 there are a lot of vibration going on in servers
+2016-10-29 10:35:13	-->	nyo (~nyo@host106-192-dynamic.49-79-r.retail.telecomitalia.it) has joined #gentoo
+2016-10-29 10:36:21	<--	maolang (~denis@2a01:e35:2e6c:5620:4a5d:60ff:fecc:e4a1) has quit (Client Quit)
+2016-10-29 10:36:39	JeffATL	having trouble setting up an NTFS-formatted 1TB USB drive for write by all users. first i need to understand if i'm going NTFS the right way - this is kernel 4.4.21 and its ntfs module is loaded
+2016-10-29 10:37:15	<--	albertus1 (~seb@x4e32de22.dyn.telefonica.de) has quit (Quit: Leaving.)
+2016-10-29 10:37:15	Nuc1eoN	hey guys, anybody experienced in setting up vagrant?
+2016-10-29 10:37:16	-->	maolang (~maolang@2a01:e35:2e6c:5620:4a5d:60ff:fecc:e4a1) has joined #gentoo
+2016-10-29 10:37:16	Nuc1eoN	I just cant get it to run using "vagrant up"
+2016-10-29 10:37:18	Nuc1eoN	it says is cannot find the provider (virualbox in my case)
+2016-10-29 10:37:30	Kelsar	Nuc1eoN: remove that, use ntfs3g, kernel ntfs support is "lack luster"
+2016-10-29 10:38:04	Nuc1eoN	Kelsar: I'm sorry? what should I remove??
+2016-10-29 10:38:14	Kelsar	Nuc1eoN: kernel ntfs modul
+2016-10-29 10:38:24	Kelsar	atleast don't use it
+2016-10-29 10:38:32	Nuc1eoN	Kelsar: I think you meant another user
+2016-10-29 10:38:48	<--	netz (~netz@unaffiliated/ntzrmtthihu777) has quit (Ping timeout: 245 seconds)
+2016-10-29 10:38:52	Kelsar	Nuc1eoN: oh sorry, indeed JeffATL
+2016-10-29 10:38:52	<--	mguillech (~mguillech@181.95.51.85) has quit (Ping timeout: 260 seconds)
+2016-10-29 10:39:39	<--	Lowl3v3l (~Lowl3v3l@dslb-188-107-138-032.188.107.pools.vodafone-ip.de) has quit (Remote host closed the connection)
+2016-10-29 10:39:49	JeffATL	Kelsar: got it
+2016-10-29 10:41:31	-->	samaelkishi (~samaelkis@71-217-67-1.tukw.qwest.net) has joined #gentoo
+2016-10-29 10:42:10	-->	Lowl3v3l (~Lowl3v3l@dslb-188-107-138-032.188.107.pools.vodafone-ip.de) has joined #gentoo
+2016-10-29 10:42:49	-->	loke__ (~loke@95.169.55.204) has joined #gentoo
+2016-10-29 10:42:56	-->	parapente (~nobody@unaffiliated/parapente) has joined #gentoo
+2016-10-29 10:43:12	samaelkishi	Sooo... what's the general consensus these days concening global ~arch?
+2016-10-29 10:43:16	samaelkishi	Terrible idea?
+2016-10-29 10:43:21	--	loke__ is now known as aktiv[b]
+2016-10-29 10:44:12	samaelkishi	barrel of fun fish?
+2016-10-29 10:44:49	<--	parapente (~nobody@unaffiliated/parapente) has quit (Client Quit)
+2016-10-29 10:45:04	<--	bblum (~bblum@gs12642.sp.cs.cmu.edu) has left #gentoo
+2016-10-29 10:45:27	-->	cu-user (~user@101.220.73.186) has joined #gentoo
+2016-10-29 10:46:30	JeffATL	if i'm going to write a USB drive with good linux/mac/win readability, NTFS best fs choise?
+2016-10-29 10:46:30		[10:46]
+2016-10-29 10:46:55	samaelkishi	JeffATL: I'd go vfat...
+2016-10-29 10:47:04	earendil	NTFS is kind of a pain on non-windows
+2016-10-29 10:47:16	<--	nyo (~nyo@host106-192-dynamic.49-79-r.retail.telecomitalia.it) has quit (Remote host closed the connection)
+2016-10-29 10:47:16	samaelkishi	JeffATL: unless you need files larger than 4GB, then you're stuck with something like exfat or NTFS
+2016-10-29 10:47:19	maolang	unless you will have file sizes over the fat32 limit ofc
+2016-10-29 10:47:28	JeffATL	samaelkishi: is a 1tb drive fwiw
+2016-10-29 10:47:45	samaelkishi	Yeesh... well... there does exist a decent ext3 driver for Windows
+2016-10-29 10:48:07	samaelkishi	So you could possibly go that route, but there are... sticky issues, sometimes. It's not perfect.
+2016-10-29 10:48:17	strixdio	anyone know why diffie-hellman isn't in my kernel build options?
+2016-10-29 10:48:21	<--	p-x (~Thunderbi@213.155.31.62) has quit (Quit: p-x)
+2016-10-29 10:48:35	aktiv[b]	so after trying kde5 for a while I'm pulling the plug on it. any major gotchas with changing profile from desktop/plasma to /desktop ?
+2016-10-29 10:49:44	-->	nyo (~nyo@host106-192-dynamic.49-79-r.retail.telecomitalia.it) has joined #gentoo
+2016-10-29 10:50:00	samaelkishi	aktiv[b]: other than the annoyingly-long emerge -DuN world, subsequent --depclean, and fixing of broken bits afterwards, I'm guessing not
+2016-10-29 10:50:03	samaelkishi	BUT
+2016-10-29 10:50:06	<--	pseudonymous (~gentoo@1903ds5-suoe.0.fullrate.ninja) has quit (Ping timeout: 265 seconds)
+2016-10-29 10:50:14	samaelkishi	I've never done it, so be cautious
+2016-10-29 10:51:50	-->	PsyLok (~PsyLok@151.68.84.85) has joined #gentoo
+2016-10-29 10:51:51	<--	PsyLok (~PsyLok@151.68.84.85) has quit (Changing host)
+2016-10-29 10:51:51	-->	PsyLok (~PsyLok@unaffiliated/psylok) has joined #gentoo
+2016-10-29 10:51:57	-->	JigmeDatse (~JigmeDats@d50-92-204-151.bchsia.telus.net) has joined #gentoo
+2016-10-29 10:52:42	maolang	aktiv[b]: same, change profile and running something like this --> emerge --ask -c (qlist -I kde*)
+2016-10-29 10:52:47	barteks2x	So I installed idea-ultimate... and this is not what I want. I want the community edition. Any reasonable way to get it other than the intellij toolbox?
+2016-10-29 10:52:57	-->	tilda_ (~tilda@unaffiliated/tildaturn) has joined #gentoo
+2016-10-29 10:52:58	maolang	followed by a emerge --ask --depclean
+2016-10-29 10:54:26	aktiv[b]	samaelkishi: the long emerge I can schedule and the broken bits I can handle, as long as it's just 'bits'
+2016-10-29 10:54:28	nyo	Hi guys, can someone help me with slim? I simply get blank screen http://pastebin.com/JKBv0wdN
+2016-10-29 10:54:58	nyo	I think this is the problem >> slim: unable to connect to X server
+2016-10-29 10:55:20	nyo	but if I go startxfce4 from the shell it does just load up fine...
+2016-10-29 10:55:29	nyo	I just need to auto start xfce4 on pc boot up...
+2016-10-29 10:56:15	maolang	aktiv[b]: With a system as big as plasma, there are likely a possibility of bigger bits, you wont know for sure until you try it, then stripping your package.use added config etc of anything plasmatic...
+2016-10-29 10:56:18	nyo	grknight, you there?
+2016-10-29 10:57:34	<--	Nuc1eoN (~nuc@lak-39-4.wohnheime.ruhr-uni-bochum.de) has quit (Changing host)
+2016-10-29 10:57:34	-->	Nuc1eoN (~nuc@oss/nuc1eon) has joined #gentoo
+2016-10-29 10:58:18	maolang	aktiv[b]: running just this part of the emerge command i posted above, can give you an idea of main stuff getting removed --> qlist -I kde*
+2016-10-29 10:58:38	maolang	after that a --depclean should remove non needed other dependencies
+2016-10-29 10:59:03	sdoubleyou	nyo: SLiM can automatically start your Xfce session if you add XSESSION="Xfce4" to /etc/env.d/90xsession and then echo XSESSION=\"Xfce4\" > /etc/env.d/90xsession
+2016-10-29 10:59:06	sdoubleyou	env-update && source /etc/profile
+2016-10-29 10:59:06	<--	caveman (~al-cavema@unaffiliated/mahmoud) has quit (Quit: bbl)
+2016-10-29 10:59:15	aktiv[b]	maolang: I just did, I think it should be quoted, because it listed everything on my system :P
+2016-10-29 11:00:04	maolang	aktiv[b]: http://dpaste.com/3NV5R9P
+2016-10-29 11:00:10	maolang	in my case
+2016-10-29 11:00:37	nyo	ok sdoubleyou gonna try
+2016-10-29 11:00:39	nyo	brb
+2016-10-29 11:00:41	<--	nyo (~nyo@host106-192-dynamic.49-79-r.retail.telecomitalia.it) has quit (Quit: Leaving)
+2016-10-29 11:00:45	<--	_0bitcount (~Big_Byte@92.176.142.156) has quit (Quit: Leaving)
+2016-10-29 11:01:29	-->	Wizzup (~Wizzup@a82-161-36-93.adsl.xs4all.nl) has joined #gentoo
+2016-10-29 11:01:36	maolang	aktiv[b]: this would ofc remove any kde apps by matching kde in package names, so a lighter touch would be changing the keyword to plasma or just unmerging at first the main plasma meta package
+2016-10-29 11:01:36		[11:01]
+2016-10-29 11:01:55	-->	meridion (~meridion@a56022.upc-a.chello.nl) has joined #gentoo
+2016-10-29 11:04:13	aktiv[b]	yeah that sounds wise
+2016-10-29 11:04:20	-->	netz (~netz@unaffiliated/ntzrmtthihu777) has joined #gentoo
+2016-10-29 11:04:48	JeffATL	getting very long waits after sshing to a gentoo machine from my macbook after entering password - not every time though
+2016-10-29 11:04:50	maolang	aktiv[b]: if any doubths you can also quickpck bin backup what you will uninstall so if there is too much you unmerge you can bring them fast without rebuilding them --> quickpkg $(qlist -I kde*)
+2016-10-29 11:05:15	cronolio	dispatch-conf does not care about file owner ?
+2016-10-29 11:05:40	maolang	aktiv[b]: you would then need to re-emerge using --> emerge packagename --usepkg=y
+2016-10-29 11:06:10	aktiv[b]	maolang: that's brilliant
+2016-10-29 11:06:39	maolang	ak for bin pkg through you might need to create an entry in make.conf to have the folder for bins configured
+2016-10-29 11:07:13	Wizzup	Is there a little endian ppc64 stage3?
+2016-10-29 11:07:15	maolang	PKGDIR="/usr/portage/distfiles/bin~" # for example
+2016-10-29 11:07:19	-->	Photon12 (~chatzilla@2804:14c:30:1:c67:d024:be1e:2f74) has joined #gentoo
+2016-10-29 11:07:20	Wizzup	(Also, #gentoo-ppc seems empty :()
+2016-10-29 11:08:11	maolang	aktiv[b]: the nice thing with bin pkg, they would install as fast as any other binary distros as it would not build anything but simply install
+2016-10-29 11:08:44	<--	netz (~netz@unaffiliated/ntzrmtthihu777) has quit (Ping timeout: 260 seconds)
+2016-10-29 11:09:00	-->	nyo (~nyo@host106-192-dynamic.49-79-r.retail.telecomitalia.it) has joined #gentoo
+2016-10-29 11:09:15	mykon	anyone know how to set usb to max powersaving? I can boil an egg on top of a usb when plugged
+2016-10-29 11:09:38	<--	space-xpc (~user1@unaffiliated/space-xpc) has quit (Ping timeout: 250 seconds)
+2016-10-29 11:09:59	nyo	sdoubleyou, no way :-(
+2016-10-29 11:11:20	nyo	gonna try again..
+2016-10-29 11:11:22	<--	nyo (~nyo@host106-192-dynamic.49-79-r.retail.telecomitalia.it) has quit (Client Quit)
+2016-10-29 11:12:20	maolang	aktiv[b]: in any case with emerge / quickpkg you can most defitively remove it safely and if needed remerge too much removed packages without rebuilding at least some...
+2016-10-29 11:12:40	<--	toralf (~toralf@x4e369e27.dyn.telefonica.de) has quit (Ping timeout: 250 seconds)
+2016-10-29 11:12:46	aktiv[b]	maolang: yeah that sounds like a very neat approach
+2016-10-29 11:13:16	maolang	aktiv[b]: consider a bin package with different USE flag than one built in it, needs a rebuilt
+2016-10-29 11:13:24	mykon	I can use the usb3.0 pendrive as frying pan here
+2016-10-29 11:13:24	mykon	help
+2016-10-29 11:14:22	maolang	aktiv[b]: i have features="binpkg-multi-instance buildpkg" in make conf so by default i have always a bin backup available
+2016-10-29 11:14:35	maolang	meant FEATURES=
+2016-10-29 11:15:33	<--	doc235 (~Blain@gentoo/contributor/doc235) has quit (Ping timeout: 260 seconds)
+2016-10-29 11:15:58	<--	ilovekiruna (~ilovekiru@b2b-130-180-113-170.unitymedia.biz) has quit (Ping timeout: 250 seconds)
+2016-10-29 11:16:35	 *	mykon prepares a cup of hot tea with the usb 3.0 port
+2016-10-29 11:16:37	bpkent	mykon: are you sure the pendrive is not defective?
+2016-10-29 11:16:37		[11:16]
+2016-10-29 11:16:58	maolang	mykon: make for me one as well, 2 sugars...
+2016-10-29 11:17:00	strixdio	mykon: My usb devs get kinda hot too.
+2016-10-29 11:17:22	mykon	strixdio: alright so we aren't alone on this one
+2016-10-29 11:17:31	strixdio	I wouldn't say a frying pan, it doesn't hurt to touch it, but, definitely very warm.
+2016-10-29 11:17:54	-->	_ohm (~research@unaffiliated/-ohm/x-0955948) has joined #gentoo
+2016-10-29 11:17:54	strixdio	I never thought that there was something wrong though.
+2016-10-29 11:18:06	maolang	mykon: if its mild temp on it when you put your hand on it thats normal, but if its too hot to keep your fingers or hand on it then thats defitively too hot
+2016-10-29 11:18:23	strixdio	Exactly.
+2016-10-29 11:19:12	samaelkishi	Hey, so... this is probably a stupid question (or I don't know where to look for information) but...
+2016-10-29 11:19:16	mykon	I've noticed only usb 3.0 generates this type of heat.
+2016-10-29 11:19:32	maolang	i have seen some cheap usb3 that go pretty damn hot when doing lots of IO on..
+2016-10-29 11:19:36	samaelkishi	I remember having issues (three or four years ago) when running unmasked ~arch globally
+2016-10-29 11:19:54	samaelkishi	is it still prone to lots of bugs?
+2016-10-29 11:20:27	maolang	samaelkishi: i am ~amd64 accepted globally but i was from the install start, have no issues whatsoever
+2016-10-29 11:21:10	-->	enki (~enki@dynamic-78-30-156-27.adsl.eunet.rs) has joined #gentoo
+2016-10-29 11:21:15	samaelkishi	maolang: what profile and DE are you running?
+2016-10-29 11:21:33	maolang	i am running 3, gnome-systemd / selinux / hardened
+2016-10-29 11:22:08	samaelkishi	Hmm... that's... vastly different from Desktop/Plasma... :-D
+2016-10-29 11:22:11	maolang	gnome mainly but also occasionally plasma, xfce and cinnamon
+2016-10-29 11:22:56	samaelkishi	Meh... I've got the process fresh in my mind. Worst case scenario is a full reinstall ;-)
+2016-10-29 11:24:03	maolang	samaelkishi: sometimes with ~amd64 and if mixing live 9999 or using overlays you will have to mask >= some packages , sometimes having other packages needing to catch up first
+2016-10-29 11:24:11	-->	nyo (~nyo@host106-192-dynamic.49-79-r.retail.telecomitalia.it) has joined #gentoo
+2016-10-29 11:24:36	-->	D-ion (~D-ion@pppoe.178-66-193-151.dynamic.avangarddsl.ru) has joined #gentoo
+2016-10-29 11:25:34	maolang	generally though i'll mask the version instead =package-group/name-1.2.3 etc just to skip the version, until next one comes out etc
+2016-10-29 11:25:54	-->	doc235 (~Blain@gentoo/contributor/doc235) has joined #gentoo
+2016-10-29 11:25:56	nyo	guys I am out of ideas for my slim getting a blank screen without anything.... what else should I try? I even installed awesome following gentoo tutorial... still blank screen :(
+2016-10-29 11:26:18	<--	zatteliet (~kv@178-118-155-229.access.telenet.be) has quit (Quit: Leaving)
+2016-10-29 11:26:25	samaelkishi	Yeah, I'm going to have to do this fresh, methinky... but, hey, it'll give me some time to set up distcc, so things should go a mite speedier with an additional 9 compilation threads
+2016-10-29 11:26:53	barteks2x	if I can't install thoings like intellij idea community edition from emerge, where would be a good place to install it? (for the whole system, not somewhere in $HOME). I still didn't really find a definitive answer
+2016-10-29 11:27:21	stqn	nyo: do you really need slim?
+2016-10-29 11:27:39	stqn	also someone was saying earlier that it’s not maintained anymore
+2016-10-29 11:27:40	nyo	I just need to boot with xfce4 without any prompt of passwords etc
+2016-10-29 11:27:50	stqn	well you don’t need slim for that
+2016-10-29 11:27:52	-->	alzagros (~alborz@unaffiliated/mahmoud) has joined #gentoo
+2016-10-29 11:28:07	nyo	I have xdm, awesome... but don't know them well...
+2016-10-29 11:28:08	stqn	or any display/login manager
+2016-10-29 11:28:12	maolang	barteks2x: if you were going to do that, i would install it in a folder sure to never be used by any packages, thats ofc not very safe but safer than directly in its app name format
+2016-10-29 11:28:15	<--	svslv (~user1@node-206-250-139-95.domolink.tula.net) has quit (Quit: Konversation terminated!)
+2016-10-29 11:28:24	nyo	ok where should I put startxfce4 ? lol
+2016-10-29 11:28:35	stqn	nyo: in ~/.xinitrc
+2016-10-29 11:28:39	nyo	yes ok
+2016-10-29 11:28:49	nyo	but how to start it at boot time? without a login?
+2016-10-29 11:28:55	barteks2x	maolang, would /opt be good place? That's how I had it done in debian, + a symlink to executable in /usr/local/bin
+2016-10-29 11:29:07	maolang	barteks2x: you could also learn to make an ebuild and create a local overlay so its installed properly...
+2016-10-29 11:29:19	<--	xmorph (~xt_@unaffiliated/xmorph) has quit (Quit: Konversation terminated!)
+2016-10-29 11:29:30	maolang	and most important ... safely
+2016-10-29 11:29:36	barteks2x	Where would be a good place to start?
+2016-10-29 11:29:36	stqn	nyo: in my .xinitrc I have "exec startxfce4 --with-ck-launch" … let me check the rest
+2016-10-29 11:29:52	barteks2x	I don't want this installation to turn into a mess like all previous ones
+2016-10-29 11:29:55	maolang	barteks2x: the gentoo wiki :)
+2016-10-29 11:30:05	-->	Kryptron_ (~Kryptron@unaffiliated/kryptron) has joined #gentoo
+2016-10-29 11:30:12	nyo	yes stqn but you have to login in the shell, or what? I mean, how can I just press power on and have xfce4 without a login?
+2016-10-29 11:30:20	maolang	there is a section there for creating ebuilds and local overlays
+2016-10-29 11:30:24	stqn	nyo: no I don’t have to login
+2016-10-29 11:30:41	barteks2x	this? https://wiki.gentoo.org/wiki/Overlay/Local_overlay
+2016-10-29 11:30:57	maolang	barteks2x: on my side i cheated a few times but used my home dir and created a bin folder in it...
+2016-10-29 11:31:22	nyo	stqn, if I don't have xdm at boot, I have to login, if I add xdm I have to see the blank screen of slim LOL
+2016-10-29 11:31:28	barteks2x	that's what I did for a few of my dumb scripts, but for things like IDE I would like to avoid that
+2016-10-29 11:31:35	maolang	barteks2x: yes and then the page for creating an ebuild
+2016-10-29 11:32:03	maolang	https://wiki.gentoo.org/wiki/Basic_guide_to_write_Gentoo_Ebuilds
+2016-10-29 11:32:03		[11:32]
+2016-10-29 11:32:09	stqn	nyo: I have that https://bpaste.net/show/f92fc3248616 in my ~/.bashrc
+2016-10-29 11:32:20	stqn	nyo: and there is a third thing to do…
+2016-10-29 11:32:56	<--	loa (~loki@broadband-188-32-186-142.nationalcablenetworks.ru) has quit (Read error: Connection reset by peer)
+2016-10-29 11:32:56	<--	Kryptron (~Kryptron@unaffiliated/kryptron) has quit (Ping timeout: 260 seconds)
+2016-10-29 11:33:21	<--	Ycarus (~ycarus@2a01:e34:eda7:b1f0:5e3d:ee40:8bba:20a1) has quit (Quit: Ycarus)
+2016-10-29 11:33:30	-->	perth (~Perth@172.78.1.184) has joined #gentoo
+2016-10-29 11:33:49	-->	loa (~loki@broadband-188-32-186-142.nationalcablenetworks.ru) has joined #gentoo
+2016-10-29 11:34:13	<--	jtriley (~jtriley@209-6-38-104.c3-0.smr-ubr2.sbo-smr.ma.cable.rcn.com) has quit (Ping timeout: 245 seconds)
+2016-10-29 11:34:22	barteks2x	the wiki doesn't say that and I'm not exactly sure, in mkdir -p /usr/local/portage/{metadata,profiles} should I replace {metadata,profiles} with something or is it actual name I should use?
+2016-10-29 11:34:49	<--	minimalism (~none@unaffiliated/minimalism) has quit (Quit: minimalism)
+2016-10-29 11:35:14	perth	If anyone can throw a good guide at buildng a 9999 (github direct) e-build at me it'd be appreciated. If not I've already got some stuff from google. Nothing great though.
+2016-10-29 11:35:17	barteks2x	wait, I think I understand what it means now
+2016-10-29 11:35:31	barteks2x	it's bash syntax that I've never seen before, right?
+2016-10-29 11:35:44	-->	mguillech (~mguillech@181.95.51.85) has joined #gentoo
+2016-10-29 11:35:53	<--	_ohm (~research@unaffiliated/-ohm/x-0955948) has quit (Read error: Connection reset by peer)
+2016-10-29 11:36:10	-->	DeviantPeer (~kvirc@541E60B8.cm-5-7b.dynamic.ziggo.nl) has joined #gentoo
+2016-10-29 11:36:21	<--	futurefutura (4db060cb@gateway/web/freenode/ip.77.176.96.203) has quit (Quit: Page closed)
+2016-10-29 11:36:30	-->	_ohm (~research@unaffiliated/-ohm/x-0955948) has joined #gentoo
+2016-10-29 11:36:34	stqn	nyo: in /etc/inittab, replace the c1 line with c1:12345:respawn:/sbin/agetty -a yourusername --noclear 38400 tty1 linux
+2016-10-29 11:36:36	maolang	barteks2x: a very quick example --> ls /usr{src,src/linux} # just run it
+2016-10-29 11:36:39	nyo	stqn, gonna have a try... thanks
+2016-10-29 11:37:10	maolang	this actually barteks2x --> ls /usr/{src,src/linux}
+2016-10-29 11:37:19	stqn	nyo: you’re on openrc right? things may be different with systemd. See https://wiki.gentoo.org/wiki/Automatic_login_to_virtual_console
+2016-10-29 11:37:29	<--	PsyLok (~PsyLok@unaffiliated/psylok) has quit (Remote host closed the connection)
+2016-10-29 11:37:45	-->	minimalism (~none@unaffiliated/minimalism) has joined #gentoo
+2016-10-29 11:37:50	nyo	ok stqn , thanks gonna have a reboot..
+2016-10-29 11:37:52	barteks2x	I figure it out, thanks. So far I know bash only enough to write simple things :(
+2016-10-29 11:37:54	-->	PsyLok (~PsyLok@151.68.84.85) has joined #gentoo
+2016-10-29 11:37:56	<--	PsyLok (~PsyLok@151.68.84.85) has quit (Changing host)
+2016-10-29 11:37:56	-->	PsyLok (~PsyLok@unaffiliated/psylok) has joined #gentoo
+2016-10-29 11:37:59	<--	nyo (~nyo@host106-192-dynamic.49-79-r.retail.telecomitalia.it) has quit (Remote host closed the connection)
+2016-10-29 11:38:24	maolang	using these things in bash can save you a lot of typing and help create some pretty wicked scripts hehe
+2016-10-29 11:39:27	<--	Jordan_U (~jordan@c-73-41-152-155.hsd1.ca.comcast.net) has quit (Quit: leaving)
+2016-10-29 11:39:33	barteks2x	I've never fully figured out how "", '', conbines with $, $() and ${} work when combines together...
+2016-10-29 11:39:37	-->	nyo (~nyo@host106-192-dynamic.49-79-r.retail.telecomitalia.it) has joined #gentoo
+2016-10-29 11:40:17	<--	mguillech (~mguillech@181.95.51.85) has quit (Ping timeout: 260 seconds)
+2016-10-29 11:40:28	barteks2x	and how did I make the same typo twice... s-->d
+2016-10-29 11:40:46	ShoarAu	you can do some neat stuff with that and regex
+2016-10-29 11:41:32	barteks2x	I know, I've seen what scripts can do, I just never know how it's going to work, so when I need to do something likethat - it's usually trial-and-error
+2016-10-29 11:41:47	maolang	barteks2x: an example of using the output of one command into another as a variable when you do --> cd ; ls $(ls /)
+2016-10-29 11:41:47	perth	barteks2x: If you want to learn about quoting in bash: http://wiki.bash-hackers.org/syntax/quoting?s[]=quotes
+2016-10-29 11:42:00	--	nullifyd1ovia is now known as nullify
+2016-10-29 11:42:50	-->	monttyle (1848393a@gateway/web/freenode/ip.24.72.57.58) has joined #gentoo
+2016-10-29 11:43:05	maolang	my bad lol --> cd / ; ls $(ls /)
+2016-10-29 11:43:08	<--	lg188 (~lg188@72.236-247-81.adsl-dyn.isp.belgacom.be) has quit (Ping timeout: 244 seconds)
+2016-10-29 11:43:12	<--	SAL9000 (~znc@101.166.208.194) has quit (Ping timeout: 252 seconds)
+2016-10-29 11:43:26	<--	nyo (~nyo@host106-192-dynamic.49-79-r.retail.telecomitalia.it) has quit (Remote host closed the connection)
+2016-10-29 11:43:49	maolang	barteks2x: lets just say, you can do some very powerfull stuff very quickly with minimal typing...
+2016-10-29 11:44:00	-->	SAL9000 (~znc@101.166.208.194) has joined #gentoo
+2016-10-29 11:44:17	-->	nyo (~nyo@host106-192-dynamic.49-79-r.retail.telecomitalia.it) has joined #gentoo
+2016-10-29 11:44:39	<--	nyo (~nyo@host106-192-dynamic.49-79-r.retail.telecomitalia.it) has quit (Remote host closed the connection)
+2016-10-29 11:45:10	DopeMeston	my /etc/portage/package.use/ is a directory, i noticed in the wiki it is just a file. can i transfer all the file contents inside package.use/ into a singal file named package.use?
+2016-10-29 11:45:26	maolang	yes DopeMeston
+2016-10-29 11:45:37	DopeMeston	okay thankyou
+2016-10-29 11:45:43	barteks2x	maybe someday I will understand it, so far when I try to nderstand it I end up thinking I do, but when I see any real-world script I always get it wrong
+2016-10-29 11:46:14	-->	nyo (~nyo@host106-192-dynamic.49-79-r.retail.telecomitalia.it) has joined #gentoo
+2016-10-29 11:46:58	maolang	DopeMeston: as easy as doing cd /etc/portage/package.use and then running --> cat ** > package.use
+2016-10-29 11:47:21	maolang	then moving that file out and deleting the folder and then dropping the file in /etc/portage
+2016-10-29 11:47:21		[11:47]
+2016-10-29 11:47:24	nyo	stqn, thanks now I get autologin but bashrc doens't seems to execute startx
+2016-10-29 11:47:25	stqn	**?
+2016-10-29 11:47:26	strixdio	barteks2x: I don't really know the difference between " ' and ` myself, lol... I usually just futz around until I get the result I need. lol
+2016-10-29 11:47:46	<--	monttyle (1848393a@gateway/web/freenode/ip.24.72.57.58) has quit (Ping timeout: 260 seconds)
+2016-10-29 11:47:48	maolang	** tells it to see all files, nothing more
+2016-10-29 11:48:01	barteks2x	maybe I should just try to read bash source...
+2016-10-29 11:48:11	strixdio	barteks2x: from what I've seen so far, " and ' are similar, and ` does what's between as a command.
+2016-10-29 11:48:18	stqn	maolang: including dotfiles?
+2016-10-29 11:48:39	maolang	stqn: everything without discrimination
+2016-10-29 11:48:58	nyo	stqn, I mean, now boots up and I get the user logged in, but doesn't execute startx. I copy and pasted your lines in .bashrc in ~ and then also tried chmod+x ~/.bashrc
+2016-10-29 11:49:05	barteks2x	and then I see expression full of quites, dollar signs, parens, and all other weird characters and I have no idea what it actually does, that's why I want to learn it
+2016-10-29 11:49:32	ShoarAu	regex
+2016-10-29 11:49:41	strixdio	barteks2x: https://stackoverflow.com/questions/6697753/difference-between-single-and-double-quotes-in-bash#6697781
+2016-10-29 11:49:44	ShoarAu	regular expressions
+2016-10-29 11:49:48	strixdio	yeah I need to learn regex myself.
+2016-10-29 11:49:49	stqn	nyo: ok the wiki says to use ~/.bash_profile instead on .bashrc, you might have more luck with that. Your default shell is bash, right?
+2016-10-29 11:49:59	stqn	maolang: ok thanks.
+2016-10-29 11:50:13	ShoarAu	strixdio: https://stackoverflow.com/questions/4736/learning-regular-expressions
+2016-10-29 11:50:15	maolang	neat short trick heh :)
+2016-10-29 11:50:20	nyo	think so stqn
+2016-10-29 11:50:22	stqn	instead of*
+2016-10-29 11:50:49	strixdio	ShoarAu: thanks.
+2016-10-29 11:50:52	-->	jtriley (~jtriley@209-6-38-104.c3-0.smr-ubr2.sbo-smr.ma.cable.rcn.com) has joined #gentoo
+2016-10-29 11:51:16	strixdio	Oh, unrelated question:
+2016-10-29 11:52:08	strixdio	when installing docker, it said I need "[*]   Diffie-Hellman operations on retained keys" in my kernel config. That doesn't exist, at least where the guide says (nor could I find it anywhere else) https://wiki.gentoo.org/wiki/Docker
+2016-10-29 11:52:34	<--	Dj_Dexter (~Dark_X@gentoo/user/dj-dexter) has quit (Ping timeout: 344 seconds)
+2016-10-29 11:52:35	stqn	nyo: maybe your .bash_profile doesn’t execute .bashrc
+2016-10-29 11:52:42	<--	nyo (~nyo@host106-192-dynamic.49-79-r.retail.telecomitalia.it) has quit (Remote host closed the connection)
+2016-10-29 11:52:43	stakewinner00	hi, someone had troubles installing mono? it says " ACCESS DENIED:  open_wr:      /run/mono.9043" i'm running 4.8.5 linux kernel.
+2016-10-29 11:52:43	barteks2x	I learned regex enough to use search function in idea so far, but grep is still mystery to me
+2016-10-29 11:52:50	-->	nyo (~nyo@host106-192-dynamic.49-79-r.retail.telecomitalia.it) has joined #gentoo
+2016-10-29 11:53:02	<--	cu-user (~user@101.220.73.186) has quit (Ping timeout: 256 seconds)
+2016-10-29 11:53:07	<--	fivestang (fivestang@gateway/shell/xshellz/x-wzrfbmhzvbedghub) has left #gentoo
+2016-10-29 11:53:09	maolang	one thing i am not sure, have to verify if your last entry  of the file you did not change line and you cat more stuff to the end if it will end uip on a new line or added directly at the end of the last line...
+2016-10-29 11:53:10	<--	cruzr (~cruzr@unaffiliated/miniCruzer) has quit (Remote host closed the connection)
+2016-10-29 11:53:18	-->	cruzr_ (~cruzr@unaffiliated/miniCruzer) has joined #gentoo
+2016-10-29 11:54:12	strixdio	barteks2x: egrep maybe?
+2016-10-29 11:54:27	-->	M_n_K (~M_n_K@unaffiliated/m-n-k/x-5820698) has joined #gentoo
+2016-10-29 11:54:41	<--	Nuc1eoN (~nuc@oss/nuc1eon) has quit (Quit: Konversation terminated!)
+2016-10-29 11:54:47	maolang	stakewinner00: are you root?
+2016-10-29 11:54:47	<--	willikins (~rbot@gentoo/bot/Willikins) has quit (Quit: seeya)
+2016-10-29 11:54:48	ShoarAu	strixdio: should be around security options
+2016-10-29 11:54:48	maolang	stakewinner00: and you might want to pastebin your whole log with the error, easier to see everything...
+2016-10-29 11:55:22	maolang	strixdio: look for crypto...
+2016-10-29 11:55:23	strixdio	ShoarAu: Yeah, I couldn't find it at all.
+2016-10-29 11:55:23	stakewinner00	i had run "sudo emerge -av mono"
+2016-10-29 11:55:39	strixdio	maolang: I did, for quite some time.
+2016-10-29 11:55:46	strixdio	I'm wondering how necessary it is.
+2016-10-29 11:55:53	<--	jtriley (~jtriley@209-6-38-104.c3-0.smr-ubr2.sbo-smr.ma.cable.rcn.com) has quit (Ping timeout: 242 seconds)
+2016-10-29 11:55:54	<--	sdoubleyou (~sdouble25@unaffiliated/sdouble25) has quit (Quit: WeeChat 1.6)
+2016-10-29 11:55:54	maolang	strixdio: there is a whole bunch of crypto related thing including the diffie one in the same location
+2016-10-29 11:56:09	stakewinner00	maolang, it's not a critical error, it shows various errors of this style until at the end it says that the emerge had failed, so the error log is prety long
+2016-10-29 11:56:28	strixdio	maolang: I used the search function in make nconfig, in and around the area it said in the guide.. found nothing.
+2016-10-29 11:56:38	maolang	strixdio: give me a sec
+2016-10-29 11:56:39	-->	lg188 (~lg188@147.173-243-81.adsl-dyn.isp.belgacom.be) has joined #gentoo
+2016-10-29 11:56:43	strixdio	maolang: Thanks.
+2016-10-29 11:58:29	maolang	strixdio: look under /Cryptographic API
+2016-10-29 11:58:33	-->	iqubic (ae3dcd30@gateway/web/freenode/ip.174.61.205.48) has joined #gentoo
+2016-10-29 11:58:44	<--	railssmith (~railssmit@c-73-189-177-212.hsd1.ca.comcast.net) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-10-29 11:58:56	strixdio	maolang: will do after it's done compiling lol
+2016-10-29 11:58:59	strixdio	thanks
+2016-10-29 12:00:19	maolang	strixdio: you should search for exacly what the warning says, btw
+2016-10-29 12:00:27	strixdio	maolang: warning?
+2016-10-29 12:01:01	maolang	like when you get emerge saying some options in kernel are not set and should be and then it gives you a name in this format -> CONFIG_CRYPTO_CRC32C
+2016-10-29 12:01:11	strixdio	maolang: oh that hasn't happened.
+2016-10-29 12:01:29	strixdio	maolang: it's just the guide, which idk how to convert to the CONFIG_ value, yet...
+2016-10-29 12:01:44	strixdio	I couldn't find it, but wanted to see if it compiled anyway.
+2016-10-29 12:01:51	strixdio	was the only option I had an issue with.
+2016-10-29 12:02:02	<--	nE0sIghT (~Thunderbi@unaffiliated/ne0sight) has quit (Quit: nE0sIghT)
+2016-10-29 12:02:15	-->	nE0sIghT (~Thunderbi@unaffiliated/ne0sight) has joined #gentoo
+2016-10-29 12:02:24	-->	methylherd (~quassel@p5DEB5C78.dip0.t-ipconnect.de) has joined #gentoo
+2016-10-29 12:02:24		[12:02]
+2016-10-29 12:02:46	strixdio	I tried searching google for "gentoo diffie-hellman" but only came up with a bunch of people having ssh issues.
+2016-10-29 12:02:52	<--	TheteSigma (TheteSi@2605:6000:1525:8119:9042:c646:2e37:a647) has quit (Read error: Connection reset by peer)
+2016-10-29 12:03:00	maolang	thats for docker when  i installed it --> http://dpaste.com/1Z1QG4K
+2016-10-29 12:03:09	-->	TheteSigma (TheteSi@2605:6000:1525:8119:9042:c646:2e37:a647) has joined #gentoo
+2016-10-29 12:03:33	iqubic	I am unable to merge this overlay: https://gpo.zugaina.org/media-sound/ponymix I am able to emerge it, but I get this error: http://pastebin.com/iW1rYQyQ
+2016-10-29 12:03:37	maolang	strixdio: it likely has in kernel in any case a short name version to look for
+2016-10-29 12:03:54	iqubic	Here is the output from emerge --info: http://termbin.com/ikpr
+2016-10-29 12:04:05	-->	willikins (~rbot@gentoo/bot/Willikins) has joined #gentoo
+2016-10-29 12:04:07	strixdio	maolang: Okay, thanks.
+2016-10-29 12:04:13	<--	e^1 (~e^0@unaffiliated/e0/x-7387528) has quit (Ping timeout: 245 seconds)
+2016-10-29 12:04:31	<--	egon2003 (~erik@5-44-200-253.customer.universal.se) has quit (Quit: Konversation terminated!)
+2016-10-29 12:05:22	strixdio	maolang: it is not in /cryptographic api
+2016-10-29 12:05:27	strixdio	I had looked there previously too
+2016-10-29 12:06:07	maolang	i am pretty sure i have seen that in there , but thats a while ago... alzeimer kicking in...
+2016-10-29 12:06:41	strixdio	lol
+2016-10-29 12:06:54	iqubic	What up with my emerge failing?
+2016-10-29 12:07:01	iqubic	I don't think that's normal.
+2016-10-29 12:07:25	iqubic	I gave a bunch of useful links, so y'all can help me.
+2016-10-29 12:07:28	strixdio	maolang: one other thing, after docker compile it said that I must have MACVLAN set but it isn't... meanwhile searching for it shows: http://dpaste.com/1GFFB2X
+2016-10-29 12:07:34	maolang	iqubic: dont trust blindly overlays... sometimes there will be problems in there which are out of your control...
+2016-10-29 12:07:53	strixdio	shouldn't it be set, since the "depends on" is set?
+2016-10-29 12:07:58	<--	iomonads (~iomonad@217.23.15.116) has quit (Ping timeout: 245 seconds)
+2016-10-29 12:08:05	iqubic	maolang: I trust this overlay. I have been using ponymix on arch for a long time
+2016-10-29 12:08:05	-->	lefou (~lefou@p57B0C7F3.dip0.t-ipconnect.de) has joined #gentoo
+2016-10-29 12:08:34	strixdio	ignore me
+2016-10-29 12:08:36	strixdio	I'm an idiot sorry.
+2016-10-29 12:09:07	maolang	strixdio: i have a 1 for it to jump, you might need something else activated to be able to use the option first...
+2016-10-29 12:09:08	-->	mackal (~mike@pool-96-237-144-12.bstnma.fios.verizon.net) has joined #gentoo
+2016-10-29 12:09:45	maolang	strixdio: http://dpaste.com/0HJX309
+2016-10-29 12:09:48	strixdio	maolang: I got it thanks :)
+2016-10-29 12:09:56	strixdio	I was being a dummy.
+2016-10-29 12:10:28	iqubic	Anyone want to help me with my emerge? Or should I not use that overlay?
+2016-10-29 12:10:55	maolang	have you googled the error message, maybe someone else with same problem..
+2016-10-29 12:11:13	iqubic	No I have not googled the error message.
+2016-10-29 12:11:42	<--	hurikhan77 (~kakra@2a02:8109:1ec0:43d4:225:22ff:fee6:c90b) has quit (Quit: Konversation terminated!)
+2016-10-29 12:11:50	<--	PichuChen (~PichuChen@2001:b011:30e0:1431:2c8c:e9c3:9210:8f99) has quit (Remote host closed the connection)
+2016-10-29 12:12:00	-->	weeman (~weeman@CAcert/Cirrus-Minor) has joined #gentoo
+2016-10-29 12:12:00	<--	weeman (~weeman@CAcert/Cirrus-Minor) has quit (Changing host)
+2016-10-29 12:12:00	-->	weeman (~weeman@unaffiliated/weeman) has joined #gentoo
+2016-10-29 12:12:24	<--	aktiv[b] (~loke@95.169.55.204) has quit (Quit: leaving)
+2016-10-29 12:12:28	-->	PichuChen (~PichuChen@2001:b011:30e0:1431:2c8c:e9c3:9210:8f99) has joined #gentoo
+2016-10-29 12:12:44	maolang	do you have this installed --> x11-libs/libnotify
+2016-10-29 12:12:56	twnqx	iqubic: i'd say either your compiler or some library is too old
+2016-10-29 12:13:01	-->	hurikhan77 (~kakra@2a02:8109:1ec0:43d4:225:22ff:fee6:c90b) has joined #gentoo
+2016-10-29 12:13:08	twnqx	make_unique is part of cxx 14
+2016-10-29 12:13:24	maolang	thats pre 5.4?
+2016-10-29 12:13:42	twnqx	no real idea, just googled a bit.
+2016-10-29 12:14:01	maolang	iqubic: you using GCC 5.4 or 4.94?
+2016-10-29 12:15:18	-->	Melchior (~kvirc@69-165-150-106.dsl.teksavvy.com) has joined #gentoo
+2016-10-29 12:15:21	iqubic	How do I check?
+2016-10-29 12:15:39	strixdio	maolang: you were correct, CONFIG_CRYPTO_CRC32C is already set. Thank you again.
+2016-10-29 12:15:43	iqubic	And how do I update my compiler if it's too old?
+2016-10-29 12:16:04	maolang	iqubic: --> gcc-config -l
+2016-10-29 12:16:24	maolang	will list the GCC you have installed
+2016-10-29 12:16:41	<--	Turingtoast (~Tino@p4FEF53B1.dip0.t-ipconnect.de) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-10-29 12:17:16	iqubic	 [1] x86_64-pc-linux-gnu-4.9.3 * is the gcc I have
+                                                                                                                                                                                                                                                                                                                                                                                                                      2016-10-29 12:25:06	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined #gentoo
+2016-10-29 12:25:06		[12:25]
+2016-10-29 12:25:06	--	Topic for #gentoo is "Gentoo Linux Support | Can't speak? /j #gentoo-ops | long pastes: dpaste.org | masked by license? http://x.vu/WgxYLs | firmware not loading? http://goo.gl/MzVLBN | perl conflicts? http://goo.gl/n1FMk8 | Be nice! http://xrl.us/kftd | portage-2.3.0_rc1 broken? "emerge -1 repoman" | php5-5 out, php5-6 in"
+2016-10-29 12:25:06	--	Topic set by rej (~jer@gentoo/developer/jer) on Thu, 25 Aug 2016 23:13:52
+2016-10-29 12:25:06	--	Channel #gentoo: 946 nicks (6 ops, 53 voices, 887 normals)
+2016-10-29 12:25:06	***	Buffer Playback...
+2016-10-29 12:25:06	strixdio	[22:02:46] I tried searching google for "gentoo diffie-hellman" but only came up with a bunch of people having ssh issues. [22:02:46]
+2016-10-29 12:25:06	maolang	[22:03:00] thats for docker when  i installed it --> http://dpaste.com/1Z1QG4K [22:03:00]
+2016-10-29 12:25:06	iqubic	[22:03:33] I am unable to merge this overlay: https://gpo.zugaina.org/media-sound/ponymix I am able to emerge it, but I get this error: http://pastebin.com/iW1rYQyQ [22:03:33]
+2016-10-29 12:25:06	maolang	[22:03:37] strixdio: it likely has in kernel in any case a short name version to look for [22:03:37]
+2016-10-29 12:25:06	iqubic	[22:03:54] Here is the output from emerge --info: http://termbin.com/ikpr [22:03:54]
+2016-10-29 12:25:06	strixdio	[22:04:07] maolang: Okay, thanks. [22:04:07]
+2016-10-29 12:25:06	strixdio	[22:05:22] maolang: it is not in /cryptographic api [22:05:22]
+2016-10-29 12:25:06	strixdio	[22:05:27] I had looked there previously too [22:05:27]
+2016-10-29 12:25:06	maolang	[22:06:07] i am pretty sure i have seen that in there , but thats a while ago... alzeimer kicking in... [22:06:07]
+2016-10-29 12:25:06	strixdio	[22:06:41] lol [22:06:41]
+2016-10-29 12:25:06	iqubic	[22:06:54] What up with my emerge failing? [22:06:54]
+2016-10-29 12:25:06	iqubic	[22:07:01] I don't think that's normal. [22:07:01]
+2016-10-29 12:25:06	iqubic	[22:07:25] I gave a bunch of useful links, so y'all can help me. [22:07:25]
+2016-10-29 12:25:06	strixdio	[22:07:28] maolang: one other thing, after docker compile it said that I must have MACVLAN set but it isn't... meanwhile searching for it shows: http://dpaste.com/1GFFB2X [22:07:28]
+2016-10-29 12:25:06	maolang	[22:07:34] iqubic: dont trust blindly overlays... sometimes there will be problems in there which are out of your control... [22:07:34]
+2016-10-29 12:25:06	strixdio	[22:07:53] shouldn't it be set, since the "depends on" is set? [22:07:53]
+2016-10-29 12:25:06	iqubic	[22:08:05] maolang: I trust this overlay. I have been using ponymix on arch for a long time [22:08:05]
+2016-10-29 12:25:06	strixdio	[22:08:34] ignore me [22:08:34]
+2016-10-29 12:25:06	strixdio	[22:08:36] I'm an idiot sorry. [22:08:36]
+2016-10-29 12:25:06	maolang	[22:09:07] strixdio: i have a 1 for it to jump, you might need something else activated to be able to use the option first... [22:09:07]
+2016-10-29 12:25:06	maolang	[22:09:45] strixdio: http://dpaste.com/0HJX309 [22:09:45]
+2016-10-29 12:25:06	strixdio	[22:09:48] maolang: I got it thanks :) [22:09:48]
+2016-10-29 12:25:06	strixdio	[22:09:56] I was being a dummy. [22:09:56]
+2016-10-29 12:25:06	iqubic	[22:10:28] Anyone want to help me with my emerge? Or should I not use that overlay? [22:10:28]
+2016-10-29 12:25:06	maolang	[22:10:55] have you googled the error message, maybe someone else with same problem.. [22:10:55]
+2016-10-29 12:25:06	iqubic	[22:11:13] No I have not googled the error message. [22:11:13]
+2016-10-29 12:25:06	maolang	[22:12:44] do you have this installed --> x11-libs/libnotify [22:12:44]
+2016-10-29 12:25:06	twnqx	[22:12:56] iqubic: i'd say either your compiler or some library is too old [22:12:56]
+2016-10-29 12:25:06	twnqx	[22:13:08] make_unique is part of cxx 14 [22:13:08]
+2016-10-29 12:25:06	maolang	[22:13:24] thats pre 5.4? [22:13:24]
+2016-10-29 12:25:06	twnqx	[22:13:42] no real idea, just googled a bit. [22:13:42]
+2016-10-29 12:25:06	maolang	[22:14:01] iqubic: you using GCC 5.4 or 4.94? [22:14:01]
+2016-10-29 12:25:06	iqubic	[22:15:21] How do I check? [22:15:21]
+2016-10-29 12:25:06	strixdio	[22:15:39] maolang: you were correct, CONFIG_CRYPTO_CRC32C is already set. Thank you again. [22:15:39]
+2016-10-29 12:25:06	iqubic	[22:15:43] And how do I update my compiler if it's too old? [22:15:43]
+2016-10-29 12:25:06	maolang	[22:16:04] iqubic: --> gcc-config -l [22:16:04]
+2016-10-29 12:25:06	maolang	[22:16:24] will list the GCC you have installed [22:16:24]
+2016-10-29 12:25:06	iqubic	[22:17:16]  [1] x86_64-pc-linux-gnu-4.9.3 * is the gcc I have [22:17:16]
+2016-10-29 12:25:06	maolang	[22:18:05] ok so you may need to have 5.4, but thats not too hard but you do have to be carefull when upgrading to it [22:18:05]
+2016-10-29 12:25:06	iqubic	[22:18:33] How do I update gcc? [22:18:33]
+2016-10-29 12:25:06	maolang	[22:19:19] you will need to edit your package.accept_keywords and add an entry and do a few things, it will take a while... [22:19:19]
+2016-10-29 12:25:06	iqubic	[22:19:56] How do I update my packge.accept_keywords? [22:19:56]
+2016-10-29 12:25:06	iqubic	[22:20:07] Is there a wiki page on updating gcc? [22:20:07]
+2016-10-29 12:25:06	maolang	[22:20:20] sys-devel/gcc ~amd64 in that file i mentioned [22:20:20]
+2016-10-29 12:25:06	maolang	[22:20:30] there is iqubic [22:20:30]
+2016-10-29 12:25:06	maolang	[22:20:55] then you emerge it [22:20:55]
+2016-10-29 12:25:06	maolang	[22:22:15] then you run -->  gcc-config 2 to switch to it [22:22:15]
+2016-10-29 12:25:06	maolang	[22:23:11] then refresh so the system knows --> . /etc/profile [22:23:11]
+2016-10-29 12:25:06	maolang	[22:23:29] and finally run this --> revdep-rebuild --library 'libstdc\+\+.so.6' -- --exclude gcc' [22:23:29]
+2016-10-29 12:25:06	maolang	[22:24:08] then doing a normal @world update etc after that would be recomended, then try emerging package again with the 5.4 gcc [22:24:08]
+2016-10-29 12:25:06	***	Playback Complete.
+2016-10-29 12:25:17	maolang	depending on your cpu speed, in my case gcc 5.4 takes roughly an hour and a half to emerge
+2016-10-29 12:25:42	maolang	yes its a fairly big emerge!
+2016-10-29 12:26:16	--	Channel created on Fri, 14 Sep 2001 17:15:36
+2016-10-29 12:26:17	<--	bootkiller (~bootkille@a89-154-162-166.cpe.netcabo.pt) has quit (Ping timeout: 265 seconds)
+2016-10-29 12:26:23	iqubic	So I think I'll do that tonight, before I go to sleep.
+2016-10-29 12:26:32	-->	jstein_ (~quassel@gentoo/developer/jstein) has joined #gentoo
+2016-10-29 12:26:32	--	Mode #gentoo [+v jstein_] by ChanServ
+2016-10-29 12:27:15	maolang	whendone, i would recommend to NOT depclean 4.93, keep it for  a while, make sure all is good emerging new stuff etc, after some time when you feel all is fine, you can depclean 4.9.3
+2016-10-29 12:27:32	maolang	keeping only 5.4
+2016-10-29 12:28:36	--	jstein_ is now known as jstein
+2016-10-29 12:30:16	-->	mks_ (5cfb321f@gateway/web/freenode/ip.92.251.50.31) has joined #gentoo
+2016-10-29 12:30:28	<--	iqubic (ae3dcd30@gateway/web/freenode/ip.174.61.205.48) has quit (Quit: Page closed)
+2016-10-29 12:30:29	<--	mks_ (5cfb321f@gateway/web/freenode/ip.92.251.50.31) has quit (Client Quit)
+2016-10-29 12:30:47	nyo	stqn, thanks I solved now, but X take like 30 seconds to fully start.. don't know.. blank screen then xfce4 arrives...
+2016-10-29 12:31:08	<--	nullifydrovia (~nullify@unaffiliated/nullify) has quit (Quit: leaving)
+2016-10-29 12:31:30	-->	nullifydrovia (~nullify@unaffiliated/nullify) has joined #gentoo
+2016-10-29 12:31:44	<--	DeviantPeer (~kvirc@541E60B8.cm-5-7b.dynamic.ziggo.nl) has quit (Ping timeout: 245 seconds)
+2016-10-29 12:32:00	stqn	nyo: I can’t say why it does that… I don’t think the same happens on my computer although I can’t say for sure as it doesn’t have a screen :)
+2016-10-29 12:32:32	nyo	:) I will check tomorrow, for today I'm done :) at least I have the computer usable, that's a lot! :D thanks!!!
+2016-10-29 12:32:59	stqn	good :)
+2016-10-29 12:33:16	<--	rru04 (~rru04@176.109.166.71) has quit (Ping timeout: 256 seconds)
+2016-10-29 12:33:45	nyo	just to share, I reinstalled gentoo because I had some emerge --update problems, and some glitches on graphic. to find later on that the same happens with a fresh gentoo, due to probably xf86-video-intel bug...
+2016-10-29 12:34:07	nyo	actually I am running firefox with hardware accelleration disabled to avoid such glitches
+2016-10-29 12:34:20	mykon	anybody running zfs here?
+2016-10-29 12:34:32	mykon	don't tell me that fallocate isn't compatible with zfs
+2016-10-29 12:34:44	nyo	I have the impression that years ago the whole gentoo community was more active, less bugs etc..
+2016-10-29 12:35:01	nyo	I haven't followed the whole evolution, dunno if people left or what ever
+2016-10-29 12:35:10	stqn	nyo: I have joined! :p
+2016-10-29 12:35:15	barteks2x	What was the way to make second kernel version instead of replacing existing one?
+2016-10-29 12:35:18	nyo	around 2011 was sky rocket :D
+2016-10-29 12:35:33	pavlix_	btw, is "dirty cow" considered not worth a GLSA?
+2016-10-29 12:35:43	nyo	the only real cool new stuff is grub doing is config automatically
+2016-10-29 12:35:57	stqn	I hate grub2, use syslinux instead.
+2016-10-29 12:36:18	stqn	*I* use…
+2016-10-29 12:36:21	nyo	never had a try with syslinux
+2016-10-29 12:36:21	-->	mguillech (~mguillech@181.95.51.85) has joined #gentoo
+2016-10-29 12:36:26	-->	Pent (~pant@S01061c1b689d60c9.cg.shawcable.net) has joined #gentoo
+2016-10-29 12:37:07	 *	apo uses syslinux
+2016-10-29 12:37:19	stqn	barteks2x: if you want to be able to boot on two different kernels, there’s nothing special to do, just build them both and copy them to /boot and edit your bootloader…
+2016-10-29 12:38:05	<--	FL4SHK (~fl4shk@2601:486:2:9870:c685:8ff:fe26:89e1) has quit (Quit: WeeChat 1.6)
+2016-10-29 12:38:24	-->	FL4SHK (~fl4shk@2601:486:2:9870:c685:8ff:fe26:89e1) has joined #gentoo
+2016-10-29 12:38:45	mykon	nyo: lol, wut u talkin bout? gentoo no is kinda boring due to the flawlessness
+2016-10-29 12:38:57	mykon	*borin now
+2016-10-29 12:39:04	-->	gentoo_ (~gentoo@91.195.185.129) has joined #gentoo
+2016-10-29 12:39:06	nyo	I am talking about the problems I had
+2016-10-29 12:39:15	mykon	had when?
+2016-10-29 12:39:44	stqn	nyo: I was using Arch from 2010 to 2015, started installing Gentoo in november 2014, so can’t compare with Gentoo in 2011… But I have no big issue with Gentoo even if not everything is perfect.
+2016-10-29 12:39:51	nyo	recently, I had some update and got perl unable to update, then xf86-video-intel got glitches on firefox, but then I discovered the same behavior with a fresh gentoo
+2016-10-29 12:40:03	 *	mykon uses straight uefi
+2016-10-29 12:40:10	gentoo_	Hello. I'm trying to install Gentoo 1st time in my life. Have a question here. There is CPU_FLAGS_X86 in /etc/portage/make.conf
+2016-10-29 12:40:10		[12:40]
+2016-10-29 12:40:22	<--	nullifydrovia (~nullify@unaffiliated/nullify) has quit (Quit: leaving)
+2016-10-29 12:40:36	nyo	mykon, btw I have discovered how much cool is distcc :D
+2016-10-29 12:40:43	-->	nullifydrovia (~nullify@unaffiliated/nullify) has joined #gentoo
+2016-10-29 12:40:45	<--	mikemol (~mikemol@rb3450.g.visvr.net) has quit (Ping timeout: 256 seconds)
+2016-10-29 12:40:49	-->	novns (~novns@unaffiliated/novns) has joined #gentoo
+2016-10-29 12:40:49	barteks2x	stqn, the problem is I don't know how
+2016-10-29 12:40:51	maolang	gentoo_: yes
+2016-10-29 12:41:09	gentoo_	I don't understand, what is the sense of that variable, if I specify -march already.
+2016-10-29 12:41:16	mykon	nyo: dunno about that, but for me it seems that gentoo has less and less bugs. Sometimes the upgrades are convoluted but without the insane breakage of the past.
+2016-10-29 12:41:17	barteks2x	I want to have something just in case I break something when trying to get nvidia optimus working
+2016-10-29 12:41:57	nyo	mykon, good to know, I hope to be a good manteiner for my gentoo from now on :)
+2016-10-29 12:42:05	maolang	gentoo_: you will want to install this and run it to get the proper cpu flags for you --> app-portage/cpuid2cpuflags
+2016-10-29 12:42:07	mykon	nyo: I gave up distcc when I discovered it wasn't able to compile with optimized cflags
+2016-10-29 12:42:08	nyo	my main problem was to wait to much to do any world update
+2016-10-29 12:42:15	gentoo_	I mean, I don't know much about CPUs and PC architecture in general. But I know if I need to optimize compiled programs for my CPU, I need to specify avaialable CPU instructions or smthn like that. Isn't march for that already?
+2016-10-29 12:42:24	stqn	gentoo_: -march tells to compiler to apply optimisations for your CPU, but the CPU_FLAGS tell the programs you are building to enable or disable specific code
+2016-10-29 12:42:42	gentoo_	stqn: well, interesting
+2016-10-29 12:42:46	nyo	mycon I don't use very deep optimization, just -march=core2
+2016-10-29 12:42:48	maolang	gentoo_: my message just before yours
+2016-10-29 12:42:56	gentoo_	maolang: yes, I see, ty
+2016-10-29 12:42:59	-->	manado1952 (~Marc-Andr@24.225.204.112) has joined #gentoo
+2016-10-29 12:43:00	maolang	:)
+2016-10-29 12:43:04	-->	PichuChen (~PichuChen@2001:b011:30e0:1431:2c8c:e9c3:9210:8f99) has joined #gentoo
+2016-10-29 12:43:15	mykon	nyo: I heard that google uses gentoo for chrome OS
+2016-10-29 12:43:21	<--	barteks2x (~barteks2x@host2165.robnet.pl) has quit (Remote host closed the connection)
+2016-10-29 12:43:27	nyo	cool mykon !
+2016-10-29 12:43:41	mykon	nyo: so imagine such a company behind google, and the russians use it with Calculate.
+2016-10-29 12:43:44	-->	bork_laser (~user@46.246.124.92) has joined #gentoo
+2016-10-29 12:43:53	nyo	I hope a long and sane bug free life for gentoo! I really prefer optimizations, since I don't change hardware often
+2016-10-29 12:44:07	nyo	I don't know about Calculate, will have a look
+2016-10-29 12:44:13	-->	barteks2x (~barteks2x@host2165.robnet.pl) has joined #gentoo
+2016-10-29 12:45:05	mykon	hint: which one are the only extras linguas used in eix and portage? (de ru)
+2016-10-29 12:45:16	stqn	barteks2x: do you use genkernel?
+2016-10-29 12:45:20	nyo	mykon, btw, I never reported bugs, and this strange behavior I am getting with intelx86-video-intel is something frustrating... should I go for the forum or the bug site?
+2016-10-29 12:45:32	<--	nullifydrovia (~nullify@unaffiliated/nullify) has quit (Client Quit)
+2016-10-29 12:45:48	-->	nullifydrovia (~nullify@unaffiliated/nullify) has joined #gentoo
+2016-10-29 12:45:53	<--	timahvo1_ (~rogue@197.237.131.125) has quit (Ping timeout: 245 seconds)
+2016-10-29 12:45:54	barteks2x	stqn, I use menuconfig
+2016-10-29 12:45:56	mykon	nyo: forums perhaps, I don't use intel.
+2016-10-29 12:45:59	<--	apero (~apero@gateway/tor-sasl/apero) has quit (Ping timeout: 245 seconds)
+2016-10-29 12:46:16	-->	bootkiller (~bootkille@a89-154-162-166.cpe.netcabo.pt) has joined #gentoo
+2016-10-29 12:46:17	barteks2x	then I just build the kernel with make && make install_modules
+2016-10-29 12:46:18	<--	timahvo1 (~rogue@197.237.131.125) has quit (Ping timeout: 256 seconds)
+2016-10-29 12:46:23	<--	violetina (~quassel@unaffiliated/violetina) has quit (Remote host closed the connection)
+2016-10-29 12:46:37	barteks2x	anyway, not eeded anymore
+2016-10-29 12:46:53	nyo	mykon, this is calculate? http://www.calculate-linux.org/
+2016-10-29 12:47:01	-->	apero (~apero@gateway/tor-sasl/apero) has joined #gentoo
+2016-10-29 12:47:02	mykon	nyo: by the way, intel supposedly have rock solid open source drivers. In fact, they only have open source.
+2016-10-29 12:47:05	gentoo_	maolang: ok, it works and at least now I know what that variable is for thanks to stqn
+2016-10-29 12:47:09	maolang	nyo: if you want to seach bugs for a package from within gentoo, you should install www-client/pybugz then when you search it will giv you reported bug numbers associated with a given package
+2016-10-29 12:47:16	stqn	barteks2x: ok… if you do things manually then you copy the kernel to /boot yourself, so you just have to name it differently than the old one…
+2016-10-29 12:47:27	gentoo_	and, btw, it's not cpuid2cpuflags anymore, it's cpuinfo2cpuflags
+2016-10-29 12:47:42	-->	timahvo1 (~rogue@197.237.131.125) has joined #gentoo
+2016-10-29 12:47:45	-->	timahvo1_ (~rogue@197.237.131.125) has joined #gentoo
+2016-10-29 12:47:46	nyo	mykon, I don't have idea. I only found that some people were talking about similiar problems. I even changed hardware with a same chipset motherboard, thinking it was the chipset gone.
+2016-10-29 12:47:57	nyo	so to avoid recompilation, etc
+2016-10-29 12:48:13	nyo	cool maolang gonna install!
+2016-10-29 12:48:23	<--	mguillech (~mguillech@181.95.51.85) has quit (Ping timeout: 245 seconds)
+2016-10-29 12:48:26	stqn	gentoo_: hmm the package was named cpuinfo2cpuflags before, but was renamed to cpuid2cpuflags. The tool itself is still named cpuinfo2cpuflags I think.
+2016-10-29 12:49:33	gentoo_	stqn: emerge: there are no ebuilds to satisfy "app-portage/cpuid2cpuflags".  .... Maybe you meant any of these: app-portage/cpuinfo2cpuflags
+2016-10-29 12:49:37	maolang	nyo: trough nothing seems to be listed for the package --> http://dpaste.com/2PWV56F
+2016-10-29 12:50:03	nyo	cool so must be some other stuff
+2016-10-29 12:50:26	barteks2x	what does this mean? emerge: there are no ebuilds built with USE flags to satisfy ">=x11-libs/libX11-1.6.2:=[abi_x86_32(-)?,abi_x86_64(-)?,abi_x86_x32(-)?,abi_mips_n32(-)?,abi_mips_n64(-)?,abi_mips_o32(-)?,abi_ppc_32(-)?,abi_ppc_64(-)?,abi_s390_32(-)?,abi_s390_64(-)?]".
+2016-10-29 12:50:32	stqn	gentoo_: have you sync’ed your portage tree at least once? (with emerge --sync or eix-sync or similar)
+2016-10-29 12:50:37	nyo	maybe it is something related to my compiled stuff...
+2016-10-29 12:50:38	mykon	nyo: which intel graphics card do you have?
+2016-10-29 12:51:07	nyo	G33 if I recall right, 1 moment gonna see...
+2016-10-29 12:51:24	<--	PichuChen (~PichuChen@2001:b011:30e0:1431:2c8c:e9c3:9210:8f99) has quit (Ping timeout: 260 seconds)
+2016-10-29 12:51:25	gentoo_	stqn: I work via live USB right now :) installing Gentoo. no, I did not sync anything yet
+2016-10-29 12:51:36	maolang	barteks2x: you need to set like emerge saiz at the bottom an abi flag for 32 bit for the package in your package use or, more drastically set them globaly in your make.conf file
+2016-10-29 12:51:41	stqn	gentoo_: ok, I suppose the name change was quite recent
+2016-10-29 12:51:45	gentoo_	so maybe you are right and it's 'id', not 'info'
+2016-10-29 12:51:47	gentoo_	ok
+2016-10-29 12:51:58	gentoo_	don't not matter a lot anyways
+2016-10-29 12:52:00	gentoo_	ty
+2016-10-29 12:52:06	barteks2x	what... I'm just trying to get nvidia drivers working
+2016-10-29 12:52:07	nyo	maolang, Intel Corporation 82G33/G31 Express Integrated Graphics Controller (rev 02)
+2016-10-29 12:52:08	gentoo_	*doesn't
+2016-10-29 12:52:11	maolang	barteks2x: in your make.conf its global --> ABI_X86="64 32"
+2016-10-29 12:52:13	barteks2x	why does it need anything 32-bt?
+2016-10-29 12:52:41	maolang	you installing skype, teamviewer or wine....
+2016-10-29 12:52:52	maolang	or some other package which is 32 bit...
+2016-10-29 12:53:09	stqn	barteks2x: I heard the tools are 32 bit
+2016-10-29 12:53:17	barteks2x	oh, that would make sense
+2016-10-29 12:53:20	maolang	ahh nvidia drivers probably
+2016-10-29 12:53:25	barteks2x	I added use flag for them
+2016-10-29 12:53:39	-->	hotaronohanako (~user@unaffiliated/hotaronohanako) has joined #gentoo
+2016-10-29 12:53:58	<--	nullifydrovia (~nullify@unaffiliated/nullify) has quit (Quit: Reconnecting)
+2016-10-29 12:54:03	maolang	barteks2x: its either per package in package.use or globaly in make.conf
+2016-10-29 12:54:11	-->	nullifydrovia (~nullify@unaffiliated/nullify) has joined #gentoo
+2016-10-29 12:54:38	maolang	if you install skype and or wine, you would get 50+ entries to add... so you know hehe
+2016-10-29 12:54:49	barteks2x	so should I add ABI_X86="64 32" to make.conf ot not?
+2016-10-29 12:54:56	stqn	anyway if you have an nvidia card you obviously want to run games and some of them are 32 bit :p
+2016-10-29 12:55:00	barteks2x	I don't fully understand what you are saying...
+2016-10-29 12:55:06	-->	natmal (~asdf@cpe-67-240-180-41.rochester.res.rr.com) has joined #gentoo
+2016-10-29 12:55:12	maolang	saves the hasle really and for me , it added 50MB footprint to the whole os
+2016-10-29 12:55:12		[12:55]
+2016-10-29 12:55:56	maolang	i had to exclude though 3 packages from abi use as they would not emerge otherwise, but that was it
+2016-10-29 12:55:59	barteks2x	and I probably won't install wine here
+2016-10-29 12:56:04	stqn	barteks2x: you don’t *have* to set ABI_X86 to 64 32, you can also set abi_x86_32 in package.use for packages that need it.
+2016-10-29 12:56:41	barteks2x	what will it change if I set it globally?
+2016-10-29 12:56:46	maolang	it really only is if you will install for example stuff that will need loads of entries, like steam, wine, teamviewer, skype etc
+2016-10-29 12:57:08	maolang	it will install additional 32 bit libraries for the packages that need it, nothiong more really
+2016-10-29 12:57:18	barteks2x	steam -> I will probably install that, skype --> as musch as I would like to not use it, I dont  have viable alternative
+2016-10-29 12:57:22	nyo	guys, which free VM do you suggest to use? I need to setup a VM for Skype. Don't want to install it locally...
+2016-10-29 12:57:28	barteks2x	and teamviecer... probably
+2016-10-29 12:58:12	maolang	if you are barteks2x then i would say put it in make, skype, teamviewer and wine and steam for me was aver 150° lines
+2016-10-29 12:58:38	barteks2x	as for wine, would it be possible to completely isolate it from everything else?
+2016-10-29 12:58:54	barteks2x	so that programs never ever change my file type associations
+2016-10-29 12:58:57	<--	nullifydrovia (~nullify@unaffiliated/nullify) has quit (Client Quit)
+2016-10-29 12:59:14	stqn	hm I think you can disable that behaviour…
+2016-10-29 12:59:17	-->	nullify (~nullify@unaffiliated/nullify) has joined #gentoo
+2016-10-29 12:59:19	stqn	I did that a long time ago
+2016-10-29 12:59:23	maolang	the programs running inside wine will normally change their things in their own wine bottles... as far as i know
+2016-10-29 12:59:24	barteks2x	ideally they shouldn't be even visible from outside of wine
+2016-10-29 12:59:32	<--	PsyLok (~PsyLok@unaffiliated/psylok) has quit (Remote host closed the connection)
+2016-10-29 12:59:46	-->	PsyLok (~PsyLok@151.68.84.85) has joined #gentoo
+2016-10-29 12:59:48	<--	PsyLok (~PsyLok@151.68.84.85) has quit (Changing host)
+2016-10-29 12:59:48	-->	PsyLok (~PsyLok@unaffiliated/psylok) has joined #gentoo
+2016-10-29 12:59:58	stqn	export WINEDLLOVERRIDES=winemenubuilder.exe=d
+2016-10-29 13:00:03	maolang	if you use wine for game then also get playonlinux
+2016-10-29 13:00:03	barteks2x	on my previous kubuntu, xubuntu and debian installations wine did change file type associations and it broke things
+2016-10-29 13:00:04	stqn	maybe that does the trick
+2016-10-29 13:00:09	<--	j3nkins (~jenkins@df.85.7a9f.ip4.static.sl-reverse.com) has quit (Quit: WeeChat 1.6)
+2016-10-29 13:00:19	-->	k73sk (~k73sk@cpe-70-121-223-149.satx.res.rr.com) has joined #gentoo
+2016-10-29 13:00:23	<--	k73sk (~k73sk@cpe-70-121-223-149.satx.res.rr.com) has quit (Client Quit)
+2016-10-29 13:00:37	<--	Melchior (~kvirc@69-165-150-106.dsl.teksavvy.com) has quit (Quit: KVIrc 4.3.1 Aria http://www.kvirc.net/)
+2016-10-29 13:00:40	barteks2x	I basically don't want wine programs to change anything in my system
+2016-10-29 13:01:11	<--	[ui] (uid21688@gateway/web/irccloud.com/x-gqwsncnkdqluzsvt) has quit (Quit: Connection closed for inactivity)
+2016-10-29 13:01:14	maolang	barteks2x: make sure you DONT run wine as root, thats a good start worse it changes remains in your home profile
+2016-10-29 13:01:26	barteks2x	and I probably won't install games on it, I occasionally use wine for something but it's rare
+2016-10-29 13:01:56	barteks2x	hm... so if I make separate user specifically for wine, it should limit any changes to that user, right?
+2016-10-29 13:02:12	maolang	as long as you run wine from that user yes
+2016-10-29 13:02:24	maolang	changes will happen within that users home profile
+2016-10-29 13:02:53	barteks2x	well then, that will be one isolated messed up account
+2016-10-29 13:03:07	<--	loriot (~tro0o0on@dslb-188-105-228-227.188.105.pools.vodafone-ip.de) has quit (Quit: Leaving.)
+2016-10-29 13:03:21	-->	rpifan (~rpi@73.106.74.192) has joined #gentoo
+2016-10-29 13:03:21	stqn	barteks2x: see second answer https://askubuntu.com/questions/323437/how-to-prevent-wine-from-adding-file-associations
+2016-10-29 13:03:33	maolang	barteks2x: there are tricks ... in a terminal start a terminal session as that user and run that wine though that :)
+2016-10-29 13:03:36	<--	peedub|work-away (~chris@71-92-244-106.static.trlk.ca.charter.com) has quit (Ping timeout: 250 seconds)
+2016-10-29 13:03:39	-->	zread (~zread@pcd420228.netvigator.com) has joined #gentoo
+2016-10-29 13:04:20	twnqx	stqn: i should have known that before, then i wouldn't open images with explorer in wine >_>
+2016-10-29 13:04:28	<--	lefou (~lefou@p57B0C7F3.dip0.t-ipconnect.de) has quit (Ping timeout: 265 seconds)
+2016-10-29 13:04:40	barteks2x	^that's exactly what I want to prevent
+2016-10-29 13:04:43	stqn	twnqx: yeah that sucks :(
+2016-10-29 13:05:08	stqn	wine devs are dumb to fuckup file associations by default
+2016-10-29 13:05:30	-->	railssmith (~railssmit@c-73-189-177-212.hsd1.ca.comcast.net) has joined #gentoo
+2016-10-29 13:05:42	twnqx	well, i just kill the .desktop files
+2016-10-29 13:05:45	twnqx	but still annoying
+2016-10-29 13:05:47	stqn	I remember when every wine update
+2016-10-29 13:05:51	<--	TIE-Fighter (~TIE-Fight@p508D784A.dip0.t-ipconnect.de) has quit (Remote host closed the connection)
+2016-10-29 13:05:55	stqn	forced text files to open in notepad…
+2016-10-29 13:06:10	barteks2x	trying to install some adobe stuff on wine didn't end well for me on debian...
+2016-10-29 13:06:24	barteks2x	(and all I wanted to do is see if it will work...)
+2016-10-29 13:07:33	maolang	wine at first takes a bit to interact with when you dont yet fully ndestand what it does under the hood, once you are good with it though its good,i have 3 games i run with it , that run absolutely perfect, in my case path of exile, eve online and age of conan, i initially just ran the installers to get bases in and then dumped my stuff from the windows ntfs on top, and that was it
+2016-10-29 13:07:51	-->	m0u (~m0u@27.red-79-159-200.dynamicip.rima-tde.net) has joined #gentoo
+2016-10-29 13:07:52	<--	m0u (~m0u@27.red-79-159-200.dynamicip.rima-tde.net) has quit (Client Quit)
+2016-10-29 13:09:23	barteks2x	as for windows ntfs, how to force mounting windows partition if windows is in that hybrid weird shutdown state?
+2016-10-29 13:09:39	barteks2x	(I want write access)
+2016-10-29 13:09:47	-->	wokko (~wokko@unaffiliated/wokko) has joined #gentoo
+2016-10-29 13:10:14	maolang	you need to disable hibernate in windows....
+2016-10-29 13:10:14		[13:10]
+2016-10-29 13:10:25	barteks2x	I don't want to reboot. I remember I did it once
+2016-10-29 13:10:33	twnqx	you should
+2016-10-29 13:10:34	barteks2x	I don't care too much about windows being a bit confused
+2016-10-29 13:10:42	twnqx	the file systems state might be inconsistent
+2016-10-29 13:10:50	maolang	you can mount it in read only thats fine through
+2016-10-29 13:10:59	barteks2x	I want to copy files to it...
+2016-10-29 13:11:12	maolang	then you nedd before going to linux to shutdown normally
+2016-10-29 13:11:20	barteks2x	and since I'm installing nvidia drivers ,reboot isn't a good option now
+2016-10-29 13:11:46	barteks2x	maolang, the thing is that windows really shuts down ONLY when I select reboot from windows
+2016-10-29 13:12:06	barteks2x	otherwise windows 10 will go into that hybrid state even if I select shut down
+2016-10-29 13:12:16	maolang	that can be disabled...
+2016-10-29 13:12:20	<--	silverhom (~silverhom@c83-252-238-248.bredband.comhem.se) has quit (Read error: Connection reset by peer)
+2016-10-29 13:12:28	barteks2x	it already takes forever to boot...
+2016-10-29 13:12:42	-->	peedub|work-away (~chris@71-92-244-106.static.trlk.ca.charter.com) has joined #gentoo
+2016-10-29 13:12:46	-->	silverhom (~silverhom@c83-252-238-248.bredband.comhem.se) has joined #gentoo
+2016-10-29 13:12:56	maolang	well its a choice, read and write, long boots or read only and fast boots :)
+2016-10-29 13:12:59	<--	tina (~tina@78-21-34-87.access.telenet.be) has quit (Quit: Lost terminal)
+2016-10-29 13:14:18	barteks2x	and forcing writing to the state it's in now shouldn't be any worse than just  unplugging a PC from AC power when windows is running. If windows breaks because of it... well... one more reason to do a reinstall
+2016-10-29 13:14:24	maolang	for me i dont care, last time i booted in windows was 3 weeks ago, dont care that it takes 1 minute versus the 13 seconds in takes me in gentoo :)
+2016-10-29 13:14:48	barteks2x	las time I bootwed windows was... 2 months ago?
+2016-10-29 13:15:17	krizoek	with eselect php, i currently have two versions; how do i disable or remove one of them?
+2016-10-29 13:15:30	<--	Kelzier (~duka@79.175.84.119) has quit (Remote host closed the connection)
+2016-10-29 13:15:36	<--	alphis (~noone@unaffiliated/alphis) has quit (Ping timeout: 260 seconds)
+2016-10-29 13:16:09	maolang	krizoek: eselect php set # i would say as for removing that would need to be through a --depclean to be sure nothing depends on older version
+2016-10-29 13:16:49	krizoek	what if i like to have the older version?
+2016-10-29 13:16:50	-->	sukbeom (~sukbeom@211.222.85.112) has joined #gentoo
+2016-10-29 13:16:54	barteks2x	found the way http://askubuntu.com/questions/145902/unable-to-mount-windows-ntfs-filesystem-due-to-hibernation
+2016-10-29 13:16:55	nyo	guys I have a compile error for kbuild, gcc is 5.4.0 http://dpaste.com/0546DPG
+2016-10-29 13:17:28	-->	alphis (~noone@unaffiliated/alphis) has joined #gentoo
+2016-10-29 13:17:41	<--	TheteSigma (TheteSi@2605:6000:1525:8119:9042:c646:2e37:a647) has quit (Remote host closed the connection)
+2016-10-29 13:17:52	-->	TheteSigma (TheteSi@2605:6000:1525:8119:9042:c646:2e37:a647) has joined #gentoo
+2016-10-29 13:18:34	barteks2x	...it no longer works
+2016-10-29 13:19:17	maolang	nyo: distcc perhaps has corrupted or missing files etc, did you empty the cache perhaps?
+2016-10-29 13:19:38	<--	bork_laser (~user@46.246.124.92) has left #gentoo ("WeeChat 1.4")
+2016-10-29 13:19:48	nyo	maolang, I don't know about emptying distcc cache, I don't use Ccache if you mean that, thanks
+2016-10-29 13:19:54	-->	PichuChen (~PichuChen@2001:b011:30e0:1431:2c8c:e9c3:9210:8f99) has joined #gentoo
+2016-10-29 13:19:58	nyo	trying without distcc now
+2016-10-29 13:20:40	maolang	barteks2x: when you can safely do it reboot to windows and reboot to linux :)
+2016-10-29 13:21:46	barteks2x	http://pastebin.com/knCbhr9C is this bad? I missed that and it's done already
+2016-10-29 13:21:46	nyo	maolang, yes without distcc works
+2016-10-29 13:22:40	barteks2x	ntfsfix works for mounting such windows partition
+2016-10-29 13:22:44	maolang	barteks2x: when you are next in windows run this powercfg /h off to disable hibernation and problem solved
+2016-10-29 13:22:52	-->	k73sk (~k73sk@cpe-70-121-223-149.satx.res.rr.com) has joined #gentoo
+2016-10-29 13:23:18	barteks2x	I should actually doa  full windows reinstall one day, but it may be problematic if I only have recovery partition...
+2016-10-29 13:23:19	nyo	are these warnings important? GCC 5.4.0 building stuff http://dpaste.com/2H7CFMA
+2016-10-29 13:23:34	maolang	barteks2x: usually a bug in the ebuild package, it collides with files from another installed package...
+2016-10-29 13:23:37	gentoo_	Hmm, I'm now selecting profile to use, and see 'kde' and 'plasma' are different ones. I want to use KDE in my new system, but never used it before. Isn't plasma part of KDE?
+2016-10-29 13:23:47	<--	k73sk (~k73sk@cpe-70-121-223-149.satx.res.rr.com) has quit (Client Quit)
+2016-10-29 13:23:51	barteks2x	maolang, and what should I do about it?
+2016-10-29 13:24:07	maolang	you should probably mask the package version and try a lower version...
+2016-10-29 13:24:18	barteks2x	well... it's already installed
+2016-10-29 13:24:32	krizoek	im trying that yes, ty maolang
+2016-10-29 13:24:42	maolang	oh i see yah it emerged anyway
+2016-10-29 13:25:05	barteks2x	so now what? hope it didn't break anything?
+2016-10-29 13:25:46	maolang	well as it mentions none of the installed packages claim the files so in this case it seems fine
+2016-10-29 13:25:46		[13:25]
+2016-10-29 13:25:51	<--	Judge_Dredd (~Judge_Dre@unaffiliated/judge-dredd/x-2170742) has quit (Quit: Leaving.)
+2016-10-29 13:26:15	-->	kzvezdarov (~kzvezdaro@208.167.254.23) has joined #gentoo
+2016-10-29 13:26:26	<--	railssmith (~railssmit@c-73-189-177-212.hsd1.ca.comcast.net) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-10-29 13:26:39	maolang	but if there was matches it would have likely stopped the emerge for the package
+2016-10-29 13:26:50	<--	kirban (~kirill@2602:306:b8a9:e4e0::38) has left #gentoo ("WeeChat 1.4")
+2016-10-29 13:29:52	<--	manado1952 (~Marc-Andr@24.225.204.112) has quit (Read error: Connection reset by peer)
+2016-10-29 13:30:37	-->	ng0 (~ng0@gateway/tor-sasl/niasterisk) has joined #gentoo
+2016-10-29 13:32:10	<--	arortell (~arortell@d11-197.rt-bras.wnvl.centurytel.net) has quit (Remote host closed the connection)
+2016-10-29 13:33:25	-->	Shentino (~Shentino@gentoo/contributor/shentino) has joined #gentoo
+2016-10-29 13:33:25	<--	kingkongmok (~kingkongm@n219077080053.netvigator.com) has quit (Read error: Connection reset by peer)
+2016-10-29 13:33:44	-->	kingkongmok (~kingkongm@n219077080053.netvigator.com) has joined #gentoo
+2016-10-29 13:34:01	barteks2x	the wiki is a bit confusing: "Create a new configuration file at /etc/modprobe.d called nvidia.conf and add the following line:" and then it says the file name is " /etc/conf.d/modules"
+2016-10-29 13:34:13	-->	kirban (~kirill@2602:306:b8a9:e4e0::38) has joined #gentoo
+2016-10-29 13:35:05	barteks2x	what is the file I should add it to?
+2016-10-29 13:35:28	maolang	barteks2x: you are installing nvidia-drivers?
+2016-10-29 13:35:37	barteks2x	following this https://wiki.gentoo.org/wiki/NVIDIA/Optimus
+2016-10-29 13:36:41	maolang	well if file exists as is in my case add it to the file
+2016-10-29 13:36:52	barteks2x	but which one?
+2016-10-29 13:36:52	<--	lg188 (~lg188@147.173-243-81.adsl-dyn.isp.belgacom.be) has quit (Remote host closed the connection)
+2016-10-29 13:37:01	maolang	the one they mention
+2016-10-29 13:37:06	barteks2x	 /etc/modprobe.d/nvidia/conf or /etc/conf.d/module?
+2016-10-29 13:37:19	barteks2x	wait, nevermind
+2016-10-29 13:37:22	barteks2x	i got confused
+2016-10-29 13:37:32	maolang	 .d  will be read in their entirety every file
+2016-10-29 13:37:42	maolang	so you can also create a nvidia file
+2016-10-29 13:37:45	barteks2x	I jumped over a few lines somehow
+2016-10-29 13:38:11	barteks2x	wait, no
+2016-10-29 13:38:13	barteks2x	I didn't
+2016-10-29 13:38:22	barteks2x	I got confused about being confused
+2016-10-29 13:38:37	barteks2x	it says "Create a new configuration file at /etc/modprobe.d called nvidia.conf and add the following line:"
+2016-10-29 13:38:49	barteks2x	but then the frame says file name is "/etc/conf.d/modules"
+2016-10-29 13:39:22	<--	ayjay_t (~ajp_@24-151-28-56.dhcp.nwtn.ct.charter.com) has quit (Read error: Connection reset by peer)
+2016-10-29 13:39:25	maolang	yep just read as well, read slower :)
+2016-10-29 13:39:49	-->	ayjay_t (~ajp_@24-151-28-56.dhcp.nwtn.ct.charter.com) has joined #gentoo
+2016-10-29 13:39:55	barteks2x	I still don't know which file I should add it to
+2016-10-29 13:40:04	maolang	the nvidia driver module name barteks2x is called nvidia
+2016-10-29 13:40:23	maolang	create the config as they say
+2016-10-29 13:40:28	maolang	nvidia.conf
+2016-10-29 13:40:47	barteks2x	BUT WHICH FILE!? The once say it's  /etc/modprobe.d/nvidia.conf but then the text says file name is /etc/conf.d/modules
+2016-10-29 13:40:47		[13:40]
+2016-10-29 13:42:00	maolang	do the modprobe one
+2016-10-29 13:42:13	-->	ARCADIVS (~RMM@24-179-11-74.dhcp.leds.al.charter.com) has joined #gentoo
+2016-10-29 13:42:18	barteks2x	the file already exists and seems to be autogenerated
+2016-10-29 13:42:34	-->	anuxivm (~anuxi@92.177.99.40) has joined #gentoo
+2016-10-29 13:42:44	maolang	if you emerged nvidia-drivers in my casei never edited any files
+2016-10-29 13:43:07	-->	ribx (~ribx@x590e64ea.dyn.telefonica.de) has joined #gentoo
+2016-10-29 13:43:55	maolang	now i dont know about optimus for intel /nvidia auto switching
+2016-10-29 13:43:59	barteks2x	well, I myself don't know what is the correct way, wiki says to do it this way but it's inconsistent
+2016-10-29 13:44:29	maolang	that would be for someone else to answer with absolute positive confirmation
