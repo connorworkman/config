@@ -36896,3 +36896,56 @@
 2016-10-29 20:59:57	Xgc	ssarah: I didn't say you can't use that parameter directly.  But it will be easier to understand your code (for you) if you don't try to use it directly.
 2016-10-29 21:01:04	Xgc	ssarah: Until you are ready to return, just allocate and fill a new buffer, using type *buf;   I think you can handle that.  Once done, we can talk about getting that pointer back to the caller.
 2016-10-29 21:01:04		[21:01]
+2016-10-29 21:01:54	ssarah	so like so? https://gist.github.com/fullmooninu/883849460cebeb5e9c9311d9f023a49b
+2016-10-29 21:01:55	Xgc	ssarah: Once you have that done correctly, we can discuss how you could have used the parameter directly.
+2016-10-29 21:02:08	<--	Hun (~Hun@x4d07638b.dyn.telefonica.de) has quit (Ping timeout: 256 seconds)
+2016-10-29 21:02:09	-->	Endarked (~endarked@exe172.neoplus.adsl.tpnet.pl) has joined ##C
+2016-10-29 21:02:11	Xgc	ssarah: No.
+2016-10-29 21:02:17	Xgc	ssarah: Stop trying to use the parameter.
+2016-10-29 21:02:40	klys	it looks right, she did what I said to do
+2016-10-29 21:02:45	klys	would be surprised
+2016-10-29 21:02:48	Xgc	ssarah: That's confusing you.  I'm asking you to stop using the most confusing logic.
+2016-10-29 21:03:03	Xgc	klys: and you were wrong.
+2016-10-29 21:03:16	<--	melita (~melita@2601:645:4001:fe20:2acf:e9ff:fe14:2645) has quit (Ping timeout: 260 seconds)
+2016-10-29 21:03:22	klys	i'll take that up with gcc then
+2016-10-29 21:03:26	ssarah	Xgc, ok, how do I stop using the char** msg_buf parameter?
+2016-10-29 21:03:45	Xgc	klys: You can write code that compiles cleanly that is perfectly wrong.
+2016-10-29 21:04:12	klys	I'll to runtime testing
+2016-10-29 21:04:16	klys	do*
+2016-10-29 21:04:24	Xgc	ssarah: Just use your char *ptr;  in the function first.
+2016-10-29 21:04:46	ssarah	Xgc, in the caller?
+2016-10-29 21:04:47	Xgc	ssarah: Allocate and store the new address in ptr.  Use that to populate the buffer.
+2016-10-29 21:04:53	Xgc	ssarah: Correct.
+2016-10-29 21:05:07	Xgc	ssarah: Forget about the caller and the passed parameter for now.
+2016-10-29 21:05:41	ssarah	I can't alter the caller code, tho.
+2016-10-29 21:05:42	<--	raycoll (~raycoll@c-50-181-214-8.hsd1.wa.comcast.net) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-10-29 21:05:42	Xgc	ssarah: Once that is done correctly, we can discuss what to do before returning.
+2016-10-29 21:05:55	Xgc	ssarah: We're not touching the caller.
+2016-10-29 21:06:00	<--	code_zombie (~code_zomb@136.63.230.43) has quit (Quit: Leaving)
+2016-10-29 21:06:44	Graypup_	visual studio is complaining about something I believe is correct: I have a method that takes `void *context` as parameter and further down, I have `struct WifiConnections *connections = (struct WifiConnections *)context->connections;`. Visual Studio is saying "expression must have pointer-to-struct-or-union-type" about `context`, which is odd because the expression looks correct.
+2016-10-29 21:07:14	Graypup_	hm, I bet it's operator precedence, lemme put in some parens
+2016-10-29 21:07:28	<--	Dembel (~Dembel@31.132.177.120) has quit (Ping timeout: 260 seconds)
+2016-10-29 21:07:32	Graypup_	nope
+2016-10-29 21:07:42	Stragus	If you have a method, then maybe you want ##c++
+2016-10-29 21:07:48	<--	AlphaOmega82 (~alfa@CPE48ee0c279953-CMbc140153e510.cpe.net.cable.rogers.com) has quit (Ping timeout: 265 seconds)
+2016-10-29 21:07:54	-->	Dembel (~Dembel@31.132.177.120) has joined ##C
+2016-10-29 21:08:20	Graypup_	this is an exercise in C, I just am calling it a method because it doesn't return anything and has side effects
+2016-10-29 21:08:30	Xgc	ssarah: Sorry. I meant to say no to your question "In the caller?"
+2016-10-29 21:08:43	Xgc	ssarah: This is all done in the called function.
+2016-10-29 21:08:56	Stragus	Ah, so are you trying to get ->connections from a void pointer called context?
+2016-10-29 21:09:30	Graypup_	yeah, windows api gives you the ability to give a callback the context as a void pointer in this case
+2016-10-29 21:09:40	Stragus	((struct WifiConnections *)context)->connections;  would probably work better
+2016-10-29 21:10:01	Graypup_	yep, brain fart, thanks!
+2016-10-29 21:10:07	<--	mazeto (~maz@177.81.218.14) has quit (Remote host closed the connection)
+2016-10-29 21:10:43	Xgc	ssarah: Take your data from msg and populate the allocated char *ptr; buffer.  That should be easy for you.
+2016-10-29 21:10:44	-->	mazeto (~maz@177.81.218.14) has joined ##C
+2016-10-29 21:11:11	Xgc	ssarah: Do not use msg_buf in any of this logic.
+2016-10-29 21:11:30	ssarah	https://gist.github.com/fullmooninu/883849460cebeb5e9c9311d9f023a49b <- like so?
+2016-10-29 21:11:39	Xgc	ssarah: No.
+2016-10-29 21:11:48	Xgc	ssarah: You used msg_buf.
+2016-10-29 21:12:15	Xgc	ssarah: Just remove that one line (4).
+2016-10-29 21:12:23	-->	raycoll (~raycoll@c-50-181-214-8.hsd1.wa.comcast.net) has joined ##C
+2016-10-29 21:12:31	Xgc	ssarah: or at least remove the initializer.
+2016-10-29 21:12:44	<--	QwertyDragon (~QwertyDra@pool-98-118-51-122.bstnma.fios.verizon.net) has quit (Quit: Leaving)
+2016-10-29 21:12:53	-->	majikman (~achou@73.95.135.71) has joined ##C
+2016-10-29 21:12:57	ssarah	Xgc, the initializer?
