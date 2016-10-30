@@ -3538,3 +3538,166 @@
 2016-10-29 21:44:50		[21:44]
 2016-10-29 21:49:34	-->	naught101 (~naught101@n58-109-142-242.sbr1.nsw.optusnet.com.au) has joined #mixxx
 2016-10-29 21:53:08	<--	naught101_ (~naught101@14-202-176-150.static.tpgi.com.au) has quit (Ping timeout: 250 seconds)
+2016-10-29 21:59:00		[21:53]
+2016-10-29 22:01:27	--	irc: disconnected from server
+2016-10-29 23:10:14	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined #mixxx
+2016-10-29 23:10:14		[23:10]
+2016-10-29 23:10:14	--	Topic for #mixxx is "Interested in Google Summer of Code? https://www.mixxx.org/wiki/doku.php/gsocadvice | Mixxx 2.0 Released! http://mixxx.org/download | http://www.mixxx.org | wiki - http://mixxx.org/wiki/ | bugs - https://bugs.launchpad.net/mixxx | Go ahead and ask a question, we'll respond eventually!"
+2016-10-29 23:10:14	--	Topic set by ywwg (~owen@2620:15c:6:fd00:74fc:8696:2a03:ed2c) on Tue, 15 Mar 2016 10:47:01
+2016-10-29 23:10:14	--	Channel #mixxx: 68 nicks (0 ops, 0 voices, 68 normals)
+2016-10-29 23:10:14	***	Buffer Playback...
+2016-10-29 23:10:14	Pegasus_RPG	[19:07:31] yrk: see the full list of controls on our wiki: http://mixxx.org/wiki/doku.php/mixxxcontrols [19:07:31]
+2016-10-29 23:10:14	Pegasus_RPG	[19:07:45] Looks like you want [PreviewDeck],play [19:07:45]
+2016-10-29 23:10:14	yrk	[19:08:17] Pegasus_RPG: excellent! thank you. mixxx rocks [19:08:17]
+2016-10-29 23:10:14	nightshade	[00:19:23] hello [00:19:23]
+2016-10-29 23:10:14	nightshade	[00:43:07] hi [00:43:07]
+2016-10-29 23:10:14	--	Notice(mixxx-commits): [14:26:50] [mixxx] uklotzde opened pull request #1032: Fix signal/slot connections of WStarRating and BaseTrackPlayer (master...wstarrating_slots) https://git.io/vXLOR [14:26:50]
+2016-10-29 23:10:14	--	Notice(mixxx-commits): [15:17:29] [mixxx] uklotzde closed pull request #1032: Fix signal/slot connections of WStarRating and BaseTrackPlayer (master...wstarrating_slots) https://git.io/vXLOR [15:17:29]
+2016-10-29 23:10:14	--	Notice(mixxx-commits): [15:38:24] [mixxx] uklotzde opened pull request #1033: Fix various signal/slot connections (master...signal_slot_fixes) https://git.io/vXLG6 [15:38:24]
+2016-10-29 23:10:14	--	Notice(mixxx-commits): [22:21:31] [mixxx] uklotzde opened pull request #1034: Order crates by case-insensitive name (master...crate_sorting) https://git.io/vXLrL [22:21:31]
+2016-10-29 23:10:14	JosepMa	[23:51:33] Hi there. [23:51:33]
+2016-10-29 23:10:14	JosepMa	[23:52:08] any dev in the channel? sblaisot , Pegasus_RPG , M-rryan , Tiger ? [23:52:08]
+2016-10-29 23:10:14	JosepMa	[23:53:05] I am working on what it looked as a trivial bug in Mixxx, but I've reached a point that I would like to comment first [23:53:05]
+2016-10-29 23:10:14	JosepMa	[23:54:10] Bug is: recording the mix to wav/aiff causes integer overflow (to saved audio) when audio saturates. [23:54:10]
+2016-10-29 23:10:14	JosepMa	[23:55:21] The root cause is that Mixxx uses libsndfile to write from its float buffer to integer, and the default mode is to not modify the data. [23:55:21]
+2016-10-29 23:10:14	JosepMa	[23:56:05] It does offer an option to automatically clip, but then, that option works depending on the CPU to which the source was compiled to [23:56:05]
+2016-10-29 23:10:14	JosepMa	[23:56:57] (i.e. it seems that some processors might automatically clip , and others don't, and the code has paths to not do additioal calculations if the cpu supposedly supports that) [23:56:57]
+2016-10-29 23:10:14	JosepMa	[23:57:12] but such thing is detected in compile time (via an .m4 script) [23:57:12]
+2016-10-29 23:10:14	JosepMa	[23:58:07] for windows, the "buildserver" files have a pregenerated config.h which currently says that the processor knows how to clip negative overflows. [23:58:07]
+2016-10-29 23:10:14	JosepMa	[23:58:55] So then, I tried the naive way ( use CSAMPLE_clamp() method ), but i cannot modify the buffer, since it is const (and probably should be) [23:58:55]
+2016-10-29 23:10:14	JosepMa	[23:59:17] and it would not be a good idea to allocate dynamically the buffer each "process" call. [23:59:17]
+2016-10-29 23:10:14	JosepMa	[00:01:01] So there I am... with a trivial thing to do (tell the code that it has to clip a value), but with no obvious way on how to tell it to. [00:01:01]
+2016-10-29 23:10:14	Pegasus_RPG	[00:03:42] JosepMa: I'm here but don't know how best to proceed. Please re-state all of that in a message to mixxx-devel as more people can respond. [00:03:42]
+2016-10-29 23:10:14	JosepMa	[00:04:23] Ok. I'll do that. [00:04:23]
+2016-10-29 23:10:14	M-rryan	[00:07:24] JosepMa : I would say enable clipping in libsndfile [00:07:24]
+2016-10-29 23:10:14	JosepMa	[00:09:22] M-rryan: sure, that's the logical thing to do, but that didn't solve it for me, because of the configuration in the libsndfile's config.h in "buildserver", and it could still fail to other people with other builds. [00:09:22]
+2016-10-29 23:10:14	M-rryan	[00:10:30] you mean Mixxx's Windows build of libsndfile ? [00:10:30]
+2016-10-29 23:10:14	JosepMa	[00:10:35] yes [00:10:35]
+2016-10-29 23:10:14	M-rryan	[00:10:50] then we should probably fix that :) [00:10:50]
+2016-10-29 23:10:14	M-rryan	[00:11:30] b/c it means we are building libsndfile incorrectly and other bugs could manifest b/c of those defines being wrong [00:11:30]
+2016-10-29 23:10:14	JosepMa	[00:12:52] Well, this only affects this part (i didn't saw any other usage of libsndfile in Mixxx, except in validity tests) [00:12:52]
+2016-10-29 23:10:14	M-rryan	[00:13:25] we use libsndfile for decoding files too [00:13:25]
+2016-10-29 23:10:14	M-rryan	[00:13:30] wav / aiff / riff [00:13:30]
+2016-10-29 23:10:14	JosepMa	[00:14:18] So... you propose: Fix libsndfiles build for windows, enable automatic clip on code and that should make it "work for most people" [00:14:18]
+2016-10-29 23:10:14	M-rryan	[00:18:34] if I understand this right -- I think the test isn't about the actual CPU but instead it's about how the lrint standard library method behaves on the platform [00:18:34]
+2016-10-29 23:10:14	JosepMa	[00:22:20] well, the m4 test is done with lrint, indeed (and libsndfile's code uses lrintf, its float variant) [00:22:20]
+2016-10-29 23:10:14	JosepMa	[00:22:49] i've just changed it and I am compiling to test it again [00:22:49]
+2016-10-29 23:10:14	M-rryan	[00:26:02] oh nevermind -- at least glibc has a different implementation of lrint per architecture [00:26:02]
+2016-10-29 23:10:14	M-rryan	[00:26:07] https://github.com/lattera/glibc/blob/a2f34833b1042d5d8eeb263b4cf4caaea138c4ad/sysdeps/x86_64/fpu/s_llrint.S [00:26:07]
+2016-10-29 23:10:14	M-rryan	[00:29:17] i guess the safe setting would be to set both to 0 so it always falls back on clamping manually [00:29:17]
+2016-10-29 23:10:14	JosepMa	[00:29:52] yes [00:29:52]
+2016-10-29 23:10:14	JosepMa	[00:29:59] that's what i'd recommend for windows [00:29:59]
+2016-10-29 23:10:14	JosepMa	[00:35:59] I will also try to fix these three bugs that I reported some time ago: [00:35:59]
+2016-10-29 23:10:14	JosepMa	[00:36:00] https://bugs.launchpad.net/mixxx/+bug/1605923 [00:36:00]
+2016-10-29 23:10:14	JosepMa	[00:36:04] https://bugs.launchpad.net/mixxx/+bug/1605921 [00:36:04]
+2016-10-29 23:10:14	JosepMa	[00:36:09] https://bugs.launchpad.net/mixxx/+bug/1605922 [00:36:09]
+2016-10-29 23:10:14	JosepMa	[00:36:25] they are all related to recoding the mix to file [00:36:25]
+2016-10-29 23:10:14	M-rryan	[00:36:29] cool! [00:36:29]
+2016-10-29 23:10:14	JosepMa	[00:37:00] would it be ok to have all them in the same branch or would you recommend a branch for each bug? [00:37:00]
+2016-10-29 23:10:14	M-rryan	[00:39:25] I personally prefer to keep them split but since they're all roughly on the same topic, I doubt addressing them in the same pull request would bother anyone [00:39:25]
+2016-10-29 23:10:14	JosepMa	[00:43:11] test: passed ;) :D [00:43:11]
+2016-10-29 23:10:14	***	Playback Complete.
+2016-10-29 23:11:21	--	Channel created on Wed, 06 Dec 2006 23:46:45
+2016-10-29 23:17:00		[23:11]
+2016-10-30 00:13:49	-->	joshontheweb (~joshonthe@223.207.185.181) has joined #mixxx
+2016-10-30 00:13:49		[00:13]
+2016-10-30 00:15:56	<--	joshonth_ (~joshonthe@223.207.187.195) has quit (Ping timeout: 256 seconds)
+2016-10-30 00:21:00		[00:15]
+2016-10-30 00:22:21	-->	magnicida (~raskolnik@2a02:8109:8cc0:6b45:8947:97dc:1d00:6ac9) has joined #mixxx
+2016-10-30 00:28:00		[00:22]
+2016-10-30 00:35:32	<--	GeekShadow (~antoine@reactos/tester/GeekShadow) has quit (Ping timeout: 260 seconds)
+2016-10-30 00:41:00		[00:35]
+2016-10-30 00:47:18	-->	marcofe (~marcofe@93-32-172-48.ip34.fastwebnet.it) has joined #mixxx
+2016-10-30 00:53:00		[00:47]
+2016-10-30 00:53:18	<--	marcofe (~marcofe@93-32-172-48.ip34.fastwebnet.it) has quit (Remote host closed the connection)
+2016-10-30 00:56:06	-->	GeekShadow (~antoine@nzf.turmel.info) has joined #mixxx
+2016-10-30 00:56:06	<--	GeekShadow (~antoine@nzf.turmel.info) has quit (Changing host)
+2016-10-30 00:56:06	-->	GeekShadow (~antoine@reactos/tester/GeekShadow) has joined #mixxx
+2016-10-30 00:56:57	-->	joshonth_ (~joshonthe@223.207.25.58) has joined #mixxx
+2016-10-30 00:58:06	-->	marcofe (~marcofe@93-32-172-48.ip34.fastwebnet.it) has joined #mixxx
+2016-10-30 00:58:56	<--	joshontheweb (~joshonthe@223.207.185.181) has quit (Ping timeout: 260 seconds)
+2016-10-30 01:04:00		[00:58]
+2016-10-30 01:51:59	<--	Pegasus_RPG (~Icedove@47.142.200.28) has quit (Remote host closed the connection)
+2016-10-30 01:51:59		[01:51]
+2016-10-30 01:52:09	<--	mykon (~galeon@87.125.71.248) has quit (Ping timeout: 245 seconds)
+2016-10-30 01:58:00		[01:52]
+2016-10-30 02:17:27	-->	mykon (~galeon@37.223.202.1) has joined #mixxx
+2016-10-30 02:17:27		[02:17]
+2016-10-30 02:31:38	<--	joshonth_ (~joshonthe@223.207.25.58) has quit (Ping timeout: 265 seconds)
+2016-10-30 02:32:44	-->	joshontheweb (~joshonthe@223.205.209.77) has joined #mixxx
+2016-10-30 02:32:44		[02:32]
+2016-10-30 02:34:41	-->	Pegasus_RPG (~Icedove@47.142.200.28) has joined #mixxx
+2016-10-30 02:40:00		[02:34]
+2016-10-30 02:47:23	<--	Pegasus_RPG (~Icedove@47.142.200.28) has quit (Ping timeout: 252 seconds)
+2016-10-30 02:53:00		[02:47]
+2016-10-30 03:37:28	<--	magnicida (~raskolnik@2a02:8109:8cc0:6b45:8947:97dc:1d00:6ac9) has quit (Ping timeout: 250 seconds)
+2016-10-30 03:37:28		[03:37]
+2016-10-30 03:56:05	<--	marcofe (~marcofe@93-32-172-48.ip34.fastwebnet.it) has quit (Quit: Konversation terminated!)
+2016-10-30 03:56:05		[03:56]
+2016-10-30 04:04:33	-->	JosepMa (~JosepMa@josepma.ddns.jazztel.es) has joined #mixxx
+2016-10-30 04:10:00		[04:04]
+2016-10-30 04:14:28	-->	luuuciano (~luuuciano@unaffiliated/luuuciano) has joined #mixxx
+2016-10-30 04:20:00		[04:14]
+2016-10-30 05:41:11	-->	magnicida (~raskolnik@ip5f5bd52d.dynamic.kabel-deutschland.de) has joined #mixxx
+2016-10-30 05:41:11		[05:41]
+2016-10-30 05:49:38	-->	Kakurady (~nekoyasha@198-84-241-141.cpe.teksavvy.com) has joined #mixxx
+2016-10-30 05:55:00		[05:49]
+2016-10-30 06:25:07	-->	datura (~datura@unaffiliated/datura) has joined #mixxx
+2016-10-30 06:25:07		[06:25]
+2016-10-30 06:33:05	-->	NoteOn (~noteon@s174004.ppp.asahi-net.or.jp) has joined #mixxx
+2016-10-30 06:39:00		[06:33]
+2016-10-30 06:56:18	<--	magnicida (~raskolnik@ip5f5bd52d.dynamic.kabel-deutschland.de) has quit (Ping timeout: 245 seconds)
+2016-10-30 06:56:18		[06:56]
+2016-10-30 07:36:50	-->	Pegasus_RPG (~Icedove@47.142.200.28) has joined #mixxx
+2016-10-30 07:36:50		[07:36]
+2016-10-30 07:36:53	-->	joshonth_ (~joshonthe@49.49.226.225) has joined #mixxx
+2016-10-30 07:37:42	<--	Pegasus_RPG (~Icedove@47.142.200.28) has quit (Client Quit)
+2016-10-30 07:38:53	<--	joshontheweb (~joshonthe@223.205.209.77) has quit (Ping timeout: 268 seconds)
+2016-10-30 07:44:00		[07:38]
+2016-10-30 07:54:22	<--	joshonth_ (~joshonthe@49.49.226.225) has quit (Ping timeout: 256 seconds)
+2016-10-30 07:56:21	-->	joshonth_ (~joshonthe@ppp-223-24-124-27.revip6.asianet.co.th) has joined #mixxx
+2016-10-30 08:02:00		[07:56]
+2016-10-30 08:02:57	-->	joshontheweb (~joshonthe@223.207.24.53) has joined #mixxx
+2016-10-30 08:04:05	<--	joshonth_ (~joshonthe@ppp-223-24-124-27.revip6.asianet.co.th) has quit (Read error: Connection reset by peer)
+2016-10-30 08:07:00	-->	joshonth_ (~joshonthe@223.206.147.193) has joined #mixxx
+2016-10-30 08:08:40	<--	joshontheweb (~joshonthe@223.207.24.53) has quit (Ping timeout: 260 seconds)
+2016-10-30 08:14:00		[08:08]
+2016-10-30 08:17:51	-->	magnicida (~raskolnik@ip5f5bd52d.dynamic.kabel-deutschland.de) has joined #mixxx
+2016-10-30 08:20:02	<--	datura (~datura@unaffiliated/datura) has quit (Ping timeout: 244 seconds)
+2016-10-30 08:26:00		[08:20]
+2016-10-30 08:46:10	<--	JosepMa (~JosepMa@josepma.ddns.jazztel.es) has quit (Read error: Connection reset by peer)
+2016-10-30 08:46:10		[08:46]
+2016-10-30 08:49:18	-->	JosepMa (~JosepMa@josepma.ddns.jazztel.es) has joined #mixxx
+2016-10-30 08:55:00		[08:49]
+2016-10-30 09:18:16	<--	lxp (~lxp@unaffiliated/lxp) has quit (Quit: Leaving.)
+2016-10-30 09:18:16		[09:18]
+2016-10-30 10:18:30	-->	datura (~datura@unaffiliated/datura) has joined #mixxx
+2016-10-30 10:18:30		[10:18]
+2016-10-30 10:47:35	<--	datura (~datura@unaffiliated/datura) has quit (Ping timeout: 268 seconds)
+2016-10-30 10:47:35		[10:47]
+2016-10-30 10:52:34	-->	datura (~datura@unaffiliated/datura) has joined #mixxx
+2016-10-30 10:58:00		[10:52]
+2016-10-30 10:59:54	<--	joshonth_ (~joshonthe@223.206.147.193) has quit (Ping timeout: 250 seconds)
+2016-10-30 11:02:45	-->	joshonth_ (~joshonthe@223.207.31.1) has joined #mixxx
+2016-10-30 11:08:00		[11:02]
+2016-10-30 11:24:35	<--	aalex (~aalex@64.187.177.58) has quit (Ping timeout: 268 seconds)
+2016-10-30 11:24:35		[11:24]
+2016-10-30 11:26:04	<--	GeekShadow (~antoine@reactos/tester/GeekShadow) has quit (Ping timeout: 260 seconds)
+2016-10-30 11:28:26	-->	aalex (~aalex@64.187.177.58) has joined #mixxx
+2016-10-30 11:34:00		[11:28]
+2016-10-30 11:39:10	-->	joshontheweb (~joshonthe@223.206.147.70) has joined #mixxx
+2016-10-30 11:40:48	<--	joshonth_ (~joshonthe@223.207.31.1) has quit (Ping timeout: 250 seconds)
+2016-10-30 11:44:34	<--	joshontheweb (~joshonthe@223.206.147.70) has quit (Ping timeout: 265 seconds)
+2016-10-30 11:47:00	-->	joshontheweb (~joshonthe@223.206.147.124) has joined #mixxx
+2016-10-30 11:48:54	<--	JosepMa (~JosepMa@josepma.ddns.jazztel.es) has left #mixxx ("QUIT :Leaving.")
+2016-10-30 11:54:00		[11:48]
+2016-10-30 11:54:27	<--	joshontheweb (~joshonthe@223.206.147.124) has quit (Ping timeout: 244 seconds)
+2016-10-30 11:58:06	-->	joshontheweb (~joshonthe@223.207.24.114) has joined #mixxx
+2016-10-30 12:01:13	--	You are now known as MojoJojo
+2016-10-30 12:01:36	--	You are now known as alyptik
+2016-10-30 12:07:00		[12:01]
+2016-10-30 12:08:01	--	Notice(mixxx-commits): [mixxx] daschuer pushed 5 new commits to master: https://git.io/vXt6h
+2016-10-30 12:08:01	--	Notice(mixxx-commits): mixxx/master cc2dcdd Uwe Klotz: Fix signal/slot connections of WStarRating and BaseTrackPlayer...
+2016-10-30 12:08:01	--	Notice(mixxx-commits): mixxx/master 4479132 Uwe Klotz: Fix signal/slot connection between TrackDAO and AutoDJCratesDAO
+2016-10-30 12:08:01	--	Notice(mixxx-commits): mixxx/master eaf7982 Uwe Klotz: Fix signal/slot connection between PlaylistDAO and AutoDJCratesDAO
+2016-10-30 12:14:00		[12:08]

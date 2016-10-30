@@ -17,6 +17,7 @@ unalias {1..9} gg history c d h j s >/dev/null 2>&1 || true
 
 ## Custom aliases
 
+alias pacawk="grep -v '^$\|^#' /etc/pacman.d/mirrorlist | awk '{print }' | awk -F '/' '{print }' "
 alias fem="find /etc -name '._cfg????_*' "
 alias showcert='openssl s_client -connect $IP:$PORT -showcerts '
 alias bsrv='sudo tar cvf /store/config/srvbak/$(date +"%Y-%d-%m").tar /srv '

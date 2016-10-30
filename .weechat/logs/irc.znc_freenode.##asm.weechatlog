@@ -12985,3 +12985,897 @@
 2016-10-29 21:50:25	<--	palantir (~palantir@85-171-132-206.rev.numericable.fr) has quit (Read error: Connection reset by peer)
 2016-10-29 21:50:33	-->	ndut2 (~ndut2@unaffiliated/skraito-0x71) has joined ##asm
 2016-10-29 21:51:53	-->	MyCuriosity (~MyCuriosi@unaffiliated/mycuriosity) has joined ##asm
+2016-10-29 21:57:00		[21:51]
+2016-10-29 21:58:07	-->	palantir (~palantir@85-171-132-206.rev.numericable.fr) has joined ##asm
+2016-10-29 22:01:26	--	irc: disconnected from server
+2016-10-29 23:10:09	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined ##asm
+2016-10-29 23:10:09		[23:10]
+2016-10-29 23:10:09	--	Topic for ##asm is "Assembly programming channel, all architectures welcome (please specify). Don't ask to ask! Use a pastebin if appropriate! Check your manuals! *** AT&T vs Intel flamers will be banned."
+2016-10-29 23:10:09	--	Topic set by Jester01 (~Jester01@62.100.244.69) on Fri, 30 Sep 2016 06:54:51
+2016-10-29 23:10:09	--	Channel ##asm: 288 nicks (0 ops, 0 voices, 288 normals)
+2016-10-29 23:10:09	***	Buffer Playback...
+2016-10-29 23:10:09	Jester02	[23:03:13] there wasn't a single mention of "java" in your question ;) [23:03:13]
+2016-10-29 23:10:09	emihir0	[23:03:36] oh, my bad =) [23:03:36]
+2016-10-29 23:10:09	emihir0	[23:05:50] basically, we have C code string, e.g. "abc\n", this I turn into StringToken, which when printed (toString()), it prints abc and a literal new line, e.g. if it were "a\nb", the b would be on a new line. This was part of our requirement (to make it behave this way...) [23:05:50]
+2016-10-29 23:10:09	zid	[23:06:21] so it's.. a string [23:06:21]
+2016-10-29 23:10:09	emihir0	[23:06:27] now however, when I want to use this string in mips, I want it back to the original form, ie. "abc\n" (or rather, this would relate only to chars, so '\n')... but I'm not sure what's the best way to do it [23:06:27]
+2016-10-29 23:10:09	zid	[23:06:36] you want to escape a string, then [23:06:36]
+2016-10-29 23:10:09	emihir0	[23:06:39] yes, it's a string that has some escaped chars [23:06:39]
+2016-10-29 23:10:09	zid	[23:06:52] https://www.google.co.uk/?gfe_rd=cr&ei=fisVWP2-Ccrv8Af10LagCA#q=java+escape+string [23:06:52]
+2016-10-29 23:10:09	kaos	[23:07:49] how is this asm [23:07:49]
+2016-10-29 23:10:09	Jester02	[23:08:28] he added an "off topic" disclaimer :) [23:08:28]
+2016-10-29 23:10:09	emihir0	[23:08:30] ... sorry, I got carried away and explained a problem to more detail than I should have (in an asm chat) :P [23:08:30]
+2016-10-29 23:10:09	emihir0	[23:08:50] thanks btw @zid, had no idea about that library [23:08:50]
+2016-10-29 23:10:09	zid	[23:09:03] google is a library? [23:09:03]
+2016-10-29 23:10:09	emihir0	[23:09:40] no, I meant the specific class StringEscapeUtils [23:09:40]
+2016-10-29 23:10:09	emihir0	[23:10:20] I was trying to google it before mentioning it here, trust me, I was just googling wrong phrases... [23:10:20]
+2016-10-29 23:10:09	zid	[23:10:58] I recommend "offtopic, but can someone please tell me what the word is for turning literal characters into things like \n" [23:10:58]
+2016-10-29 23:10:09	Amun_Ra	[02:07:18] zid: escaping characters? [02:07:18]
+2016-10-29 23:10:09	KidBeta	[05:17:31] does anyone know a good tut / guide for reverse engineering Objective C OSX applications im kinda okay at Windows C++/C apps but im stuck on how some of the more advanced stuff in Objective-C works under the covers at the ASM layer, I know this is only tangentially related to ASM but the guys in #RE are kinda take the whole silence thing seriously. [05:17:31]
+2016-10-29 23:10:09	klys	[05:21:12] kidbeta, would clang/llvm's assembler have something like binutils' objdump -d ? [05:21:12]
+2016-10-29 23:10:09	KidBeta	[05:21:56] im using hopper at the moment (which is like a poor mans IDA for OSX) and I get some of the stuff its just stuff like msgsend is breaking my brain. Ill have a look at see if I can make more sense of it using objdump [05:21:56]
+2016-10-29 23:10:09	klys	[05:22:28] it's just a disassembly listing [05:22:28]
+2016-10-29 23:10:09	KidBeta	[05:24:29] ive got the disassembly what im having trouble with is tracking down a function and specifically working out what one does [05:24:29]
+2016-10-29 23:10:09	KidBeta	[05:24:52] luckily ObjC has very descriptive function names (at least in this case) but the function doesnt seem to do anything ? [05:24:52]
+2016-10-29 23:10:09	KidBeta	[05:27:53] http://pastebin.com/uHY5M27W is the function, the random leave halfway through the function is kinda tripping me out [05:27:53]
+2016-10-29 23:10:09	klys	[05:37:22] kidbeta, you know the value is returned in eax right, and you know what imul does? [05:37:22]
+2016-10-29 23:10:09	KidBeta	[06:16:45] klys yeah man :) its just that i kinda expected a lot more code for a function thats meant to flash the firmware on a HDD. [06:16:45]
+2016-10-29 23:10:09	klys	[06:17:29] kidbeta, I'm sure the function that does that is somewhere else [06:17:29]
+2016-10-29 23:10:09	KidBeta	[06:17:41] That was my suspicion too once I saw it [06:17:41]
+2016-10-29 23:10:09	KidBeta	[06:18:05] Theres a couple others that look like they might but I cant see anything that seems to issue commands that would do something like flash firmware [06:18:05]
+2016-10-29 23:10:09	KidBeta	[06:20:12] http://pastebin.com/DPtVSVxz was my other thought for what did the actual update, the only problem is I have no idea how to follow the sendmsg calls to find the actual functions its using. [06:20:12]
+2016-10-29 23:10:10	Love4Boobies	[06:22:59] Someone please ban ndut2 for spamming us both in the channel and in private. [06:22:59]
+2016-10-29 23:10:10	Love4Boobies	[06:23:22] He's probably a 10yo trying to make an IRC channel for "hackers". [06:23:22]
+2016-10-29 23:10:10	ndut2	[06:23:25] just invitation [06:23:25]
+2016-10-29 23:10:10	Love4Boobies	[06:23:32] You are very aggressive. [06:23:32]
+2016-10-29 23:10:10	ndut2	[06:23:33] ......... [06:23:33]
+2016-10-29 23:10:10	Love4Boobies	[06:23:41] I got that invitation at least 10 times in the last day. [06:23:41]
+2016-10-29 23:10:10	Love4Boobies	[06:23:44] Stop it already. [06:23:44]
+2016-10-29 23:10:10	klys	[06:23:46] kidbeta, that's most assuredly doing the update [06:23:46]
+2016-10-29 23:10:10	Love4Boobies	[06:23:48] No one cares. [06:23:48]
+2016-10-29 23:10:10	Love4Boobies	[06:24:03] If they didn't join the first time, they won't join the 20th time. [06:24:03]
+2016-10-29 23:10:10	KidBeta	[06:24:52] once you know the syntax it looks like ObjC gives away ALOT of details in the binary assuming this isnt an accidental debug build [06:24:52]
+2016-10-29 23:10:10	ctxz	[06:52:10] I know the 8259A Is a bit dated by now, but I've gotten seriously into interrupts, specifically Hardware Interrupts and I can't seem to get one thing clear. AFAIK the 8259A can handle multiple interrupt requests (8 to be precise if there is no slave). Now what I don't get is 1. How exactly does data inside the ISR look like after passing the priority resolver, and 2. If there are multiple interrupts, the most [06:52:10]
+2016-10-29 23:10:10	ctxz	[06:52:18] prioritised gets chosen, what happends with the other interrupts? [06:52:18]
+2016-10-29 23:10:10	edcba	[06:53:47] they wait for EOI ? [06:53:47]
+2016-10-29 23:10:10	ctxz	[06:55:13] They don't get passed to the CPU one by one? [06:55:13]
+2016-10-29 23:10:10	edcba	[07:11:11] http://slideplayer.com/slide/5050552/ [07:11:11]
+2016-10-29 23:10:10	edcba	[07:11:29] hmm forgot there was a rotate priority thing [07:11:29]
+2016-10-29 23:10:10	ndut2	[07:13:16] hi all [07:13:16]
+2016-10-29 23:10:10	ndut2	[07:13:19] :) [07:13:19]
+2016-10-29 23:10:10	 *	ndut2 [08:55:41] https://www.youtube.com/watch?v=fHE0txCjGgI [08:55:41]
+2016-10-29 23:10:10	***	Playback Complete.
+2016-10-29 23:10:16	--	Channel created on Sun, 27 May 2007 05:31:12
+2016-10-29 23:13:57	<--	Demon_Fox (~Demon_Fox@71.94.3.176) has quit (Read error: Connection reset by peer)
+2016-10-29 23:18:25	<--	jackbrown (~se@unaffiliated/jackbrown) has quit (Ping timeout: 260 seconds)
+2016-10-29 23:20:43	-->	SunnyD (~SunnyD@cpe-72-178-78-211.hot.res.rr.com) has joined ##asm
+2016-10-29 23:23:40	-->	paule32 (~jens@p4FFC51FC.dip0.t-ipconnect.de) has joined ##asm
+2016-10-29 23:24:43	-->	Jackneill_ (~Jackneill@unaffiliated/jackneill) has joined ##asm
+2016-10-29 23:26:37	-->	dqi (~dqi@165-218-045-062.dynamic.caiway.nl) has joined ##asm
+2016-10-29 23:26:37		[23:26]
+2016-10-29 23:27:59	-->	jackbrown (~se@unaffiliated/jackbrown) has joined ##asm
+2016-10-29 23:33:00		[23:27]
+2016-10-29 23:37:46	-->	devonrevenge (~devonreve@unaffiliated/devonrevenge) has joined ##asm
+2016-10-29 23:43:00		[23:37]
+2016-10-29 23:44:19	<--	wondiws (~Jasper@5ED7DF59.cm-7-8d.dynamic.ziggo.nl) has quit (Ping timeout: 256 seconds)
+2016-10-29 23:50:00		[23:44]
+2016-10-29 23:56:18	-->	wondiws (~Jasper@5ED7DF59.cm-7-8d.dynamic.ziggo.nl) has joined ##asm
+2016-10-29 23:59:11	--	Axton_ is now known as Axton
+2016-10-30 00:05:00		[23:59]
+2016-10-30 00:07:02	-->	hmmmm (~sdfgsf@72.79.173.10) has joined ##asm
+2016-10-30 00:08:00	<--	jan64_ (~jan64@dou218.neoplus.adsl.tpnet.pl) has quit (Quit: Leaving)
+2016-10-30 00:13:00		[00:08]
+2016-10-30 00:22:52	-->	Sender (~Ghost@freebsd/contributor/Sender) has joined ##asm
+2016-10-30 00:28:00		[00:22]
+2016-10-30 00:28:32	<--	MindlessDrone (~MindlessD@unaffiliated/mindlessdrone) has quit (Ping timeout: 260 seconds)
+2016-10-30 00:29:00	-->	MindlessDrone (~MindlessD@unaffiliated/mindlessdrone) has joined ##asm
+2016-10-30 00:33:49	-->	dminuoso_ (~dminuoso@unaffiliated/dminuoso) has joined ##asm
+2016-10-30 00:36:57	<--	dqi (~dqi@165-218-045-062.dynamic.caiway.nl) has quit (Read error: No route to host)
+2016-10-30 00:42:00		[00:36]
+2016-10-30 00:44:18	<--	jackbrown (~se@unaffiliated/jackbrown) has quit (Ping timeout: 250 seconds)
+2016-10-30 00:45:40	-->	rendar (~I@host68-178-dynamic.1-87-r.retail.telecomitalia.it) has joined ##asm
+2016-10-30 00:47:48	-->	skraito_ (~ndut2@unaffiliated/skraito-0x71) has joined ##asm
+2016-10-30 00:47:53	-->	dqi (~dqi@165-218-045-062.dynamic.caiway.nl) has joined ##asm
+2016-10-30 00:48:26	<--	ndut2 (~ndut2@unaffiliated/skraito-0x71) has quit (Disconnected by services)
+2016-10-30 00:48:32	--	skraito_ is now known as ndut2
+2016-10-30 00:54:00		[00:48]
+2016-10-30 00:58:19	-->	jackbrown (~se@unaffiliated/jackbrown) has joined ##asm
+2016-10-30 01:04:00		[00:58]
+2016-10-30 01:09:19	-->	GeDaMo (~GeDaMo@212.225.83.199) has joined ##asm
+2016-10-30 01:11:30	-->	meth (~meth@unaffiliated/meth) has joined ##asm
+2016-10-30 01:12:00	<--	Sender (~Ghost@freebsd/contributor/Sender) has left ##asm ("Quit")
+2016-10-30 01:13:24	-->	brt (~brt@x1-6-20-4e-7f-c8-4b-ba.cpe.webspeed.dk) has joined ##asm
+2016-10-30 01:18:59	-->	Puhe (~Puhe@ool-18bf15a1.dyn.optonline.net) has joined ##asm
+2016-10-30 01:19:50	<--	brt (~brt@x1-6-20-4e-7f-c8-4b-ba.cpe.webspeed.dk) has quit (Ping timeout: 250 seconds)
+2016-10-30 01:19:50		[01:19]
+2016-10-30 01:21:34	-->	snyp (~Snyp@nas4.meghbelabroadband.in) has joined ##asm
+2016-10-30 01:24:04	<--	Puhe (~Puhe@ool-18bf15a1.dyn.optonline.net) has quit (Quit: Leaving)
+2016-10-30 01:29:30	<--	ndut2 (~ndut2@unaffiliated/skraito-0x71) has quit (Ping timeout: 268 seconds)
+2016-10-30 01:31:52	-->	DearVolt (~DearVolt@169-0-208-125.ip.afrihost.co.za) has joined ##asm
+2016-10-30 01:37:00		[01:31]
+2016-10-30 01:38:02	<--	kaos (~kaos@h7n8-vn-a12.ias.bredband.telia.com) has quit (Remote host closed the connection)
+2016-10-30 01:42:33	DearVolt	Hello everyone :) I'm feeling a little hopeless at this point so hoping someone could please help me. Syntax: Intel x64. Code: main.c http://pastebin.com/m4nfAKJT linkNodes.asm http://pastebin.com/MAHVQMCq and finally the problem: I'm implementing a graph and everything seems to work fine except for some crazy corner case. If I change main.c:37 to iterate one less time everything works great except for that one missing edge. If I leave
+2016-10-30 01:42:33	DearVolt	it as is, I get a seg fault. It seems like my one edge is overwriting the other but I have single stepped through the program (GDB) and checked that all is fine.
+2016-10-30 01:44:32	DearVolt	linkNodes.asm lines 73-100 are basically a copy of lines 40 - 67. The source with a makefile can be downloaded at http://noekie.com/source.zip - If I add the edge (link) to one node instead of both then it works fine. It seems to be just that one edge A->C.
+2016-10-30 01:44:36	-->	rtkt (~rtkt@ptr-2hj4tbw74k45r08mt38vhofux.ip6.access.telenet.be) has joined ##asm
+2016-10-30 01:45:35	edcba	just look where the segfault occurs
+2016-10-30 01:46:31	DearVolt	It's in my output edcba. The for loop for node A.
+2016-10-30 01:46:40	DearVolt	There's something wrong with the array of edges, links.
+2016-10-30 01:46:51	 *	zid takes a gander
+2016-10-30 01:46:53	dminuoso_	Im not going to download your zip packages and unpack them.
+2016-10-30 01:47:09	edcba	doubt there is a need to
+2016-10-30 01:47:11	DearVolt	I understand. That's why I've given pastebin links.
+2016-10-30 01:47:26	edcba	DearVolt: which indirection is segfaulting ?
+2016-10-30 01:47:28	zid	allocatenode is just what I think it is and I don't need to ask for it?
+2016-10-30 01:48:04	DearVolt	@zid, yup. Simple malloc.
+2016-10-30 01:48:07	dminuoso_	DearVolt: Also marking functions with external linkage is just silly - external linkage is the default linkage.
+2016-10-30 01:48:08	edcba	you should use a debugger to know exactly where is the problem if you can't guess
+2016-10-30 01:48:13	zid	wait what, this uses floating point to mess with the nodes?
+2016-10-30 01:48:31	DearVolt	@zid: No, just the weight of the edges are doubles.
+2016-10-30 01:48:36	zid	oh phew
+2016-10-30 01:48:48	-->	metachr0n (~nobody@gateway/vpn/privateinternetaccess/metachr0n) has joined ##asm
+2016-10-30 01:48:51	<--	metachr0n (~nobody@gateway/vpn/privateinternetaccess/metachr0n) has quit (Read error: Connection reset by peer)
+2016-10-30 01:48:56	-->	phinxy (~tehhhd@unaffiliated/phinxy) has joined ##asm
+2016-10-30 01:49:07	zid	DearVolt: these links are omnidirectional? I only see you incing rdi's number of links not rsi's
+2016-10-30 01:49:08	dminuoso_	DearVolt: At any rate. Get a debugger, figure out which exact memory access triggers the seg fault.
+2016-10-30 01:49:14	<--	jackbrown (~se@unaffiliated/jackbrown) has quit (Ping timeout: 268 seconds)
+2016-10-30 01:49:18	dminuoso_	Then you know which read/write uses an invalid address.
+2016-10-30 01:49:21	zid	oh you've cloned it instead of doing everything twice
+2016-10-30 01:49:23	zid	that's very odd
+2016-10-30 01:49:26	DearVolt	@edcba: It's the edge between A->C. A's links array should contain B, C, D but when it traverses it outputs B, D, seg fault. If I -1 then it outputs B,D and the rest of the graph correctly.
+2016-10-30 01:49:35	-->	metachr0n (~nobody@gateway/vpn/privateinternetaccess/metachr0n) has joined ##asm
+2016-10-30 01:49:51	DearVolt	@zid: No, see lines 73 - 100. That's where I do the other direction.
+2016-10-30 01:50:08	zid	btw this isn't twitter
+2016-10-30 01:50:15	DearVolt	First do node -> neighbour and then do neighbour -> node.
+2016-10-30 01:50:23	dminuoso_	DearVolt: Buy a debugger. You still have not told us where the seg fault comes from.
+2016-10-30 01:50:31	dminuoso_	I can tell you gdb if you like.
+2016-10-30 01:50:33	dminuoso_	SELL.
+2016-10-30 01:51:01	zid	You never test if realloc fails in the assembly, not your problem but it's an improvement you can make
+2016-10-30 01:51:15	edcba	can't we do inc qword ptr [rdi+Node.nrOfLinks] in x64 ?
+2016-10-30 01:51:16	DearVolt	dminuoso_: I've already told you I've used GDB and I've already told you where the seg fault occurs. It's when I'm outputting -> It seems to be reading a "stray" address in the links array rather than one of an existing node.
+2016-10-30 01:51:27	dminuoso_	DearVolt: Where have you told us?
+2016-10-30 01:51:27	zid	what does that mean
+2016-10-30 01:51:45	zid	wht line is "outputting ->"
+2016-10-30 01:52:27	dminuoso_	DearVolt: Look. I dont care about "which region of code triggers it". I care about which INSTRUCTION triggers it.
+2016-10-30 01:52:27		[01:52]
+2016-10-30 01:52:32	DearVolt	I'll add that check, zid. And I've mentioned in my initial problem as well as in my fourth last message, dminuoso_
+2016-10-30 01:52:46	DearVolt	It's triggered in the C.
+2016-10-30 01:52:50	DearVolt	Not in my assembly.
+2016-10-30 01:52:59	zid	Then tell me which dereference crashes
+2016-10-30 01:52:59	dminuoso_	DearVolt: Great. Now attach your debugger, and disassemble the code.
+2016-10-30 01:52:59	edcba	damn pastebin is lacking Node_Size
+2016-10-30 01:53:16	edcba	you should calculate Node_size automatically...
+2016-10-30 01:53:34	DearVolt	But it's something in my assembly causing it. It's the dereference on line 39 of main.c in the third iteration.
+2016-10-30 01:53:34	edcba	dunno which asm you are using but usually there is some sizeof macro
+2016-10-30 01:53:47	dminuoso_	DearVolt: Seriously. Stop.
+2016-10-30 01:53:54	zid	DearVolt: Which dereference crashes?
+2016-10-30 01:54:28	dminuoso_	printf(nodeA->links[i].neighbour->id); -> here I see at least 4 potential memory dereferences
+2016-10-30 01:54:46	<--	Coldseeker (~Frosty@adsl-mel-4-177.ozonline.com.au) has quit (Quit: The one good thing about repeating your mistakes is that you know when to cringe.)
+2016-10-30 01:54:57	edcba	telling which loop it occurs is almost as useful as telling it's occuring on your computer
+2016-10-30 01:55:15	DearVolt	It must be the neighbour that is not a correct address. I'm sorry, dminuoso. I don't think I am understanding exactly what you are asking.
+2016-10-30 01:55:21	zid	it must be? or it is?
+2016-10-30 01:55:22	dminuoso_	Maybe you have corrupted your heap and the call to printf is crashing.
+2016-10-30 01:55:26	edcba	your loop has tousands of instructions occuring
+2016-10-30 01:55:27	dminuoso_	DearVolt: ^- Maybe!
+2016-10-30 01:55:35	dminuoso_	But I have no fucking clue because you are not telling us which fucking instruction is seg faulting.
+2016-10-30 01:56:00	dminuoso_	Or maybe your stack got corrupted
+2016-10-30 01:56:48	dminuoso_	DearVolt: Attach a debugger. When it seg faults, disassemble the code, and look at the exact machine instruction that causes the issue.
+2016-10-30 01:56:48	edcba	how much is node_size ?
+2016-10-30 01:56:48	DearVolt	neighbour->id. And I doubt that. If I comment out node A's output, everything works fine. Same for if I only output the first two links of A.
+2016-10-30 01:56:55	dminuoso_	DearVolt: Stop. Guessing.
+2016-10-30 01:56:57	DearVolt	It's 40 bytes.
+2016-10-30 01:56:59	dminuoso_	USE YOUR DEBUGGER.
+2016-10-30 01:57:22	zid	I can even tell you what to put into gdb if you ask
+2016-10-30 01:57:29	DearVolt	I am using it. It's not telling me where exactly. I'm sorry, I'm not too experienced with GDB.
+2016-10-30 01:57:36	zid	Then ask.
+2016-10-30 01:57:39	DearVolt	Please do, zid. I would appreciate that.
+2016-10-30 01:57:40	zid	Don't just make shit up.
+2016-10-30 01:57:47	DearVolt	Sorry.
+2016-10-30 01:57:58	edcba	being experienced with debuggers is as much important as knowing how to code :)
+2016-10-30 01:57:58	zid	If you built with debug symbols, the crashing source line will be displayed, do you have that?
+2016-10-30 01:58:10	edcba	because you will spent a lot more time with the debugger than coding lol
+2016-10-30 01:58:19	zid	if you don't, rebuild with -ggdb and do it again
+2016-10-30 01:58:31	DearVolt	I can debug the asm quite well, but the C is not being built with -g. Let me add that quickly.
+2016-10-30 01:59:02	-->	jackbrown (~se@unaffiliated/jackbrown) has joined ##asm
+2016-10-30 01:59:27	GeDaMo	Are you sure that realloc doesn't change r9?
+2016-10-30 01:59:33	DearVolt	All I get is 0x0000000000400a22 in main ()
+2016-10-30 01:59:38	DearVolt	Positive, GeDaMo.
+2016-10-30 02:00:03	zid	Either you didn't build with debug symbols, or it crashed in the assembly.
+2016-10-30 02:00:11	DearVolt	I've checked all my registers. The function usually works fine. It seems to be one specific call that goes wrong and I'm having trouble identifying the problem.
+2016-10-30 02:00:12	zid	'main' is just the closest symbol it knows about
+2016-10-30 02:01:04	DearVolt	I'm positive it doesn't crash in the assembly. It happens during the output - After the assembly function calls. Let me see if I did something wrong with the -g flag,
+2016-10-30 02:01:53	DearVolt	This is my make for the C: gcc main.o linkNodes.o allocateNode.o -o prog.out -m64 -lm -static -g
+2016-10-30 02:02:08	zid	you need to build main.c with -g
+2016-10-30 02:02:13	DearVolt	I have also tried -ggdb. What else can I try to get more information about where in the C the seg fault is occuring?
+2016-10-30 02:02:27	DearVolt	Ah, of course! I'm sorry, that was silly of me.
+2016-10-30 02:02:28	zid	the object file is what contains the debug info, you can't add it in later
+2016-10-30 02:02:35	zid	you can also mix .o and .c on the same line
+2016-10-30 02:02:45	zid	so something like nasm asm.c -o asm.o; gcc main.c asm.o -g  is fine
+2016-10-30 02:03:31	DearVolt	Still the same output though. I knew about the mixing, but thank you :)
+2016-10-30 02:04:11	zid	source.zip is a zipbomb too, lovely
+2016-10-30 02:04:14	DearVolt	Okay, line 68. printf(nodeA->links[i].neighbour->id);
+2016-10-30 02:04:21	DearVolt	What is a zipbomb?
+2016-10-30 02:04:35	zid	now do p nodeA, p nodeA->links, p nodeA->links[i], etc
+2016-10-30 02:04:47	zid	p is print
+2016-10-30 02:04:57	zid	it will give you their value, make sure they're not, for example, null
+2016-10-30 02:05:24	zid	a zipbomb is a zip containing files without a containing folder, so when unzipped it just dumps garbage into .
+2016-10-30 02:05:25	DearVolt	I know print and examine. I'm fairly decent at debugging assembly, but things like the p nodeA-links are new to me.
+2016-10-30 02:05:38	edcba	well with gdb it should be obvious whether it's null or not :)
+2016-10-30 02:06:02	<--	dqi (~dqi@165-218-045-062.dynamic.caiway.nl) has quit (Ping timeout: 250 seconds)
+2016-10-30 02:06:45	DearVolt	p nodeA->links[i]    $3 = {neighbour = 0x0, distance = 0}
+2016-10-30 02:06:55	DearVolt	So the address is null.
+2016-10-30 02:07:21	DearVolt	And zid, I'll read up on that. Is it supposed to be malicious?
+2016-10-30 02:07:24	zid	so nrOfLinks is either wrong, or links is malformed, figure out which
+2016-10-30 02:07:45	DearVolt	I've already checked nrOfLinks, it's right.
+2016-10-30 02:07:45		[02:07]
+2016-10-30 02:07:47	zid	DearVolt: it's annoying as shit, to delete the zip I have to do unzip -p blah.zip | xargs rm
+2016-10-30 02:07:52	edcba	gdb knows about C structs etc ?
+2016-10-30 02:07:55	zid	it does
+2016-10-30 02:07:56	edcba	nice
+2016-10-30 02:08:03	-->	Lucifer333 (~k@194.154.216.86) has joined ##asm
+2016-10-30 02:08:28	edcba	a pity to use that feature when learning asm though
+2016-10-30 02:08:44	<--	phinxy (~tehhhd@unaffiliated/phinxy) has quit (Quit: Leaving)
+2016-10-30 02:09:19	zid	Your C is also broken btw, %d is not the specifier for size_t
+2016-10-30 02:09:42	zid	It crashes in linkNodes for me
+2016-10-30 02:09:44	edcba	btw shouldn't align 8 at start of structs ? :)
+2016-10-30 02:10:10	DearVolt	zid: Okay, I'm sorry. Will put it in a directory next time. What's confusing me a lot is how links is well formed for all the other nodes, it's just for nodeA that the third edge gets put in the index of the second and then the third is empty.
+2016-10-30 02:10:12	zid	mov rax, [r11]
+2016-10-30 02:10:32	DearVolt	zid: This was a given source file. size_t is defined as an unsigned long, right?
+2016-10-30 02:10:40	zid	line 99 in your paste
+2016-10-30 02:10:48	zid	DearVolt: no, size_t is a size_t, you want %zu
+2016-10-30 02:11:06	DearVolt	Line 67 or line 100?
+2016-10-30 02:11:11	zid	99.
+2016-10-30 02:11:16	zid	In the paste
+2016-10-30 02:11:30	DearVolt	Thank you. Wow, never heard of %zu. I'll look it up in the man pages.
+2016-10-30 02:11:42	edcba	never heard of it either
+2016-10-30 02:11:53	zid	size_t is a type that can hold the size of objects, long might be too small
+2016-10-30 02:11:56	edcba	but i don't do C much
+2016-10-30 02:11:59	zid	i.e 32bit longs on windows
+2016-10-30 02:12:48	zid	size_t is an unsigned long long on windows, but an unsigned long on linux, for my CPU. Guessing won't help you.
+2016-10-30 02:13:14	DearVolt	Yes, that one. It behaves correctly in most function calls. What do you think is wrong? Perhaps r9 (The offset into the array) isn't the correct size? I've tried checking that when single stepping though.
+2016-10-30 02:13:57	edcba	anyway nrOfLinks shouldn't be size_t
+2016-10-30 02:14:16	edcba	it's just a number
+2016-10-30 02:14:35	DearVolt	edcba: That was given source and part of the spec. I think they were trying to trick us when calculating the size of the struct.
+2016-10-30 02:14:45	edcba	yeah maybe
+2016-10-30 02:15:17	edcba	or just wanted you to trick you in forgetting to multiply by size of structs when dereferencing arrays in asm
+2016-10-30 02:15:52	zid	size of the object, when using arrays. More succint.
+2016-10-30 02:16:02	edcba	it happens easily especially when you write mov rax,links[rdi]
+2016-10-30 02:16:40	zid	This is why I just write things in C and disassemble them, "There, I wrote some assembly"
+2016-10-30 02:16:47	edcba	haha
+2016-10-30 02:16:53	DearVolt	That's possible too. They emphasize it in the notes though. What does links[rdi] do?
+2016-10-30 02:17:11	edcba	it's same than mov rax,[rdi+links]
+2016-10-30 02:17:13	zid	it's a mixture of at&t and intel sy ntax that means [links+rdi] I think
+2016-10-30 02:17:38	DearVolt	And compilers usually to a pretty good job. Definitely better than I currently can. Ah, so it's like commutative addition with the base address and the index?
+2016-10-30 02:19:16	edcba	yeah it's just addition
+2016-10-30 02:19:48	edcba	same than mov rax,[rdi].links too
+2016-10-30 02:20:12	edcba	maybe there are non obvious difference in type checking though
+2016-10-30 02:20:22	edcba	don't remember
+2016-10-30 02:20:34	edcba	depends on how is declared links anyway
+2016-10-30 02:21:25	DearVolt	That sort of explains all array indexing with [], like in C. Any advice on how I can isolate the problem? I'm going to try get to that line on the third function call now and double check if something is wrong.
+2016-10-30 02:22:29	edcba	comment code until it doesn't segfault ? :)
+2016-10-30 02:23:07	zid	DearVolt: step through the code with a piece of A4 paper, writing down all the register values
+2016-10-30 02:23:08		[02:23]
+2016-10-30 02:23:17	DearVolt	If I comment lines 72 - 100 it doesn't segfault.
+2016-10-30 02:23:22	dminuoso_	13:13 < edcba> anyway nrOfLinks shouldn't be size_t
+2016-10-30 02:23:22	dminuoso_	Why
+2016-10-30 02:23:26	DearVolt	I've already got them written down, zid :P
+2016-10-30 02:23:29	dminuoso_	Any "number of xxx" should be size_t
+2016-10-30 02:23:32	dminuoso_	it's the most proper type.
+2016-10-30 02:23:35	zid	DearVolt: You know why it crashes then
+2016-10-30 02:23:53	zid	dminuoso: no, size of things should be, counts of things need not be
+2016-10-30 02:24:01	zid	otherwise you can't guarentee nr * size doesn't overflow as well
+2016-10-30 02:24:44	<--	metachr0n (~nobody@gateway/vpn/privateinternetaccess/metachr0n) has quit (Quit: WeeChat 1.4)
+2016-10-30 02:24:47	dminuoso_	Im unsure how a different data type gives you that guarantee.
+2016-10-30 02:24:52	DearVolt	I'm sorry, but I don't think I'm seeing it. I'll start stepping through it now again.
+2016-10-30 02:24:57	zid	dminuoso: It's easier to perform the check
+2016-10-30 02:25:20	dminuoso_	zid: As long as you dont do x >= 0 checks you are fine.
+2016-10-30 02:25:23	zid	DearVolt: The basic issue is that your link count goes out of sync with your link array, at some point
+2016-10-30 02:25:24	DearVolt	zid: Could you please tell me on which function call it crashed for you?
+2016-10-30 02:25:37	zid	a to D
+2016-10-30 02:25:45	DearVolt	Yes, I figured as much. Having trouble identifying where/how though. And thank you!
+2016-10-30 02:25:54	edcba	dminuoso: just semantically a count and a size isn't the same
+2016-10-30 02:25:58	DearVolt	You worded it very well though.
+2016-10-30 02:26:17	GeDaMo	I still think you shouldn't rely on r9 being unchanged by the call to realloc
+2016-10-30 02:26:43	DearVolt	Okay, I'll change that as well GeDaMo. Thank you :)
+2016-10-30 02:26:44	edcba	but i didn't know there was no more appropriate type than size_t :(
+2016-10-30 02:26:50	zid	http://i.imgur.com/FTYxzos.png
+2016-10-30 02:27:05	-->	fr0gRIP (~fr0gRIP@2a01:e35:243f:6d60:626d:c7ff:fe04:bcab) has joined ##asm
+2016-10-30 02:27:05	zid	it isn't fucked internally at least, your code just does a thing wrong
+2016-10-30 02:27:29	dminuoso_	DearVolt: rbx, rsp, rbp, r12, r13, r14, and r15 are the registers System V ABI guarantees to be preserved.
+2016-10-30 02:27:37	dminuoso_	DearVolt: All others can be freely clobbered.
+2016-10-30 02:27:42	DearVolt	Yes, D is overwriting C.
+2016-10-30 02:27:55	zid	that's not good.
+2016-10-30 02:28:20	zid	yea shouldn't A's 2nd link be 2.1 not 3.3
+2016-10-30 02:28:36	zid	so yea, something is writing something wrong somewhere.
+2016-10-30 02:28:53	zid	also you're using realloc wrong.
+2016-10-30 02:28:54	zid	still.
+2016-10-30 02:29:10	DearVolt	Yes. So my r9 value is incorrect in that function call. Let me change to a memory location and see if it's being clobbered.
+2016-10-30 02:29:33	DearVolt	What am I doing wrong with realloc?
+2016-10-30 02:29:41	DearVolt	Not checking for failure?
+2016-10-30 02:29:52	-->	yalue (~yalue@99-194-16-144.dyn.centurytel.net) has joined ##asm
+2016-10-30 02:30:29	zid	I've not read the code carefully, because I can't be bothered, but memory corruption + calling realloc almost always means you used realloc wrong. Specifically, realloc can return a different pointer to the one you gave it. so every place that pointer is used needs updating
+2016-10-30 02:30:34	zid	which may cause your links to point to stale data.
+2016-10-30 02:30:47	DearVolt	That was it!
+2016-10-30 02:31:01	zid	and you're definitely not error checking it, so I'd wager you're also not consistency checking it
+2016-10-30 02:31:33	DearVolt	But I do update the place that pointer is used, zid. What do you mean by the memory corruption part?
+2016-10-30 02:32:08	zid	I mean this causes a lot of memory corrpution.
+2016-10-30 02:32:08	DearVolt	Thank you so much GeDaMo, dminuoso and zid. I've definitely learnt to stick to those registers preserved across function calls.
+2016-10-30 02:32:17	zid	both just by looking at the output, and memory check tools
+2016-10-30 02:32:18	DearVolt	And edcba :)
+2016-10-30 02:32:26	GeDaMo	DearVolt: what was the problem?
+2016-10-30 02:32:55	DearVolt	Like Valgrind? It was r9 not being preserved, GeDaMo. But only for one function call. I guess that's why it can't be guaranteed,
+2016-10-30 02:33:03	GeDaMo	Ah
+2016-10-30 02:33:15	zid	http://codepad.org/uQYTILV5
+2016-10-30 02:33:31	Jester02	also note that they are not just preserved for you, you must also preserve them for your caller (haven't checked the code)
+2016-10-30 02:33:49	edcba	hehe
+2016-10-30 02:33:49	zid	That's a pretty good number of errors for a small snippet of code, gj :P
+2016-10-30 02:34:09	edcba	there are all the same, structs aren't initialized
+2016-10-30 02:34:33	zid	so the part he didn't post had issues too? grand.
+2016-10-30 02:34:42	DearVolt	Wow, that output is quite intimidating. And yes, I leave the memory I allocate for the structs as all zeroes. Is that bad? I don't really have default values.
+2016-10-30 02:34:52	zid	you can't "leave" memory zeros
+2016-10-30 02:34:56	zid	you have to SET it to zeros.
+2016-10-30 02:35:09	zid	that's why calloc and memset exist
+2016-10-30 02:35:11	edcba	yeah you should really initialize them yourself
+2016-10-30 02:35:41	zid	although for pointers even that isn't enough technically (in practice it will be, though)
+2016-10-30 02:35:46	DearVolt	Ah, my bad. I thought I read on the man pages it's all zeroes. It was telling me that at compile time at a stage as well.
+2016-10-30 02:36:11	<--	yalue (~yalue@99-194-16-144.dyn.centurytel.net) has quit (Quit: Leaving)
+2016-10-30 02:36:12	DearVolt	And Jester01, I'm sorry, but I'm not quite sure I understand? You mean pushing those register values onto the stack before calling any other functions?
+2016-10-30 02:36:19	DearVolt	*Jester02
+2016-10-30 02:36:26	zid	DearVolt: If it's your first call to malloc it'll probably be zeros, because the OS gives you zero'd memory, but if you free() something then malloc() again, you'll almost always get the memory you just freed back again
+2016-10-30 02:36:45	zid	which will be full of whatever you filled it with before you freed it
+2016-10-30 02:36:57	dminuoso_	^- the only guarantee you can draw from this, is that its impossible to leak "memory" into other processes.
+2016-10-30 02:37:08	zid	which, in your case, will be valid but incorrect data, meaning you'll end up with fucked up links or names or something
+2016-10-30 02:37:14	zid	which is why "Use after free" exploits are so dangerous
+2016-10-30 02:37:16	DearVolt	Ah, I see. I rely on that in the code though. So I don't need to malloc a bigger array, memcpy and then free.
+2016-10-30 02:37:30	zid	they almost always cause phantom but valid data to reappear
+2016-10-30 02:37:33	Jester02	I mean, if you want to use a callee-saved register because its value is preserved by a function you call, you must also preserve it for your caller, you can't just use it
+2016-10-30 02:38:31	DearVolt	Ah I see, makes sense. Wow, I'm learning a lot! Assembly has been fun but there's so much stuff I still have to learn, it's a little overwhelming.
+2016-10-30 02:38:31		[02:38]
+2016-10-30 02:38:43	zid	Your assembly skills aren't horrible, your CS skills are still though
+2016-10-30 02:38:55	zid	Lack of capacity to form useful questions, debug, etc
+2016-10-30 02:38:57	edcba	i definitely seen worse lol
+2016-10-30 02:38:57	DearVolt	Ouch hahaha.
+2016-10-30 02:39:12	zid	Work on it, soldier.
+2016-10-30 02:39:22	zid	Also, your war face.
+2016-10-30 02:39:23	DearVolt	But yes, I definitely struggle asking the questions.
+2016-10-30 02:39:36	DearVolt	Thank you so much :)
+2016-10-30 02:39:49	-->	ARM9 (~ARM9@46-236-101-75.customer.t3.se) has joined ##asm
+2016-10-30 02:40:13	-->	MonsterAbyss (~MonsterAb@162.243.210.129) has joined ##asm
+2016-10-30 02:40:16	DearVolt	Time to upload and see if I get the marks. Then maybe hang around here to see if there's more I can learn.
+2016-10-30 02:41:08	zid	I don't know about learning things, but you can do some work for me
+2016-10-30 02:41:33	DearVolt	Sure thing. What can I do?
+2016-10-30 02:41:36	edcba	are you contracting students to do your work ? :)
+2016-10-30 02:41:48	zid	I've got this 500kB exe, port it all back to C.
+2016-10-30 02:41:55	zid	You should be done by about 2040
+2016-10-30 02:42:00	<--	jackbrown (~se@unaffiliated/jackbrown) has quit (Ping timeout: 260 seconds)
+2016-10-30 02:42:00	DearVolt	I got 0 though, so now I really need to test thoroughly.
+2016-10-30 02:42:18	edcba	zid: just emulate asm in C, easy !
+2016-10-30 02:42:23	DearVolt	You mean disassemble and reengineer?
+2016-10-30 02:42:30	zid	DearVolt: yerp
+2016-10-30 02:43:03	edcba	is it protected ?
+2016-10-30 02:43:34	zid	http://codepad.org/rDyLQVei -> http://codepad.org/BHAtxe0O
+2016-10-30 02:44:02	zid	that, but about a thousand times
+2016-10-30 02:44:16	edcba	it must be win32/linux compatible too
+2016-10-30 02:44:17	edcba	?
+2016-10-30 02:44:30	zid	nah
+2016-10-30 02:44:43	zid	I just threw that in because I was doing unit tests on a linux machine at the time
+2016-10-30 02:44:50	zid	the real code runs on windows ce
+2016-10-30 02:45:00	DearVolt	zid: I'm busy doing that at the moment. I bought a PIC microcontroller recently and have a hex file for a program for it. Busy turning it into assembly at the moment. I'm learning a lot with that as well.
+2016-10-30 02:45:42	DearVolt	And wow, that code you posted looks intense.
+2016-10-30 02:45:55	zid	It handles encrypting/decrypting savegames
+2016-10-30 02:45:58	edcba	zid: just write an AI that learns to write C code that produce your asm functions !
+2016-10-30 02:46:12	zid	edcba: hex rays? I have that :P
+2016-10-30 02:46:34	edcba	no i mean using github as corpus
+2016-10-30 02:46:45	edcba	you will get hopefully sensical code
+2016-10-30 02:46:58	edcba	good variable names etc
+2016-10-30 02:47:15	zid	compile everything on github with every possible definition of every type, with every compilation option, with every compiler? :)
+2016-10-30 02:47:19	edcba	no
+2016-10-30 02:47:22	zid	and then compare the binary
+2016-10-30 02:47:42	edcba	the AI will learn to write code with github and also evolve to match asm output
+2016-10-30 02:48:01	zid	it might be easier to write a fuzzer to do it
+2016-10-30 02:48:01	edcba	hopefully you already know compiler and options
+2016-10-30 02:48:15	edcba	yeah but it will be reusable
+2016-10-30 02:48:31	zid	k you get right on that, me and DearVolt will do it by hand, then we can compare at the end
+2016-10-30 02:48:35	zid	a bit like NASA development
+2016-10-30 02:48:41	edcba	haha
+2016-10-30 02:48:42	zid	all 3 systems have to agree at the end else we have a bug
+2016-10-30 02:49:20	DearVolt	Am I a reliable system though? Hahaha.
+2016-10-30 02:49:31	edcba	i hope source code isn't a big pile of shit
+2016-10-30 02:49:37	zid	https://github.com/zid/Diablo-MUD/blob/master/table.c#L98 depends, do you understand this? (It's a litmus test)
+2016-10-30 02:49:58	<--	Beetny (~Beetny@14-202-48-200.tpgi.com.au) has quit (Ping timeout: 250 seconds)
+2016-10-30 02:50:31	zid	I really should invert that if()
+2016-10-30 02:50:57	edcba	yeah while(1) isn't very happy
+2016-10-30 02:51:03	zid	if(strcmp) {pb = &(*pb)->next; continue }
+2016-10-30 02:51:09	zid	would probably look nicer
+2016-10-30 02:51:22	edcba	i'd prefer a for loop
+2016-10-30 02:51:28	zid	and the while should be while(pb)
+2016-10-30 02:51:45	zid	but thes eare things he can submit to me in a patch once he understands it ;)
+2016-10-30 02:51:49	zid	I'm too lazy to pull the repo to edit it
+2016-10-30 02:52:22	zid	edcba: for(pb = &t->buckets[nbucket]; pb; pb = &(*pb)->next) is kinda terse, but doable
+2016-10-30 02:52:27	DearVolt	I get the hashing part. Not too sure about inside the if? Seems like it's checking the columns of a 2D bucket before removing them?
+2016-10-30 02:52:34	zid	err that should be *pb not pb on the conditional
+2016-10-30 02:53:00	edcba	i would strcmp in condition of for loop
+2016-10-30 02:53:13	zid	DearVolt: It's doing a->b->c  ->   a->c, free(b)
+2016-10-30 02:54:17	DearVolt	That explains the next. I guess I fail the test though xD
+2016-10-30 02:54:17		[02:54]
+2016-10-30 02:54:23	DearVolt	Your work looks pretty cool!
+2016-10-30 02:54:28	-->	dirar (~giita@105.157.227.233) has joined ##asm
+2016-10-30 02:55:04	<--	meth (~meth@unaffiliated/meth) has quit (Quit: Snoochie Boochies!)
+2016-10-30 02:55:32	-->	jackbrown (~se@unaffiliated/jackbrown) has joined ##asm
+2016-10-30 02:59:13	DearVolt	I'm getting "Error in `./prog.out': munmap_chunk(): invalid pointer: 0x00000000004885dd" from the automated marker. They said they are going to check for memory leaks. Should I use free and malloc instead of realloc?
+2016-10-30 03:01:35	zid	I'd use calloc
+2016-10-30 03:02:09	edcba	you didn't free anything anyway
+2016-10-30 03:02:30	zid	realloc might though, is the point, you can't replace realloc with malloc
+2016-10-30 03:02:34	zid	it has to be with free and malloc
+2016-10-30 03:03:00	edcba	you didn't call some "deallocateNode"
+2016-10-30 03:03:21	zid	edcba: he does call realloc though, which is malloc(); memcpy(); free90:
+2016-10-30 03:03:46	edcba	f the new size of the memory object would require movement of the object, the space for the previous instantiation of the object is freed.
+2016-10-30 03:04:06	DearVolt	In the C they give us, they don't call any of our code after the output, so I can't free it anywhere. I was thinking realloc would do what zid just said so I shouldn't have memory leaks other than the nodes themselves not being deallocated.
+2016-10-30 03:04:30	DearVolt	So calloc, memcpy and free, zid?
+2016-10-30 03:04:46	zid	if you want to reimplement realloc yourself, yea. Or you could just call realloc.
+2016-10-30 03:06:01	GeDaMo	Maybe they expect you to free all your memory before exiting
+2016-10-30 03:06:06	DearVolt	So leave it as it? I have absolutely no idea why I'm getting 0. My code works for their test case and some of mine.
+2016-10-30 03:06:12	edcba	anyway calling allocation in asm is stupid
+2016-10-30 03:06:15	zid	'some of mine' :P
+2016-10-30 03:06:25	edcba	but it's homework...
+2016-10-30 03:06:28	DearVolt	@GeDaMo: They don't call any of our code before exiting though. So I can't free anywhere after the output.
+2016-10-30 03:06:55	DearVolt	All of mine I mean hahaha. But there's only a bit (2 different graphs), so some.
+2016-10-30 03:07:12	DearVolt	"One further note on marks, Fitchfork will test if you dynamically grow your link arrays
+2016-10-30 03:07:12	DearVolt	and it will test for memory leaks."
+2016-10-30 03:07:50	edcba	well it doesn't "leak" since process is terminated at the end :p
+2016-10-30 03:08:04	zid	testing for lost memory, presumably
+2016-10-30 03:08:22	edcba	yeah they just want at end of main same memory than at start
+2016-10-30 03:08:54	zid	DearVolt: Given that the struct declaration is part of the interface, they should be capable of freeing it themselves.
+2016-10-30 03:09:19	edcba	yeah that's why it's again a stupid exercise
+2016-10-30 03:09:19		[03:09]
+2016-10-30 03:09:23	DearVolt	I think they meant they don't want you leaving stray allocated memory when growing your links array.
+2016-10-30 03:09:39	DearVolt	Which I'm sure I avoided with realloc.
+2016-10-30 03:10:00	edcba	you still should unalloc at end
+2016-10-30 03:10:04	zid	He can't.
+2016-10-30 03:10:10	edcba	links
+2016-10-30 03:10:14	edcba	not nodes
+2016-10-30 03:10:21	zid	He can't know where the 'end' is.
+2016-10-30 03:10:35	edcba	he need not the end he needs the start
+2016-10-30 03:10:51	DearVolt	Yeah, my functions are called before the output that uses those structs and arrays, so I can't deallocate before they are used.
+2016-10-30 03:10:51	zid	Freeing his links at the start is no good :P
+2016-10-30 03:11:08	edcba	why ? it's a calloced ptr
+2016-10-30 03:11:42	zid	edcba: tutor.c does CreateNode(); BanananNode(); then does printf("%d", node->nbananas);
+2016-10-30 03:11:47	DearVolt	I've been working on this since yesterday morning. About 8 hours of work now. The next task is actually pretty fun. It's a shortest path problem.
+2016-10-30 03:11:49	zid	YOu wrote CreateNode and BananaNode() in student.asm
+2016-10-30 03:11:56	zid	how does student.asm free anything?
+2016-10-30 03:12:19	zid	tutor.c would have to tell you to free it, via something like DeleteNode
+2016-10-30 03:12:28	zid	but it does not
+2016-10-30 03:12:31	edcba	he does alloc links, he doesn't alloc nodes
+2016-10-30 03:12:43	edcba	first time it realloc(null)
+2016-10-30 03:12:55	edcba	so he can free those
+2016-10-30 03:13:09	zid	what's a "those" and who is "it"
+2016-10-30 03:13:13	DearVolt	I do alloc nodes. But I'm not able to free anything after the printfs since the main doesn't call any of my functions.
+2016-10-30 03:13:44	edcba	DearVolt allocates the links array through a realloc(null) call at first link inserted
+2016-10-30 03:13:49	DearVolt	And I have no control over the main.
+2016-10-30 03:13:55	zid	edcba: At which point all data must remain alive.
+2016-10-30 03:14:04	edcba	DearVolt: no control over main() ?
+2016-10-30 03:14:10	zid	edcba: main is tutor.c
+2016-10-30 03:14:10	edcba	ok then that suxx lol
+2016-10-30 03:14:17	zid	he's writing functions to a spec, edcba.
+2016-10-30 03:14:20	DearVolt	Marker uses it's own main. I can only change the asm functions.
+2016-10-30 03:14:24	zid	Their performance is tested through a test harness
+2016-10-30 03:14:35	edcba	ok then you can't free anything
+2016-10-30 03:14:38	zid	no shit :P
+2016-10-30 03:15:04	zid	It's not project euler, just testing stdout
+2016-10-30 03:15:10	edcba	haha
+2016-10-30 03:15:37	DearVolt	It's slightly more complicated than just stdout, but still not very advanced. Was developed by students a few years ago. No one likes it.
+2016-10-30 03:15:50	edcba	just detect the main caller in stack and hook it to free everything :p
+2016-10-30 03:16:54	zid	edcba: You'd have to be able to leak the tests back to yourself
+2016-10-30 03:16:59	zid	which may not be possible
+2016-10-30 03:17:51	DearVolt	I think I'll have to resort to emailing the lecturer. I still have another 11 upload attempts, but I'm all out of ideas on why I could be getting 0.
+2016-10-30 03:18:21	-->	brt (~brt@x1-6-20-4e-7f-c8-4b-ba.cpe.webspeed.dk) has joined ##asm
+2016-10-30 03:18:24	<--	Suchorski (regex@unaffiliated/suchorski) has quit (Ping timeout: 256 seconds)
+2016-10-30 03:19:00	-->	Suchorski (regex@unaffiliated/suchorski) has joined ##asm
+2016-10-30 03:23:44	dirar	hi all
+2016-10-30 03:23:54	dirar	Can anyone explain me the purpose of this code: http://pastebin.com/b06e7PYz (7 lines)
+2016-10-30 03:24:01	dirar	I know it goes through a string (eax) but i don't know what it does after.
+2016-10-30 03:25:03	GeDaMo	Looks more like an array of ints
+2016-10-30 03:25:03		[03:25]
+2016-10-30 03:25:07	<--	fr0gRIP (~fr0gRIP@2a01:e35:243f:6d60:626d:c7ff:fe04:bcab) has quit (Quit: fr0gRIP)
+2016-10-30 03:27:18	GeDaMo	SOme kind of CRC?
+2016-10-30 03:28:02	zid	Top tip, port it to C, wrap it in a for(i = 0; i<0xFFFFFFUL; i++) and print it out
+2016-10-30 03:28:15	-->	phinxy (~tehhhd@unaffiliated/phinxy) has joined ##asm
+2016-10-30 03:28:17	zid	now you get to see what transform it's doing without having to think
+2016-10-30 03:28:52	-->	crankslider (~slidercra@unaffiliated/slidercrank) has joined ##asm
+2016-10-30 03:31:18	dirar	i'm trying to solve a simple crackme from crackmes.de, the program asks for 2 strings when i print the value of the address in  eax i get my first string 41414141 (AAAA)
+2016-10-30 03:36:56	zid	hum until you get to the chorus, that's my advice
+2016-10-30 03:41:18	<--	brt (~brt@x1-6-20-4e-7f-c8-4b-ba.cpe.webspeed.dk) has quit (Ping timeout: 245 seconds)
+2016-10-30 03:41:18		[03:41]
+2016-10-30 03:46:51	edcba	zid: you already know the answer, your loop advice is cheating
+2016-10-30 03:47:18	edcba	it could be false/true half of the time and he wouldn't know much more :p
+2016-10-30 03:47:42	<--	slash^ (~unknown@2001:a61:11d1:801:6475:60a9:6b4e:f66c) has quit (Read error: Connection reset by peer)
+2016-10-30 03:48:32	-->	Broken|PC (244422cb@gateway/web/cgi-irc/kiwiirc.com/ip.36.68.34.203) has joined ##asm
+2016-10-30 03:49:33	<--	rtkt (~rtkt@ptr-2hj4tbw74k45r08mt38vhofux.ip6.access.telenet.be) has quit (Ping timeout: 260 seconds)
+2016-10-30 03:55:00		[03:49]
+2016-10-30 03:56:36	Broken|PC	/join ##shellcoder
+2016-10-30 04:00:15	zid	no thanks
+2016-10-30 04:00:40	zid	edcba: I don't, I'm too lazy to know the answer, that's why I'd show the 4GB truth table.
+2016-10-30 04:01:48	edcba	well there is still a lot of true results i think
+2016-10-30 04:02:29	edcba	that kind of code is there to detect a byte value into register
+2016-10-30 04:03:03	edcba	so maybe 64M true values
+2016-10-30 04:03:25	zid	you've got a good chance of finding one then
+2016-10-30 04:09:00		[04:03]
+2016-10-30 04:09:05	<--	Enthralled (~Enthralle@65.19.183.157) has quit (Changing host)
+2016-10-30 04:09:05	-->	Enthralled (~Enthralle@unaffiliated/dxdydz) has joined ##asm
+2016-10-30 04:12:29	-->	rgrinberg (~rgrinberg@blk-212-79-74.eastlink.ca) has joined ##asm
+2016-10-30 04:14:26	<--	_sfiguser (~sfigguser@95.237.96.249) has quit (Remote host closed the connection)
+2016-10-30 04:16:07	<--	KidBeta (~textual@hpavc/kidbeta) has quit (Quit: My MacBook Pro has gone to sleep. ZZZzzz…)
+2016-10-30 04:22:00		[04:16]
+2016-10-30 04:31:26	-->	wildlander (~wild@unaffiliated/wildlander) has joined ##asm
+2016-10-30 04:33:31	<--	duke (~duke@unaffiliated/dukey) has quit (Quit: ZNC - http://znc.in)
+2016-10-30 04:35:09	-->	RTFM[away] (~RTFMaway]@unaffiliated/rtfmaway/x-3892344) has joined ##asm
+2016-10-30 04:36:34	<--	ararob (~yaaic@unaffiliated/ararob) has quit (Ping timeout: 250 seconds)
+2016-10-30 04:38:58	-->	pcfx (~michael@p4FD1187F.dip0.t-ipconnect.de) has joined ##asm
+2016-10-30 04:38:58		[04:38]
+2016-10-30 04:52:08	-->	rtkt (~rtkt@ptr-2hj4tbw74k45r08mt38vhofux.ip6.access.telenet.be) has joined ##asm
+2016-10-30 04:56:59	-->	Prod_ (~DaffyDuck@0138800884.0.fullrate.ninja) has joined ##asm
+2016-10-30 04:56:59		[04:56]
+2016-10-30 04:58:18	-->	Goplat (~goplat@reactos/developer/Goplat) has joined ##asm
+2016-10-30 05:01:04	<--	messy (~messy@128.194.3.238) has quit (Ping timeout: 260 seconds)
+2016-10-30 05:02:44	-->	lapinozz (~lapinozz@45.74.164.117) has joined ##asm
+2016-10-30 05:07:34	-->	fr0gRIP (~fr0gRIP@163.5.223.102) has joined ##asm
+2016-10-30 05:13:00		[05:07]
+2016-10-30 05:13:39	-->	messy (~messy@128.194.3.238) has joined ##asm
+2016-10-30 05:14:35	<--	dirar (~giita@105.157.227.233) has quit (Ping timeout: 268 seconds)
+2016-10-30 05:20:00		[05:14]
+2016-10-30 05:21:02	<--	rtkt (~rtkt@ptr-2hj4tbw74k45r08mt38vhofux.ip6.access.telenet.be) has quit (Ping timeout: 250 seconds)
+2016-10-30 05:22:17	<--	snyp (~Snyp@nas4.meghbelabroadband.in) has quit (Quit: WeeChat 1.6)
+2016-10-30 05:22:51	-->	ararob (~yaaic@c-f78472d5.043-274-73746f25.cust.bredbandsbolaget.se) has joined ##asm
+2016-10-30 05:22:52	<--	ararob (~yaaic@c-f78472d5.043-274-73746f25.cust.bredbandsbolaget.se) has quit (Changing host)
+2016-10-30 05:22:52	-->	ararob (~yaaic@unaffiliated/ararob) has joined ##asm
+2016-10-30 05:23:09	-->	brt (~brt@x1-6-20-4e-7f-c8-4b-ba.cpe.webspeed.dk) has joined ##asm
+2016-10-30 05:28:01	-->	dirar (~giita@41.250.85.172) has joined ##asm
+2016-10-30 05:34:00		[05:28]
+2016-10-30 05:36:07	-->	jan64 (~jan64@acgz84.neoplus.adsl.tpnet.pl) has joined ##asm
+2016-10-30 05:37:03	-->	palantir (~palantir@0545fe52.skybroadband.com) has joined ##asm
+2016-10-30 05:39:38	<--	fr0gRIP (~fr0gRIP@163.5.223.102) has quit (Quit: fr0gRIP)
+2016-10-30 05:44:34	-->	freakazoid0223_ (~chatzilla@pool-108-52-4-128.phlapa.fios.verizon.net) has joined ##asm
+2016-10-30 05:48:21	<--	freakazoid0223 (~chatzilla@pool-108-52-4-128.phlapa.fios.verizon.net) has quit (Ping timeout: 265 seconds)
+2016-10-30 05:48:27	--	freakazoid0223_ is now known as freakazoid0223
+2016-10-30 05:50:12	<--	rgrinberg (~rgrinberg@blk-212-79-74.eastlink.ca) has quit (Ping timeout: 244 seconds)
+2016-10-30 05:50:12		[05:50]
+2016-10-30 05:50:45	-->	fr0gRIP (~fr0gRIP@163.5.223.102) has joined ##asm
+2016-10-30 05:56:00		[05:50]
+2016-10-30 05:56:02	-->	slash^ (~unknown@2001:a61:11d1:801:d8ff:13de:3067:4248) has joined ##asm
+2016-10-30 06:01:37	-->	m8 (~m8@unaffiliated/m8) has joined ##asm
+2016-10-30 06:02:21	<--	xchasdsfsd (~x@unaffiliated/sdfgsdfg) has quit (Remote host closed the connection)
+2016-10-30 06:08:00		[06:02]
+2016-10-30 06:20:54	-->	CTXz (~CTXz@181.53.broadband14.iol.cz) has joined ##asm
+2016-10-30 06:21:44	<--	brt (~brt@x1-6-20-4e-7f-c8-4b-ba.cpe.webspeed.dk) has quit (Quit: peace)
+2016-10-30 06:22:59	-->	Heasummn (~Heasummn@c-73-73-21-171.hsd1.il.comcast.net) has joined ##asm
+2016-10-30 06:23:06	<--	CTXz (~CTXz@181.53.broadband14.iol.cz) has quit (Client Quit)
+2016-10-30 06:23:06		[06:23]
+2016-10-30 06:23:29	<--	SunnyD (~SunnyD@cpe-72-178-78-211.hot.res.rr.com) has quit (Quit: ChatZilla 0.9.90.1 [Firefox 30.0/20140605174243])
+2016-10-30 06:25:46	-->	CTXz (~CTXz@181.53.broadband14.iol.cz) has joined ##asm
+2016-10-30 06:26:13	<--	CTXz (~CTXz@181.53.broadband14.iol.cz) has quit (Client Quit)
+2016-10-30 06:26:55	-->	CTXz (~CTXz@181.53.broadband14.iol.cz) has joined ##asm
+2016-10-30 06:30:20	<--	palantir (~palantir@0545fe52.skybroadband.com) has quit (Read error: Connection reset by peer)
+2016-10-30 06:30:29	-->	palantir_ (~palantir@0545fe52.skybroadband.com) has joined ##asm
+2016-10-30 06:31:02	<--	dminuoso_ (~dminuoso@unaffiliated/dminuoso) has quit (Ping timeout: 244 seconds)
+2016-10-30 06:31:03	-->	Judge_Dredd (~Judge_Dre@unaffiliated/judge-dredd/x-2170742) has joined ##asm
+2016-10-30 06:32:10	-->	duke (~duke@void.pw) has joined ##asm
+2016-10-30 06:32:10	<--	duke (~duke@void.pw) has quit (Changing host)
+2016-10-30 06:32:10	-->	duke (~duke@unaffiliated/dukey) has joined ##asm
+2016-10-30 06:34:00	-->	araml (~araml@unaffiliated/araml) has joined ##asm
+2016-10-30 06:36:36	-->	AverageJ0e (~joe@ip68-3-197-107.ph.ph.cox.net) has joined ##asm
+2016-10-30 06:36:48	-->	arguros (~arguros@12.172.180.2) has joined ##asm
+2016-10-30 06:38:00	-->	palantir (~palantir@0545fe52.skybroadband.com) has joined ##asm
+2016-10-30 06:38:16	<--	palantir_ (~palantir@0545fe52.skybroadband.com) has quit (Read error: Connection reset by peer)
+2016-10-30 06:38:16		[06:38]
+2016-10-30 06:40:51	<--	palantir (~palantir@0545fe52.skybroadband.com) has quit (Read error: Connection reset by peer)
+2016-10-30 06:41:09	-->	palantir (~palantir@0545fe52.skybroadband.com) has joined ##asm
+2016-10-30 06:44:03	<--	codfection (~codfectio@unaffiliated/codfection) has quit (Quit: Leaving)
+2016-10-30 06:44:19	<--	palantir (~palantir@0545fe52.skybroadband.com) has quit (Read error: Connection reset by peer)
+2016-10-30 06:44:48	-->	palantir (~palantir@0545fe52.skybroadband.com) has joined ##asm
+2016-10-30 06:48:12	<--	palantir (~palantir@0545fe52.skybroadband.com) has quit (Read error: Connection reset by peer)
+2016-10-30 06:48:22	-->	palantir (~palantir@0545fe52.skybroadband.com) has joined ##asm
+2016-10-30 06:54:00		[06:48]
+2016-10-30 06:56:36	<--	Broken|PC (244422cb@gateway/web/cgi-irc/kiwiirc.com/ip.36.68.34.203) has quit (Quit: http://www.kiwiirc.com/ - A hand crafted IRC client)
+2016-10-30 06:57:07	<--	palantir (~palantir@0545fe52.skybroadband.com) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-10-30 07:00:06	-->	CheckDavid (uid14990@gateway/web/irccloud.com/x-lzdjivnwaqjpumwr) has joined ##asm
+2016-10-30 07:04:39	-->	palantir (~palantir@0545fe52.skybroadband.com) has joined ##asm
+2016-10-30 07:09:57	-->	xocket (~xocket@unaffiliated/xocket) has joined ##asm
+2016-10-30 07:09:57		[07:09]
+2016-10-30 07:11:21	-->	meth (~meth@unaffiliated/meth) has joined ##asm
+2016-10-30 07:11:38	-->	jack (~jack@c-73-222-153-68.hsd1.ca.comcast.net) has joined ##asm
+2016-10-30 07:14:52	<--	King_Hual (~failed@unaffiliated/king-hual/x-1207580) has quit (Ping timeout: 265 seconds)
+2016-10-30 07:20:00		[07:14]
+2016-10-30 07:23:11	<--	ybden (ybden@unaffiliated/ybden) has quit (Quit: Fing)
+2016-10-30 07:24:00	-->	King_Hual (~failed@unaffiliated/king-hual/x-1207580) has joined ##asm
+2016-10-30 07:24:42	-->	rtkt (~rtkt@ptr-2hj4tbw74k45r08mt38vhofux.ip6.access.telenet.be) has joined ##asm
+2016-10-30 07:26:34	-->	ybden (ybden@unaffiliated/ybden) has joined ##asm
+2016-10-30 07:26:50	<--	ararob (~yaaic@unaffiliated/ararob) has quit (Ping timeout: 244 seconds)
+2016-10-30 07:27:12	-->	dminuoso_ (~dminuoso@unaffiliated/dminuoso) has joined ##asm
+2016-10-30 07:32:48	<--	dminuoso_ (~dminuoso@unaffiliated/dminuoso) has quit (Ping timeout: 260 seconds)
+2016-10-30 07:33:11	-->	slither (~jesus@95.146.18.106) has joined ##asm
+2016-10-30 07:38:16	-->	ararob (~yaaic@unaffiliated/ararob) has joined ##asm
+2016-10-30 07:38:16		[07:38]
+2016-10-30 07:40:40	--	jack is now known as lemonpepper24
+2016-10-30 07:43:12	<--	ararob (~yaaic@unaffiliated/ararob) has quit (Ping timeout: 268 seconds)
+2016-10-30 07:45:53	<--	jackbrown (~se@unaffiliated/jackbrown) has quit (Ping timeout: 245 seconds)
+2016-10-30 07:48:26	-->	palantir_ (~palantir@0545fe52.skybroadband.com) has joined ##asm
+2016-10-30 07:48:38	<--	palantir (~palantir@0545fe52.skybroadband.com) has quit (Read error: Connection reset by peer)
+2016-10-30 07:49:01	<--	fr0gRIP (~fr0gRIP@163.5.223.102) has quit (Quit: fr0gRIP)
+2016-10-30 07:52:13	<--	Heasummn (~Heasummn@c-73-73-21-171.hsd1.il.comcast.net) has quit (Remote host closed the connection)
+2016-10-30 07:53:09	<--	palantir_ (~palantir@0545fe52.skybroadband.com) has quit (Ping timeout: 260 seconds)
+2016-10-30 07:53:32	-->	palantir (~palantir@0545fe52.skybroadband.com) has joined ##asm
+2016-10-30 07:53:32		[07:53]
+2016-10-30 07:55:57	<--	rtkt (~rtkt@ptr-2hj4tbw74k45r08mt38vhofux.ip6.access.telenet.be) has quit (Ping timeout: 260 seconds)
+2016-10-30 07:57:14	-->	jack_rabbit (~jack_rabb@c-50-179-163-66.hsd1.il.comcast.net) has joined ##asm
+2016-10-30 07:58:05	-->	palantir_ (~palantir@0545fe52.skybroadband.com) has joined ##asm
+2016-10-30 07:58:22	<--	palantir (~palantir@0545fe52.skybroadband.com) has quit (Ping timeout: 265 seconds)
+2016-10-30 08:01:47	<--	palantir_ (~palantir@0545fe52.skybroadband.com) has quit (Read error: Connection reset by peer)
+2016-10-30 08:02:16	-->	palantir (~palantir@0545fe52.skybroadband.com) has joined ##asm
+2016-10-30 08:04:28	<--	jack_rabbit (~jack_rabb@c-50-179-163-66.hsd1.il.comcast.net) has quit (Ping timeout: 260 seconds)
+2016-10-30 08:05:15	<--	slash^ (~unknown@2001:a61:11d1:801:d8ff:13de:3067:4248) has quit (Read error: Connection reset by peer)
+2016-10-30 08:06:05	-->	snyp (~Snyp@150.129.132.159) has joined ##asm
+2016-10-30 08:06:36	-->	navidr (uid112413@gateway/web/irccloud.com/x-ktumoqsmaobrtxjl) has joined ##asm
+2016-10-30 08:06:48	<--	palantir (~palantir@0545fe52.skybroadband.com) has quit (Ping timeout: 260 seconds)
+2016-10-30 08:10:21	-->	palantir (~palantir@0545fe52.skybroadband.com) has joined ##asm
+2016-10-30 08:10:21		[08:10]
+2016-10-30 08:11:50	-->	fub (~fub@aftr-37-201-171-155.unity-media.net) has joined ##asm
+2016-10-30 08:12:18	fub	Hi, for the instruction "movzx", what does "zero-extension" mean?
+2016-10-30 08:12:24	fub	I do not really get what this instruction does
+2016-10-30 08:13:46	-->	palantir_ (~palantir@0545fe52.skybroadband.com) has joined ##asm
+2016-10-30 08:14:14	<--	palantir (~palantir@0545fe52.skybroadband.com) has quit (Read error: Connection reset by peer)
+2016-10-30 08:15:31	ggole	It's a copy from a small location to a larger one. The extra bits are filled with zeros.
+2016-10-30 08:16:19	-->	jack_rabbit (~jack_rabb@c-50-179-163-66.hsd1.il.comcast.net) has joined ##asm
+2016-10-30 08:16:43	zid	i.e 0xFF -> 0x00FF
+2016-10-30 08:19:57	-->	The_Donald (~HagerTheH@h081217214054.dyn.cm.kabsi.at) has joined ##asm
+2016-10-30 08:20:35	--	The_Donald is now known as ABrownBear
+2016-10-30 08:23:30	-->	kbw (~KeyboardW@104-178-145-79.lightspeed.tukrga.sbcglobal.net) has joined ##asm
+2016-10-30 08:26:18	-->	whoa (~whoa@unaffiliated/whoa) has joined ##asm
+2016-10-30 08:26:18		[08:26]
+2016-10-30 08:26:25	<--	whoa (~whoa@unaffiliated/whoa) has left ##asm ("Leaving")
+2016-10-30 08:28:12	-->	ararob (~yaaic@unaffiliated/ararob) has joined ##asm
+2016-10-30 08:29:15	-->	dminuoso_ (~dminuoso@unaffiliated/dminuoso) has joined ##asm
+2016-10-30 08:31:03	-->	hmmmmm (~sdfgsf@pool-72-79-164-79.sctnpa.east.verizon.net) has joined ##asm
+2016-10-30 08:32:18	-->	Heasummn (~Heasummn@c-73-73-21-171.hsd1.il.comcast.net) has joined ##asm
+2016-10-30 08:33:52	<--	hmmmm (~sdfgsf@72.79.173.10) has quit (Ping timeout: 250 seconds)
+2016-10-30 08:34:24	<--	Heasummn (~Heasummn@c-73-73-21-171.hsd1.il.comcast.net) has quit (Read error: Connection reset by peer)
+2016-10-30 08:34:39	<--	dminuoso_ (~dminuoso@unaffiliated/dminuoso) has quit (Ping timeout: 245 seconds)
+2016-10-30 08:34:52	<--	kbw (~KeyboardW@104-178-145-79.lightspeed.tukrga.sbcglobal.net) has quit (Quit: My MacBook Air has gone to sleep. ZZZzzz…)
+2016-10-30 08:35:54	-->	Fiki (~Fiki@80-109-242-183.cable.dynamic.surfer.at) has joined ##asm
+2016-10-30 08:36:48	-->	kbw (~KeyboardW@104-178-145-79.lightspeed.tukrga.sbcglobal.net) has joined ##asm
+2016-10-30 08:38:58	-->	hmmmmmm (~sdfgsf@72.79.171.198) has joined ##asm
+2016-10-30 08:39:48	fub	ah, thanks
+2016-10-30 08:40:24	vulture	fub: as opposed to sign extension, which replicates the upper bits of the smaller data type to the larger data type, e.g. 15 => 0015, or f5 => fff5
+2016-10-30 08:41:15	vulture	it is generally used when you need to convert a smaller data type (e.g. unsigned char or unsigned short) to a larger data type (e.g. unsigned int)
+2016-10-30 08:41:27	vulture	(and sign extension, same sentence but remove unsigned everywhere)
+2016-10-30 08:41:27		[08:41]
+2016-10-30 08:41:44	<--	hmmmmm (~sdfgsf@pool-72-79-164-79.sctnpa.east.verizon.net) has quit (Ping timeout: 244 seconds)
+2016-10-30 08:42:49	fub	vulture: okay
+2016-10-30 08:44:15	-->	hmmmmm (~sdfgsf@pool-72-79-168-149.sctnpa.east.verizon.net) has joined ##asm
+2016-10-30 08:46:54	<--	hmmmmmm (~sdfgsf@72.79.171.198) has quit (Ping timeout: 244 seconds)
+2016-10-30 08:49:19	<--	kbw (~KeyboardW@104-178-145-79.lightspeed.tukrga.sbcglobal.net) has quit (Quit: My MacBook Air has gone to sleep. ZZZzzz…)
+2016-10-30 08:51:36	<--	ararob (~yaaic@unaffiliated/ararob) has quit (Ping timeout: 260 seconds)
+2016-10-30 08:53:35	-->	kbw (~KeyboardW@104-178-145-79.lightspeed.tukrga.sbcglobal.net) has joined ##asm
+2016-10-30 08:56:04	<--	Fiki (~Fiki@80-109-242-183.cable.dynamic.surfer.at) has quit (Quit: Leaving)
+2016-10-30 08:56:15	-->	bkboggy (~bkboggy@cpe-172-250-147-60.socal.res.rr.com) has joined ##asm
+2016-10-30 08:59:10	bkboggy	In MIPS jal instruction saves the address of the next instruction in $ra and just to the address of a procedure.  I'm looking at MIPS reference and it shows that R[$ra] = PC + 8; PC = JumpAddr
+2016-10-30 08:59:10		[08:59]
+2016-10-30 08:59:15	bkboggy	I'm a bit confused why it's PC + 8
+2016-10-30 08:59:18	<--	palantir_ (~palantir@0545fe52.skybroadband.com) has quit (Read error: Connection reset by peer)
+2016-10-30 08:59:24	Jester02	pipelining
+2016-10-30 08:59:25	<--	rendar (~I@host68-178-dynamic.1-87-r.retail.telecomitalia.it) has quit (Ping timeout: 260 seconds)
+2016-10-30 08:59:37	bkboggy	Doesn't PC get incremented during Fetch stage to point to the next instruction?
+2016-10-30 08:59:38	-->	palantir (~palantir@0545fe52.skybroadband.com) has joined ##asm
+2016-10-30 08:59:44	Jester02	simply said, the PC is already 2 instructions forward of the current execution
+2016-10-30 09:00:09	bkboggy	When jal is fetched, current PC will increment to the next instruction, right?
+2016-10-30 09:00:21	bkboggy	So why skip over two more instructions?
+2016-10-30 09:00:35	Jester02	fetch - decode - execute
+2016-10-30 09:00:47	bkboggy	Right, and?
+2016-10-30 09:00:49	zid	is this a delay slots conversation
+2016-10-30 09:01:00	Jester02	when the JAL is in execute, two more instructions have already been fetched
+2016-10-30 09:01:05	bkboggy	hmm
+2016-10-30 09:01:07	Jester02	and correspondingly PC has been incremented
+2016-10-30 09:01:15	bkboggy	Good catch..
+2016-10-30 09:01:18	bkboggy	I didn't even consider that.
+2016-10-30 09:01:20	bkboggy	duh...
+2016-10-30 09:01:24	bkboggy	Jester02, thanks man.
+2016-10-30 09:01:32	zid	bkboggy: that only applies to mips, because it's insane
+2016-10-30 09:01:36	bkboggy	lol
+2016-10-30 09:01:52	Jester02	no, sparc is insane :)
+2016-10-30 09:02:11	bkboggy	It's been a few years since x86 for me (beyond some basic reversing), so I can't remember if that was insane as well.
+2016-10-30 09:02:40	Jester02	x86 PC is also updated but only to next instruction
+2016-10-30 09:02:41	<--	palantir (~palantir@0545fe52.skybroadband.com) has quit (Read error: Connection reset by peer)
+2016-10-30 09:02:53	zid	Jester02: does a cpu where the superscalarness of it has to be massaged, so something like ld a, 52 / ld b, a  has to have some nops inbetween to stop 'b' receiving the stale a have a name?
+2016-10-30 09:02:58	zid	or rather, the process
+2016-10-30 09:03:04	zid	ensuring the opcode stream is coherant?
+2016-10-30 09:03:19	-->	palantir (~palantir@0545fe52.skybroadband.com) has joined ##asm
+2016-10-30 09:03:27	Jester02	I am not aware
+2016-10-30 09:05:41	-->	codfection (~codfectio@unaffiliated/codfection) has joined ##asm
+2016-10-30 09:08:27	ggole	That Mill thingy
+2016-10-30 09:08:41	bkboggy	Jester02, so, this brings up another question for me... if jal is supposed to link back to the instruction after it, by us synchronizing PC with the pipeline, we're linking to two instructions away from jal.
+2016-10-30 09:08:56	ggole	Instructions visibly retire a given number of cycles after they are issued, and it's at that point that the value is available
+2016-10-30 09:09:02	<--	kbw (~KeyboardW@104-178-145-79.lightspeed.tukrga.sbcglobal.net) has quit (Quit: My MacBook Air has gone to sleep. ZZZzzz…)
+2016-10-30 09:09:17	ggole	Although stale registers don't really apply in that model
+2016-10-30 09:09:44	zid	ggole: so.. does it have a name?
+2016-10-30 09:10:09	ggole	Scheduling? Or do you mean does that style of CPU have a name?
+2016-10-30 09:10:14	zid	the massaging
+2016-10-30 09:10:25	ggole	Scheduling.
+2016-10-30 09:10:29	zid	ah okay thanks
+2016-10-30 09:11:48	<--	palantir (~palantir@0545fe52.skybroadband.com) has quit (Read error: Connection reset by peer)
+2016-10-30 09:12:08	<--	Antares (~Antares@ppp91-78-145-119.pppoe.mtu-net.ru) has quit (Ping timeout: 245 seconds)
+2016-10-30 09:12:23	-->	palantir (~palantir@0545fe52.skybroadband.com) has joined ##asm
+2016-10-30 09:14:31	Jester02	bkboggy: the assembler inserts a nop into the delay slot which will be skipped
+2016-10-30 09:14:31		[09:14]
+2016-10-30 09:14:48	<--	lemonpepper24 (~jack@c-73-222-153-68.hsd1.ca.comcast.net) has quit (Quit: Konversation terminated!)
+2016-10-30 09:14:54	bkboggy	hmm
+2016-10-30 09:15:59	bkboggy	Well, thankfully I don't have to remember to increment it, since it does it... but damn.
+2016-10-30 09:16:21	<--	dirar (~giita@41.250.85.172) has quit (Ping timeout: 244 seconds)
+2016-10-30 09:16:36	Jester02	0004 0C000006      jal foo
+2016-10-30 09:16:36	Jester02	0008 00000000
+2016-10-30 09:16:36	Jester02	000c 8D040000      lw $a0, ($t0)
+2016-10-30 09:16:51	<--	wildlander (~wild@unaffiliated/wildlander) has quit (Quit: Saliendo)
+2016-10-30 09:16:52	-->	kbw (~KeyboardW@104-178-145-79.lightspeed.tukrga.sbcglobal.net) has joined ##asm
+2016-10-30 09:16:55	<--	xocket (~xocket@unaffiliated/xocket) has quit (Quit: Leaving)
+2016-10-30 09:17:36	bkboggy	Jester02, so if we want to loop back, we have to remember about that nop
+2016-10-30 09:17:40	<--	kbw (~KeyboardW@104-178-145-79.lightspeed.tukrga.sbcglobal.net) has quit (Client Quit)
+2016-10-30 09:18:19	Jester02	you use labels, not sure what you want to remember
+2016-10-30 09:18:27	bkboggy	true
+2016-10-30 09:18:46	bkboggy	thanks
+2016-10-30 09:22:24	<--	palantir (~palantir@0545fe52.skybroadband.com) has quit (Read error: Connection reset by peer)
+2016-10-30 09:22:53	-->	palantir (~palantir@0545fe52.skybroadband.com) has joined ##asm
+2016-10-30 09:24:22	-->	jackbrown (~se@unaffiliated/jackbrown) has joined ##asm
+2016-10-30 09:26:40	<--	palantir (~palantir@0545fe52.skybroadband.com) has quit (Read error: Connection reset by peer)
+2016-10-30 09:27:03	-->	palantir (~palantir@0545fe52.skybroadband.com) has joined ##asm
+2016-10-30 09:28:49	-->	rendar (~I@host68-178-dynamic.1-87-r.retail.telecomitalia.it) has joined ##asm
+2016-10-30 09:30:14	-->	dminuoso_ (~dminuoso@unaffiliated/dminuoso) has joined ##asm
+2016-10-30 09:30:14		[09:30]
+2016-10-30 09:32:16	<--	palantir (~palantir@0545fe52.skybroadband.com) has quit (Read error: Connection reset by peer)
+2016-10-30 09:32:46	-->	palantir (~palantir@0545fe52.skybroadband.com) has joined ##asm
+2016-10-30 09:35:26	<--	dminuoso_ (~dminuoso@unaffiliated/dminuoso) has quit (Ping timeout: 268 seconds)
+2016-10-30 09:40:51	-->	lowin (~lowin@151.245.89.124) has joined ##asm
+2016-10-30 09:45:26	-->	Elish (~jDrFCBuF@unaffiliated/elish) has joined ##asm
+2016-10-30 09:45:26		[09:45]
+2016-10-30 09:50:07	-->	MyCuriosity (~MyCuriosi@unaffiliated/mycuriosity) has joined ##asm
+2016-10-30 09:53:27	<--	ggole (~ggole@203-59-103-166.dyn.iinet.net.au) has quit
+2016-10-30 09:56:25	<--	bkboggy (~bkboggy@cpe-172-250-147-60.socal.res.rr.com) has quit (Quit: Leaving)
+2016-10-30 09:58:12	-->	kaos (~kaos@h7n8-vn-a12.ias.bredband.telia.com) has joined ##asm
+2016-10-30 10:04:00		[09:58]
+2016-10-30 10:10:48	-->	Antares (~Antares@ppp91-78-145-119.pppoe.mtu-net.ru) has joined ##asm
+2016-10-30 10:11:54	<--	Prod_ (~DaffyDuck@0138800884.0.fullrate.ninja) has left ##asm ("Leaving")
+2016-10-30 10:14:22	-->	SwiftMatt (~Objective@162.242.95.126) has joined ##asm
+2016-10-30 10:15:21	<--	SwiftMatt (~Objective@162.242.95.126) has quit (Client Quit)
+2016-10-30 10:16:38	-->	bkboggy (~bkboggy@cpe-172-250-147-60.socal.res.rr.com) has joined ##asm
+2016-10-30 10:17:11	-->	xocket (~xocket@unaffiliated/xocket) has joined ##asm
+2016-10-30 10:18:47	<--	xux (~xux@unaffiliated/xux) has quit (Quit: xux)
+2016-10-30 10:19:25	-->	nktn (~nktn___@181.46.158.157) has joined ##asm
+2016-10-30 10:19:25		[10:19]
+2016-10-30 10:21:09	<--	navidr (uid112413@gateway/web/irccloud.com/x-ktumoqsmaobrtxjl) has quit (Quit: Connection closed for inactivity)
+2016-10-30 10:23:12	bkboggy	In MIPS, a jump instruction, j, uses word addressing.  So, if we say j 2000, it's jumping to address 8000.  Why is that load word, lw, and store word, sw, do not do the same?  Those two use byte addressing, so to get the 4th element of an array, for example, I'd have to do something like lw $t0, 16($s0) where $s0 is the beginning address of an array.  Since we're loading a word, wouldn't it make sense for it to be lw $t0, 4($s0)
+2016-10-30 10:23:26	bkboggy	Not very consistent, it seems.
+2016-10-30 10:23:38	Jester02	instructions are fixed word size
+2016-10-30 10:23:54	-->	nine_milli (~nine_mill@32.213.61.120) has joined ##asm
+2016-10-30 10:23:54	Jester02	it makes sense to not waste storing the two low bits that are known zero
+2016-10-30 10:24:02	bkboggy	But if we're loading a word, it would be four bytes as well.
+2016-10-30 10:24:05	Jester02	data however is byte granular
+2016-10-30 10:24:38	bkboggy	Or are they giving us freedom in deciding where those 4 bytes start?
+2016-10-30 10:24:43	Jester02	yes
+2016-10-30 10:24:53	bkboggy	So, if I want to be stupid, I could do lw $t0, 15($s0)
+2016-10-30 10:25:04	Jester02	that's not necessarily stupid
+2016-10-30 10:25:10	Jester02	depending on what's in $s0
+2016-10-30 10:25:24	bkboggy	$s0 is the starting address of an array.
+2016-10-30 10:25:33	bkboggy	And we know we're loading words, since we're using lw
+2016-10-30 10:25:33	Jester02	yes, I mean, it can be byte granular too
+2016-10-30 10:25:39	Jester02	1+3=4
+2016-10-30 10:25:41	Jester02	for example ;)
+2016-10-30 10:26:04	Jester02	furthermore, the lw is part of an instruction family that uses the same encoding
+2016-10-30 10:26:09	zid	If all addresses had to be aligned then all opcodes would do it
+2016-10-30 10:26:12	bkboggy	I mean, they have load byte..
+2016-10-30 10:26:21	Jester02	yes and lb uses the same encoding
+2016-10-30 10:26:32	bkboggy	Right, but it makes sense to do byte addressing when you're loading a byte.
+2016-10-30 10:26:36	Jester02	yes
+2016-10-30 10:26:45	Jester02	but since it's the same encoding, lw inherits that too
+2016-10-30 10:26:45	bkboggy	But when you're loading a word, it seems that it's expected that you would address it in words.
+2016-10-30 10:26:51	zid	bkboggy: struct banana{ char a; word b; char c; word d; }
+2016-10-30 10:26:57	Jester02	which part of 1+3=4 is confusing?
+2016-10-30 10:27:08	bkboggy	I didn't know what you meant by it.
+2016-10-30 10:27:13	Jester02	the offset does not need to be word aligned
+2016-10-30 10:27:20	bkboggy	I see.
+2016-10-30 10:27:25	Jester02	lw a(b)  loads from a+b
+2016-10-30 10:27:58	<--	Elish (~jDrFCBuF@unaffiliated/elish) has quit (Quit: Elish)
+2016-10-30 10:28:01	bkboggy	I guess that makes sense, thanks guys.
+2016-10-30 10:28:18	Jester02	anyway, it's consistent in that you address data in bytes in general, and code in words
+2016-10-30 10:28:38	bkboggy	true
+2016-10-30 10:28:39	Jester02	if you had lw with special word addressing now THAT would be an exception
+2016-10-30 10:30:59	-->	dminuoso_ (~dminuoso@unaffiliated/dminuoso) has joined ##asm
+2016-10-30 10:31:03	bkboggy	Jester02, yeah, that would be odd... makes sense now.
+2016-10-30 10:36:12	<--	dminuoso_ (~dminuoso@unaffiliated/dminuoso) has quit (Ping timeout: 260 seconds)
+2016-10-30 10:36:12		[10:36]
+2016-10-30 10:42:16	<--	MyCuriosity (~MyCuriosi@unaffiliated/mycuriosity) has quit (Quit: Leaving)
+2016-10-30 10:43:08	-->	xux (~xux@unaffiliated/xux) has joined ##asm
+2016-10-30 10:46:21	<--	nktn (~nktn___@181.46.158.157) has quit (Remote host closed the connection)
+2016-10-30 10:47:37	-->	rgrinberg (~rgrinberg@blk-222-202-216.eastlink.ca) has joined ##asm
+2016-10-30 10:48:21	-->	wildlander (~wild@unaffiliated/wildlander) has joined ##asm
+2016-10-30 10:50:30	<--	palantir (~palantir@0545fe52.skybroadband.com) has quit (Read error: Connection reset by peer)
+2016-10-30 10:51:05	-->	palantir (~palantir@2a02:c7d:45f:1500:7cb5:2bb:f218:1897) has joined ##asm
+2016-10-30 10:57:00		[10:51]
+2016-10-30 10:57:27	-->	Holonium (~Holonium@cpe-98-145-176-62.natnow.res.rr.com) has joined ##asm
+2016-10-30 10:57:44	-->	_sfiguser (~sfigguser@95.237.96.249) has joined ##asm
+2016-10-30 10:57:45	_sfiguser	hello all, i'm reading the gas assembly docs here https://sourceware.org/binutils/docs/as/ but i cannot find a bare minimum example for x86 arch and x86_64 architecture... i mean a simple hello world... how can one read the docs and cannot write a simple pgm ?
+2016-10-30 10:58:08	zid	because it's an assembler, a tool
+2016-10-30 10:58:16	zid	the manual for a keyboard doesn't teach you english.
+2016-10-30 10:58:19	Holonium	Hello
+2016-10-30 10:59:38	Jester02	also it depends on OS/environment
+2016-10-30 10:59:42	Holonium	I was wondering if anybody could provide some resources to learn x64 fasm syntax?
+2016-10-30 11:00:27	Holonium	It is an Intel C2D CPU
+2016-10-30 11:00:43	zid	don't use fasm
+2016-10-30 11:00:55	Holonium	what should I use
+2016-10-30 11:01:02	zid	a real assembler? nasm for example
+2016-10-30 11:01:12	<--	MoALTz (~no@77-254-9-16.adsl.inetia.pl) has quit (Quit: Leaving)
+2016-10-30 11:01:27	zid	nasm uses mostly the same syntax as the manual for your cpu does
+2016-10-30 11:01:43	Holonium	where do i find a manual for my cpu
+2016-10-30 11:01:51	zid	intel.com instruction set reference A and B
+2016-10-30 11:03:02	Holonium	do i download the zip file
+2016-10-30 11:03:18	zid	what the fuck has intel done to its website
+2016-10-30 11:03:45	zid	http://www.intel.co.uk/content/dam/www/public/us/en/documents/manuals/64-ia-32-architectures-software-developer-manual-325462.pdf
+2016-10-30 11:03:58	Holonium	no, do i download the nasm rcl zip or the win 64 file
+2016-10-30 11:04:26	zid	I don't know what you're talking about.
+2016-10-30 11:04:37	Holonium	on the nasm download page
+2016-10-30 11:04:44	zid	nasm.us? sourceforge?
+2016-10-30 11:05:11	zid	http://www.nasm.us/pub/nasm/releasebuilds/2.12.02/
+2016-10-30 11:05:15	zid	that looks good.
+2016-10-30 11:05:29	Holonium	i did not realize that it was on sourceforge
+2016-10-30 11:05:44	Holonium	i have it now
+2016-10-30 11:07:08	Holonium	thanks for the help. if i understand correctly it uses the intel reference syntax
+2016-10-30 11:07:25	zid	yea you an omit the ptrs and stuff though
+2016-10-30 11:07:32	zid	and just use dword [eax]
+2016-10-30 11:08:06	Holonium	thanks for all the help. i have been trying to learn for some time now.
+2016-10-30 11:08:34	Holonium	Bye
+2016-10-30 11:08:50	<--	Holonium (~Holonium@cpe-98-145-176-62.natnow.res.rr.com) has quit (Quit: Leaving)
+2016-10-30 11:10:04	<--	slither (~jesus@95.146.18.106) has quit (Quit: Leaving)
+2016-10-30 11:15:26	<--	rgrinberg (~rgrinberg@blk-222-202-216.eastlink.ca) has quit (Remote host closed the connection)
+2016-10-30 11:15:26		[11:15]
+2016-10-30 11:15:52	<--	Judge_Dredd (~Judge_Dre@unaffiliated/judge-dredd/x-2170742) has quit (Quit: Leaving.)
+2016-10-30 11:17:38	-->	sol (sol@c-50-190-227-220.hsd1.va.comcast.net) has joined ##asm
+2016-10-30 11:17:51	--	sol is now known as Guest39973
+2016-10-30 11:17:58	--	Guest39973 is now known as sol-paradice
+2016-10-30 11:22:16	-->	mohae_ (~quassel@c-98-227-35-38.hsd1.il.comcast.net) has joined ##asm
+2016-10-30 11:23:55	-->	pie_ (~pie_@78-131-53-143.pool.digikabel.hu) has joined ##asm
+2016-10-30 11:25:01	<--	mohae (~quassel@c-98-227-35-38.hsd1.il.comcast.net) has quit (Ping timeout: 260 seconds)
+2016-10-30 11:26:23	<--	DearVolt (~DearVolt@169-0-208-125.ip.afrihost.co.za) has quit (Quit: Leaving)
+2016-10-30 11:27:04	-->	dqi (~dqi@165-218-045-062.dynamic.caiway.nl) has joined ##asm
+2016-10-30 11:30:16	<--	xocket (~xocket@unaffiliated/xocket) has quit (Quit: Leaving)
+2016-10-30 11:31:22	-->	vigole (~Thunderbi@185.168.30.209) has joined ##asm
+2016-10-30 11:31:22		[11:31]
+2016-10-30 11:31:45	-->	dminuoso_ (~dminuoso@unaffiliated/dminuoso) has joined ##asm
+2016-10-30 11:31:57	<--	AfroThundr (~AfroThund@2601:147:c000:177f:5cbe:f59:bd0f:9ba) has quit (Read error: Connection reset by peer)
+2016-10-30 11:32:22	<--	vigole (~Thunderbi@185.168.30.209) has quit (Client Quit)
+2016-10-30 11:34:37	<--	GeDaMo (~GeDaMo@212.225.83.199) has quit (Remote host closed the connection)
+2016-10-30 11:36:51	<--	dminuoso_ (~dminuoso@unaffiliated/dminuoso) has quit (Ping timeout: 252 seconds)
+2016-10-30 11:38:04	-->	sneakerhax (~sneakers@unaffiliated/sneakerhead) has joined ##asm
+2016-10-30 11:39:14	-->	AfroThundr (~AfroThund@2601:147:c000:177f:edc6:37de:6da1:ed84) has joined ##asm
+2016-10-30 11:39:26	<--	xux (~xux@unaffiliated/xux) has quit (Quit: xux)
+2016-10-30 11:39:32	-->	Kostenko_ (~Kostenko@bl5-166-253.dsl.telepac.pt) has joined ##asm
+2016-10-30 11:39:58	<--	AfroThundr (~AfroThund@2601:147:c000:177f:edc6:37de:6da1:ed84) has quit (Max SendQ exceeded)
+2016-10-30 11:40:48	<--	Kostenko (~Kostenko@bl5-166-253.dsl.telepac.pt) has quit (Ping timeout: 250 seconds)
+2016-10-30 11:42:58	<--	lipvig (~lipvig@104.244.77.198) has quit (Ping timeout: 250 seconds)
+2016-10-30 11:44:36	-->	lipvig (~lipvig@104.244.77.198) has joined ##asm
+2016-10-30 11:45:29	<--	RudyValencia (znc@unaffiliated/rudyvalencia) has quit (Ping timeout: 245 seconds)
+2016-10-30 11:48:49	<--	Goplat (~goplat@reactos/developer/Goplat) has quit (Ping timeout: 260 seconds)
+2016-10-30 11:48:49		[11:48]
+2016-10-30 11:49:09	<--	ARM9 (~ARM9@46-236-101-75.customer.t3.se) has quit (Quit: Leaving)
+2016-10-30 11:50:58	-->	kbw (~KeyboardW@104-178-145-79.lightspeed.tukrga.sbcglobal.net) has joined ##asm
+2016-10-30 11:55:59	-->	Goplat (~goplat@reactos/developer/Goplat) has joined ##asm
+2016-10-30 11:56:01	<--	nine_milli (~nine_mill@32.213.61.120) has quit (Quit: nine_milli)
+2016-10-30 11:58:34	-->	RudyValencia (rudy@unaffiliated/rudyvalencia) has joined ##asm
+2016-10-30 12:00:37	-->	Judge_Dredd (~Judge_Dre@unaffiliated/judge-dredd/x-2170742) has joined ##asm
+2016-10-30 12:01:03	<--	roxfan (roxfan@35.207-67-87.adsl-dyn.isp.belgacom.be) has quit (Remote host closed the connection)
+2016-10-30 12:01:13	--	You are now known as MojoJojo
+2016-10-30 12:01:36	--	You are now known as alyptik
+2016-10-30 12:02:53	<--	lapinozz (~lapinozz@45.74.164.117) has quit (Read error: No route to host)
+2016-10-30 12:03:39	<--	pcfx (~michael@p4FD1187F.dip0.t-ipconnect.de) has left ##asm
+2016-10-30 12:04:24	-->	lapinozz (~lapinozz@45.74.164.117) has joined ##asm
+2016-10-30 12:04:24		[12:04]
+2016-10-30 12:07:09	<--	rendar (~I@host68-178-dynamic.1-87-r.retail.telecomitalia.it) has quit (Quit: std::lower_bound + std::less_equal *works* with a vector without duplicates!)
+2016-10-30 12:07:36	-->	thib (~thib@wikimedia/Thibaut120094) has joined ##asm
+2016-10-30 12:09:27	-->	roxfan (roxfan@35.207-67-87.adsl-dyn.isp.belgacom.be) has joined ##asm
+2016-10-30 12:12:44	<--	kl0wn (kl0wn@ilovedal.net) has quit (Read error: Connection reset by peer)
+2016-10-30 12:16:57	<--	kbw (~KeyboardW@104-178-145-79.lightspeed.tukrga.sbcglobal.net) has quit (Quit: My MacBook Air has gone to sleep. ZZZzzz…)
