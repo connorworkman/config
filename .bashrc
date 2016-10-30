@@ -192,3 +192,5 @@ which() { (alias; declare -f) | /bin/which --tty-only --read-alias --read-functi
 #[[ -f /usr/share/tmux-applet/autostart.sh ]] && . /usr/share/tmux-applet/autostart.sh
 
 
+export PATH=$PATH:/opt/openresty/bin/:/opt/openresty/nginx/sbin/ #Automatically added by openresty package
+

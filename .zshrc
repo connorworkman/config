@@ -435,6 +435,7 @@ AUTOPAIR_RBOUNDS[braces]=''
 ## Array declaring active highlighters names.
 typeset -ga ZSH_HIGHLIGHT_HIGHLIGHTERS
 #ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets)
+#ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets line pattern)
 ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets line pattern root)
 ## colors for zsh-syntax-highlighting
 #ZSH_HIGHLIGHT_STYLES[default]='fg=cyan,bold' #base1
