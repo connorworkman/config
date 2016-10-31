@@ -10429,3 +10429,70 @@
 2016-10-30 13:16:07		[13:16]
 2016-10-30 13:17:41	-->	halfwit (~halfwit@d108-181-235-47.abhsia.telus.net) has joined #thevoid
 2016-10-30 13:23:00		[13:17]
+2016-10-30 13:51:10	alyptik	hm, is there a way to use ssl for and entire block exept for one /foobar location in nginx?
+2016-10-30 13:51:10		[13:51]
+2016-10-30 13:52:03	Max`P	alyptik: no
+2016-10-30 13:52:12	alyptik	ah so that's why
+2016-10-30 13:52:13	alyptik	damn
+2016-10-30 13:52:15	Max`P	that wouldn't make sense really
+2016-10-30 13:52:31	alyptik	well because i am proxying to icecast on 127.0.0.1:8000
+2016-10-30 13:52:35	alyptik	afaik it doest do ssl
+2016-10-30 13:52:42	Max`P	That doesn't matter
+2016-10-30 13:52:49	Max`P	you can proxy to a non-ssl in an ssl server block
+2016-10-30 13:53:02	alyptik	if i try to proxy to non http i get a not found nginx page error
+2016-10-30 13:53:03	Max`P	nginx will terminate the SSL connection anyway
+2016-10-30 13:53:14	alyptik	if i do it in my 80 server block it works fine though
+2016-10-30 13:53:20	Max`P	show the configs
+2016-10-30 13:53:25	alyptik	80 is only listeing on 192.168.1.99
+2016-10-30 13:53:26	alyptik	kk
+2016-10-30 13:53:26	alyptik	sec
+2016-10-30 13:53:35	haavard	I proxy to non-SSL WeeChat relay so Wee doesn't need to keep the keys in the open, works great
+2016-10-30 13:53:41	+Anna	girl at works loves that stuff is pretty sick
+2016-10-30 13:55:15	alyptik	Max`P› https://ptpb.pw/b0S3/text
+2016-10-30 13:55:16	+Anna	Title: pb (at ptpb.pw)
+2016-10-30 13:55:59	alyptik	oops should be http:// on the proxy
+2016-10-30 13:56:02	alyptik	but neither works anyway
+2016-10-30 13:56:03	Max`P	yep
+2016-10-30 13:56:18	Max`P	That's what I would have said, needs to use HTTP as your localhost thing is not https
+2016-10-30 13:57:06	alyptik	 i get 404 - The file you requested could not be found
+2016-10-30 13:57:16	Max`P	From nginx, or from the upstream server?
+2016-10-30 13:57:16	alyptik	but it works fine 192.168.1.99/stream,
+2016-10-30 13:57:26	alyptik	from my brower
+2016-10-30 13:57:35	alyptik	this computer is 192.68.1.98
+2016-10-30 13:57:45	alyptik	browser*
+2016-10-30 13:58:35	alyptik	Max`P› i am doing this config over ssh; the server is on my LAN
+2016-10-30 13:58:36	Max`P	Are you accessing the https version with the hostname?
+2016-10-30 13:58:55	alyptik	alyp.tk/stream
+2016-10-30 13:58:56	alyptik	yeah
+2016-10-30 13:59:14	Max`P	So, is it an nginx 404, or an icecast 404?
+2016-10-30 13:59:20	alyptik	oh sorry nginx
+2016-10-30 14:00:00	alyptik	thought you were asking if it was an error in my journal log
+2016-10-30 14:00:51	alyptik	i could have my server listen on 80 but i wouldn't want a document root
+2016-10-30 14:00:55	alyptik	is that even doable?
+2016-10-30 14:01:26	alyptik	so only alyp.tk/stream would resolve 
+2016-10-30 14:01:28	Max`P	What do you have in the sites/enabled/*.conf ?
+2016-10-30 14:01:38	alyptik	lemme check
+2016-10-30 14:01:54	alyptik	oh dir
+2016-10-30 14:01:58	alyptik	doesnt exist hah
+2016-10-30 14:02:12	alyptik	i think it is from a .pacnew i diff'd in
+2016-10-30 14:02:31	Max`P	what does "nginx -t" (as root) returns?
+2016-10-30 14:02:50	alyptik	omfg
+2016-10-30 14:02:55	alyptik	nginx: the configuration file /opt/openresty/nginx/conf/nginx.conf syntax is ok
+2016-10-30 14:03:04	alyptik	i forgot i had that installed
+2016-10-30 14:03:28	alyptik	lemme try changing my path see if it works
+2016-10-30 14:03:32	Max`P	Yeah, that probably doesn't help either
+2016-10-30 14:04:26	alyptik	nope :[
+2016-10-30 14:04:50	alyptik	nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+2016-10-30 14:05:11	Max`P	hmm
+2016-10-30 14:05:23	+Anna	army, and marines are idiots
+2016-10-30 14:05:32	alyptik	could it be the headers?
+2016-10-30 14:05:59	Max`P	No
+2016-10-30 14:06:21	Max`P	try replacing the proxy_pass line with "return 500;" and reload
+2016-10-30 14:06:21		[14:06]
+2016-10-30 14:06:29	alyptik	alright
+2016-10-30 14:06:46	alyptik	in quotes?
+2016-10-30 14:06:48	Max`P	If you get a 500 instead of a 404, then the proxy_pass is broken. If you still get a 404, then you're just not reaching that location block at all
+2016-10-30 14:06:53	Max`P	No without the quotes
+2016-10-30 14:07:50	alyptik	500 Internal Server Error
+2016-10-30 14:08:01	alyptik	so what does that mean it's broken?
+2016-10-30 14:08:24	alyptik	not resolving?
