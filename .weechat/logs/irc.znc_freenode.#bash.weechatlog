@@ -44160,3 +44160,174 @@
 2016-11-01 17:24:03	--	justanother|CHI is now known as justanother|LBS
 2016-11-01 17:24:03	<--	bigfondue (~bigfondue@c-69-137-134-106.hsd1.pa.comcast.net) has quit (Ping timeout: 265 seconds)
 2016-11-01 17:26:12	--	justanother|LBS is now known as justanother\_ub
+2016-11-01 17:27:07	-->	dar123 (~textual@69.53.245.200) has joined #bash
+2016-11-01 17:27:16	-->	xchasdsfsd (~x@unaffiliated/sdfgsdfg) has joined #bash
+2016-11-01 17:28:29	-->	luckman212 (~luckman21@unaffiliated/luckman212) has joined #bash
+2016-11-01 17:28:29		[17:28]
+2016-11-01 17:29:19	<--	est31 (~quassel@gateway/tor-sasl/est31) has quit (Ping timeout: 245 seconds)
+2016-11-01 17:29:54	-->	est31 (~quassel@gateway/tor-sasl/est31) has joined #bash
+2016-11-01 17:30:00	<--	chachasmooth (~chachasmo@unaffiliated/chachasmooth) has quit (Ping timeout: 250 seconds)
+2016-11-01 17:31:06	<--	theglass (~glass@unaffiliated/theglass) has quit (Quit: ZNC - http://znc.in)
+2016-11-01 17:31:37	-->	chachasmooth (~chachasmo@unaffiliated/chachasmooth) has joined #bash
+2016-11-01 17:31:57	-->	Noldorin (~noldorin@unaffiliated/noldorin) has joined #bash
+2016-11-01 17:32:00	-->	theglass (~glass@unaffiliated/theglass) has joined #bash
+2016-11-01 17:37:00		[17:32]
+2016-11-01 17:37:54	<--	S00do (~S000do@c-67-190-58-99.hsd1.co.comcast.net) has quit (Quit: Leaving)
+2016-11-01 17:38:21	Ouroboros	hm, its kinda confusing how fifos work wrt open/write/read/close and eof
+2016-11-01 17:38:47	qmr	fi fie fo fum
+2016-11-01 17:40:26	twkm	maybe not quite what you expect, but as they really don't buffer anything it is easily understood.
+2016-11-01 17:40:53	-->	tik-tok (~weechat@gateway/tor-sasl/tik-tok) has joined #bash
+2016-11-01 17:41:05	bibble	lol qmr
+2016-11-01 17:41:10	Ouroboros	well, its also because the shell commands are higher leven than what i am used to
+2016-11-01 17:41:50	-->	kurahaupo_ (~kurahaupo@2401:fa00:9:fd00:c545:a4d5:2726:d13b) has joined #bash
+2016-11-01 17:42:21	Ouroboros	mkfifo foo; echo "bar" > foo &; read line < foo; # here both descriptors are closed and the eof from echo got lost
+2016-11-01 17:42:37	Ouroboros	read line < foo; # this doesnt return eof, it just blocks again
+2016-11-01 17:42:57	-->	palms (~rizo@99-103-21-200.lightspeed.cicril.sbcglobal.net) has joined #bash
+2016-11-01 17:42:57	<--	ag4ve_ (~ag4ve@172.56.3.66) has quit (Ping timeout: 252 seconds)
+2016-11-01 17:43:34	<--	ritztech (~ritztech@69.194.133.98) has quit (Remote host closed the connection)
+2016-11-01 17:43:43	twkm	&; is invalid.
+2016-11-01 17:43:48	<--	kurahaupo__ (~kurahaupo@2401:fa00:9:fd00:c545:a4d5:2726:d13b) has quit (Ping timeout: 245 seconds)
+2016-11-01 17:44:03	twkm	> foo happens before echo is run, and blocks on open because foo is a fifo.
+2016-11-01 17:44:09	-->	ritztech (~ritztech@69.194.133.98) has joined #bash
+2016-11-01 17:44:25	-->	kurahaupo__ (~kurahaupo@2401:fa00:9:fd00:c545:a4d5:2726:d13b) has joined #bash
+2016-11-01 17:44:25	twkm	you didn't echo $line so how would you know the bar got lost?
+2016-11-01 17:44:48	<--	Frickelpit (~pit@ubuntuusers/serverteam/frickelpit) has quit (Ping timeout: 260 seconds)
+2016-11-01 17:44:49	Ouroboros	i meant to show that the echo is happening in a separate process
+2016-11-01 17:45:04	twkm	read a second time opens the fifo a second time, but the first echo has already ended and closed the fifo so there's no writer present so the second <foo blocks.
+2016-11-01 17:45:36	Ouroboros	yep
+2016-11-01 17:45:37	<--	kurahaupo_ (~kurahaupo@2401:fa00:9:fd00:c545:a4d5:2726:d13b) has quit (Read error: Connection reset by peer)
+2016-11-01 17:45:58	Ouroboros	i mean, it all makes sense, its more about how to correctly work with this
+2016-11-01 17:46:02	-->	Adbray (~Adbtay@2001:470:1f11:def:5092:a950:8210:2b63) has joined #bash
+2016-11-01 17:46:30	Ouroboros	normally you wouldnt be closing anything until everything is done
+2016-11-01 17:48:17	-->	Frickelpit (~pit@ubuntuusers/serverteam/frickelpit) has joined #bash
+2016-11-01 17:48:25	twkm	maybe you want a group for your writers, or an exec.
+2016-11-01 17:48:28	<--	ritztech (~ritztech@69.194.133.98) has quit (Ping timeout: 250 seconds)
+2016-11-01 17:48:34	twkm	ditto for the readers.
+2016-11-01 17:48:41	Ouroboros	a what?
+2016-11-01 17:48:54	twkm	g-r-o-u-p.  ''man bash''
+2016-11-01 17:49:01	twkm	exec.  ''help exec''
+2016-11-01 17:49:24	pragma-	e-x-e-c.
+2016-11-01 17:49:51	Ouroboros	oh that kind of group
+2016-11-01 17:49:53	twkm	either of which allow you to open the fd just once but with multiple commands involved, instead of the common redirection for a single command.
+2016-11-01 17:50:10	twkm	a'la, { echo foo; echo bar; } > pipe
+2016-11-01 17:50:31	llua	p-i-p-e
+2016-11-01 17:50:42	twkm	or, exec 3< pipe; read -u3 line && read -u3 otherline
+2016-11-01 17:51:39	pragma-	r-e-a-d.
+2016-11-01 17:51:48	Ouroboros	n-o-d
+2016-11-01 17:52:13	twkm	yay!
+2016-11-01 17:52:13		[17:52]
+2016-11-01 17:52:18	<--	tik-tok (~weechat@gateway/tor-sasl/tik-tok) has quit (Quit: tik-tok)
+2016-11-01 17:53:32	-->	justanotheruser (~justanoth@unaffiliated/justanotheruser) has joined #bash
+2016-11-01 17:55:55	-->	hahuang61 (~hahuang65@2601:647:4000:d7:d480:d7ef:bb37:793f) has joined #bash
+2016-11-01 17:55:58	<--	justanother\_ub (~justanoth@unaffiliated/justanotheruser) has quit (Ping timeout: 256 seconds)
+2016-11-01 17:56:42	-->	xall (~xall@ppp-115-87-132-192.revip4.asianet.co.th) has joined #bash
+2016-11-01 17:57:54	-->	carcrash (~cartsar@74.3.184.100) has joined #bash
+2016-11-01 17:58:22	<--	truckcrash (~cartsar@74.3.184.100) has quit (Read error: Connection reset by peer)
+2016-11-01 17:58:31	dar123	hey guyz, i am scratching my head with multiple sed statements
+2016-11-01 17:59:16	llua	your head is a i/o stream?
+2016-11-01 17:59:53	-->	fatalhalt (~fatalhalt@c-73-246-193-29.hsd1.il.comcast.net) has joined #bash
+2016-11-01 18:00:07	hyper_ch	llua: you sound surprised
+2016-11-01 18:00:07	<--	Klaus_Dieter (~klaus@x4db32370.dyn.telefonica.de) has quit (Read error: Connection reset by peer)
+2016-11-01 18:00:13	-->	gtristan (~tristanva@114.207.54.40) has joined #bash
+2016-11-01 18:00:20	<--	Sparklyballs (~sparklyba@unaffiliated/sparklyballs) has quit (Quit: Outta here folks....)
+2016-11-01 18:00:29	-->	kurahaupo_ (~kurahaupo@2401:fa00:9:fd00:c545:a4d5:2726:d13b) has joined #bash
+2016-11-01 18:00:52	-->	Klaus_Dieter (~klaus@x4db32370.dyn.telefonica.de) has joined #bash
+2016-11-01 18:01:01	<--	hahuang61 (~hahuang65@2601:647:4000:d7:d480:d7ef:bb37:793f) has quit (Ping timeout: 260 seconds)
+2016-11-01 18:01:47	-->	Sparklyballs (~sparklyba@unaffiliated/sparklyballs) has joined #bash
+2016-11-01 18:02:23	-->	joyceg (uid91416@gateway/web/irccloud.com/x-uypzwbxhlvchlwqi) has joined #bash
+2016-11-01 18:02:47	dar123	can some please take a look at my script, how can i share it? patebin?
+2016-11-01 18:02:54	twkm	dar123: you probably want ##sed, unless your problem is how to quote things.
+2016-11-01 18:03:14	dar123	sed "s/$O_EXT/$EXT/g;s/$O_NAME/$NAME/g" $TEMPLATE > "${MAC}-phone.cfg"
+2016-11-01 18:03:20	twkm	as an aside, don't use all upper-case variable names for purely internal purposes.
+2016-11-01 18:03:30	dar123	+ sed 's/xxxx/1234/g;s//Monga Bonga/g' template-phone.cfg
+2016-11-01 18:03:32	<--	kurahaupo__ (~kurahaupo@2401:fa00:9:fd00:c545:a4d5:2726:d13b) has quit (Ping timeout: 260 seconds)
+2016-11-01 18:03:37	dar123	and this is when i debug it
+2016-11-01 18:03:40	twkm	if any of those variables contain a slash you'll confuse sed.
+2016-11-01 18:03:43	-->	flaccid (~flaccid@c122-106-81-105.randw3.nsw.optusnet.com.au) has joined #bash
+2016-11-01 18:04:22	dar123	none of them have slash
+2016-11-01 18:04:58	dar123	its just O_NAME variable doesn't show up and the value for it is "yyyy"
+2016-11-01 18:05:18	twkm	sed -e "s/.../.../g" -e "s/.../.../g" "$template" > "$mac-phone.cfg"
+2016-11-01 18:05:33	llua	that doesn't seem to be the case
+2016-11-01 18:05:46	twkm	show the trace line above it where it is set.
+2016-11-01 18:06:02	<--	b0n (~b0n@c-24-5-47-4.hsd1.ca.comcast.net) has quit (Quit: Leaving)
+2016-11-01 18:06:14	dar123	http://hastebin.com/enegudowex.bash
+2016-11-01 18:06:14	pasteban	Paste is available without javascript on http://hastebin.com/raw/enegudowex
+2016-11-01 18:06:15	llua	betting on faq 24
+2016-11-01 18:06:15	<--	hyphenated (~hyphenate@mail.tw.co.nz) has quit (Quit: hyphenated)
+2016-11-01 18:06:33	llua	Name
+2016-11-01 18:07:00	twkm	O_NAME != O_Name.  bash ain't dos.
+2016-11-01 18:07:14	dar123	ahhh shitt, just realized that
+2016-11-01 18:07:14		[18:07]
+2016-11-01 18:07:15	dar123	:p
+2016-11-01 18:08:31	<--	vilmund (~me@unaffiliated/vilmund) has left #bash ("fare thee well")
+2016-11-01 18:08:39	-->	tik-tok (~weechat@gateway/tor-sasl/tik-tok) has joined #bash
+2016-11-01 18:08:42	<--	tik-tok (~weechat@gateway/tor-sasl/tik-tok) has quit (Client Quit)
+2016-11-01 18:08:56	twkm	also you might be interested in shellcheck.
+2016-11-01 18:09:15	twkm	but feed it truth instead of faked data, in case the data does matter in some other way.
+2016-11-01 18:09:25	<--	karakedi (~eAC53C340@unaffiliated/orphan) has quit (Ping timeout: 260 seconds)
+2016-11-01 18:10:46	<--	MaxFrost (~MaxFrost@2601:444:0:1f4f:9566:87da:7e7e:a3c) has quit (Quit: Going offline, see ya! (www.adiirc.com))
+2016-11-01 18:11:10	<--	luckman212 (~luckman21@unaffiliated/luckman212) has quit (Ping timeout: 250 seconds)
+2016-11-01 18:12:02	<--	Hitechcg (~Hitechcg@67.233.110.42) has quit (Ping timeout: 268 seconds)
+2016-11-01 18:13:13	-->	tik-tok (~weechat@gateway/tor-sasl/tik-tok) has joined #bash
+2016-11-01 18:18:31	-->	luckman212 (~luckman21@unaffiliated/luckman212) has joined #bash
+2016-11-01 18:20:52	-->	Jameswine (~jameswine@50-243-118-118-static.hfc.comcastbusiness.net) has joined #bash
+2016-11-01 18:26:00		[18:20]
+2016-11-01 18:26:48	<--	jfmcarreira (~jfmcarrei@unaffiliated/jfmcarreira) has quit (Ping timeout: 260 seconds)
+2016-11-01 18:32:00		[18:26]
+2016-11-01 18:34:01	<--	reev (~reev@123.63.166.181) has quit (Read error: Connection reset by peer)
+2016-11-01 18:34:31	<--	Noldorin (~noldorin@unaffiliated/noldorin) has quit (Quit: My MacBook Pro has gone to sleep. ZZZzzz…)
+2016-11-01 18:36:17	-->	reev (~reev@123.63.166.181) has joined #bash
+2016-11-01 18:37:24	-->	nomotif (~nomotif@c-98-207-81-55.hsd1.ca.comcast.net) has joined #bash
+2016-11-01 18:37:37	<--	reev (~reev@123.63.166.181) has quit (Max SendQ exceeded)
+2016-11-01 18:39:54	quazimodo	how do i get a multiline output from awk into a variable, and then later 1 by 1 into xargs
+2016-11-01 18:40:07	quazimodo	running_pids=$(ps -ef | grep sidekiq | grep -v grep | awk '{print $2}')
+2016-11-01 18:40:16	<--	DirtyCajun (~DirtyCaju@24-155-65-144.dyn.grandenetworks.net) has quit (Read error: Connection reset by peer)
+2016-11-01 18:40:20	<--	palms (~rizo@99-103-21-200.lightspeed.cicril.sbcglobal.net) has quit (Ping timeout: 260 seconds)
+2016-11-01 18:40:25	quazimodo	echo $running_pids  outputs   1234 4567 8234
+2016-11-01 18:40:41	quazimodo	so i can't easily pipe it into xargs
+2016-11-01 18:41:04	llua	to do...?
+2016-11-01 18:41:20	quazimodo	kill them all via a particular command
+2016-11-01 18:41:20	Ouroboros	why would you need xargs
+2016-11-01 18:41:38	Ouroboros	you can just do kill $running_pids
+2016-11-01 18:41:40	llua	and this command is...?
+2016-11-01 18:41:44	quazimodo	can i?
+2016-11-01 18:41:53	quazimodo	kill -s 9 $running_pids ?
+2016-11-01 18:42:07	Ouroboros	yes, in this context, the variable is expanded and then field splitting occurs
+2016-11-01 18:42:19	llua	do you not have pkill?
+2016-11-01 18:42:24	quazimodo	llua: it looks like "bundle exec sidekiqctl stop <pid> 30"
+2016-11-01 18:42:31	<--	ron_o (~ron_o@unaffiliated/ron-o/x-8242187) has quit (Ping timeout: 244 seconds)
+2016-11-01 18:42:38	quazimodo	Ouroboros: never knew
+2016-11-01 18:42:52	Ouroboros	really? this is why we constantly have to put stuff in quotes
+2016-11-01 18:42:59	quazimodo	but, incidentally, how would you take the columns extracted by awk, put it in a variable and then later get xargs to use each row ?
+2016-11-01 18:43:20	<--	kyan (~kyan@cpe-74-78-187-9.maine.res.rr.com) has quit (Quit: Leaving)
+2016-11-01 18:43:28	<--	kbdkode (~kbdkode@unaffiliated/kbdkode) has quit (Quit:      see ya    )
+2016-11-01 18:44:08	-->	hyphenated (~hyphenate@103.26.17.55) has joined #bash
+2016-11-01 18:44:49	Ouroboros	xargs doesnt require newlines, so you can just do it normally
+2016-11-01 18:45:05	quazimodo	ok
+2016-11-01 18:45:08	Ouroboros	echo "$running_pids" | xargs kill
+2016-11-01 18:45:36	Ouroboros	but i avoid xargs like the plague
+2016-11-01 18:45:47	<--	arescorpio (~arescorpi@140-29-245-190.fibertel.com.ar) has quit (Quit: Leaving.)
+2016-11-01 18:45:50	<--	hyphenated (~hyphenate@103.26.17.55) has quit (Client Quit)
+2016-11-01 18:46:09	quazimodo	yeah?
+2016-11-01 18:46:39	twkm	better to use an array, then you can eliminate xargs and use quoting to avoid problems ... kill "${pids[@]}"
+2016-11-01 18:46:56	bibble	newb to args, but ^ yep
+2016-11-01 18:47:38	llua	or like, use pkill since we seem ok with killing the processes by name
+2016-11-01 18:47:38		[18:47]
+2016-11-01 18:47:54	twkm	try to use -x with pkill.
+2016-11-01 18:49:53	-->	Hitechcg (~Hitechcg@67.233.110.42) has joined #bash
+2016-11-01 18:50:26	-->	el-aman (~Mutter@199.212.86.97) has joined #bash
+2016-11-01 18:52:33	<--	ProtocolNetworks (~Nope@2607:ff48:aa81:800::7ada:1) has quit (Ping timeout: 245 seconds)
+2016-11-01 18:54:26	<--	el-aman (~Mutter@199.212.86.97) has quit (Remote host closed the connection)
+2016-11-01 18:54:40	-->	el-aman (~Mutter@199.212.86.97) has joined #bash
+2016-11-01 18:55:02	-->	ProtocolNetworks (~Nope@104.223.125.229) has joined #bash
+2016-11-01 18:55:34	<--	doyle (~doyle@108.162.154.221) has quit (Remote host closed the connection)
+2016-11-01 18:55:39	<--	el-aman (~Mutter@199.212.86.97) has quit (Remote host closed the connection)
+2016-11-01 18:57:59	-->	DirtyCajun (~DirtyCaju@24-155-65-144.dyn.grandenetworks.net) has joined #bash
+2016-11-01 18:58:00	-->	Alina-malina (~Alina-mal@37.157.216.159) has joined #bash
+2016-11-01 18:58:25	quazimodo	 running_pids=`ps -ef | grep sidekiq | grep -v grep | awk '{print $2}'`
+2016-11-01 18:58:26	quazimodo	 su -s /bin/bash -c "kill -s 9 $running_pids" $EB_APP_USER
+2016-11-01 18:58:37	quazimodo	that's the whole thing. It thrws errors
+2016-11-01 18:58:42	quazimodo	so, is it incorrect?
+2016-11-01 18:59:01	quazimodo	actually, thats not it, i wrapped $running_pids in \"
+2016-11-01 18:59:53	Ouroboros	why
+2016-11-01 19:00:37	twkm	it is horrible.
