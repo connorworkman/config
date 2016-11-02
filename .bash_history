@@ -1,56 +1,3 @@
-man keymaps
-xdg-mime query default inode/directory'\
-
-xdg-mime query default inode/directory\
-
-v ~/.local/share/applications/FoxitReader.desktop
-v /usr/share/applications/pcmanfm-qt.desktop
-xdg-mime set-default
-xdg-mime set-default --help
-xdg-mime default pcmanfm.desktop;
-cp /usr/share/applications/pcmanfm* ~/.local/share/applications/
-xdg-mime query default /home/alyptik
-xdg-mime query /home/alyptik
-xdg-mime query filetype file:/home/alyptik
-xdg-mime query filetype /home/alyptik
-xdg-open file://home/alyptik
-xdg-mime default pcmanfm-qt inode/directory
-xdg-mime query default inode/directory
-xdg-mime default pcmanfm-qt.desktop; inode/directory
-v ~/.local/share/applications/mimeapps.list
-google 'why does xdg-open directories in browser'
-echo $XDG_CURRENT_DESKTOP
-man gvfs-open
-gvfs-open ~
-v ~/.local/share/applications/mimeapps.list /etc/mime.types
-xdg-mime default pcmanfm-qt.desktop inode/directory
-_ xdg-mime default pcmanfm-qt.desktop inode/directory
-gvfs-open ~/
-xdg-mime query default application/x-directory
-xdg-mime default pcmanfm-qt.desktop application/x-directory
-xdg-open file://.home/alyptik
-xdg-open file:///home/alyptik
-_ xdg-mime default pcmanfm-qt.desktop application/x-directory
-_ v usr/share/applications/mimeinfo.cache
-_ v usr/share/applications/mimeinfo.list
-_ v /usr/share/applications/mimeinfo.cache
-cat cat ~/.config/mimeapps.list
-cat ~/.config/mimeapps.list
-v ~/.config/mimeapps.list
-_ visudo
-update-desktop-database /usr/share/application
-_ update-desktop-database /usr/share/application
-update-desktop-database
-_ update-desktop-database
-xdg-open /home/alyptik
-mwiflex.sh
-sspc tox
-	find /@media/microSDXC/audio -maxdepth 1 -name "*TSL*" -type d -print | \\
-		sed 's/^.*\/\(TSL.*\)$/\1/' | \\
-		while read -r; do\
-			rclone move "/@media/microSDXC/audio/${REPLY}" dropbox:/EDM/TSL/${REPLY} && \\
-			rmdir "/@media/microSDXC/audio/${REPLY}"\
-		done\
 	find /@media/microSDXC/audio -maxdepth 1 -name "*alyptik*" -type d -print | \\
 		sed 's/^.*\/alyptik - \(.*\)$/\1/' | \\
 		while read -r; do\
@@ -548,3 +495,16 @@ set -o emacs
 echo
 echexit
 exit
+printf "performance\nperformance\nperformance\nperformance" | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
+printf "performance\nperformance\nperformance\nondemand" | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
+printf "performance\nperformance\nperformance\npowersave" | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
+printf "performance\nperformance\nperformance\npowersave" | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
+< /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
+shopt extglob
+rtc.sh
+v `which rtc.sh`
+rtc.sh
+rtc.sh
+v `which rtc.sh`
+rtc.sh
+v `which rtc.sh`
