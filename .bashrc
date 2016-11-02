@@ -10,7 +10,7 @@ bind "set menu-complete-display-prefix on"
 
 #[ ! -e "${HOME}"/aliases.sh ] || . "${HOME}"/aliases.sh
 
-source /usr/share/doc/find-the-command/ftc.bash
+[ ! -f /usr/share/doc/find-the-command/ftc.bash ] || source /usr/share/doc/find-the-command/ftc.bash
 ## Trap function
 homepushdcheck() {
     if [[ "${EUID}" -ne 0 ]]; then
@@ -180,7 +180,7 @@ fi
 eval `pump --startup`
 
 ## Custom which for bash
-which() { (alias; declare -f) | /bin/which --tty-only --read-alias --read-functions --show-tilde --show-dot $@; }
+which() { (alias; declare -f) | /usr/bin/which --tty-only --read-alias --read-functions --show-tilde --show-dot $@; }
 #[ -r ${HOME}/baliases.sh ] && source ${HOME}/baliases.sh || source ${HOME}/aliases.sh
 #true || { [ -r ${HOME}/aliases.sh ] && . ${HOME}/baliases.sh; }
 
@@ -191,6 +191,4 @@ which() { (alias; declare -f) | /bin/which --tty-only --read-alias --read-functi
 ## autostart tmux
 #[[ -f /usr/share/tmux-applet/autostart.sh ]] && . /usr/share/tmux-applet/autostart.sh
 
-
-export PATH=$PATH:/opt/openresty/bin/:/opt/openresty/nginx/sbin/ #Automatically added by openresty package
 
