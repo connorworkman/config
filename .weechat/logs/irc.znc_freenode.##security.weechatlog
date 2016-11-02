@@ -3915,3 +3915,62 @@
 2016-11-01 14:25:51	-->	brelod (~Daniel@92-249-161-30.pool.digikabel.hu) has joined ##security
 2016-11-01 14:26:00	<--	somis (~somis@149.56.153.177) has quit (Quit: WeeChat 1.6)
 2016-11-01 14:26:09	-->	Hecate (~plik@unaffiliated/sutekh) has joined ##security
+2016-11-01 14:30:04	biocage	... reading previous discussion, that's not really what offline root means
+2016-11-01 14:30:17	biocage	s/offline/airgap
+2016-11-01 14:31:47	<--	OS-10178 (~OS-10178@unaffiliated/os-10178) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-11-01 14:33:10	 *	biocage finds K_F's book on Amazon
+2016-11-01 14:33:47	K_F	biocage: :)
+2016-11-01 14:34:12	<--	DiabloHorn (~DiabloHor@unaffiliated/diablohorn) has quit (Quit: leaving)
+2016-11-01 14:34:47	<--	imbaray (~imbaray@cpc99932-brnt1-2-0-cust1394.4-2.cable.virginm.net) has quit (Quit: R.afk)
+2016-11-01 14:34:47		[14:34]
+2016-11-01 14:36:07	squib	biocage, it is not best practice to keep an offline root "off" the network?
+2016-11-01 14:36:46	squib	biocage, do you have any comments regarding what I came in here to ask?
+2016-11-01 14:37:21	-->	jandrusk (~jra@cpe-104-231-119-61.neo.res.rr.com) has joined ##security
+2016-11-01 14:37:59	-->	sneakerhax (~sneakers@unaffiliated/sneakerhead) has joined ##security
+2016-11-01 14:39:31	-->	bitgamy (~bitgamy@184.75.223.211) has joined ##security
+2016-11-01 14:40:27	-->	chipotle (~chipotle@cpe-67-243-155-207.nyc.res.rr.com) has joined ##security
+2016-11-01 14:41:16	<--	NotsoRoyal (~andro@unaffiliated/notsoroyal) has quit (Ping timeout: 250 seconds)
+2016-11-01 14:41:20	biocage	squib: no you basically have it, i think. it comes down to revocation periods and how much risk you can accept. I don't think it's worth automating much - you get exposure in return for just a tiny bit of usability.
+2016-11-01 14:41:36	biocage	squib: what timeline do you need revocations to take effect within? what's your tolerance for risk?
+2016-11-01 14:41:55	squib	biocage, I did notice interestingly enough that the big external roots, Verisign etc all appear to use very long CRL periods
+2016-11-01 14:41:58	biocage	squib: don't know your use case but you can handle this via corporate processes, for example, an 8 hour outboarding process
+2016-11-01 14:42:30	-->	NotsoRoyal (~andro@unaffiliated/notsoroyal) has joined ##security
+2016-11-01 14:42:56	biocage	squib: yeah that's the tradespace between usability and security
+2016-11-01 14:43:14	squib	biocage, well right now the consensus is that we do NOT want to deal with updating the base CRL often because the root is kept offline, but we DO want to be able to revoke a subordinate/signing CA's certificate and have that status be known within a reasonable time.  say 24 hours or so
+2016-11-01 14:43:40	<--	Hecate (~plik@unaffiliated/sutekh) has quit (Quit: -a- make a sqee)
+2016-11-01 14:43:43	biocage	squib: sounds like a pretty straightforward manual process as long as someone is always on call
+2016-11-01 14:43:58	biocage	(and it doesn't happen often, and if it does happen often, You're Doing It Wrong.)
+2016-11-01 14:44:02	squib	one thing I am not sure about is that if a delta CRL is used, is both the base and delta crl expected to be online?  if a client is performing validation and the base crl is valid but the delta is expired, does that break validation?
+2016-11-01 14:44:23	squib	biocage, well you know what I'm getting at right? CRLs are cached
+2016-11-01 14:44:41	squib	a CRL period of one year means that if I revoke a cert, many machines will not learn of that relocation for a year
+2016-11-01 14:44:44	biocage	squib: yeah but I think you are going to end up getting bogged down in implementation idiosyncracies
+2016-11-01 14:44:47	squib	*revocation'
+2016-11-01 14:44:48	K_F	squib: sadly not too many implemenations actually check CRLs in pratice
+2016-11-01 14:44:58	biocage	^
+2016-11-01 14:45:07	biocage	honestly CRL is not first line
+2016-11-01 14:45:10	squib	K_F, I realize that too, nevertheless I am still interested in getting our ducks in a row
+2016-11-01 14:46:15	squib	man
+2016-11-01 14:46:16	squib	pki sucks
+2016-11-01 14:46:18	squib	:)
+2016-11-01 14:46:23	-->	lnbf (~b@1.126.49.110) has joined ##security
+2016-11-01 14:46:52	biocage	no
+2016-11-01 14:46:56	biocage	it's just not panacea
+2016-11-01 14:47:08	K_F	squib: PKI is great.. you're talking more about X.509 global PKIX in this case
+2016-11-01 14:47:25	K_F	squib: but don't mix that up with the principles :)
+2016-11-01 14:47:26	<--	e14 (~e14@73.114.20.196) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-11-01 14:47:55	biocage	squib: are you concerned about client compromises or server compromises?
+2016-11-01 14:48:00	squib	do you guys know though? if both a base crl and delta crl are published and the client supports both CRL types for validation, are both expected to be non expired? or can the delta be expired as long as the base is still valid?
+2016-11-01 14:48:30	biocage	I don't KNOW the answer, but I suspect it is up to implementation semantics, which from a security posture means you can't trust the behavior
+2016-11-01 14:48:36	squib	I want to have a short delta crl period so if a subordinate ca cert has to be revoked, validation checks can happen quickly
+2016-11-01 14:48:54	-->	es1 (~es1@unaffiliated/es1) has joined ##security
+2016-11-01 14:49:03	squib	biocage, server compromises. the client CRLs will be a shorter CRL and will also utilize OCSP when available
+2016-11-01 14:49:03	biocage	So why not test it out and write a nice article?
+2016-11-01 14:49:25	squib	:) yes why not
+2016-11-01 14:49:32	biocage	(I'm serious)
+2016-11-01 14:50:50	<--	eric_lagergren (~eric_lage@c-73-225-199-152.hsd1.wa.comcast.net) has quit (Remote host closed the connection)
+2016-11-01 14:50:50		[14:50]
+2016-11-01 14:51:02	<--	axiom_1 (~axiom_1@2601:7c0:8301:3a08:f4e7:6bf:82b2:fa4d) has quit (Quit: Leaving)
+2016-11-01 14:51:06	-->	e14 (~e14@73.114.20.196) has joined ##security
+2016-11-01 14:51:15	biocage	Why can't you keep your delta CRL valid?
+2016-11-01 14:51:25	<--	chwy (~chwy@unaffiliated/chwy) has left ##security ("WeeChat 1.6")
+2016-11-01 14:52:14	<--	jonbryan (~jgbryan@unaffiliated/jonbryan) has quit (Quit: WeeChat 1.5)
