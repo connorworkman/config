@@ -44331,3 +44331,107 @@
 2016-11-01 18:59:01	quazimodo	actually, thats not it, i wrapped $running_pids in \"
 2016-11-01 18:59:53	Ouroboros	why
 2016-11-01 19:00:37	twkm	it is horrible.
+2016-11-01 19:01:25	<--	Alina-malina (~Alina-mal@37.157.216.159) has quit (Changing host)
+2016-11-01 19:01:26	-->	Alina-malina (~Alina-mal@unaffiliated/alina-malina) has joined #bash
+2016-11-01 19:02:26	quazimodo	:( i wanna cry
+2016-11-01 19:02:37	quazimodo	i'm a developer ffs and i can't make this work
+2016-11-01 19:03:20	twkm	su ... 'pkill -9 -x sidekiq' ...
+2016-11-01 19:03:20		[19:03]
+2016-11-01 19:03:22	-->	hyphenated (~hyphenate@103.26.17.55) has joined #bash
+2016-11-01 19:03:31	bibble	quazimodo: 'kill -s 9 $running_pids" $EB_APP_USER'
+2016-11-01 19:03:33	Ouroboros	twkm: he cant use pkill
+2016-11-01 19:03:34	twkm	it may be that you've misplaced the username.
+2016-11-01 19:03:43	twkm	sucks to be him.
+2016-11-01 19:04:01	twkm	and kill -9 is horrific.
+2016-11-01 19:04:06	llua	has a functioning ruby environment, can't use pkill tho.
+2016-11-01 19:04:07	bibble	ah
+2016-11-01 19:04:10	-->	spacenomad (~spacenoma@unaffiliated/spacenomad) has joined #bash
+2016-11-01 19:04:17	quazimodo	i've lost the plot
+2016-11-01 19:04:29	Ouroboros	twkm: i think he is not actually doing kill -9, but some other specific stop command
+2016-11-01 19:04:31	quazimodo	all i want to do, is 1 by 1 pass the elements of an array of PIDs to a goddam command
+2016-11-01 19:04:32	twkm	but okay, you have ruby.  use fucking ruby if that's what you *can* program in, don't spend decades trying to figure out bash.
+2016-11-01 19:04:33	Ouroboros	right?
+2016-11-01 19:04:52	Ouroboros	quazimodo: oh, you want one by one?
+2016-11-01 19:04:58	quazimodo	Ouroboros: actually i don't care, at this point if i can just kill them it'll be good ,then i'll get to the next step
+2016-11-01 19:05:06	twkm	you didn't make an array of pids, and in any case su doesn't allow you to keep array elements distinct.
+2016-11-01 19:05:07	quazimodo	sure
+2016-11-01 19:05:12	quazimodo	1 by one's great :)
+2016-11-01 19:05:52	Ouroboros	then something like: for pid in $running_pids; do my_kill_command $pid; done
+2016-11-01 19:07:12	-->	phorloop (~phorloop@203.213.239.151) has joined #bash
+2016-11-01 19:08:53	<--	ccl (~ccl@unaffiliated/ccl) has quit (Ping timeout: 248 seconds)
+2016-11-01 19:11:18	twkm	ski7777: nobody can tell you what your sudo or pam configuration will require/allow.
+2016-11-01 19:11:45	twkm	try a channel related to your vendor or o/s, they'll probably know.
+2016-11-01 19:12:16	Ouroboros	i think you are scrolled up :P
+2016-11-01 19:12:25	twkm	quazimodo: you should consider using asroot, pfexec, sudo, etc., instead of su, if that's possible.
+2016-11-01 19:12:53	twkm	i was checking if sudo had been ruled out and only saw ski's unanswered question.
+2016-11-01 19:13:05	<--	heurist` (heurist@unaffiliated/heurist) has quit (Ping timeout: 268 seconds)
+2016-11-01 19:13:26	-->	heurist` (heurist@unaffiliated/heurist) has joined #bash
+2016-11-01 19:13:57	Ouroboros	ah
+2016-11-01 19:14:38	<--	bitvijays (~bitvijays@unaffiliated/bitvijays) has quit (Ping timeout: 252 seconds)
+2016-11-01 19:16:22	-->	XV8 (~XV8@d-216-36-29-104.cpe.metrocast.net) has joined #bash
+2016-11-01 19:16:36	-->	bitvijays (~bitvijays@unaffiliated/bitvijays) has joined #bash
+2016-11-01 19:19:30	-->	jackbrown (~se@unaffiliated/jackbrown) has joined #bash
+2016-11-01 19:19:30		[19:19]
+2016-11-01 19:20:20	<--	dar123 (~textual@69.53.245.200) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-11-01 19:21:32	-->	jfmcarreira (~jfmcarrei@2001:8a0:f28d:f01:ba27:ebff:fe6e:8b21) has joined #bash
+2016-11-01 19:21:32	<--	jfmcarreira (~jfmcarrei@2001:8a0:f28d:f01:ba27:ebff:fe6e:8b21) has quit (Changing host)
+2016-11-01 19:21:32	-->	jfmcarreira (~jfmcarrei@unaffiliated/jfmcarreira) has joined #bash
+2016-11-01 19:24:45	-->	tmch (~tmch@5.159.107.211) has joined #bash
+2016-11-01 19:26:39	-->	mrrhq (~mrrhq@unaffiliated/mrrhq) has joined #bash
+2016-11-01 19:29:40	-->	nilg (~user@82.79.215.164) has joined #bash
+2016-11-01 19:32:53	quazimodo	when i do variable=$(some | stuff | awk '{print $2}') then what happens to the data that variable holds
+2016-11-01 19:32:56	quazimodo	is it just a string?
+2016-11-01 19:33:16	bibble	yep
+2016-11-01 19:33:22	yitz	bash only has scalars and arrays (and maps). All scalars are "strings"
+2016-11-01 19:33:24	quazimodo	because when i pipe echo $variable into xargs it acts -very- differently to if i do some | stuff | awk '{print $2}' | xargs
+2016-11-01 19:33:37	bibble	"\n" in string
+2016-11-01 19:33:44	<--	gagan662 (gagan662@unaffiliated/gagan662) has quit (Read error: Connection reset by peer)
+2016-11-01 19:33:48	quazimodo	and this is my problem
+2016-11-01 19:33:55	yitz	!" > quazimodo
+2016-11-01 19:33:56	greybot	quazimodo: "Double quote" every literal that contains spaces/metacharacters and _every_ expansion: "$var", "$(command "$var")", "${array[@]}", "a & b". Use 'single quotes' for code or literal $'s: 'Costs $5 US', ssh host 'echo "$HOSTNAME"'. See http://mywiki.wooledge.org/Quotes , http://mywiki.wooledge.org/Arguments and http://wiki.bash-hackers.org/syntax/words .
+2016-11-01 19:34:07	yitz	!xargs > quazimodo
+2016-11-01 19:34:07	greybot	quazimodo: xargs(1) is dangerous (broken, exploitable, etc.) when reading non-NUL-delimited input. If you're working with filenames, use find's -exec [command] {} + instead. If you can get NUL-delimited output, use xargs -0. Otherwise, you probably want a while read or for loop instead.
+2016-11-01 19:34:32	quazimodo	does null delimited output save properly as a string?
+2016-11-01 19:34:32		[19:34]
+2016-11-01 19:34:41	<--	Cabanossi (~Cabanossi@p5DD7BEC8.dip0.t-ipconnect.de) has quit (Ping timeout: 256 seconds)
+2016-11-01 19:34:42	-->	gagan662 (gagan662@gateway/shell/insomnia247/x-ezuepbthhcvqcpew) has joined #bash
+2016-11-01 19:35:01	twkm	never.
+2016-11-01 19:35:29	twkm	you'd have to encode it.
+2016-11-01 19:37:25	-->	Cabanossi (~Cabanossi@p5DD7BC35.dip0.t-ipconnect.de) has joined #bash
+2016-11-01 19:37:51	quazimodo	great
+2016-11-01 19:38:36	-->	ron_o (~ron_o@unaffiliated/ron-o/x-8242187) has joined #bash
+2016-11-01 19:38:44	quazimodo	 su -s /bin/bash -c "echo \"$running_pids\" | tr '\n' '\0' | xargs -0 kill -s 9 " $EB_APP_USER
+2016-11-01 19:38:47	quazimodo	does that look right?
+2016-11-01 19:39:04	yitz	quazimodo: If you got a bunch of pids, put it into an array
+2016-11-01 19:39:12	quazimodo	i tried, have no idea how
+2016-11-01 19:39:18	yitz	Then you can do: kill -s9 "${pids[@]}"
+2016-11-01 19:39:24	quazimodo	i tried ${running_pids[@]}
+2016-11-01 19:39:30	yitz	pids+=( $new )
+2016-11-01 19:39:40	yitz	"${running_pids[@]}"
+2016-11-01 19:40:01	yitz	When you assign things, you need to make sure you assign as an array and not as a scalar
+2016-11-01 19:40:18	quazimodo	 su -s /bin/bash -c "kill -s9 \"${running_pids[@]}\"" $EB_APP_USER
+2016-11-01 19:40:32	quazimodo	eh?
+2016-11-01 19:40:33	yitz	pids=( $( pgrep sidekiq ) ); kill -9 "${pids[@]}"
+2016-11-01 19:40:52	yitz	pkill sidekiq
+2016-11-01 19:41:03	yitz	pkill -9 sidekiq
+2016-11-01 19:41:20	-->	pijiu (~pijiu@unaffiliated/pijiu) has joined #bash
+2016-11-01 19:41:22	yitz	!kill-9
+2016-11-01 19:41:22	greybot	Do NOT use SIGKILL (kill -9) to terminate processes. All processes will terminate in response to the default SIGTERM. If they don't terminate instantly, that's because they're busy cleaning up. If you interrupt them, you break them. See http://stackoverflow.com/a/690631/347411 and http://turnoff.us/geek/dont-sigkill/
+2016-11-01 19:41:24	-->	Chizz8l (~Den@92.242.103.226) has joined #bash
+2016-11-01 19:41:35	yitz	!pm
+2016-11-01 19:41:35	greybot	http://mywiki.wooledge.org/ProcessManagement
+2016-11-01 19:41:38	Ouroboros	quazimodo: the problem is you keep putting quotes around $running_pids
+2016-11-01 19:42:06	yitz	Ouroboros: There should always be quotes
+2016-11-01 19:42:39	Ouroboros	no, i mean he has inner quotes
+2016-11-01 19:42:42	yitz	!qefe
+2016-11-01 19:42:42	greybot	"$Quote" "$Every" "$Fucking" "$Expansion"
+2016-11-01 19:43:05	yitz	He's approaching it all wrong
+2016-11-01 19:43:13	-->	glebihan (~glebihan@unaffiliated/glebihan) has joined #bash
+2016-11-01 19:43:28	<--	pijiu (~pijiu@unaffiliated/pijiu) has quit (Client Quit)
+2016-11-01 19:43:29	quazimodo	i guess
+2016-11-01 19:43:41	yitz	sudo pkill sidekiq
+2016-11-01 19:43:58	yitz	si -c 'pkill sidekiq'
+2016-11-01 19:44:02	yitz	su -c 'pkill sidekiq'
+2016-11-01 19:44:16	-->	Laif (~mp@unaffiliated/laif) has joined #bash
+2016-11-01 19:44:39	yitz	"echo \"$running_pids\" | tr '\n' '\0' | xargs -0 kill -s 9 "    <=== basically reads:   kill -s9 $running_pids
+2016-11-01 19:44:48	yitz	You're over complicating things

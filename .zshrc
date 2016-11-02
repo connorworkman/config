@@ -4,25 +4,23 @@
 function cleanup() {
  [[ ${-} != *i* ]] || {
      #[[ ! -f "$ZSH_ERROR" || -z $(cat "$ZSH_ERROR") ]] && {
-     [[ -z "$({ exec </dev/stdin; cat; } <&2)" ]] && {
-	printf " \033[32m %s \n" 'zshrc: no errors detected'
      } || {
-	 printf " \033[31m %s \n" 'zshrc: the following errors were detected:'
-	 { exec </dev/stdin; cat | tee -a /store/zsh-log-${UID}.log | sed 's/^.*$/\t&/'; } <&2
-     }
-	 printf "\033[0m"
  }
  ## cleanup env and temp files
  #[ ! -f "${ZSH_ERROR}" ] || rm -f "${ZSH_ERROR}"
- ls /dev/fd/9 >/dev/null 2>&1 && {
+ if [ -c /dev/fd/9 ]; then
+    (exec </dev/stdin; read -u 0) <&2 && {
+	 printf " \033[31m %s \n" 'zshrc: the following errors were detected:'
+	 (exec </dev/stdin; cat | tee -a /store/zsh-log-${UID}.log | sed 's/^.*$/\t&/') <&2
+	 printf "\033[0m"; } || printf " \033[32m %s \n" 'zshrc: no errors detected'
     exec 2>&9
     exec 9>&-
- }
+ fi
  return 0
 }
 
-# EXIT trap
-trap "{ cleanup; trap -; }" EXIT
+## EXIT trap
+#trap "{ cleanup; trap -; }" EXIT
 trap 'cleanup' TRAP
 
 #trap ' { [[ ${EUID} -ne 0 ]] && cleanup ${HOME} || cleanup ${PWD}; }' 0 5
