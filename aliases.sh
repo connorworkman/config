@@ -12,8 +12,8 @@
 alias ohmyzsh='pushd ${ZSH} '
 
 # Unset previous function/alias iterations
-unset -f fc which define h wd bfg defrag src >/dev/null 2>&1 || true
-unalias {1..9} gg history c d h j s >/dev/null 2>&1 || true
+unset -f fc which define h wd bfg defrag src 2>&- || true
+unalias {1..9} gg history c d h j s u 2>&- || true
 
 ## Custom aliases
 
@@ -339,7 +339,6 @@ alias ctmux='gvim ${HOME}/.tmux.conf '
 alias cxr='gvim ${HOME}/.Xresources '
 alias cxi='gvim ${HOME}/.xinitrc '
 
-unalias s u >/dev/null 2>&1 || true
 alias s='systemctl '
 alias u='systemctl --user '
 
