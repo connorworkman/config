@@ -10660,3 +10660,265 @@
 2016-11-01 21:50:49	<--	j12t (~j12t@c-50-131-55-96.hsd1.ca.comcast.net) has quit (Ping timeout: 252 seconds)
 2016-11-01 21:52:16	<--	Upgreydd (d9616309@gateway/web/freenode/ip.217.97.99.9) has quit (Ping timeout: 260 seconds)
 2016-11-01 21:58:00		[21:52]
+2016-11-02 00:56:15	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined #openvpn
+2016-11-02 00:56:15		[00:56]
+2016-11-02 00:56:15	--	Topic for #openvpn is "OpenVPN Community Support Channel || PLEASE read entire /topic || Current Release: 2.3.12 (23 Aug 2016) || First time? Use !welcome and !goal || Access-Server? /join #openvpn-as || Your problem is probably firewall. Really || TAP/bridging is almost always a bad idea || Vulninfo: !heartbleed !poodle !ovpnuke !sweet32 || Patience is a virtue"
+2016-11-02 00:56:15	--	Topic set by danhunsaker (sid145261@openvpn/corp/danhunsaker) on Sun, 09 Oct 2016 21:20:15
+2016-11-02 00:56:15	--	Channel #openvpn: 235 nicks (8 ops, 2 voices, 225 normals)
+2016-11-02 00:56:15	***	Buffer Playback...
+2016-11-02 00:56:15	@vpnHelper	[17:14:21] "tcp" is (#1) Sometimes you cannot avoid tunneling over tcp, but if you can avoid it, DO. http://sites.inka.de/~bigred/devel/tcp-tcp.html Why TCP Over TCP Is A Bad Idea., or (#2) http://www.openvpn.net/papers/BLUG-talk/14.html for a presentation by James Yonan (OpenVPN lead developer), or (#3) if you must use tcp, you likely want --tcp-nodelay [17:14:21]
+2016-11-02 00:56:15	marco208	[17:14:22] No, I'm home now :) [17:14:22]
+2016-11-02 00:56:15	marco208	[17:14:37] stable 100Mbit ping 5ms to 8.8.8.8 [17:14:37]
+2016-11-02 00:56:15	@krzee	[17:15:21] 8.8.8.8 doesnt matter, but i assume its good to the vpn server as well [17:15:21]
+2016-11-02 00:56:15	marco208	[17:15:31] tcp-nodelay -> I wrote it down, I will check this tomorrow. [17:15:31]
+2016-11-02 00:56:15	marco208	[17:16:07] same, 5 ms [17:16:07]
+2016-11-02 00:56:15	marco208	[17:16:24] ping over vpn 6 ms [17:16:24]
+2016-11-02 00:56:15	@krzee	[17:16:40] tried iperf with an without the vpn? [17:16:40]
+2016-11-02 00:56:15	marco208	[17:17:33] Not iperf, but a http post upload over VPN 500KBps average without 9~11MBps [17:17:33]
+2016-11-02 00:56:15	@krzee	[17:18:06] iperf is better cause you can do tcp or udp [17:18:06]
+2016-11-02 00:56:15	@krzee	[17:18:37] and you can do the same with openvpn [17:18:37]
+2016-11-02 00:56:15	marco208	[17:18:58] the http server and vpn server are in the same datacenter, ping <1ms bandwidth 998Mbit [17:18:58]
+2016-11-02 00:56:15	@krzee	[17:19:01] then mess with combos and see if anythings different [17:19:01]
+2016-11-02 00:56:15	marco208	[17:19:03] I will test iperf [17:19:03]
+2016-11-02 00:56:15	@krzee	[17:19:16] i assumed the http server was on the vpn server itself lol [17:19:16]
+2016-11-02 00:56:15	@krzee	[17:19:47] since thats normally how people test that sort of stuff, then they d/l via vpn ip and pub ip [17:19:47]
+2016-11-02 00:56:15	@krzee	[17:20:18] except iperf is better [17:20:18]
+2016-11-02 00:56:15	@krzee	[17:20:34] but still using pub ip and vpn ip [17:20:34]
+2016-11-02 00:56:15	marco208	[17:21:39] Im setting ip iperf somewhere else now, and then client -> ovpn -> server test it [17:21:39]
+2016-11-02 00:56:15	marco208	[17:25:26] well, that's weird... [17:25:26]
+2016-11-02 00:56:15	marco208	[17:25:28] [ ID] Interval           Transfer     Bandwidth [17:25:28]
+2016-11-02 00:56:15	marco208	[17:25:28] [  4]   0.00-10.00  sec  14.1 MBytes  11.8 Mbits/sec                  sender [17:25:28]
+2016-11-02 00:56:15	marco208	[17:25:28] [  4]   0.00-10.00  sec  14.1 MBytes  11.8 Mbits/sec                  receiver [17:25:28]
+2016-11-02 00:56:15	marco208	[17:27:08] What could make the http upload limit to 500KBps? TCP? [17:27:08]
+2016-11-02 00:56:15	marco208	[17:29:27] The iperf server is located on the same server as the HTTP host [17:29:27]
+2016-11-02 00:56:15	arha	[17:38:15] hi [17:38:15]
+2016-11-02 00:56:15	arha	[17:38:31] is there some initialization header i can catch when openvpn starts? [17:38:31]
+2016-11-02 00:56:15	arha	[17:39:51] i'm trying to make some router rules, so when connecting on a public ip, :443, when the stream starts with GET, POST, PUT, DELETE it redirects to some internal ip :80, when it does [whatever openvpn uses], it redirects  to ip:1194, and if nothing happens for a while, it redirects to ip:@2 [17:39:51]
+2016-11-02 00:56:15	arha	[17:40:02] just checking here before firing up wireshark [17:40:02]
+2016-11-02 00:56:15	MagisterQuis	[18:18:45] I'm having trouble getting my client and server to agree on a cipher. [18:18:45]
+2016-11-02 00:56:15	MagisterQuis	[18:18:57] Logs from both: http://sprunge.us/LEEY [18:18:57]
+2016-11-02 00:56:15	MagisterQuis	[18:19:03] They're both running with the same version of LibreSSL. [18:19:03]
+2016-11-02 00:56:15	MagisterQuis	[18:19:24] Is it possible that using EC keys is causing a problem? [18:19:24]
+2016-11-02 00:56:15	Hello71	[19:12:27] arha: sslh [19:12:27]
+2016-11-02 00:56:15	arha	[19:27:21] Hello71: i know [19:27:21]
+2016-11-02 00:56:15	arha	[19:27:28] i want to create those rules on a non-linux device [19:27:28]
+2016-11-02 00:56:15	arha	[19:32:32] sslh seems to be using this string:  { name: "regex"; host: "localhost"; port: "1194"; regex_patterns: [ "^\x00[\x0D-\xFF]$", "^\x00[\x0D-\xFF]\x38" ]; }, [19:32:32]
+2016-11-02 00:56:15	arha	[19:32:35] hmm [19:32:35]
+2016-11-02 00:56:15	@krzee	[01:22:48] hey ecrist what chapters are done beyond chapter 4? [01:22:48]
+2016-11-02 00:56:15	Upgreydd	[07:18:58] Hi guys i have problem with my openvpn. I'm getting `RTNETLINK answers: Operation not permitted` [07:18:58]
+2016-11-02 00:56:15	Upgreydd	[07:21:47] in config i have user and group "nobody" it's related with this? [07:21:47]
+2016-11-02 00:56:15	marco208	[08:23:51] Thank you krzee! tcp-nodelay and sndbuf fixed the problem for me! [08:23:51]
+2016-11-02 00:56:15	makinen	[10:39:56] I've set up and openvpn client and server and the traffic flows just fine between them. Now I'd like open a connection from the internet to server and reroute the connection to the openvpn client [10:39:56]
+2016-11-02 00:56:15	makinen	[10:40:26] iptables -t nat -A PREROUTING -p tcp --dport 9002 -j DNAT --to-destination 10.9.8.2 [10:40:26]
+2016-11-02 00:56:15	makinen	[10:40:41] that is what tried to do with no success [10:40:41]
+2016-11-02 00:56:15	makinen	[10:44:20] except the tcp handshake completes but nothing goes through [10:44:20]
+2016-11-02 00:56:15	@dazo	[10:47:21] makinen: I've done that ... you need the PREROUTING ... but you need some more hackery too, with routing tables on the VPN client [10:47:21]
+2016-11-02 00:56:15	@dazo	[10:48:11] so that the return path when your service on/behind the VPN client responds it will be sent out via the VPN tunnel and not the local default gateway [10:48:11]
+2016-11-02 00:56:15	@dazo	[10:49:32] makinen: the service you want to enable from the internet via the VPN ... is it hosted on the VPN client? [10:49:32]
+2016-11-02 00:56:15	@dazo	[10:51:03] btw .... rob0 is the one who helped me discover all this ages ago ... so he might have some valuable input too, if he got time [10:51:03]
+2016-11-02 00:56:15	***	Playback Complete.
+2016-11-02 00:57:30	--	Channel created on Sat, 25 Nov 2006 20:42:40
+2016-11-02 00:59:20	-->	jackbrown (~se@unaffiliated/jackbrown) has joined #openvpn
+2016-11-02 01:05:00		[00:59]
+2016-11-02 01:15:44	-->	SkinnyMelon (~SkinnyMel@51B61ADB.dsl.pool.telekom.hu) has joined #openvpn
+2016-11-02 01:21:00		[01:15]
+2016-11-02 01:29:08	<--	SkinnyMelon (~SkinnyMel@51B61ADB.dsl.pool.telekom.hu) has quit (Ping timeout: 244 seconds)
+2016-11-02 01:35:00		[01:29]
+2016-11-02 01:40:53	<--	j12t (~j12t@c-50-131-55-96.hsd1.ca.comcast.net) has quit (Ping timeout: 245 seconds)
+2016-11-02 01:43:58	-->	totus (~totus@2605:6000:66c0:8800:796c:8f67:6ef1:12f3) has joined #openvpn
+2016-11-02 01:46:22	makinen	dazo: yes the service is just nc -l 9002 for now and it's running on the vpn client
+2016-11-02 01:48:16	<--	jphoglund (~hoeg@hetty.hoeg.net) has quit (Ping timeout: 260 seconds)
+2016-11-02 01:49:46	-->	SkinnyMelon (~SkinnyMel@51B61ADB.dsl.pool.telekom.hu) has joined #openvpn
+2016-11-02 01:55:00		[01:49]
+2016-11-02 01:58:00	-->	ExoUNX (~textual@unaffiliated/exounx) has joined #openvpn
+2016-11-02 02:03:00		[01:58]
+2016-11-02 02:13:32	@dazo	makinen: okay, what you basically need to do is to add an --up script on the client .... which does this:
+2016-11-02 02:13:43	@dazo	meh
+2016-11-02 02:13:53	@dazo	 /sbin/ip rule add from ${ifconfig_local} table 3000
+2016-11-02 02:13:54	@dazo	 /sbin/ip route add default via @@VPN_IP_ADDRESS_OF_SERVER@@ table 3000
+2016-11-02 02:13:54	@dazo	 /sbin/ip route flush cache
+2016-11-02 02:14:40	@dazo	you can change '3000' to a number of your own, or swap it to a name being referenced in /etc/iproute2/rt_tables
+2016-11-02 02:15:56	@dazo	you need a similar --down script as well ... and if you use --user/--group, you need to run that script via the down-root plugin.  The down-script just does this:
+2016-11-02 02:15:56	@dazo	 /sbin/ip rule del from ${ifconfig_local} table 3000
+2016-11-02 02:15:56	@dazo	 /sbin/ip route flush cache
+2016-11-02 02:18:29	@dazo	What this does is that packets arriving via the VPN tunnel will go via the VPN tunnel when the service responds, regardless of the source IP address .... without this rule, it will go out via the default gateway instead of the VPN, which again leads nowhere and packet "drops"
+2016-11-02 02:18:29		[02:18]
+2016-11-02 02:18:47	@dazo	You can confirm this behaviour by running tcpdump on your default gateway interface
+2016-11-02 02:20:24	makinen	okay thanks I'll set it up
+2016-11-02 02:26:00		[02:20]
+2016-11-02 02:33:14	<--	CaTtleyA (~CaTtleyA@lputeaux-656-1-50-20.w82-127.abo.wanadoo.fr) has quit (Quit: Lost terminal)
+2016-11-02 02:36:24	<--	jackbrown (~se@unaffiliated/jackbrown) has quit (Ping timeout: 260 seconds)
+2016-11-02 02:38:04	makinen	got it to work \o/
+2016-11-02 02:44:00		[02:38]
+2016-11-02 02:47:39	-->	jackbrown (~se@unaffiliated/jackbrown) has joined #openvpn
+2016-11-02 02:53:00		[02:47]
+2016-11-02 03:16:32	makinen	can I use the same static key for multiple clients?
+2016-11-02 03:16:32		[03:16]
+2016-11-02 03:18:30	@dazo	makinen: yes, but that requires you to have a single openvpn process for each client .... I'd rather recommend you to use PKI and certificates .... it gives far better security too
+2016-11-02 03:18:33	@dazo	!static
+2016-11-02 03:18:34	@vpnHelper	"static" is (#1) use --ifconfig-push in a ccd entry for a static ip for the vpn client, or (#2) example in net30 (default): ifconfig-push 10.8.0.6 10.8.0.5 example in subnet (see !topology) or tap (see !tunortap): ifconfig-push 10.8.0.5 255.255.255.0, or (#3) also see !ccd and !iporder, or (#4) with static IPs, limit your --ifconfig-pool to exclude the static range, or (#5) See also: !addressing
+2016-11-02 03:18:38	@dazo	nah
+2016-11-02 03:19:16	@dazo	!statickey
+2016-11-02 03:19:17	@vpnHelper	"statickey" is (#1) you can use static keys by using --secret </path/to/key>, or (#2) static keys only work for ptp links, not client/server. They also do not provide forward encryption. A forward-secure encryption scheme (such as openvpn uses with certs) protects secret keys from exposure by evolving the keys with time., or (#3) see !forwardsecurity for more info
+2016-11-02 03:19:27	@dazo	makinen: ^^
+2016-11-02 03:22:10	-->	wallbroken (~wallbroke@unaffiliated/wallbroken) has joined #openvpn
+2016-11-02 03:22:12	wallbroken	hi
+2016-11-02 03:22:14	makinen	!forwardsecurity
+2016-11-02 03:22:14	wallbroken	https://otacon22.com/2011/01/08/guida-a-openvpn-per-gnulinux/
+2016-11-02 03:22:14	@vpnHelper	"forwardsecurity" is (#1) in server/client mode with certs your key renegotiates (changes) every hour (by default), so if someone captures your traffic, and then gets your key, they can not decrypt past traffic, or (#2) in ptp mode (static key) you do not have this, so if someone gets your key they can decrypt ANY past traffic that they captured
+2016-11-02 03:22:15	@vpnHelper	Title: Guida a OpenVPN per GNU/Linux | Otacon22 blog (at otacon22.com)
+2016-11-02 03:22:24	wallbroken	please could you check if this configuration is good?
+2016-11-02 03:25:09	-->	SviMik (~pIRCuser8@131-250-35-213.dyn.estpak.ee) has joined #openvpn
+2016-11-02 03:26:57	DArqueBishop	!blog
+2016-11-02 03:26:57	@vpnHelper	"blog" is (#1) Do not follow blog posts for openvpn. They are wrong, they are old, they are written by fools. We won't read them, or troubleshoot them., or (#2) Also see !howto
+2016-11-02 03:31:12	wallbroken	lol
+2016-11-02 03:31:33	wallbroken	DArqueBishop, maybe only reading the proposed configuration?
+2016-11-02 03:31:33		[03:31]
+2016-11-02 03:32:37	<--	Voldenet (~Voldenet@unaffiliated/voldenet) has quit (Ping timeout: 244 seconds)
+2016-11-02 03:34:14	<--	jackbrown (~se@unaffiliated/jackbrown) has quit (Ping timeout: 245 seconds)
+2016-11-02 03:37:33	-->	Voldenet (~Voldenet@unaffiliated/voldenet) has joined #openvpn
+2016-11-02 03:38:14	-->	j12t (~j12t@c-50-131-55-96.hsd1.ca.comcast.net) has joined #openvpn
+2016-11-02 03:44:00		[03:38]
+2016-11-02 03:44:02	<--	j12t (~j12t@c-50-131-55-96.hsd1.ca.comcast.net) has quit (Ping timeout: 250 seconds)
+2016-11-02 03:45:28	<--	Nik05 (~Nik05@unaffiliated/nik05) has quit (Quit: Connection problems...)
+2016-11-02 03:51:00		[03:45]
+2016-11-02 03:55:21	-->	CaTtleyA (~CaTtleyA@lputeaux-656-1-50-20.w82-127.abo.wanadoo.fr) has joined #openvpn
+2016-11-02 04:01:00		[03:55]
+2016-11-02 04:02:10	<--	stemid (~avatar@i-lands.anark.ist) has left #openvpn
+2016-11-02 04:03:06	<--	luckman212 (~luckman21@unaffiliated/luckman212) has quit (Ping timeout: 250 seconds)
+2016-11-02 04:09:00		[04:03]
+2016-11-02 04:09:28	skylite	how can I see logs in stdout if I turned on log-append?
+2016-11-02 04:09:41	-->	jackbrown (~se@unaffiliated/jackbrown) has joined #openvpn
+2016-11-02 04:10:49	-->	gardar (~gardar@bnc.giraffi.net) has joined #openvpn
+2016-11-02 04:11:14	-->	luckman212 (~luckman21@unaffiliated/luckman212) has joined #openvpn
+2016-11-02 04:12:53	-->	Noldorin (~noldorin@unaffiliated/noldorin) has joined #openvpn
+2016-11-02 04:15:39	-->	Emperor_Earth (~Emperor_E@cpe-98-14-184-255.nyc.res.rr.com) has joined #openvpn
+2016-11-02 04:21:00		[04:15]
+2016-11-02 04:23:13	-->	Envil (~envil@x4db31e36.dyn.telefonica.de) has joined #openvpn
+2016-11-02 04:29:00		[04:23]
+2016-11-02 04:30:08	-->	navidr (uid112413@gateway/web/irccloud.com/x-nhkyynavyzieezyn) has joined #openvpn
+2016-11-02 04:34:50	<--	Noldorin (~noldorin@unaffiliated/noldorin) has quit (Quit: My MacBook Pro has gone to sleep. ZZZzzz…)
+2016-11-02 04:35:53	<--	u0m3 (~u0m3@86.120.85.26) has quit (Ping timeout: 265 seconds)
+2016-11-02 04:41:00		[04:35]
+2016-11-02 05:10:03	-->	romare (~st.pauli@unaffiliated/romare) has joined #openvpn
+2016-11-02 05:10:03		[05:10]
+2016-11-02 05:11:36	<--	romare (~st.pauli@unaffiliated/romare) has left #openvpn
+2016-11-02 05:17:00		[05:11]
+2016-11-02 05:23:32	@krzee	skylite: tail the logfile
+2016-11-02 05:23:36	@krzee	tail -f
+2016-11-02 05:29:00		[05:23]
+2016-11-02 05:30:37	<--	shootbird (~quassel@beepbeep.serverpit.com) has quit (Ping timeout: 252 seconds)
+2016-11-02 05:36:00		[05:30]
+2016-11-02 05:37:47	-->	m1911 (~m1911@123.118.27.170) has joined #openvpn
+2016-11-02 05:40:58	<--	m1911 (~m1911@123.118.27.170) has quit (Remote host closed the connection)
+2016-11-02 05:41:27	-->	j12t (~j12t@c-50-131-55-96.hsd1.ca.comcast.net) has joined #openvpn
+2016-11-02 05:45:48	<--	j12t (~j12t@c-50-131-55-96.hsd1.ca.comcast.net) has quit (Ping timeout: 250 seconds)
+2016-11-02 05:47:22	<--	jackbrown (~se@unaffiliated/jackbrown) has quit (Ping timeout: 250 seconds)
+2016-11-02 05:49:07	<--	catalase (catalase@gateway/shell/elitebnc/x-jhmxbdjyfsrlcmfs) has quit (Ping timeout: 258 seconds)
+2016-11-02 05:50:03	-->	shootbird (~quassel@beepbeep.serverpit.com) has joined #openvpn
+2016-11-02 05:50:24	-->	jamesaxl (~jamesaxl@176.98.129.195) has joined #openvpn
+2016-11-02 05:56:00		[05:50]
+2016-11-02 06:07:54	<--	CaTtleyA (~CaTtleyA@lputeaux-656-1-50-20.w82-127.abo.wanadoo.fr) has quit (Ping timeout: 268 seconds)
+2016-11-02 06:09:23	-->	catalase (catalase@gateway/shell/elitebnc/x-mvwwcetrvwrwshsx) has joined #openvpn
+2016-11-02 06:10:38	--	Poster|t is now known as Poster
+2016-11-02 06:14:52	<--	batrick (batrick@nmap/developer/batrick) has quit (Quit: WeeChat 1.6)
+2016-11-02 06:14:52		[06:14]
+2016-11-02 06:15:53	-->	wknapik (~wknapik@unaffiliated/wknapik) has joined #openvpn
+2016-11-02 06:15:58	wknapik	hi
+2016-11-02 06:18:15	-->	jackbrown (~se@unaffiliated/jackbrown) has joined #openvpn
+2016-11-02 06:19:02	-->	brutser (~mail@89.119-241-81.adsl-dyn.isp.belgacom.be) has joined #openvpn
+2016-11-02 06:19:30	-->	YoJimmy (~I_Tode@208.81.5.100) has joined #openvpn
+2016-11-02 06:19:42	brutser	hi all, maybe this is a stupid question and not possible, but I have some failover IP addresses on my server, how can I use those as my outgoing IP for openvpn?
+2016-11-02 06:19:53	-->	CaTtleyA (~CaTtleyA@lputeaux-656-1-50-20.w82-127.abo.wanadoo.fr) has joined #openvpn
+2016-11-02 06:19:58	wknapik	how can i detect the topology in an --up/--down script ? it seems pushing an explicit "topology p2p/net3/subnet" is not required from the server in any case. do i just rely on the existence of the ifconfig_netmask variable to detect subnet/net30 vs. p2p ?
+2016-11-02 06:22:59	-->	Noldorin (~noldorin@unaffiliated/noldorin) has joined #openvpn
+2016-11-02 06:28:00		[06:22]
+2016-11-02 06:29:45	--	irc: disconnected from server
+2016-11-02 12:00:58	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined #openvpn
+2016-11-02 12:00:58		[12:00]
+2016-11-02 12:00:58	--	Topic for #openvpn is "OpenVPN Community Support Channel || PLEASE read entire /topic || Current Release: 2.3.12 (23 Aug 2016) || First time? Use !welcome and !goal || Access-Server? /join #openvpn-as || Your problem is probably firewall. Really || TAP/bridging is almost always a bad idea || Vulninfo: !heartbleed !poodle !ovpnuke !sweet32 || Patience is a virtue"
+2016-11-02 12:00:58	--	Topic set by danhunsaker (sid145261@openvpn/corp/danhunsaker) on Sun, 09 Oct 2016 21:20:15
+2016-11-02 12:00:58	--	Channel #openvpn: 243 nicks (8 ops, 2 voices, 233 normals)
+2016-11-02 12:00:58	***	Buffer Playback...
+2016-11-02 12:00:58	@vpnHelper	[19:55:39] Title: Imgur: The most awesome images on the Internet (at imgur.com) [19:55:39]
+2016-11-02 12:00:58	alex88	[19:55:45] in fact it's "skipping" the option as invalid [19:55:45]
+2016-11-02 12:00:58	alex88	[19:55:49] and everything works fine [19:55:49]
+2016-11-02 12:00:58	alex88	[19:55:55] so probably they have that line duplicated [19:55:55]
+2016-11-02 12:00:58	@dazo	[19:58:18] alex88: it's possible to increase the log level to see the PUSH_REPLY line (should be a slider you pull to the right above the log data somewhere) .... I'd do that just to be 100% sure [19:58:18]
+2016-11-02 12:00:58	alex88	[19:58:57] on the new client? sure let me do it [19:58:57]
+2016-11-02 12:00:58	@dazo	[20:00:35] no need to imgur it ... just verify the PUSH_REPLY line [20:00:35]
+2016-11-02 12:00:58	alex88	[20:01:28] PUSH_REPLY,dhcp-option DNS 192.168.1.1,route-gateway 192.168.2.1,topology subent, ping 10, ping-restart 120,route-delay 10,route-gateway ,redirect........ [20:01:28]
+2016-11-02 12:00:58	alex88	[20:01:37] yeah, another route-gateway without the second parameter [20:01:37]
+2016-11-02 12:00:58	alex88	[20:01:48] same list of options shown in the other vpn client [20:01:48]
+2016-11-02 12:00:58	@dazo	[20:02:08] right, so the VPN server does the wrong thing ... and OpenVPN Connect is most picky about it [20:02:08]
+2016-11-02 12:00:58	alex88	[20:02:14] that's why tunnelblick wasn't able to do anything, maybe on the second route-gateway it was setting a null router ip [20:02:14]
+2016-11-02 12:00:58	alex88	[20:02:24] yeah, more strict on that [20:02:24]
+2016-11-02 12:00:58	alex88	[20:02:44] and they weren't able to replicate this in their lab..lol [20:02:44]
+2016-11-02 12:00:58	alex88	[20:03:02] maybe it's cheaper for them to send a replacement router and try that first, than working on a firmware issue [20:03:02]
+2016-11-02 12:00:58	@dazo	[20:03:23] It didn't match any paths in their management controlled troubleshoot sheet .... which means "not our problem" </sarcasm> [20:03:23]
+2016-11-02 12:00:58	alex88	[20:03:50] :D [20:03:50]
+2016-11-02 12:00:58	@dazo	[20:04:40] well, new firmwares are much more expensive .... as they need to run that through more internal processes, including several rounds of tests and reviews .... at least that is what is fairly common in the embedded world [20:04:40]
+2016-11-02 12:00:58	@dazo	[20:04:46] which is why it takes time [20:04:46]
+2016-11-02 12:00:58	@dazo	[20:05:10] for all we know, the ball is already rolling internally .... it just haven't ended in a publicly released update [20:05:10]
+2016-11-02 12:00:58	alex88	[20:05:56] could be, so why send me a new router? it's an openvpn config ffs, they could've tested that without even using a router [20:05:56]
+2016-11-02 12:00:58	alex88	[20:06:00] to see there was something wrong with it [20:06:00]
+2016-11-02 12:00:58	@dazo	[20:06:34] well, that's just engineer department not speaking with support department [20:06:34]
+2016-11-02 12:00:58	alex88	[20:06:52] or the opposite, to not bother them [20:06:52]
+2016-11-02 12:00:58	@dazo	[20:06:53] (that's not even a joke) [20:06:53]
+2016-11-02 12:00:58	alex88	[20:07:36] no no, I can imagine such situation, they're probably already busy on something else, now that this product (a week after the issue being opened) has been declared EOL [20:07:36]
+2016-11-02 12:00:58	@dazo	[20:11:54] yeah [20:11:54]
+2016-11-02 12:00:58	@dazo	[20:12:40] which is one of the reasons I prefer openwrt for routers and CyanogenMod for Android phones .... the firmware there have far better long-term support than what the manufacturer provides [20:12:40]
+2016-11-02 12:00:58	alex88	[20:13:10] I've switched back to stock after I started using nexus phones... [20:13:10]
+2016-11-02 12:00:58	alex88	[20:13:15] so about routers, your advice is openwrt [20:13:15]
+2016-11-02 12:00:58	alex88	[20:13:34] I've only used dd-wrt in my routers, so I'll dig better on how openwrt works [20:13:34]
+2016-11-02 12:00:58	@dazo	[20:14:13] openwrt isn't so slick and smooth on the web UI side as dd-wrt ... but I usually disable the webUI anyway and use only SSH, so I don't notice that so much [20:14:13]
+2016-11-02 12:00:58	alex88	[20:14:27] oh ok good to know :) [20:14:27]
+2016-11-02 12:00:58	@dazo	[20:14:59] well, it might have improved .... it's probably 5-6 years since I tried LuCI (openwrt webUI) :) [20:14:59]
+2016-11-02 12:00:58	alex88	[20:15:18] :D [20:15:18]
+2016-11-02 12:00:58	@dazo	[20:16:56] My mantra is:  What can't be done on the command line isn't worth doing. [20:16:56]
+2016-11-02 12:00:58	brutser	[20:52:48] dazo: you still around maybe? i had another issue i wanted to discuss [20:52:48]
+2016-11-02 12:00:58	brutser	[20:54:01] a few clients complain that when they surf using the vpn, they get a lot of captcha request and some even got blocked from some online service they were using - they say it's the vpn, but i checked the outgoing ip of the vpn, and that's not blacklisted anywhere and there is no reason also why it would be blacklisted - is there something else that can cause this? [20:54:01]
+2016-11-02 12:00:58	@dazo	[21:04:52] brutser: sounds like cloudflare related issues ... quite common with VPN services and IP some ranges ... [21:04:52]
+2016-11-02 12:00:58	@dazo	[21:05:21] cloudflare (iirc) has been known to be notorious of making life harder for those surfing the web through VPN providers [21:05:21]
+2016-11-02 12:00:58	@dazo	[21:06:02] https://support.cloudflare.com/hc/en-us/articles/203366080-Why-do-I-see-a-captcha-or-challenge-page-Attention-Required-trying-to-visit-a-site-protected-by-CloudFlare-as-a-site-visitor- [21:06:02]
+2016-11-02 12:00:58	@vpnHelper	[21:06:04] Title: Why do I see a captcha or challenge page (Attention Required) trying to visit a site protected by CloudFlare as a site visitor? Cloudflare Support (at support.cloudflare.com) [21:06:04]
+2016-11-02 12:00:58	Harry`	[21:45:47] !welcome [21:45:47]
+2016-11-02 12:00:58	@vpnHelper	[21:45:48] "welcome" is (#1) Start by stating your !goal, such as 'I would like to access the internet over my vpn' (*not* '!goal <whatever>' - the bot doesn't understand that - just '!goal' [without the quotes]), or (#2) New to IRC? see the link in !ask, or (#3) We may need you to !paste your !logs and !configs and maybe !interface to help you, or (#4) See !howto for beginners, or (#5) See !route for lans [21:45:48]
+2016-11-02 12:00:58	@vpnHelper	[21:45:49] behind openvpn, or (#6) !redirect for sending inet traffic through the server, or (#7) Also interesting: !man !/30 !topology !iporder !sample !forum !wiki !mitm, or (#8) Don't use 192.168.1.0/24 or 192.168.0.0/24 (too much potential for conflict), or (#9) And again, if you think you need !tap, you're probably wrong, or (#10) see !1925 before arguing with the admins or the person helping you [21:45:49]
+2016-11-02 12:00:58	Harry`	[21:47:01] !redirect [21:47:01]
+2016-11-02 12:00:58	@vpnHelper	[21:47:02] "redirect" is (#1) to make all inet traffic flow through the vpn, you will need --redirect-gateway (see !def1), as well as IP forwarding (see !ipforward) and NAT (see !nat) enabled on the server., or (#2) you may need to use a different dns server when redirecting gateway, see !dns or !pushdns, or (#3) if using ipv6 try: route-ipv6 2000::/3, or (#4) Handy troubleshooting flowchart: [21:47:02]
+2016-11-02 12:00:58	@vpnHelper	[21:47:04] http://pekster.sdf.org/misc/redirect.png [21:47:04]
+2016-11-02 12:00:58	Harry`	[21:51:05] !route [21:51:05]
+2016-11-02 12:00:58	@vpnHelper	[21:51:06] "route" is (#1) http://www.secure-computing.net/wiki/index.php/OpenVPN/Routing or https://community.openvpn.net/openvpn/wiki/RoutedLans (same page mirrored) if you have lans behind openvpn, read it DONT SKIM IT, or (#2) READ IT DONT SKIM IT!, or (#3) See !tcpip for a basic networking guide, or (#4) See !serverlan or !clientlan for steps and troubleshooting flowcharts [21:51:06]
+2016-11-02 12:00:58	***	Playback Complete.
+2016-11-02 12:01:20	<--	irco (~irco@vpn205-066.rzuser.uni-heidelberg.de) has quit (Ping timeout: 268 seconds)
+2016-11-02 12:02:15	--	Channel created on Sat, 25 Nov 2006 20:42:40
+2016-11-02 12:04:32	-->	defsdoor (~andy@cpc35-sutt4-2-0-cust184.19-1.cable.virginm.net) has joined #openvpn
+2016-11-02 12:09:52	brutser	dazo: the iptables rules, they are not saved permanently, when reboot the server, they are gone - with firewalld how i save those rules?
+2016-11-02 12:12:43	DArqueBishop	brutser: https://fedoraproject.org/wiki/FirewallD
+2016-11-02 12:12:44	@vpnHelper	Title: FirewallD - FedoraProject (at fedoraproject.org)
+2016-11-02 12:13:01	<--	jackbrown (~se@unaffiliated/jackbrown) has quit (Ping timeout: 260 seconds)
+2016-11-02 12:19:00		[12:13]
+2016-11-02 12:23:55	@dazo	brutser: did you find a way to configure this using firewall-cmd --direct?
+2016-11-02 12:24:45	@dazo	brutser: if so ... you can do:  firewall-cmd --runtime-to-permanent .... or you can run each of those commands you ran earlier to configure this properly, but by adding --permanent
+2016-11-02 12:25:06	@dazo	brutser: you can also verify it is saved by looking at /etc/firewalld/direct.xml
+2016-11-02 12:25:44	-->	troulouliou_div2 (~troulouli@unaffiliated/troulouliou-div2/x-0271439) has joined #openvpn
+2016-11-02 12:26:48	<--	MikeDebian (~ML@a81-84-80-8.cpe.netcabo.pt) has quit (Quit: Leaving)
+2016-11-02 12:30:08	-->	mrpops2ko (~mrpops2ko@46.28.49.141.adsl.inet-telecom.org) has joined #openvpn
+2016-11-02 12:36:00		[12:30]
+2016-11-02 12:44:18	@dazo	mattock: git tree pushed and updated for v2.3.13 ... I'll prepare a tarball for you later when I've come home
+2016-11-02 12:44:30	 *	dazo need to run
+2016-11-02 12:45:44	<--	SkinnyMelon (~SkinnyMel@51B61ADB.dsl.pool.telekom.hu) has quit (Ping timeout: 268 seconds)
+2016-11-02 12:51:00		[12:45]
+2016-11-02 12:59:55	<--	mrpops2ko (~mrpops2ko@46.28.49.141.adsl.inet-telecom.org) has quit (Ping timeout: 268 seconds)
+2016-11-02 13:03:23	<--	defsdoor (~andy@cpc35-sutt4-2-0-cust184.19-1.cable.virginm.net) has quit (Remote host closed the connection)
+2016-11-02 13:03:49	-->	defsdoor (~andy@cpc35-sutt4-2-0-cust184.19-1.cable.virginm.net) has joined #openvpn
+2016-11-02 13:05:52	<--	troulouliou_div2 (~troulouli@unaffiliated/troulouliou-div2/x-0271439) has quit (Quit: Leaving)
+2016-11-02 13:11:00		[13:05]
+2016-11-02 13:42:44	<--	devtea (~tdreyer1@unaffiliated/tdreyer1) has quit (Ping timeout: 260 seconds)
+2016-11-02 13:42:44		[13:42]
+2016-11-02 14:00:00	<--	Sweet-P (~Sweet-P@138.68.9.53) has quit (Quit: Quit...)
+2016-11-02 14:00:00		[14:00]
+2016-11-02 14:06:51	<--	defsdoor (~andy@cpc35-sutt4-2-0-cust184.19-1.cable.virginm.net) has quit (Remote host closed the connection)
+2016-11-02 14:12:00		[14:06]
+2016-11-02 14:12:22	-->	Noldorin (~noldorin@unaffiliated/noldorin) has joined #openvpn

@@ -44611,3 +44611,1116 @@
 2016-11-01 22:01:05	-->	oxhak (~OxHaK@unaffiliated/oxhak) has joined #bash
 2016-11-01 22:01:05		[22:01]
 2016-11-01 22:02:24	<--	hahuang61 (~hahuang65@c-50-136-152-183.hsd1.ca.comcast.net) has quit (Ping timeout: 250 seconds)
+2016-11-02 00:56:14	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined #bash
+2016-11-02 00:56:14		[00:56]
+2016-11-02 00:56:14	--	Topic for #bash is "FAQ: http://mywiki.wooledge.org/BashFAQ | Guide: http://mywiki.wooledge.org/BashGuide | Ref: http://gnu.org/s/bash/manual | http://wiki.bash-hackers.org/ | http://mywiki.wooledge.org/Quotes | Check your script: http://www.shellcheck.net/ | Mailing list: https://lists.gnu.org/mailman/listinfo/help-bash | Devel: http://xrl.us/bmodjy"
+2016-11-02 00:56:14	--	Topic set by geirha on Tue, 18 Oct 2016 10:18:38
+2016-11-02 00:56:14	--	Channel #bash: 1079 nicks (1 op, 0 voices, 1078 normals)
+2016-11-02 00:56:14	***	Buffer Playback...
+2016-11-02 00:56:14	Darby_Crash	[09:49:09] ok mar77i thanks i'm trying [09:49:09]
+2016-11-02 00:56:14	Darby_Crash	[09:52:02] how can i pass first argument to this local REPLY; local data=(); while read -r -n 1; do data+=("$REPLY"); done [09:52:02]
+2016-11-02 00:56:14	mar77i	[09:54:16] oh right [09:54:16]
+2016-11-02 00:56:14	mar77i	[09:54:33] done<<<"$1" [09:54:33]
+2016-11-02 00:56:14	Darby_Crash	[09:55:42] thanks [09:55:42]
+2016-11-02 00:56:14	Darby_Crash	[09:59:33] php xor.php foo bar => Fx4e [09:59:33]
+2016-11-02 00:56:14	Darby_Crash	[09:59:59] bash xor.sh foo bar => Fx4ecQo= [09:59:59]
+2016-11-02 00:56:14	mar77i	[10:00:17] bash appends newlines to everything. [10:00:17]
+2016-11-02 00:56:14	mar77i	[10:01:17] Darby_Crash: post the latest code if you want more help [10:01:17]
+2016-11-02 00:56:14	Darby_Crash	[10:01:32] ok thanks [10:01:32]
+2016-11-02 00:56:14	Darby_Crash	[10:01:53] https://clbin.com/6w0ud [10:01:53]
+2016-11-02 00:56:14	mar77i	[10:02:23] that last line [10:02:23]
+2016-11-02 00:56:14	mar77i	[10:03:06] could be shortened to sed -r 's|\s+||g'<<<"${data[@]}"|base64 [10:03:06]
+2016-11-02 00:56:14	mar77i	[10:03:52] sadly though, I think herestrings also get a newline. [10:03:52]
+2016-11-02 00:56:14	ShapeShifter499	[10:04:44] does anyone see anything wrong with this script?  https://gist.github.com/ShapeShifter499/1ec06e2e85653aa3c2a9595a7ab2a8b2 [10:04:44]
+2016-11-02 00:56:14	ShapeShifter499	[10:05:33] what I want it to do is find all symlinks that link somewhere outside of that "decrypted" folder, remove the symlink without removing the files it links to, then replace it with a dummy file [10:05:33]
+2016-11-02 00:56:14	mar77i	[10:06:06] Darby_Crash: sed -r $'s|\s+||g'<<<"${data[@]}"|tr -d $'\n'|base64 # should work a expected [10:06:06]
+2016-11-02 00:56:14	ShapeShifter499	[10:06:13] I grabbed the 'find' command bit from https://serverfault.com/a/355182 [10:06:13]
+2016-11-02 00:56:14	mar77i	[10:06:26] well uh [10:06:26]
+2016-11-02 00:56:14	mar77i	[10:08:02] tr -d $'\t\n '<<<"${data[@]}"|hexdump -C # keep in mind that this will remove all whitespace from the output. so if x ^ y results in a whitespace character as listed, it'll be stripped [10:08:02]
+2016-11-02 00:56:14	mar77i	[10:08:33] Darby_Crash: that's probably why someone earlier told you to not use bash. [10:08:33]
+2016-11-02 00:56:14	mar77i	[10:10:03] Darby_Crash: this should do, though: for char in "${data[@]}"; do printf "$char"; done|base64 [10:10:03]
+2016-11-02 00:56:14	mar77i	[10:10:37] to have it faster, you could pipe to base64 when calling chr already. [10:10:37]
+2016-11-02 00:56:14	mar77i	[10:11:12] will say, scratch that last line and make the last line done|base64 [10:11:12]
+2016-11-02 00:56:14	rofogo	[10:11:32] hello [10:11:32]
+2016-11-02 00:56:14	rofogo	[10:12:03] hey men whats up? [10:12:03]
+2016-11-02 00:56:14	mar77i	[10:15:52] up: away from the closest center of gravity. [10:15:52]
+2016-11-02 00:56:14	Darby_Crash	[10:16:30] https://clbin.com/PRVGv [10:16:30]
+2016-11-02 00:56:14	mar77i	[10:16:46] Darby_Crash: I told you. [10:16:46]
+2016-11-02 00:56:14	mar77i	[10:16:54] 11:11 < mar77i> will say, scratch that last line and make the last line done|base64 [10:16:54]
+2016-11-02 00:56:14	Darby_Crash	[10:19:24] don't work like expected [10:19:24]
+2016-11-02 00:56:14	Zheis	[10:19:49] hi [10:19:49]
+2016-11-02 00:56:14	mar77i	[10:20:07] of course, because instead of assigning to data[i] you'd have to remove the indirection around chr. [10:20:07]
+2016-11-02 00:56:14	Darby_Crash	[10:21:32] how can i do this? [10:21:32]
+2016-11-02 00:56:14	mar77i	[10:23:15] remove the assignment to data[i] and the indirection $() around chr and leave only chr, so chr would output into the pipe created to base64 on the other side of done. [10:23:15]
+2016-11-02 00:56:14	Zheis	[10:23:45] My script use a variable which contain a "è" character. I want to test this variable value with an if condition, but my "è" character isn't read by my script, it's read as "xE8", the unicode. How can i test my variable value with this "è" character? [10:23:45]
+2016-11-02 00:56:14	mar77i	[10:24:02] Darby_Crash: and actually, this can be reduced further, because you don't need any arrays. [10:24:02]
+2016-11-02 00:56:14	mar77i	[10:27:11] Darby_Crash: close enough? https://clbin.com/zD0nt [10:27:11]
+2016-11-02 00:56:14	checkbot	[10:27:11] mar77i: I think the problem is on line 19. 1 was modified in a subshell. That change might be lost. (4 issue(s) found by http://shellcheck.net ). [10:27:11]
+2016-11-02 00:56:14	mar77i	[10:30:21] checkbot: ah, remove the quotes in $(( )), then it runs [10:30:21]
+2016-11-02 00:56:14	checkbot	[10:30:21] mar77i: Use !checkbot for info/triggers, /msg checkbot quiet for stfu, or http://shellcheck.net for a web interface. [10:30:21]
+2016-11-02 00:56:14	mar77i	[10:30:43] :D [10:30:43]
+2016-11-02 00:56:14	mar77i	[10:30:53] Darby_Crash: ah, remove the quotes in $(( )), then it runs [10:30:53]
+2016-11-02 00:56:14	Darby_Crash	[10:31:17] mar77i, i have do it but the result is wrong [10:31:17]
+2016-11-02 00:56:14	mar77i	[10:31:37] yes, it is. [10:31:37]
+2016-11-02 00:56:14	Akee	[10:49:21] Hi ! I've got this command : openssl rand -hex 8 #outputs bd71f01857a9bb7b and I would like to format the output to bd:71:f0:18:57:a9:bb:7b instead : is there a nice way to do so ? [10:49:21]
+2016-11-02 00:56:14	timvisher	[10:55:07] # sed 's/\(..\)/\1:/g' <<<'aabbccddee' | sed 's/:$//' [10:55:07]
+2016-11-02 00:56:14	shbot2	[10:55:09] timvisher: aa:bb:cc:dd:ee [10:55:09]
+2016-11-02 00:56:14	timvisher	[10:55:15] i don't know if that qualifies as nice :P [10:55:15]
+2016-11-02 00:56:14	timvisher	[10:55:46] Akee: ^ [10:55:46]
+2016-11-02 00:56:14	***	Playback Complete.
+2016-11-02 00:56:44	<--	corsibu (~corsibu@171.20.68.68) has quit (Remote host closed the connection)
+2016-11-02 00:57:18	-->	corsibu (~corsibu@171.20.68.68) has joined #bash
+2016-11-02 00:57:18	--	Channel created on Sat, 25 Nov 2006 20:42:44
+2016-11-02 00:57:49	<--	logan_e__ (uid164592@gateway/web/irccloud.com/x-ozjovjidufrvkxso) has quit (Quit: Connection closed for inactivity)
+2016-11-02 00:57:51	-->	quazimodo (~quazimodo@155.143.14.28) has joined #bash
+2016-11-02 00:59:09	<--	d0nn1e (~d0nn1e@cpe-104-138-218-156.triad.res.rr.com) has quit (Ping timeout: 260 seconds)
+2016-11-02 00:59:17	timvisher	isn't here some way to get shbot to send mention the intended user?
+2016-11-02 00:59:47	Akee	nice, thank's timvisher
+2016-11-02 00:59:52	izalove	# echo timvisher no there's no way
+2016-11-02 00:59:58	-->	jackbrown (~se@unaffiliated/jackbrown) has joined #bash
+2016-11-02 00:59:59	timvisher	lolz
+2016-11-02 00:59:59	shbot2	izalove: Missing terminating quote, bracket or keyword
+2016-11-02 01:00:03	-->	heurist_ (heurist@unaffiliated/heurist) has joined #bash
+2016-11-02 01:00:06	 *	izalove is stupid
+2016-11-02 01:00:12	<--	heurist`_ (heurist@unaffiliated/heurist) has quit (Ping timeout: 244 seconds)
+2016-11-02 01:00:26	Akee	# echo "Thank's timvisher"
+2016-11-02 01:00:27	shbot2	Akee: Thank's timvisher
+2016-11-02 01:00:59	-->	d0nn1e (~d0nn1e@cpe-104-138-218-156.triad.res.rr.com) has joined #bash
+2016-11-02 01:01:06	Danny_B	hi. i'd need to edit the file with sed but keep its timestamp. i haven't find any switch for sed to do that, so i assume i'll need bash script, but idk neither how to get nor to set the timestamp... thanks for help
+2016-11-02 01:01:35	timvisher	0_o
+2016-11-02 01:01:36	<--	corsibu (~corsibu@171.20.68.68) has quit (Ping timeout: 260 seconds)
+2016-11-02 01:02:02	izalove	Danny_B: sed is actually writing to a temp file, and then renaming it to the name of the original file
+2016-11-02 01:02:19	timvisher	you could probably just touch the file afterwards with the original time stamp
+2016-11-02 01:02:20	izalove	so it's literally doing this    sed '...' <file >tmp; mv tmp file
+2016-11-02 01:02:48	Danny_B	timvisher: mind to elaborate a bit, pls?
+2016-11-02 01:02:49	-->	chishiki (~chishiki@unaffiliated/chishiki) has joined #bash
+2016-11-02 01:03:21	<--	sqz (~sqz@243-231-47-212.rev.cloud.scaleway.com) has quit (Remote host closed the connection)
+2016-11-02 01:03:53	timvisher	Danny_B: i've never done so but it looks like touch has an `-m` and `-d` flag that lets you specify a date other than now and change the mtime to that.
+2016-11-02 01:04:08	timvisher	Danny_B: http://pubs.opengroup.org/onlinepubs/9699919799/utilities/touch.html
+2016-11-02 01:04:44	timvisher	oh you can also use a reference file
+2016-11-02 01:04:46	timvisher	with -r
+2016-11-02 01:05:05	timvisher	so you could maybe use the `-i.bak` option for sed and then touch the new file with `foo.bak`?
+2016-11-02 01:05:17	timvisher	(somebody stop me if i'm spouting nonesense :P)
+2016-11-02 01:05:24	timvisher	nonsense*
+2016-11-02 01:05:36	<--	rofogo (~Unknown@117.195.227.21) has left #bash
+2016-11-02 01:05:37	Danny_B	so touch -r old new ?
+2016-11-02 01:06:04	Danny_B	(where old == original.bak)
+2016-11-02 01:06:12	timvisher	i guess
+2016-11-02 01:06:20	timvisher	like i said i've never done so but that's my read of the man page :)
+2016-11-02 01:06:43	Akee	Well, I believe that you cannot force a file's attributes with past times
+2016-11-02 01:06:54	timvisher	oh so you can only go future?
+2016-11-02 01:06:58	<--	The-Bat (~karthik@122.15.255.69) has quit (Quit: Konversation terminated!)
+2016-11-02 01:07:04	Akee	unless you change the system's date and restore it after I guess
+2016-11-02 01:07:36	Akee	that's just a distant memory, I remember searching this kind of stuff once and I think that's the conclusion I got then
+2016-11-02 01:08:05	Danny_B	timvisher: works
+2016-11-02 01:08:39	Akee	well, I searched wrong the first time, good to know then ! sorry for misleading you then
+2016-11-02 01:08:54	timvisher	yeah works for me :P
+2016-11-02 01:09:02	timvisher	but gods why would you want to do this? :\
+2016-11-02 01:09:52	-->	b3h3m0th (uid26288@gateway/web/irccloud.com/x-rdphrawhutxwcvch) has joined #bash
+2016-11-02 01:12:17	-->	DirtyCajun (~DirtyCaju@24-155-65-144.dyn.grandenetworks.net) has joined #bash
+2016-11-02 01:12:17		[01:12]
+2016-11-02 01:12:31	<--	hyphenated (~hyphenate@103.26.17.55) has quit (Quit: hyphenated)
+2016-11-02 01:12:38	-->	spine55 (~spine@ip68-108-246-161.sb.sd.cox.net) has joined #bash
+2016-11-02 01:12:56	Danny_B	got some logs which i need to clean out of crap but need to preserve when they were last used (in a nutshell)
+2016-11-02 01:14:06	timvisher	best of luck then :)
+2016-11-02 01:17:28	<--	spine55 (~spine@ip68-108-246-161.sb.sd.cox.net) has quit (Ping timeout: 260 seconds)
+2016-11-02 01:17:45	<--	`Cam (~textual@220-245-59-146.tpgi.com.au) has quit (Quit: ZZZ)
+2016-11-02 01:18:43	-->	JeanCarloMachado (~jean@201-25-18-112.paemt704.dsl.brasiltelecom.net.br) has joined #bash
+2016-11-02 01:18:47	-->	xaa (~xaa@2a02:a03f:6f:3c00:4497:17fe:84d7:bb49) has joined #bash
+2016-11-02 01:19:01	<--	alcohol (~alcohol@unaffiliated/alcohol) has quit (Quit: brb)
+2016-11-02 01:20:50	-->	alcohol (~alcohol@unaffiliated/alcohol) has joined #bash
+2016-11-02 01:20:59	-->	KodingKitty (~chatzilla@140.101.159.249) has joined #bash
+2016-11-02 01:21:07	-->	_mirko_ (~mirko@unaffiliated/-mirko-/x-2946915) has joined #bash
+2016-11-02 01:21:16	KodingKitty	hi, I'm trying to write a bash script to select correct JDK path.
+2016-11-02 01:21:35	KodingKitty	I have /usr/lib/jvm/java-6-openjdk-common
+2016-11-02 01:21:35	timvisher	KodingKitty: what os?
+2016-11-02 01:21:39	KodingKitty	linux.
+2016-11-02 01:21:44	timvisher	what distro?
+2016-11-02 01:21:53	KodingKitty	independent for distributions,
+2016-11-02 01:21:55	KodingKitty	that's the challenge.
+2016-11-02 01:22:13	KodingKitty	I've used the wildcard /usr/libjvm/java-6-openjdk-*
+2016-11-02 01:22:14	timvisher	does every distro have an equivalent of update-alternatives? :)
+2016-11-02 01:22:37	KodingKitty	how could I exclude 'common' from 'amd64' ?
+2016-11-02 01:22:57	KodingKitty	for jdk_dir in $sub_dir/java-6-openjdk-* ; do
+2016-11-02 01:23:20	KodingKitty	but it includes the /usr/lib/jvm/java-6-openjdk-common,
+2016-11-02 01:23:31	KodingKitty	so any idea how could I exclude it ?
+2016-11-02 01:23:46	-->	nihilNihil (~gangalo@unaffiliated/gangalo) has joined #bash
+2016-11-02 01:23:53	-->	myhau (~myhau@host-94-251-132-31.dynamic.mm.pl) has joined #bash
+2016-11-02 01:24:07	<--	nihilNihil (~gangalo@unaffiliated/gangalo) has left #bash ("Leaving")
+2016-11-02 01:24:15	timvisher	# echo KodingKitty; touch charnock-common charnock-amd64; echo *-!(common)
+2016-11-02 01:24:18	shbot2	timvisher: KodingKitty
+2016-11-02 01:24:18	shbot2	timvisher: charnock-amd64
+2016-11-02 01:24:32	timvisher	that requires extglob to be on
+2016-11-02 01:24:59	KodingKitty	I'm confused timvisher
+2016-11-02 01:25:08	timvisher	about what?
+2016-11-02 01:25:18	KodingKitty	about the wildcard.
+2016-11-02 01:25:25	timvisher	which part of it? :)
+2016-11-02 01:25:35	KodingKitty	*-!(common)
+2016-11-02 01:26:13	-->	rominronin (~rominroni@212.186.112.18) has joined #bash
+2016-11-02 01:26:19	timvisher	i'm not sure what to say. can you elaborate?
+2016-11-02 01:26:40	<--	netmancer (~netmancer@ulrik.uio.no) has quit (Remote host closed the connection)
+2016-11-02 01:26:48	KodingKitty	# echo KodingKitty; touch charnock-common charnock-amd64; echo *-!(common)
+2016-11-02 01:26:49	shbot2	KodingKitty: KodingKitty
+2016-11-02 01:26:50	shbot2	KodingKitty: charnock-amd64
+2016-11-02 01:27:20	timvisher	are you confused why it only echos `charnock-amd64`?
+2016-11-02 01:27:20		[01:27]
+2016-11-02 01:27:24	-->	KindOne_ (kindone@freenude/topless/kindone) has joined #bash
+2016-11-02 01:27:35	 *	timvisher wonders if echoes is actually the correct spelling
+2016-11-02 01:28:48	timvisher	KodingKitty: in general everything i know about globs i learned from http://mywiki.wooledge.org/BashGuide/Patterns
+2016-11-02 01:29:09	<--	Munt (~Munt@unaffiliated/munt) has quit (Ping timeout: 244 seconds)
+2016-11-02 01:30:04	<--	KindOne (kindone@freenude/topless/kindone) has quit (Ping timeout: 245 seconds)
+2016-11-02 01:31:42	-->	sqz (~sqz@243-231-47-212.rev.cloud.scaleway.com) has joined #bash
+2016-11-02 01:31:43	--	KindOne_ is now known as KindOne
+2016-11-02 01:35:57	-->	phorloop (~phorloop@203.213.239.151) has joined #bash
+2016-11-02 01:37:53	<--	jfmcarreira (~jfmcarrei@unaffiliated/jfmcarreira) has quit (Ping timeout: 260 seconds)
+2016-11-02 01:39:02	-->	a3Dman (~3Dman@unaffiliated/a3dman) has joined #bash
+2016-11-02 01:39:35	-->	jfmcarreira (~jfmcarrei@2001:8a0:f28d:f01:ba27:ebff:fe6e:8b21) has joined #bash
+2016-11-02 01:39:36	<--	jfmcarreira (~jfmcarrei@2001:8a0:f28d:f01:ba27:ebff:fe6e:8b21) has quit (Changing host)
+2016-11-02 01:39:36	-->	jfmcarreira (~jfmcarrei@unaffiliated/jfmcarreira) has joined #bash
+2016-11-02 01:39:57	-->	pobrema (~moby@189-105-251-179.user.veloxzone.com.br) has joined #bash
+2016-11-02 01:40:13	<--	gtristan (~tristanva@114.207.54.40) has quit (Ping timeout: 260 seconds)
+2016-11-02 01:40:17	-->	corsibu (~corsibu@171.20.68.68) has joined #bash
+2016-11-02 01:40:37	-->	wonderworld (~ww@ip-176-198-197-145.hsi05.unitymediagroup.de) has joined #bash
+2016-11-02 01:40:45	-->	draco_kun (~draco_kun@170.210.83.36) has joined #bash
+2016-11-02 01:41:42	-->	somis (~somis@149.56.153.177) has joined #bash
+2016-11-02 01:44:08	geirha	alternatively, you can skip it inside the loop
+2016-11-02 01:44:08		[01:44]
+2016-11-02 01:44:20	<--	shesmu (~shesmu@d24-150-190-228.home.cgocable.net) has quit (Remote host closed the connection)
+2016-11-02 01:44:41	-->	anyofyou (~anyofyou@103.208.85.158) has joined #bash
+2016-11-02 01:44:52	geirha	for jdk_dir in "$sub_dir"/java-6-openjdk-*; do [[ $jdk_dir = *-common ]] && continue; printf 'Do stuff with %s\n' "$jdk_dir"; done
+2016-11-02 01:46:17	<--	KodingKitty (~chatzilla@140.101.159.249) has quit (Ping timeout: 260 seconds)
+2016-11-02 01:46:18	<--	CurryWurst (~CurryWurs@2001:1b48:203::1:1000) has quit (Ping timeout: 245 seconds)
+2016-11-02 01:47:41	<--	jeffreylevesque (~chatzilla@pool-100-15-106-25.washdc.fios.verizon.net) has quit (Ping timeout: 260 seconds)
+2016-11-02 01:47:41	<--	m4n (~jemshad@115.254.119.194) has quit (Ping timeout: 265 seconds)
+2016-11-02 01:48:08	<--	cdg (~cdg@2602:30a:2e2d:b980:2559:4689:4823:a88b) has quit (Remote host closed the connection)
+2016-11-02 01:50:01	<--	anyofyou (~anyofyou@103.208.85.158) has quit (Ping timeout: 260 seconds)
+2016-11-02 01:50:21	scrimple	anyone able to help me work out the syntax for a negative sed line deletion?
+2016-11-02 01:50:36	mute	there's a ##sed i think but also
+2016-11-02 01:50:38	mute	!ask
+2016-11-02 01:50:38	greybot	If you have a question, please just ask it. Don't look for topic experts. Don't ask to ask. Don't PM! Don't ask if people are awake, or in the mood to help. Just ask the question straight out, and be patient waiting for an answer. http://mywiki.wooledge.org/NetEtiquette
+2016-11-02 01:50:57	scrimple	thanks mute ; just tired
+2016-11-02 01:51:10	<--	deekej (deekej@nat/redhat/x-zycbxchejcuuqbmg) has quit (Remote host closed the connection)
+2016-11-02 01:51:22	scrimple	so I've got this line which removes all nine-digit strings from a list: sed '/^\([0-9]\{9\}\)$/d'
+2016-11-02 01:52:21	scrimple	I'm trying to reverse it, and get *only* the nine-digit strings from the list. I've seend a lot of notes on forward-matching but can't quite get anything to work (the escapes and multiple nested parens are driving me nuts)
+2016-11-02 01:53:39	mute	i'm no sed expert but in my mine, we're looking for lines with those, and then substituting it to just that number, yea?
+2016-11-02 01:53:58	mute	so like, sed 's/.*\(digitsthinghere\).*/\1/p'
+2016-11-02 01:54:04	mute	er, sed -n
+2016-11-02 01:55:37	-->	vinrock (~vin@unaffiliated/vinrock) has joined #bash
+2016-11-02 01:56:06	scrimple	mute: no; not substituting but instead deleting (with /d syntax)
+2016-11-02 01:56:51	<--	corsibu (~corsibu@171.20.68.68) has quit (Remote host closed the connection)
+2016-11-02 01:57:23	-->	corsibu (~corsibu@171.20.68.68) has joined #bash
+2016-11-02 01:57:28	mute	uh, show me an example of a line and your expected output
+2016-11-02 01:57:50	-->	dchapman (~neo@unaffiliated/dchapman) has joined #bash
+2016-11-02 01:58:52	-->	Filystyn (~piotr@unaffiliated/filystyn) has joined #bash
+2016-11-02 02:00:12	mute	because the opposite of delete is print
+2016-11-02 02:00:12		[02:00]
+2016-11-02 02:00:28	-->	skweek (~skweek@2607:fe50:0:810b:85d2:64ff:7360:86ec) has joined #bash
+2016-11-02 02:01:11	dchapman	I'd like to reduce user errors when using rm. I tried: alias rmi='rm -I' in .bashrc. When I use the command, I get rm: cannot remove '–I': No such file or directory. What am I doing wrong?
+2016-11-02 02:01:37	<--	corsibu (~corsibu@171.20.68.68) has quit (Ping timeout: 252 seconds)
+2016-11-02 02:02:03	geirha	you need to use ascii characters
+2016-11-02 02:02:08	-->	cisstrd (~cisstrd@unaffiliated/cisstrd) has joined #bash
+2016-11-02 02:02:17	-->	CurryWurst (~CurryWurs@2001:1b48:203::1:1000) has joined #bash
+2016-11-02 02:02:33	scrimple	mute: http://pastebin.com/8pBT3S1u
+2016-11-02 02:02:33	pasteban	Paste is available without ads on http://pastebin.com/raw?i=8pBT3S1u
+2016-11-02 02:03:23	-->	synthroid (~synthroid@50.202.5.122) has joined #bash
+2016-11-02 02:03:42	geirha	dchapman: – and - are completely different characters as far as rm is concerned. It only considers arguments starting with the latter when looking for options
+2016-11-02 02:04:24	<--	_ADN_ (~ADN@host81-158-143-101.range81-158.btcentralplus.com) has quit (Ping timeout: 268 seconds)
+2016-11-02 02:04:41	mute	scrimple: sed -n means don't print, then change your d to p
+2016-11-02 02:04:44	mute	that's one solution
+2016-11-02 02:05:01	dchapman	geirha: It's actually just a regular dash - in bashrc. The output is making it a long dash for some reason.
+2016-11-02 02:05:33	<--	phorloop (~phorloop@203.213.239.151) has quit (Quit: My laptop go to sleep. ZZZzzz…)
+2016-11-02 02:06:12	mute	scrimple: sed '/^\([0-9]\{9\}\)$/!d' i think is another
+2016-11-02 02:06:17	geirha	dchapman: what does this output?   alias -p rmi | od -An -ctx1
+2016-11-02 02:06:19	-->	synthroi_ (~synthroid@gateway/vpn/privateinternetaccess/synthroid) has joined #bash
+2016-11-02 02:07:55	geirha	err, I guess without the -p
+2016-11-02 02:08:13	-->	MaxFrost (~MaxFrost@2601:444:0:1f4f:5457:b0f4:df43:9b58) has joined #bash
+2016-11-02 02:08:40	geirha	So:  alias rmi | od -An -ctx1
+2016-11-02 02:08:48	<--	draco_kun (~draco_kun@170.210.83.36) has quit (Quit: draco_kun)
+2016-11-02 02:08:55	dchapman	geirha: Heh, ok one sec. Was about to paste it.
+2016-11-02 02:08:55	<--	synthroid (~synthroid@50.202.5.122) has quit (Ping timeout: 244 seconds)
+2016-11-02 02:09:28	-->	draco_kun (~draco_kun@170.210.83.36) has joined #bash
+2016-11-02 02:09:38	geirha	I didn't expect alias -p rmi  to print all alias in addition to printing the rmi a second time. Somewhat inconsistent with other bash builtins
+2016-11-02 02:09:44	dchapman	geirha: http://paste.ubuntu.com/23415835/
+2016-11-02 02:10:19	geirha	hm, yeah, that's all ascii
+2016-11-02 02:10:22	-->	heurist`_` (heurist@unaffiliated/heurist) has joined #bash
+2016-11-02 02:10:31	-->	troulouliou_div2 (~troulouli@41.159.11.107) has joined #bash
+2016-11-02 02:10:37	geirha	so perhaps rm in turn is overridden. What does ''type rm'' output?
+2016-11-02 02:10:43	<--	quazimodo (~quazimodo@155.143.14.28) has quit (Ping timeout: 250 seconds)
+2016-11-02 02:10:43	<--	troulouliou_div2 (~troulouli@41.159.11.107) has quit (Changing host)
+2016-11-02 02:10:43	-->	troulouliou_div2 (~troulouli@unaffiliated/troulouliou-div2/x-0271439) has joined #bash
+2016-11-02 02:10:57	-->	johnmilton (~johnmilto@static-47-206-47-42.mias.fl.frontiernet.net) has joined #bash
+2016-11-02 02:11:00	dchapman	rm is /bin/rm
+2016-11-02 02:11:16	scrimple	mute: ahhh i get it - that's quite clever, didn't think of that
+2016-11-02 02:11:19	scrimple	thanks
+2016-11-02 02:11:40	scrimple	just goest to show it's easy to get hung up on the regexes themselves
+2016-11-02 02:11:43	<--	jozwior (~jozwior@213.189.47.210) has quit (Ping timeout: 245 seconds)
+2016-11-02 02:12:10	<--	heurist_ (heurist@unaffiliated/heurist) has quit (Ping timeout: 250 seconds)
+2016-11-02 02:12:33	-->	CubiK (~CubiK@unaffiliated/cubik) has joined #bash
+2016-11-02 02:12:41	geirha	dchapman: Odd. I don't see what could cause that issue then
+2016-11-02 02:12:57	<--	smiche (~smichess@mobile-access-5d6af8-15.dhcp.inet.fi) has quit (Remote host closed the connection)
+2016-11-02 02:13:59	dchapman	geirha: All right, thanks. I'll try some other chans I suppose.
+2016-11-02 02:14:05	-->	CTC2 (~Dan@5-14-89-19.residential.rdsnet.ro) has joined #bash
+2016-11-02 02:15:28	CTC2	Hello. I'm trying to make a script that compares some filesizes. I use "if [[ $backupFacut < 890 || $backupHDDused < 890 ]]; then", but when the values of a variable go over 999, it takes on ~then~ route. Any thoughts ?
+2016-11-02 02:15:28		[02:15]
+2016-11-02 02:16:33	-->	quazimodo (~quazimodo@155.143.14.28) has joined #bash
+2016-11-02 02:17:03	-->	phorloop (~phorloop@203.213.239.151) has joined #bash
+2016-11-02 02:17:42	-->	kenden (~dsps@79-67-134-135.dynamic.dsl.as9105.com) has joined #bash
+2016-11-02 02:18:03	-->	sobersocialist (~Instantbi@c-71-225-45-121.hsd1.pa.comcast.net) has joined #bash
+2016-11-02 02:18:41	geirha	dchapman: Yeah, from bash's perspective, rm should be getting the right option, so next step would be to figure out why /bin/rm somehow converts it to a unicode string, and treats it as a file
+2016-11-02 02:19:16	dchapman	geirha: Thanks, that's a direction to look into at least.
+2016-11-02 02:19:18	geirha	dchapman: Wait, hang on, could there be a file named –I in the directory where you're trying to remove something?
+2016-11-02 02:19:54	mute	maybe you don't have GNU
+2016-11-02 02:20:16	geirha	still, it should have given a message about invalid option if it wasn't GNU
+2016-11-02 02:20:19	dchapman	geirha: Nah. Standard dir, standard files.
+2016-11-02 02:22:22	dchapman	geirha: Using the command without the alias works. So rm is functioning fine on it's own.
+2016-11-02 02:23:25	-->	ag4ve_ (~ag4ve@c-68-33-74-186.hsd1.md.comcast.net) has joined #bash
+2016-11-02 02:24:22	-->	The_Loko (~The_Loko@204.209.222.87.dynamic.jazztel.es) has joined #bash
+2016-11-02 02:25:34	geirha	if you type   rmi somefile   without hitting enter, but instead hit Ctrl+Alt+e, do you see the -I correctly?
+2016-11-02 02:25:58	dchapman	geirha: Thinking this is my fault. To double check I just $ source ~/.bashrc, and now it's working. I swear I sourced it before, but perhaps I didn't. Sorry about this.
+2016-11-02 02:26:18	geirha	Ah, well at least there's a rational explanation then :)
+2016-11-02 02:26:47	dchapman	geirha: But it was still processing it as though it read .bashrc, because it was running the alias command. Just incorrectly.
+2016-11-02 02:27:02	-->	jeffreylevesque (~chatzilla@129.6.45.20) has joined #bash
+2016-11-02 02:28:04	geirha	sounds like you either copy/pasted the alias into that session, causing the -I to get changed underway, or that it sourced .bashrc at a time where the alias was wrong in .bashrc
+2016-11-02 02:29:06	geirha	maybe copy/pasted via some web page or fancy editor ..?
+2016-11-02 02:29:37	dchapman	geirha: Oh good God no. I use vim, and typed it by hand. Thinking just random user error.
+2016-11-02 02:30:23	BenA	Don't assign to thingy what can easily be explained by dodah.
+2016-11-02 02:30:30	BenA	Etc.
+2016-11-02 02:30:30		[02:30]
+2016-11-02 02:31:32	-->	uranellus (~alexander@srv1.bnc.dus.cuegee.net) has joined #bash
+2016-11-02 02:31:32	<--	uranellus (~alexander@srv1.bnc.dus.cuegee.net) has quit (Changing host)
+2016-11-02 02:31:32	-->	uranellus (~alexander@unaffiliated/uranellus) has joined #bash
+2016-11-02 02:32:40	<--	riemann (~riemann@ip-222-88.ists.pl) has quit (Quit: Leaving)
+2016-11-02 02:34:49	-->	thesha (~thesha@124.40.246.86) has joined #bash
+2016-11-02 02:36:05	-->	bapun (~bapun@103.14.197.66) has joined #bash
+2016-11-02 02:36:18	<--	cisstrd (~cisstrd@unaffiliated/cisstrd) has quit (Ping timeout: 245 seconds)
+2016-11-02 02:36:24	<--	jackbrown (~se@unaffiliated/jackbrown) has quit (Ping timeout: 260 seconds)
+2016-11-02 02:36:33	<--	desultory (~desultory@gentoo/developer/desultory) has quit (Quit: leaving)
+2016-11-02 02:37:49	<--	MaxFrost (~MaxFrost@2601:444:0:1f4f:5457:b0f4:df43:9b58) has quit (Quit: Going offline, see ya! (www.adiirc.com))
+2016-11-02 02:37:52	<--	jfr (~Johnny@dlgw.dlsoftware.fi) has quit (Quit: leaving)
+2016-11-02 02:38:17	<--	dinfuehr (~dinfuehr@91-115-15-194.adsl.highway.telekom.at) has quit (Ping timeout: 252 seconds)
+2016-11-02 02:38:21	-->	cdg (~cdg@2602:30a:2e2d:b980:19ae:45f7:2039:71d3) has joined #bash
+2016-11-02 02:38:39	-->	jozwior (~jozwior@213.189.47.210) has joined #bash
+2016-11-02 02:38:45	<--	CTC2 (~Dan@5-14-89-19.residential.rdsnet.ro) has left #bash ("Leaving")
+2016-11-02 02:38:55	-->	dinfuehr (~dinfuehr@178-190-107-211.adsl.highway.telekom.at) has joined #bash
+2016-11-02 02:39:45	<--	pandaadb (~pandaadb@94.198.186.66) has quit (Ping timeout: 252 seconds)
+2016-11-02 02:40:00	<--	phorloop (~phorloop@203.213.239.151) has quit (Quit: My laptop go to sleep. ZZZzzz…)
+2016-11-02 02:40:15	-->	pandaadb (~pandaadb@94.198.186.66) has joined #bash
+2016-11-02 02:41:43	<--	skweek (~skweek@2607:fe50:0:810b:85d2:64ff:7360:86ec) has quit (Ping timeout: 245 seconds)
+2016-11-02 02:42:08	timvisher	is there a faq page about useless uses of cat?
+2016-11-02 02:42:22	-->	ych (~horrror@46-116-60-237.bb.netvision.net.il) has joined #bash
+2016-11-02 02:42:29	-->	Soda (~user@31.40.42.31) has joined #bash
+2016-11-02 02:43:06	geirha	!uuoc
+2016-11-02 02:43:06	greybot	Useless Use of Cat (cat foo | grep bar). See http://www.iki.fi/era/unix/award.html#cat
+2016-11-02 02:43:16	geirha	no, but there's that award
+2016-11-02 02:46:19	-->	anyofyou (~anyofyou@103.208.85.158) has joined #bash
+2016-11-02 02:46:19		[02:46]
+2016-11-02 02:46:55	<--	ProfessorKaos64 (~mikeyd@216.49.14.203.res-cmts.pnt.ptd.net) has quit (Remote host closed the connection)
+2016-11-02 02:47:46	<--	enki (~enki@dynamic-78-30-156-107.adsl.eunet.rs) has quit (Read error: Connection reset by peer)
+2016-11-02 02:48:17	-->	jackbrown (~se@unaffiliated/jackbrown) has joined #bash
+2016-11-02 02:48:23	-->	enki (~enki@dynamic-78-30-156-107.adsl.eunet.rs) has joined #bash
+2016-11-02 02:48:34	-->	skweek (~skweek@2607:fe50:0:810b:85d2:64ff:7360:86ec) has joined #bash
+2016-11-02 02:50:39	<--	kenden (~dsps@79-67-134-135.dynamic.dsl.as9105.com) has quit (Ping timeout: 268 seconds)
+2016-11-02 02:51:44	<--	anyofyou (~anyofyou@103.208.85.158) has quit (Ping timeout: 260 seconds)
+2016-11-02 02:52:36	<--	xall (~xall@ppp-115-87-132-192.revip4.asianet.co.th) has quit (Ping timeout: 256 seconds)
+2016-11-02 02:53:57	<--	friedrich (~friedrich@aextron.de) has quit (Ping timeout: 260 seconds)
+2016-11-02 02:54:02	<--	clopez (~tau@neutrino.es) has quit (Ping timeout: 250 seconds)
+2016-11-02 02:54:28	-->	ritztech (~ritztech@69.194.133.98) has joined #bash
+2016-11-02 02:55:15	-->	clopez (~tau@neutrino.es) has joined #bash
+2016-11-02 02:57:31	<--	subhead (~subhead@109.235.42.45) has quit
+2016-11-02 02:57:49	-->	subhead (~subhead@109.235.42.45) has joined #bash
+2016-11-02 02:58:34	<--	Sango (~kvirc@10.230-227-89.dsl.completel.net) has quit (Quit: KVIrc 4.2.0 Equilibrium http://www.kvirc.net/)
+2016-11-02 02:58:49	-->	tlaxkit (~Thunderbi@92.177.99.40) has joined #bash
+2016-11-02 02:59:41	<--	iliv (~iliv@93.77.152.230) has quit (Quit: Time to get some sleep... ZzZzZzZ)
+2016-11-02 02:59:53	-->	friedrich (~friedrich@aextron.de) has joined #bash
+2016-11-02 03:01:13	-->	Sango (~kvirc@10.230-227-89.dsl.completel.net) has joined #bash
+2016-11-02 03:01:49	-->	corsibu (~corsibu@171.20.68.68) has joined #bash
+2016-11-02 03:01:49		[03:01]
+2016-11-02 03:01:51	<--	corsibu (~corsibu@171.20.68.68) has quit (Remote host closed the connection)
+2016-11-02 03:02:28	-->	corsibu (~corsibu@171.20.68.68) has joined #bash
+2016-11-02 03:02:35	-->	Iridos (~iridos@unaffiliated/iridos) has joined #bash
+2016-11-02 03:05:11	-->	iliv (~iliv@93.77.152.230) has joined #bash
+2016-11-02 03:05:23	-->	And1 (fYRMsli0EE@monoceres.uberspace.de) has joined #bash
+2016-11-02 03:06:33	-->	pullphinger (~pullphing@12.40.23.68) has joined #bash
+2016-11-02 03:06:53	-->	oyes (~textual@72.35.67.10) has joined #bash
+2016-11-02 03:07:40	<--	cwillu (~cwillu@204-83-117-123.sktn.hsdb.sasknet.sk.ca) has quit (Quit: Leaving)
+2016-11-02 03:07:59	-->	cwillu (~cwillu@204-83-117-123.sktn.hsdb.sasknet.sk.ca) has joined #bash
+2016-11-02 03:08:25	And1	Dear folks, I might need some help, please. 'convert' from image gives me a lot of lines with x and y coordinates plus some color values. I would like to create a text files, were all values are sorted. ascending x values side by side, ascending y values one below the other … like seen here: http://lpaste.net/8330893603865886720
+2016-11-02 03:08:36	And1	I hope someone knows a smart command on how to achieve this. : )
+2016-11-02 03:08:59	And1	Maybe it can even be included in the while read line …
+2016-11-02 03:09:07	-->	dking_desktop (~danielk@vbo1.inmotionhosting.com) has joined #bash
+2016-11-02 03:10:50	<--	dking_desktop (~danielk@vbo1.inmotionhosting.com) has left #bash
+2016-11-02 03:11:13	And1	Where x and y are dynamic, depending on the image provided.
+2016-11-02 03:11:26	<--	ag4ve_ (~ag4ve@c-68-33-74-186.hsd1.md.comcast.net) has quit (Ping timeout: 244 seconds)
+2016-11-02 03:15:51	<--	diogenese (diogenese@diogenese.velotech.net) has quit (Remote host closed the connection)
+2016-11-02 03:16:27	-->	TanPy (~tanpy@tst-ext.thestreet.com) has joined #bash
+2016-11-02 03:16:47	<--	Laif (~mp@unaffiliated/laif) has quit (Quit: Leaving)
+2016-11-02 03:17:13	Uqbar	And1: sort -k could be the quickest way out. you'd sort over y ascending and then over x ascending. see man sort. I'm not sure all flavours of sort(1) support it, though.
+2016-11-02 03:17:13		[03:17]
+2016-11-02 03:19:03	<--	iliv (~iliv@93.77.152.230) has quit (Quit: Time to get some sleep... ZzZzZzZ)
+2016-11-02 03:20:20	-->	cymen_ (~simon2@squint.a-oben.org) has joined #bash
+2016-11-02 03:20:33	-->	WayToDoor (~milk.bott@193.55.29.169) has joined #bash
+2016-11-02 03:20:54	<--	f0g (~foggy@95.215.44.99) has quit (Ping timeout: 245 seconds)
+2016-11-02 03:21:12	<--	eduardas_m (~eduardas_@213.197.143.19) has quit (Ping timeout: 260 seconds)
+2016-11-02 03:21:46	-->	spine55 (~spine@ip68-108-246-161.sb.sd.cox.net) has joined #bash
+2016-11-02 03:22:23	-->	f0g (~foggy@176.223.111.92) has joined #bash
+2016-11-02 03:26:27	-->	biax (~biax@unaffiliated/biax) has joined #bash
+2016-11-02 03:27:40	flying	if -z what does it mean ?
+2016-11-02 03:28:10	--	kurahaupo__ is now known as kurahaupo
+2016-11-02 03:28:18	-->	AquaL1te_ (~AquaL1te@unaffiliated/aqual1te) has joined #bash
+2016-11-02 03:28:18	<--	chowbok (~chowbok@207-181-255-76.c3-0.lem-ubr1.chi-lem.il.cable.rcn.com) has quit (Ping timeout: 256 seconds)
+2016-11-02 03:29:00	<--	AquaL1te (~AquaL1te@unaffiliated/aqual1te) has quit (Ping timeout: 244 seconds)
+2016-11-02 03:29:11	go|dfish	# help test | grep -- -z
+2016-11-02 03:29:13	shbot2	go|dfish:       -z STRING      True if string is empty.
+2016-11-02 03:30:02	kurahaupo	flying: depends on the context. might mean compressed with gzip. might mean nul-terminated records rather than lines of text. might mean zero length
+2016-11-02 03:30:21	kurahaupo	flying: what is the context?
+2016-11-02 03:31:04	kurahaupo	flying: hint "if" is not a context; but "test" is a context
+2016-11-02 03:31:18	<--	mgraff (~mgraff@iv2-technologies-gw1.ter1.prb.par.cust.as8218.eu) has quit (Quit: Bye !)
+2016-11-02 03:31:43	-->	mgraff (~mgraff@iv2-technologies-gw1.ter1.prb.par.cust.as8218.eu) has joined #bash
+2016-11-02 03:31:46	kurahaupo	!if[ > flying
+2016-11-02 03:31:46	greybot	flying: [ is NOT part of the `if' syntax. It's a normal, ordinary COMMAND, like grep and rm. Like `if grep ..', `if [' just checks its exit status. And just like `ifgrep`, `if[` is wrong. http://mywiki.wooledge.org/BashGuide/TestsAndConditionals
+2016-11-02 03:32:08	<--	hs0ucy (~hs0ucy@68.67.45.242) has quit (Ping timeout: 245 seconds)
+2016-11-02 03:32:12	ghoti	And1: do you have a solution to your text processing question yet?
+2016-11-02 03:32:37	kurahaupo	# type -p [
+2016-11-02 03:32:37		[03:32]
+2016-11-02 03:32:39	shbot2	kurahaupo: no output
+2016-11-02 03:32:41	<--	sujeet (sujeet@unaffiliated/freeboson) has quit (Ping timeout: 260 seconds)
+2016-11-02 03:32:46	<--	xchasdsfsd (~x@unaffiliated/sdfgsdfg) has quit (Quit: xchasdsfsd)
+2016-11-02 03:33:05	-->	psynor (~patrick.s@69-39-85-101.static.123.net) has joined #bash
+2016-11-02 03:33:05	kurahaupo	# type [ # I was expecting /bin/[
+2016-11-02 03:33:07	shbot2	kurahaupo: [ is a shell builtin
+2016-11-02 03:33:31	-->	nikivi (~nikivi@wlan-200200.nbw.tue.nl) has joined #bash
+2016-11-02 03:33:53	-->	elcoc0 (~elcoc0@ns321551.ip-94-23-9.eu) has joined #bash
+2016-11-02 03:34:14	<--	jackbrown (~se@unaffiliated/jackbrown) has quit (Ping timeout: 245 seconds)
+2016-11-02 03:34:14	psynor	what is the proper way to use variables in a single quoted parameter of a command in a bash script?  e.g. perl -pi -e 's~$var1~$var2~g' /path/to/file
+2016-11-02 03:34:48	ghoti	psynor: for your example, I'd suggest having perl reach into the environment (make sure the variables are exported of course).
+2016-11-02 03:35:08	ghoti	psynor: perl can do that in a number of ways -- you can start by looking up the %ENV variable.
+2016-11-02 03:35:16	-->	sujeet (sujeet@unaffiliated/freeboson) has joined #bash
+2016-11-02 03:35:21	<--	nikivi (~nikivi@wlan-200200.nbw.tue.nl) has quit (Client Quit)
+2016-11-02 03:35:24	-->	eduardas_m (~eduardas_@213.197.143.19) has joined #bash
+2016-11-02 03:36:15	psynor	there isn't a way to simple handle the variables within the string?
+2016-11-02 03:36:19	ghoti	psynor: alternately, you can switch from single quotes to double quotes, which will allow the variables to be expanded. But in either case, you'll want to check your variables for invalid/illegal characters before you use them this way.
+2016-11-02 03:36:41	llua	!bobby
+2016-11-02 03:36:41	greybot	http://xkcd.com/327/ ## http://mywiki.wooledge.org/BashWeaknesses ## Don't write database code in bash. Use perl, python, etc; any language with an appropriate library
+2016-11-02 03:37:16	-->	underpantz (~underpant@188.27.35.25) has joined #bash
+2016-11-02 03:37:16	ghoti	psynor: For example, what if $var1 contains a ~ character?
+2016-11-02 03:37:26	psynor	i understand that part
+2016-11-02 03:37:37	<--	pobrema (~moby@189-105-251-179.user.veloxzone.com.br) has quit (Quit: Leaving)
+2016-11-02 03:37:40	psynor	im just wondering about the right way to have the variables expanded in the string
+2016-11-02 03:38:02	ghoti	psynor: you didn't ask for the "right" way, you asked for a "simple" way.
+2016-11-02 03:38:11	psynor	yes
+2016-11-02 03:38:16	<--	WayToDoor (~milk.bott@193.55.29.169) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-11-02 03:38:24	ghoti	Hmm, actually, you did ask for the "proper" way. And after I suggested one, you asked for a "simple" way. Which do you want?
+2016-11-02 03:38:46	ghoti	Never mind, I've given you both.
+2016-11-02 03:38:49	-->	larryv (~larryv@wikipedia/larryv) has joined #bash
+2016-11-02 03:38:54	llua	shotgun loaded
+2016-11-02 03:38:55	 *	ghoti focuses on his coffee instead
+2016-11-02 03:38:55	psynor	i simply want to know how to expand a varible in the single quoted parameter of the perl line
+2016-11-02 03:39:03	-->	cdg_ (~cdg@162-226-219-152.lightspeed.tukrga.sbcglobal.net) has joined #bash
+2016-11-02 03:39:08	-->	troker (~troker@66.37.38.50) has joined #bash
+2016-11-02 03:39:27	-->	iliv (~iliv@93.77.152.230) has joined #bash
+2016-11-02 03:39:31	llua	you don't.
+2016-11-02 03:39:38	<--	cdg (~cdg@2602:30a:2e2d:b980:19ae:45f7:2039:71d3) has quit (Ping timeout: 245 seconds)
+2016-11-02 03:39:44	<--	larryv (~larryv@wikipedia/larryv) has left #bash
+2016-11-02 03:39:48	-->	kojiro (~ganryu@gentoo/contributor/kojiro) has joined #bash
+2016-11-02 03:40:19	ghoti	llua: are you looking for the perl equivalent to awk's `-v` option? What's wrong with pulling variables out of %ENV ?
+2016-11-02 03:40:26	kurahaupo	psynor: why must it be single quoted?
+2016-11-02 03:40:47	-->	WayToDoor (~milk.bott@193.55.29.169) has joined #bash
+2016-11-02 03:41:03	kurahaupo	psynor: (expanding variables is what double quotes are for)
+2016-11-02 03:41:14	<--	myhau (~myhau@host-94-251-132-31.dynamic.mm.pl) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-11-02 03:41:25	llua	why must injecting code into another interpreter not sound bat shit crazy?
+2016-11-02 03:41:51	psynor	it isnt necessary.  i just wasnt used to using double quotes in that context for the perl line
+2016-11-02 03:41:57	psynor	if i can do that it will be fine
+2016-11-02 03:41:58	<--	arooni (chasetoys@2600:3c00::f03c:91ff:fe3b:e418) has quit (Quit: ZNC - http://znc.in)
+2016-11-02 03:42:26	<--	thesha (~thesha@124.40.246.86) has quit (Ping timeout: 244 seconds)
+2016-11-02 03:42:34	-->	s7urmi (57894852@gateway/web/cgi-irc/kiwiirc.com/ip.87.137.72.82) has joined #bash
+2016-11-02 03:42:44	kurahaupo	llua: I'm just waiting for a solution that involves using sed to generate awk to generate shell, invoked over ssh...
+2016-11-02 03:43:11	ghoti	psynor:
+2016-11-02 03:43:12	ghoti	# export foo=BAR; perl -e 'print %ENV{"foo"} . "\n"'
+2016-11-02 03:43:14	shbot2	ghoti: bash: perl: command not found
+2016-11-02 03:43:19	ghoti	oh, bleah
+2016-11-02 03:43:24	ghoti	but you can test that yourself.
+2016-11-02 03:43:54	kurahaupo	ghoti: $ENV rather than %ENV
+2016-11-02 03:44:34	kurahaupo	ghoti: and the double quotes inside the {} are not needed
+2016-11-02 03:44:39	ghoti	kurahaupo: at the risk of being redirected to #perl, why?
+2016-11-02 03:45:13	kurahaupo	ghoti: the first, because you're extracting a scalar, not a whole hash
+2016-11-02 03:45:18	<--	sujeet (sujeet@unaffiliated/freeboson) has quit (Ping timeout: 256 seconds)
+2016-11-02 03:45:28	<--	Nik05 (~Nik05@unaffiliated/nik05) has quit (Quit: Connection problems...)
+2016-11-02 03:45:32	ghoti	ah, so I'm wasting CPU by converting to a hash for the lookup?
+2016-11-02 03:45:32	<--	DeMiNe0 (~DeMiNe0@104.131.119.74) has quit (Ping timeout: 244 seconds)
+2016-11-02 03:45:42	ghoti	fair enough.
+2016-11-02 03:45:49	-->	Jolt2bolt (~Jolt2bolt@200.93.78.184) has joined #bash
+2016-11-02 03:46:02	kurahaupo	ghoti: the second, because there is implicit quoting of words used as keys both in {} and on the left of =>
+2016-11-02 03:46:14	<--	martinbjeldbak (~martin@188.226.252.120) has quit (Remote host closed the connection)
+2016-11-02 03:46:22	ghoti	I think I'll stick to bash and awk.
+2016-11-02 03:46:55	-->	Tanta (~tanta@50-201-37-70-static.hfc.comcastbusiness.net) has joined #bash
+2016-11-02 03:47:13	-->	sujeet (sujeet@unaffiliated/freeboson) has joined #bash
+2016-11-02 03:47:15	kurahaupo	ghoti: no, ENV is a hash alright, but the correct Perl syntax to extract an element from a hash is $hashvar{key}
+2016-11-02 03:47:33	ghoti	Huh. The other works too. Why?
+2016-11-02 03:47:46	-->	anyofyou (~anyofyou@103.208.85.158) has joined #bash
+2016-11-02 03:47:46		[03:47]
+2016-11-02 03:47:52	kurahaupo	ghoti: dwim
+2016-11-02 03:48:00	<--	taurgal (~taurgal@mac71-h01-31-33-31-250.dsl.sta.abo.bbox.fr) has quit (Ping timeout: 268 seconds)
+2016-11-02 03:48:03	-->	hs0ucy (~hs0ucy@68.67.45.242) has joined #bash
+2016-11-02 03:48:19	<--	s7urmi (57894852@gateway/web/cgi-irc/kiwiirc.com/ip.87.137.72.82) has left #bash
+2016-11-02 03:48:29	ghoti	kurahaupo: that's generous of it. thanks for the correction.
+2016-11-02 03:48:33	<--	kojiro (~ganryu@gentoo/contributor/kojiro) has quit (Quit: leaving)
+2016-11-02 03:48:41	kurahaupo	ghoti: it only works in recent versions of Perl
+2016-11-02 03:48:51	-->	kojiro (~ganryu@gentoo/contributor/kojiro) has joined #bash
+2016-11-02 03:49:00	<--	ych (~horrror@46-116-60-237.bb.netvision.net.il) has quit (Quit: My Mac has gone to sleep. ZZZzzz…)
+2016-11-02 03:49:15	<--	pullphinger (~pullphing@12.40.23.68) has quit
+2016-11-02 03:50:31	-->	arooni (chasetoys@2600:3c00::f03c:91ff:fe3b:e418) has joined #bash
+2016-11-02 03:50:53	-->	_ADN_ (~ADN@212.161.49.106) has joined #bash
+2016-11-02 03:51:58	<--	kojiro (~ganryu@gentoo/contributor/kojiro) has quit (Client Quit)
+2016-11-02 03:52:15	-->	kojiro (~ganryu@gentoo/contributor/kojiro) has joined #bash
+2016-11-02 03:52:38	-->	jfr (~Johnny@c3.ip19.netikka.fi) has joined #bash
+2016-11-02 03:53:08	<--	anyofyou (~anyofyou@103.208.85.158) has quit (Ping timeout: 250 seconds)
+2016-11-02 03:53:52	-->	mrwappie (c1acfd16@gateway/web/freenode/ip.193.172.253.22) has joined #bash
+2016-11-02 03:54:52	<--	nckpz (~nckpz@pool-71-190-162-82.nycmny.fios.verizon.net) has quit (Ping timeout: 250 seconds)
+2016-11-02 03:55:09	<--	jfr (~Johnny@c3.ip19.netikka.fi) has quit (Client Quit)
+2016-11-02 03:55:48	-->	momomo (~momomo@c213-89-26-80.bredband.comhem.se) has joined #bash
+2016-11-02 03:56:20	cymen_	Can I somehow rebind C-r so it will first do history -r?
+2016-11-02 03:56:29	-->	erliang (~erliang@61.190.213.226) has joined #bash
+2016-11-02 03:56:31	<--	erliang (~erliang@61.190.213.226) has quit (Max SendQ exceeded)
+2016-11-02 03:56:57	-->	erliang (~erliang@61.190.213.226) has joined #bash
+2016-11-02 03:57:12	momomo	how can get arguments from say index 3 to pass along to a command on 2  ?
+2016-11-02 03:57:14	<--	erliang (~erliang@61.190.213.226) has quit (Max SendQ exceeded)
+2016-11-02 03:57:27	momomo	$2 $3 $4 $5 ...
+2016-11-02 03:57:46	-->	erliang (~erliang@61.190.213.226) has joined #bash
+2016-11-02 03:58:04	<--	erliang (~erliang@61.190.213.226) has quit (Max SendQ exceeded)
+2016-11-02 03:58:14	-->	ag4ve_ (~ag4ve@172.56.2.96) has joined #bash
+2016-11-02 03:58:37	-->	erliang (~erliang@61.190.213.226) has joined #bash
+2016-11-02 03:58:44	-->	ych (~horrror@46-116-60-237.bb.netvision.net.il) has joined #bash
+2016-11-02 03:58:45	<--	erliang (~erliang@61.190.213.226) has left #bash
+2016-11-02 03:58:58	-->	DeMiNe0 (~DeMiNe0@104.131.119.74) has joined #bash
+2016-11-02 03:59:15	geirha	shift and then use "$@"
+2016-11-02 03:59:25	geirha	with bash you can also use "${@:2}"
+2016-11-02 03:59:26	-->	hahuang61 (~hahuang65@c-50-136-152-183.hsd1.ca.comcast.net) has joined #bash
+2016-11-02 04:00:19	MediocreNutty	Hey, sorry about this. Off-topic question: Does anyone know much about AS400/OS400 or know an irc about this subject? can't find anything on alis besides an empty channel
+2016-11-02 04:00:35	<--	tristanp_ (~tristanp@104.232.112.2) has quit
+2016-11-02 04:02:16	-->	tristanp (~tristanp@104.232.112.2) has joined #bash
+2016-11-02 04:02:36	momomo	ook, thanks :)
+2016-11-02 04:02:45	And1	ghoti: Hm not really.
+2016-11-02 04:02:51	And1	In perl, but maybe it’s nicer in bash.
+2016-11-02 04:02:51		[04:02]
+2016-11-02 04:02:56	<--	ome (uid36537@gateway/web/irccloud.com/x-uabrvqrwwmovmcul) has quit (Quit: Connection closed for inactivity)
+2016-11-02 04:03:04	And1	Uqbar: Lemme take a look. Thank you.
+2016-11-02 04:03:06	<--	luckman212 (~luckman21@unaffiliated/luckman212) has quit (Ping timeout: 250 seconds)
+2016-11-02 04:03:28	And1	Uqbar: So, I know the command. But I'm not sure how I'd use it in this case.
+2016-11-02 04:03:49	<--	last_staff (~Thunderbi@79.135.14.226) has quit (Quit: last_staff)
+2016-11-02 04:04:24	momomo	if I have COMMAND="$2 ${@:4}" ... how do I execute it ? ... $("$COMMAND") is complaining that command do not exist
+2016-11-02 04:04:32	<--	hahuang61 (~hahuang65@c-50-136-152-183.hsd1.ca.comcast.net) has quit (Ping timeout: 260 seconds)
+2016-11-02 04:04:33	momomo	it is treating it as one command
+2016-11-02 04:04:39	momomo	including the args
+2016-11-02 04:05:42	<--	vqrs (~vqrs@learnprogramming/regular/vqrs) has quit (Ping timeout: 256 seconds)
+2016-11-02 04:05:52	Tanta	COMMAND="$2 ""${0:4}"
+2016-11-02 04:06:06	Tanta	not sure that will work though since it's being interpreted first
+2016-11-02 04:06:11	Tanta	that will turn into one string
+2016-11-02 04:06:23	geirha	momomo: Don't put commands in variables
+2016-11-02 04:06:44	Tanta	what you should do is run_cmd=( "$2" "${@:4}" )
+2016-11-02 04:06:47	Tanta	then run_cmd
+2016-11-02 04:07:11	<--	ritztech (~ritztech@69.194.133.98) has quit (Remote host closed the connection)
+2016-11-02 04:07:19	-->	vqrs (~vqrs@learnprogramming/regular/vqrs) has joined #bash
+2016-11-02 04:07:27	Tanta	if you look under the hood of any automation engine that executes shell, it compiles each command into an array element
+2016-11-02 04:07:38	ghoti	And1: what you're asking for might work better as a stackoverflow question.
+2016-11-02 04:07:45	-->	ritztech (~ritztech@69.194.133.98) has joined #bash
+2016-11-02 04:08:22	geirha	Either run it directly:  "$2" "${@:4}"    or use an array like Tanta showed; "${run_cmd[@]}"
+2016-11-02 04:08:33	geirha	including the quotes
+2016-11-02 04:08:43	geirha	and no $()
+2016-11-02 04:09:16	<--	ritztech (~ritztech@69.194.133.98) has quit (Remote host closed the connection)
+2016-11-02 04:09:23	-->	riemann (~riemann@84-10-11-234.static.chello.pl) has joined #bash
+2016-11-02 04:09:32	-->	ritztech (~ritztech@69.194.133.98) has joined #bash
+2016-11-02 04:09:38	<--	rivarun (~rivarun@ipa210.225.tellas.gr) has quit (Ping timeout: 245 seconds)
+2016-11-02 04:09:39	And1	ghoti: Uh. I’m having no good experiences with stackoverlow. Always got some handy tiny oneliner help here and I’m very thankful for this channel. : )
+2016-11-02 04:09:51	momomo	yes, I run it directly now .. if else
+2016-11-02 04:10:00	-->	cowl (~sean@128.163.8.25) has joined #bash
+2016-11-02 04:10:19	-->	jackbrown (~se@unaffiliated/jackbrown) has joined #bash
+2016-11-02 04:10:39	ghoti	And1: fair enough, but your question looks like it might require a bit of back-and-forth, along with education. Speaking for myself, I'm more likely to do that if I get points for it. :)
+2016-11-02 04:11:08	-->	cdown (~cdown@209.136.131.202) has joined #bash
+2016-11-02 04:11:14	-->	luckman212 (~luckman21@unaffiliated/luckman212) has joined #bash
+2016-11-02 04:11:29	And1	ghoti: Heh.
+2016-11-02 04:11:37	llua	MediocreNutty: try joining #help
+2016-11-02 04:11:50	And1	Maybe geirha knows how to help, like most of the time. : )
+2016-11-02 04:12:51	-->	Noldorin (~noldorin@unaffiliated/noldorin) has joined #bash
+2016-11-02 04:13:10	<--	ag4ve_ (~ag4ve@172.56.2.96) has quit (Ping timeout: 265 seconds)
+2016-11-02 04:13:16	<--	JinnX (jinnx@unaffiliated/jinnx) has quit (Quit: Quit)
+2016-11-02 04:14:17	-->	edvorg (~edvorg@1.224.84.141) has joined #bash
+2016-11-02 04:14:40	-->	kgirthofer (~kgirthofe@66.227.68.165) has joined #bash
+2016-11-02 04:14:41	-->	lss8 (~lss8@unaffiliated/lss8) has joined #bash
+2016-11-02 04:15:36	-->	|narcos| (uid99359@gateway/web/irccloud.com/x-jfipxbretgdgtxvo) has joined #bash
+2016-11-02 04:15:39	-->	Emperor_Earth (~Emperor_E@cpe-98-14-184-255.nyc.res.rr.com) has joined #bash
+2016-11-02 04:16:00	-->	JinnX (jinnx@unaffiliated/jinnx) has joined #bash
+2016-11-02 04:16:32	-->	AaronMT (~textual@2607:fea8:3ca0:2:dc72:74ee:b25a:8589) has joined #bash
+2016-11-02 04:16:33	-->	deekej (deekej@nat/redhat/x-wajwpkbkcxhbgdmz) has joined #bash
+2016-11-02 04:16:33	-->	stacks88 (~x@167.114.219.244) has joined #bash
+2016-11-02 04:17:35	-->	rivarun (~rivarun@ipa210.225.tellas.gr) has joined #bash
+2016-11-02 04:17:42	geirha	awk '$2 != y { printf("\n"); y = $2 } { printf("%s\t", $0) }'
+2016-11-02 04:19:18	<--	tik-tok (~weechat@gateway/tor-sasl/tik-tok) has quit (Quit: tik-tok)
+2016-11-02 04:19:18		[04:19]
+2016-11-02 04:19:21	<--	hs0ucy (~hs0ucy@68.67.45.242) has quit (Ping timeout: 260 seconds)
+2016-11-02 04:20:03	-->	pirate21994 (~pirate219@117.198.163.95) has joined #bash
+2016-11-02 04:20:48	-->	ag4ve_ (~ag4ve@172.56.2.96) has joined #bash
+2016-11-02 04:23:52	<--	edvorg (~edvorg@1.224.84.141) has quit (Remote host closed the connection)
+2016-11-02 04:25:27	And1	geirha: Thank you so very much!
+2016-11-02 04:25:46	<--	ravior (~ravior@89.121.200.106) has quit (Quit: Konversation terminated!)
+2016-11-02 04:25:54	<--	tlaxkit (~Thunderbi@92.177.99.40) has quit (Quit: tlaxkit)
+2016-11-02 04:26:44	-->	rocktop__ (~rocktop@160.176.31.117) has joined #bash
+2016-11-02 04:28:14	<--	rocktop_ (~rocktop@160.177.20.100) has quit (Ping timeout: 260 seconds)
+2016-11-02 04:28:22	<--	rivarun (~rivarun@ipa210.225.tellas.gr) has quit (Remote host closed the connection)
+2016-11-02 04:29:13	-->	ignatiz- (50c1d51a@gateway/web/freenode/ip.80.193.213.26) has joined #bash
+2016-11-02 04:29:26	-->	edvorg (~edvorg@1.224.84.141) has joined #bash
+2016-11-02 04:29:42	And1	This gives me a noeol flag in vim. Maybe this is somehow fixable. Then it’s perfect.
+2016-11-02 04:30:48	-->	navidr (uid112413@gateway/web/irccloud.com/x-nhkyynavyzieezyn) has joined #bash
+2016-11-02 04:31:04	ghoti	And1: you can add 'END{print ""}' to the end of the awk script.
+2016-11-02 04:31:18	ghoti	or 'END{printf("\n")}' if you prefer
+2016-11-02 04:32:20	-->	hs0ucy (~hs0ucy@68.67.45.242) has joined #bash
+2016-11-02 04:32:27	And1	ghoti: Like this? awk '$2 != y { printf("\n"); y = $2 } { printf("%s\t", $0) } END { printf("\n") }' – I would not want a trailing empty new line, though.
+2016-11-02 04:32:30	<--	Magnetz74 (~roman@209.198.66.7) has quit (Ping timeout: 265 seconds)
+2016-11-02 04:32:40	And1	I definitely should understand awk one day … : o
+2016-11-02 04:32:46	<--	GinoManWrx (~GinoMan@50-251-53-110-static.hfc.comcastbusiness.net) has quit (Quit: Leaving)
+2016-11-02 04:33:36	ghoti	And1: oh, I thought the error you mentioned was due to the missing newline on the last line. That's what this would add (since geirha's solution strips newlines except where y changes).
+2016-11-02 04:34:06	ghoti	And1: but I think a better solution would be to process the output of `convert` more directly.
+2016-11-02 04:34:43	And1	ghoti: What do you mean with more directly?
+2016-11-02 04:34:43		[04:34]
+2016-11-02 04:34:50	<--	Noldorin (~noldorin@unaffiliated/noldorin) has quit (Quit: My MacBook Pro has gone to sleep. ZZZzzz…)
+2016-11-02 04:35:53	<--	cdown (~cdown@209.136.131.202) has quit (Ping timeout: 250 seconds)
+2016-11-02 04:36:58	<--	corsibu (~corsibu@171.20.68.68) has quit (Remote host closed the connection)
+2016-11-02 04:37:32	-->	corsibu (~corsibu@171.20.68.68) has joined #bash
+2016-11-02 04:37:43	-->	dendazen (~dendazen@128.177.29.242) has joined #bash
+2016-11-02 04:39:14	geirha	convert ... txt:- | awk -F'[: ]+' '{split($1,a,/,/); if (y != a[2]) printf("\n"); y = a[2]; printf("x.%d, y.%d, rgb%s\t", a[1], a[2], $2) } END { printf("\n") }'
+2016-11-02 04:39:26	-->	brief (2518e95f@gateway/web/freenode/ip.37.24.233.95) has joined #bash
+2016-11-02 04:40:01	-->	victorhe (~victorhe@50.56.229.9) has joined #bash
+2016-11-02 04:40:10	<--	dodobrain (~dodobrain@unaffiliated/freakabcd) has quit (Remote host closed the connection)
+2016-11-02 04:40:19	geirha	awk -F'[: ]+' '{split($1,a,/,/); if (y != a[2]) printf("\n"); y = a[2]; if (NR > 1) printf("x.%d, y.%d, rgb%s\t", a[1], a[2], $2) } END { printf("\n") }'
+2016-11-02 04:40:40	<--	b3h3m0th (uid26288@gateway/web/irccloud.com/x-rdphrawhutxwcvch) has quit (Quit: Connection closed for inactivity)
+2016-11-02 04:41:50	-->	dunpeal (~dunpeal@unaffiliated/dunpeal) has joined #bash
+2016-11-02 04:41:51	<--	corsibu (~corsibu@171.20.68.68) has quit (Ping timeout: 244 seconds)
+2016-11-02 04:42:10	-->	Shapeshifter (~Shapeshif@unaffiliated/shapeshifter) has joined #bash
+2016-11-02 04:42:14	-->	nckpz (~nckpz@72.89.243.64) has joined #bash
+2016-11-02 04:42:18	And1	I'll try that. And try to understand it for some a lot minutes. Thank you geirha. For all your help always.
+2016-11-02 04:42:39	dunpeal	Hi. I have a script foo that writes to stdout. If I do `./foo > bar.txt`, what encoding will bar.txt be written in?
+2016-11-02 04:43:13	izalove	whatever format ./foo produces
+2016-11-02 04:43:17	Shapeshifter	Hi. If I do something like: content=""; cat "$FILE" | while IFS= read line; do content+="$line"; done I end up with $content containing no newlines between the lines. What do I need to do differently?
+2016-11-02 04:43:35	<--	nckpz (~nckpz@72.89.243.64) has quit (Max SendQ exceeded)
+2016-11-02 04:44:06	-->	nckpz (~nckpz@static-72-89-243-64.nycmny.fios.verizon.net) has joined #bash
+2016-11-02 04:44:14	<--	kimitux (~michael@p4FF874D2.dip0.t-ipconnect.de) has quit (Quit: Konversation terminated!)
+2016-11-02 04:44:25	izalove	why don't you just use   content=$(< file)   ?
+2016-11-02 04:44:28	dreisner	Shapeshifter: are you trying to put the file content in a variable? what do you intend to do with it?
+2016-11-02 04:45:06	ghoti	dunpeal: with your example, you haven't added any newlines. You might do that easily using $`\n'.
+2016-11-02 04:45:30	geirha	mapfile -t content < file; ...; printf %s "${content[@]}"
+2016-11-02 04:46:05	geirha	Oh wait you DIDN'T want newlines removed. Nevermind
+2016-11-02 04:47:53	-->	rivarun (~rivarun@ipa210.225.tellas.gr) has joined #bash
+2016-11-02 04:48:24	-->	keltim (~keltim@173.212.48.130) has joined #bash
+2016-11-02 04:49:20	-->	anyofyou (~anyofyou@103.208.85.158) has joined #bash
+2016-11-02 04:52:01	<--	momomo (~momomo@c213-89-26-80.bredband.comhem.se) has quit (Quit: Leaving)
+2016-11-02 04:52:01		[04:52]
+2016-11-02 04:52:25	dunpeal	izalove: OK, so basically, `./foo > bar.txt` just writes to disk the string that foo outputs into stdout, so the same encoding is preserved.
+2016-11-02 04:52:27	-->	momomo (~momomo@c213-89-26-80.bredband.comhem.se) has joined #bash
+2016-11-02 04:52:30	Shapeshifter	Actually what I wrote doesn't make any sense anyway because the subshell cant assign to content (which is outside). What I really wanted was the same result as doing content=$(< "$file") but using the while loop, because I do something to every line. I guess I'll just write each line to temp file instead of trying to assign to a variable.
+2016-11-02 04:52:33	dunpeal	that makes sense, thanks.
+2016-11-02 04:53:57	<--	mwoodson (mwoodson@nat/redhat/x-gggmqgqkmtbxmmcx) has quit (Ping timeout: 248 seconds)
+2016-11-02 04:54:00	<--	victorhe (~victorhe@50.56.229.9) has quit (Ping timeout: 260 seconds)
+2016-11-02 04:54:18	<--	sph084 (~shenness@50.58.91.120) has quit (Ping timeout: 258 seconds)
+2016-11-02 04:54:29	<--	Sonicblaze (quassel@nat/redhat/x-flbhuseqxjprmbok) has quit (Ping timeout: 248 seconds)
+2016-11-02 04:54:46	<--	ych (~horrror@46-116-60-237.bb.netvision.net.il) has quit (Quit: My Mac has gone to sleep. ZZZzzz…)
+2016-11-02 04:55:22	ghoti	Shapeshifter: use process redirection.  while read var; do content+=var; done < $file
+2016-11-02 04:55:33	ghoti	er, that was normal redirection.
+2016-11-02 04:55:34	<--	ag4ve_ (~ag4ve@172.56.2.96) has quit (Ping timeout: 256 seconds)
+2016-11-02 04:55:42	ghoti	use process redirection if you want something more complex on the input...
+2016-11-02 04:55:43	-->	Sonicblaze (quassel@nat/redhat/x-dpcnwidcbksbtoxk) has joined #bash
+2016-11-02 04:55:50	<--	anyofyou (~anyofyou@103.208.85.158) has quit (Ping timeout: 268 seconds)
+2016-11-02 04:56:04	ghoti	  while read var; do content+=var; done < <( sed 'yadda' $file )
+2016-11-02 04:56:37	ghoti	that way you avoid the subshell generated by putting the while loop at the end of a pipe.
+2016-11-02 04:56:56	-->	heurist__ (heurist@unaffiliated/heurist) has joined #bash
+2016-11-02 04:57:10	Shapeshifter	ghoti: So the subshell is "caused" by piping, not by "do"?
+2016-11-02 04:57:17	ghoti	yes
+2016-11-02 04:57:21	Shapeshifter	I see.
+2016-11-02 04:57:21	-->	gtristan (~tristanva@110.11.226.29) has joined #bash
+2016-11-02 04:57:47	<--	AquaL1te_ (~AquaL1te@unaffiliated/aqual1te) has quit (Quit: leaving)
+2016-11-02 04:58:12	<--	spine55 (~spine@ip68-108-246-161.sb.sd.cox.net) has quit (Ping timeout: 260 seconds)
+2016-11-02 04:58:16	-->	sph084 (~shenness@rrcs-24-172-126-106.midsouth.biz.rr.com) has joined #bash
+2016-11-02 04:58:43	<--	heurist`_` (heurist@unaffiliated/heurist) has quit (Ping timeout: 252 seconds)
+2016-11-02 04:58:52	ghoti	# printf 'foo\nbar\n' > /tmp/foo; while read var; do out+="$var"; done < /tmp/foo; echo "$out"
+2016-11-02 04:58:53	shbot2	ghoti: foobar
+2016-11-02 04:59:06	ghoti	Shapeshifter: ^
+2016-11-02 04:59:27	Shapeshifter	well I wanted to keep the newlines though.
+2016-11-02 04:59:36	<--	rafi (Thunderbir@nat/redhat/x-yekayqurcsylkpdd) has quit (Quit: rafi)
+2016-11-02 04:59:55	<--	sqz (~sqz@243-231-47-212.rev.cloud.scaleway.com) has quit (Remote host closed the connection)
+2016-11-02 05:00:06	Shapeshifter	That was the intial confusion. Doing out+="$var", "$out" does not contain the newlines anymore.
+2016-11-02 05:00:20	-->	Rapture (~textual@50-232-118-138-static.hfc.comcastbusiness.net) has joined #bash
+2016-11-02 05:00:31	<--	iliv (~iliv@93.77.152.230) has quit (Quit: Time to get some sleep... ZzZzZzZ)
+2016-11-02 05:00:36	ghoti	you've already got multiple solutions for that, but just in case they don't work, here's mine again:
+2016-11-02 05:00:37	-->	mwoodson (mwoodson@nat/redhat/x-lwxetcqsikvrqlqt) has joined #bash
+2016-11-02 05:00:39	ghoti	# while read var; do out+="$var"$'\n'; done < <( printf 'one\ntwo\n' ); echo "$out"
+2016-11-02 05:00:40	shbot2	ghoti: one
+2016-11-02 05:00:41	shbot2	ghoti: two
+2016-11-02 05:00:44	<--	JeanCarloMachado (~jean@201-25-18-112.paemt704.dsl.brasiltelecom.net.br) has quit (Ping timeout: 250 seconds)
+2016-11-02 05:01:28	-->	rafi (Thunderbir@nat/redhat/x-cfbxdzwertzdwiek) has joined #bash
+2016-11-02 05:01:41	ghoti	This way, the newlines are still being stripped, but they're being added back using $'\n'.
+2016-11-02 05:01:51	-->	iliv (~iliv@93.77.152.230) has joined #bash
+2016-11-02 05:03:41	<--	finnx (~sns@96-89-88-125-static.hfc.comcastbusiness.net) has left #bash
+2016-11-02 05:03:54	<--	rafi (Thunderbir@nat/redhat/x-cfbxdzwertzdwiek) has quit (Client Quit)
+2016-11-02 05:04:11	<--	dunpeal (~dunpeal@unaffiliated/dunpeal) has quit (Quit: leaving)
+2016-11-02 05:04:34	-->	cdown (~cdown@mobile-166-171-122-225.mycingular.net) has joined #bash
+2016-11-02 05:06:03	-->	njs126 (~njs126@rrcs-67-79-116-98.se.biz.rr.com) has joined #bash
+2016-11-02 05:07:42	-->	kbdkode (~kbdkode@unaffiliated/kbdkode) has joined #bash
+2016-11-02 05:07:42		[05:07]
+2016-11-02 05:08:08	<--	_mirko_ (~mirko@unaffiliated/-mirko-/x-2946915) has quit (Quit: WeeChat 1.6)
+2016-11-02 05:08:25	<--	pandaant (~batman@dslb-088-078-125-037.088.078.pools.vodafone-ip.de) has quit (Remote host closed the connection)
+2016-11-02 05:09:14	-->	ravior (~ravior@193.231.148.210) has joined #bash
+2016-11-02 05:11:34	-->	tik-tok (~weechat@gateway/tor-sasl/tik-tok) has joined #bash
+2016-11-02 05:12:17	-->	sdoherty (sdoherty@nat/redhat/x-pzvsvwhmhfuszptu) has joined #bash
+2016-11-02 05:14:59	Darby_Crash	mar77i,
+2016-11-02 05:15:47	Darby_Crash	are you there?
+2016-11-02 05:16:32	<--	DaVu (~kvirc@unaffiliated/david1977) has quit (Quit: KVIrc 4.9.2 Aria http://www.kvirc.net/)
+2016-11-02 05:18:01	<--	cdown (~cdown@mobile-166-171-122-225.mycingular.net) has quit (Read error: Connection reset by peer)
+2016-11-02 05:18:31	-->	ych (~horrror@46-116-60-237.bb.netvision.net.il) has joined #bash
+2016-11-02 05:19:15	<--	merzo (~merzo@94.45.58.141) has quit (Ping timeout: 252 seconds)
+2016-11-02 05:19:57	-->	finnx (~sns@96-89-88-125-static.hfc.comcastbusiness.net) has joined #bash
+2016-11-02 05:20:35	-->	chowbok (~chowbok@207-181-255-76.c3-0.lem-ubr1.chi-lem.il.cable.rcn.com) has joined #bash
+2016-11-02 05:20:53	<--	CurryWurst (~CurryWurs@2001:1b48:203::1:1000) has quit (Ping timeout: 245 seconds)
+2016-11-02 05:21:29	-->	merzo (~merzo@92.60.189.225) has joined #bash
+2016-11-02 05:21:39	<--	bisch (~Bob@97-116-39-13.mpls.qwest.net) has quit (Quit: Leaving)
+2016-11-02 05:22:20	<--	ravior (~ravior@193.231.148.210) has quit (Quit: Konversation terminated!)
+2016-11-02 05:22:28	<--	WangDang (~wangdang@104.247.235.41) has quit (Ping timeout: 260 seconds)
+2016-11-02 05:22:35	-->	cdown (~cdown@mobile-166-171-122-225.mycingular.net) has joined #bash
+2016-11-02 05:24:40	-->	xall (~xall@ppp-115-87-132-192.revip4.asianet.co.th) has joined #bash
+2016-11-02 05:24:40		[05:24]
+2016-11-02 05:25:42	<--	nckpz (~nckpz@static-72-89-243-64.nycmny.fios.verizon.net) has quit (Ping timeout: 250 seconds)
+2016-11-02 05:28:02	<--	brillenfux (~brillenfu@unaffiliated/brillenfux) has quit (Quit: Leaving)
+2016-11-02 05:28:10	-->	myhau (~myhau@host-94-251-132-31.dynamic.mm.pl) has joined #bash
+2016-11-02 05:28:36	-->	WangDang_ (~wangdang@104-247-235-41.cpe.teksavvy.com) has joined #bash
+2016-11-02 05:30:35	-->	CurryWurst (~CurryWurs@2001:1b48:203::1:1000) has joined #bash
+2016-11-02 05:32:20	nchambers	!faq1
+2016-11-02 05:32:21	greybot	http://mywiki.wooledge.org/BashFAQ/001 -- How can I read a file (data stream, variable) line-by-line (and/or field-by-field)?
+2016-11-02 05:33:26	-->	nikivi (~nikivi@wlan-200200.nbw.tue.nl) has joined #bash
+2016-11-02 05:34:22	-->	ccl (~ccl@unaffiliated/ccl) has joined #bash
+2016-11-02 05:35:29	danemacmillan	What are these color codes called? 30;2
+2016-11-02 05:35:40	danemacmillan	I'm trying to google so I can set my own colors, but nothing is soming up
+2016-11-02 05:35:53	danemacmillan	I'm trying to change the color output for ag/silver_searcher
+2016-11-02 05:36:14	OnkelTem	Hi. Why this is wrong in a script: if (( `drush8 --version 2>/dev/null | tr -dc '0-9' | head -c1` >= 8 )); then ...
+2016-11-02 05:36:29	OnkelTem	line 20: ((: >= 8 : syntax error: operand expected (error token is ">= 8 ")
+2016-11-02 05:36:49	geirha	danemacmillan: http://wiki.bash-hackers.org/scripting/terminalcodes
+2016-11-02 05:36:53	izalove	OnkelTem: your command in ` ` didn't print anything
+2016-11-02 05:37:27	-->	davidfetter_ge (~chatzilla@64.129.231.6) has joined #bash
+2016-11-02 05:37:27	-->	netameta (~netameta@24-158-128-88.dhcp.kgpt.tn.charter.com) has joined #bash
+2016-11-02 05:37:47	-->	m1911 (~m1911@123.118.27.170) has joined #bash
+2016-11-02 05:37:52	geirha	didn't find the drush8 command, probably
+2016-11-02 05:37:58	izalove	try   (( $(....) + 0 >= 8 ))
+2016-11-02 05:38:22	OnkelTem	izalove: right! :) Thanks.
+2016-11-02 05:38:52	OnkelTem	This is because drush8 is an alias. Can I run a command which is aliased?
+2016-11-02 05:39:03	geirha	what's the 8 in drush8 if the 8 does not indicate a version already?
+2016-11-02 05:39:16	izalove	scripts don't source your .bashrc
+2016-11-02 05:39:35	geirha	nor do aliases work unless you expclitly enable them
+2016-11-02 05:40:02	geirha	Just use functions
+2016-11-02 05:40:02		[05:40]
+2016-11-02 05:40:16	geirha	For almost every purpose, aliases are superseded by shell functions.
+2016-11-02 05:40:58	<--	m1911 (~m1911@123.118.27.170) has quit (Remote host closed the connection)
+2016-11-02 05:41:10	nchambers	what would an exception be?
+2016-11-02 05:41:59	<--	nikivi (~nikivi@wlan-200200.nbw.tue.nl) has quit (Quit: irc)
+2016-11-02 05:42:00	izalove	we don't talk much about those exceptions here <.<
+2016-11-02 05:42:20	nchambers	oh silly me
+2016-11-02 05:42:27	-->	kpease (~kpease@72.22.182.166) has joined #bash
+2016-11-02 05:42:54	-->	polymorphisme (~Icedove@2a01:e35:2421:ea10:7627:eaff:fe50:a29b) has joined #bash
+2016-11-02 05:43:01	izalove	!magicalias
+2016-11-02 05:43:01	greybot	Magic aliases: a dire hack, fraught with peril and doom. http://www.chiark.greenend.org.uk/~sgtatham/aliases.html improved version: https://gist.github.com/ormaaj/5a969c62bab8d21fe468
+2016-11-02 05:43:40	geirha	The exception is called ormaaj
+2016-11-02 05:44:09	izalove	warning: improved version may not actually be improved
+2016-11-02 05:45:37	izalove	ok that's clever
+2016-11-02 05:45:46	 *	izalove forgot about that
+2016-11-02 05:45:50	OnkelTem	geirha: what do you mean 'use functions'? I'm trying to figure out the correct 'drush' executable on a client machine. It can aliased
+2016-11-02 05:45:52	OnkelTem	be+
+2016-11-02 05:46:25	<--	kbdkode (~kbdkode@unaffiliated/kbdkode) has quit (Quit:      see ya    )
+2016-11-02 05:46:49	geirha	then you can't test that in a script
+2016-11-02 05:47:22	<--	jackbrown (~se@unaffiliated/jackbrown) has quit (Ping timeout: 250 seconds)
+2016-11-02 05:47:49	<--	MaBunny (~Peter@45.250.58.33) has quit (Quit: Bye guys hav a good time :))
+2016-11-02 05:50:26	-->	whippythellama (~whippythe@cpe-2606-A000-4FCA-D900-28C5-D3BA-377D-16BB.dyn6.twc.com) has joined #bash
+2016-11-02 05:51:31	-->	ravior (~ravior@89.121.200.106) has joined #bash
+2016-11-02 05:52:04	<--	cowl (~sean@128.163.8.25) has left #bash ("WeeChat 1.4")
+2016-11-02 05:52:08	<--	skweek (~skweek@2607:fe50:0:810b:85d2:64ff:7360:86ec) has quit (Ping timeout: 245 seconds)
+2016-11-02 05:52:14	-->	anyofyou (~anyofyou@103.208.85.158) has joined #bash
+2016-11-02 05:52:34	-->	nikivi (~nikivi@wlan-200200.nbw.tue.nl) has joined #bash
+2016-11-02 05:52:35	<--	merzo (~merzo@92.60.189.225) has quit (Remote host closed the connection)
+2016-11-02 05:53:19	<--	ritztech (~ritztech@69.194.133.98) has quit (Remote host closed the connection)
+2016-11-02 05:53:40	-->	merzo (~merzo@92.60.189.225) has joined #bash
+2016-11-02 05:53:57	-->	eivarv (~eivarv@cm-84.215.4.97.getinternet.no) has joined #bash
+2016-11-02 05:54:13	mrwappie	I'm writing a interface to open programs as htop, mysql etc. for my Debian server but now i want to ad some more advanced options. I know that there are other languages that are way more flexible. Would you recommencement sticking with Bash or use other languages?
+2016-11-02 05:54:34	timvisher	is there a faq about `read -r`?
+2016-11-02 05:55:25	geirha	!read-r
+2016-11-02 05:55:25		[05:55]
+2016-11-02 05:55:25	greybot	By default, if ''read'' reads a line of input terminated by a backslash (\), it will *continue* reading lines of input until the first line not terminated by "\", or it hits EOF and then concatenate those lines into a single line. This is a dumb misfeature. So *always* use the -r option with ''read'', unless you know you have a case when you want the default behavior, or when using the bash-only ''read -e''.
+2016-11-02 05:55:51	timvisher	geirha: thanks :)
+2016-11-02 05:56:13	<--	TomyWork (~tomy@85.199.84.100) has quit (Ping timeout: 256 seconds)
+2016-11-02 05:56:33	geirha	mrwappie: Don't know what "interface to open programs" entails
+2016-11-02 05:56:43	<--	polymorphisme (~Icedove@2a01:e35:2421:ea10:7627:eaff:fe50:a29b) has quit (Quit: À bientôt… :P)
+2016-11-02 05:57:23	<--	anyofyou (~anyofyou@103.208.85.158) has quit (Ping timeout: 252 seconds)
+2016-11-02 05:57:39	mrwappie	A interface to open standard programs
+2016-11-02 05:57:50	<--	riemann (~riemann@84-10-11-234.static.chello.pl) has quit (Remote host closed the connection)
+2016-11-02 05:58:22	mrwappie	But in regular, would you advice bash or other langueges like C to build a 'help' program
+2016-11-02 05:58:38	<--	whippythellama (~whippythe@cpe-2606-A000-4FCA-D900-28C5-D3BA-377D-16BB.dyn6.twc.com) has quit (Ping timeout: 250 seconds)
+2016-11-02 05:58:59	mrwappie	Nvm Got to do some research first, sorry for the questions ;)
+2016-11-02 05:59:41	geirha	I'm still clueless as to what that means
+2016-11-02 06:00:04	-->	CurryWurst_ (~CurryWurs@2001:1b48:203::1:1000) has joined #bash
+2016-11-02 06:00:08	-->	heurist (heurist@unaffiliated/heurist) has joined #bash
+2016-11-02 06:00:08	<--	CurryWurst (~CurryWurs@2001:1b48:203::1:1000) has quit (Read error: Connection reset by peer)
+2016-11-02 06:00:09	<--	Al3xG0 (~unix@unaffiliated/al3xg0) has quit (Ping timeout: 260 seconds)
+2016-11-02 06:00:24	-->	hahuang61 (~hahuang65@c-50-136-152-183.hsd1.ca.comcast.net) has joined #bash
+2016-11-02 06:01:05	flying	for what are used the files in /etc/udev/?
+2016-11-02 06:01:12	<--	lixus (~muellejo@isolde.aschendorff.de) has quit (Quit: Leaving)
+2016-11-02 06:02:02	-->	ritztech (~ritztech@69.194.133.98) has joined #bash
+2016-11-02 06:02:04	geirha	ask your OS channel
+2016-11-02 06:02:19	<--	oyes (~textual@72.35.67.10) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-11-02 06:02:39	-->	devnull84 (~devnull84@196.15.203.251) has joined #bash
+2016-11-02 06:02:42	<--	sdoherty (sdoherty@nat/redhat/x-pzvsvwhmhfuszptu) has quit (Ping timeout: 250 seconds)
+2016-11-02 06:03:34	<--	heurist__ (heurist@unaffiliated/heurist) has quit (Ping timeout: 256 seconds)
+2016-11-02 06:05:28	<--	hahuang61 (~hahuang65@c-50-136-152-183.hsd1.ca.comcast.net) has quit (Ping timeout: 260 seconds)
+2016-11-02 06:06:02	<--	nikivi (~nikivi@wlan-200200.nbw.tue.nl) has quit (Quit: irc)
+2016-11-02 06:07:14	<--	devnull84 (~devnull84@196.15.203.251) has quit (Ping timeout: 265 seconds)
+2016-11-02 06:07:28	<--	jnylin (~jnylin@ypi551.lnu.se) has quit (Read error: Connection reset by peer)
+2016-11-02 06:08:33	<--	SpiderPig (~matt@71-80-56-116.dhcp.mant.nc.charter.com) has quit (Ping timeout: 260 seconds)
+2016-11-02 06:08:49	-->	SpiderPig (~matt@71-80-56-116.dhcp.mant.nc.charter.com) has joined #bash
+2016-11-02 06:09:41	<--	rcernin (rcernin@nat/redhat/x-iamiyeerwsjnaduf) has quit (Quit: WeeChat 1.5)
+2016-11-02 06:09:51	<--	ych (~horrror@46-116-60-237.bb.netvision.net.il) has quit (Quit: My Mac has gone to sleep. ZZZzzz…)
+2016-11-02 06:11:04	<--	cdg_ (~cdg@162-226-219-152.lightspeed.tukrga.sbcglobal.net) has quit (Remote host closed the connection)
+2016-11-02 06:11:04		[06:11]
+2016-11-02 06:11:31	-->	whippythellama (~whippythe@cpe-45-37-33-183.nc.res.rr.com) has joined #bash
+2016-11-02 06:11:37	-->	cdg (~cdg@2602:30a:2e2d:b980:19ae:45f7:2039:71d3) has joined #bash
+2016-11-02 06:11:53	-->	}ls{ (~kalle@unaffiliated/ls/x-8089558) has joined #bash
+2016-11-02 06:14:36	-->	pheanex (~pheanex@2001-4dd6-9e06-0-bc93-417-ac40-d3eb.ipv6dyn.netcologne.de) has joined #bash
+2016-11-02 06:15:54	-->	TomyLobo (~TomyLobo@2a02:8109:87c0:20c:941f:634e:363:c18a) has joined #bash
+2016-11-02 06:16:09	-->	sdoherty (sdoherty@nat/redhat/x-mnszpugpdkopjory) has joined #bash
+2016-11-02 06:17:47	-->	oyes (~textual@weston-24.51.220.86.myacc.net) has joined #bash
+2016-11-02 06:18:53	-->	jackbrown (~se@unaffiliated/jackbrown) has joined #bash
+2016-11-02 06:19:27	<--	ahmed_elgabri (~ahmedelga@212.123.217.154) has quit (Ping timeout: 256 seconds)
+2016-11-02 06:20:00	<--	gattuso (~gattuso@gruppoculturale.it) has quit (Read error: Connection reset by peer)
+2016-11-02 06:20:16	<--	flying (~flying@90.216.134.194) has quit
+2016-11-02 06:21:18	-->	diogenese (diogenese@diogenese.velotech.net) has joined #bash
+2016-11-02 06:22:57	<--	Ishaq (~Ishaq@budgetnode/management) has quit (Excess Flood)
+2016-11-02 06:23:13	<--	oxhak (~OxHaK@unaffiliated/oxhak) has quit (Remote host closed the connection)
+2016-11-02 06:23:39	-->	Noldorin (~noldorin@unaffiliated/noldorin) has joined #bash
+2016-11-02 06:25:14	-->	Ishaq (~Ishaq@budgetnode/management) has joined #bash
+2016-11-02 06:25:16	alyptik	hahahah
+2016-11-02 06:25:35	alyptik	ah dammit
+2016-11-02 06:25:38	alyptik	wrong channel
+2016-11-02 06:25:46	-->	gattuso- (~gattuso@gruppoculturale.it) has joined #bash
+2016-11-02 06:26:05	-->	Aliekezhi (~Aliekezhi@2a01:e34:ed3c:4750:d3ec:c63d:8eaf:79a1) has joined #bash
+2016-11-02 06:26:05		[06:26]
+2016-11-02 06:26:08	Quatrepee	it's a rare day that bash is that rousing alyptik
+2016-11-02 06:26:30	alyptik	it seem so
+2016-11-02 06:27:39	-->	haldean (~haldean@li1184-20.members.linode.com) has joined #bash
+2016-11-02 06:27:41	<--	JinnX (jinnx@unaffiliated/jinnx) has quit (Quit: Quit)
+2016-11-02 06:27:43	<--	xall (~xall@ppp-115-87-132-192.revip4.asianet.co.th) has quit (Ping timeout: 268 seconds)
+2016-11-02 06:27:53	-->	kyan (~kyan@cpe-74-78-187-9.maine.res.rr.com) has joined #bash
+2016-11-02 06:28:48	-->	lompik (~lompik@2001:19f0:6800:1522:5400:ff:fe21:fd3d) has joined #bash
+2016-11-02 06:29:19	<--	haldean (~haldean@li1184-20.members.linode.com) has left #bash
+2016-11-02 06:29:45	--	irc: disconnected from server
+2016-11-02 12:00:56	-->	alyptik (~alyptik@unaffiliated/alyptik) has joined #bash
+2016-11-02 12:00:56		[12:00]
+2016-11-02 12:00:56	--	Topic for #bash is "FAQ: http://mywiki.wooledge.org/BashFAQ | Guide: http://mywiki.wooledge.org/BashGuide | Ref: http://gnu.org/s/bash/manual | http://wiki.bash-hackers.org/ | http://mywiki.wooledge.org/Quotes | Check your script: http://www.shellcheck.net/ | Mailing list: https://lists.gnu.org/mailman/listinfo/help-bash | Devel: http://xrl.us/bmodjy"
+2016-11-02 12:00:56	--	Topic set by geirha on Tue, 18 Oct 2016 10:18:38
+2016-11-02 12:00:57	--	Channel #bash: 1101 nicks (1 op, 0 voices, 1100 normals)
+2016-11-02 12:00:57	***	Buffer Playback...
+2016-11-02 12:00:57	izalove	[21:50:07] if (( v )); then ... [21:50:07]
+2016-11-02 12:00:57	moth	[21:50:12] which is why it's `printf '\n%s'` instead of `printf '%s\n'` [21:50:12]
+2016-11-02 12:00:57	tables_	[21:50:52] how do i denote space or blank in regex? [21:50:52]
+2016-11-02 12:00:57	emg	[21:51:02] moth: but sed is line based so it won't act until it reads a trailing newline [21:51:02]
+2016-11-02 12:00:57	tables_	[21:51:03] in my sed i'm trying to say "space" or "blank" [21:51:03]
+2016-11-02 12:00:57	emg	[21:51:14] well which one? they are different? [21:51:14]
+2016-11-02 12:00:57	emg	[21:51:18] tables_:^^ [21:51:18]
+2016-11-02 12:00:57	izalove	[21:51:19] with blank you mean newline? [21:51:19]
+2016-11-02 12:00:57	emg	[21:51:24] but, [[:blank:]] or [[:space:]] [21:51:24]
+2016-11-02 12:00:57	tables_	[21:51:37] sed "s/hi[[:blank:]]there/hi there/g" [21:51:37]
+2016-11-02 12:00:57	izalove	[21:52:04] tables_: i can never remember the difference between [:blank:] and [:space:] but [[:blank:][:space:]] will work [21:52:04]
+2016-11-02 12:00:57	emg	[21:52:07] tables_: blank is only space or tab, space is \f \n \r \t \v [21:52:07]
+2016-11-02 12:00:57	emg	[21:52:14] and space [21:52:14]
+2016-11-02 12:00:57	emg	[21:52:44] [:blank:] contains [:space:] [21:52:44]
+2016-11-02 12:00:57	izalove	[21:52:58] didn't you just say the opposite? [21:52:58]
+2016-11-02 12:00:57	emg	[21:53:13] yes [21:53:13]
+2016-11-02 12:00:57	emg	[21:53:21] space contains blank [21:53:21]
+2016-11-02 12:00:57	 *	emg [21:53:24] shuts up for a bit [21:53:24]
+2016-11-02 12:00:57	Zeranoe	[21:53:28] It looks like 'v=true; if $v; then echo "v=true"; fi' works too. Which is the preferred way? [21:53:28]
+2016-11-02 12:00:57	izalove	[21:53:45] Zeranoe: of course the preferred way is   if (( v )); then ... [21:53:45]
+2016-11-02 12:00:57	emg	[21:53:50] !bool > Zeranoe [21:53:50]
+2016-11-02 12:00:57	greybot	[21:53:51] Zeranoe: Bash doesn't have boolean variables, but you can shanghai integers for this purpose, just like in C. first=1; errors=0; if ((first)); then ...; if ((! errors)); then ...; ((debug)) && log stuff [21:53:51]
+2016-11-02 12:00:57	Zeranoe	[21:54:20] I mean, that example works [21:54:20]
+2016-11-02 12:00:57	Zeranoe	[21:54:31] So, something has boolean [21:54:31]
+2016-11-02 12:00:57	moth	[21:54:36] emg: `printf foo | sed s/foo/bar` [21:54:36]
+2016-11-02 12:00:57	izalove	[21:54:41] Zeranoe: yeah but you're asking for personal opinions [21:54:41]
+2016-11-02 12:00:57	emg	[21:55:11] Zeranoe: no, you're running the bash builtin utilitie true, which has an exit code of 0 indicating success [21:55:11]
+2016-11-02 12:00:57	emg	[21:55:17] Zeranoe: but there's no reason to run a command [21:55:17]
+2016-11-02 12:00:57	moth	[21:55:18] *s/foo/bar/ [21:55:18]
+2016-11-02 12:00:57	izalove	[21:55:30] (( is a command too... [21:55:30]
+2016-11-02 12:00:57	Zeranoe	[21:55:36] emg: Oh I see [21:55:36]
+2016-11-02 12:00:57	moth	[21:56:51] hmm [21:56:51]
+2016-11-02 12:00:57	emg	[21:57:25] izalove: no it isn't [21:57:25]
+2016-11-02 12:00:57	izalove	[21:57:32] what [21:57:32]
+2016-11-02 12:00:57	tables_	[21:57:58] sed "s/\"[[:blank:]],/\" ,/g" [21:57:58]
+2016-11-02 12:00:57	tables_	[21:58:01] i want blank or space [21:58:01]
+2016-11-02 12:00:57	tables_	[21:58:06] i needd to notate blank or space [21:58:06]
+2016-11-02 12:00:57	emg	[21:58:29] izalove: hmm, ok, listed under compound commands... fine, you win this round [21:58:29]
+2016-11-02 12:00:57	emg	[21:58:43] izalove: but that's like saying a for loop is a command... [21:58:43]
+2016-11-02 12:00:57	izalove	[21:58:50] it is [21:58:50]
+2016-11-02 12:00:57	emg	[21:58:54] tables_: you need to explain what you mean when you say blank or space [21:58:54]
+2016-11-02 12:00:57	emg	[21:59:14] tables_: what is a blank? what is a space? [21:59:14]
+2016-11-02 12:00:57	emg	[21:59:29] tables_: also use single quotes around the outside so you don't need to escape the doubles inside [21:59:29]
+2016-11-02 12:00:57	geirha	[21:59:41] tables_: try adding * [21:59:41]
+2016-11-02 12:00:57	emg	[21:59:45] sed 's/"[[:blank:]],/" ,/g' [21:59:45]
+2016-11-02 12:00:57	geirha	[21:59:56] or \{0,1\} [21:59:56]
+2016-11-02 12:00:57	tables_	[22:00:29] fo shizes [22:00:29]
+2016-11-02 12:00:57	izalove	[22:00:38] oh i see, geirha is guessing that blank == lack of a space [22:00:38]
+2016-11-02 12:00:57	tables_	[22:00:48] fo sheezes [22:00:48]
+2016-11-02 12:00:57	tables_	[22:00:49] thx u [22:00:49]
+2016-11-02 12:00:57	***	Playback Complete.
+2016-11-02 12:01:00	-->	anyofyou (~anyofyou@103.208.85.158) has joined #bash
+2016-11-02 12:01:09	izalove	geirha: guess the lotto numbers
+2016-11-02 12:01:20	<--	irco (~irco@vpn205-066.rzuser.uni-heidelberg.de) has quit (Ping timeout: 268 seconds)
+2016-11-02 12:01:20	<--	clopez (~tau@neutrino.es) has quit (Ping timeout: 268 seconds)
+2016-11-02 12:01:23	geirha	1 2 3 4 5 6 7
+2016-11-02 12:01:27	izalove	thanks
+2016-11-02 12:01:42	izalove	if i win you'll have 50%
+2016-11-02 12:01:51	geirha	sweet!
+2016-11-02 12:02:03	--	Channel created on Sat, 25 Nov 2006 20:42:44
+2016-11-02 12:02:54	Zeranoe	Why does this actually return true? if (( 1 )); then echo "true"; fi . I thought (( )) was a mathematical operator
+2016-11-02 12:03:18	emg	!(( > Zeranoe
+2016-11-02 12:03:19	greybot	Zeranoe: ((...)) is an arithmetic command, which returns an exit status of 0 if the expression is nonzero, or 1 if the expression is zero. Also used as a synonym for "let", if side effects (assignments) are needed. See <http://mywiki.wooledge.org/ArithmeticExpression>.
+2016-11-02 12:03:44	izalove	if the result of the last expression is non zero (== true), (( returns 0 (== true)
+2016-11-02 12:03:51	-->	Streusel (~Anonymous@unaffiliated/streusel) has joined #bash
+2016-11-02 12:04:07	izalove	otherwise it returns 1
+2016-11-02 12:04:17	-->	clopez (~tau@neutrino.es) has joined #bash
+2016-11-02 12:06:15	-->	winem_ (~quassel@p20030057E7461520ACCEA75B4589B59F.dip0.t-ipconnect.de) has joined #bash
+2016-11-02 12:06:29	<--	anyofyou (~anyofyou@103.208.85.158) has quit (Ping timeout: 260 seconds)
+2016-11-02 12:06:32	-->	skweek (~skweek@2607:fe50:0:810b:85d2:64ff:7360:86ec) has joined #bash
+2016-11-02 12:06:53	-->	jetchisel (~jetchisel@opensuse/member/jetchisel) has joined #bash
+2016-11-02 12:07:56	-->	malina (~malina@unaffiliated/malina) has joined #bash
+2016-11-02 12:08:33	<--	turlutton (~turlutton@unaffiliated/turlutton) has quit (Quit: leaving)
+2016-11-02 12:08:46	-->	mnrmnaughmnrgle (~mnrmnaugh@unaffiliated/mnrmnaugh) has joined #bash
+2016-11-02 12:08:56	-->	acetakwas (~acetakwas@105.112.40.226) has joined #bash
+2016-11-02 12:09:33	<--	mnrmnaughmnrgle (~mnrmnaugh@unaffiliated/mnrmnaugh) has quit (Max SendQ exceeded)
+2016-11-02 12:09:58	<--	hahuang61 (~hahuang65@50-242-90-68-static.hfc.comcastbusiness.net) has quit (Ping timeout: 268 seconds)
+2016-11-02 12:10:18	<--	mnrmnaugh (~mnrmnaugh@unaffiliated/mnrmnaugh) has quit (Read error: Connection reset by peer)
+2016-11-02 12:11:35	-->	skered (~dereks@unaffiliated/skered) has joined #bash
+2016-11-02 12:11:50	<--	johnmilton (~johnmilto@96-58-242-186.res.bhn.net) has quit (Ping timeout: 268 seconds)
+2016-11-02 12:12:10	-->	nopolitica (~zul@ppp109-252-29-184.pppoe.spdop.ru) has joined #bash
+2016-11-02 12:13:01	<--	jackbrown (~se@unaffiliated/jackbrown) has quit (Ping timeout: 260 seconds)
+2016-11-02 12:13:43	<--	gelignite (~gelignite@x4db6eae7.dyn.telefonica.de) has quit (Quit: http://bit.ly/1kso8Ta)
+2016-11-02 12:13:44	-->	gr3y5t0ne (~textual@104.238.169.39) has joined #bash
+2016-11-02 12:13:56	<--	Scartozzo (~flavio@2-238-140-4.ip244.fastwebnet.it) has quit (Remote host closed the connection)
+2016-11-02 12:14:05	-->	mnrmnaugh (~mnrmnaugh@unaffiliated/mnrmnaugh) has joined #bash
+2016-11-02 12:14:26	<--	ech0s7 (~ech0s7@198.208.72.23) has quit (Quit: This computer has gone to sleep)
+2016-11-02 12:14:42	-->	KindOne_ (kindone@freenude/topless/kindone) has joined #bash
+2016-11-02 12:15:06	<--	tele_ (~tele@78.8.182.217) has quit (Quit: Leaving)
+2016-11-02 12:15:28	<--	tables_ (~danny@ip-64-134-6-212.public.wayport.net) has quit (Ping timeout: 260 seconds)
+2016-11-02 12:16:15	-->	hahuang61 (~hahuang65@2601:647:4000:d7:7105:5af3:f27a:2530) has joined #bash
+2016-11-02 12:16:15		[12:16]
+2016-11-02 12:16:24	<--	oxhak__ (~OxHaK@219-132-190-109.isp.overthebox.ovh) has quit (Ping timeout: 260 seconds)
+2016-11-02 12:16:52	<--	oxhak_ (~OxHaK@219-132-190-109.isp.overthebox.ovh) has quit (Ping timeout: 260 seconds)
+2016-11-02 12:16:56	<--	KindOne (kindone@freenude/topless/kindone) has quit (Ping timeout: 260 seconds)
+2016-11-02 12:17:29	-->	justanotheruser (~justanoth@unaffiliated/justanotheruser) has joined #bash
+2016-11-02 12:17:42	-->	[r4] (~r4]@staticline-31-183-98-219.toya.net.pl) has joined #bash
+2016-11-02 12:17:58	<--	bapun_ (~bapun@103.14.197.18) has quit (Ping timeout: 245 seconds)
+2016-11-02 12:18:13	<--	blueness_ (~blueness@gentoo/developer/blueness) has quit (Quit: blueness_)
+2016-11-02 12:18:48	<--	oxhak (~OxHaK@unaffiliated/oxhak) has quit (Ping timeout: 260 seconds)
+2016-11-02 12:18:57	--	KindOne_ is now known as KindOne
+2016-11-02 12:19:55	-->	Scartozzo (~flavio@2-238-140-4.ip244.fastwebnet.it) has joined #bash
+2016-11-02 12:20:08	-->	kbdkode (~kbdkode@unaffiliated/kbdkode) has joined #bash
+2016-11-02 12:20:30	<--	nilg (~user@86.122.92.86) has quit (Remote host closed the connection)
+2016-11-02 12:21:36	-->	S00do (~S000do@c-67-190-58-99.hsd1.co.comcast.net) has joined #bash
+2016-11-02 12:22:00	<--	Darby_Crash (~Darby_Cra@net-93-144-46-86.cust.dsl.teletu.it) has quit (Ping timeout: 260 seconds)
+2016-11-02 12:23:37	-->	johnmilton (~johnmilto@96-58-242-186.res.bhn.net) has joined #bash
+2016-11-02 12:24:14	<--	aax (~xaa@91.179.136.153) has quit (Read error: Connection reset by peer)
+2016-11-02 12:25:07	-->	tables_ (~danny@ip-64-134-6-212.public.wayport.net) has joined #bash
+2016-11-02 12:25:44	-->	troulouliou_div2 (~troulouli@unaffiliated/troulouliou-div2/x-0271439) has joined #bash
+2016-11-02 12:25:52	tables_	how do i denote any character?
+2016-11-02 12:25:54	tables_	[[:alphanum:]] isn't enough
+2016-11-02 12:26:34	blind	?
+2016-11-02 12:26:39	jetchisel	you mean [[:alnum:]]
+2016-11-02 12:26:43	tables_	yes alnum
+2016-11-02 12:26:47	tables_	i need any character
+2016-11-02 12:26:49	tables_	a wildcard
+2016-11-02 12:26:55	geirha	.
+2016-11-02 12:27:11	-->	tost (~lurker@86.63.168.151) has joined #bash
+2016-11-02 12:27:27	tables_	thx
+2016-11-02 12:27:33	tables_	it works in sed?
+2016-11-02 12:27:44	<--	gr3y5t0ne (~textual@104.238.169.39) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-11-02 12:27:44	jetchisel	tias
+2016-11-02 12:28:08	<--	skweek (~skweek@2607:fe50:0:810b:85d2:64ff:7360:86ec) has quit (Ping timeout: 260 seconds)
+2016-11-02 12:28:09	<--	JanC (~janc@lugwv/member/JanC) has quit (Remote host closed the connection)
+2016-11-02 12:28:17	<--	toster_ (~lurker@86.63.168.151) has quit (Read error: Connection reset by peer)
+2016-11-02 12:28:25	<--	Fischmiep (~Fischmiep@46-59-161-26.lsn7.wtnet.de) has quit (Ping timeout: 260 seconds)
+2016-11-02 12:28:32	-->	JanC (~janc@lugwv/member/JanC) has joined #bash
+2016-11-02 12:29:28	<--	davidfetter_ge (~chatzilla@64.129.231.6) has quit (Ping timeout: 260 seconds)
+2016-11-02 12:29:56	<--	nopolitica (~zul@ppp109-252-29-184.pppoe.spdop.ru) has quit (Ping timeout: 260 seconds)
+2016-11-02 12:29:57	-->	davidfetter_ge (~chatzilla@64.129.231.6) has joined #bash
+2016-11-02 12:31:02	<--	candide (~pbot3@unaffiliated/pragmatic-chaos/bot/candide) has quit (Remote host closed the connection)
+2016-11-02 12:31:19	-->	candide (~pbot3@unaffiliated/pragmatic-chaos/bot/candide) has joined #bash
+2016-11-02 12:31:19		[12:31]
+2016-11-02 12:31:20	--	Mode #bash [+o candide] by ChanServ
+2016-11-02 12:31:58	-->	jathan (~jathan@arcmty01.izabc.com) has joined #bash
+2016-11-02 12:32:17	<--	johnmilton (~johnmilto@96-58-242-186.res.bhn.net) has quit (Remote host closed the connection)
+2016-11-02 12:33:10	<--	Streusel (~Anonymous@unaffiliated/streusel) has quit (Quit: Computer has gone to sleep.)
+2016-11-02 12:33:16	-->	blueness_ (~blueness@gentoo/developer/blueness) has joined #bash
+2016-11-02 12:33:53	<--	cdg (~cdg@c-69-94-206-50.hs.gigamonster.net) has quit (Remote host closed the connection)
+2016-11-02 12:34:19	<--	TanPy (~tanpy@tst-ext.thestreet.com) has quit
+2016-11-02 12:35:08	tables_	{"cc":{"dt":"2016-10-31T17:05:00","station":"Chino, Chino Airport","t":20,"tf":20,"p":0,"s":"d300","ws":2,"uv":5,"wn":"SW","wd":225,"rh":52,"pr":1015,"v":16000,"dp":9,"pw":0,"c":26,"ds":2,"pt":6}
+2016-11-02 12:35:22	tables_	how do i do sed "s/\",/\n/g"
+2016-11-02 12:35:25	tables_	when it needs to?
+2016-11-02 12:35:33	tables_	if you see the part of the string "Chino, Chino Airport"
+2016-11-02 12:35:42	tables_	it should not do a newline
+2016-11-02 12:35:53	tables_	i meant sed "s/,/\n/g"
+2016-11-02 12:36:12	-->	dmin7b5 (~dmin7b5@99-39-90-28.lightspeed.rcsntx.sbcglobal.net) has joined #bash
+2016-11-02 12:37:11	<--	kurahaupo__ (~kurahaupo@ppp121-44-214-73.bras1.syd2.internode.on.net) has quit (Ping timeout: 244 seconds)
+2016-11-02 12:37:18	<--	slappy16 (~Adium@209.66.91.113) has quit (Read error: Connection reset by peer)
+2016-11-02 12:37:39	-->	slappy16 (~Adium@209.66.91.113) has joined #bash
+2016-11-02 12:38:35	-->	_nrke (~Enrique@71.red-83-50-103.dynamicip.rima-tde.net) has joined #bash
+2016-11-02 12:38:50	-->	Sasazuka (~Sasazuka@unaffiliated/sasazuka) has joined #bash
+2016-11-02 12:39:12	<--	malina (~malina@unaffiliated/malina) has quit (Ping timeout: 250 seconds)
+2016-11-02 12:39:28	-->	[ADN] (~ADN@host81-158-143-101.range81-158.btcentralplus.com) has joined #bash
+2016-11-02 12:40:04	<--	vg_ (~vg@192.19.218.250) has quit (Quit: Leaving)
+2016-11-02 12:40:41	<--	mycelium (~fungal@unaffiliated/fungal) has quit (Quit: mycelium)
+2016-11-02 12:40:53	go|dfish	tables_: echo '{"cc":{"dt":"2016-10-31T17:05:00","station":"Chino, Chino Airport","t":20,"tf":20,"p":0,"s":"d300","ws":2,"uv":5,"wn":"SW","wd":225,"rh":52,"pr":1015,"v":16000,"dp":9,"pw":0,"c":26,"ds":2,"pt":6}}' | python -m json.tool
+2016-11-02 12:41:50	tables_	i'm trying to make a json tool that automatically parses all values
+2016-11-02 12:41:57	tables_	does json.tool parse all the values for me?
+2016-11-02 12:42:50	geirha	that's what json parsers usually do
+2016-11-02 12:43:36	<--	mnrmnaugh (~mnrmnaugh@unaffiliated/mnrmnaugh) has quit (Read error: Connection reset by peer)
+2016-11-02 12:44:18	-->	mnrmnaugh (~mnrmnaugh@unaffiliated/mnrmnaugh) has joined #bash
+2016-11-02 12:46:06	<--	mnrmnaugh (~mnrmnaugh@unaffiliated/mnrmnaugh) has quit (Read error: Connection reset by peer)
+2016-11-02 12:47:55	<--	tables_ (~danny@ip-64-134-6-212.public.wayport.net) has quit (Ping timeout: 265 seconds)
+2016-11-02 12:47:55		[12:47]
+2016-11-02 12:48:10	-->	tik-tok (~username@gateway/tor-sasl/tik-tok) has joined #bash
+2016-11-02 12:49:03	-->	impermanence (180ace91@gateway/web/cgi-irc/kiwiirc.com/ip.24.10.206.145) has joined #bash
+2016-11-02 12:49:08	<--	winem_ (~quassel@p20030057E7461520ACCEA75B4589B59F.dip0.t-ipconnect.de) has quit (Ping timeout: 260 seconds)
+2016-11-02 12:50:08	-->	anton02 (~quassel@lal1651212.lnk.telstra.net) has joined #bash
+2016-11-02 12:50:14	<--	lonewulf1 (~lonewulf@24-107-25-247.dhcp.stls.mo.charter.com) has quit (Quit: leaving)
+2016-11-02 12:51:56	<--	acetakwas (~acetakwas@105.112.40.226) has quit (Ping timeout: 260 seconds)
+2016-11-02 12:52:25	-->	lonewulf` (~lonewulf@unaffiliated/lonewulf/x-3292126) has joined #bash
+2016-11-02 12:52:35	<--	anton02 (~quassel@lal1651212.lnk.telstra.net) has quit (Remote host closed the connection)
+2016-11-02 12:53:45	<--	jabular (~jabular@unaffiliated/jabular) has quit (Quit: leaving)
+2016-11-02 12:53:56	<--	S00do (~S000do@c-67-190-58-99.hsd1.co.comcast.net) has quit (Quit: Leaving)
+2016-11-02 12:54:25	<--	Rapture (~textual@50-232-118-138-static.hfc.comcastbusiness.net) has quit (Quit: Textual IRC Client: www.textualapp.com)
+2016-11-02 12:54:53	-->	jabular (~jabular@unaffiliated/jabular) has joined #bash
+2016-11-02 12:54:54	<--	irc-5225225 (~weechat@gateway/tor-sasl/irc-5225225) has quit (Remote host closed the connection)
+2016-11-02 12:55:11	-->	irc-52251 (~weechat@gateway/tor-sasl/irc-5225225) has joined #bash
+2016-11-02 12:55:24	<--	cdown (~cdown@mobile-166-176-56-51.mycingular.net) has quit (Read error: Connection reset by peer)
+2016-11-02 12:55:26	-->	nopolitica (~zul@ppp109-252-29-184.pppoe.spdop.ru) has joined #bash
+2016-11-02 12:55:39	--	irc-52251 is now known as irc-5225225
+2016-11-02 12:56:04	-->	mnrmnaugh (~mnrmnaugh@unaffiliated/mnrmnaugh) has joined #bash
+2016-11-02 12:56:47	-->	anuxivm (~anuxi@92.177.99.40) has joined #bash
+2016-11-02 12:56:54	<--	Jackneill_ (~Jackneill@unaffiliated/jackneill) has quit (Remote host closed the connection)
+2016-11-02 12:57:32	-->	cdown (~cdown@mobile-166-176-56-51.mycingular.net) has joined #bash
+2016-11-02 12:57:40	<--	nOgAnOo (sid146237@gateway/web/irccloud.com/x-owqiljyghzvqjcqm) has quit (Ping timeout: 250 seconds)
+2016-11-02 12:58:20	-->	malina (~malina@unaffiliated/malina) has joined #bash
+2016-11-02 12:59:24	-->	cdg (~cdg@c-69-94-206-50.hs.gigamonster.net) has joined #bash
+2016-11-02 13:00:40	-->	Jobava (uid133806@gateway/web/irccloud.com/x-zxktssevxjiwfofs) has joined #bash
+2016-11-02 13:00:44	-->	nOgAnOo (sid146237@gateway/web/irccloud.com/x-qzaxushlbdelzugi) has joined #bash
+2016-11-02 13:00:45	-->	quazimodo (~quazimodo@202.168.10.81) has joined #bash
+2016-11-02 13:01:01	<--	impermanence (180ace91@gateway/web/cgi-irc/kiwiirc.com/ip.24.10.206.145) has quit (Quit: http://www.kiwiirc.com/ - A hand crafted IRC client)
+2016-11-02 13:02:10	-->	anyofyou (~anyofyou@103.208.85.158) has joined #bash
+2016-11-02 13:02:27	-->	D630 (~D630@unaffiliated/d630) has joined #bash
+2016-11-02 13:03:46	-->	tables_ (~danny@ip-64-134-6-212.public.wayport.net) has joined #bash
+2016-11-02 13:03:46		[13:03]
+2016-11-02 13:04:05	<--	Jolt2bolt (~Jolt2bolt@200.93.78.184) has quit (Quit: Energize..... POFFF!)
+2016-11-02 13:04:33	-->	dendazen (~dendazen@pool-108-53-218-126.nwrknj.fios.verizon.net) has joined #bash
+2016-11-02 13:05:26	<--	Craniumguy (~Gloria@cpe-97-98-169-24.neb.res.rr.com) has quit (Quit: Oh no, my bouncer died!)
+2016-11-02 13:05:44	-->	pheanex (~pheanex@2001-4dd1-5310-0-3997-bb2e-8de1-60f9.ipv6dyn.netcologne.de) has joined #bash
+2016-11-02 13:05:52	<--	troulouliou_div2 (~troulouli@unaffiliated/troulouliou-div2/x-0271439) has quit (Quit: Leaving)
+2016-11-02 13:05:56	<--	[ADN] (~ADN@host81-158-143-101.range81-158.btcentralplus.com) has quit (Ping timeout: 260 seconds)
+2016-11-02 13:05:58	-->	jsdklfjadkfj (~x@unaffiliated/sdfgsdfg) has joined #bash
+2016-11-02 13:06:41	<--	jeremyhall (~quassel@rrcs-76-79-249-215.west.biz.rr.com) has quit (Ping timeout: 260 seconds)
+2016-11-02 13:06:42	<--	phorloop (~phorloop@203.213.239.151) has quit (Quit: Byeee...)
+2016-11-02 13:07:55	<--	riemann (~riemann@ip-222-88.ists.pl) has quit (Quit: Leaving)
+2016-11-02 13:07:56	<--	anyofyou (~anyofyou@103.208.85.158) has quit (Ping timeout: 268 seconds)
+2016-11-02 13:08:02	<--	High_Priest (~hp@unaffiliated/high-priest/x-8117523) has quit (Remote host closed the connection)
+2016-11-02 13:08:57	-->	Craniumguy (~Gloria@cpe-97-98-169-24.neb.res.rr.com) has joined #bash
+2016-11-02 13:10:24	<--	tables_ (~danny@ip-64-134-6-212.public.wayport.net) has quit (Ping timeout: 250 seconds)
+2016-11-02 13:10:58	-->	tables_ (~danny@ip-64-134-6-212.public.wayport.net) has joined #bash
+2016-11-02 13:11:35	-->	e14 (~e14@73.114.32.103) has joined #bash
+2016-11-02 13:11:53	-->	fishcooker (~chika@139.195.136.125) has joined #bash
+2016-11-02 13:12:34	<--	malina (~malina@unaffiliated/malina) has quit (Read error: Connection reset by peer)
+2016-11-02 13:12:40	-->	gr3y5t0ne (~textual@104.238.169.135) has joined #bash
+2016-11-02 13:12:51	<--	e14 (~e14@73.114.32.103) has quit (Client Quit)
+2016-11-02 13:13:41	<--	talsamon (~talsamon@193-80-186-99.adsl.highway.telekom.at) has quit (Ping timeout: 256 seconds)
+2016-11-02 13:14:35	-->	talsamon (~talsamon@91-115-88-186.adsl.highway.telekom.at) has joined #bash
+2016-11-02 13:16:18	<--	ZyX-I (~ZyX-I@broadband-77-37-230-77.nationalcablenetworks.ru) has quit (Ping timeout: 245 seconds)
+2016-11-02 13:17:48	-->	node9 (~node9@CPE0c473dd24701-CM0c473dd24700.cpe.net.cable.rogers.com) has joined #bash
+2016-11-02 13:18:26	-->	MaxFrost (~MaxFrost@2601:444:0:1f4f:e1f8:416f:c776:f1e6) has joined #bash
+2016-11-02 13:18:31	-->	impermanence (180ace91@gateway/web/cgi-irc/kiwiirc.com/ip.24.10.206.145) has joined #bash
+2016-11-02 13:21:09	<--	jetchisel (~jetchisel@opensuse/member/jetchisel) has quit (Ping timeout: 260 seconds)
+2016-11-02 13:21:09		[13:21]
+2016-11-02 13:21:14	<--	dendazen (~dendazen@pool-108-53-218-126.nwrknj.fios.verizon.net) has quit (Read error: Connection reset by peer)
+2016-11-02 13:21:16	<--	hashpuppy (uid43164@gateway/web/irccloud.com/x-otdcjpnxgyplymzi) has quit (Quit: Connection closed for inactivity)
+2016-11-02 13:24:32	-->	e14 (~e14@73.114.32.103) has joined #bash
+2016-11-02 13:25:16	-->	High_Priest (~hp@unaffiliated/high-priest/x-8117523) has joined #bash
+2016-11-02 13:25:18	<--	awb (~awb@108-81-230-18.lightspeed.sntcca.sbcglobal.net) has quit (Quit: awb)
+2016-11-02 13:26:05	<--	mnrmnaugh (~mnrmnaugh@unaffiliated/mnrmnaugh) has quit (Read error: Connection reset by peer)
+2016-11-02 13:26:06	<--	jottr (~jottr@unaffiliated/jottr) has quit (Ping timeout: 265 seconds)
+2016-11-02 13:26:30	-->	mnrmnaugh (~mnrmnaugh@unaffiliated/mnrmnaugh) has joined #bash
+2016-11-02 13:30:13	<--	nopolitica (~zul@ppp109-252-29-184.pppoe.spdop.ru) has quit (Ping timeout: 252 seconds)
+2016-11-02 13:30:42	<--	pheanex (~pheanex@2001-4dd1-5310-0-3997-bb2e-8de1-60f9.ipv6dyn.netcologne.de) has quit (Quit: Leaving.)
+2016-11-02 13:31:53	<--	rcernin (~rcernin@77.240.179.195) has quit (Quit: WeeChat 1.5)
+2016-11-02 13:32:55	-->	node9_ (~node9@177.154.139.194) has joined #bash
+2016-11-02 13:32:59	<--	cdown (~cdown@mobile-166-176-56-51.mycingular.net) has quit (Read error: Connection reset by peer)
+2016-11-02 13:33:54	-->	nopolitica (~zul@ppp109-252-29-184.pppoe.spdop.ru) has joined #bash
+2016-11-02 13:33:56	-->	winem_ (~quassel@p20030057E7461520ACCEA75B4589B59F.dip0.t-ipconnect.de) has joined #bash
+2016-11-02 13:34:05	-->	wonderworld (~ww@ip-176-198-197-145.hsi05.unitymediagroup.de) has joined #bash
+2016-11-02 13:34:43	-->	skweek (~skweek@2607:fe50:0:810b:85d2:64ff:7360:86ec) has joined #bash
+2016-11-02 13:35:12	<--	node9 (~node9@CPE0c473dd24701-CM0c473dd24700.cpe.net.cable.rogers.com) has quit (Ping timeout: 256 seconds)
+2016-11-02 13:38:37	<--	winem_ (~quassel@p20030057E7461520ACCEA75B4589B59F.dip0.t-ipconnect.de) has quit (Ping timeout: 260 seconds)
+2016-11-02 13:38:37		[13:38]
+2016-11-02 13:38:58	<--	olalonde (uid136@gateway/web/irccloud.com/x-lteuizpmgrbehwtb) has quit (Quit: Connection closed for inactivity)
+2016-11-02 13:39:28	<--	tables_ (~danny@ip-64-134-6-212.public.wayport.net) has quit (Ping timeout: 260 seconds)
+2016-11-02 13:40:00	<--	keltim (~keltim@173.212.48.130) has quit (Ping timeout: 268 seconds)
+2016-11-02 13:41:11	--	Naib_ is now known as Naib
+2016-11-02 13:41:26	<--	[r4] (~r4]@staticline-31-183-98-219.toya.net.pl) has quit (Ping timeout: 256 seconds)
+2016-11-02 13:42:44	<--	devtea (~tdreyer1@unaffiliated/tdreyer1) has quit (Ping timeout: 260 seconds)
+2016-11-02 13:43:55	<--	klaas (klaas@simply.kla.as) has quit (Quit: ZNC - http://znc.sourceforge.net)
+2016-11-02 13:44:56	<--	dodobrain (~dodobrain@unaffiliated/freakabcd) has quit (Ping timeout: 268 seconds)
+2016-11-02 13:45:01	<--	pasteban (~pasteban@157.146.251.23.bc.googleusercontent.com) has quit (Remote host closed the connection)
+2016-11-02 13:46:05	<--	afuentes (~kusanagi@201.165.35.37.dynamic.jazztel.es) has quit (Ping timeout: 260 seconds)
+2016-11-02 13:46:07	-->	pasteban (~pasteban@157.146.251.23.bc.googleusercontent.com) has joined #bash
+2016-11-02 13:46:28	-->	John[Lisbeth] (~user@52.165.40.155) has joined #bash
+2016-11-02 13:46:39	<--	e14 (~e14@73.114.32.103) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-11-02 13:46:57	-->	r00tninja (~r00tninja@unaffiliated/r00tninja) has joined #bash
+2016-11-02 13:47:31	--	MillerBoss is now known as Contoso
+2016-11-02 13:48:01	--	Contoso is now known as Guest10691
+2016-11-02 13:48:42	--	Guest10691 is now known as MillerBoss
+2016-11-02 13:48:59	<--	Zeranoe (~Zeranoe@c-71-227-126-94.hsd1.mi.comcast.net) has quit (Quit: Leaving)
+2016-11-02 13:49:06	-->	e14 (~e14@73.114.32.103) has joined #bash
+2016-11-02 13:49:58	<--	John[Lisbeth] (~user@52.165.40.155) has quit (Remote host closed the connection)
+2016-11-02 13:50:01	<--	checkbot (~checkbot@157.146.251.23.bc.googleusercontent.com) has quit (Remote host closed the connection)
+2016-11-02 13:50:37	-->	checkbot (~checkbot@157.146.251.23.bc.googleusercontent.com) has joined #bash
+2016-11-02 13:51:04	<--	firstdayonthejob (~firstdayo@cpc99346-croy26-2-0-cust153.19-2.cable.virginm.net) has quit (Ping timeout: 256 seconds)
+2016-11-02 13:51:06	-->	John[Lisbeth] (~user@52.165.40.155) has joined #bash
+2016-11-02 13:51:50	-->	jottr (~jottr@unaffiliated/jottr) has joined #bash
+2016-11-02 13:53:29	<--	gr3y5t0ne (~textual@104.238.169.135) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-11-02 13:54:10	<--	jathan (~jathan@arcmty01.izabc.com) has quit (Ping timeout: 250 seconds)
+2016-11-02 13:54:10		[13:54]
+2016-11-02 13:54:30	-->	|narcos| (uid99359@gateway/web/irccloud.com/x-oiqytpdrwrernflw) has joined #bash
+2016-11-02 13:54:53	-->	nelek_ (~nf@ip-83-134-175-17.dsl.scarlet.be) has joined #bash
+2016-11-02 13:55:32	<--	myhau (~myhau@host-94-251-132-31.dynamic.mm.pl) has quit (Ping timeout: 252 seconds)
+2016-11-02 13:56:21	<--	mnrmnaugh (~mnrmnaugh@unaffiliated/mnrmnaugh) has quit (Read error: Connection reset by peer)
+2016-11-02 13:56:42	-->	mnrmnaugh (~mnrmnaugh@unaffiliated/mnrmnaugh) has joined #bash
+2016-11-02 13:56:56	-->	jathan (~jathan@arcmty01.izabc.com) has joined #bash
+2016-11-02 13:57:33	<--	afkk (~nf@ip-83-134-175-208.dsl.scarlet.be) has quit (Ping timeout: 260 seconds)
+2016-11-02 13:58:20	<--	fishcooker (~chika@139.195.136.125) has quit (Ping timeout: 250 seconds)
+2016-11-02 13:58:28	<--	Anja_ (~Anja@49.50.252.82) has quit (Quit: Leaving)
+2016-11-02 13:59:01	<--	d0nn1e (~d0nn1e@cpe-104-138-218-156.triad.res.rr.com) has quit (Ping timeout: 256 seconds)
+2016-11-02 14:00:21	-->	d0nn1e (~d0nn1e@104.138.218.156) has joined #bash
+2016-11-02 14:03:03	<--	JacobsLadd3r (~textual@megapurple.laika.com) has quit (Quit: Textual IRC Client: www.textualapp.com)
+2016-11-02 14:03:41	-->	Anja (~Anja@49.50.252.82) has joined #bash
+2016-11-02 14:03:42	-->	anyofyou (~anyofyou@103.208.85.158) has joined #bash
+2016-11-02 14:03:44	<--	ron_o (~ron_o@unaffiliated/ron-o/x-8242187) has quit (Ping timeout: 260 seconds)
+2016-11-02 14:04:45	-->	JanC_ (~janc@lugwv/member/JanC) has joined #bash
+2016-11-02 14:05:52	<--	JanC (~janc@lugwv/member/JanC) has quit (Ping timeout: 250 seconds)
+2016-11-02 14:06:00	--	JanC_ is now known as JanC
+2016-11-02 14:06:16	<--	Filystyn (~piotr@unaffiliated/filystyn) has quit (Quit: Konversation terminated!)
+2016-11-02 14:06:25	<--	nitric (~nitric@unaffiliated/nitric) has quit (Ping timeout: 260 seconds)
+2016-11-02 14:06:28	<--	e14 (~e14@73.114.32.103) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-11-02 14:08:18	<--	dmin7b5 (~dmin7b5@99-39-90-28.lightspeed.rcsntx.sbcglobal.net) has quit (Quit: Textual IRC Client: www.textualapp.com)
+2016-11-02 14:09:05	<--	anyofyou (~anyofyou@103.208.85.158) has quit (Ping timeout: 252 seconds)
+2016-11-02 14:12:07	<--	_mirko_ (~mirko@unaffiliated/-mirko-/x-2946915) has quit (Quit: WeeChat 1.6)
+2016-11-02 14:12:07		[14:12]
+2016-11-02 14:12:20	-->	Noldorin (~noldorin@unaffiliated/noldorin) has joined #bash
+2016-11-02 14:12:48	<--	cdg (~cdg@c-69-94-206-50.hs.gigamonster.net) has quit (Remote host closed the connection)
+2016-11-02 14:13:02	-->	e14 (~e14@73.114.32.103) has joined #bash
+2016-11-02 14:13:53	-->	gr3y5t0ne (~textual@104.238.169.68) has joined #bash
+2016-11-02 14:14:18	<--	jottr (~jottr@unaffiliated/jottr) has quit (Ping timeout: 256 seconds)
+2016-11-02 14:14:28	<--	tdy (~tdy@unaffiliated/tdy) has quit (Ping timeout: 260 seconds)
