@@ -10932,3 +10932,74 @@
 2016-11-02 14:33:57	TheWhisper	Basically, have the VPN allow access to the LAN but only to one device on said LAN
 2016-11-02 14:35:05	TheWhisper	I currently have it setup: client -> VPN (+ device VPN is on) -> all devices on LAN
 2016-11-02 14:35:31	TheWhisper	but I want to limit it so that it's: client -> VPN (+ device VPN is on) -> 1 device on LAN (with all other inaccessable)
+2016-11-02 14:40:13	@dazo	TheWhisper: sounds like you need to look into firewalling.  That is the best and most common way to restrict what VPN client can do over the VPN
+2016-11-02 14:40:15	-->	bluenemo (~bluenemo@unaffiliated/bluenemo) has joined #openvpn
+2016-11-02 14:40:36	TheWhisper	dazo, firewall on where? On the VPN device?
+2016-11-02 14:40:54	@dazo	TheWhisper: on the VPN server side
+2016-11-02 14:40:57	TheWhisper	I was working on some iptables rules, but figured there had to be a better way
+2016-11-02 14:41:23	TheWhisper	I'm surprised there's no way to just like 'route [vpn ip] [lan ip]
+2016-11-02 14:41:27	@dazo	iptables is by far the best way ... that can't easily be manipulated by OpenVPN
+2016-11-02 14:41:58	--	Vampire0_ is now known as Vampire0
+2016-11-02 14:42:13	@dazo	you can do that too of course, the server can route single IP addresses ... but the client can still add its own routing entries, circumventing that
+2016-11-02 14:42:29	@dazo	remember that security comes in layers
+2016-11-02 14:43:02	TheWhisper	Wouldn't the server's config have to mirror what the client's is requesting?
+2016-11-02 14:43:21	@dazo	not when it comes to routing
+2016-11-02 14:43:39	TheWhisper	Interesting
+2016-11-02 14:43:50	@dazo	not at all ... this is how TCP/IP is designed
+2016-11-02 14:44:03	TheWhisper	It's interesting if you weren't already aware of it :P
+2016-11-02 14:44:13	TheWhisper	This is what I was working on for iptables: http://hastebin.com/ogumasuzim.css
+2016-11-02 14:44:14	@vpnHelper	Title: hastebin (at hastebin.com)
+2016-11-02 14:44:21	TheWhisper	The VPN is hosted on a NAS
+2016-11-02 14:44:35	@dazo	that looks quite sane
+2016-11-02 14:44:58	TheWhisper	This would allow me to access the NAS' ports as well as a single device's port on the LAN?
+2016-11-02 14:45:22	@dazo	if you want to be even stricter, you'll add similar routing rules on the devices representing LAN DEVICE IP and NAS IP ... you can't filter on tun+ device, but use the VPN client IP
+2016-11-02 14:45:51	@dazo	line 1 allows all ports on NAS IP on traffic coming from the tun0 device
+2016-11-02 14:46:15	@dazo	all VPN clients on all NAS IP ports, that is
+2016-11-02 14:46:30	@dazo	line 2 allows all VPN clients on tun0 to access PORT on LAN DEVICE IP
+2016-11-02 14:46:41	@dazo	and line 3 denies everything else
+2016-11-02 14:46:57	TheWhisper	Would I need similar OUTPUT rules too?
+2016-11-02 14:47:07	@dazo	no, wait a minute!
+2016-11-02 14:47:12	@dazo	you need this in FORWARD
+2016-11-02 14:47:44	@dazo	INPUT/OUTPUT chains are for "localhost" .... and FORWARD is for the traffic not destined to "localhost"
+2016-11-02 14:48:14	TheWhisper	Ah, for packets being routed through the box
+2016-11-02 14:48:14		[14:48]
+2016-11-02 14:48:14	@dazo	(it's 1:45am where I am ... and I was just about to call it a day :))
+2016-11-02 14:48:19	@dazo	yeah, exactly
+2016-11-02 14:48:28	TheWhisper	haha sorry to keep you up :P
+2016-11-02 14:48:34	@dazo	no worries :(
+2016-11-02 14:48:35	@dazo	:)
+2016-11-02 14:49:05	TheWhisper	Okay, let me give this a try again
+2016-11-02 14:49:21	@dazo	I'd do a few hardening details though .... I'd add -s VPN_IP_RANGE
+2016-11-02 14:49:24	TheWhisper	I can't get my iptables-restore to work
+2016-11-02 14:49:36	@dazo	try iptables-save first?
+2016-11-02 14:49:55	TheWhisper	I saved it to a file, added my rules into that file, and then ran iptables-restore
+2016-11-02 14:50:04	TheWhisper	but it's complaining that a chain already exists in iptables
+2016-11-02 14:50:10	@dazo	ahh, can you pastebin the save?
+2016-11-02 14:50:11	TheWhisper	so I'm thinking I need to flush all my rules
+2016-11-02 14:50:20	TheWhisper	sure, one minute
+2016-11-02 14:50:30	TheWhisper	Can I PM you?
+2016-11-02 14:50:42	@dazo	for the pastebin URL, yes
+2016-11-02 14:51:19	@dazo	it's something duplicated if iptables-restore fails ... it will normally flush everything by default before applying the new rule set
+2016-11-02 14:57:00		[14:51]
+2016-11-02 15:16:30	<--	chachasmooth (~chachasmo@unaffiliated/chachasmooth) has quit (Ping timeout: 250 seconds)
+2016-11-02 15:16:30		[15:16]
+2016-11-02 15:19:14	-->	chachasmooth (~chachasmo@unaffiliated/chachasmooth) has joined #openvpn
+2016-11-02 15:21:21	<--	SviMik (~pIRCuser8@131-250-35-213.dyn.estpak.ee) has quit (Quit: svimik@mail.ru)
+2016-11-02 15:27:00		[15:21]
+2016-11-02 15:33:34	-->	DrCode (~DrCode@5.28.134.3) has joined #openvpn
+2016-11-02 15:34:54	<--	deadhead9 (~deadhead@85.159.237.208) has quit (Read error: Connection reset by peer)
+2016-11-02 15:35:15	-->	deadhead9 (~deadhead@184.75.220.122) has joined #openvpn
+2016-11-02 15:41:00		[15:35]
+2016-11-02 15:57:26	<--	shootbird (~quassel@beepbeep.serverpit.com) has quit (Ping timeout: 256 seconds)
+2016-11-02 15:57:26		[15:57]
+2016-11-02 16:04:45	-->	barajasfab (~fabian@2606:6000:6115:d900:c00a:732b:bb6a:57a0) has joined #openvpn
+2016-11-02 16:10:00		[16:04]
+2016-11-02 16:20:14	--	You are now known as Poeple
+2016-11-02 16:20:32	--	You are now known as People
+2016-11-02 16:21:20	-->	shootbird (~quassel@beepbeep.serverpit.com) has joined #openvpn
+2016-11-02 16:27:00		[16:21]
+2016-11-02 16:44:04	-->	Vampire0_ (~Vampire@jEdit/Vampire) has joined #openvpn
+2016-11-02 16:44:04		[16:44]
+2016-11-02 16:47:39	<--	Vampire0 (~Vampire@jEdit/Vampire) has quit (Ping timeout: 265 seconds)
+2016-11-02 16:53:00		[16:47]
+2016-11-02 16:55:04	<--	skylite (~skylite@5402F4FC.dsl.pool.telekom.hu) has quit (Ping timeout: 260 seconds)
