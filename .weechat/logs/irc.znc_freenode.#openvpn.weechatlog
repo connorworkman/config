@@ -11413,3 +11413,370 @@
 2016-11-03 04:47:16	@dazo	hehe ... good point!
 2016-11-03 04:47:56	@dazo	SJVN is actually good tech writer, IMHO .... reflected, correct most of the time and straight to the point
 2016-11-03 04:48:35	-->	APTX (~APTX@unaffiliated/aptx) has joined #openvpn
+2016-11-03 04:50:11	skyroveRR	"What's far more troubling is that the Santa Fe ISP didn't have any of the SYN flood defenses up" <- LOL... An ISP doesn't have basic defenses up?!
+2016-11-03 04:50:22	@dazo	exactly!
+2016-11-03 04:51:39	skyroveRR	The only time they probably have "defenses" up is when they are being pinged to death, and so they figure let's block ICMP altogether instead of just rate limiting ping, and then they brag about how successful they have been by blocking the entire ICMP universe.
+2016-11-03 04:54:25	skyroveRR	(at least that's what my ISP does, and is implicitly proud of doing for the most part. )
+2016-11-03 04:56:54	-->	SkinnyMelon (~SkinnyMel@51B61ADB.dsl.pool.telekom.hu) has joined #openvpn
+2016-11-03 05:00:53	@plaisthos	that stuff costs money
+2016-11-03 05:01:18	@plaisthos	and rate limiting is harder than it sounds
+2016-11-03 05:01:28	@plaisthos	your routers might have only basic acl support
+2016-11-03 05:01:35	@plaisthos	which is drop/don't drop
+2016-11-03 05:07:00		[05:01]
+2016-11-03 05:08:50	skyroveRR	If you can't recognise and act on the incoming traffic which is as simple as ICMP, and can't understand its significance on the rest of your network, you probably shouldn't be running an ISP... rate limiting is just part of the story.
+2016-11-03 05:09:52	@plaisthos	skyroveRR: it is not as simple as that
+2016-11-03 05:11:41	skyroveRR	I know it isn't as simple, but then you shouldn't be going around "justfiying" that what you did was a very good decision.
+2016-11-03 05:15:43	@plaisthos	your shiny 700k cisco router might only do acls
+2016-11-03 05:16:48	skyroveRR	And it might *just* be using default usernames and passwords and listening on ports 22 globally.
+2016-11-03 05:17:36	skyroveRR	(know a few IP addresses that run cisco VPNs and still have "admin/admin" as username and passwords.
+2016-11-03 05:19:20	<--	gerforce (~gerforce@112.26.67.63) has quit (Quit: WeeChat 1.0.1)
+2016-11-03 05:20:01	-->	Olipro (~Olipro@uncyclopedia/pdpc.21for7.olipro) has joined #openvpn
+2016-11-03 05:26:00		[05:20]
+2016-11-03 05:33:53	<--	shiriru (~shiriru@213.91.236.225) has quit (Quit: Leaving)
+2016-11-03 05:39:00		[05:33]
+2016-11-03 05:52:48	-->	nicehsz (~nicehsz@26.80-203-141.nextgentel.com) has joined #openvpn
+2016-11-03 05:55:54	nicehsz	Hi. Can somebody please let me know of any good tools to ensure all traffic is sent over the VPN connection, and if connection to the VPN-server is unavailable not allow any traffic thru other interfaces.   Suggestions for both Windows & Linux welcomed..many thanks in advance anyway for any input..  :]
+2016-11-03 05:55:54		[05:55]
+2016-11-03 05:56:52	nicehsz	or rather than tools, if any decent methods using common OS functionality   (suggestions for IP table/firewall rules to accomplish the same, or such..)
+2016-11-03 06:02:00		[05:56]
+2016-11-03 06:02:18	-->	j12t (~j12t@c-50-131-55-96.hsd1.ca.comcast.net) has joined #openvpn
+2016-11-03 06:03:36	-->	Vampire0_ (~Vampire@jEdit/Vampire) has joined #openvpn
+2016-11-03 06:03:36	SviMik	nicehsz as an option - remove default route, and add route to your gateway (router) for VPN server only.
+2016-11-03 06:04:46	SviMik	nicehsz then only VPN server will be accessible through the internet, and without VPN running nothing else will be.
+2016-11-03 06:05:27	<--	Vampire0 (~Vampire@jEdit/Vampire) has quit (Ping timeout: 268 seconds)
+2016-11-03 06:06:37	nicehsz	hm.. cool, not all sure what that means but will try google around for more info on that -- many thanks!
+2016-11-03 06:07:15	nicehsz	"remove default route" in particular.. but guessing I'll figure that w Google or the Openvpn docs
+2016-11-03 06:07:40	-->	MikeDebian (~ML@a81-84-80-8.cpe.netcabo.pt) has joined #openvpn
+2016-11-03 06:07:47	SviMik	(but I guess the routing table gets overwrited by DHCP client sooner or later, so this option is reliable for static IP configuration only)
+2016-11-03 06:08:02	nicehsz	oh..hmh..
+2016-11-03 06:14:00		[06:08]
+2016-11-03 06:30:08	-->	__FBi (~B@Aircrack-NG/User) has joined #openvpn
+2016-11-03 06:30:08		[06:30]
+2016-11-03 06:30:13	@dazo	you need additional routes which have a higher priority than the DHCP provided ones (metric is the keyword here)
+2016-11-03 06:31:09	@dazo	but you should also look into firewalling, to block any traffic not exiting on TUN/TAP adapters, except of the OpenVPN connection
+2016-11-03 06:34:14	__FBi	morning dazo
+2016-11-03 06:36:16	 *	dazo always gets sceptical when FBI starts greeting him ..... :-P
+2016-11-03 06:36:19	@dazo	__FBi: morning!
+2016-11-03 06:37:48	__FBi	ha!
+2016-11-03 06:43:00		[06:37]
+2016-11-03 06:46:10	nicehsz	dazo: Thanks... will try
+2016-11-03 06:50:41	<--	Ox4 (~user@unaffiliated/zloy) has quit (Ping timeout: 260 seconds)
+2016-11-03 06:52:50	<--	CaTtleyA (~CaTtleyA@16.146-14-84.ripe.coltfrance.com) has quit (Ping timeout: 268 seconds)
+2016-11-03 06:58:00		[06:52]
+2016-11-03 07:08:57	<--	shootbird (~quassel@beepbeep.serverpit.com) has quit (Ping timeout: 268 seconds)
+2016-11-03 07:11:20	-->	navidr (uid112413@gateway/web/irccloud.com/x-smlxhurvsflksbhb) has joined #openvpn
+2016-11-03 07:12:20	<--	Harry` (~Harry`@pdpc/supporter/active/harry) has quit (Ping timeout: 260 seconds)
+2016-11-03 07:14:47	--	dmc is now known as Absolem
+2016-11-03 07:14:47		[07:14]
+2016-11-03 07:18:09	-->	shootbird (~quassel@beepbeep.serverpit.com) has joined #openvpn
+2016-11-03 07:21:31	-->	jackbrown (~se@unaffiliated/jackbrown) has joined #openvpn
+2016-11-03 07:25:00	-->	gffa (~unknown@unaffiliated/gffa) has joined #openvpn
+2016-11-03 07:25:23	<--	Vampire0_ (~Vampire@jEdit/Vampire) has quit (Ping timeout: 265 seconds)
+2016-11-03 07:25:24	-->	Harry` (~Harry`@pdpc/supporter/active/harry) has joined #openvpn
+2016-11-03 07:27:27	-->	Vampire0_ (~Vampire@jEdit/Vampire) has joined #openvpn
+2016-11-03 07:33:00		[07:27]
+2016-11-03 07:36:29	-->	CaTtleyA (~CaTtleyA@lfbn-1-3377-77.w90-127.abo.wanadoo.fr) has joined #openvpn
+2016-11-03 07:37:39	brutser	hi all, suppose i have setup a 'test' openvpn server and i am able to connect my client and all look 'ok' ish - how can i actually check if everything is 'perfect' ish? i mean, is there some way to check some packets or something?
+2016-11-03 07:38:28	brutser	also, is there a guide to tighten up the default openvpn configuration?
+2016-11-03 07:39:18	brutser	maybe you guys can say me some commands i need to run and then show output, so i can figure out if everything is ok etc.
+2016-11-03 07:42:02	@dazo	brutser: try to use iperf, which will load your tunnel .... and while that run, you can check with tcpdump/wireshark on the various interfaces to see if you get what you'd expect
+2016-11-03 07:42:22	nicehsz	brutser: try wiershark  see if u can sniff traffic or if appear encrypted?
+2016-11-03 07:42:30	nicehsz	google  "openvpn+harden", i think , for possibly finding tips on improving security of
+2016-11-03 07:42:36	brutser	dazo: ok, i will look into that
+2016-11-03 07:42:43	brutser	nicehsz: yes already googling :) thanks
+2016-11-03 07:43:02	brutser	always type here , then share my thoughts with google lol
+2016-11-03 07:43:12	-->	pagios (pagios@snake.v4.nv.panicbnc.us) has joined #openvpn
+2016-11-03 07:43:15	pagios	hello
+2016-11-03 07:43:23	nicehsz	well met
+2016-11-03 07:43:29	@dazo	brutser: other than that ... look into using --chroot, --user, --group  ... for some lightweight hardening inside OpenVPN .... then consider using a distro OS with SELinux involved, then there's the firewall of course
+2016-11-03 07:44:00	@dazo	(if your system uses systemd, the upstream unit files adds further hardening by default this way)
+2016-11-03 07:44:13	pagios	i have my company firewall that conencts to a vpn in amazon cloud, the traffic originates from amazon cloud. now if i try to open a vpn using openvpn from my client machine to a remote host i am getting a tls error, is it because i cant vpn over a vpn?
+2016-11-03 07:44:21	<--	troulouliou_div2 (~troulouli@unaffiliated/troulouliou-div2/x-0271439) has quit (Quit: Leaving)
+2016-11-03 07:44:43	brutser	dazo: ok, selinux is in place, fw too - i will look into all those things, thanks
+2016-11-03 07:44:44	nicehsz	u can chain vpn connections
+2016-11-03 07:45:02	pagios	nicehsz, i dont have access to the firewall
+2016-11-03 07:45:04	nicehsz	pagios: unsure but guessing configuration error on one of thhe ends
+2016-11-03 07:45:05	pagios	i am a clinet inside
+2016-11-03 07:45:49	nicehsz	where do u see error, in openvpn gui log output?  specifically what does it say..?
+2016-11-03 07:46:03	@dazo	pagios: VPN is effectively just a virtual network cable, including a virtual network interface on both sides .... so whatever you can do with TCP/IP routing on a physical network, you can do with a VPN
+2016-11-03 07:47:00	@dazo	what I try to say:  it doesn't matter if this or that side is server or client .... once the tunnel is up and running, you can start doing normal TCP/IP routing stuff to make the traffic flow
+2016-11-03 07:47:10	pagios	WARNING: this configuration may cache passwords in memory -- use the auth-nocache option to prevent this
+2016-11-03 07:47:10	pagios	Thu Nov  3 19:29:01 2016 Authenticate/Decrypt packet error: bad packet ID (may be a replay): [ #1 /
+2016-11-03 07:47:29	@dazo	!logs
+2016-11-03 07:47:30	@vpnHelper	"logs" is (#1) please pastebin your logfiles from both client and server with verb set to 4 (only use 5 if asked), or (#2) In the Windows client(OpenVPN-GUI) right-click the status icon and pick View Log, or (#3) In the OS X client(Tunnelblick) right-click it and select Copy log text to clipboard, or (#4) if you dont know how to find your logs, see !logfile
+2016-11-03 07:48:45	@dazo	(back to TCP/IP routing) there is one crucial exception though, that is if hosts behind the VPN server wants to access hosts on the LAN side of the VPN client, then the server needs to do a a couple of minor tricks
+2016-11-03 07:48:45		[07:48]
+2016-11-03 07:48:47	nicehsz	if to reach out of network having many restrictions, maybe consider what is usually allowed and looks like normal traffic, such as tcp 80 http/web browsing requests, and use proxy to connect to it/tunnel thru?  mayb this has info https://www.comparitech.com/blog/vpn-privacy/hide-openvpn-traffic-obfsproxy-on-windows-and-linux-ec2/
+2016-11-03 07:48:48	@vpnHelper	Title: Hide OpenVPN traffic with Obfsproxy on Windows & Linux EC2 server (at www.comparitech.com)
+2016-11-03 07:49:47	pagios	http://pastebin.com/9UvX5M7E
+2016-11-03 07:50:05	@dazo	pagios: we need the complete --verb 4 log to get the whole picture
+2016-11-03 07:50:12	pagios	ok
+2016-11-03 07:51:33	<--	shootbird (~quassel@beepbeep.serverpit.com) has quit (Ping timeout: 260 seconds)
+2016-11-03 07:53:40	pagios	TLS Error: incoming packet authentication failed from  same error
+2016-11-03 07:54:00	pagios	i  cant paste the data as it might contain sensitive info
+2016-11-03 07:54:15	DArqueBishop	!secret
+2016-11-03 07:54:16	@vpnHelper	"secret" is funny that people use free programs, consult free help for them, run a business with them, but are restricted to say what they do.
+2016-11-03 07:54:18	nicehsz	simply googling the tls error there are some suggestions, such as time sync error, bad or wrong configuration (cert/key files ) etc, tried those basic things to ensure arnt?
+2016-11-03 07:54:38	pagios	yea
+2016-11-03 07:54:56	DArqueBishop	!topsecret
+2016-11-03 07:54:57	@vpnHelper	"topsecret" is (#1) if your setup is so top secret that you cant post your configs or logs, please leave now and go find support you trust., or (#2) Clever readers may attempt to use RFC5737/RFC3849 to represent arbitrary public IPs one wishes to hide. Unclever attempts may be ignored with prejudice.
+2016-11-03 07:55:11	nicehsz	what did you try?  tried changing the tls settings in ur client config file too much?
+2016-11-03 07:55:13	pagios	nicehsz, the idea is say you are a client behind a firewall, and that firewall connects to a vpn server to route internet traffic. can you connect as a client to another vpn server remotely on the internet?
+2016-11-03 07:55:22	pagios	will i be able to tunnel over a tunnel
+2016-11-03 07:56:14	DArqueBishop	pagios: there's no reason why not.
+2016-11-03 07:56:20	nicehsz	if router forces all thru that vpn server first i dont think u can get out of that , with routing rules set and enforced in router/firewall that u dont have access to?
+2016-11-03 07:56:21	@dazo	nicehsz: this error is related to either a crappy connection or a faulty config ... but impossible to say without any logs
+2016-11-03 07:56:30	nicehsz	hm:\
+2016-11-03 07:56:48	pagios	connection is fine
+2016-11-03 07:56:51	@dazo	save your time, nicehsz .... pagios have to show us some logs or he's on his own
+2016-11-03 07:57:01	@dazo	Authenticate/Decrypt packet error: bad packet ID (may be a replay):
+2016-11-03 07:57:25	@dazo	pagios: ^^ that indicates something is wrong .... and it is very common to see this on crappy connections
+2016-11-03 07:57:39	pagios	my connection is good enough
+2016-11-03 07:57:42	@dazo	but we can't guess if it is a crappy connection
+2016-11-03 07:57:46	 *	dazo moves on
+2016-11-03 08:00:20	-->	shootbird (~quassel@beepbeep.serverpit.com) has joined #openvpn
+2016-11-03 08:01:08	pagios	nicehsz, i dont get it
+2016-11-03 08:03:32	nicehsz	sry dont think i can think of anything more, Im kinda n00b to all this too and would just google around and prolly come up with what you say uve tried already anyway, unless could give any further details (like more extensive log output^^) .. dunno
+2016-11-03 08:03:33	<--	skyroveRR (~skyroveRR@unaffiliated/skyroverr) has quit (Read error: Connection timed out)
+2016-11-03 08:04:49	nicehsz	it saying incmoing packet auth error should at least mean u cuold reach server, and get some kinda reply from it...  but not securely establish a reliable connection....  or something
+2016-11-03 08:04:49		[08:04]
+2016-11-03 08:05:17	DArqueBishop	Again, we need logs.
+2016-11-03 08:05:20	nicehsz	for whatever reason, as he said try dig for more logs or details to search
+2016-11-03 08:05:35	DArqueBishop	pagios: if you can't provide us with logs, go to someone who you can trust for support.
+2016-11-03 08:05:41	-->	skyroveRR (~skyroveRR@unaffiliated/skyroverr) has joined #openvpn
+2016-11-03 08:06:02	pagios	the time of client and server should be the same?
+2016-11-03 08:07:18	DArqueBishop	"Should"?
+2016-11-03 08:07:22	DArqueBishop	You don't know?
+2016-11-03 08:08:48	nicehsz	may be, as some of the first google results suggests as one of the reasons for that error, likely commonly being id guess.....
+2016-11-03 08:08:48	pagios	its different gmts
+2016-11-03 08:08:48	nicehsz	expired certificate?
+2016-11-03 08:08:48	nicehsz	:s..no idea..
+2016-11-03 08:08:56	nicehsz	if didnt try all the basic suggestions as found when googling the error try that first then, if cant get more logs, at least to exclude some more of these possibly basic things
+2016-11-03 08:14:00		[08:08]
+2016-11-03 08:14:01	pagios	talkign about time, the time should be synched between my client and the openserver or the firewall time and the openvpn server
+2016-11-03 08:15:45	nicehsz	ciphers in client and server config files matching,exactly? ..etc, if think can exclude that issue^  try these other suggestions and try narrow down remaining possibilities to change (and where u might be able to) that could have any impact
+2016-11-03 08:16:29	-->	kaiza (~kaiza@71-17-31-175.sktn.hsdb.sasknet.sk.ca) has joined #openvpn
+2016-11-03 08:18:00	<--	ExoUNX (~textual@unaffiliated/exounx) has quit (Quit: I'm outta here)
+2016-11-03 08:18:16	-->	ExoUNX (~ExoUNX@unaffiliated/exounx) has joined #openvpn
+2016-11-03 08:19:58	pagios	i just want to understand high level some stuff
+2016-11-03 08:19:58	pagios	can i vpn over a vpn first
+2016-11-03 08:19:58	nicehsz	surely, may chain thru any number of hops over openvpn servers/clients afaik
+2016-11-03 08:19:59	nicehsz	some commercial vpn providers even offer such "dual hop" vpn service, too
+2016-11-03 08:19:59	<--	Naeil (~nzoueidi@ubuntu/member/na3il) has quit (Ping timeout: 260 seconds)
+2016-11-03 08:22:28	@dazo	pagios: I've run 3 nested tunnels without any issues
+2016-11-03 08:22:46	nicehsz	didnt test it myself, but if any1 interested found an apparent download seemingly enabling chaining as such from the same host even,without use of vms or such.. https://sourceforge.net/projects/vpnchains/?source=directory
+2016-11-03 08:22:47	@dazo	routing gets complicated, but if done correct, that works
+2016-11-03 08:23:28	@dazo	nicehsz: please be very careful about providing such links .... prefer resources on our wiki pages ... the reason is !blogs
+2016-11-03 08:23:30	@dazo	!blogs
+2016-11-03 08:23:36	@dazo	!blog
+2016-11-03 08:23:37	@vpnHelper	"blog" is (#1) Do not follow blog posts for openvpn. They are wrong, they are old, they are written by fools. We won't read them, or troubleshoot them., or (#2) Also see !howto
+2016-11-03 08:27:51	@dazo	(the vpnchains project haven't had much activity for ~4 years ... which is also not a too good indication, as security products should to have some kind of progress ... especially when the dependencies (OpenVPN) have changed quite a lot of the same period)
+2016-11-03 08:28:24	nicehsz	o.. k, sorry!
+2016-11-03 08:30:47	@dazo	no worries, we're thankful you're hanging out and trying to help!  so feel free keep up the good work :)
+2016-11-03 08:30:47		[08:30]
+2016-11-03 08:33:26	nicehsz	:) thanks too, i think mainly people like urself haveing been helpful in the past when ive had all kindsa issues and asking around similarly is what motivates me the most to try help others as well if possible=) ..hopefully they too would eventually as well some time then,or be more inclined atleast..:)
+2016-11-03 08:34:41	@dazo	one thing I can guarantee you ... if you're humble enough to accept criticism from the old-timers here, you will learn a lot while helping others .... and that's the beauty of it all!
+2016-11-03 08:35:12	nicehsz	:-)
+2016-11-03 08:35:16	@dazo	and there's no shame to say "I don't know that" .... we all need to say that from time to time :)
+2016-11-03 08:35:23	DArqueBishop	I don't.
+2016-11-03 08:35:25	DArqueBishop	;-)
+2016-11-03 08:35:37	@dazo	hahah .... but you're the Bishop!
+2016-11-03 08:36:06	<--	linuxthefish (~ltf@unaffiliated/edmundf) has left #openvpn ("Leaving")
+2016-11-03 08:36:16	DArqueBishop	THE BISHOP!
+2016-11-03 08:36:19	DArqueBishop	https://www.youtube.com/watch?v=gDnE-5lD7w8
+2016-11-03 08:36:48	<--	SkinnyMelon (~SkinnyMel@51B61ADB.dsl.pool.telekom.hu) has quit (Ping timeout: 260 seconds)
+2016-11-03 08:38:31	@dazo	;-)
+2016-11-03 08:39:15	brutser	dazo: you familiar with https://openvpn.fox-it.com/about.html ?
+2016-11-03 08:39:16	@vpnHelper	Title: OpenVPN-NL (at openvpn.fox-it.com)
+2016-11-03 08:40:15	brutser	it's a tightened fork of openvpn, using polarssl vs openssl
+2016-11-03 08:40:54	brutser	it looks ok, i just contemplating if i should use it or not
+2016-11-03 08:41:46	DArqueBishop	"Hey guys. should I be using this fork of your software instead of your software?"
+2016-11-03 08:46:31	brutser	:D
+2016-11-03 08:46:31		[08:46]
+2016-11-03 08:46:31	brutser	my apologies
+2016-11-03 08:46:31	<--	brutser (~mail@89.119-241-81.adsl-dyn.isp.belgacom.be) has quit
+2016-11-03 08:46:31	@dazo	actually, the people behind that one is active in among us developers
+2016-11-03 08:47:36	nicehsz	id guess being less known having advantage of not being as attractive a target, major popular ones possibly becoming vulnerable at some point thru vulnerabilities discovered when trying to attack some high-value target or way to exploit the amount of ppl affected...  but also.. less battle-tested,maybe major flaws easily found.Being open source I guess most assume that others will have analysed
+2016-11-03 08:47:36	nicehsz	..and have reason to trust because of, rarely going in depth or even ever compiling themselves at all
+2016-11-03 08:47:37	nicehsz	if worried may be good to use a mix, and various less-common ones like this in-between among other creative/individual adjustments too..depending on paranoia:d
+2016-11-03 08:48:23	@dazo	if anyone here chooses to use OpenVPN-NL ... that's not a problem at all ... it is basically the same openvpn source code, just being built with stricter defaults and some features disabled
+2016-11-03 08:48:52	DArqueBishop	dazo: I was being snarky.
+2016-11-03 08:49:11	@dazo	:)
+2016-11-03 08:49:12	 *	DArqueBishop is known to respond to requests with snarkiness and curmudgeonness.
+2016-11-03 08:49:25	 *	dazo too ... but is too often misunderstood! :-P
+2016-11-03 08:49:39	DArqueBishop	... especially if I feel someone's doing something not 100%above board. :-)
+2016-11-03 08:51:53	@krzee	well in your defense, we dont support most non openvpn apps that run openvpn, like network mangler for example
+2016-11-03 08:52:46	@krzee	it just so happens that THAT fork is known to us, and is actually openvpn itself with bulletproof vests places over feet in case the user decides to point his gun in the wrong direction
+2016-11-03 08:52:54	@krzee	placed*
+2016-11-03 08:53:03	 *	ecrist three, but s/$/and hostility or beligerance/ with what DArqueBishop stated
+2016-11-03 08:53:03	<--	totus (~totus@cpe-24-160-136-100.satx.res.rr.com) has quit (Read error: Connection reset by peer)
+2016-11-03 08:53:42	-->	totus (~totus@cpe-24-160-136-100.satx.res.rr.com) has joined #openvpn
+2016-11-03 08:59:00		[08:53]
+2016-11-03 09:00:04	<--	totus (~totus@cpe-24-160-136-100.satx.res.rr.com) has quit (Read error: Connection reset by peer)
+2016-11-03 09:00:13	-->	totus (~totus@cpe-24-160-136-100.satx.res.rr.com) has joined #openvpn
+2016-11-03 09:06:00		[09:00]
+2016-11-03 09:09:40	<--	skyroveRR (~skyroveRR@unaffiliated/skyroverr) has quit (Ping timeout: 260 seconds)
+2016-11-03 09:10:17	-->	skyroveRR (~skyroveRR@unaffiliated/skyroverr) has joined #openvpn
+2016-11-03 09:11:15	-->	SkinnyMelon (~SkinnyMel@51B61ADB.dsl.pool.telekom.hu) has joined #openvpn
+2016-11-03 09:15:41	-->	troulouliou_div2 (~troulouli@unaffiliated/troulouliou-div2/x-0271439) has joined #openvpn
+2016-11-03 09:18:45	<--	pagios (pagios@snake.v4.nv.panicbnc.us) has left #openvpn ("Leaving")
+2016-11-03 09:20:19	-->	devtea (~tdreyer1@unaffiliated/tdreyer1) has joined #openvpn
+2016-11-03 09:24:44	-->	Xentil (~quassel@static.233.79.4.46.clients.your-server.de) has joined #openvpn
+2016-11-03 09:24:44		[09:24]
+2016-11-03 09:35:06	-->	metachr0n (~nobody@gateway/vpn/privateinternetaccess/metachr0n) has joined #openvpn
+2016-11-03 09:35:14	<--	OS-16517 (~YBPL@unaffiliated/os-16517) has quit (Ping timeout: 245 seconds)
+2016-11-03 09:36:08	-->	OS-16517 (OS-16517@unaffiliated/os-16517) has joined #openvpn
+2016-11-03 09:36:22	<--	shootbird (~quassel@beepbeep.serverpit.com) has quit (Ping timeout: 265 seconds)
+2016-11-03 09:37:29	-->	klow (~textual@c-98-247-49-57.hsd1.wa.comcast.net) has joined #openvpn
+2016-11-03 09:41:09	<--	navidr (uid112413@gateway/web/irccloud.com/x-smlxhurvsflksbhb) has quit (Quit: Connection closed for inactivity)
+2016-11-03 09:41:09		[09:41]
+2016-11-03 09:45:23	-->	shootbird (~quassel@beepbeep.serverpit.com) has joined #openvpn
+2016-11-03 09:51:00		[09:45]
+2016-11-03 10:02:08	-->	niamor (~romain@static-173-72-242-154.clppva.fios.verizon.net) has joined #openvpn
+2016-11-03 10:04:04	<--	OS-16517 (OS-16517@unaffiliated/os-16517) has quit (Ping timeout: 260 seconds)
+2016-11-03 10:07:13	brokensyntax	You know, it surprises me that I don't see janJustKaiser in here.
+2016-11-03 10:07:13		[10:07]
+2016-11-03 10:10:54	<--	Rienzilla (rien@sinas.rename-it.nl) has left #openvpn
+2016-11-03 10:11:23	-->	OS-16517 (OS-16517@unaffiliated/os-16517) has joined #openvpn
+2016-11-03 10:17:00		[10:11]
+2016-11-03 10:19:17	<--	niamor (~romain@static-173-72-242-154.clppva.fios.verizon.net) has quit (Remote host closed the connection)
+2016-11-03 10:22:45	<--	troulouliou_div2 (~troulouli@unaffiliated/troulouliou-div2/x-0271439) has quit (Quit: Leaving)
+2016-11-03 10:24:44	-->	akkad (akkad@166.84.6.60) has joined #openvpn
+2016-11-03 10:25:10	akkad	what would prevent 2.3.2 from connecting on tls 1.2 or 1.1? client only seems to want to do 1.0
+2016-11-03 10:30:10	<--	Envil (~envil@x4e37c1ab.dyn.telefonica.de) has quit (Remote host closed the connection)
+2016-11-03 10:33:05	-->	Celmor (~celmor@HSI-KBW-149-172-216-251.hsi13.kabel-badenwuerttemberg.de) has joined #openvpn
+2016-11-03 10:33:05		[10:33]
+2016-11-03 10:35:32	Celmor	hello, what should permissions of these files be? /etc/openvpn/ca.crt that I copied from /etc/easy-rsa/pki/ca.crt and /etc/openvpn/servername.key that I copied from /etc/easy-rsa/pki/private/servername.key
+2016-11-03 10:36:04	<--	kaiza (~kaiza@71-17-31-175.sktn.hsdb.sasknet.sk.ca) has quit (Quit: o7)
+2016-11-03 10:37:23	nicehsz	as restrictive as possible, while still enabling whatever needs it the required access  for use, id think prolly best..  however that'd be with your setup/intentions for it all..
+2016-11-03 10:37:58	nicehsz	..assuming deviating frmo standard recommendations or such as you ask.. may be easier to advice if given more info on what why or such then tho
+2016-11-03 10:39:44	Celmor	well, who would need access to these files, I'm in the process of creating my openvpn server here https://wiki.archlinux.org/index.php/Easy-rsa#Server_certificate_and_private_key
+2016-11-03 10:39:58	@vpnHelper	Title: Easy-rsa - ArchWiki (at wiki.archlinux.org)
+2016-11-03 10:40:20	<--	jackbrown (~se@unaffiliated/jackbrown) has quit (Read error: Connection reset by peer)
+2016-11-03 10:42:59	Celmor	I would think the ca.crt only contains public information but the servername.key is the private key of the server and should only be readable by root, right?
+2016-11-03 10:42:59	-->	brutser (~mail@89.119-241-81.adsl-dyn.isp.belgacom.be) has joined #openvpn
+2016-11-03 10:43:06	@dazo	Celmor: usually it's enough with root read access to the files.  If everyone have read access to the certificates, that doesn't matter - certificates are essentially public keys with some meta data and a signature from a CA
+2016-11-03 10:43:16	brutser	dazo: i am trying to get a fixed ip for a client, but i get this error: There is a problem in your selection of --ifconfig endpoints [local=10.1.0.10, remote=10.1.0.1].  The local and remote VPN endpoints must exist within the same 255.255.255.252 subnet.  This is a limitation of --dev tun when used with the TAP-WIN32 driver.  Try 'openvpn --show-valid-subnets' option for more info.
+2016-11-03 10:43:28	@dazo	!topology
+2016-11-03 10:43:29	@vpnHelper	"topology" is (#1) it is possible to avoid the !/30 behavior if you use 2.1+ with the option: topology subnet This will end up being default in later versions., or (#2) Clients will receive addresses ending in .2, .3, .4, etc, instead of being divided into 2-host subnets., or (#3) details and examples at: https://community.openvpn.net/openvpn/wiki/Topology
+2016-11-03 10:43:33	@dazo	brutser: ^^^
+2016-11-03 10:43:35	brutser	in my client dir, only reads: ifconfig-push 10.1.0.10 10.1.0.1
+2016-11-03 10:43:44	brutser	ok
+2016-11-03 10:44:47	Celmor	dazo, but /etc/openvpn/servername.key should be kept secre / only root should have read acces on this, right?
+2016-11-03 10:44:55	@dazo	brutser: regarding openvpn-nl .... yes, we know very well about it.   That project is why we have mbedTLS/PolarSSL support in the upstream OpenVPN ... Fox-IT guys is behind that support.   OpenVPN-NL basically the upstream OpenVPN with a reduced feature set to reduce the risk of configuring a VPN tunnel with a weaker security aspect
+2016-11-03 10:45:08	@dazo	Celmor: that's what I tried to say, yes
+2016-11-03 10:45:21	brutser	ok
+2016-11-03 10:46:21	-->	troulouliou_div2 (~troulouli@unaffiliated/troulouliou-div2/x-0271439) has joined #openvpn
+2016-11-03 10:46:29	@dazo	I just forgot to say *key* files, Celmor ... I just sad "files" .... sorry'bout that
+2016-11-03 10:46:45	Celmor	that's why I thought you mean both files
+2016-11-03 10:46:49	brutser	dazo: so if i use the 10.1.0.0/24 , what is the correct way to push the ip address to the client?
+2016-11-03 10:47:04	brutser	let's say i want 10.1.0.10 for the client
+2016-11-03 10:47:09	@dazo	Celmor: just ensure you don't save the CA *key* file on a publicly available server .... that file needs to be well protected ... loose control of that one, and anyone who possess it can sign new and valid certificates without your knowledge
+2016-11-03 10:48:03	@dazo	brutser: read !topology, it covers it ... also --topology in the man page
+2016-11-03 10:48:04	@dazo	!man
+2016-11-03 10:48:07	Celmor	I'll consider putting this on an encrypted drive and symlinking it to /etc/openvpn
+2016-11-03 10:48:07		[10:48]
+2016-11-03 10:48:12	@vpnHelper	"man" is (#1) For man pages, see http://openvpn.net/index.php/open-source/documentation/manuals/, or (#2) the man pages are your friend!, or (#3) Protip: you can search the manpage for a specific --option (with dashes) to find it quicker
+2016-11-03 10:49:24	@dazo	brutser: in fact the URL in #3 in the !topology gives a very good overview
+2016-11-03 10:49:24	@dazo	Celmor: the server does not need CA key at all ... .server only needs:  server.key, server.crt, ca.crt and dh*.pem
+2016-11-03 10:49:24	@dazo	Celmor: clients only need   client.key, client.crt and ca.crt
+2016-11-03 10:50:13	@dazo	Celmor: you can put all the Easy-RSA files on a USB drive, disconnect it and put it into a fire safe ... and it would work very well .... you only need the CA private key when creating (signing) new certificates
+2016-11-03 10:50:35	@dazo	(and the other Easy-RSA files, are just helper files for the openssl tools which is used under the hood of Easy-RSA)
+2016-11-03 10:51:18	@dazo	Celmor: this Easy-RSA detail is something basically _all_ blog posts on the interwebs fails to mention ... which is why !blog is quite harsh
+2016-11-03 10:51:19	@dazo	!blog
+2016-11-03 10:51:21	@vpnHelper	"blog" is (#1) Do not follow blog posts for openvpn. They are wrong, they are old, they are written by fools. We won't read them, or troubleshoot them., or (#2) Also see !howto
+2016-11-03 10:51:43	Celmor	w hat about ta.key?
+2016-11-03 10:52:34	Celmor	does block include the arch article on openvpn?
+2016-11-03 10:52:37	Celmor	blog*
+2016-11-03 10:52:37	@dazo	ta.key needs to be shared between client and server (it must be identical) .... it's enough that root can read it
+2016-11-03 10:53:29	@dazo	Celmor: it's a long time since I read the arch blog .... arch wikis/blogs are far from the worst, but it is not anything approved from the community side as a safe and sane post
+2016-11-03 10:53:45	@dazo	!howto
+2016-11-03 10:53:47	@vpnHelper	"howto" is (#1) OpenVPN comes with a great howto, http://openvpn.net/howto PLEASE READ IT!, or (#2) http://www.secure-computing.net/openvpn/howto.php for a mirror, or (#3) Getting started with OpenVPN: https://community.openvpn.net/openvpn/wiki/GettingStartedwithOVPN
+2016-11-03 10:54:19	@dazo	Celmor: ^^^ Have a look at #3 ... that should cover most of the same, but is written by us - with security in mind
+2016-11-03 10:54:37	brutser	dazo: one last thing, client can connect and ping the server, but cannot ping the internet, my iptables probably is protecting that - what do i need to think about to fix this?
+2016-11-03 10:54:51	@dazo	!nat
+2016-11-03 10:54:52	@vpnHelper	"nat" is (#1) http://openvpn.net/howto.html#redirect for an explanation of NAT as it applies to openvpn, or (#2) http://www.secure-computing.net/wiki/index.php/OpenVPN/FAQ#Traffic_forwarding_doesn.27t_work_when_using_client_specific_access_rules, or (#3) dont forget to turn on ip forwarding, or (#4) please choose between !linnat !openvznat !winnat and !fbsdnat for specific howto
+2016-11-03 10:54:55	<--	metachr0n (~nobody@gateway/vpn/privateinternetaccess/metachr0n) has quit (Quit: WeeChat 1.4)
+2016-11-03 10:54:58	Celmor	I'll read it after I got openvpn working, only then I consider further security measures
+2016-11-03 10:55:11	@dazo	!linnat
+2016-11-03 10:55:12	@vpnHelper	"linnat" is (#1) for a basic iptables NAT where 10.8.0.x is the vpn network: iptables -t nat -I POSTROUTING -s 10.8.0.0/24 -o eth0 -j MASQUERADE, or (#2) to choose what IP address to NAT as, you can use iptables -t nat -I POSTROUTING -o eth0 -j SNAT --to <IP ADDRESS>, or (#3) http://netfilter.org/documentation/HOWTO//NAT-HOWTO.html for more info
+2016-11-03 10:55:24	Celmor	what I don't need on a live system I'll simply put in my keepass database
+2016-11-03 10:55:45	@dazo	brutser: ^^^
+2016-11-03 10:55:52	 *	dazo didn't know the keepass database could save PEM key files
+2016-11-03 10:55:54	brutser	dazo: i think i alrady did that, let me pastebin the iptables rules
+2016-11-03 10:56:02	Celmor	it can save any file
+2016-11-03 10:56:10	Celmor	as an attachement to an entry
+2016-11-03 10:56:25	Celmor	and allows for save editing of that file
+2016-11-03 10:56:30	@dazo	brutser: I need to run now ... but there are plenty of others here who knows how to do that kind of NAT/routing setup you need
+2016-11-03 10:56:46	Celmor	dazo, thanks for your help
+2016-11-03 10:56:47	brutser	ok thanks a bunch! you have a nice evening
+2016-11-03 11:00:56	@dazo	u2
+2016-11-03 11:06:00		[11:00]
+2016-11-03 11:08:35	<--	defsdoor (~andy@cpc35-sutt4-2-0-cust184.19-1.cable.virginm.net) has quit (Remote host closed the connection)
+2016-11-03 11:11:21	<--	gffa (~unknown@unaffiliated/gffa) has quit (Quit: quit)
+2016-11-03 11:13:42	-->	zulutango (~zulutango@d27-99-34-168.bla1.nsw.optusnet.com.au) has joined #openvpn
+2016-11-03 11:13:59	<--	ExoUNX (~ExoUNX@unaffiliated/exounx) has quit (Quit: I'm outta here)
+2016-11-03 11:19:00		[11:13]
+2016-11-03 11:37:04	<--	klow (~textual@c-98-247-49-57.hsd1.wa.comcast.net) has quit (Read error: Connection reset by peer)
+2016-11-03 11:37:04		[11:37]
+2016-11-03 11:38:13	-->	klow (~textual@c-98-247-49-57.hsd1.wa.comcast.net) has joined #openvpn
+2016-11-03 11:43:06	--	Vampire0_ is now known as Vampire0
+2016-11-03 11:49:00		[11:43]
+2016-11-03 11:55:14	<--	shootbird (~quassel@beepbeep.serverpit.com) has quit (Ping timeout: 250 seconds)
+2016-11-03 11:58:28	<--	DzAirmaX (~AirmaX@unaffiliated/dzairmax) has quit (Ping timeout: 252 seconds)
+2016-11-03 11:58:58	<--	designbybeck (~designbyb@x169y027.angelo.edu) has quit (Quit: Leaving)
+2016-11-03 12:00:40	-->	allizom (~Thunderbi@host135-174-dynamic.56-79-r.retail.telecomitalia.it) has joined #openvpn
+2016-11-03 12:04:16	-->	shootbird (~quassel@beepbeep.serverpit.com) has joined #openvpn
+2016-11-03 12:04:16		[12:04]
+2016-11-03 12:13:05	-->	DzAirmaX (~AirmaX@unaffiliated/dzairmax) has joined #openvpn
+2016-11-03 12:19:00		[12:13]
+2016-11-03 12:34:13	<--	luckman212 (~luckman21@unaffiliated/luckman212) has quit (Ping timeout: 245 seconds)
+2016-11-03 12:34:13		[12:34]
+2016-11-03 12:36:29	-->	luckman212 (~luckman21@unaffiliated/luckman212) has joined #openvpn
+2016-11-03 12:42:00		[12:36]
+2016-11-03 12:54:57	-->	mrpops2ko (~mrpops2ko@88.202.224.88.adsl.inet-telecom.org) has joined #openvpn
+2016-11-03 12:58:31	<--	CaTtleyA (~CaTtleyA@lfbn-1-3377-77.w90-127.abo.wanadoo.fr) has quit (Ping timeout: 268 seconds)
+2016-11-03 12:58:31		[12:58]
+2016-11-03 13:04:09	<--	troulouliou_div2 (~troulouli@unaffiliated/troulouliou-div2/x-0271439) has quit (Ping timeout: 268 seconds)
+2016-11-03 13:07:49	-->	flugger (~flugger@gateway/vpn/privateinternetaccess/flugger) has joined #openvpn
+2016-11-03 13:07:51	<--	AlexRussia (~Alex@unaffiliated/alexrussia) has quit (Ping timeout: 268 seconds)
+2016-11-03 13:10:56	<--	baetheus (~brandon@null.pub) has quit (Ping timeout: 268 seconds)
+2016-11-03 13:16:00		[13:10]
+2016-11-03 13:25:41	-->	baetheus (~brandon@null.pub) has joined #openvpn
+2016-11-03 13:26:41	<--	brutser (~mail@89.119-241-81.adsl-dyn.isp.belgacom.be) has quit
+2016-11-03 13:27:55	<--	Xentil (~quassel@static.233.79.4.46.clients.your-server.de) has quit (Ping timeout: 252 seconds)
+2016-11-03 13:33:00		[13:27]
+2016-11-03 13:39:00	-->	brutser (~mail@89.119-241-81.adsl-dyn.isp.belgacom.be) has joined #openvpn
+2016-11-03 13:39:26	brutser	hi, i got a NAT issue, for some reason the client cannot browse internet - i have ip masquerade rule and ipforwarding enabled
+2016-11-03 13:39:47	brutser	it must be some iptables rule that is not in place, but i am no expert in that :/
+2016-11-03 13:44:53	<--	Noldorin (~noldorin@unaffiliated/noldorin) has quit (Quit: Textual IRC Client: www.textualapp.com)
+2016-11-03 13:45:03	<--	brutser (~mail@89.119-241-81.adsl-dyn.isp.belgacom.be) has quit
+2016-11-03 13:45:36	-->	Noldorin (~noldorin@unaffiliated/noldorin) has joined #openvpn
+2016-11-03 13:51:00		[13:45]
+2016-11-03 14:11:25	-->	dogman (~dog.marle@2601:84:8702:5c31:6878:2166:d81:ccb) has joined #openvpn
+2016-11-03 14:11:25		[14:11]
+2016-11-03 14:20:50	<--	infernix (nix@unaffiliated/infernix) has quit (Ping timeout: 250 seconds)
+2016-11-03 14:25:26	<--	Countess_Bathory (~Tess@unaffiliated/bloodcountess) has quit (Read error: Connection reset by peer)
+2016-11-03 14:31:00		[14:25]
+2016-11-03 14:38:41	<--	klow (~textual@c-98-247-49-57.hsd1.wa.comcast.net) has quit (Quit: Textual IRC Client: www.textualapp.com)
+2016-11-03 14:40:47	-->	Countess_Bathory (~Tess@unaffiliated/bloodcountess) has joined #openvpn
+2016-11-03 14:40:48	<--	MikeDebian (~ML@a81-84-80-8.cpe.netcabo.pt) has quit (Quit: Leaving)
+2016-11-03 14:45:13	-->	brutser (~mail@89.119-241-81.adsl-dyn.isp.belgacom.be) has joined #openvpn
+2016-11-03 14:45:23	brutser	hi, i got a NAT issue, for some reason the client cannot browse internet - i have ip masquerade rule and ipforwarding enabled
+2016-11-03 14:45:28	brutser	it must be some iptables rule that is not in place, but i am no expert in that :/
+2016-11-03 14:45:32	brutser	anyone around that can help me?
+2016-11-03 14:45:39	<--	dogman (~dog.marle@2601:84:8702:5c31:6878:2166:d81:ccb) has quit (Quit: Part and Quat!)
+2016-11-03 14:46:12	-->	dogman (~dog.marle@2601:84:8702:5c31:6878:2166:d81:ccb) has joined #openvpn
+2016-11-03 14:46:12		[14:46]
+2016-11-03 14:49:06	<--	APTX (~APTX@unaffiliated/aptx) has quit (Quit: No Ping reply in 180 seconds.)
+2016-11-03 14:49:30	nicehsz	brutser: more info please?  "cannot browse internet".. its not just the web browser ure having issues with eh..  what have you tried, or not.. able to tell where it stops or any other bit of info whats lacking ?
+2016-11-03 14:50:16	<--	dogman (~dog.marle@2601:84:8702:5c31:6878:2166:d81:ccb) has quit (Client Quit)
+2016-11-03 14:51:52	brutser	ok, i can ping the server when connected, but i cannot ping any outside ip of the vpn server
+2016-11-03 14:52:22	-->	APTX (~APTX@unaffiliated/aptx) has joined #openvpn
+2016-11-03 14:53:29	brutser	i pretty much made default config, maybe i forgot something with iptables
+2016-11-03 14:53:46	 *	brutser is not expert
+2016-11-03 14:53:57	-->	infernix (nix@unaffiliated/infernix) has joined #openvpn
+2016-11-03 14:54:12	brutser	nicehsz: where to start?
+2016-11-03 14:55:35	nicehsz	Hm.... im just some random n00b too really, but.. what happens if you try ping google.com , or maybe google.com's  IP rather..timeouts or?
+2016-11-03 14:56:19	nicehsz	google's easily remembered public dns addr should be pingable i think, could try  ping 8.8.8.8    in that cae to test..hmh
+2016-11-03 14:56:27	brutser	Reply from 10.1.0.1: Destination host unreachable.

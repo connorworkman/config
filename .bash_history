@@ -508,3 +508,4 @@ rtc.sh
 v `which rtc.sh`
 rtc.sh
 v `which rtc.sh`
+cat .bashrc

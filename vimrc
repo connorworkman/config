@@ -262,20 +262,20 @@ function! ToggleXXD()
     else
 	%!xxd
 	let g:txxd = 1
-    endif
+    endi
 endfunction
 nnoremap <C-F9> :call ToggleXXD()<CR>
 "nnoremap <F10> <Esc>:%!xxd<CR>
 let g:tindent = 0
 function! ToggleIndent()
     if g:tindent == 0
-	set shiftwidth = 8
+	set shiftwidth=8
 	let g:tindent = 1
     elseif g:tindent == 1
-	set shiftwidth = 1
+	set shiftwidth=1
 	let g:tindent = 2
-   else
-	set shiftwidth = 4
+	else
+	set shiftwidth=4
 	let g:tindent = 0
     endif
 endfunction
