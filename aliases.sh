@@ -18,10 +18,7 @@ unalias {1..9} gg history c d h j s u 2>/dev/null || true
 ## Custom aliases
 
 
-alias fuck='sudo $(fc -ln -1) '
-#alias fuck='sudo $(history -p \!\!) '
-
-alias uem='sudo emerge --update --deep --newuse @world && sudo etc-update '
+alias nem='sudo emerge --update --deep --newuse @world && sudo etc-update '
 alias gdistccmon='DISTCC_DIR="/var/tmp/portage/.distcc" distccmon-text '
 alias myuptime='uptime -p | cut -c 4- '
 alias pacawk="grep -v '^$\|^#' /etc/pacman.d/mirrorlist | awk '{print }' | awk -F '/' '{print }' "

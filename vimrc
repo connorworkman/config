@@ -316,7 +316,9 @@ let g:gruvbox_contrast_dark="high"
 let g:gruvbox_contrast_light="high"
 let g:gruvbox_improved_strings=0
 let g:gruvbox_improved_warnings=0
-
+let OmniCpp_MayCompleteDot = 1
+let OmniCpp_MayCompleteArrow = 1
+let OmniCpp_MayCompleteScope = 1
 " colorscheme solarized
 colorscheme gruvbox
 syntax on
