@@ -155,6 +155,8 @@ cnoremap w!! silent w !sudo dd of=%
 "cnoremap w!! silent w !sudo tee %
 "command Sudo silent w !sudo dd of=%
 
+map <C-F12> :!ctags -R --c++-kinds=+p --fields=+iaS --extra=+q .<CR>
+
 " Open a Quickfix window for the last search.
 nnoremap <silent> ,/ :execute 'vimgrep /'.@/.'/g %'<CR>:copen<CR>
 
