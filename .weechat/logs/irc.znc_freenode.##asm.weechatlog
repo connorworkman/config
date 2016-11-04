@@ -18078,3 +18078,505 @@
 2016-11-03 20:23:16	<--	vdamewood (~vdamewood@unaffiliated/vdamewood) has quit (Quit: Life beckons.)
 2016-11-03 20:29:00		[20:23]
 2016-11-03 20:34:21	--	irc: disconnected from server
+2016-11-03 22:49:36	-->	sudon`tkode (~alyptik@unaffiliated/alyptik) has joined ##asm
+2016-11-03 22:49:36		[22:49]
+2016-11-03 22:49:36	--	Topic for ##asm is "Assembly programming channel, all architectures welcome (please specify). Don't ask to ask! Use a pastebin if appropriate! Check your manuals! *** AT&T vs Intel flamers will be banned."
+2016-11-03 22:49:36	--	Topic set by Jester01 (~Jester01@62.100.244.69) on Fri, 30 Sep 2016 06:54:51
+2016-11-03 22:49:36	--	Channel ##asm: 281 nicks (0 ops, 0 voices, 281 normals)
+2016-11-03 22:49:36	***	Buffer Playback...
+2016-11-03 22:49:36	zid	[02:32:24] someone who reads whatever that is better than me can probably look at that [02:32:24]
+2016-11-03 22:49:36	moogoom	[02:32:40] oh ok one second ill make it more legible [02:32:40]
+2016-11-03 22:49:36	moogoom	[02:32:53] it is made for ARM architecture by the way :) [02:32:53]
+2016-11-03 22:49:36	bcos	[02:32:54] "How many $ would you like to donate:". User enters 2147483648. Code converts this to the integer 0x80000000, but treats it as signed. Back-end subtracts "negative 2 billion dollars" from user's account and adds "negative 2 billion dollars" elsewhere. User is happy... :-) [02:32:54]
+2016-11-03 22:49:36	zid	[02:33:16] bcos: I rigged a voting website that in my favor once [02:33:16]
+2016-11-03 22:49:36	zid	[02:33:29] you could distribute your 10 votes however you liked [02:33:29]
+2016-11-03 22:49:36	bcos	[02:33:29] :-) [02:33:29]
+2016-11-03 22:49:36	zid	[02:33:35] so naturally I gave everybody else -1000 [02:33:35]
+2016-11-03 22:49:36	zid	[02:33:45] "hey, it sums to 10, must be fine!" [02:33:45]
+2016-11-03 22:49:36	zid	[02:34:44] He couldn't figure it out and asked me how I did it which was cutest [02:34:44]
+2016-11-03 22:49:36	zid	[02:35:10] I think I might actually have stolen votes from you [02:35:10]
+2016-11-03 22:49:36	moogoom	[02:36:22] http://pastebin.com/PiLcUFP8 [02:36:22]
+2016-11-03 22:49:36	zid	[02:36:39] there is no such thing as a 'bit pointer' [02:36:39]
+2016-11-03 22:49:36	moogoom	[02:36:56] sorry I don't know the actual term [02:36:56]
+2016-11-03 22:49:36	bcos	[02:37:06] moogoom: I'm not familiar with ARM, but that looks quite wrong - e.g. you can't multiply by 10 using shifts [02:37:06]
+2016-11-03 22:49:36	bcos	[02:37:12] *using one shift [02:37:12]
+2016-11-03 22:49:36	zid	[02:37:16] also you're trying to do two different steps at once? [02:37:16]
+2016-11-03 22:49:36	zid	[02:37:25] there's no need for two buffers to read a string as a number [02:37:25]
+2016-11-03 22:49:36	moogoom	[02:38:08] bcos: shift left will multiply the number by whatever the base is in (10 if its decimal) [02:38:08]
+2016-11-03 22:49:36	zid	[02:38:14] no [02:38:14]
+2016-11-03 22:49:36	zid	[02:38:27] shift left will shift the bits left, which in effect, is a binary multiply by 1 [02:38:27]
+2016-11-03 22:49:36	bcos	[02:38:34] Shift left works on binary, and will multiply by "powers of 2" [02:38:34]
+2016-11-03 22:49:36	zid	[02:38:35] by 10* [02:38:35]
+2016-11-03 22:49:36	zid	[02:38:44] 10 in decimal being.. 2 [02:38:44]
+2016-11-03 22:49:36	moogoom	[02:38:47] if you shift left 10 in binary it becomes 100 [02:38:47]
+2016-11-03 22:49:36	zid	[02:38:50] shifting left just doubles it [02:38:50]
+2016-11-03 22:49:36	moogoom	[02:38:55] which changes it from 2 to 4 [02:38:55]
+2016-11-03 22:49:36	zid	[02:39:00] but not 2 to 20 [02:39:00]
+2016-11-03 22:49:36	zid	[02:39:03] which is the point [02:39:03]
+2016-11-03 22:49:36	moogoom	[02:39:10] shifting left 123 in decimal changes it to 1230 [02:39:10]
+2016-11-03 22:49:36	zid	[02:39:16] no, it changes it to 256 [02:39:16]
+2016-11-03 22:49:36	zid	[02:39:30] "2 to 4" and "123 to 1230" do not follow the same rule [02:39:30]
+2016-11-03 22:49:36	moogoom	[02:39:41] it depends on what base it is in [02:39:41]
+2016-11-03 22:49:36	zid	[02:39:45] values don't have bases [02:39:45]
+2016-11-03 22:49:36	zid	[02:39:48] for the 123092th time [02:39:48]
+2016-11-03 22:49:36	zid	[02:40:00] <<1 is the same as multiply by 2, end of story [02:40:00]
+2016-11-03 22:49:36	bcos	[02:40:04] You can multiply by 10 by doing "result = x << 3 + x << 1;     // result = x * 8 + x * 2 = x * 10" [02:40:04]
+2016-11-03 22:49:36	moogoom	[02:40:05] fine [02:40:05]
+2016-11-03 22:49:36	moogoom	[02:40:30] lets say its " mul R4, R4, R3 " [02:40:30]
+2016-11-03 22:49:36	moogoom	[02:40:50] soryr "mul R4, R3, #10 " [02:40:50]
+2016-11-03 22:49:36	moogoom	[02:40:55] sorry* [02:40:55]
+2016-11-03 22:49:36	bcos	[02:48:54] moogoom: Spend some time thinking about this: https://gist.github.com/anonymous/86cb795d79a8e8b5f9ff60029bdf0aec [02:48:54]
+2016-11-03 22:49:36	xux	[02:49:58] fucking pussy-niggers banned me from ##programming [02:49:58]
+2016-11-03 22:49:36	xux	[02:50:02] got any smart movies to recommend? [02:50:02]
+2016-11-03 22:49:36	AvgJoe	[04:11:43] how do you get banned from programming? [04:11:43]
+2016-11-03 22:49:36	AvgJoe	[04:12:01] vulture_, help me out here [04:12:01]
+2016-11-03 22:49:36	SwiftMatt	[04:12:07] https://dpaste.de/nF48 [04:12:07]
+2016-11-03 22:49:36	SwiftMatt	[04:12:14] how do you end on line 6/7 [04:12:14]
+2016-11-03 22:49:36	SwiftMatt	[04:12:17] how do you end the code [04:12:17]
+2016-11-03 22:49:36	SwiftMatt	[04:12:25] such that it doesn't fall through to Fib again [04:12:25]
+2016-11-03 22:49:36	***	Playback Complete.
+2016-11-03 22:50:17	--	Channel created on Sun, 27 May 2007 05:31:12
+2016-11-03 22:51:14	<--	chr1s (~chris@212-147-34-113.fix.access.vtx.ch) has quit (Quit: Konversation terminated!)
+2016-11-03 22:56:45	-->	memesaregreat (0eb140db@gateway/web/cgi-irc/kiwiirc.com/ip.14.177.64.219) has joined ##asm
+2016-11-03 22:57:19	memesaregreat	Should I learn ASM before learning C?
+2016-11-03 22:57:58	dminuoso_	memesaregreat: No.
+2016-11-03 22:58:03	archivist	only if you want to
+2016-11-03 22:58:28	memesaregreat	if I want to get into reverse engineering (no .NET craps), ASM is a must right?
+2016-11-03 22:58:36	dminuoso_	memesaregreat: It's definitely helpful in some areas, debugging in particular, but it is not a requirement at all.
+2016-11-03 22:58:46	dminuoso_	memesaregreat: Yeah.
+2016-11-03 23:00:17	-->	chr1s (~chris@212-147-34-113.fix.access.vtx.ch) has joined ##asm
+2016-11-03 23:05:46	<--	chr1s (~chris@212-147-34-113.fix.access.vtx.ch) has quit (Quit: Konversation terminated!)
+2016-11-03 23:05:46		[23:05]
+2016-11-03 23:05:54	-->	chr1s (~chris@212-147-34-113.fix.access.vtx.ch) has joined ##asm
+2016-11-03 23:06:43	-->	Geek (~Geek@212.73.149.139) has joined ##asm
+2016-11-03 23:07:06	--	Geek is now known as Guest17393
+2016-11-03 23:07:46	-->	slavking (~root@cable-94-189-160-113.dynamic.sbb.rs) has joined ##asm
+2016-11-03 23:13:00		[23:07]
+2016-11-03 23:15:10	<--	chr1s (~chris@212-147-34-113.fix.access.vtx.ch) has quit (Quit: Konversation terminated!)
+2016-11-03 23:15:17	-->	chr1s (~chris@212-147-34-113.fix.access.vtx.ch) has joined ##asm
+2016-11-03 23:17:03	<--	palantir (~palantir@05453dba.skybroadband.com) has quit (Read error: Connection reset by peer)
+2016-11-03 23:17:31	-->	palantir (~palantir@05453dba.skybroadband.com) has joined ##asm
+2016-11-03 23:21:10	<--	navidr (uid112413@gateway/web/irccloud.com/x-ntqtohqljebqiqmx) has quit (Quit: Connection closed for inactivity)
+2016-11-03 23:24:43	<--	chr1s (~chris@212-147-34-113.fix.access.vtx.ch) has quit (Quit: Konversation terminated!)
+2016-11-03 23:25:04	<--	Fiki (~Fiki@80-109-242-183.cable.dynamic.surfer.at) has quit (Quit: Leaving)
+2016-11-03 23:25:35	-->	chr1s (~chris@212-147-34-113.fix.access.vtx.ch) has joined ##asm
+2016-11-03 23:30:10	<--	chr1s (~chris@212-147-34-113.fix.access.vtx.ch) has quit (Client Quit)
+2016-11-03 23:30:10		[23:30]
+2016-11-03 23:30:18	-->	chr1s (~chris@212-147-34-113.fix.access.vtx.ch) has joined ##asm
+2016-11-03 23:31:13	<--	memesaregreat (0eb140db@gateway/web/cgi-irc/kiwiirc.com/ip.14.177.64.219) has quit (Quit: http://www.kiwiirc.com/ - A hand crafted IRC client)
+2016-11-03 23:35:35	<--	chr1s (~chris@212-147-34-113.fix.access.vtx.ch) has quit (Remote host closed the connection)
+2016-11-03 23:35:43	-->	chr1s (~chris@212-147-34-113.fix.access.vtx.ch) has joined ##asm
+2016-11-03 23:41:00		[23:35]
+2016-11-03 23:45:10	<--	chr1s (~chris@212-147-34-113.fix.access.vtx.ch) has quit (Quit: Konversation terminated!)
+2016-11-03 23:45:18	-->	chr1s (~chris@212-147-34-113.fix.access.vtx.ch) has joined ##asm
+2016-11-03 23:48:59	-->	Atranimus (~Atranimus@athedsl-205528.home.otenet.gr) has joined ##asm
+2016-11-03 23:50:53	<--	palantir (~palantir@05453dba.skybroadband.com) has quit (Read error: Connection reset by peer)
+2016-11-03 23:51:05	-->	palantir (~palantir@05453dba.skybroadband.com) has joined ##asm
+2016-11-03 23:57:00		[23:51]
+2016-11-03 23:59:34	-->	King_Hual (~failed@unaffiliated/king-hual/x-1207580) has joined ##asm
+2016-11-04 00:05:00		[23:59]
+2016-11-04 00:05:05	defragger	nd they consume less battery power :P
+2016-11-04 00:05:18	defragger	ups wrong channel
+2016-11-04 00:06:06	-->	rnsanchez (~rnsanchez@179.177.213.20.dynamic.adsl.gvt.net.br) has joined ##asm
+2016-11-04 00:07:30	<--	chr1s (~chris@212-147-34-113.fix.access.vtx.ch) has quit (Remote host closed the connection)
+2016-11-04 00:12:03	<--	slavking (~root@cable-94-189-160-113.dynamic.sbb.rs) has quit (Quit: Leaving)
+2016-11-04 00:13:09	-->	Burgundy (~burgundy@82.76.176.187) has joined ##asm
+2016-11-04 00:14:48	<--	FriskyKat (SomeWhere@90.212.224.152) has quit (Ping timeout: 260 seconds)
+2016-11-04 00:15:48	-->	Demon_Fox (~Demon_Fox@71.94.3.176) has joined ##asm
+2016-11-04 00:16:41	-->	devonrevenge (~devonreve@unaffiliated/devonrevenge) has joined ##asm
+2016-11-04 00:20:58	-->	Ox4 (~user@unaffiliated/zloy) has joined ##asm
+2016-11-04 00:20:58		[00:20]
+2016-11-04 00:25:00	-->	spt0 (~spt0@unaffiliated/spt0) has joined ##asm
+2016-11-04 00:28:50	-->	chr1s (~chris@212-147-34-113.fix.access.vtx.ch) has joined ##asm
+2016-11-04 00:30:10	<--	chr1s (~chris@212-147-34-113.fix.access.vtx.ch) has quit (Client Quit)
+2016-11-04 00:36:00		[00:30]
+2016-11-04 00:39:14	-->	pirate21994 (~pirate219@117.207.15.85) has joined ##asm
+2016-11-04 00:42:10	<--	int0x27h (~int0x27h@unaffiliated/int0x27h) has quit (Ping timeout: 260 seconds)
+2016-11-04 00:42:38	<--	blacksyke (sid151792@gateway/web/irccloud.com/x-eeyjdcpvckesryfc) has quit (Ping timeout: 260 seconds)
+2016-11-04 00:42:44	-->	Protab (~Rotab@2001:2002:4e47:9822:589b:69de:5531:b9db) has joined ##asm
+2016-11-04 00:42:45	<--	Rotab (~Rotab@2001:2002:4e47:9822:589b:69de:5531:b9db) has quit (Disconnected by services)
+2016-11-04 00:42:46	--	Protab is now known as Rotab
+2016-11-04 00:43:34	<--	Whisket (sid35606@gateway/web/irccloud.com/x-kczkekkbdksppbna) has quit (Ping timeout: 260 seconds)
+2016-11-04 00:43:35	<--	retrohacker (sid34590@gateway/web/irccloud.com/x-igydfchzfaqcqwmo) has quit (Ping timeout: 260 seconds)
+2016-11-04 00:43:35	<--	winny (~winny@unaffiliated/winstonw) has quit (Ping timeout: 260 seconds)
+2016-11-04 00:44:03	<--	CyberNigma (sid146612@gateway/web/irccloud.com/x-cmrgvvtleznpzimv) has quit (Ping timeout: 260 seconds)
+2016-11-04 00:44:30	<--	Neo (~neo@opennic/Neo) has quit (Ping timeout: 260 seconds)
+2016-11-04 00:45:28	-->	blacksyke (sid151792@gateway/web/irccloud.com/x-avvyrymdcnkvesic) has joined ##asm
+2016-11-04 00:45:59	-->	Neo (~neo@opennic/Neo) has joined ##asm
+2016-11-04 00:47:26	-->	Atroc (~Atroc@h081217214054.dyn.cm.kabsi.at) has joined ##asm
+2016-11-04 00:47:35	-->	retrohacker (sid34590@gateway/web/irccloud.com/x-zwfmmdngnkbnufmf) has joined ##asm
+2016-11-04 00:48:04	-->	Whisket (sid35606@gateway/web/irccloud.com/x-qnbkdmlkakszigro) has joined ##asm
+2016-11-04 00:48:57	-->	int0x27h (~int0x27h@anfoog.org) has joined ##asm
+2016-11-04 00:48:57	<--	int0x27h (~int0x27h@anfoog.org) has quit (Changing host)
+2016-11-04 00:48:57	-->	int0x27h (~int0x27h@unaffiliated/int0x27h) has joined ##asm
+2016-11-04 00:53:37	<--	kaos (~kaos@h7n8-vn-a12.ias.bredband.telia.com) has quit (Remote host closed the connection)
+2016-11-04 00:53:37		[00:53]
+2016-11-04 00:53:38	-->	Antares (~Antares@ppp91-76-65-163.pppoe.mtu-net.ru) has joined ##asm
+2016-11-04 00:55:08	-->	GeDaMo (~GeDaMo@212.225.83.199) has joined ##asm
+2016-11-04 00:55:59	<--	Rotab (~Rotab@2001:2002:4e47:9822:589b:69de:5531:b9db) has quit (Read error: Connection reset by peer)
+2016-11-04 00:56:13	-->	Rotab (~Rotab@2001:2002:4e47:9822:589b:69de:5531:b9db) has joined ##asm
+2016-11-04 00:56:16	<--	RTFM[away] (~RTFMaway]@unaffiliated/rtfmaway/x-3892344) has quit (Ping timeout: 250 seconds)
+2016-11-04 00:56:30	-->	winny (~winny@unaffiliated/winstonw) has joined ##asm
+2016-11-04 00:57:23	-->	t1nkerer1 (~t1nkerer@193.138.30.36) has joined ##asm
+2016-11-04 00:57:56	<--	t1nkerer1 (~t1nkerer@193.138.30.36) has quit (Max SendQ exceeded)
+2016-11-04 00:58:27	<--	Broly (~brocolli@gave-jessica-and-ashlee-simpson-my.stickynapalm.com) has quit (Read error: Connection reset by peer)
+2016-11-04 00:58:52	-->	Broly (ylorb@gave-jessica-and-ashlee-simpson-my.stickynapalm.com) has joined ##asm
+2016-11-04 00:59:32	<--	t1nkerer (~t1nkerer@193.138.30.36) has quit (Ping timeout: 260 seconds)
+2016-11-04 01:00:18	-->	CyberNigma (sid146612@gateway/web/irccloud.com/x-djuvdxaejfpekire) has joined ##asm
+2016-11-04 01:03:34	-->	kaos (~kaos@h7n8-vn-a12.ias.bredband.telia.com) has joined ##asm
+2016-11-04 01:04:57	<--	sanct (~sanct@212.35.67.11) has quit (Ping timeout: 252 seconds)
+2016-11-04 01:05:28	-->	byte512 (~user@h37n2-um-a32.ias.bredband.telia.com) has joined ##asm
+2016-11-04 01:05:29	-->	sanct (~sanct@212.35.67.11) has joined ##asm
+2016-11-04 01:11:00		[01:05]
+2016-11-04 01:14:25	-->	geste (~chatzilla@pd95b0b70.dip0.t-ipconnect.de) has joined ##asm
+2016-11-04 01:15:51	-->	FriskyKat (SomeWhere@90.221.251.191) has joined ##asm
+2016-11-04 01:16:41	<--	geste (~chatzilla@pd95b0b70.dip0.t-ipconnect.de) has quit (Client Quit)
+2016-11-04 01:21:22	-->	chr1s (~chris@212-147-34-113.fix.access.vtx.ch) has joined ##asm
+2016-11-04 01:27:00		[01:21]
+2016-11-04 01:30:10	<--	chr1s (~chris@212-147-34-113.fix.access.vtx.ch) has quit (Quit: Konversation terminated!)
+2016-11-04 01:31:54	<--	palantir (~palantir@05453dba.skybroadband.com) has quit (Read error: Connection reset by peer)
+2016-11-04 01:33:40	-->	palantir (~palantir@05453dba.skybroadband.com) has joined ##asm
+2016-11-04 01:35:40	<--	dijital1 (~dijital1@pdpc/supporter/active/dijital1) has quit (Quit: Textual IRC Client: www.textualapp.com)
+2016-11-04 01:36:50	<--	Atranimus (~Atranimus@athedsl-205528.home.otenet.gr) has quit (Quit: Leaving)
+2016-11-04 01:38:55	-->	chr1s (~chris@212-147-34-113.fix.access.vtx.ch) has joined ##asm
+2016-11-04 01:39:30	-->	Atranimus (~Macgyver@athedsl-205528.home.otenet.gr) has joined ##asm
+2016-11-04 01:45:00		[01:39]
+2016-11-04 01:45:16	<--	chr1s (~chris@212-147-34-113.fix.access.vtx.ch) has quit (Quit: Konversation terminated!)
+2016-11-04 01:45:54	-->	geste (~chatzilla@pd95b0b70.dip0.t-ipconnect.de) has joined ##asm
+2016-11-04 01:46:02	-->	chr1s (~chris@212-147-34-113.fix.access.vtx.ch) has joined ##asm
+2016-11-04 01:52:00		[01:46]
+2016-11-04 02:02:02	<--	lowin (~lowin@151.245.117.99) has quit (Read error: Connection reset by peer)
+2016-11-04 02:04:34	<--	palantir (~palantir@05453dba.skybroadband.com) has quit (Ping timeout: 250 seconds)
+2016-11-04 02:05:33	-->	dijital1 (~dijital1@24.159.118.117) has joined ##asm
+2016-11-04 02:05:34	<--	dijital1 (~dijital1@24.159.118.117) has quit (Changing host)
+2016-11-04 02:05:34	-->	dijital1 (~dijital1@pdpc/supporter/active/dijital1) has joined ##asm
+2016-11-04 02:06:26	-->	lowin (~lowin@151.245.117.99) has joined ##asm
+2016-11-04 02:07:17	<--	vdamewood (~vdamewood@unaffiliated/vdamewood) has quit (Quit: Life beckons.)
+2016-11-04 02:07:17		[02:07]
+2016-11-04 02:09:44	-->	GinoManWorks (~GinoMan@50-251-53-110-static.hfc.comcastbusiness.net) has joined ##asm
+2016-11-04 02:10:02	<--	chr1s (~chris@212-147-34-113.fix.access.vtx.ch) has quit (Quit: Konversation terminated!)
+2016-11-04 02:11:11	-->	palantir (~palantir@05453dba.skybroadband.com) has joined ##asm
+2016-11-04 02:13:11	<--	Demon_Fox (~Demon_Fox@71.94.3.176) has quit (Quit: Leaving)
+2016-11-04 02:14:56	<--	nisstyre (~yourstrul@oftn/oswg-member/Nisstyre) has quit (Read error: Connection reset by peer)
+2016-11-04 02:16:59	-->	araml (~araml@unaffiliated/araml) has joined ##asm
+2016-11-04 02:21:46	-->	chr1s (~chris@212-147-34-113.fix.access.vtx.ch) has joined ##asm
+2016-11-04 02:26:38	<--	Atroc (~Atroc@h081217214054.dyn.cm.kabsi.at) has quit (Read error: Connection reset by peer)
+2016-11-04 02:26:38		[02:26]
+2016-11-04 02:29:41	-->	lecture01 (~Thunderbi@dslb-188-106-228-090.188.106.pools.vodafone-ip.de) has joined ##asm
+2016-11-04 02:30:12	<--	chr1s (~chris@212-147-34-113.fix.access.vtx.ch) has quit (Quit: Konversation terminated!)
+2016-11-04 02:31:53	-->	chr1s (~chris@212-147-34-113.fix.access.vtx.ch) has joined ##asm
+2016-11-04 02:35:10	<--	Guest17393 (~Geek@212.73.149.139) has quit (Ping timeout: 244 seconds)
+2016-11-04 02:41:00		[02:35]
+2016-11-04 02:41:48	-->	slidercrank (~slidercra@unaffiliated/slidercrank) has joined ##asm
+2016-11-04 02:45:09	<--	chr1s (~chris@212-147-34-113.fix.access.vtx.ch) has quit (Quit: Konversation terminated!)
+2016-11-04 02:45:17	-->	chr1s (~chris@212-147-34-113.fix.access.vtx.ch) has joined ##asm
+2016-11-04 02:48:54	<--	chr1s (~chris@212-147-34-113.fix.access.vtx.ch) has quit (Client Quit)
+2016-11-04 02:49:02	-->	chr1s (~chris@212-147-34-113.fix.access.vtx.ch) has joined ##asm
+2016-11-04 02:49:40	-->	Atroc (~Atroc___@h081217214054.dyn.cm.kabsi.at) has joined ##asm
+2016-11-04 02:50:10	-->	control (~control@unaffiliated/control) has joined ##asm
+2016-11-04 02:51:20	-->	Guest17393 (~Geek@212.73.149.139) has joined ##asm
+2016-11-04 02:54:26	-->	dcluna (~dcluna@189.111.41.96) has joined ##asm
+2016-11-04 02:55:07	<--	SunnyD (~SunnyD@cpe-72-178-78-211.hot.res.rr.com) has quit (Quit: ChatZilla 0.9.90.1 [Firefox 30.0/20140605174243])
+2016-11-04 02:57:41	<--	Atranimus (~Macgyver@athedsl-205528.home.otenet.gr) has quit (Quit: Bye)
+2016-11-04 02:57:41		[02:57]
+2016-11-04 03:00:15	<--	chr1s (~chris@212-147-34-113.fix.access.vtx.ch) has quit (Quit: Konversation terminated!)
+2016-11-04 03:01:16	-->	chr1s (~chris@212-147-34-113.fix.access.vtx.ch) has joined ##asm
+2016-11-04 03:02:07	<--	chr1s (~chris@212-147-34-113.fix.access.vtx.ch) has quit (Client Quit)
+2016-11-04 03:02:14	-->	chr1s (~chris@212-147-34-113.fix.access.vtx.ch) has joined ##asm
+2016-11-04 03:07:15	<--	palantir (~palantir@05453dba.skybroadband.com) has quit (Read error: Connection reset by peer)
+2016-11-04 03:08:59	-->	palantir (~palantir@05453dba.skybroadband.com) has joined ##asm
+2016-11-04 03:12:33	<--	rendar (~rendar@host30-177-dynamic.13-79-r.retail.telecomitalia.it) has quit (Ping timeout: 252 seconds)
+2016-11-04 03:14:21	-->	xocket (~xocket@unaffiliated/xocket) has joined ##asm
+2016-11-04 03:14:21		[03:14]
+2016-11-04 03:15:09	<--	chr1s (~chris@212-147-34-113.fix.access.vtx.ch) has quit (Quit: Konversation terminated!)
+2016-11-04 03:15:17	-->	chr1s (~chris@212-147-34-113.fix.access.vtx.ch) has joined ##asm
+2016-11-04 03:15:44	<--	chr1s (~chris@212-147-34-113.fix.access.vtx.ch) has quit (Client Quit)
+2016-11-04 03:16:45	--	xsdfsefgew is now known as Erythrea
+2016-11-04 03:16:48	-->	chr1s (~chris@212-147-34-113.fix.access.vtx.ch) has joined ##asm
+2016-11-04 03:20:17	-->	Demon_Fox (~Demon_Fox@71.94.3.176) has joined ##asm
+2016-11-04 03:26:00		[03:20]
+2016-11-04 03:26:20	-->	rendar (~rendar@host174-179-dynamic.55-79-r.retail.telecomitalia.it) has joined ##asm
+2016-11-04 03:27:40	<--	dijital1 (~dijital1@pdpc/supporter/active/dijital1) has quit (Quit: Textual IRC Client: www.textualapp.com)
+2016-11-04 03:30:10	<--	chr1s (~chris@212-147-34-113.fix.access.vtx.ch) has quit (Quit: Konversation terminated!)
+2016-11-04 03:30:17	-->	chr1s (~chris@212-147-34-113.fix.access.vtx.ch) has joined ##asm
+2016-11-04 03:30:28	<--	araml (~araml@unaffiliated/araml) has quit (Quit: WeeChat 1.0.1)
+2016-11-04 03:32:08	<--	palantir (~palantir@05453dba.skybroadband.com) has quit (Ping timeout: 260 seconds)
+2016-11-04 03:32:27	<--	chr1s (~chris@212-147-34-113.fix.access.vtx.ch) has quit (Client Quit)
+2016-11-04 03:32:41	-->	palantir (~palantir@05453dba.skybroadband.com) has joined ##asm
+2016-11-04 03:32:46	-->	ararob2 (~yaaic@46-227-67-181.pool.ovpn.se) has joined ##asm
+2016-11-04 03:33:30	-->	chr1s (~chris@212-147-34-113.fix.access.vtx.ch) has joined ##asm
+2016-11-04 03:36:39	-->	zap0 (~moofy@14-201-222-143.tpgi.com.au) has joined ##asm
+2016-11-04 03:37:08	<--	Guest17393 (~Geek@212.73.149.139) has quit (Ping timeout: 252 seconds)
+2016-11-04 03:37:43	<--	fub (~fub@aftr-37-201-171-155.unity-media.net) has quit (Quit: quit.)
+2016-11-04 03:38:02	-->	dijital1 (~dijital1@pdpc/supporter/active/dijital1) has joined ##asm
+2016-11-04 03:40:53	<--	xocket (~xocket@unaffiliated/xocket) has quit (Disconnected by services)
+2016-11-04 03:40:54	-->	rgrinberg (~rgrinberg@24-246-56-85.cable.teksavvy.com) has joined ##asm
+2016-11-04 03:40:54	-->	xock_stream (~xocket@unaffiliated/xocket) has joined ##asm
+2016-11-04 03:45:09	<--	chr1s (~chris@212-147-34-113.fix.access.vtx.ch) has quit (Quit: Konversation terminated!)
+2016-11-04 03:45:09		[03:45]
+2016-11-04 03:45:17	-->	chr1s (~chris@212-147-34-113.fix.access.vtx.ch) has joined ##asm
+2016-11-04 03:51:00		[03:45]
+2016-11-04 03:52:40	<--	chr1s (~chris@212-147-34-113.fix.access.vtx.ch) has quit (Quit: Konversation terminated!)
+2016-11-04 03:52:47	-->	rnsanchez_ (~rnsanchez@177.18.97.239) has joined ##asm
+2016-11-04 03:52:48	-->	chr1s (~chris@212-147-34-113.fix.access.vtx.ch) has joined ##asm
+2016-11-04 03:54:04	-->	hmmmm (~sdfgsf@pool-72-79-166-50.sctnpa.east.verizon.net) has joined ##asm
+2016-11-04 03:55:18	<--	palantir (~palantir@05453dba.skybroadband.com) has quit (Ping timeout: 256 seconds)
+2016-11-04 03:55:19	<--	rnsanchez (~rnsanchez@179.177.213.20.dynamic.adsl.gvt.net.br) has quit (Ping timeout: 256 seconds)
+2016-11-04 03:57:22	-->	king_jah (~jah@S0106503955715ed3.ss.shawcable.net) has joined ##asm
+2016-11-04 03:57:29	-->	palantir (~palantir@05453dba.skybroadband.com) has joined ##asm
+2016-11-04 03:58:29	-->	Hask (~Hask@mail.vauban.lu) has joined ##asm
+2016-11-04 03:59:51	<--	Beetny (~Beetny@14-202-48-200.tpgi.com.au) has quit (Ping timeout: 252 seconds)
+2016-11-04 04:00:09	<--	chr1s (~chris@212-147-34-113.fix.access.vtx.ch) has quit (Quit: Konversation terminated!)
+2016-11-04 04:00:18	-->	chr1s (~chris@212-147-34-113.fix.access.vtx.ch) has joined ##asm
+2016-11-04 04:00:55	<--	pirate21994 (~pirate219@117.207.15.85) has quit (Quit: Leaving)
+2016-11-04 04:02:21	<--	lowin (~lowin@151.245.117.99) has quit (Ping timeout: 260 seconds)
+2016-11-04 04:02:48	<--	chr1s (~chris@212-147-34-113.fix.access.vtx.ch) has quit (Client Quit)
+2016-11-04 04:02:55	-->	chr1s (~chris@212-147-34-113.fix.access.vtx.ch) has joined ##asm
+2016-11-04 04:05:39	<--	dminuoso_ (~dminuoso@unaffiliated/dminuoso) has quit (Ping timeout: 250 seconds)
+2016-11-04 04:07:15	<--	Erythrea (~sdfgsdfg@unaffiliated/sdfgsdfg) has quit (Remote host closed the connection)
+2016-11-04 04:07:15		[04:07]
+2016-11-04 04:13:34	-->	Prod_ (~DaffyDuck@0138800884.0.fullrate.ninja) has joined ##asm
+2016-11-04 04:14:45	-->	lowin (~lowin@151.245.124.38) has joined ##asm
+2016-11-04 04:15:09	<--	chr1s (~chris@212-147-34-113.fix.access.vtx.ch) has quit (Quit: Konversation terminated!)
+2016-11-04 04:15:17	-->	chr1s (~chris@212-147-34-113.fix.access.vtx.ch) has joined ##asm
+2016-11-04 04:15:20	-->	dminuoso_ (~dminuoso@unaffiliated/dminuoso) has joined ##asm
+2016-11-04 04:15:28	--	meth is now known as Windows10
+2016-11-04 04:18:11	-->	RTFM[away] (~RTFMaway]@unaffiliated/rtfmaway/x-3892344) has joined ##asm
+2016-11-04 04:21:48	<--	palantir (~palantir@05453dba.skybroadband.com) has quit (Read error: Connection reset by peer)
+2016-11-04 04:23:08	<--	chr1s (~chris@212-147-34-113.fix.access.vtx.ch) has quit (Quit: Konversation terminated!)
+2016-11-04 04:23:08		[04:23]
+2016-11-04 04:23:16	-->	palantir (~palantir@05453dba.skybroadband.com) has joined ##asm
+2016-11-04 04:24:19	-->	chr1s (~chris@212-147-34-113.fix.access.vtx.ch) has joined ##asm
+2016-11-04 04:28:23	-->	Guest17393 (~Geek@212.73.149.139) has joined ##asm
+2016-11-04 04:29:54	<--	geste (~chatzilla@pd95b0b70.dip0.t-ipconnect.de) has quit (Quit: ChatZilla 0.9.92 [Firefox 49.0.2/20161019084923])
+2016-11-04 04:30:10	<--	chr1s (~chris@212-147-34-113.fix.access.vtx.ch) has quit (Quit: Konversation terminated!)
+2016-11-04 04:30:17	-->	chr1s (~chris@212-147-34-113.fix.access.vtx.ch) has joined ##asm
+2016-11-04 04:31:07	-->	Atranimus (~Macgyver@178-146-85-198.mobile.nym.cosmote.net) has joined ##asm
+2016-11-04 04:31:35	-->	m8 (~m8@unaffiliated/m8) has joined ##asm
+2016-11-04 04:33:10	<--	chr1s (~chris@212-147-34-113.fix.access.vtx.ch) has quit (Client Quit)
+2016-11-04 04:34:08	-->	chr1s (~chris@212-147-34-113.fix.access.vtx.ch) has joined ##asm
+2016-11-04 04:34:51	-->	MoALTz (~no@77-254-9-16.adsl.inetia.pl) has joined ##asm
+2016-11-04 04:35:26	<--	dminuoso_ (~dminuoso@unaffiliated/dminuoso) has quit (Remote host closed the connection)
+2016-11-04 04:41:00		[04:35]
+2016-11-04 04:41:20	-->	xocket (~xocket@unaffiliated/xocket) has joined ##asm
+2016-11-04 04:42:43	<--	spt0 (~spt0@unaffiliated/spt0) has quit (Remote host closed the connection)
+2016-11-04 04:43:07	-->	spt0 (~spt0@unaffiliated/spt0) has joined ##asm
+2016-11-04 04:43:19	<--	spt0 (~spt0@unaffiliated/spt0) has quit (Remote host closed the connection)
+2016-11-04 04:43:35	<--	Demon_Fox (~Demon_Fox@71.94.3.176) has quit (Quit: Leaving)
+2016-11-04 04:43:58	-->	spt0 (~spt0@unaffiliated/spt0) has joined ##asm
+2016-11-04 04:44:56	<--	xock_stream (~xocket@unaffiliated/xocket) has quit (Ping timeout: 260 seconds)
+2016-11-04 04:45:09	<--	chr1s (~chris@212-147-34-113.fix.access.vtx.ch) has quit (Remote host closed the connection)
+2016-11-04 04:45:17	-->	chr1s (~chris@212-147-34-113.fix.access.vtx.ch) has joined ##asm
+2016-11-04 04:46:00	-->	lol (~aTm@93-43-190-223.ip93.fastwebnet.it) has joined ##asm
+2016-11-04 04:46:56	<--	spt0 (~spt0@unaffiliated/spt0) has quit (Client Quit)
+2016-11-04 04:49:10	<--	lol (~aTm@93-43-190-223.ip93.fastwebnet.it) has quit (Quit: [ateam Script] Version 1.0 *)
+2016-11-04 04:49:11	-->	spt0 (~spt0@unaffiliated/spt0) has joined ##asm
+2016-11-04 04:49:48	<--	Prod_ (~DaffyDuck@0138800884.0.fullrate.ninja) has quit (Quit: Leaving)
+2016-11-04 04:52:58	<--	futex_ (~mcstn@sie57-h01-176-128-148-93.dsl.sta.abo.bbox.fr) has quit (Ping timeout: 245 seconds)
+2016-11-04 04:53:23	<--	chr1s (~chris@212-147-34-113.fix.access.vtx.ch) has quit (Quit: Konversation terminated!)
+2016-11-04 04:53:30	-->	chr1s (~chris@212-147-34-113.fix.access.vtx.ch) has joined ##asm
+2016-11-04 04:57:13	-->	xux (~xux@unaffiliated/xux) has joined ##asm
+2016-11-04 04:57:13		[04:57]
+2016-11-04 05:00:10	<--	chr1s (~chris@212-147-34-113.fix.access.vtx.ch) has quit (Quit: Konversation terminated!)
+2016-11-04 05:00:17	-->	chr1s (~chris@212-147-34-113.fix.access.vtx.ch) has joined ##asm
+2016-11-04 05:03:28	<--	Atranimus (~Macgyver@178-146-85-198.mobile.nym.cosmote.net) has quit (Read error: Connection reset by peer)
+2016-11-04 05:03:30	<--	chr1s (~chris@212-147-34-113.fix.access.vtx.ch) has quit (Remote host closed the connection)
+2016-11-04 05:03:38	-->	chr1s (~chris@212-147-34-113.fix.access.vtx.ch) has joined ##asm
+2016-11-04 05:04:08	<--	dqi (~dqi@165-218-045-062.dynamic.caiway.nl) has quit (Ping timeout: 260 seconds)
+2016-11-04 05:06:11	-->	freakazoid0223_ (~chatzilla@pool-173-49-14-128.phlapa.fios.verizon.net) has joined ##asm
+2016-11-04 05:08:03	<--	palantir (~palantir@05453dba.skybroadband.com) has quit (Ping timeout: 252 seconds)
+2016-11-04 05:08:56	<--	swatti (~memory@194.88.49.178) has quit (Remote host closed the connection)
+2016-11-04 05:08:59	-->	EI24 (~EI24@90-224-11-165-no124.tbcn.telia.com) has joined ##asm
+2016-11-04 05:09:17	<--	freakazoid0223 (~chatzilla@pool-173-49-14-128.phlapa.fios.verizon.net) has quit (Ping timeout: 260 seconds)
+2016-11-04 05:09:46	-->	futex (~mcstn@sie57-h01-176-128-148-93.dsl.sta.abo.bbox.fr) has joined ##asm
+2016-11-04 05:10:35	-->	palantir (~palantir@05453dba.skybroadband.com) has joined ##asm
+2016-11-04 05:11:51	--	freakazoid0223_ is now known as freakazoid0223
+2016-11-04 05:13:14	-->	Demon_Fox (~Demon_Fox@71.94.3.176) has joined ##asm
+2016-11-04 05:13:14		[05:13]
+2016-11-04 05:15:10	<--	chr1s (~chris@212-147-34-113.fix.access.vtx.ch) has quit (Quit: Konversation terminated!)
+2016-11-04 05:15:18	-->	chr1s (~chris@212-147-34-113.fix.access.vtx.ch) has joined ##asm
+2016-11-04 05:16:05	<--	dcluna (~dcluna@189.111.41.96) has quit (Ping timeout: 260 seconds)
+2016-11-04 05:18:42	<--	messy (~messy@128.194.3.238) has quit (Ping timeout: 250 seconds)
+2016-11-04 05:20:25	<--	Ox4 (~user@unaffiliated/zloy) has left ##asm ("ERC (IRC client for Emacs 25.1.50.1)")
+2016-11-04 05:20:36	-->	dqi (~dqi@165-218-045-062.dynamic.caiway.nl) has joined ##asm
+2016-11-04 05:20:52	<--	lochs (lochs@unaffiliated/lochs) has quit (Ping timeout: 260 seconds)
+2016-11-04 05:21:31	-->	jan64 (~jan64@djw154.neoplus.adsl.tpnet.pl) has joined ##asm
+2016-11-04 05:21:45	-->	lochs (lochs@masteruk.xshellz.com) has joined ##asm
+2016-11-04 05:23:29	<--	Affliction (affliction@2600:3c01::13:ffff) has quit (Remote host closed the connection)
+2016-11-04 05:23:45	<--	chr1s (~chris@212-147-34-113.fix.access.vtx.ch) has quit (Quit: Konversation terminated!)
+2016-11-04 05:25:05	-->	Affliction (affliction@argon.rfc1337.net) has joined ##asm
+2016-11-04 05:28:24	<--	Antares (~Antares@ppp91-76-65-163.pppoe.mtu-net.ru) has quit (Ping timeout: 260 seconds)
+2016-11-04 05:28:24		[05:28]
+2016-11-04 05:30:17	-->	chr1s (~chris@212-147-34-113.fix.access.vtx.ch) has joined ##asm
+2016-11-04 05:30:18	<--	palantir (~palantir@05453dba.skybroadband.com) has quit (Read error: Connection reset by peer)
+2016-11-04 05:31:07	-->	palantir (~palantir@05453dba.skybroadband.com) has joined ##asm
+2016-11-04 05:31:49	-->	messy (~messy@128.194.3.238) has joined ##asm
+2016-11-04 05:33:52	<--	chr1s (~chris@212-147-34-113.fix.access.vtx.ch) has quit (Client Quit)
+2016-11-04 05:34:45	-->	chr1s (~chris@212-147-34-113.fix.access.vtx.ch) has joined ##asm
+2016-11-04 05:39:04	-->	AverageJ0e (~joe@ip68-3-197-107.ph.ph.cox.net) has joined ##asm
+2016-11-04 05:41:28	-->	snyp (~Snyp@150.129.132.164) has joined ##asm
+2016-11-04 05:41:37	<--	xocket (~xocket@unaffiliated/xocket) has quit (Disconnected by services)
+2016-11-04 05:41:38	-->	xock_stream (~xocket@unaffiliated/xocket) has joined ##asm
+2016-11-04 05:45:10	<--	chr1s (~chris@212-147-34-113.fix.access.vtx.ch) has quit (Quit: Konversation terminated!)
+2016-11-04 05:45:10		[05:45]
+2016-11-04 05:49:29	-->	araml (~araml@unaffiliated/araml) has joined ##asm
+2016-11-04 05:49:30	<--	palantir (~palantir@05453dba.skybroadband.com) has quit (Read error: Connection reset by peer)
+2016-11-04 05:49:36	-->	Prod_ (~DaffyDuck@0138800884.0.fullrate.ninja) has joined ##asm
+2016-11-04 05:50:18	-->	palantir (~palantir@05453dba.skybroadband.com) has joined ##asm
+2016-11-04 05:52:35	-->	slither (~jesus@95.146.18.106) has joined ##asm
+2016-11-04 05:54:08	-->	chr1s (~chris@212-147-34-113.fix.access.vtx.ch) has joined ##asm
+2016-11-04 05:54:32	-->	ARM9 (~ARM9@46-236-101-75.customer.t3.se) has joined ##asm
+2016-11-04 05:54:34	-->	egos (~egos@mc3.data.slu.se) has joined ##asm
+2016-11-04 05:57:29	-->	dcluna (~dcluna@189.111.41.96) has joined ##asm
+2016-11-04 06:00:09	<--	chr1s (~chris@212-147-34-113.fix.access.vtx.ch) has quit (Remote host closed the connection)
+2016-11-04 06:01:29	-->	|DM| (~|DM|@79.101.135.1) has joined ##asm
+2016-11-04 06:01:29		[06:01]
+2016-11-04 06:03:41	<--	MoALTz (~no@77-254-9-16.adsl.inetia.pl) has quit (Quit: Leaving)
+2016-11-04 06:04:22	<--	lowin (~lowin@151.245.124.38) has quit (Ping timeout: 250 seconds)
+2016-11-04 06:07:50	<--	Hask (~Hask@mail.vauban.lu) has quit (Ping timeout: 252 seconds)
+2016-11-04 06:08:15	<--	spt0 (~spt0@unaffiliated/spt0) has quit (Quit: Leaving)
+2016-11-04 06:08:40	-->	spt0 (~spt0@unaffiliated/spt0) has joined ##asm
+2016-11-04 06:09:48	<--	palantir (~palantir@05453dba.skybroadband.com) has quit (Read error: Connection reset by peer)
+2016-11-04 06:09:55	-->	palantir_ (~palantir@05453dba.skybroadband.com) has joined ##asm
+2016-11-04 06:10:22	-->	jan64_ (~jan64@dke119.neoplus.adsl.tpnet.pl) has joined ##asm
+2016-11-04 06:10:33	-->	mArtale (~mArtale@unaffiliated/martale) has joined ##asm
+2016-11-04 06:13:20	<--	rgrinberg (~rgrinberg@24-246-56-85.cable.teksavvy.com) has quit (Remote host closed the connection)
+2016-11-04 06:13:40	<--	jan64 (~jan64@djw154.neoplus.adsl.tpnet.pl) has quit (Ping timeout: 260 seconds)
+2016-11-04 06:14:48	-->	MoALTz (~no@77-254-9-16.adsl.inetia.pl) has joined ##asm
+2016-11-04 06:15:23	-->	rgrinberg (~rgrinberg@24-246-56-85.cable.teksavvy.com) has joined ##asm
+2016-11-04 06:16:31	-->	lowin (~lowin@31.56.128.183) has joined ##asm
+2016-11-04 06:16:31		[06:16]
+2016-11-04 06:26:11	--	Windows10 is now known as meth
+2016-11-04 06:27:40	<--	palantir_ (~palantir@05453dba.skybroadband.com) has quit (Read error: Connection reset by peer)
+2016-11-04 06:28:29	-->	palantir (~palantir@05453dba.skybroadband.com) has joined ##asm
+2016-11-04 06:28:53	<--	MoALTz (~no@77-254-9-16.adsl.inetia.pl) has quit (Ping timeout: 248 seconds)
+2016-11-04 06:29:46	-->	MoALTz (~no@77-254-9-16.adsl.inetia.pl) has joined ##asm
+2016-11-04 06:32:24	<--	Guest17393 (~Geek@212.73.149.139) has quit (Ping timeout: 252 seconds)
+2016-11-04 06:32:24		[06:32]
+2016-11-04 06:33:23	<--	GinoManWorks (~GinoMan@50-251-53-110-static.hfc.comcastbusiness.net) has quit (Quit: Leaving)
+2016-11-04 06:37:01	bforte	hey there, I'm using radare2 for disassembling/reverse engineering x86_64 binaries. and I'm wanting to test out a decompiler to see what results it can produce.. now my trouble is that the ones I've looked at (radeco, snowman and boomerang) seem to "only" work for x86 assembly.
+2016-11-04 06:37:22	bforte	is there an opensource decompiler for x86_64 binaries?
+2016-11-04 06:42:34	-->	xocket (~xocket@unaffiliated/xocket) has joined ##asm
+2016-11-04 06:43:10	<--	blackwind_123 (~IceChat9@117.192.137.241) has quit (Ping timeout: 244 seconds)
+2016-11-04 06:46:03	<--	xock_stream (~xocket@unaffiliated/xocket) has quit (Ping timeout: 268 seconds)
+2016-11-04 06:46:36	-->	blackwind_123 (~IceChat9@117.192.144.201) has joined ##asm
+2016-11-04 06:47:21	-->	Judge_Dredd (~Judge_Dre@unaffiliated/judge-dredd/x-2170742) has joined ##asm
+2016-11-04 06:47:36	<--	palantir (~palantir@05453dba.skybroadband.com) has quit (Read error: Connection reset by peer)
+2016-11-04 06:47:36		[06:47]
+2016-11-04 06:49:05	bforte	wait, though it doesn't say so on github, snowman seems to be able to do that (according to derevenets.com)
+2016-11-04 06:49:17	-->	palantir (~palantir@05453dba.skybroadband.com) has joined ##asm
+2016-11-04 06:49:24	bforte	nvm then, will try that tomorrow.
+2016-11-04 06:49:27	-->	bkboggy (~bkboggy@cpe-172-250-147-60.socal.res.rr.com) has joined ##asm
+2016-11-04 06:52:36	<--	DusXMT (~dusxmt@195.12.144.254) has quit (Read error: Connection reset by peer)
+2016-11-04 06:53:02	-->	DusXMT (~dusxmt@195.12.144.254) has joined ##asm
+2016-11-04 06:57:33	<--	Natch (~Natch@h-155-122.a444.priv.bahnhof.se) has quit (Remote host closed the connection)
+2016-11-04 06:58:46	-->	kbw (~KeyboardW@104-178-145-79.lightspeed.tukrga.sbcglobal.net) has joined ##asm
+2016-11-04 07:04:00		[06:58]
+2016-11-04 07:04:47	<--	Prod_ (~DaffyDuck@0138800884.0.fullrate.ninja) has quit (Quit: Leaving)
+2016-11-04 07:07:57	<--	palantir (~palantir@05453dba.skybroadband.com) has quit (Ping timeout: 252 seconds)
+2016-11-04 07:11:10	-->	palantir (~palantir@05453dba.skybroadband.com) has joined ##asm
+2016-11-04 07:17:00		[07:11]
+2016-11-04 07:23:48	-->	sneakers (~sneakers@unaffiliated/sneakerhead) has joined ##asm
+2016-11-04 07:26:18	-->	Natch (~Natch@h-155-122.a444.priv.bahnhof.se) has joined ##asm
+2016-11-04 07:32:00		[07:26]
+2016-11-04 07:35:09	<--	ararob2 (~yaaic@46-227-67-181.pool.ovpn.se) has quit (Ping timeout: 260 seconds)
+2016-11-04 07:36:21	<--	kbw (~KeyboardW@104-178-145-79.lightspeed.tukrga.sbcglobal.net) has quit (Quit: My MacBook Air has gone to sleep. ZZZzzz…)
+2016-11-04 07:36:30	-->	ararob2 (~yaaic@c-f78472d5.043-274-73746f25.cust.bredbandsbolaget.se) has joined ##asm
+2016-11-04 07:38:53	<--	mArtale (~mArtale@unaffiliated/martale) has quit (Quit: sutdown -t 10)
+2016-11-04 07:41:41	<--	palantir (~palantir@05453dba.skybroadband.com) has quit (Ping timeout: 252 seconds)
+2016-11-04 07:41:55	<--	xocket (~xocket@unaffiliated/xocket) has quit (Disconnected by services)
+2016-11-04 07:41:56	-->	xock_stream (~xocket@unaffiliated/xocket) has joined ##asm
+2016-11-04 07:44:03	-->	palantir (~palantir@05453dba.skybroadband.com) has joined ##asm
+2016-11-04 07:47:45	<--	slither (~jesus@95.146.18.106) has quit (Ping timeout: 244 seconds)
+2016-11-04 07:47:45		[07:47]
+2016-11-04 08:04:47	<--	bforte (~bforte@mikaeus.net) has quit (Ping timeout: 252 seconds)
+2016-11-04 08:04:47		[08:04]
+2016-11-04 08:09:01	<--	palantir (~palantir@05453dba.skybroadband.com) has quit (Ping timeout: 250 seconds)
+2016-11-04 08:10:49	-->	kbw (~KeyboardW@104-178-145-79.lightspeed.tukrga.sbcglobal.net) has joined ##asm
+2016-11-04 08:11:13	-->	palantir (~palantir@05453dba.skybroadband.com) has joined ##asm
+2016-11-04 08:12:35	<--	kbw (~KeyboardW@104-178-145-79.lightspeed.tukrga.sbcglobal.net) has quit (Client Quit)
+2016-11-04 08:13:35	-->	Richard_Cavell (uid165693@gateway/web/irccloud.com/x-bzruqcaxjdfgdzkp) has joined ##asm
+2016-11-04 08:19:00		[08:13]
+2016-11-04 08:20:31	-->	kbw (~KeyboardW@104-178-145-79.lightspeed.tukrga.sbcglobal.net) has joined ##asm
+2016-11-04 08:20:43	<--	Xark_ (~Xark@47.150.69.188) has quit (Ping timeout: 258 seconds)
+2016-11-04 08:22:42	-->	k_j (~no@151.42.107.28) has joined ##asm
+2016-11-04 08:24:18	-->	When_shackles_co (~c@va-76-1-149-172.dhcp.embarqhsd.net) has joined ##asm
+2016-11-04 08:24:25	--	When_shackles_co is now known as emmy
+2016-11-04 08:24:48	<--	emmy (~c@va-76-1-149-172.dhcp.embarqhsd.net) has quit (Client Quit)
+2016-11-04 08:30:00		[08:24]
+2016-11-04 08:34:29	-->	Xark (~Xark@unaffiliated/xark) has joined ##asm
+2016-11-04 08:37:30	<--	kbw (~KeyboardW@104-178-145-79.lightspeed.tukrga.sbcglobal.net) has quit (Quit: My MacBook Air has gone to sleep. ZZZzzz…)
+2016-11-04 08:38:53	<--	asla (~asla@2400:6180:0:d0::1b6:b001) has quit (K-Lined)
+2016-11-04 08:38:54	<--	palantir (~palantir@05453dba.skybroadband.com) has quit (Read error: Connection reset by peer)
+2016-11-04 08:42:57	-->	xocket (~xocket@unaffiliated/xocket) has joined ##asm
+2016-11-04 08:43:15	-->	palantir (~palantir@05453dba.skybroadband.com) has joined ##asm
+2016-11-04 08:45:37	<--	xock_stream (~xocket@unaffiliated/xocket) has quit (Ping timeout: 260 seconds)
+2016-11-04 08:45:37		[08:45]
+2016-11-04 08:46:57	<--	snyp (~Snyp@150.129.132.164) has quit (Ping timeout: 252 seconds)
+2016-11-04 08:49:09	-->	phinxy (~tehhhd@unaffiliated/phinxy) has joined ##asm
+2016-11-04 08:52:53	-->	kbw (~KeyboardW@104-178-145-79.lightspeed.tukrga.sbcglobal.net) has joined ##asm
+2016-11-04 08:58:00		[08:52]
+2016-11-04 08:58:46	-->	Guest17393 (~Geek@212.73.149.139) has joined ##asm
+2016-11-04 09:00:06	-->	asla (~asla@2400:6180:0:d0::1b6:b001) has joined ##asm
+2016-11-04 09:00:34	-->	Lowl3v3l (~Lowl3v3l@2001:470:51c6:a278:4f08:6b23:708c:5525) has joined ##asm
+2016-11-04 09:00:50	<--	Judge_Dredd (~Judge_Dre@unaffiliated/judge-dredd/x-2170742) has quit (Quit: Leaving.)
+2016-11-04 09:04:05	-->	paule32 (~jens@dslb-188-106-228-090.188.106.pools.vodafone-ip.de) has joined ##asm
+2016-11-04 09:07:19	<--	zap0 (~moofy@14-201-222-143.tpgi.com.au) has quit (Quit: zap0)
+2016-11-04 09:12:49	<--	bkboggy (~bkboggy@cpe-172-250-147-60.socal.res.rr.com) has quit (Ping timeout: 268 seconds)
+2016-11-04 09:15:40	-->	bkboggy (~bkboggy@cpe-172-250-147-60.socal.res.rr.com) has joined ##asm
+2016-11-04 09:15:40		[09:15]
+2016-11-04 09:17:57	-->	Fiki (~Fiki@80-109-242-183.cable.dynamic.surfer.at) has joined ##asm
+2016-11-04 09:18:34	<--	bkboggy (~bkboggy@cpe-172-250-147-60.socal.res.rr.com) has quit (Max SendQ exceeded)
+2016-11-04 09:20:00	<--	kbw (~KeyboardW@104-178-145-79.lightspeed.tukrga.sbcglobal.net) has quit (Quit: My MacBook Air has gone to sleep. ZZZzzz…)
+2016-11-04 09:20:22	-->	Xylitol (~temari@unaffiliated/xylitol) has joined ##asm
+2016-11-04 09:21:47	-->	bkboggy (~bkboggy@cpe-172-250-147-60.socal.res.rr.com) has joined ##asm
+2016-11-04 09:22:41	<--	lowin (~lowin@31.56.128.183) has quit (Ping timeout: 265 seconds)
+2016-11-04 09:24:14	<--	bkboggy (~bkboggy@cpe-172-250-147-60.socal.res.rr.com) has quit (Max SendQ exceeded)
+2016-11-04 09:24:59	-->	Jackneill (~Jackneill@unaffiliated/jackneill) has joined ##asm
+2016-11-04 09:27:39	-->	bkboggy (~bkboggy@cpe-172-250-147-60.socal.res.rr.com) has joined ##asm
+2016-11-04 09:27:52	<--	palantir (~palantir@05453dba.skybroadband.com) has quit (Ping timeout: 250 seconds)
+2016-11-04 09:28:12	<--	Demon_Fox (~Demon_Fox@71.94.3.176) has quit (Remote host closed the connection)
+2016-11-04 09:28:39	-->	palantir (~palantir@05453dba.skybroadband.com) has joined ##asm
+2016-11-04 09:29:58	<--	bkboggy (~bkboggy@cpe-172-250-147-60.socal.res.rr.com) has quit (Max SendQ exceeded)
+2016-11-04 09:32:30	-->	bkboggy (~bkboggy@cpe-172-250-147-60.socal.res.rr.com) has joined ##asm
+2016-11-04 09:32:30		[09:32]
+2016-11-04 09:34:44	<--	bkboggy (~bkboggy@cpe-172-250-147-60.socal.res.rr.com) has quit (Max SendQ exceeded)
+2016-11-04 09:35:30	-->	lowin (~lowin@151.245.115.13) has joined ##asm
+2016-11-04 09:37:35	-->	bkboggy (~bkboggy@cpe-172-250-147-60.socal.res.rr.com) has joined ##asm
+2016-11-04 09:38:08	-->	kbw (~KeyboardW@104-178-145-79.lightspeed.tukrga.sbcglobal.net) has joined ##asm
+2016-11-04 09:39:29	<--	bkboggy (~bkboggy@cpe-172-250-147-60.socal.res.rr.com) has quit (Max SendQ exceeded)
+2016-11-04 09:41:42	-->	bkboggy (~bkboggy@cpe-172-250-147-60.socal.res.rr.com) has joined ##asm
+2016-11-04 09:42:19	<--	xocket (~xocket@unaffiliated/xocket) has quit (Disconnected by services)
+2016-11-04 09:42:22	-->	xock_stream (~xocket@unaffiliated/xocket) has joined ##asm
+2016-11-04 09:42:37	<--	palantir (~palantir@05453dba.skybroadband.com) has quit (Read error: Connection reset by peer)
+2016-11-04 09:43:55	-->	palantir (~palantir@05453dba.skybroadband.com) has joined ##asm
+2016-11-04 09:44:04	<--	bkboggy (~bkboggy@cpe-172-250-147-60.socal.res.rr.com) has quit (Max SendQ exceeded)
+2016-11-04 09:48:07	-->	bkboggy (~bkboggy@cpe-172-250-147-60.socal.res.rr.com) has joined ##asm
+2016-11-04 09:48:07		[09:48]
+2016-11-04 09:50:19	<--	bkboggy (~bkboggy@cpe-172-250-147-60.socal.res.rr.com) has quit (Max SendQ exceeded)
+2016-11-04 09:53:11	-->	bkboggy (~bkboggy@cpe-172-250-147-60.socal.res.rr.com) has joined ##asm
+2016-11-04 09:55:34	<--	bkboggy (~bkboggy@cpe-172-250-147-60.socal.res.rr.com) has quit (Max SendQ exceeded)
+2016-11-04 09:58:38	-->	bkboggy (~bkboggy@cpe-172-250-147-60.socal.res.rr.com) has joined ##asm
+2016-11-04 10:01:13	<--	bkboggy (~bkboggy@cpe-172-250-147-60.socal.res.rr.com) has quit (Max SendQ exceeded)
+2016-11-04 10:04:38	<--	Atroc (~Atroc___@h081217214054.dyn.cm.kabsi.at) has quit (Ping timeout: 268 seconds)
+2016-11-04 10:04:38		[10:04]
+2016-11-04 10:04:46	--	You are now known as notsudon`tkode
+2016-11-04 10:06:01	-->	bkboggy (~bkboggy@cpe-172-250-147-60.socal.res.rr.com) has joined ##asm
+2016-11-04 10:08:31	<--	bkboggy (~bkboggy@cpe-172-250-147-60.socal.res.rr.com) has quit (Max SendQ exceeded)
+2016-11-04 10:09:52	-->	slither (~jesus@95.146.18.106) has joined ##asm
+2016-11-04 10:13:31	-->	bkboggy (~bkboggy@cpe-172-250-147-60.socal.res.rr.com) has joined ##asm
+2016-11-04 10:18:33	--	acro_ is now known as acor
+2016-11-04 10:19:35	--	acor is now known as acro_
+2016-11-04 10:24:02	<--	byte512 (~user@h37n2-um-a32.ias.bredband.telia.com) has quit (Ping timeout: 256 seconds)
+2016-11-04 10:24:02		[10:24]
+2016-11-04 10:26:32	<--	RTFM[away] (~RTFMaway]@unaffiliated/rtfmaway/x-3892344) has quit (Ping timeout: 250 seconds)
+2016-11-04 10:29:18	<--	Richard_Cavell (uid165693@gateway/web/irccloud.com/x-bzruqcaxjdfgdzkp) has quit (Quit: Connection closed for inactivity)
+2016-11-04 10:32:20	<--	sneakers (~sneakers@unaffiliated/sneakerhead) has quit (Read error: Connection reset by peer)
+2016-11-04 10:33:52	-->	Spec-Chum (~Russ@90.254.167.18) has joined ##asm
+2016-11-04 10:34:27	--	acro_ is now known as acro
+2016-11-04 10:36:57	-->	byte512 (~user@h37n2-um-a32.ias.bredband.telia.com) has joined ##asm
+2016-11-04 10:38:14	<--	m8 (~m8@unaffiliated/m8) has quit (Read error: Connection reset by peer)
+2016-11-04 10:39:01	<--	ararob2 (~yaaic@c-f78472d5.043-274-73746f25.cust.bredbandsbolaget.se) has quit (Ping timeout: 260 seconds)
+2016-11-04 10:41:47	<--	kbw (~KeyboardW@104-178-145-79.lightspeed.tukrga.sbcglobal.net) has quit (Quit: My MacBook Air has gone to sleep. ZZZzzz…)
+2016-11-04 10:41:47		[10:41]
+2016-11-04 10:42:31	-->	Vulpes` (~user@ip68-2-62-254.ph.ph.cox.net) has joined ##asm

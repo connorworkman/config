@@ -12,12 +12,16 @@
 alias ohmyzsh='pushd ${ZSH} '
 
 # Unset previous function/alias iterations
-unset -f fc which define h wd bfg defrag src >/dev/null 2>&1 || true
-unalias {1..9} gg history c d h j s u >/dev/null 2>&1 || true
+unset -f fc which define h wd bfg defrag src 2>/dev/null || true
+unalias {1..9} gg history c d h j s u 2>/dev/null || true
 
 ## Custom aliases
 
-alias uem='sudo emerge --update --deep --changed-use @world && sudo etc-update '
+
+alias fuck='sudo $(fc -ln -1) '
+#alias fuck='sudo $(history -p \!\!) '
+
+alias uem='sudo emerge --update --deep --newuse @world && sudo etc-update '
 alias gdistccmon='DISTCC_DIR="/var/tmp/portage/.distcc" distccmon-text '
 alias myuptime='uptime -p | cut -c 4- '
 alias pacawk="grep -v '^$\|^#' /etc/pacman.d/mirrorlist | awk '{print }' | awk -F '/' '{print }' "
@@ -30,7 +34,7 @@ alias em='emerge '
 alias ems='emerge -s '
 alias eq='equery '
 alias gg='web_search_custom google '
-alias makepkg='eval $(pump --startup) && . /store/config/.profile && makepkg '
+alias pmakepkg='eval $(pump --startup) && . ${HOME}/.profile && makepkg '
 alias j="jump"
 alias b="bookmark"
 alias d="deletemark"
@@ -315,9 +319,9 @@ alias rpc='pacaur -R '
 alias rcpc='pacaur -Rc '
 alias spc='pacaur -S '
 alias sspc='pacaur --color=always -Ss '
+alias qspc='pacaur --color=always -Qs '
 #alias sspc='apacman --color=always -Ss '
-alias pss='pacman --color=always -Ss '
-alias css='cower --color=always -s '
+alias scw='cower --color=always -s '
 alias pa='pacaur '
 alias pm='sudo pacman '
 alias cw='cower '
@@ -328,16 +332,6 @@ alias iapac='apacman --skipinteg -S '
 alias para='parallel '
 alias r-s='rsync -avzP --info=progress2 --partial '
 alias ping6='ping -6c 5 '
-alias fuck='sudo $(fc -ln -1) '
-#alias fuck='sudo $(history -p \!\!) '
-alias omz='pushd ${ZSH:-${HOME}/.oh-my-zsh} '
-alias calias='gvim ${HOME}/aliases.sh '
-alias cbalias='gvim ${HOME}/baliases.sh '
-alias czsh='gvim ${HOME}/.zshrc '
-alias cbash='gvim ${HOME}/.bashrc '
-alias ctmux='gvim ${HOME}/.tmux.conf '
-alias cxr='gvim ${HOME}/.Xresources '
-alias cxi='gvim ${HOME}/.xinitrc '
 
 alias s='systemctl '
 alias u='systemctl --user '
