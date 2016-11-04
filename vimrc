@@ -365,6 +365,12 @@ au BufNewFile,BufRead *conf setf cfg
 au BufNewFile,BufRead db.* set filetype=bindzone
 au BufNewFile,BufRead *grub* setf grub
 
+au FileType php setl ofu=phpcomplete#CompletePHP
+au FileType ruby,eruby setl ofu=rubycomplete#Complete
+au FileType html,xhtml setl ofu=htmlcomplete#CompleteTags
+au FileType c setl ofu=ccomplete#CompleteCpp
+au FileType css setl ofu=csscomplete#CompleteCSS
+
 " Tell vim to remember certain things when we exit
 "  '10  :  marks will be remembered for up to 10 previously edited files
 "  "100 :  will save up to 100 lines for each register

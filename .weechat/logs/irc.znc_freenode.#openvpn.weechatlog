@@ -12236,3 +12236,26 @@
 2016-11-04 12:28:53		[12:28]
 2016-11-04 12:28:54	@vpnHelper	"welcome" is (#1) Start by stating your !goal, such as 'I would like to access the internet over my vpn' (*not* '!goal <whatever>' - the bot doesn't understand that - just '!goal' [without the quotes]), or (#2) New to IRC? see the link in !ask, or (#3) We may need you to !paste your !logs and !configs and maybe !interface to help you, or (#4) See !howto for beginners, or (#5) See !route for lans
 2016-11-04 12:28:55	@vpnHelper	behind openvpn, or (#6) !redirect for sending inet traffic through the server, or (#7) Also interesting: !man !/30 !topology !iporder !sample !forum !wiki !mitm, or (#8) Don't use 192.168.1.0/24 or 192.168.0.0/24 (too much potential for conflict), or (#9) And again, if you think you need !tap, you're probably wrong, or (#10) see !1925 before arguing with the admins or the person helping you
+2016-11-04 12:31:44	zamabe	Hello. First time setting up openvpn, went relatively well. The CA exists on both sides, the client has a signed cert. The server has a letsencrypt cert. Browsers do not have issues verifying this cert for https, but openvpn gives this error in client logs, and I'm not sure what it thinks is broken:
+2016-11-04 12:31:44	zamabe	VERIFY ERROR: depth=1, error=unable to get local issuer certificate: C=US, O=Let's Encrypt, CN=Let's Encrypt Authority X3
+2016-11-04 12:32:07	zamabe	s/CA/CA cert/
+2016-11-04 12:32:56	zamabe	OpenSSL: error:14090086:SSL routines:ssl3_get_server_certificate:certificate verify failed
+2016-11-04 12:33:28	zamabe	OpenVPN 2.3.12 x86_64-pc-linux-gnu [SSL (OpenSSL)] [LZO] [EPOLL] [MH] [IPv6]
+2016-11-04 12:33:51	@dazo	zamabe: ehm .... you should not use commercial (even Let's Encrypt) certificates for your OpenVPN server
+2016-11-04 12:34:42	@dazo	zamabe: the reason is, if I figure out your servers IP address and port ... I can use a Lets encrypt signed certificate to connect to your server and get properly authenticated
+2016-11-04 12:35:44	@dazo	zamabe: look at easy-rsa, xca or similar CA solutions and setup your own private CA .... here you sign your own certificates for all your servers and clients, and only those certificates signed by the CA you control can establish a connection
+2016-11-04 12:36:00	zamabe	aaaah, so, the server cert should also be signed by the generated CA cert?
+2016-11-04 12:36:15	@dazo	yeah
+2016-11-04 12:36:45	zamabe	More clarity for me: The reason it cannot verify the certificate is because it only checks against the given CA cert?
+2016-11-04 12:36:45	@dazo	if you use easy-rsa ... there should be a "build server" approach
+2016-11-04 12:37:23	@dazo	correct ... the clients will on connection be sent the servers certificate, which it will validate against the local copy of the CA certificate (--ca)
+2016-11-04 12:38:20	@dazo	and once the client approves, it will sent its client certificate to the server, which does a similar check against the local CA certificate ... plus CRL checks (--crl-verify) or other TLS checks (--tls-verify script hook, --plugin, etc)
+2016-11-04 12:38:27	zamabe	I did use easy-rsa, just assumed it was a quick-setup option to use the generated CA instead of including instructions on how to get one from the trusted CAs. My bad :)
+2016-11-04 12:39:01	@dazo	if it's easy-rsa2 ... then run ./build-server $HOSTNAME
+2016-11-04 12:39:12	@dazo	where $HOSTNAME is the hostname of your server
+2016-11-04 12:39:14	zamabe	yip :)
+2016-11-04 12:39:16	zamabe	thank you
+2016-11-04 12:39:23	@dazo	yw
+2016-11-04 12:40:25	 *	dazo need to run
+2016-11-04 12:40:33	<--	shootbird (~quassel@beepbeep.serverpit.com) has quit (Ping timeout: 260 seconds)
+2016-11-04 12:40:36	--	You are now known as alyptik
