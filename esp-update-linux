@@ -21,15 +21,6 @@ build() {
 		-exec printf ' \033[32m %s \n\033[0m' "Copying {} to ${ESP_DIR}/..." \; \
 		-exec cp -v "{}" "${ESP_DIR}/" \; || return 1
 	echo
-	find "${ESP_DIR}" -maxdepth 1 \
-                \( \
-                        -name "vmlinuz*" \
-                \) \
-                \! -name "*mainline*" \
-		\! -name "*.efi" \
-                -exec printf ' \033[32m %s \n\033[0m' "Moving {} to {}.efi..." \; \
-                -exec mv -v {}{,.efi} \; || return 1
-	echo
 	sed 's/\/boot\//EFI\\arch\\/g' "/boot/refind_linux.conf" | \
 		tee "${ESP_DIR}/refind_linux.conf" | \
 		sed 's/.*initrd=\(.*\\\)\([^ ]*\).*/initrd=\/boot\/\2\t=>\t\initrd=\1\2/g' | \
@@ -45,6 +36,15 @@ HELPEOF
 }
 
 archive() {
+	find "${ESP_DIR}" -maxdepth 1 \
+                \( \
+                      -name "vmlinuz*" \
+                \) \
+                \! -name "*mainline*" \
+		\! -name "*.efi" \
+                -exec printf ' \033[32m %s \n\033[0m' "Moving {} to {}.efi..." \; \
+                -exec mv -v {}{,.efi} \; || return 1
+	echo
 	true || {
 	sed 's/\/boot\//EFI\\arch\\/g' "/boot/refind_linux.conf" | \
 		tee "${ESP_DIR}/refind_linux.conf" | \
