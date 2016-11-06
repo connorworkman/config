@@ -791,7 +791,7 @@ scg() {
 	[[ "$PWD" != /store/config ]] && pushd /store/config 2>&1 >/dev/null || local dirvar=1
 	git add .
 	#git commit -S -F <(printf "Configuration backup on $(date).\n") && {
-	git commit -a -S -m "Configuration backup on $(date)." && {
+	git commit -a -S -m "Configuration backup on $(date +'%Y-%d-%m %I:%M %p %Z')." && {
 		git push && \
 			printf '\n \033[32m %s \n\033[0m' "Commit successful!" || \
 			printf '\n \033[31m %s \n\033[0m' "Error during push..."
