@@ -271,13 +271,13 @@ nnoremap <C-F9> :call ToggleXXD()<CR>
 let g:tindent = 0
 function! ToggleIndent()
     if g:tindent == 0
-	set shiftwidth=8
+	set shiftwidth=4
 	let g:tindent = 1
     elseif g:tindent == 1
 	set shiftwidth=1
 	let g:tindent = 2
 	else
-	set shiftwidth=4
+	set shiftwidth=8
 	let g:tindent = 0
     endif
 endfunction
@@ -333,7 +333,7 @@ set nocp
 set background=dark
 set mouse=a
 set tabstop=8
-set softtabstop=4
+set softtabstop=8
 "set shiftwidth=8
 set shiftwidth=4
 set noexpandtab
