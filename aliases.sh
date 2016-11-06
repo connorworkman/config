@@ -768,27 +768,27 @@ tgv() {
 
 
 setup-scg() {
-	[[ "$PWD" != /store/config ]] && pushd /store/config 2>&1 >/dev/null || local dirvar=1
+	[[ "$PWD" != /store/config ]] && pushd /store/config >/dev/null 2>&1 || local dirvar=1
 	#git init .
 	#git remote add origin git+ssh://git@github.com/alyptik/config.git
 	git remote set-url origin "git+ssh://git@github.com/alyptik/config.git"
 	#(($dirvar)) || popd &>/dev/null
-	[[ "$dirvar" -eq 0 ]] && popd 2>&1 >/dev/null || return 0
+	[[ "$dirvar" -eq 0 ]] && popd >/dev/null 2>&1 || return 0
 }
 
 
 pscg() {
-	[[ "$PWD" != /store/config ]] && pushd /store/config 2>&1 >/dev/null || local dirvar=1
+	[[ "$PWD" != /store/config ]] && pushd /store/config >/dev/null 2>&1 || local dirvar=1
 	git pull &&
 		printf '\n \033[32m %s \n\033[0m' "Pull successful!" || \
 		printf '\n \033[31m %s \n\033[0m' "Error during pull..."
-	#(($dirvar)) || popd 2>&1 >/dev/null
-	[[ "$dirvar" -eq 0 ]] && popd 2>&1 >/dev/null || return 0
+	#(($dirvar)) || popd >/dev/null 2>&1
+	[[ "$dirvar" -eq 0 ]] && popd >/dev/null 2>&1 || return 0
 }
 
 
 scg() {
-	[[ "$PWD" != /store/config ]] && pushd /store/config 2>&1 >/dev/null || local dirvar=1
+	[[ "$PWD" != /store/config ]] && pushd /store/config >/dev/null 2>&1 || local dirvar=1
 	git add .
 	#git commit -S -F <(printf "Configuration backup on $(date).\n") && {
 	git commit -a -S -m "Configuration backup on $(date +'%Y-%d-%m %I:%M %p %Z')." && {
@@ -798,7 +798,7 @@ scg() {
 	} || {
 		printf '\n \033[31m %s \n\033[0m' "Nothing to commit..."
 	}
-	[[ $dirvar -eq 0 ]] && popd 2>&1 >/dev/null || return 0
+	[[ $dirvar -eq 0 ]] && popd >/dev/null 2>&1 || return 0
 }
 
 par() {
