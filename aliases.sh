@@ -845,13 +845,13 @@ dbr() {
 				sed 's/./\l&/g;s/ (.*//')" && \
 				rmdir "/@media/microSDXC/audio/alyptik - ${REPLY}"
 		done
-	find /@media/microSDXC/wanderlust -maxdepth 1 -name "*Wanderlust Ep.*" -type d -print | \
-		while read -r; do
-        		rclone move "$REPLY" \
-				'dropbox:/edm/wanderlust/'"${REPLY/*wanderlust\//}"  && \
-				rmdir "${REPLY}"
-		done
-	find /@media/microSDXC/wanderlust -maxdepth 1 -name "*alyptik*" -type d -print | \
+#	find /@media/microSDXC/wanderlust -maxdepth 1 -name "*Wanderlust Ep.*" -type d -print | \
+#		while read -r; do
+#        		rclone move "$REPLY" \
+#				'dropbox:/edm/wanderlust/'"${REPLY/*wanderlust\//}"  && \
+#				rmdir "${REPLY}"
+#		done
+	find /@media/microSDXC/audio -name "*alyptik*" -type d -print | \
 		sed 's/^.*\/alyptik - \(.*\)$/\1/' | \
 		while read -r; do
 			rclone lsd "dropbox:/edm/wanderlust/$(<<<${REPLY:l} sed 's/ (.*//')" 2>/dev/null && {
