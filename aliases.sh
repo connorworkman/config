@@ -17,7 +17,8 @@ unalias {1..9} gg history c d h j s u 2>/dev/null || true
 
 ## Custom aliases
 
-aliasendiantest="echo -n I | xxd -b | awk '{ print substr($2,6,1); exit}' && echo 'Big Endian' || echo 'Little Endian'"
+alias acp='anamnesis '
+alias endiantest="echo -n I | xxd -b | awk '{ print substr($2,6,1); exit}' && echo 'Big Endian' || echo 'Little Endian'"
 alias nem='sudo emerge --update --deep --newuse @world && sudo etc-update '
 alias gdistccmon='DISTCC_DIR="/var/tmp/portage/.distcc" distccmon-text '
 alias myuptime='uptime -p | cut -c 4- '

@@ -7002,3 +7002,95 @@
 2016-11-06 15:11:59	APNG	where do I store the data?
 2016-11-06 15:12:18	APNG	~/.local/share/?
 2016-11-06 15:12:32	APNG	I need to re-read that XDG base dir thing
+2016-11-06 15:18:00		[15:12]
+2016-11-06 15:23:21	alad	!aw xdg base directory support
+2016-11-06 15:23:22	phrik	alad: No results found.
+2016-11-06 15:23:25	alad	meh
+2016-11-06 15:23:32	alad	APNG: https://wiki.archlinux.org/index.php/XDG_Base_Directory_support
+2016-11-06 15:23:33	phrik	Title: XDG Base Directory support - ArchWiki (at wiki.archlinux.org)
+2016-11-06 15:23:35	alad	has a tl;dr
+2016-11-06 15:23:45	APNG	yeah I re-read it
+2016-11-06 15:23:53	APNG	~/.local/share is correct
+2016-11-06 15:23:59	-->	xocket (~xocket@unaffiliated/xocket) has joined #archlinux-women
+2016-11-06 15:24:17	APNG	(well, $XDG_DATA_HOME, but that's ~/.local/share when $XDG_DATA_HOME is unset)
+2016-11-06 15:24:26	APNG	(or empty)
+2016-11-06 15:26:45	<--	xock_stream (~xocket@unaffiliated/xocket) has quit (Ping timeout: 260 seconds)
+2016-11-06 15:28:08	APNG	so how do I make such script? .-.
+2016-11-06 15:28:34	APNG	I'll ask a bash channel .-.
+2016-11-06 15:29:45	alad	I don't even know what you're trying to do
+2016-11-06 15:30:23	APNG	I kinda have an addiction problem but I don't keep track of my "clean" time
+2016-11-06 15:30:41	APNG	so I wanna make a shell script to do that for me
+2016-11-06 15:30:47	APNG	replace myself with a shell script
+2016-11-06 15:30:53	alad	may I suggest a specialized solution like org-mode, task, calcurse, etc. ?
+2016-11-06 15:31:15	alad	but assuming a script; how are you supposed to interact with it?
+2016-11-06 15:31:23	APNG	./relapse --today
+2016-11-06 15:31:46	APNG	or ./relapse <unixtimestamp>
+2016-11-06 15:31:59	alad	so basically some timer that resets when you send it a command?
+2016-11-06 15:32:10	APNG	no
+2016-11-06 15:32:23	APNG	*append* to a file when I relapse
+2016-11-06 15:32:38	alad	append the elapsed "clean" time when you do so ?
+2016-11-06 15:32:44	APNG	no
+2016-11-06 15:32:48	alad	<_<
+2016-11-06 15:32:54	alad	can you make a diagram or something
+2016-11-06 15:32:59	APNG	I wanna keep a log of all the times I relapsed
+2016-11-06 15:33:10	alad	oh
+2016-11-06 15:33:10		[15:33]
+2016-11-06 15:33:13	alad	that's pretty simple
+2016-11-06 15:33:27	APNG	I could calculate stuff but meh
+2016-11-06 15:33:42	alad	alias relapse='date -Iminutes >> ~/relapse.txt'
+2016-11-06 15:33:44	alad	:P
+2016-11-06 15:33:58	APNG	unix time please >.>
+2016-11-06 15:34:02	alad	uh, man date
+2016-11-06 15:34:06	alad	can't remember it :D
+2016-11-06 15:34:21	APNG	ok so
+2016-11-06 15:34:28	APNG	does that create the file if it doesn't exist?
+2016-11-06 15:34:33	Peng	yes
+2016-11-06 15:34:41	APNG	does that create the dirtree?
+2016-11-06 15:34:55	Peng	no, but ~ should always exist
+2016-11-06 15:35:02	alad	date -u '%s'
+2016-11-06 15:35:21	APNG	Peng, ~/.local/share/ tho
+2016-11-06 15:35:31	alad	or wait
+2016-11-06 15:35:32	Peng	ohh
+2016-11-06 15:35:48	Peng	sorry, it overflowed my brain's scrollback
+2016-11-06 15:36:00	alad	invalid date blah blah
+2016-11-06 15:36:03	alad	stupid date nonsense
+2016-11-06 15:36:34	alad	date '+%s'
+2016-11-06 15:36:39	alad	I just googled that one as date(1) is garbage
+2016-11-06 15:38:32	alad	APNG: alias relapse='date +%s >> ~/.local/share/relapse.txt'
+2016-11-06 15:38:54	APNG	ok
+2016-11-06 15:39:04	APNG	how do I pick between --today and a unix timestamp?
+2016-11-06 15:40:23	alad	if [[ $1 == --today ]]; then date <somethingformatter>; else date +%s; fi >> ~/.local/share/relapse.txt
+2016-11-06 15:40:58	alad	for somethingformatter, `info date` has some examples
+2016-11-06 15:41:22	alad	section 21.1.7 :-P
+2016-11-06 15:47:00		[15:41]
+2016-11-06 15:51:09	APNG	no I mean
+2016-11-06 15:51:11	APNG	eh nvm
+2016-11-06 15:56:23	alad	meh
+2016-11-06 15:56:25	alad	#bash
+2016-11-06 16:02:00		[15:56]
+2016-11-06 16:06:18	fsckd	unix epoch is irrespective of local time zone :)
+2016-11-06 16:07:03	fsckd	based on UTC but isn't quite UTC. eventually they will differ. but by then humans will be extinct and cockroaches will tell time by the ripples in the air.
+2016-11-06 16:07:06	APNG	--today should use the current time in unix time
+2016-11-06 16:07:31	APNG	if --today is not specified then a valid unix timestamp must be passed, and that's gonna be used as the relapse time
+2016-11-06 16:07:46	<--	tigrmesh (~tigrmesh@archlinux/op/tigrmesh) has quit (Ping timeout: 250 seconds)
+2016-11-06 16:08:04	fsckd	valid unix timestamp is just a positive integer
+2016-11-06 16:08:22	fsckd	so something like...
+2016-11-06 16:08:24	APNG	yes
+2016-11-06 16:08:31	fsckd	one moment, i lost my mouse
+2016-11-06 16:08:40	APNG	"stuff" is not a valid unix timestamp
+2016-11-06 16:09:05	fsckd	simple regex to verify it is all integers
+2016-11-06 16:09:54	fsckd	if [[ $1 == --today ]] blah elif [[ $1 =~ whatever regex ]] blah else error
+2016-11-06 16:10:13	fsckd	the first blah would be the date command, the second blah is just appending to the file
+2016-11-06 16:11:13	fsckd	you can make the test stronger by making sure teh integer is greater than a number, to make sure you haven't left off a few digits
+2016-11-06 16:12:59	APNG	in theory I'd never use unix time directly but rather call it as ./relapse $(date <whatever>)
+2016-11-06 16:13:14	APNG	why convert time myself if there's a tool for it
+2016-11-06 16:13:21	APNG	unix philosophy and all
+2016-11-06 16:13:42	fsckd	yeah. you can have that date command in the script
+2016-11-06 16:14:10	fsckd	since you would be calling date anyways to get today's time
+2016-11-06 16:17:25	-->	tigrmesh (~tigrmesh@archlinux/op/tigrmesh) has joined #archlinux-women
+2016-11-06 16:17:25		[16:17]
+2016-11-06 16:17:25	--	Mode #archlinux-women [+v tigrmesh] by ChanServ
+2016-11-06 16:23:43	<--	alad (~alad@unaffiliated/alad) has quit (Quit: broken)
+2016-11-06 16:24:03	<--	xocket (~xocket@unaffiliated/xocket) has quit (Disconnected by services)
+2016-11-06 16:24:05	-->	xock_stream (~xocket@unaffiliated/xocket) has joined #archlinux-women
+2016-11-06 16:30:00		[16:24]
