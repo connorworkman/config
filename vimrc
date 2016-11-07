@@ -194,7 +194,7 @@ nnoremap <F5> <C-d>
 nnoremap <C-F5> <Esc>:tabn<CR>
 nnoremap <M-F5> <Esc>:set noscb<CR>
 " Clipboard mappings
-"
+
 vmap <F6> "+y<Esc>:call system("xclip -i -selection clipboard", getreg("\""))
 \<CR>:call system("xclip -i", getreg("\""))<CR>
 vmap <C-F6> <F6>v`>
