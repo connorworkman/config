@@ -263,7 +263,7 @@ alias lgr='rsync -avzP --info=progress2 --delete /@media/shared/Music/ /@media/m
 #alias adbr='rclone move /@media/microSDXC/audio/ dropbox:/EDM/audio/ '
 #alias pdbr='rclone sync /@media/microSDXC/Practice\ Mixes/ dropbox:/EDM/practice/ '
 #alias dbr='rclone sync /@media/microSDXC/Music/djzomg/ dropbox:/EDM/djzomg/ '
-alias s-config='pushd /store/config >&- '
+alias s-config='pushd /store/config >/dev/null '
 alias entropy='watch -n .1 cat /proc/sys/kernel/random/entropy_avail '
 alias lcompose='less "/usr/share/X11/locale/$(grep --max-count=1 "${LANG%.*}.UTF-8\$" /usr/share/X11/locale/locale.dir | cut --delimiter=/ --fields 1)/Compose" '
 alias drun='dmenu_run -fn terminus -i -sf "#ffffff" -sb "#1D1F21" -nf "#888888" -nb "#1D1F21" '
