@@ -371,6 +371,8 @@ alias ald='ld -I/lib64/ld-linux-x86-64.so.2 /usr/lib/crt1.o /usr/lib/crti.o -lc 
 
 ## shell functions
 
+calc (){ bc -l <<< "$*"; }
+
 lpman() {
 	man -t "${1?Error: No manpage provided.}" | groff -man -Tps | lpr
 }
