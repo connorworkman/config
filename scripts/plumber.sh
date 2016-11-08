@@ -18,7 +18,7 @@ mpvcmd(){
 }
 
 case $1 in
-  *.webm|*.gif|*.gifv|*.mp4|*.avi) mpvcmd "$1" ;;
+  *.webm|*.gif|*.gifv|*.mp4|*.avi|*.mkv|*.mov|*.swf|*.flv) mpvcmd "$1" ;;
   #*://ptpb.pw/*) ~/bin/pyb "$1" ;;
   #*://i.imgur.com/*) ~/bin/pyb "$1" ;;
   #*://i.imgur.com/*) /usr/bin/chromium "$1" ;;

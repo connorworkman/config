@@ -20805,3 +20805,674 @@
 2016-11-07 00:37:47	<--	zap0 (~moofy@14-201-222-143.tpgi.com.au) has quit (Quit: zap0)
 2016-11-07 00:39:35	--	kamog` is now known as kamog
 2016-11-07 00:45:00		[00:39]
+2016-11-07 00:54:59	<--	Guest3564 (~Geek@95-42-153-38.ip.btc-net.bg) has quit (Read error: Connection reset by peer)
+2016-11-07 01:00:00		[00:54]
+2016-11-07 01:05:50	zid	boru: I HAVE AWOKEN! The new era is upon us!
+2016-11-07 01:06:36	 *	Jester01 yawns
+2016-11-07 01:06:53	Jester01	is this magical new era called 'monday'?
+2016-11-07 01:06:54	Jester01	damn you
+2016-11-07 01:07:06	zid	mnday again? fuck, we just had one of those
+2016-11-07 01:07:18	zid	BPL: What did you do to get vs to work?
+2016-11-07 01:08:06	BPL	zid: using dumpbin /exports, it seems when using vs's linker I need to use "decorated" functions
+2016-11-07 01:08:18	zid	and the decoration wasnit just a leading _?
+2016-11-07 01:08:44	-->	Hask (~Hask@mail.vauban.lu) has joined ##asm
+2016-11-07 01:08:58	BPL	zid: Not, a lot of functions will use the suffix @xxx
+2016-11-07 01:09:04	BPL	let me show you
+2016-11-07 01:09:12	zid	@4 for adjusts stack by 4?
+2016-11-07 01:09:21	zid	that's because of the calling convention windows uses afaik
+2016-11-07 01:09:25	BPL	zid: Yeah, https://msdn.microsoft.com/en-us/library/56h2zst2.aspx
+2016-11-07 01:09:35	-->	aleph- (~hatter@unaffiliated/church-) has joined ##asm
+2016-11-07 01:09:51	<--	rnbhat (~user@185.62.205.145) has quit (Quit: WeeChat 1.0.1)
+2016-11-07 01:10:00	BPL	zid: In fact, after checking both golink and vs's linker... I was wondering about this --> http://stackoverflow.com/questions/40463742/is-it-possible-to-have-portable-asm
+2016-11-07 01:13:30	zid	seems golink has a /mix switch that deals with it
+2016-11-07 01:14:01	BPL	mmm, let me try
+2016-11-07 01:17:45	Jester01	it's not like I didn't link you to it on SO :)
+2016-11-07 01:17:45		[01:17]
+2016-11-07 01:17:51	L4B	BPL: Just declare your functions as extern "C" so you they don't require mangling.
+2016-11-07 01:18:59	L4B	The problem is that you're trying to link regular C++ functions, not that you're using Visual Studio. Any compiler will do some form of mangling.
+2016-11-07 01:19:55	L4B	You should also make sure that you're using the cdecl calling convention.
+2016-11-07 01:20:32	L4B	That's about it.
+2016-11-07 01:21:45	-->	GeDaMo (~GeDaMo@212.225.83.199) has joined ##asm
+2016-11-07 01:21:48	L4B	GoLink looks stupid.
+2016-11-07 01:22:01	zid	ld is life, fuck ld.
+2016-11-07 01:22:50	-->	rendar (~I@host190-113-dynamic.180-80-r.retail.telecomitalia.it) has joined ##asm
+2016-11-07 01:24:28	zid	This guy's a  nut
+2016-11-07 01:24:57	zid	his website advocates some cult, and he writes insane linkers with features like "beep on error"
+2016-11-07 01:25:10	-->	swatti (~memory@194.88.49.178) has joined ##asm
+2016-11-07 01:25:32	zid	He'd probably come 1st place in a squirrel shit lookalike competition
+2016-11-07 01:26:39	BPL	Jester01: Hehe, sure, but that link wasn't solving my actual questions ;-)  L4B: Yeah, thing is, I'll be using import libs I don't have control over, so... using extern "C" or my own cdecl calling convention is not a real option
+2016-11-07 01:27:06	Jester01	it did show the underscore and the @ suffix though.
+2016-11-07 01:28:00	Jester01	http://stackoverflow.com/a/1029093/547981
+2016-11-07 01:29:00	BPL	Jester01: yeah, but I realized about that stuff by trial&error, for some reason that post wasn't was very useful at that time, maybe when i tried those examples i had messed up and discard them automatically :P . In any case, now things are becoming much clearer, slowly slowly, catchey the monkey
+2016-11-07 01:29:39	BPL	Jester01: Out of curiosity, do you know anything about printf+vs's linker error? That's still unsolved
+2016-11-07 01:30:07	Jester01	I don't have windows or that linker to try
+2016-11-07 01:30:56	Jester01	but this answer says to link libcmt.lib http://stackoverflow.com/a/5130009/547981
+2016-11-07 01:31:31	BPL	ok, let me try
+2016-11-07 01:34:23	BPL	Jester01: No luck, in my asm listing i declare extern _printf and then I do --> nasm -fwin32 example3.asm   && link /out:example3.exe example3.obj kernel32.lib user32.lib libcmt.lib msvcrt.lib example3 /entry:start /subsystem:console , no luck...
+2016-11-07 01:34:23		[01:34]
+2016-11-07 01:36:26	-->	urbancamo (~Mark@host-92-27-220-250.static.as13285.net) has joined ##asm
+2016-11-07 01:36:52	<--	FriskyKat (SomeWhere@0544e12e.skybroadband.com) has quit (Ping timeout: 260 seconds)
+2016-11-07 01:39:29	BPL	zid: Mmm, actually, i've tried one of my "dummy" nasm listing using decorated function and it worked ok with golink without using "mix" :P
+2016-11-07 01:40:10	zid	that's.. the point?
+2016-11-07 01:40:12	zid	mix adds them
+2016-11-07 01:42:18	BPL	zid: Mmm, i didn't understand then very well the meaning, the thing is, golink will work out of the box using decorated/undecorated function names
+2016-11-07 01:43:03	zid	If you add /mix, looking at it
+2016-11-07 01:43:10	zid	but anyway, enough crazy linker talk
+2016-11-07 01:44:53	-->	Bellator (~Bellator@62.140.132.7) has joined ##asm
+2016-11-07 01:50:00		[01:44]
+2016-11-07 01:52:33	<--	araml (~araml@181.167.144.80) has quit (Quit: WeeChat 1.0.1)
+2016-11-07 01:54:37	-->	r00t_us3r (uid126983@gateway/web/irccloud.com/x-iwvjtqgodcxursus) has joined ##asm
+2016-11-07 01:57:44	-->	FriskyKat (SomeWhere@90.222.60.24) has joined ##asm
+2016-11-07 02:01:41	-->	Frisky-Kat (SomeWhere@054592af.skybroadband.com) has joined ##asm
+2016-11-07 02:02:01	-->	RTFM[away] (~RTFMaway]@unaffiliated/rtfmaway/x-3892344) has joined ##asm
+2016-11-07 02:04:42	<--	swatti (~memory@194.88.49.178) has quit (Read error: Connection reset by peer)
+2016-11-07 02:04:53	<--	FriskyKat (SomeWhere@90.222.60.24) has quit (Ping timeout: 260 seconds)
+2016-11-07 02:08:08	-->	swatti (~memory@194.88.49.178) has joined ##asm
+2016-11-07 02:08:08		[02:08]
+2016-11-07 02:12:48	<--	Frisky-Kat (SomeWhere@054592af.skybroadband.com) has quit (Ping timeout: 260 seconds)
+2016-11-07 02:18:00		[02:12]
+2016-11-07 02:24:37	-->	FriskyKat (SomeWhere@05442a14.skybroadband.com) has joined ##asm
+2016-11-07 02:26:44	<--	NeoGeo64 (~linux@2604:2d80:8831:0:7427:7dbc:9da:ab0e) has quit (Ping timeout: 245 seconds)
+2016-11-07 02:27:52	-->	araml (~araml@unaffiliated/araml) has joined ##asm
+2016-11-07 02:29:14	-->	Frisky-Kat (SomeWhere@2.220.120.16) has joined ##asm
+2016-11-07 02:29:36	<--	FriskyKat (SomeWhere@05442a14.skybroadband.com) has quit (Ping timeout: 260 seconds)
+2016-11-07 02:34:05	-->	FriskyKat (SomeWhere@90.213.46.152) has joined ##asm
+2016-11-07 02:34:05		[02:34]
+2016-11-07 02:36:36	<--	Frisky-Kat (SomeWhere@2.220.120.16) has quit (Ping timeout: 260 seconds)
+2016-11-07 02:38:45	<--	dostoyevsky (~sck@n096h062.rs.de.inter.net) has quit (Quit: leaving)
+2016-11-07 02:39:42	-->	bcos (~bcos@CPE-1-123-1-164.sfl9.fli.bigpond.net.au) has joined ##asm
+2016-11-07 02:40:04	-->	dostoyevsky (~sck@n096h062.rs.de.inter.net) has joined ##asm
+2016-11-07 02:41:33	<--	bcos_ (~bcos@CPE-1-123-128-73.sml9.way.bigpond.net.au) has quit (Ping timeout: 265 seconds)
+2016-11-07 02:44:05	-->	NeoGeo64 (~linux@173-22-20-236.client.mchsi.com) has joined ##asm
+2016-11-07 02:50:00		[02:44]
+2016-11-07 02:59:38	-->	GinoManWorks (~GinoMan@50-251-53-110-static.hfc.comcastbusiness.net) has joined ##asm
+2016-11-07 03:00:42	-->	vdamewood (~vdamewood@unaffiliated/vdamewood) has joined ##asm
+2016-11-07 03:03:50	<--	codfection (~codfectio@unaffiliated/codfection) has quit (Ping timeout: 250 seconds)
+2016-11-07 03:09:00		[03:03]
+2016-11-07 03:11:02	-->	pirate21994 (~pirate219@117.215.42.140) has joined ##asm
+2016-11-07 03:17:00		[03:11]
+2016-11-07 03:26:38	<--	Prod_ (~DaffyDuck@0138800884.0.fullrate.ninja) has quit (Quit: Leaving)
+2016-11-07 03:28:04	-->	codfection (~codfectio@unaffiliated/codfection) has joined ##asm
+2016-11-07 03:31:13	<--	dqi (~dqi@165-218-045-062.dynamic.caiway.nl) has quit (Ping timeout: 256 seconds)
+2016-11-07 03:33:54	<--	codfection (~codfectio@unaffiliated/codfection) has quit (Remote host closed the connection)
+2016-11-07 03:33:54		[03:33]
+2016-11-07 03:35:52	-->	CheckDavid (uid14990@gateway/web/irccloud.com/x-yfvhnuvtixlltxmr) has joined ##asm
+2016-11-07 03:41:00		[03:35]
+2016-11-07 03:41:18	-->	fr0gRIP (~fr0gRIP@163.5.182.52) has joined ##asm
+2016-11-07 03:43:38	-->	Judge_Dredd (~Judge_Dre@unaffiliated/judge-dredd/x-2170742) has joined ##asm
+2016-11-07 03:43:42	<--	Judge_Dredd (~Judge_Dre@unaffiliated/judge-dredd/x-2170742) has quit (Max SendQ exceeded)
+2016-11-07 03:44:10	-->	king_jah (~jah@S0106503955715ed3.ss.shawcable.net) has joined ##asm
+2016-11-07 03:44:33	<--	Bellator (~Bellator@62.140.132.7) has quit (Ping timeout: 260 seconds)
+2016-11-07 03:44:53	-->	Judge_Dredd (~Judge_Dre@unaffiliated/judge-dredd/x-2170742) has joined ##asm
+2016-11-07 03:49:31	<--	vdamewood (~vdamewood@unaffiliated/vdamewood) has quit (Remote host closed the connection)
+2016-11-07 03:50:29	-->	vdamewood (~vdamewood@unaffiliated/vdamewood) has joined ##asm
+2016-11-07 03:53:23	-->	rnsanchez_ (~rnsanchez@177.132.222.223) has joined ##asm
+2016-11-07 03:55:50	<--	rnsanchez (~rnsanchez@187.113.251.183) has quit (Ping timeout: 250 seconds)
+2016-11-07 04:01:00		[03:55]
+2016-11-07 04:01:58	<--	magz (~magz@68-168-184-223.fttp.usinternet.com) has quit (Remote host closed the connection)
+2016-11-07 04:03:13	<--	dminuoso_ (~dminuoso@unaffiliated/dminuoso) has quit (Ping timeout: 260 seconds)
+2016-11-07 04:06:40	<--	L4B (~love4boob@unaffiliated/l4b) has left ##asm
+2016-11-07 04:07:04	-->	dminuoso_ (~dminuoso@unaffiliated/dminuoso) has joined ##asm
+2016-11-07 04:13:00		[04:07]
+2016-11-07 04:23:07	<--	Judge_Dredd (~Judge_Dre@unaffiliated/judge-dredd/x-2170742) has quit (Quit: Leaving.)
+2016-11-07 04:25:38	-->	SunnyD (~SunnyD@cpe-72-178-78-211.hot.res.rr.com) has joined ##asm
+2016-11-07 04:25:58	-->	hmmmm (~sdfgsf@pool-72-79-166-50.sctnpa.east.verizon.net) has joined ##asm
+2016-11-07 04:27:25	-->	dqi (~dqi@ip-145-116-176-103.wlan-int.ru.nl) has joined ##asm
+2016-11-07 04:33:00		[04:27]
+2016-11-07 04:35:39	<--	urbancamo (~Mark@host-92-27-220-250.static.as13285.net) has quit (Quit: Leaving)
+2016-11-07 04:35:45	<--	dminuoso_ (~dminuoso@unaffiliated/dminuoso) has quit (Remote host closed the connection)
+2016-11-07 04:40:47	<--	messy (~messy@tamuall-165-91-49-42.vpn.tamu.edu) has quit (Read error: Connection reset by peer)
+2016-11-07 04:42:02	-->	dminuoso_ (~dminuoso@unaffiliated/dminuoso) has joined ##asm
+2016-11-07 04:42:27	<--	Neslepaks (~Neslepaks@178.61.71.85) has left ##asm
+2016-11-07 04:48:00		[04:42]
+2016-11-07 04:53:08	<--	pirate21994 (~pirate219@117.215.42.140) has quit (Quit: Leaving)
+2016-11-07 04:53:26	-->	pirate21994 (~pirate219@117.215.42.140) has joined ##asm
+2016-11-07 04:56:35	-->	phinxy (~tehhhd@unaffiliated/phinxy) has joined ##asm
+2016-11-07 05:00:23	-->	messy (~messy@128.194.3.238) has joined ##asm
+2016-11-07 05:00:43	-->	Prod_ (~DaffyDuck@0138800884.0.fullrate.ninja) has joined ##asm
+2016-11-07 05:02:50	-->	lapinozz (~lapinozz@45.74.164.117) has joined ##asm
+2016-11-07 05:06:58	<--	fub (~fub@88.128.80.183) has quit (Quit: sleep.)
+2016-11-07 05:06:58		[05:06]
+2016-11-07 05:11:03	 *	boru chuckles
+2016-11-07 05:11:19	zid	I think you have african giggling sickness, rip
+2016-11-07 05:11:25	zid	it's fatal, kills you after 40 to 50 years
+2016-11-07 05:11:36	-->	Pent (~pant@S01061c1b689d60c9.cg.shawcable.net) has joined ##asm
+2016-11-07 05:11:49	<--	lecture01 (~Thunderbi@2a00:c1a0:8502:e300:224:81ff:fe12:72e5) has quit (Ping timeout: 260 seconds)
+2016-11-07 05:12:59	boru	You could've ushered them along to that other channel.
+2016-11-07 05:13:07	<--	dminuoso_ (~dminuoso@unaffiliated/dminuoso) has quit (Ping timeout: 244 seconds)
+2016-11-07 05:14:20	zid	I think I have someone on ignore..
+2016-11-07 05:14:30	-->	lecture01 (~Thunderbi@2a00:c1a0:8502:e300:224:81ff:fe12:72e5) has joined ##asm
+2016-11-07 05:14:32	boru	Hmm?
+2016-11-07 05:20:00		[05:14]
+2016-11-07 05:20:22	-->	Atranimus (~Macgyver@internet-31-217-178-159.pat.nym.cosmote.net) has joined ##asm
+2016-11-07 05:22:56	<--	lecture01 (~Thunderbi@2a00:c1a0:8502:e300:224:81ff:fe12:72e5) has quit (Ping timeout: 250 seconds)
+2016-11-07 05:28:00		[05:22]
+2016-11-07 05:29:18	-->	lecture01 (~Thunderbi@dslb-094-222-038-032.094.222.pools.vodafone-ip.de) has joined ##asm
+2016-11-07 05:31:35	<--	geste (~chatzilla@pd95b0b70.dip0.t-ipconnect.de) has quit (Ping timeout: 252 seconds)
+2016-11-07 05:31:55	-->	jan64 (~jan64@cnr144.neoplus.adsl.tpnet.pl) has joined ##asm
+2016-11-07 05:32:49	<--	RTFM[away] (~RTFMaway]@unaffiliated/rtfmaway/x-3892344) has quit (Ping timeout: 260 seconds)
+2016-11-07 05:33:47	-->	Frisky-Kat (SomeWhere@90.222.60.70) has joined ##asm
+2016-11-07 05:34:06	<--	lecture01 (~Thunderbi@dslb-094-222-038-032.094.222.pools.vodafone-ip.de) has quit (Ping timeout: 265 seconds)
+2016-11-07 05:34:25	<--	FriskyKat (SomeWhere@90.213.46.152) has quit (Ping timeout: 260 seconds)
+2016-11-07 05:34:52	-->	lecture01 (~Thunderbi@77-64-233-141.dynamic.primacom.net) has joined ##asm
+2016-11-07 05:40:00		[05:34]
+2016-11-07 05:41:30	-->	codfection (~codfectio@unaffiliated/codfection) has joined ##asm
+2016-11-07 05:42:01	<--	r00t_us3r (uid126983@gateway/web/irccloud.com/x-iwvjtqgodcxursus) has quit (Ping timeout: 250 seconds)
+2016-11-07 05:42:01	<--	mats (sid23029@gateway/web/irccloud.com/x-rkgnjsufmzfkswbh) has quit (Ping timeout: 250 seconds)
+2016-11-07 05:42:10	<--	gdx90 (gdx90@gateway/shell/fnordserver.eu/x-fajmogdmayvxecez) has quit (Quit: https://fnordserver.eu)
+2016-11-07 05:42:27	<--	CheckDavid (uid14990@gateway/web/irccloud.com/x-yfvhnuvtixlltxmr) has quit (Ping timeout: 250 seconds)
+2016-11-07 05:42:27	<--	retrohacker (sid34590@gateway/web/irccloud.com/x-zwfmmdngnkbnufmf) has quit (Ping timeout: 250 seconds)
+2016-11-07 05:42:28	<--	tjpeden (sid42254@gateway/web/irccloud.com/x-ozrkelgsgkvdwqcr) has quit (Ping timeout: 250 seconds)
+2016-11-07 05:42:29	<--	angelsl (angelsl@pdpc/supporter/student/angelsl) has quit (Ping timeout: 250 seconds)
+2016-11-07 05:42:30	<--	Khaotic (Khaotic@unaffiliated/khaotic) has quit (Ping timeout: 250 seconds)
+2016-11-07 05:42:30	<--	_sf_ (sid139915@metasploit/sf) has quit (Ping timeout: 250 seconds)
+2016-11-07 05:42:53	<--	slash^ (~unknown@2001:a61:212f:7f01:a0d6:3c2c:a732:3a0a) has quit (Ping timeout: 250 seconds)
+2016-11-07 05:42:53	<--	Waywardsun (sid134771@gateway/web/irccloud.com/x-hrxeoaixuutdqant) has quit (Ping timeout: 250 seconds)
+2016-11-07 05:42:53	<--	briansteffens (brian@2600:3c03::f03c:91ff:fe61:dbc0) has quit (Ping timeout: 250 seconds)
+2016-11-07 05:43:20	<--	SlashLife (~slashlife@botters/slashlife) has quit (Ping timeout: 250 seconds)
+2016-11-07 05:43:45	<--	Broly (ylorb@gave-jessica-and-ashlee-simpson-my.stickynapalm.com) has quit (Ping timeout: 250 seconds)
+2016-11-07 05:44:50	-->	Waywardsun (sid134771@gateway/web/irccloud.com/x-xquhwzoakpumweda) has joined ##asm
+2016-11-07 05:45:40	-->	retrohacker (sid34590@gateway/web/irccloud.com/x-jbdkduutahlslsjj) has joined ##asm
+2016-11-07 05:45:59	-->	CheckDavid (uid14990@gateway/web/irccloud.com/x-ifkmetcdspcrmyly) has joined ##asm
+2016-11-07 05:46:12	-->	tjpeden (sid42254@gateway/web/irccloud.com/x-ejxgkgihdqgdlkyp) has joined ##asm
+2016-11-07 05:46:19	-->	r00t_us3r (uid126983@gateway/web/irccloud.com/x-bahcnwrxunfcvzan) has joined ##asm
+2016-11-07 05:46:25	-->	mats (sid23029@gateway/web/irccloud.com/x-babrxtfkklcyepcw) has joined ##asm
+2016-11-07 05:46:32	<--	Frisky-Kat (SomeWhere@90.222.60.70) has quit (Ping timeout: 260 seconds)
+2016-11-07 05:48:01	<--	SunnyD (~SunnyD@cpe-72-178-78-211.hot.res.rr.com) has quit (Quit: ChatZilla 0.9.90.1 [Firefox 30.0/20140605174243])
+2016-11-07 05:48:07	<--	boddah (~ralph@static.118.185.201.138.clients.your-server.de) has quit (Quit: leaving)
+2016-11-07 05:48:33	-->	Khaotic (Khaotic@unaffiliated/khaotic) has joined ##asm
+2016-11-07 05:49:56	-->	angelsl (sid108369@pdpc/supporter/student/angelsl) has joined ##asm
+2016-11-07 05:50:12	<--	jack_rabbit (~jack_rabb@c-50-179-163-66.hsd1.il.comcast.net) has quit (Ping timeout: 260 seconds)
+2016-11-07 05:51:54	-->	_sf_ (sid139915@metasploit/sf) has joined ##asm
+2016-11-07 05:53:02	-->	boddah (~ralph@static.118.185.201.138.clients.your-server.de) has joined ##asm
+2016-11-07 05:53:45	-->	SlashLife (~slashlife@botters/slashlife) has joined ##asm
+2016-11-07 05:54:10	-->	AverageJ0e (~joe@ip68-3-197-107.ph.ph.cox.net) has joined ##asm
+2016-11-07 05:54:14	-->	briansteffens (brian@2600:3c03::f03c:91ff:fe61:dbc0) has joined ##asm
+2016-11-07 05:56:03	-->	FriskyKat (SomeWhere@94.6.32.32) has joined ##asm
+2016-11-07 05:56:03		[05:56]
+2016-11-07 05:57:49	-->	Broly (ylorb@gave-jessica-and-ashlee-simpson-my.stickynapalm.com) has joined ##asm
+2016-11-07 06:01:26	-->	Frisky-Kat (SomeWhere@94.6.34.1) has joined ##asm
+2016-11-07 06:02:15	<--	chr1s (~chris@212-147-34-113.fix.access.vtx.ch) has quit (Quit: Konversation terminated!)
+2016-11-07 06:03:49	<--	FriskyKat (SomeWhere@94.6.32.32) has quit (Ping timeout: 260 seconds)
+2016-11-07 06:04:40	<--	Atranimus (~Macgyver@internet-31-217-178-159.pat.nym.cosmote.net) has quit (Ping timeout: 260 seconds)
+2016-11-07 06:07:13	<--	Prutheus (~XPS@WB21-0110.STUDFB.UniBw-Muenchen.de) has quit (Quit: leaving)
+2016-11-07 06:08:10	-->	fub (~fub@aftr-37-201-171-155.unity-media.net) has joined ##asm
+2016-11-07 06:10:30	<--	fub (~fub@aftr-37-201-171-155.unity-media.net) has quit (Client Quit)
+2016-11-07 06:11:31	-->	meth (~meth@unaffiliated/meth) has joined ##asm
+2016-11-07 06:11:31		[06:11]
+2016-11-07 06:11:46	-->	jan64_ (~jan64@dok190.neoplus.adsl.tpnet.pl) has joined ##asm
+2016-11-07 06:12:02	-->	fub (~fub@aftr-37-201-171-155.unity-media.net) has joined ##asm
+2016-11-07 06:12:20	--	Frisky-Kat is now known as FriskyKat
+2016-11-07 06:15:17	<--	Hask (~Hask@mail.vauban.lu) has quit (Ping timeout: 260 seconds)
+2016-11-07 06:15:24	<--	jan64 (~jan64@cnr144.neoplus.adsl.tpnet.pl) has quit (Ping timeout: 260 seconds)
+2016-11-07 06:17:09	-->	dminuoso_ (~dminuoso@unaffiliated/dminuoso) has joined ##asm
+2016-11-07 06:18:32	-->	meth_ (~meth@unaffiliated/meth) has joined ##asm
+2016-11-07 06:18:51	<--	meth (~meth@unaffiliated/meth) has quit (Read error: Connection reset by peer)
+2016-11-07 06:23:09	<--	CheckDavid (uid14990@gateway/web/irccloud.com/x-ifkmetcdspcrmyly) has quit (Quit: Connection closed for inactivity)
+2016-11-07 06:24:09	-->	byte512 (~user@h37n2-um-a32.ias.bredband.telia.com) has joined ##asm
+2016-11-07 06:26:07	-->	xocket (~xocket@unaffiliated/xocket) has joined ##asm
+2016-11-07 06:26:33	-->	geste (~chatzilla@pd95b0b70.dip0.t-ipconnect.de) has joined ##asm
+2016-11-07 06:26:33		[06:26]
+2016-11-07 06:26:38	<--	dqi (~dqi@ip-145-116-176-103.wlan-int.ru.nl) has quit (Ping timeout: 250 seconds)
+2016-11-07 06:27:37	--	meth_ is now known as meth
+2016-11-07 06:32:42	<--	fub (~fub@aftr-37-201-171-155.unity-media.net) has left ##asm ("quit.")
+2016-11-07 06:32:54	-->	rgrinberg (~rgrinberg@172-97-156-83.cpe.distributel.net) has joined ##asm
+2016-11-07 06:34:34	-->	otherflow (~otherflow@unaffiliated/otherflow) has joined ##asm
+2016-11-07 06:34:36	<--	FriskyKat (SomeWhere@94.6.34.1) has quit (Ping timeout: 260 seconds)
+2016-11-07 06:40:00		[06:34]
+2016-11-07 06:40:01	<--	geste (~chatzilla@pd95b0b70.dip0.t-ipconnect.de) has quit (Quit: ChatZilla 0.9.92 [Firefox 49.0.2/20161019084923])
+2016-11-07 06:40:20	-->	Atranimus (~Macgyver@internet-31-217-178-89.pat.nym.cosmote.net) has joined ##asm
+2016-11-07 06:40:20	-->	m8 (~m8@unaffiliated/m8) has joined ##asm
+2016-11-07 06:42:44	<--	vdamewood (~vdamewood@unaffiliated/vdamewood) has quit (Ping timeout: 256 seconds)
+2016-11-07 06:45:10	-->	FriskyKat (SomeWhere@0547dbe7.skybroadband.com) has joined ##asm
+2016-11-07 06:45:31	-->	Prutheus (~XPS@WB21-0110.STUDFB.UniBw-Muenchen.de) has joined ##asm
+2016-11-07 06:46:06	<--	Jester01 (~Jester01@62.100.244.69) has quit (Quit: ZNC - http://znc.sourceforge.net)
+2016-11-07 06:46:48	-->	SwiftMatt (~Objective@162.242.95.123) has joined ##asm
+2016-11-07 06:47:47	-->	Jester01 (~Jester01@62.100.244.69) has joined ##asm
+2016-11-07 06:48:30	BPL	mmm, what could be the reason why the final size of one nasm listing is 2560bytes using golink and 3584bytes using vs's linker?
+2016-11-07 06:49:01	Jester01	who cares :D
+2016-11-07 06:49:22	Jester01	run dumpbin on them and compare
+2016-11-07 06:49:45	Jester01	maybe added a comment section or whatever
+2016-11-07 06:49:51	<--	Atranimus (~Macgyver@internet-31-217-178-89.pat.nym.cosmote.net) has quit (Read error: Connection reset by peer)
+2016-11-07 06:50:11	-->	Atranimus (~Macgyver@internet-31-217-178-81.pat.nym.cosmote.net) has joined ##asm
+2016-11-07 06:50:27	archivist	like,  copyright the Borg
+2016-11-07 06:51:04	-->	Frisky-Kat (SomeWhere@05458505.skybroadband.com) has joined ##asm
+2016-11-07 06:51:42	BPL	Jester01: with vs's there is {1000 .data, 1000.rdata, 1000.reloc, 1000 .text}, with golink's {1000 .data, 1000 .idata, 1000 .text}. Of course, that only the summary
+2016-11-07 06:52:20	<--	FriskyKat (SomeWhere@0547dbe7.skybroadband.com) has quit (Ping timeout: 260 seconds)
+2016-11-07 06:52:29	Jester01	looks like .reloc then
+2016-11-07 06:52:37	<--	Atranimus (~Macgyver@internet-31-217-178-81.pat.nym.cosmote.net) has quit (Client Quit)
+2016-11-07 06:52:51	BPL	ok, let's see now using a proper compressor then
+2016-11-07 06:54:51	BPL	much better, 806 bytes is a reasonable ammount
+2016-11-07 06:55:11	-->	FriskyKat (SomeWhere@2.126.6.228) has joined ##asm
+2016-11-07 06:55:11		[06:55]
+2016-11-07 06:55:36	<--	Frisky-Kat (SomeWhere@05458505.skybroadband.com) has quit (Ping timeout: 260 seconds)
+2016-11-07 06:56:41	-->	ararob (~yaaic@46-227-67-186.pool.ovpn.se) has joined ##asm
+2016-11-07 06:56:42	<--	ararob (~yaaic@46-227-67-186.pool.ovpn.se) has quit (Changing host)
+2016-11-07 06:56:42	-->	ararob (~yaaic@unaffiliated/ararob) has joined ##asm
+2016-11-07 07:01:04	-->	Dawai (dawai@78-20-63-107.access.telenet.be) has joined ##asm
+2016-11-07 07:01:15	<--	Dawai (dawai@78-20-63-107.access.telenet.be) has quit (Client Quit)
+2016-11-07 07:03:27	-->	ARM9 (~ARM9@46-236-101-75.customer.t3.se) has joined ##asm
+2016-11-07 07:03:32	<--	otherflow (~otherflow@unaffiliated/otherflow) has quit (Quit: Quitte)
+2016-11-07 07:05:21	-->	crankslider (~slidercra@unaffiliated/slidercrank) has joined ##asm
+2016-11-07 07:11:00		[07:05]
+2016-11-07 07:11:06	<--	araml (~araml@unaffiliated/araml) has quit (Quit: WeeChat 1.4)
+2016-11-07 07:13:32	<--	Tymid00 (6d5df45d@gateway/web/freenode/ip.109.93.244.93) has quit (Quit: Page closed)
+2016-11-07 07:19:00		[07:13]
+2016-11-07 07:19:53	<--	pirate21994 (~pirate219@117.215.42.140) has quit (Quit: Leaving)
+2016-11-07 07:25:00		[07:19]
+2016-11-07 07:26:04	<--	xocket (~xocket@unaffiliated/xocket) has quit (Disconnected by services)
+2016-11-07 07:26:04	-->	xock_stream (~xocket@unaffiliated/xocket) has joined ##asm
+2016-11-07 07:27:47	<--	phinxy (~tehhhd@unaffiliated/phinxy) has quit (Read error: Connection reset by peer)
+2016-11-07 07:28:11	-->	phinxy (~tehhhd@unaffiliated/phinxy) has joined ##asm
+2016-11-07 07:30:19	<--	fr0gRIP (~fr0gRIP@163.5.182.52) has quit (Quit: fr0gRIP)
+2016-11-07 07:31:42	-->	Richard_Cavell (uid165693@gateway/web/irccloud.com/x-gbpwmicccnsqblvz) has joined ##asm
+2016-11-07 07:34:31	-->	Judge_Dredd (~Judge_Dre@unaffiliated/judge-dredd/x-2170742) has joined ##asm
+2016-11-07 07:40:00		[07:34]
+2016-11-07 07:45:52	BPL	Jester01: Btw, could you please get rid of the duplicated label here http://stackoverflow.com/questions/40454892/printf-unresolved-error-using-visual-studio-linker, that printf issue is still unresolved
+2016-11-07 07:47:36	-->	yiimi (~yiimi@unaffiliated/yiimi) has joined ##asm
+2016-11-07 07:47:38	Jester01	yeah well you shouldn't have asked 2 questions in one :P
+2016-11-07 07:47:48	yiimi	when would you use a relative jump and when would you use an absolute jump?
+2016-11-07 07:48:18	Jester01	you have cleverly edited out the first question
+2016-11-07 07:49:05	Jester01	yiimi: what architecture
+2016-11-07 07:51:03	<--	phinxy (~tehhhd@unaffiliated/phinxy) has quit (Read error: Connection reset by peer)
+2016-11-07 07:51:44	BPL	Jester01: The first question wasn't a duplicate (your link hadn't help completelly with the whole question)... now this new one is neither a duplicate... so, could you please get rid of that unuseful duplicated label?
+2016-11-07 07:52:09	Jester01	the original question asked about the winapi version and the duplicate did answer that
+2016-11-07 07:52:22	Jester01	the "also happens with printf" was nothing more than an afterthought
+2016-11-07 07:52:45	zid	which one is jester
+2016-11-07 07:53:26	Jester01	?
+2016-11-07 07:53:36	<--	SwiftMatt (~Objective@162.242.95.123) has quit (Quit: My MacBook Pro has gone to sleep. ZZZzzz…)
+2016-11-07 07:53:36	zid	on so
+2016-11-07 07:53:44	Jester01	yeah see link above
+2016-11-07 07:53:55	zid	ctrl-f jes = 0 results
+2016-11-07 07:54:09	Jester01	not sure what you mean
+2016-11-07 07:54:19	Jester01	<BPL> Jester01: Btw, could you please get rid of the duplicated label here http://stackoverflow.com/questions/40454892/printf-unresolved-error-using-visual-studio-linker, that printf issue is still unresolved
+2016-11-07 07:54:21	zid	on stack overflow, which one of the users, is Jester01
+2016-11-07 07:54:33	GeDaMo	zid wants to know your SO username
+2016-11-07 07:54:35	Jester01	Jester obviously.
+2016-11-07 07:54:45	Jester01	it clearly says so on the question
+2016-11-07 07:54:47	zid	okay, tehre are 0 instances of jester on that page, so I'm confused
+2016-11-07 07:54:48	BPL	Jester01: Please read again the new title and new content and then read this "This question was marked as an exact duplicate of an existing question. If this question is different, please edit it to explain how it is different"
+2016-11-07 07:55:12	Jester01	yes you have edited it significantly and deleted the main part that was answered by the duplicate
+2016-11-07 07:55:12		[07:55]
+2016-11-07 07:56:13	-->	SwiftMatt (~Objective@162.242.95.123) has joined ##asm
+2016-11-07 07:56:15	Jester01	http://stackoverflow.com/posts/40454892/revisions
+2016-11-07 07:57:22	Jester01	zid, your browser is broken :D
+2016-11-07 07:57:37	Jester01	my name appears twice on that page
+2016-11-07 07:58:04	zid	nein4me
+2016-11-07 07:58:51	GeDaMo	I don't see "Jester" either
+2016-11-07 07:59:00	GeDaMo	Also the title seems to have changed
+2016-11-07 07:59:05	Jester01	yes it has
+2016-11-07 07:59:31	Jester01	you guys don't see the "marked as duplicate by Jester assembly   19 hours ago "
+2016-11-07 07:59:38	Jester01	or my comment?
+2016-11-07 08:00:03	GeDaMo	When i click the link, it takes me here https://stackoverflow.com/questions/1023593/how-to-write-hello-world-in-assembler-under-windows
+2016-11-07 08:00:24	Jester01	yeah well I am talking about the original question
+2016-11-07 08:00:29	Jester01	http://stackoverflow.com/questions/40454892/printf-unresolved-error-using-visual-studio-linker
+2016-11-07 08:00:43	-->	slither (~jesus@95.146.18.106) has joined ##asm
+2016-11-07 08:00:56	GeDaMo	That's what I mean, when I click that link it takes me to the 'hello world' one
+2016-11-07 08:01:08	Jester01	really?
+2016-11-07 08:01:17	GeDaMo	Yeah
+2016-11-07 08:01:20	Jester01	strange, auto-forwarding to the duplicate?
+2016-11-07 08:01:25	zid	looks like it
+2016-11-07 08:01:29	 *	Jester01 tries private browsing not logged in
+2016-11-07 08:01:45	Jester01	heh
+2016-11-07 08:01:49	Jester01	never knew that
+2016-11-07 08:02:06	Jester01	at least the http://stackoverflow.com/posts/40454892/revisions  works
+2016-11-07 08:02:08	<--	dansan (~daniel@2602:304:cd72:9ed0::49) has quit (Quit: The C preprocessor is a pathway to many abilities some consider to be unnatural.)
+2016-11-07 08:02:25	-->	fr0gRIP (~fr0gRIP@2a01:cb11:43b:7a00:626d:c7ff:fe04:bcab) has joined ##asm
+2016-11-07 08:02:41	-->	dansan (~daniel@2602:304:cd72:9ed0::49) has joined ##asm
+2016-11-07 08:02:47	zid	That page is literally invisible for me
+2016-11-07 08:02:53	zid	I cannot find anywhere that links it or lets me see it
+2016-11-07 08:03:05	Jester01	not even the revisions link?
+2016-11-07 08:03:06	GeDaMo	I see «Post Closed as "duplicate" by Jester» on the revisions page
+2016-11-07 08:03:23	zid	and the only link is to the thing you dupped it onto
+2016-11-07 08:03:25	zid	maybe it's to stop google trying to show duplicates
+2016-11-07 08:04:22	<--	dansan (~daniel@2602:304:cd72:9ed0::49) has quit (Excess Flood)
+2016-11-07 08:04:48	-->	dansan (~daniel@2602:304:cd72:9ed0::49) has joined ##asm
+2016-11-07 08:07:15	-->	TurboBorland (~GrandmaEu@c-73-32-158-183.hsd1.tx.comcast.net) has joined ##asm
+2016-11-07 08:08:07	-->	Manticore (~Manticore@2a07-a880-4601-1072-04a0-d952-b1bb-d687.pool6.ovpn.se) has joined ##asm
+2016-11-07 08:08:31	--	Manticore is now known as Guest47900
+2016-11-07 08:11:21	roxfan	zid: what's your rep on SO?
+2016-11-07 08:11:21		[08:11]
+2016-11-07 08:11:31	zid	0?
+2016-11-07 08:11:35	roxfan	ok
+2016-11-07 08:11:44	roxfan	some things are not shown to low-rep users
+2016-11-07 08:11:52	zid	I'm not a user
+2016-11-07 08:12:14	roxfan	ok
+2016-11-07 08:12:23	boru	I've seen people put it on their resumes, you know.
+2016-11-07 08:12:38	boru	Fairly easy to filter those out, at least.
+2016-11-07 08:13:24	roxfan	do they list user id too? you could then check if their answers any good
+2016-11-07 08:13:43	boru	No, immediate discard after seeing 'stack overflow'
+2016-11-07 08:14:05	roxfan	fair enough
+2016-11-07 08:14:44	Jester01	BPL: for your information http://stackoverflow.com/a/5130009/547981  this answer in the duplicate works for the printf
+2016-11-07 08:14:50	ARM9	shitposting on /r/programming is more productive than what most people do on stackoverflow
+2016-11-07 08:15:12	fooobarrr	i hate /r/programming
+2016-11-07 08:15:16	zid	/r/programming is godawful
+2016-11-07 08:15:21	ARM9	preach
+2016-11-07 08:15:21	boru	What is that?
+2016-11-07 08:15:27	BPL	Jester01: I think I had told you few hours ago I had tried that and didn't help, unless I've missed something, let me try again
+2016-11-07 08:15:34	fooobarrr	almost as much as the rest of that cesspool
+2016-11-07 08:15:47	ARM9	a pit of inequity deeper and more depraved than ##c
+2016-11-07 08:15:51	Jester01	I have booted up my windows VM for you and it works.
+2016-11-07 08:16:08	Jester01	Z:\windows>test.exe
+2016-11-07 08:16:08	Jester01	Win32
+2016-11-07 08:16:08	Jester01	World!
+2016-11-07 08:16:09	boru	##c used to be alright.
+2016-11-07 08:16:18	BPL	Jester01: Used vs2015's linker? which one you've used?
+2016-11-07 08:16:27	Jester01	Microsoft (R) Incremental Linker Version 11.00.50727.1
+2016-11-07 08:16:32	<--	lecture01 (~Thunderbi@77-64-233-141.dynamic.primacom.net) has quit (Read error: Connection reset by peer)
+2016-11-07 08:16:34	Jester01	no idea which vs
+2016-11-07 08:16:38	BPL	let me try with that one to confirm
+2016-11-07 08:16:59	roxfan	11.00 is 2012 iirc
+2016-11-07 08:16:59	Jester01	I did "link test.obj libcmt.lib"
+2016-11-07 08:17:06	<--	anotherguy (5e3673f1@gateway/web/freenode/ip.94.54.115.241) has quit (Ping timeout: 260 seconds)
+2016-11-07 08:17:06	Jester01	as per the linked answer
+2016-11-07 08:17:15	Jester01	linked LOL
+2016-11-07 08:17:32	boru	Have you been drinking?
+2016-11-07 08:17:33	<--	SwiftMatt (~Objective@162.242.95.123) has quit (Quit: My MacBook Pro has gone to sleep. ZZZzzz…)
+2016-11-07 08:17:34	Jester01	yeah seems to be 2012
+2016-11-07 08:17:39	<--	Guest47900 (~Manticore@2a07-a880-4601-1072-04a0-d952-b1bb-d687.pool6.ovpn.se) has quit (Quit: Leaving)
+2016-11-07 08:20:22	vulture	what was your problem
+2016-11-07 08:20:30	vulture	rather, what is the error
+2016-11-07 08:21:45	Jester01	hello1.obj : error LNK2001: unresolved external symbol _printf
+2016-11-07 08:23:54	BPL	Wow, this is funny, with `Microsoft (R) Incremental Linker Version 14.00.23918.0` (vs2015) I get an unresolved error (using libcmt.lib), with `12.00.40629.0` (vs 2013) I get a crash http://screencast.com/t/NHmglrGXrC , trying now with lower versions :P
+2016-11-07 08:24:19	 *	zid bets filesystem corruption
+2016-11-07 08:26:26	-->	xocket (~xocket@unaffiliated/xocket) has joined ##asm
+2016-11-07 08:26:26		[08:26]
+2016-11-07 08:26:51	BPL	with vs2010 it'll expect mainCRTStartup entry point, interesting... http://screencast.com/t/PYe0cVCgU
+2016-11-07 08:29:37	<--	xock_stream (~xocket@unaffiliated/xocket) has quit (Ping timeout: 240 seconds)
+2016-11-07 08:29:45	Jester01	it did not find _main
+2016-11-07 08:30:17	Jester01	note I literally only used libcmt.lib
+2016-11-07 08:30:42	BPL	Jester01: Alright, with vs2010 (10.00.40219.01) using _main as entry point worked... in any case, my original question was targetting vs2015... I'll change the tag of my question to vs2015, I had missed that :P
+2016-11-07 08:32:18	vulture	are you compiling x86 or x64
+2016-11-07 08:32:25	Jester01	now that you mention it, I believe microsoft has changed something about the c lib
+2016-11-07 08:32:31	BPL	vulture: I've tried only with x86 command prompts
+2016-11-07 08:32:33	Jester01	that's going to be another duplicate :D
+2016-11-07 08:32:42	vulture	did you link libc
+2016-11-07 08:32:51	vulture	e.g. msvcrt.lib
+2016-11-07 08:33:15	BPL	vulture: With golink it worked using msvcrt.dll... I think i had also tried that one with vs_2015, no luck neither
+2016-11-07 08:33:22	Jester01	here you go http://stackoverflow.com/questions/33721059/call-c-standard-library-function-from-asm-in-visual-studio/33724617
+2016-11-07 08:33:34	vulture	vs2015 changed things cuz ucrt
+2016-11-07 08:34:25	vulture	but also make sure you arent mixing x86 and x64 cuz x86 often uses _ prefix and x64 does not
+2016-11-07 08:34:45	BPL	vulture: Yeah, sure, I've learned about that today the hard way :)
+2016-11-07 08:37:17	BPL	Jester01: Nice! finally, alright alright... NOW, you can mark it as duplicated with that one \o/
+2016-11-07 08:37:32	Jester01	:P
+2016-11-07 08:37:45	zid	Jester01: Can we mark BPL as duplicate?
+2016-11-07 08:38:36	Jester01	as if one wasn't enough
+2016-11-07 08:39:04	zid	I'm sure I'v eseen someone asking the same questions before though
+2016-11-07 08:40:16	-->	Xylitol (~temari@11.116.88.79.rev.sfr.net) has joined ##asm
+2016-11-07 08:40:16	<--	Xylitol (~temari@11.116.88.79.rev.sfr.net) has quit (Changing host)
+2016-11-07 08:40:16	-->	Xylitol (~temari@unaffiliated/xylitol) has joined ##asm
+2016-11-07 08:46:00		[08:40]
+2016-11-07 08:50:21	<--	dminuoso_ (~dminuoso@unaffiliated/dminuoso) has quit (Ping timeout: 256 seconds)
+2016-11-07 08:51:22	-->	nh_ (~nh@2a00:1028:838e:877e:1aa6:f7ff:fe1d:6c8f) has joined ##asm
+2016-11-07 08:51:39	<--	r00t_us3r (uid126983@gateway/web/irccloud.com/x-bahcnwrxunfcvzan) has quit (Quit: Connection closed for inactivity)
+2016-11-07 08:54:27	--	nh_ is now known as mirabilis
+2016-11-07 08:54:32	yiimi	Jester01: i suppose x86
+2016-11-07 08:54:37	yiimi	Jester01: sorry for the late response
+2016-11-07 08:56:25	Jester01	mostly you use relative
+2016-11-07 08:56:35	Jester01	unless you need indirect which are absolute
+2016-11-07 08:56:59	Jester01	conditional jumps don't even have an absolute variant
+2016-11-07 08:58:44	-->	snyp (~Snyp@nas4.meghbelabroadband.in) has joined ##asm
+2016-11-07 09:01:18	-->	nero1 (~guest@178.162.199.92) has joined ##asm
+2016-11-07 09:01:18		[09:01]
+2016-11-07 09:04:50	-->	dqi (~dqi@92-111-39-233.static.chello.nl) has joined ##asm
+2016-11-07 09:07:24	<--	rendar (~I@host190-113-dynamic.180-80-r.retail.telecomitalia.it) has quit (Ping timeout: 250 seconds)
+2016-11-07 09:13:00		[09:07]
+2016-11-07 09:26:35	<--	xocket (~xocket@unaffiliated/xocket) has quit (Disconnected by services)
+2016-11-07 09:26:37	-->	xock_stream (~xocket@unaffiliated/xocket) has joined ##asm
+2016-11-07 09:32:00		[09:26]
+2016-11-07 09:33:19	<--	codfection (~codfectio@unaffiliated/codfection) has quit (Remote host closed the connection)
+2016-11-07 09:34:16	-->	invano_ (~invano@89-157-136-205.rev.numericable.fr) has joined ##asm
+2016-11-07 09:34:48	-->	TwoGs (~ggardner@192.4.12.237) has joined ##asm
+2016-11-07 09:35:29	-->	codfection (~codfectio@unaffiliated/codfection) has joined ##asm
+2016-11-07 09:36:43	-->	rendar (~I@host190-113-dynamic.180-80-r.retail.telecomitalia.it) has joined ##asm
+2016-11-07 09:38:20	-->	rtkt (~rtkt@ptr-2hj4tbw74k45rx5q6tvdt53rd.ip6.access.telenet.be) has joined ##asm
+2016-11-07 09:38:28	<--	dqi (~dqi@92-111-39-233.static.chello.nl) has quit (Ping timeout: 260 seconds)
+2016-11-07 09:38:41	-->	Atroc (~Atroc@h081217214054.dyn.cm.kabsi.at) has joined ##asm
+2016-11-07 09:38:56	<--	meth (~meth@unaffiliated/meth) has quit (Quit: Snoochie Boochies!)
+2016-11-07 09:39:02	<--	Demon_Fox (~Demon_Fox@71.94.3.176) has quit (Quit: Leaving)
+2016-11-07 09:40:08	<--	invano_ (~invano@89-157-136-205.rev.numericable.fr) has quit (Remote host closed the connection)
+2016-11-07 09:42:47	<--	slither (~jesus@95.146.18.106) has quit (Ping timeout: 268 seconds)
+2016-11-07 09:47:34	-->	Atroc_ (~Atroc@h081217214054.dyn.cm.kabsi.at) has joined ##asm
+2016-11-07 09:47:34		[09:47]
+2016-11-07 09:47:35	<--	Atroc_ (~Atroc@h081217214054.dyn.cm.kabsi.at) has quit (Max SendQ exceeded)
+2016-11-07 09:47:58	-->	Atroc_ (~Atroc@h081217214054.dyn.cm.kabsi.at) has joined ##asm
+2016-11-07 09:48:41	<--	Atroc_ (~Atroc@h081217214054.dyn.cm.kabsi.at) has quit (Client Quit)
+2016-11-07 09:54:00		[09:48]
+2016-11-07 09:55:57	-->	h\ (non@host42-207-dynamic.16-87-r.retail.telecomitalia.it) has joined ##asm
+2016-11-07 09:56:28	h\	hi~
+2016-11-07 09:58:15	<--	TwoGs (~ggardner@192.4.12.237) has left ##asm ("Leaving")
+2016-11-07 09:58:53	-->	slither (~jesus@95.146.18.106) has joined ##asm
+2016-11-07 09:59:26	GeDaMo	Hi h\ :)
+2016-11-07 10:00:06	<--	Xylitol (~temari@unaffiliated/xylitol) has quit (Quit: Sharpen your sickle at sunset)
+2016-11-07 10:06:00		[10:00]
+2016-11-07 10:10:35	-->	RTFM[away] (~RTFMaway]@187.38.137.252) has joined ##asm
+2016-11-07 10:10:42	<--	RTFM[away] (~RTFMaway]@187.38.137.252) has quit (Changing host)
+2016-11-07 10:10:42	-->	RTFM[away] (~RTFMaway]@unaffiliated/rtfmaway/x-3892344) has joined ##asm
+2016-11-07 10:12:31	-->	liquidfl0ppy (~Christoph@c-73-245-165-7.hsd1.fl.comcast.net) has joined ##asm
+2016-11-07 10:12:32	<--	liquidfl0ppy (~Christoph@c-73-245-165-7.hsd1.fl.comcast.net) has quit (Remote host closed the connection)
+2016-11-07 10:17:26	<--	crankslider (~slidercra@unaffiliated/slidercrank) has quit (Ping timeout: 264 seconds)
+2016-11-07 10:17:53	<--	nero1 (~guest@178.162.199.92) has left ##asm
+2016-11-07 10:23:00		[10:17]
+2016-11-07 10:24:08	-->	h` (non@host42-207-dynamic.16-87-r.retail.telecomitalia.it) has joined ##asm
+2016-11-07 10:24:19	-->	dminuoso_ (~dminuoso@unaffiliated/dminuoso) has joined ##asm
+2016-11-07 10:24:58	<--	h\ (non@host42-207-dynamic.16-87-r.retail.telecomitalia.it) has quit (Write error: Broken pipe)
+2016-11-07 10:26:17	<--	ARM9 (~ARM9@46-236-101-75.customer.t3.se) has quit (Ping timeout: 240 seconds)
+2016-11-07 10:26:44	-->	ARM9 (~ARM9@46-236-101-75.customer.t3.se) has joined ##asm
+2016-11-07 10:27:38	-->	xocket (~xocket@unaffiliated/xocket) has joined ##asm
+2016-11-07 10:30:32	<--	xock_stream (~xocket@unaffiliated/xocket) has quit (Ping timeout: 256 seconds)
+2016-11-07 10:33:15	-->	xux (~xux@unaffiliated/xux) has joined ##asm
+2016-11-07 10:39:00		[10:33]
+2016-11-07 10:39:45	-->	orizzle (orizzle@unaffiliated/orizzle) has joined ##asm
+2016-11-07 10:45:00		[10:39]
+2016-11-07 10:45:13	<--	rnsanchez_ (~rnsanchez@177.132.222.223) has quit (Quit: Exit 1)
+2016-11-07 10:49:56	<--	xux (~xux@unaffiliated/xux) has quit (Quit: xux)
+2016-11-07 10:50:34	<--	h` (non@host42-207-dynamic.16-87-r.retail.telecomitalia.it) has quit
+2016-11-07 10:52:21	<--	rendar (~I@host190-113-dynamic.180-80-r.retail.telecomitalia.it) has quit (Quit: std::lower_bound + std::less_equal *works* with a vector without duplicates!)
+2016-11-07 10:58:00		[10:52]
+2016-11-07 11:01:12	-->	xux (~xux@unaffiliated/xux) has joined ##asm
+2016-11-07 11:01:57	<--	m8 (~m8@unaffiliated/m8) has quit (Read error: Connection reset by peer)
+2016-11-07 11:03:54	-->	lecture01 (~Thunderbi@77-64-233-141.dynamic.primacom.net) has joined ##asm
+2016-11-07 11:06:29	<--	Judge_Dredd (~Judge_Dre@unaffiliated/judge-dredd/x-2170742) has quit (Quit: Leaving.)
+2016-11-07 11:08:05	<--	slither (~jesus@95.146.18.106) has quit (Ping timeout: 265 seconds)
+2016-11-07 11:08:20	-->	Ohbe (Obiez@77.29.254.142) has joined ##asm
+2016-11-07 11:09:14	--	Ohbe is now known as Akirau
+2016-11-07 11:13:03	-->	araml (~araml@unaffiliated/araml) has joined ##asm
+2016-11-07 11:13:03		[11:13]
+2016-11-07 11:20:08	<--	rtkt (~rtkt@ptr-2hj4tbw74k45rx5q6tvdt53rd.ip6.access.telenet.be) has quit (Quit: Leaving)
+2016-11-07 11:23:45	<--	lapinozz (~lapinozz@45.74.164.117) has quit (Ping timeout: 260 seconds)
+2016-11-07 11:26:41	<--	rgrinberg (~rgrinberg@172-97-156-83.cpe.distributel.net) has quit (Ping timeout: 244 seconds)
+2016-11-07 11:26:52	<--	xocket (~xocket@unaffiliated/xocket) has quit (Disconnected by services)
+2016-11-07 11:26:52	-->	xock_stream (~xocket@unaffiliated/xocket) has joined ##asm
+2016-11-07 11:29:21	<--	Prutheus (~XPS@WB21-0110.STUDFB.UniBw-Muenchen.de) has quit (Quit: leaving)
+2016-11-07 11:29:21		[11:29]
+2016-11-07 11:32:45	BPL	Hi, how could i use __FILE__ && __LINE__ nasm macros in a win32 messagebox?
+2016-11-07 11:33:06	Jester01	it's a duplicate!
+2016-11-07 11:33:08	Jester01	oh wait :D
+2016-11-07 11:33:44	Jester01	short version: you don't want to do that, use a debugger instead.
+2016-11-07 11:34:34	Jester01	long version: you will probably have to write some macros that create the string
+2016-11-07 11:34:57	<--	xock_stream (~xocket@unaffiliated/xocket) has quit (Ping timeout: 240 seconds)
+2016-11-07 11:35:44	BPL	ok, sounds reasonable... my 3 options were a) __file__+__line__+msgbox b) __file__+__line__+custom_logger c) debugger , assuming a) would be fast enough
+2016-11-07 11:36:37	<--	GeDaMo (~GeDaMo@212.225.83.199) has quit (Remote host closed the connection)
+2016-11-07 11:37:26	Jester01	a debugger can do so much more (assuming you need this for debugging)
+2016-11-07 11:39:19	BPL	yeah, definitely i need it, my dummy opengl hello world is crashing right now :) , with c/c++ the bug would be solved atm... but my 2-days asm skills aren't that sharp yet
+2016-11-07 11:45:00		[11:39]
+2016-11-07 11:45:06	-->	xocket (~xocket@unaffiliated/xocket) has joined ##asm
+2016-11-07 11:46:11	-->	Obiez (Obiez@77.29.222.74) has joined ##asm
+2016-11-07 11:48:12	<--	Akirau (Obiez@77.29.254.142) has quit (Ping timeout: 265 seconds)
+2016-11-07 11:49:48	vulture	use a debugger :P
+2016-11-07 11:55:00		[11:49]
+2016-11-07 11:55:11	--	Obiez is now known as Akirau
+2016-11-07 11:55:53	dminuoso_	Jester01: I want one more - I want last n stack frames displayed with proper symbol names - at runtime!
+2016-11-07 11:56:01	dminuoso_	After C++ name mangling!
+2016-11-07 11:56:18	Jester01	and your problem is?
+2016-11-07 11:56:25	dminuoso_	DWARF2 is super annoying.
+2016-11-07 11:56:29	dminuoso_	:(
+2016-11-07 11:56:50	 *	boru chuckles
+2016-11-07 11:57:09	boru	It's quite well documented.
+2016-11-07 11:57:39	dminuoso_	boru: Much better than ELF.
+2016-11-07 11:57:47	boru	Aye, very much so.
+2016-11-07 11:58:33	boru	I really ought to gather up some pertinent reference material, somewhere.
+2016-11-07 11:58:34	dminuoso_	Currently I've completely ripped out my entire memory subsystem though, so this is more important than stack traces I guess..
+2016-11-07 11:58:45	dminuoso_	No more memory :'(
+2016-11-07 11:58:55	<--	snyp (~Snyp@nas4.meghbelabroadband.in) has quit (Quit: WeeChat 1.6)
+2016-11-07 11:59:04	boru	Ah, you're working on your system?
+2016-11-07 11:59:04	Jester01	memory is only memory now
+2016-11-07 11:59:55	dminuoso_	boru: Yeah. My memory management was fully operational but there were some design flaws because I took shortcuts.
+2016-11-07 12:01:40	dminuoso_	I repeated the same mistake that has infested Linux..
+2016-11-07 12:02:01	dminuoso_	Apparently.
+2016-11-07 12:02:54	boru	As in the allocator, or process memory management?
+2016-11-07 12:03:12	boru	zid's been working on an allocator for his system on and off for a while now.
+2016-11-07 12:03:36	boru	Actually, perhaps it wasn't an allocator.
+2016-11-07 12:04:36	<--	blackwind_123 (~IceChat9@117.192.137.72) has quit (Ping timeout: 256 seconds)
+2016-11-07 12:05:32	-->	devonrevenge (~devonreve@unaffiliated/devonrevenge) has joined ##asm
+2016-11-07 12:05:39	-->	Bennux_dev (~Bennux_de@200.54.74.162) has joined ##asm
+2016-11-07 12:05:51	dminuoso_	boru: the allocator itself.
+2016-11-07 12:06:11	-->	blackwind_123 (~IceChat9@117.192.136.192) has joined ##asm
+2016-11-07 12:06:16	dminuoso_	Dont have userspace yet
+2016-11-07 12:06:19	boru	Which Linux problem did you run into? Overcommit?
+2016-11-07 12:06:38	<--	GinoManWorks (~GinoMan@50-251-53-110-static.hfc.comcastbusiness.net) has quit (Quit: Leaving)
+2016-11-07 12:06:40	Jester01	since when is that a problem (especially that you can switch it off)
+2016-11-07 12:06:44	dminuoso_	boru: Linux maps basically all physical memory into virtual memory to get direct access to any page it wants
+2016-11-07 12:06:58	dminuoso_	boru: with 32 bit processors it was particularly bothersome because high mem
+2016-11-07 12:07:32	dminuoso_	effectively it limits you to only half the virtual address space if you have 128TB of ram
+2016-11-07 12:07:35	boru	Ah, right.
+2016-11-07 12:07:50	dminuoso_	which is great, because then bootstrapping your memory systems become trivial
+2016-11-07 12:08:37	boru	FWIW, you couldn't always turn it off, and non-deterministic allocators are a bad idea, imho.
+2016-11-07 12:09:26	boru	Perhaps not for application programmers with relatively endless resources, but in instances where you're up against the endstops, you're going to want determinism.
+2016-11-07 12:09:29	kaos	bad bad idea
+2016-11-07 12:09:47	dminuoso_	huh?
+2016-11-07 12:09:59	kaos	A BAD
+2016-11-07 12:10:03	kaos	IDEA
+2016-11-07 12:10:03		[12:10]
+2016-11-07 12:10:07	boru	I was answering Jester.
+2016-11-07 12:10:53	-->	meth (~meth@unaffiliated/meth) has joined ##asm
+2016-11-07 12:12:43	<--	aleph- (~hatter@unaffiliated/church-) has quit (Ping timeout: 252 seconds)
+2016-11-07 12:13:42	dminuoso_	boru: There's no downside to overcommit really.
+2016-11-07 12:15:04	dminuoso_	At least none that I can see.
+2016-11-07 12:15:06	boru	Except when you hit the endstops.
+2016-11-07 12:17:44	boru	Anyway, AFK for a bit to do some soldering.
+2016-11-07 12:18:29	<--	codfection (~codfectio@unaffiliated/codfection) has quit (Remote host closed the connection)
+2016-11-07 12:19:16	-->	meth_ (~meth@unaffiliated/meth) has joined ##asm
+2016-11-07 12:20:54	<--	Jesin (~Jesin@pool-96-231-49-118.washdc.fios.verizon.net) has quit (Quit: Leaving)
+2016-11-07 12:21:43	<--	meth (~meth@unaffiliated/meth) has quit (Ping timeout: 256 seconds)
+2016-11-07 12:23:33	-->	dqi (~dqi@165-218-045-062.dynamic.caiway.nl) has joined ##asm
+2016-11-07 12:25:15	<--	dminuoso_ (~dminuoso@unaffiliated/dminuoso) has quit (Ping timeout: 258 seconds)
+2016-11-07 12:25:15		[12:25]
+2016-11-07 12:31:40	<--	xocket (~xocket@unaffiliated/xocket) has quit (Ping timeout: 250 seconds)
+2016-11-07 12:33:47	-->	freakazoid0223_ (~chatzilla@pool-173-49-14-128.phlapa.fios.verizon.net) has joined ##asm
+2016-11-07 12:37:01	<--	freakazoid0223 (~chatzilla@pool-173-49-14-128.phlapa.fios.verizon.net) has quit (Ping timeout: 260 seconds)
+2016-11-07 12:37:11	--	freakazoid0223_ is now known as freakazoid0223
+2016-11-07 12:38:28	<--	Bennux_dev (~Bennux_de@200.54.74.162) has quit (Quit: Leaving)
+2016-11-07 12:41:37	<--	MoALTz (~no@77-254-9-16.adsl.inetia.pl) has quit (Quit: Leaving)
+2016-11-07 12:41:37		[12:41]
+2016-11-07 12:43:13	-->	Pent2 (~pant@S01061c1b689d60c9.cg.shawcable.net) has joined ##asm
+2016-11-07 12:45:41	-->	devonrevenge1 (~devonreve@cpc48-slam6-2-0-cust245.2-4.cable.virginm.net) has joined ##asm
+2016-11-07 12:45:41	<--	devonrevenge1 (~devonreve@cpc48-slam6-2-0-cust245.2-4.cable.virginm.net) has quit (Changing host)
+2016-11-07 12:45:41	-->	devonrevenge1 (~devonreve@unaffiliated/devonrevenge) has joined ##asm
+2016-11-07 12:45:43	<--	lecture01 (~Thunderbi@77-64-233-141.dynamic.primacom.net) has quit (Remote host closed the connection)
+2016-11-07 12:45:56	<--	Pent (~pant@S01061c1b689d60c9.cg.shawcable.net) has quit (Ping timeout: 268 seconds)
+2016-11-07 12:46:39	<--	devonrevenge1 (~devonreve@unaffiliated/devonrevenge) has quit (Client Quit)
+2016-11-07 12:49:39	<--	meth_ (~meth@unaffiliated/meth) has quit (Ping timeout: 246 seconds)
+2016-11-07 12:55:00		[12:49]
+2016-11-07 13:00:10	orizzle	AverageJ0e how was your hike tonight
+2016-11-07 13:00:29	<--	ARM9 (~ARM9@46-236-101-75.customer.t3.se) has quit (Quit: Leaving)
+2016-11-07 13:00:30	-->	grublet (~grublet@cpe-74-131-112-99.kya.res.rr.com) has joined ##asm
+2016-11-07 13:00:42	AverageJ0e	was good
+2016-11-07 13:00:55	AverageJ0e	did piestawa peak. easy enough
+2016-11-07 13:01:00	orizzle	you go every day?
+2016-11-07 13:01:44	<--	control (~control@unaffiliated/control) has quit (Ping timeout: 244 seconds)
+2016-11-07 13:04:09	-->	aleph- (~hatter@unaffiliated/church-) has joined ##asm
+2016-11-07 13:04:49	AverageJ0e	yup
+2016-11-07 13:10:00		[13:04]
+2016-11-07 13:11:44	vulture	AverageJ0e: was in OC last week when you said stuff, did you still need
+2016-11-07 13:12:19	AverageJ0e	im good now doc
+2016-11-07 13:12:25	vulture	rgr
+2016-11-07 13:12:29	AverageJ0e	but orizzle here could use a hand
+2016-11-07 13:12:36	AverageJ0e	i admire his persistence
+2016-11-07 13:12:51	vulture	I did a lot of hiking in OC
+2016-11-07 13:13:00	vulture	3 miles a day between hotel and work
+2016-11-07 13:13:11	<--	BPL (~BPL__@215.2.165.83.dynamic.reverse-mundo-r.com) has quit (Read error: Connection reset by peer)
+2016-11-07 13:13:27	AverageJ0e	nice
+2016-11-07 13:14:07	-->	lecture01 (~Thunderbi@2a00:c1a0:8502:e300:12c9:2201:1:1) has joined ##asm
+2016-11-07 13:14:31	AverageJ0e	cardio is good for the soul
+2016-11-07 13:16:13	orizzle	i can always use help
+2016-11-07 13:16:17	orizzle	in more ways than one
+2016-11-07 13:16:38	orizzle	AverageJ0e you probably didn't get a chance to check out the binary
+2016-11-07 13:17:53	AverageJ0e	of course i looked, im just as perplexed as you. you patch the thing to allow it to read the hard drive serial number from your drive as somehting else and it isnt working
+2016-11-07 13:18:18	orizzle	no - it does work when i do that
+2016-11-07 13:18:55	orizzle	well hang on. it works (1) with the original hard drive unpatched and (2) with any hard drive if I patch the serial number of the original hard drive into the binary
+2016-11-07 13:20:32	<--	devonrevenge (~devonreve@unaffiliated/devonrevenge) has quit (Quit: WeeChat 1.6)
+2016-11-07 13:21:30	-->	dminuoso_ (~dminuoso@unaffiliated/dminuoso) has joined ##asm
+2016-11-07 13:27:00		[13:21]
+2016-11-07 13:27:03	<--	dminuoso_ (~dminuoso@unaffiliated/dminuoso) has quit (Ping timeout: 244 seconds)
+2016-11-07 13:29:25	<--	Atroc (~Atroc@h081217214054.dyn.cm.kabsi.at) has quit (Read error: Connection reset by peer)
+2016-11-07 13:35:00		[13:29]
+2016-11-07 13:42:36	zid	orizzle: trying to unban yourself from steam? :P
+2016-11-07 13:46:53	-->	EI24 (~EI24@90-224-11-165-no124.tbcn.telia.com) has joined ##asm
+2016-11-07 13:49:35	<--	dqi (~dqi@165-218-045-062.dynamic.caiway.nl) has quit (Ping timeout: 258 seconds)
+2016-11-07 13:55:00		[13:49]
+2016-11-07 13:59:20	<--	Richard_Cavell (uid165693@gateway/web/irccloud.com/x-gbpwmicccnsqblvz) has quit (Quit: Connection closed for inactivity)
+2016-11-07 14:05:00		[13:59]
+2016-11-07 14:16:27	-->	Ropeney (~Ropeney@tank.mindvision.com.au) has joined ##asm
+2016-11-07 14:17:49	<--	grublet (~grublet@cpe-74-131-112-99.kya.res.rr.com) has quit (Ping timeout: 260 seconds)
+2016-11-07 14:17:55	-->	Cam0Cow (~Mutter@cpe-72-180-21-217.tx.res.rr.com) has joined ##asm
+2016-11-07 14:18:08	<--	Cam0Cow (~Mutter@cpe-72-180-21-217.tx.res.rr.com) has quit (Remote host closed the connection)
+2016-11-07 14:23:21	-->	gluytium (~g@45.63.76.107) has joined ##asm
+2016-11-07 14:23:21		[14:23]
+2016-11-07 14:23:35	-->	dminuoso_ (~dminuoso@unaffiliated/dminuoso) has joined ##asm
+2016-11-07 14:28:32	<--	dminuoso_ (~dminuoso@unaffiliated/dminuoso) has quit (Ping timeout: 256 seconds)
+2016-11-07 14:32:37	<--	aleph- (~hatter@unaffiliated/church-) has quit (Ping timeout: 268 seconds)
+2016-11-07 14:33:41	<--	fr0gRIP (~fr0gRIP@2a01:cb11:43b:7a00:626d:c7ff:fe04:bcab) has quit (Ping timeout: 260 seconds)
+2016-11-07 14:36:49	<--	MindlessDrone (~MindlessD@unaffiliated/mindlessdrone) has quit (Ping timeout: 244 seconds)
+2016-11-07 14:38:57	<--	King_Hual (~failed@unaffiliated/king-hual/x-1207580) has quit (Read error: Connection reset by peer)
+2016-11-07 14:38:57		[14:38]
+2016-11-07 14:46:04	<--	byte512 (~user@h37n2-um-a32.ias.bredband.telia.com) has quit (Ping timeout: 265 seconds)
+2016-11-07 14:46:42	-->	fr0gRIP (~fr0gRIP@2a01:cb11:43b:7a00:56ee:75ff:fe62:7201) has joined ##asm
+2016-11-07 14:52:00		[14:46]
+2016-11-07 14:55:44	-->	snyp (~Snyp@150.129.132.117) has joined ##asm
+2016-11-07 14:58:51	-->	MindlessDrone (~MindlessD@unaffiliated/mindlessdrone) has joined ##asm
+2016-11-07 15:03:16	<--	asla (~asla@unaffiliated/asla) has quit (Ping timeout: 260 seconds)
+2016-11-07 15:03:30	-->	asla (~asla@2400:6180:0:d0::1b6:b001) has joined ##asm
+2016-11-07 15:04:04	<--	cd80 (~bf3@gateway/vpn/privateinternetaccess/emul16) has quit (Ping timeout: 268 seconds)
+2016-11-07 15:05:41	-->	Judge_Dredd (~Judge_Dre@unaffiliated/judge-dredd/x-2170742) has joined ##asm
+2016-11-07 15:07:44	-->	Lagopus` (~user@ip68-2-62-254.ph.ph.cox.net) has joined ##asm
+2016-11-07 15:07:44		[15:07]
+2016-11-07 15:09:37	<--	Lagopus (~user@unaffiliated/vulpes) has quit (Ping timeout: 260 seconds)
+2016-11-07 15:09:59	-->	afusion (~afusion@202.73.42.140) has joined ##asm
+2016-11-07 15:10:32	<--	sanct (~sanct@212.35.67.11) has quit (Ping timeout: 250 seconds)
+2016-11-07 15:10:49	<--	Prod_ (~DaffyDuck@0138800884.0.fullrate.ninja) has quit (Quit: Leaving)
+2016-11-07 15:11:32	-->	cd80 (~bf3@46.166.138.141) has joined ##asm
+2016-11-07 15:12:33	<--	yiimi (~yiimi@unaffiliated/yiimi) has quit (Ping timeout: 245 seconds)
+2016-11-07 15:13:42	-->	nisstyre (~yourstrul@li611-52.members.linode.com) has joined ##asm
+2016-11-07 15:13:42	<--	nisstyre (~yourstrul@li611-52.members.linode.com) has quit (Changing host)
+2016-11-07 15:13:42	-->	nisstyre (~yourstrul@oftn/oswg-member/Nisstyre) has joined ##asm
+2016-11-07 15:14:15	-->	yiimi (~yiimi@unaffiliated/yiimi) has joined ##asm
+2016-11-07 15:20:00		[15:14]
+2016-11-07 15:24:21	-->	dminuoso_ (~dminuoso@unaffiliated/dminuoso) has joined ##asm
+2016-11-07 15:27:08	<--	woggle (~charles@c-73-251-125-90.hsd1.va.comcast.net) has quit (Ping timeout: 245 seconds)
+2016-11-07 15:28:04	<--	EI24 (~EI24@90-224-11-165-no124.tbcn.telia.com) has quit (Remote host closed the connection)
+2016-11-07 15:28:40	-->	SwiftMatt (~Objective@130.253.27.23) has joined ##asm
+2016-11-07 15:29:15	<--	dminuoso_ (~dminuoso@unaffiliated/dminuoso) has quit (Ping timeout: 258 seconds)
+2016-11-07 15:29:26	-->	woggle (~charles@c-73-251-125-90.hsd1.va.comcast.net) has joined ##asm
+2016-11-07 15:29:59	-->	Heasummn (~Heasummn@c-73-73-21-171.hsd1.il.comcast.net) has joined ##asm
+2016-11-07 15:31:00	<--	MindlessDrone (~MindlessD@unaffiliated/mindlessdrone) has quit (Ping timeout: 246 seconds)
+2016-11-07 15:36:00		[15:31]
+2016-11-07 15:36:59	-->	crankslider (~slidercra@unaffiliated/slidercrank) has joined ##asm
+2016-11-07 15:42:00		[15:36]
+2016-11-07 15:42:24	-->	MindlessDrone (~MindlessD@unaffiliated/mindlessdrone) has joined ##asm
+2016-11-07 15:48:00		[15:42]
+2016-11-07 15:53:50	-->	arescorpio (~arescorpi@55-29-245-190.fibertel.com.ar) has joined ##asm
+2016-11-07 15:59:00		[15:53]
+2016-11-07 16:02:40	-->	freakazoid0223_ (~chatzilla@pool-173-49-14-128.phlapa.fios.verizon.net) has joined ##asm
+2016-11-07 16:05:03	<--	freakazoid0223 (~chatzilla@pool-173-49-14-128.phlapa.fios.verizon.net) has quit (Ping timeout: 245 seconds)
+2016-11-07 16:05:09	--	freakazoid0223_ is now known as freakazoid0223
+2016-11-07 16:05:14	-->	Jesin (~Jesin@pool-96-231-49-118.washdc.fios.verizon.net) has joined ##asm
+2016-11-07 16:10:29	<--	palantir (~palantir@2a02:c7d:45f:1500:9944:4b9d:fc23:1619) has quit (Quit: My MacBook has gone to sleep. ZZZzzz…)
+2016-11-07 16:16:00		[16:10]
+2016-11-07 16:20:35	-->	Walkerdine (~Walkerdin@2601:40d:8201:2320:6ce0:34bc:91f3:e3a0) has joined ##asm
+2016-11-07 16:23:38	-->	ottanta (~80@unaffiliated/ottanta) has joined ##asm
+2016-11-07 16:25:05	-->	dminuoso_ (~dminuoso@unaffiliated/dminuoso) has joined ##asm
+2016-11-07 16:30:12	<--	dminuoso_ (~dminuoso@unaffiliated/dminuoso) has quit (Ping timeout: 258 seconds)
+2016-11-07 16:32:49	-->	Goplat (~goplat@reactos/developer/Goplat) has joined ##asm
+2016-11-07 16:32:49		[16:32]

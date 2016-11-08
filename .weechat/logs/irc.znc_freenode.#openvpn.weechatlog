@@ -13568,3 +13568,335 @@
 2016-11-07 00:33:17		[00:33]
 2016-11-07 00:38:15	-->	tekk (~me@2001:1b40:5009:10::) has joined #openvpn
 2016-11-07 00:44:00		[00:38]
+2016-11-07 00:50:23	<--	troulouliou_div2 (~troulouli@unaffiliated/troulouliou-div2/x-0271439) has quit (Quit: Leaving)
+2016-11-07 00:56:00		[00:50]
+2016-11-07 01:12:32	<--	norkle (~norkle@unaffiliated/norkle) has quit (Ping timeout: 260 seconds)
+2016-11-07 01:12:32		[01:12]
+2016-11-07 01:20:14	-->	norkle (~norkle@unaffiliated/norkle) has joined #openvpn
+2016-11-07 01:23:49	-->	j12t (~j12t@c-50-131-55-96.hsd1.ca.comcast.net) has joined #openvpn
+2016-11-07 01:27:41	<--	AlexRussia (~Alex@unaffiliated/alexrussia) has quit (Ping timeout: 256 seconds)
+2016-11-07 01:27:41		[01:27]
+2016-11-07 01:28:34	<--	j12t (~j12t@c-50-131-55-96.hsd1.ca.comcast.net) has quit (Ping timeout: 265 seconds)
+2016-11-07 01:28:35	<--	norkle (~norkle@unaffiliated/norkle) has quit (Disconnected by services)
+2016-11-07 01:31:33	-->	norkle (~norkle@unaffiliated/norkle) has joined #openvpn
+2016-11-07 01:37:00		[01:31]
+2016-11-07 01:49:41	-->	jamesaxl (~jamesaxl@176.98.129.195) has joined #openvpn
+2016-11-07 01:51:54	<--	xamindar (~quassel@71-91-164-206.dhcp.gwnt.ga.charter.com) has quit (Quit: http://quassel-irc.org - Chat comfortably. Anywhere.)
+2016-11-07 01:57:00		[01:51]
+2016-11-07 02:20:00	slypknot	gerforce: you may need a different iptables rule
+2016-11-07 02:20:00		[02:20]
+2016-11-07 02:24:36	-->	j12t (~j12t@c-50-131-55-96.hsd1.ca.comcast.net) has joined #openvpn
+2016-11-07 02:26:05	<--	subzero79 (~subzero79@106.69.112.35) has quit (Quit: Ping timeout (120 seconds))
+2016-11-07 02:28:01	<--	davimore (~davimore@253-148-045-062.dynamic.caiway.nl) has quit (Ping timeout: 265 seconds)
+2016-11-07 02:29:11	<--	j12t (~j12t@c-50-131-55-96.hsd1.ca.comcast.net) has quit (Ping timeout: 250 seconds)
+2016-11-07 02:31:26	-->	xamindar (~quassel@71-91-164-206.dhcp.gwnt.ga.charter.com) has joined #openvpn
+2016-11-07 02:31:55	-->	Xc3ls10r (~Xc@unaffiliated/xc3ls10r) has joined #openvpn
+2016-11-07 02:36:44	gerforce	slypknot: what's wrong with the current one
+2016-11-07 02:36:44		[02:36]
+2016-11-07 02:41:36	-->	KaliLinuxGR (~alexandro@unaffiliated/kalilinuxgr) has joined #openvpn
+2016-11-07 02:42:08	slypknot	gerforce: masqerade may not work on a vps
+2016-11-07 02:42:14	slypknot	try this instead
+2016-11-07 02:42:56	slypknot	iptables -t nat -A POSTROUTING -o eth0 -j SNAT --to-source 12.34.56.78   # <-- Use your OpenVPN server's real external IP here
+2016-11-07 02:44:01	gerforce	slypknot: i also noticed that the push statements(push "default-gateway def1") seems not working. Because i didn't see the default route change/
+2016-11-07 02:44:14	gerforce	slypknot: ok, i'll try.
+2016-11-07 02:44:46	slypknot	without your logs i cannot say
+2016-11-07 02:47:10	gerforce	slypknot: i'll try to change the default gateway manually and using this nat rules instead. Be back soon.
+2016-11-07 02:53:00		[02:47]
+2016-11-07 02:55:40	<--	Xc3ls10r (~Xc@unaffiliated/xc3ls10r) has quit (Ping timeout: 260 seconds)
+2016-11-07 02:58:48	<--	gerforce (~gerforce@120.210.188.151) has quit (Ping timeout: 250 seconds)
+2016-11-07 03:02:09	-->	gerforce (~gerforce@120.210.188.151) has joined #openvpn
+2016-11-07 03:03:39	gerforce	slypknot: i tried to manually set the default gw (client side ) to 10.8.0.1(server side tunnel end point), and using the SNAT iptables command. Things still the same.
+2016-11-07 03:03:55	gerforce	slypknot: couldn't get an echo reply.
+2016-11-07 03:04:34	@dazo	!redirect
+2016-11-07 03:04:35	@vpnHelper	"redirect" is (#1) to make all inet traffic flow through the vpn, you will need --redirect-gateway (see !def1), as well as IP forwarding (see !ipforward) and NAT (see !nat) enabled on the server., or (#2) you may need to use a different dns server when redirecting gateway, see !dns or !pushdns, or (#3) if using ipv6 try: route-ipv6 2000::/3, or (#4) Handy troubleshooting flowchart:
+2016-11-07 03:04:36	@vpnHelper	http://pekster.sdf.org/misc/redirect.png
+2016-11-07 03:09:12	gerforce	dazo: http://paste.debian.net/893230/
+2016-11-07 03:09:12		[03:09]
+2016-11-07 03:10:08	gerforce	dazo: i didn't see the route change(client side) after i using the push "redirect-gateway def1" statement in my server.conf file.
+2016-11-07 03:10:10	@dazo	gerforce: did you even pay attention to #4 in !redirect?
+2016-11-07 03:10:20	@dazo	which OS on the client?
+2016-11-07 03:10:25	@dazo	!logs
+2016-11-07 03:10:27	@vpnHelper	"logs" is (#1) please pastebin your logfiles from both client and server with verb set to 4 (only use 5 if asked), or (#2) In the Windows client(OpenVPN-GUI) right-click the status icon and pick View Log, or (#3) In the OS X client(Tunnelblick) right-click it and select Copy log text to clipboard, or (#4) if you dont know how to find your logs, see !logfile
+2016-11-07 03:10:47	gerforce	dazo: debian jessie
+2016-11-07 03:11:05	gerforce	dazo: the server debian jessie too
+2016-11-07 03:11:16	@dazo	okay ... full logs with --verb 4 from server and client
+2016-11-07 03:12:15	gerforce	dazo: wait a miniute, working on it.
+2016-11-07 03:18:00		[03:12]
+2016-11-07 03:21:33	<--	jamesaxl (~jamesaxl@176.98.129.195) has quit (Read error: Connection reset by peer)
+2016-11-07 03:22:24	-->	jamesaxl (~jamesaxl@176.98.129.195) has joined #openvpn
+2016-11-07 03:22:46	-->	sz0 (uid110435@gateway/web/irccloud.com/x-uioggvqiwzvmumcv) has joined #openvpn
+2016-11-07 03:25:08	<--	wuseman (~wuziduzi@unaffiliated/wuseman) has quit (Ping timeout: 260 seconds)
+2016-11-07 03:25:21	-->	j12t (~j12t@c-50-131-55-96.hsd1.ca.comcast.net) has joined #openvpn
+2016-11-07 03:27:05	-->	wuseman (~wuziduzi@unaffiliated/wuseman) has joined #openvpn
+2016-11-07 03:30:00	-->	irco (~irco@vpn205-104.rzuser.uni-heidelberg.de) has joined #openvpn
+2016-11-07 03:30:19	<--	j12t (~j12t@c-50-131-55-96.hsd1.ca.comcast.net) has quit (Ping timeout: 268 seconds)
+2016-11-07 03:32:08	gerforce	dazo: http://paste.debian.net/893273/  server-side log
+2016-11-07 03:32:43	gerforce	dazo: http://paste.debian.net/893275/      client-side log     both with verb 5
+2016-11-07 03:33:02	<--	Voldenet (~Voldenet@unaffiliated/voldenet) has quit (Ping timeout: 250 seconds)
+2016-11-07 03:33:02		[03:33]
+2016-11-07 03:33:51	gerforce	configuration files are the same i pasted before except verb level.http://paste.debian.net/893230/
+2016-11-07 03:38:32	-->	Voldenet (~Voldenet@unaffiliated/voldenet) has joined #openvpn
+2016-11-07 03:40:01	gerforce	dazo: sorry for using verb 5 if it's a problem for reading. I didn't notice. Just want to be more elaborate.
+2016-11-07 03:42:11	@dazo	gerforce: the server log is useless ... there is no client connecting here
+2016-11-07 03:42:43	@dazo	and the client log doesn't show the server connect even
+2016-11-07 03:43:03	gerforce	Peer Connection Initiated with [AF_INET]120.210.188.151:55941
+2016-11-07 03:43:24	gerforce	dazo: this is the client...
+2016-11-07 03:43:27	@dazo	*sigh*
+2016-11-07 03:43:32	@dazo	that doesn't tell a shit
+2016-11-07 03:43:45	@dazo	i expect to see a lot more
+2016-11-07 03:43:52	@dazo	this log is mangled
+2016-11-07 03:43:54	 *	dazo moves on
+2016-11-07 03:44:25	slypknot	gerforce: your client is not pulling --redirect-gateway
+2016-11-07 03:44:56	gerforce	dazo: i can ping both ends. It means the tunnel has been set. why doesn't tell anything?
+2016-11-07 03:46:02	slypknot	gerforce: because your client is not configured to --pull
+2016-11-07 03:46:35	gerforce	slypknot: all right. i'll try to config the client again
+2016-11-07 03:47:51	slypknot	gerforce: it is going to take more than that ..
+2016-11-07 03:48:04	slypknot	you are not using server/client model ..
+2016-11-07 03:48:04		[03:48]
+2016-11-07 03:50:07	gerforce	slypknot:ok, i found the error.
+2016-11-07 03:50:52	gerforce	slypknot: but what if i change the route manually?
+2016-11-07 03:52:04	<--	Naeil (~nzoueidi@ubuntu/member/na3il) has quit (Remote host closed the connection)
+2016-11-07 03:58:00		[03:52]
+2016-11-07 04:10:49	-->	Naeil (~nzoueidi@ubuntu/member/na3il) has joined #openvpn
+2016-11-07 04:12:08	-->	ExoUNX (~ExoUNX@unaffiliated/exounx) has joined #openvpn
+2016-11-07 04:13:19	<--	guampa (~guampa@unaffiliated/guampa) has quit (Quit: quit)
+2016-11-07 04:13:19		[04:13]
+2016-11-07 04:26:10	-->	j12t (~j12t@c-50-131-55-96.hsd1.ca.comcast.net) has joined #openvpn
+2016-11-07 04:29:56	-->	SviMik (~pIRCuser8@213.35.250.131) has joined #openvpn
+2016-11-07 04:29:56		[04:29]
+2016-11-07 04:30:31	-->	defsdoor (~andy@cpc35-sutt4-2-0-cust184.19-1.cable.virginm.net) has joined #openvpn
+2016-11-07 04:30:45	<--	j12t (~j12t@c-50-131-55-96.hsd1.ca.comcast.net) has quit (Ping timeout: 244 seconds)
+2016-11-07 04:32:07	-->	Envil (~envil@x4db4a2a3.dyn.telefonica.de) has joined #openvpn
+2016-11-07 04:35:05	-->	AlexRussia (~Alex@unaffiliated/alexrussia) has joined #openvpn
+2016-11-07 04:37:51	-->	guampa (~guampa@unaffiliated/guampa) has joined #openvpn
+2016-11-07 04:43:00		[04:37]
+2016-11-07 05:03:43	<--	defsdoor (~andy@cpc35-sutt4-2-0-cust184.19-1.cable.virginm.net) has quit (Ping timeout: 252 seconds)
+2016-11-07 05:03:43		[05:03]
+2016-11-07 05:13:11	<--	skyroveRR (~skyroveRR@unaffiliated/skyroverr) has quit (Quit: skyroveRR)
+2016-11-07 05:17:21	-->	skyroveRR (~skyroveRR@unaffiliated/skyroverr) has joined #openvpn
+2016-11-07 05:17:28	<--	luckman212 (~luckman21@unaffiliated/luckman212) has quit (Ping timeout: 250 seconds)
+2016-11-07 05:19:02	<--	terrorpup (~terrorpup@opensuse/member/terrorpup) has quit (Quit: Leaving)
+2016-11-07 05:19:02		[05:19]
+2016-11-07 05:20:00	-->	luckman212 (~luckman21@unaffiliated/luckman212) has joined #openvpn
+2016-11-07 05:23:58	<--	Geom (~Geom@122.52.93.126) has quit (Ping timeout: 250 seconds)
+2016-11-07 05:26:50	-->	j12t (~j12t@c-50-131-55-96.hsd1.ca.comcast.net) has joined #openvpn
+2016-11-07 05:31:37	<--	j12t (~j12t@c-50-131-55-96.hsd1.ca.comcast.net) has quit (Ping timeout: 260 seconds)
+2016-11-07 05:37:00		[05:31]
+2016-11-07 05:42:01	<--	danhunsaker (sid145261@openvpn/corp/danhunsaker) has quit (Ping timeout: 250 seconds)
+2016-11-07 05:42:22	<--	quarters (quarters@gateway/shell/fnordserver.eu/x-lqqbwdhotsiusspn) has quit (Quit: https://fnordserver.eu)
+2016-11-07 05:42:27	<--	Eugene (eugene@kashpureff.org) has quit (Ping timeout: 250 seconds)
+2016-11-07 05:43:19	<--	whfsdude (~whfsdude@Zenoss/Support/whfsdude) has quit (Ping timeout: 250 seconds)
+2016-11-07 05:43:19	<--	plaisthos (~arne@openvpn/community/developer/plaisthos) has quit (Ping timeout: 250 seconds)
+2016-11-07 05:43:20	<--	bdmc (apin@drochaid.buadh-brath.com) has quit (Ping timeout: 250 seconds)
+2016-11-07 05:43:20	<--	ordex (~linuxaro@open-mesh.org/batman/ordex) has quit (Ping timeout: 250 seconds)
+2016-11-07 05:43:20	<--	patcable (sid11336@lopsa/member/mrbucket) has quit (Ping timeout: 250 seconds)
+2016-11-07 05:43:45	<--	sbraz (~sbraz@unaffiliated/drwx) has quit (Ping timeout: 250 seconds)
+2016-11-07 05:46:46	-->	patcable (sid11336@lopsa/member/mrbucket) has joined #openvpn
+2016-11-07 05:46:55	-->	danhunsaker (sid145261@openvpn/corp/danhunsaker) has joined #openvpn
+2016-11-07 05:46:55	--	Mode #openvpn [+o danhunsaker] by ChanServ
+2016-11-07 05:47:26	-->	plaisthos (~arne@openvpn/community/developer/plaisthos) has joined #openvpn
+2016-11-07 05:47:27	--	Mode #openvpn [+o plaisthos] by ChanServ
+2016-11-07 05:48:37	-->	sbraz (~sbraz@unaffiliated/drwx) has joined #openvpn
+2016-11-07 05:49:35	-->	Eugene (eugene@kashpureff.org) has joined #openvpn
+2016-11-07 05:55:00		[05:49]
+2016-11-07 05:55:06	-->	whfsdude (~whfsdude@Zenoss/Support/whfsdude) has joined #openvpn
+2016-11-07 05:57:58	<--	Naeil (~nzoueidi@ubuntu/member/na3il) has quit (Ping timeout: 256 seconds)
+2016-11-07 06:03:00		[05:57]
+2016-11-07 06:05:09	-->	pvoigt (~Linux@unaffiliated/pvoigt) has joined #openvpn
+2016-11-07 06:11:00		[06:05]
+2016-11-07 06:27:47	-->	j12t (~j12t@c-50-131-55-96.hsd1.ca.comcast.net) has joined #openvpn
+2016-11-07 06:27:47		[06:27]
+2016-11-07 06:31:20	<--	j12t (~j12t@c-50-131-55-96.hsd1.ca.comcast.net) has quit (Remote host closed the connection)
+2016-11-07 06:31:30	-->	j12t (~j12t@c-50-131-55-96.hsd1.ca.comcast.net) has joined #openvpn
+2016-11-07 06:36:11	-->	Naeil (~nzoueidi@ubuntu/member/na3il) has joined #openvpn
+2016-11-07 06:42:00		[06:36]
+2016-11-07 06:43:16	<--	shabius (~shaburov1@broadband-46-188-78-140.2com.net) has quit (Remote host closed the connection)
+2016-11-07 06:49:00		[06:43]
+2016-11-07 07:14:15	-->	SCHAAP137 (~SCHAPiE@unaffiliated/schaap137) has joined #openvpn
+2016-11-07 07:14:15		[07:14]
+2016-11-07 07:18:41	-->	TomasCZ (~TomasCZ@yes.tenlab.net) has joined #openvpn
+2016-11-07 07:19:28	<--	Naeil (~nzoueidi@ubuntu/member/na3il) has quit (Ping timeout: 265 seconds)
+2016-11-07 07:21:50	<--	toli (~toli@62.235.88.46) has quit (Ping timeout: 256 seconds)
+2016-11-07 07:22:02	<--	Noldorin (~noldorin@unaffiliated/noldorin) has quit (Quit: Textual IRC Client: www.textualapp.com)
+2016-11-07 07:23:45	<--	SCHAAP137 (~SCHAPiE@unaffiliated/schaap137) has quit (Quit: WeeChat 1.6)
+2016-11-07 07:25:40	-->	SCHAAP137 (~SCHAAP137@unaffiliated/schaap137) has joined #openvpn
+2016-11-07 07:26:01	-->	shabius (~shaburov1@broadband-46-188-78-140.2com.net) has joined #openvpn
+2016-11-07 07:28:15	-->	toli (~toli@213.49.130.147) has joined #openvpn
+2016-11-07 07:34:00		[07:28]
+2016-11-07 07:35:30	-->	Noldorin (~noldorin@unaffiliated/noldorin) has joined #openvpn
+2016-11-07 07:41:00		[07:35]
+2016-11-07 07:46:32	<--	jamesaxl (~jamesaxl@176.98.129.195) has quit (Ping timeout: 265 seconds)
+2016-11-07 07:49:51	<--	shabius (~shaburov1@broadband-46-188-78-140.2com.net) has quit (Remote host closed the connection)
+2016-11-07 07:53:17	-->	shabius (~shaburov1@broadband-46-188-78-140.2com.net) has joined #openvpn
+2016-11-07 07:59:00		[07:53]
+2016-11-07 08:53:06	-->	Geom (~Geom@112.201.159.134) has joined #openvpn
+2016-11-07 08:53:06		[08:53]
+2016-11-07 08:55:54	-->	agi (~agi@etc.inittab.org) has joined #openvpn
+2016-11-07 08:56:41	<--	agi (~agi@etc.inittab.org) has left #openvpn ("[1]+  Killed                  cat /dev/urandom | irssi")
+2016-11-07 09:02:00		[08:56]
+2016-11-07 09:18:45	-->	Sambom (~Sambom@217-209-182-119-no122.tbcn.telia.com) has joined #openvpn
+2016-11-07 09:18:45		[09:18]
+2016-11-07 09:20:53	<--	SCHAAP137 (~SCHAAP137@unaffiliated/schaap137) has quit (Ping timeout: 245 seconds)
+2016-11-07 09:25:23	pacovc	anyone having an issue with openvpn in linux and dns leaks?
+2016-11-07 09:30:05	-->	jamesaxl (~jamesaxl@176.98.129.195) has joined #openvpn
+2016-11-07 09:33:50	-->	deadhead9 (~deadhead@185.12.45.110) has joined #openvpn
+2016-11-07 09:33:50		[09:33]
+2016-11-07 09:37:16	<--	deadhead (~deadhead@85.159.237.208) has quit (Ping timeout: 256 seconds)
+2016-11-07 09:40:54	SviMik	pacovc linux need a special script to update dns records
+2016-11-07 09:41:40	SviMik	or you can simply configure your system to always use 8.8.8.8 - it will work both for vpn and for normal use
+2016-11-07 09:42:49	pacovc	what dns server is that?
+2016-11-07 09:42:55	pacovc	i have seen that before
+2016-11-07 09:44:09	pacovc	you mean this? for the script ?
+2016-11-07 09:44:13	pacovc	script-security 2
+2016-11-07 09:44:13	pacovc	up /etc/openvpn/update-resolv-conf
+2016-11-07 09:44:13	pacovc	down /etc/openvpn/update-resolv-conf
+2016-11-07 09:47:26	SviMik	yes, I mean update-resolv-conf
+2016-11-07 09:47:34	SviMik	8.8.8.8 is Google DNS
+2016-11-07 09:50:30	pacovc	i tried that script by adding to openvpn and it did not work..is there another step to getting it to work other than simply adding those lines to ovpn?
+2016-11-07 09:50:30		[09:50]
+2016-11-07 09:51:49	-->	CaTtleyA (~CaTtleyA@lfbn-1-3377-77.w90-127.abo.wanadoo.fr) has joined #openvpn
+2016-11-07 09:51:50	pacovc	I feel like there is a missing step that some of these websites are not explaning lol :)
+2016-11-07 09:51:56	pacovc	SviMik,
+2016-11-07 09:51:58	SviMik	yes. make sure your vpn server provides you a dns server option, or add that option to your client config manually, like: dhcp-option DNS 8.8.8.8
+2016-11-07 09:52:37	pacovc	SviMik, the same vpn works fine in windows with (block-outside-dns) so I don't think its the vpn.
+2016-11-07 09:53:46	SviMik	I'm just telling what needs to be configured.
+2016-11-07 09:54:17	SviMik	I can't see your server configuration
+2016-11-07 09:54:53	pacovc	I understand
+2016-11-07 09:55:03	SviMik	!logs
+2016-11-07 09:55:05	@vpnHelper	"logs" is (#1) please pastebin your logfiles from both client and server with verb set to 4 (only use 5 if asked), or (#2) In the Windows client(OpenVPN-GUI) right-click the status icon and pick View Log, or (#3) In the OS X client(Tunnelblick) right-click it and select Copy log text to clipboard, or (#4) if you dont know how to find your logs, see !logfile
+2016-11-07 09:55:22	pacovc	So I can simply add those three lines to ovpn file and thats it?
+2016-11-07 09:55:33	pacovc	SviMik,
+2016-11-07 09:56:25	SviMik	pacovc yes. add dhcp-option, script-security, up, and down lines
+2016-11-07 09:56:49	SviMik	of course, make sure the /etc/openvpn/update-resolv-conf actually exists
+2016-11-07 10:00:34	<--	pacovc (~pacovc@gateway/tor-sasl/pacovc) has quit (Ping timeout: 245 seconds)
+2016-11-07 10:01:37	-->	ustn (~ustn@p4FDB1ACE.dip0.t-ipconnect.de) has joined #openvpn
+2016-11-07 10:07:00		[10:01]
+2016-11-07 10:24:09	-->	pacovc (~pacovc@gateway/tor-sasl/pacovc) has joined #openvpn
+2016-11-07 10:24:09		[10:24]
+2016-11-07 10:34:35	<--	shootbird (~quassel@beepbeep.serverpit.com) has quit (Ping timeout: 268 seconds)
+2016-11-07 10:36:47	<--	shabius (~shaburov1@broadband-46-188-78-140.2com.net) has quit (Remote host closed the connection)
+2016-11-07 10:38:03	<--	slypknot (~kettlecal@unaffiliated/kettlecalling) has quit (Quit: WeeChat 1.0.1)
+2016-11-07 10:39:46	<--	pacovc (~pacovc@gateway/tor-sasl/pacovc) has quit (Remote host closed the connection)
+2016-11-07 10:39:46		[10:39]
+2016-11-07 10:40:25	<--	Envil (~envil@x4db4a2a3.dyn.telefonica.de) has quit (Remote host closed the connection)
+2016-11-07 10:41:14	-->	shabius (~shaburov1@broadband-46-188-78-140.2com.net) has joined #openvpn
+2016-11-07 10:42:28	-->	shootbird (~quassel@beepbeep.serverpit.com) has joined #openvpn
+2016-11-07 10:45:25	<--	shabius (~shaburov1@broadband-46-188-78-140.2com.net) has quit (Remote host closed the connection)
+2016-11-07 10:50:28	-->	pacovc (~pacovc@gateway/tor-sasl/pacovc) has joined #openvpn
+2016-11-07 10:51:12	-->	shabius (~shaburov1@broadband-46-188-78-140.2com.net) has joined #openvpn
+2016-11-07 10:55:47	@dazo	SviMik: if someone is concerned about leaking DNS .... Google is probably not the instance you want to provide the DNS lookups on your behalf
+2016-11-07 10:55:47		[10:55]
+2016-11-07 11:00:45	SviMik	dazo any real example what ploblem there might be?
+2016-11-07 11:01:06	<--	Emperor_Earth (~Emperor_E@cpe-98-14-184-255.nyc.res.rr.com) has quit (Ping timeout: 268 seconds)
+2016-11-07 11:01:54	<--	totus (~totus@2605:6000:66c0:8800:657a:3a02:2ef9:ac5) has quit (Excess Flood)
+2016-11-07 11:02:15	-->	totus (~totus@2605:6000:66c0:8800:f40c:ef1d:7f5b:210a) has joined #openvpn
+2016-11-07 11:02:43	SviMik	dazo by DNS leak I understand situation when remote host can detect which DNS server you use, and make some geographical and ISP assumptions based on that.
+2016-11-07 11:03:53	SviMik	if a website detects that I use 8.8.8.8 - it give no idea about my location nor about my real ISP
+2016-11-07 11:06:27	pacovc	I think i have it fixed
+2016-11-07 11:06:31	pacovc	im still testing
+2016-11-07 11:06:46	pacovc	in network manager openvpn
+2016-11-07 11:12:00		[11:06]
+2016-11-07 11:12:33	<--	shootbird (~quassel@beepbeep.serverpit.com) has quit (Ping timeout: 245 seconds)
+2016-11-07 11:12:40	<--	xamindar (~quassel@71-91-164-206.dhcp.gwnt.ga.charter.com) has quit (Ping timeout: 260 seconds)
+2016-11-07 11:14:48	-->	xamindar (~quassel@71-91-164-206.dhcp.gwnt.ga.charter.com) has joined #openvpn
+2016-11-07 11:17:05	-->	gffa (~unknown@unaffiliated/gffa) has joined #openvpn
+2016-11-07 11:20:09	<--	pacovc (~pacovc@gateway/tor-sasl/pacovc) has quit (Ping timeout: 245 seconds)
+2016-11-07 11:20:55	-->	shootbird (~quassel@beepbeep.serverpit.com) has joined #openvpn
+2016-11-07 11:26:00		[11:20]
+2016-11-07 11:30:39	-->	SCHAAP137 (~SCHAAP137@unaffiliated/schaap137) has joined #openvpn
+2016-11-07 11:36:00		[11:30]
+2016-11-07 11:36:07	-->	pacovc (~pacovc@gateway/tor-sasl/pacovc) has joined #openvpn
+2016-11-07 11:37:17	<--	gffa (~unknown@unaffiliated/gffa) has quit (Quit: quit)
+2016-11-07 11:43:00		[11:37]
+2016-11-07 11:46:16	<--	wuseman (~wuziduzi@unaffiliated/wuseman) has quit (Ping timeout: 265 seconds)
+2016-11-07 11:48:14	-->	wuseman (~wuziduzi@unaffiliated/wuseman) has joined #openvpn
+2016-11-07 11:54:00		[11:48]
+2016-11-07 11:56:33	<--	ExoUNX (~ExoUNX@unaffiliated/exounx) has quit (Quit: I'm outta here)
+2016-11-07 12:02:00		[11:56]
+2016-11-07 12:07:44	<--	Xentil (~quassel@static.233.79.4.46.clients.your-server.de) has quit (Ping timeout: 260 seconds)
+2016-11-07 12:07:54	<--	jamesaxl (~jamesaxl@176.98.129.195) has quit (Quit: Leaving)
+2016-11-07 12:13:00		[12:07]
+2016-11-07 12:13:47	<--	CaTtleyA (~CaTtleyA@lfbn-1-3377-77.w90-127.abo.wanadoo.fr) has quit (Ping timeout: 268 seconds)
+2016-11-07 12:16:32	<--	ustn (~ustn@p4FDB1ACE.dip0.t-ipconnect.de) has quit (Quit: ustn)
+2016-11-07 12:19:00	-->	JackWinter_ (~jack@vodsl-5055.vo.lu) has joined #openvpn
+2016-11-07 12:20:06	<--	JackWinter (~jack@vodsl-5055.vo.lu) has quit (Ping timeout: 265 seconds)
+2016-11-07 12:26:00		[12:20]
+2016-11-07 12:32:45	@dazo	SviMik: that's a weak definition of DNS leak ... and it does not cover what the DNS provider can do with your lookup data.  Ideally having your own caching DNS server will provide far better results.  At least if it can't be tied to the VPN tunnel
+2016-11-07 12:36:54	SviMik	dazo well, my definition covers the most popular problem: user's location may be compromised, and that's what most users actually care about. Google DNS solves that
+2016-11-07 12:37:16	-->	Xentil (~quassel@static.233.79.4.46.clients.your-server.de) has joined #openvpn
+2016-11-07 12:37:21	<--	Xentil (~quassel@static.233.79.4.46.clients.your-server.de) has quit (Client Quit)
+2016-11-07 12:37:40	@dazo	                           {internet client data}               {internet - DNS data}
+2016-11-07 12:37:40	@dazo	                                     ^                                       ^
+2016-11-07 12:37:40	@dazo	                                     |                                       |
+2016-11-07 12:37:40	@dazo	+--------------+             +-------+------+                     +----------+---------------+
+2016-11-07 12:37:40	@dazo	|  VPN client  +------------->   VPN server <---------------------+  VPN client + DNS server |
+2016-11-07 12:37:41	@dazo	+--------------+             +--------------+                     +--------------------------+
+2016-11-07 12:37:54	pacovc	well since I added another dns other than my isp dsn to the main connection and check for it to force ip4 it seem to now want to use the vpn dns
+2016-11-07 12:37:55	SviMik	dazo I know there might be more, but that's goes more to the paranoid section
+2016-11-07 12:37:55	pacovc	rofl
+2016-11-07 12:38:01	pacovc	for consistently
+2016-11-07 12:38:45	@dazo	this isn't about paranoia ... if anyone things so, they need to catch up on the what is really happening on the net
+2016-11-07 12:38:47	pacovc	more consistently
+2016-11-07 12:39:23	pacovc	wrong room I thought this was nm
+2016-11-07 12:39:25	pacovc	:)
+2016-11-07 12:42:53	SviMik	dazo if you do redirect-gateway, then requests to 8.8.8.8 will go through the VPN tunnel too. so I don't understand what your drawing means...
+2016-11-07 12:42:53		[12:42]
+2016-11-07 12:43:31	pacovc	how do you do redirect-gateway?
+2016-11-07 12:43:37	@dazo	!redirect
+2016-11-07 12:43:38	@vpnHelper	"redirect" is (#1) to make all inet traffic flow through the vpn, you will need --redirect-gateway (see !def1), as well as IP forwarding (see !ipforward) and NAT (see !nat) enabled on the server., or (#2) you may need to use a different dns server when redirecting gateway, see !dns or !pushdns, or (#3) if using ipv6 try: route-ipv6 2000::/3, or (#4) Handy troubleshooting flowchart:
+2016-11-07 12:43:39	@vpnHelper	http://pekster.sdf.org/misc/redirect.png
+2016-11-07 12:44:30	pacovc	!defl1
+2016-11-07 12:44:32	@dazo	SviMik: redirect-gateway will then tell google DNS which IP address users requesting lookup for $host match the same public IP address the traffic exits on
+2016-11-07 12:44:44	pacovc	!def1
+2016-11-07 12:44:46	@vpnHelper	"def1" is (#1) used in redirect-gateway, Add the def1 flag to override the default gateway by using 0.0.0.0/1 and 128.0.0.0/1 rather than 0.0.0.0/0. This has the benefit of overriding but not wiping out the original default gateway., or (#2) please see --redirect-gateway in the man page ( !man ) to fully understand, or (#3) push "redirect-gateway def1"
+2016-11-07 12:46:08	@dazo	SviMik: my setup will actually use 2 public IPs ... one for the traffic, and another not directly related to the users VPN client for the DNS lookups
+2016-11-07 12:47:04	@dazo	SviMik: if you add a Tor link between the "DNS data internet link" and the "DNS server", that's entering paranoia mode
+2016-11-07 12:47:46	SviMik	dazo they must have the same location anyway, or a website checking that may start screaming "you are using VPN!!!"
+2016-11-07 12:48:04	@dazo	that's a website I don't want to visit
+2016-11-07 12:48:16	-->	designbybeck (~designbyb@x169y027.angelo.edu) has joined #openvpn
+2016-11-07 12:48:29	@dazo	And I wouldn't recommend anyone else either
+2016-11-07 12:49:17	@dazo	(which is why I do not like Cloudflare at all)
+2016-11-07 12:50:34	pacovc	isn't redirect gateway already apart of openvpn?
+2016-11-07 12:51:23	@dazo	pacovc: it is ... but it doesn't mean it will solve all issues
+2016-11-07 12:51:52	SviMik	dazo our clients actually do use VPN to visit websites that have geographic restrictions. there are many sites that very-very-don't want to show their content for foreign visitors, and even ban datacenter subnets too.
+2016-11-07 12:52:17	pacovc	so your saying attding 8.8.8.8 and using openvpn then the google dns lookup goes through the vpn?
+2016-11-07 12:52:24	pacovc	adding
+2016-11-07 12:53:25	SviMik	dazo and I like Cloudflare, it helps us to hide our real IP and protects from ddos
+2016-11-07 12:54:40	@dazo	pacovc: it should ... but by doing that, you also tell Google which IP address you are using ... so if you've used Google services outside of the VPN, switch on VPN ... they can actually spot that you moved from an ordinary public IP to a different one, while tracking which places you visit through DNS lookups ... in this way actually knowing whom you are and what you seek on the Internet, regardless of if the traffic goes via VPN or not
+2016-11-07 12:55:19	@dazo	SviMik: lets just say that I have far higher requirements than you do when it comes to IT security
+2016-11-07 12:55:26	 *	dazo needs to do  real work now
+2016-11-07 12:56:26	SviMik	I agree. VPN has *many* different use, and not all of them are about security
+2016-11-07 12:56:45	-->	dadinn (~you-user-@154.58.83.47) has joined #openvpn
+2016-11-07 12:59:58	<--	dadinn (~you-user-@154.58.83.47) has quit (Client Quit)
+2016-11-07 12:59:58		[12:59]
+2016-11-07 13:03:35	-->	pdobrogost_home (~quassel@87-205-154-248.adsl.inetia.pl) has joined #openvpn
+2016-11-07 13:09:00		[13:03]
+2016-11-07 13:17:40	-->	dadinn (~you-user-@154.58.83.47) has joined #openvpn
+2016-11-07 13:23:00		[13:17]
+2016-11-07 13:43:15	-->	subzero79 (~subzero79@58-6-219-193.dyn.iinet.net.au) has joined #openvpn
+2016-11-07 13:43:15		[13:43]
+2016-11-07 13:48:27	--	r00t^2 is now known as jth4n
+2016-11-07 13:48:40	--	jth4n is now known as r00t^2
+2016-11-07 13:54:00		[13:48]
+2016-11-07 13:59:56	<--	irco (~irco@vpn205-104.rzuser.uni-heidelberg.de) has quit (Ping timeout: 268 seconds)
+2016-11-07 14:05:00		[13:59]
+2016-11-07 14:05:12	<--	SviMik (~pIRCuser8@213.35.250.131) has quit (Quit: svimik@mail.ru)
+2016-11-07 14:10:09	<--	subzero79 (~subzero79@58-6-219-193.dyn.iinet.net.au) has quit (Remote host closed the connection)
+2016-11-07 14:10:23	-->	subzero79 (~subzero79@58-6-219-193.dyn.iinet.net.au) has joined #openvpn
+2016-11-07 14:16:00		[14:10]
+2016-11-07 14:17:56	<--	subzero79 (~subzero79@58-6-219-193.dyn.iinet.net.au) has quit (Ping timeout: 260 seconds)
+2016-11-07 14:23:00		[14:17]
+2016-11-07 14:25:19	<--	pacovc (~pacovc@gateway/tor-sasl/pacovc) has quit (Quit: Leaving)
+2016-11-07 14:31:00		[14:25]
+2016-11-07 15:08:37	storrgie	Can I set up an instance, or instances that would allow for me to route selectively (based on logins) to different vlans?
+2016-11-07 15:08:37		[15:08]
+2016-11-07 15:14:50	-->	DemiGuru (~DemiGuru@108.61.68.165) has joined #openvpn
+2016-11-07 15:17:34	<--	DemiGuru (~DemiGuru@108.61.68.165) has left #openvpn
+2016-11-07 15:20:33	Eugene	storrgie - there's no such feature in openvpn core, but you can definitely build a system around the scripting hooks
+2016-11-07 15:22:52	Eugene	Eg, Write an --up hook that looks at the username+tunnel IP and adds firewall rules to allow/deny them access to a given network.
+2016-11-07 15:23:14	Eugene	Funkier invocations of `ip rule` are left as an exercise
+2016-11-07 15:29:00		[15:23]
+2016-11-07 15:55:49	<--	SCHAAP137 (~SCHAAP137@unaffiliated/schaap137) has quit (Quit: Leaving)
+2016-11-07 15:55:49		[15:55]
+2016-11-07 16:24:49	<--	THX1138` (~THX1138@unaffiliated/zzyzx) has quit (Quit: l8r)
+2016-11-07 16:24:49		[16:24]
