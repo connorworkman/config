@@ -372,6 +372,13 @@ alias ald='ld -I/lib64/ld-linux-x86-64.so.2 /usr/lib/crt1.o /usr/lib/crti.o -lc 
 
 ## shell functions
 
+cmixxx() {
+	pump scons asmlib=0 qtdir=/usr/lib/qt4 prefix="/opt/mixxx" install_root="/opt/mixxx" -j5 \
+		virtualize=0 localecompare=1 qt_sqlite_plugin=0 opus=1 faad=1 wv=1 ffmpeg=1 \
+		optimize=native build=release battery=1 perftools=0 perftools_profiler=0 modplug=1 \
+		"${@}"
+}
+
 calc (){ bc -l <<< "$*"; }
 
 lpman() {
