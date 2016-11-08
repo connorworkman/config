@@ -18,8 +18,9 @@ mpvcmd(){
 }
 
 case $1 in
-  *.webm|*.gif|*.gifv|*.mp4|*.avi|*.mkv|*.mov|*.swf|*.flv) mpvcmd "$1" ;;
-  #*://ptpb.pw/*) ~/bin/pyb "$1" ;;
+  *.webm|*.gif|*.gifv|*.mp4|*.avi|*.mkv|*.mov|*.flv) mpvcmd "$1" ;;
+  #*://ptpb.pw/*/text) ~/bin/pyb "$1" ;;
+  *://ptpb.pw/*/text) vim -p "${1%%/text*}" ;;
   #*://i.imgur.com/*) ~/bin/pyb "$1" ;;
   #*://i.imgur.com/*) /usr/bin/chromium "$1" ;;
   *://i.imgur.com/*) feh "$1" ;;
