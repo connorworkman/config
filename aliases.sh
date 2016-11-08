@@ -17,6 +17,7 @@ unalias {1..9} gg history c d h j s u 2>/dev/null || true
 
 ## Custom aliases
 
+alias hgdb='vim -c "tab h gdbmgr.txt | tabn | q" '
 alias acp='anamnesis '
 alias endiantest="echo -n I | xxd -b | awk '{ print substr($2,6,1); exit}' && echo 'Big Endian' || echo 'Little Endian'"
 alias nem='sudo emerge --update --deep --newuse @world && sudo etc-update '
