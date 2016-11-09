@@ -767,6 +767,7 @@ hash -d efi=/boot/efi/EFI
 hash -d bin=${HOME}/bin
 hash -d scripts=/store/scripts
 hash -d magnets=/store/config/magnets
+hash -d torrents=/store/torrents
 hash -d code=${HOME}/code
 hash -d git=${HOME}/code/git
 hash -d aur=${HOME}/code/aur
