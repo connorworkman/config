@@ -323,6 +323,9 @@ let g:gruvbox_improved_warnings=0
 let OmniCpp_MayCompleteDot = 1
 let OmniCpp_MayCompleteArrow = 1
 let OmniCpp_MayCompleteScope = 1
+let g:easytags_on_cursorhold = 1
+let g:easytags_always_enabled = 1
+let g:easytags_async = 1
 " colorscheme solarized
 colorscheme gruvbox
 syntax on
@@ -341,7 +344,7 @@ set shiftwidth=4
 set noexpandtab
 set verbose=0
 set display=lastline
-set showcmd
+"set showcmd
 set timeout timeoutlen=2500 ttimeoutlen=100
 set pastetoggle=<M-F3>
 set number
