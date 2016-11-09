@@ -139,6 +139,8 @@ nnoremap <Leader>= <Esc>:set rnu!<CR>
 nnoremap <Leader>, <Esc>:s/ .*:[0-9][0-9]//
 "nnoremap <Leader>. <Esc>:%s/[0-9]*\. //
 nnoremap <Leader>. <Esc>:s/[0-9]*\. //
+"nnoremap <Leader>. V"+y<Esc>:call system("xclip -i -selection clipboard", getreg("\""))
+"\<CR>:call system("xclip -i", getreg("\""))<CR>
 "nnoremap <Leader>/ :%s/ by / - /
 nnoremap <Leader>/ <Esc>i<C-r>=system('')
 nnoremap <Leader>u <Esc>:silent w! !sudo tee % >/dev/null<CR>
@@ -157,11 +159,13 @@ cnoremap w!! silent w !sudo dd of=%
 
 map <C-F12> :!ctags -R --c++-kinds=+p --fields=+iaS --extra=+q .<CR>
 
+nnoremap <c-]> g<c-]>
+vnoremap <c-]> g<c-]>
+nnoremap g<c-]> <c-]>
+vnoremap g<c-]> <c-]>
+
 " Open a Quickfix window for the last search.
 nnoremap <silent> ,/ :execute 'vimgrep /'.@/.'/g %'<CR>:copen<CR>
-
-"nnoremap <Leader>. V"+y<Esc>:call system("xclip -i -selection clipboard", getreg("\""))
-"\<CR>:call system("xclip -i", getreg("\""))<CR>
 
 " Correctly parse F-keys in tmux
 map [1;5Q <C-F2>
