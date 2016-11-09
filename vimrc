@@ -356,14 +356,16 @@ au BufNewFile,BufRead *tmux.conf setf tmux
 au BufNewFile,BufRead *nanorc setf nanorc
 au BufNewFile,BufRead *vimpagerrc setf vim
 au BufNewFile,BufRead *.\(service\|socket\|target\|timer\)* setf sysctl
-au BufNewFile,BufRead *\(nftables.conf\|.nft\)* setf nftables
+"au BufNewFile,BufRead *\(nftables.conf\|.nft\)* setf nftables
 au BufNewFile,BufRead *\(nftables.conf\|.nft\)* set filetype=nftables
 au BufNewFile,BufRead *toxic.conf* set filetype=cfg
 "au BufNewFile,BufRead *conf setf config
 "au BufNewFile,BufRead *conf setf conf
 au BufNewFile,BufRead *conf setf cfg
 au BufNewFile,BufRead db.* set filetype=bindzone
-au BufNewFile,BufRead *grub* setf grub
+au BufNewFile,BufRead *grub* set filetype=grub
+
+au BufWritePost *.c,*.cpp,*.h :silent! !ctags -R &
 
 au FileType php setl ofu=phpcomplete#CompletePHP
 au FileType ruby,eruby setl ofu=rubycomplete#Complete
