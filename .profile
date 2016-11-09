@@ -59,7 +59,7 @@ export PAGER=less
 export SYSTEMD_LESS='-RXMK' journalctl
 ## Intel VA-API and VDPAU configu
 #export LIBVA_DRIVER_NAME="i965"
-export VDPAU_DRIVER="va_gl"
+#export VDPAU_DRIVER="va_gl"
 ## Set X cursor theme
 export XCURSOR_THEME=ArchCursorTheme
 ## Configure KWin to use OpenGL ES
