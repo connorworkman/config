@@ -132,8 +132,8 @@ nnoremap <Leader>h <Esc>:silent !cat /store/config/mappings-vim.txt \| sed 's/^[
 nnoremap <Leader>v <Esc>:silent !cat /store/config/100vimcommands.txt \| sed 's/^[ ]*//' \| less<CR>:redraw!<CR>
 
 " nnoremap <Leader>" mzI" <Esc>`z
-nnoremap <Leader>- <Esc>:set nu!<CR>
-nnoremap <Leader>= <Esc>:set rnu!<CR>
+"nnoremap <Leader>- <Esc>:set nu!<CR>
+"nnoremap <Leader>= <Esc>:set rnu!<CR>
 "nnoremap <Leader>, :s/.*[0-9]*[\.\]] \([A-Z].*\) \[.*\]$/\1/
 "nnoremap <Leader>, <Esc>:%s/ .*:[0-9][0-9]//
 nnoremap <Leader>, <Esc>:s/ .*:[0-9][0-9]//
@@ -146,12 +146,17 @@ nnoremap <Leader>/ <Esc>i<C-r>=system('')
 nnoremap <Leader>u <Esc>:silent w! !sudo tee % >/dev/null<CR>
 nnoremap <Leader>s <Esc>:silent w! !sudo tee % >/dev/null<CR>
 
-nnoremap <Leader>dg <Esc>:diffget<CR>
-nnoremap <Leader>dp <Esc>:diffput<CR>
-vnoremap <Leader>dg <Esc>:'<,'>diffget<CR>
-vnoremap <Leader>dp <Esc>:'<,'>diffput<CR>
+nnoremap <Leader>dg <Esc>:diffget<CR>]c
+nnoremap <Leader>o <Esc>:diffget<CR>]c
+nnoremap <Leader>dp <Esc>:diffput<CR>]c
+nnoremap <Leader>p <Esc>:diffput<CR>]c
+vnoremap <Leader>dg <Esc>:'<,'>diffget<CR>]c
+vnoremap <Leader>o <Esc>:'<,'>diffget<CR>]c
+vnoremap <Leader>dp <Esc>:'<,'>diffput<CR>]c
+vnoremap <Leader>p <Esc>:'<,'>diffput<CR>]c
+noremap <Leader>= <Esc>]c
+noremap <Leader>- <Esc>[c
 nnoremap <Leader>dw <Esc>:wincmd p<CR>
-nnoremap <buffer> <Leader>py :call Pep8()<CR>
 " Allow saving of files as sudo when I forgot to start vim using sudo.
 cnoremap w!! silent w !sudo dd of=%
 "cnoremap w!! silent w !sudo tee %
