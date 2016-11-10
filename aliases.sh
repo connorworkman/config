@@ -17,6 +17,7 @@ unalias {1..9} gg history c d h j s u 2>/dev/null || true
 
 ## Custom aliases
 
+alias zerospace='printf "\n%s\n%s\n" "In chromium console:" "copy(String.fromCodePoint(0x200B)) or copy(String.fromCodePoint(0xFEFF))" '
 alias hgdb='vim -c "tab h gdbmgr.txt | tabn | q" '
 alias acp='anamnesis '
 alias endiantest="echo -n I | xxd -b | awk '{ print substr($2,6,1); exit}' && echo 'Big Endian' || echo 'Little Endian'"
