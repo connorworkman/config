@@ -157,10 +157,15 @@ vnoremap <Leader>p <Esc>:'<,'>diffput<CR>]c
 noremap <Leader>= <Esc>]c
 noremap <Leader>- <Esc>[c
 nnoremap <Leader>dw <Esc>:wincmd p<CR>
+
+nnoremap <Leader>a <Esc>:A<CR>
+
 " Allow saving of files as sudo when I forgot to start vim using sudo.
 cnoremap w!! silent w !sudo dd of=%
 "cnoremap w!! silent w !sudo tee %
 "command Sudo silent w !sudo dd of=%
+
+
 
 map <C-F12> :!ctags -R --c++-kinds=+p --fields=+iaS --extra=+q .<CR>
 
