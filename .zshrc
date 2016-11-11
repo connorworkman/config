@@ -674,9 +674,9 @@ function check_last_exit_code() {
   local LAST_EXIT_CODE=$?
   local EXIT_CODE_PROMPT=' '
   if [[ ${LAST_EXIT_CODE} -ne 0 ]]; then
-    EXIT_CODE_PROMPT+="%{$fg[red]%}[%{$reset_color%}"
-    EXIT_CODE_PROMPT+="%{$fg_bold[red]%}$LAST_EXIT_CODE%{$reset_color%}"
-    EXIT_CODE_PROMPT+="%{$fg[red]%}]%{$reset_color%}"
+    EXIT_CODE_PROMPT+="%{$fg[yellow]%}[%{$reset_color%}"
+    EXIT_CODE_PROMPT+="%{$fg_bold[yellow]%}$LAST_EXIT_CODE%{$reset_color%}"
+    EXIT_CODE_PROMPT+="%{$fg[yellow]%}]%{$reset_color%}"
 else
     #EXIT_CODE_PROMPT+="%{$fg[green]%}-%{$reset_color%}"
     #EXIT_CODE_PROMPT+="%{$fg_bold[green]%}$LAST_EXIT_CODE%{$reset_color%}"
@@ -742,7 +742,9 @@ function git_prompt_string() {
 #export PS1=${PS1}'$(check_last_exit_code)'
 #export RPROMPT='$(check_last_exit_code)$(git_prompt_string)'"${RPROMPT}"
 #[[ "$LPROMPT" != *'$(check_last_exit_code)'* ]] && export LPROMPT=${LPROMPT}'$(check_last_exit_code)'
-[[ "$RPROMPT" != *'$(check_last_exit_code)'* ]] && export RPROMPT='$(check_last_exit_code)$(git_prompt_string)'"${RPROMPT}"
+#[[ "$RPROMPT" != *'$(check_last_exit_code)'* ]] && export RPROMPT='$(check_last_exit_code)$(git_prompt_string)'"${RPROMPT}"
+#[[ "$RPROMPT" != *'$(check_last_exit_code)'* ]] && export RPROMPT='$(check_last_exit_code)%(?,%F{green}(⌐■_■),%F{yellow}%? %F{red}（╯°□°）╯︵ ┻━┻)%f$(git_prompt_string)'"${RPROMPT}"
+[[ "$RPROMPT" != *'$(check_last_exit_code)'* ]] && export RPROMPT='$(check_last_exit_code)%(?,%F{green}(⌐■_■),%F{yellow}%F{red}（╯°□°）╯︵ ┻━┻)%f$(git_prompt_string)'"${RPROMPT}"
 
 ## Source environment
 [ ! -r ${HOME}/.profile ] || . ${HOME}/.profile
@@ -753,6 +755,7 @@ safetytoggle -n
 compdef _scrs scrs
 compdef _scrs scrs2
 compdef _scrs scrs3
+compdef _pacaur apacman
 
 # {{{ 'hash' some often used directories
 # #d# start
