@@ -576,7 +576,7 @@ news_cmd_long | \
 	sed 's/^.*\(:.*::\)/:\1/g' | \
 	awk '{ line[NR] = $0 } END { for (i = NR; i > 0; i -= 2) { print line[i-1]; print line[i] } }'
 ## "Is the internet on fire?" status reports
-host -t txt istheinternetonfire.com | cut -f 2 -d '"' | cowsay -f moose
+host -t txt istheinternetonfire.com | cut -f 2 -d '"' | cowsay -f moose -W 50
 
 ################################################################################
 # Mödified by Ogion
