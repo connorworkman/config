@@ -8,7 +8,6 @@
 ## For a full list of active aliases, run `alias`.
 
 ## Example alias
-
 alias ohmyzsh='pushd ${ZSH} '
 
 # Unset previous function/alias iterations
@@ -16,7 +15,8 @@ unset -f fc which define h wd bfg defrag src 2>/dev/null || true
 unalias {1..9} gg history c d h j s u 2>/dev/null || true
 
 ## Custom aliases
-
+#
+alias spump='eval $(pump --startup) && . ${HOME}/.profile '
 alias zerospace='printf "\n%s\n%s\n" "In chromium console:" "copy(String.fromCodePoint(0x200B)) or copy(String.fromCodePoint(0xFEFF))" '
 alias hgdb='vim -c "tab h gdbmgr.txt | tabn | q" '
 alias acp='anamnesis '
