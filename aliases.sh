@@ -232,8 +232,9 @@ alias tm='tmux '
 alias tma='tmux attach '
 alias wm='wemux '
 alias cp='cp --reflink=auto '
-alias ix="curl -F 'f:1=<-' ix.io "
+alias pix="curl -F 'f:1=<-' ix.io "
 alias tbin='nc termbin.com 9999 '
+
 alias p-scan='nmap -sV -A '
 #alias dloader='node /@media/microSDXC/deezloader/app.js & '
 alias pkgsize='expac -s "%-30n %m" | sort -hk 2 | awk '\''{printf "%s %.0f MiB\n", $1, $2/1024/1024}'\'' | column -t '
@@ -373,6 +374,31 @@ alias sld='ld -s -I/lib64/ld-linux-x86-64.so.2 /usr/lib/crt1.o /usr/lib/crti.o -
 alias ald='ld -I/lib64/ld-linux-x86-64.so.2 /usr/lib/crt1.o /usr/lib/crti.o -lc /usr/lib/crtn.o '
 
 ## shell functions
+
+ix() {
+    local opts
+    local OPTIND
+    [ -f "$HOME/.netrc" ] && opts='-n'
+    while getopts ":hd:i:n:" x; do
+	case $x in
+	    h) echo "ix [-d ID] [-i ID] [-n N] [opts]"; return;;
+	    d) $echo curl $opts -X DELETE ix.io/$OPTARG; return;;
+	    i) opts="$opts -X PUT"; local id="$OPTARG";;
+	    n) opts="$opts -F read:1=$OPTARG";;
+	esac
+    done
+    shift $(($OPTIND - 1))
+    [ -t 0 ] && {
+	local filename="$1"
+	shift
+	[ "$filename" ] && {
+	    curl $opts -F f:1=@"$filename" $* ix.io/$id
+	    return
+	}
+	echo "^C to cancel, ^D to send."
+    }
+    curl $opts -F f:1='<-' $* ix.io/$id
+}
 
 showfingerprint() {
 	openssl s_client -connect ${1?No IP specified!}:${2?No IP specified!} -showcerts 2>&1 | \
