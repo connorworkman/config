@@ -76,6 +76,11 @@ export ZSH="/usr/share/oh-my-zsh"
 #ZSH_THEME="pygmalion"
 #ZSH_THEME="powerline"
 
+#ZSH_THEME=
+
+POWERLINE_PATH=short
+POWERLINE_NO_BLANK_LINE=
+
 BULLETTRAIN_DIR_EXTENDED=2
 #export BULLETTRAIN_CUSTOM_MSG=`host 192.168.1.98 | sed -r 's/^.*pointer .*?\.(.*\..*\.)$/\1 -/'`
 BULLETTRAIN_CONTEXT_SHOW=true
