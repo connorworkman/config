@@ -15,7 +15,7 @@ unset -f fc which define h wd bfg defrag src 2>/dev/null || true
 unalias {1..9} gg history c d h j s u 2>/dev/null || true
 
 ## Custom aliases
-#
+
 alias spump='eval $(pump --startup) && . ${HOME}/.profile '
 alias zerospace='printf "\n%s\n%s\n" "In chromium console:" "copy(String.fromCodePoint(0x200B)) or copy(String.fromCodePoint(0xFEFF))" '
 alias hgdb='vim -c "tab h gdbmgr.txt | tabn | q" '
@@ -373,6 +373,12 @@ alias sld='ld -s -I/lib64/ld-linux-x86-64.so.2 /usr/lib/crt1.o /usr/lib/crti.o -
 alias ald='ld -I/lib64/ld-linux-x86-64.so.2 /usr/lib/crt1.o /usr/lib/crti.o -lc /usr/lib/crtn.o '
 
 ## shell functions
+
+showfingerprint() {
+	openssl s_client -connect ${1?No IP specified!}:${2?No IP specified!} -showcerts 2>&1 | \
+		openssl x509 -sha1 -noout -fingerprint 2>&1 | \
+		sed -e ' s/^.*=//p; 1 s/://g; $ y/ABCDEF/abcdef/'
+}
 
 cmixxx() {
 	pump scons asmlib=0 qtdir=/usr/lib/qt4 prefix="/opt/mixxx" install_root="/opt/mixxx" -j5 \
