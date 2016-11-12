@@ -142,7 +142,8 @@ nnoremap <Leader>. <Esc>:s/[0-9]*\. //
 "nnoremap <Leader>. V"+y<Esc>:call system("xclip -i -selection clipboard", getreg("\""))
 "\<CR>:call system("xclip -i", getreg("\""))<CR>
 "nnoremap <Leader>/ :%s/ by / - /
-nnoremap <Leader>/ <Esc>i<C-r>=system('')
+"nnoremap <Leader>/ <Esc>i<C-r>=system('')
+nnoremap <Leader>/ <Esc>:%s/\(.*\) by \(.*\)/\2 - \1/
 nnoremap <Leader>u <Esc>:silent w! !sudo tee % >/dev/null<CR>
 nnoremap <Leader>s <Esc>:silent w! !sudo tee % >/dev/null<CR>
 
