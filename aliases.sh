@@ -16,7 +16,9 @@ unalias {1..9} gg history c d h j s u z gbr gco gcs 2>/dev/null || true
 
 ## Custom aliases
 
-alias fz='grep --line-buffered --color=never -r "" * | fzf '
+## with ag - respects .agignore and .gitignore
+alias fag=' ag --nobreak --nonumbers --noheading . | fzf '
+alias fgr='grep --line-buffered --color=never -r "" * | fzf '
 alias psd="paste -sd ' ' "
 alias py='python '
 alias py2='python2 '
@@ -391,7 +393,7 @@ fo() {
   key=$(head -1 <<< "$out")
   file=$(head -2 <<< "$out" | tail -1)
   if [ -n "$file" ]; then
-    [ "$key" = ctrl-o ] && open "$file" || ${EDITOR:-vim} "$file"
+    [ "$key" = ctrl-o ] && xdg-open "$file" || ${EDITOR:-vim} "$file"
   fi
 }
 
@@ -400,9 +402,7 @@ fo() {
 # zsh autoload function
 vf() {
   local files
-
   files=(${(f)"$(locate -Ai -0 $@ | grep -z -vE '~$' | fzf --read0 -0 -1 -m)"})
-
   if [[ -n $files ]]
   then
      vim -- $files
@@ -415,9 +415,7 @@ vf() {
 # zsh autoload function
 f() {
   local file
-
   file="$(locate -Ai -0 $@ | grep -z -vE '~$' | fzf --read0 -0 -1)"
-
   if [[ -n $file ]]
   then
      if [[ -d $file ]]
@@ -430,14 +428,11 @@ f() {
 }
 
 # fh - repeat history
-fh() {
-  print -z $( ([ -n "$ZSH_NAME" ] && fc -l 1 || history) | fzf +s --tac | sed 's/ *[0-9]* *//')
-}
+fh() { print -z $( ([ -n "$ZSH_NAME" ] && fc -l 1 || history) | fzf +s --tac | sed 's/ *[0-9]* *//'); }
 
 # fkill - kill process
 fkill() {
   pid=$(ps -ef | sed 1d | fzf -m | awk '{print $2}')
-
   if [ "x$pid" != "x" ]
   then
     kill -${1:-9} $pid
@@ -505,7 +500,6 @@ cf() {
   local cols sep
   cols=$(( COLUMNS / 3 ))
   sep='{{::}}'
-
   # Copy History DB to circumvent the lock
   # - See http://stackoverflow.com/questions/8936878 for the file path
   cp -f ~/Library/Application\ Support/Google/Chrome/Default/History /tmp/h
@@ -514,7 +508,7 @@ cf() {
     "select substr(title, 1, $cols), url
      from urls order by last_visit_time desc" |
   awk -F $sep '{printf "%-'$cols's  \x1b[36m%s\n", $1, $2}' |
-  fzf --ansi --multi | sed 's#.*\(https*://\)#\1#' | xargs open
+  fzf --ansi --multi | sed 's#.*\(https*://\)#\1#' | xargs xdg-open
 }
 
 z() {
@@ -539,12 +533,12 @@ ix() {
 	local filename="$1"
 	shift
 	[ "$filename" ] && {
-	    curl $opts -F f:1=@"$filename" $* ix.io/$id
+	    eval "curl $opts -F f:1=@$filename $* ix.io/$id"
 	    return
 	}
 	echo "^C to cancel, ^D to send."
     }
-    curl $opts -F f:1='<-' $* ix.io/$id
+    eval "curl $opts -F f:1='<-' $* ix.io/$id"
 }
 
 showfingerprint() {

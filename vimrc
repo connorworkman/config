@@ -314,7 +314,7 @@ if has('gui_running')
   let g:solarized_contrast="low"	"default value is normal
   let g:solarized_visibility="normal"	"default value is normal
   set lines=60 columns=108 linespace=0
-  set guifont=FiraCode\ Light\ 22
+  set guifont=FiraCode\ Light\ 16
 "  set guifont=Inconsolata\ g\ Light\ 22
 "  set guifont=Source\ Code\ Pro\ Light\ 16
 "  set guifont=Terminus\ (TTF)\ Medium\ 16
