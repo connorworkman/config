@@ -220,66 +220,6 @@ autoload -Uz down-line-or-beginning-search
 zle -N up-line-or-beginning-search
 zle -N down-line-or-beginning-search
 
-## Key bindings
-## if this is  an interactive shell, then bind hh to Ctrl-r (for Vi mode check doc)
-#[[ $- =~ ".*i.*" ]] && bindkey -s "\C-r" "\eqhh\n"
-#bindkey -s "\C-r" "\eqhh\n"
-# bind UP and DOWN arrow keys
-zmodload zsh/terminfo
-# bind UP and DOWN arrow keys (compatibility fallback
-# for Ubuntu 12.04, Fedora 21, and MacOSX 10.9 users)
-bindkey "$terminfo[kcuu1]" history-substring-search-up
-bindkey "$terminfo[kcud1]" history-substring-search-down
-bindkey '\eOA' up-line-or-beginning-search
-bindkey '\e[A' up-line-or-beginning-search
-bindkey '\eOB' down-line-or-beginning-search
-bindkey '\e[B' down-line-or-beginning-search
-#bindkey  "\e[A"    history-search-backward
-#bindkey  "\e[B"    history-search-forward
-bindkey -e '^[[A' up-line-or-beginning-search
-bindkey -e '^[[B' down-line-or-beginning-search
-bindkey -v '^[[A' up-line-or-beginning-search
-bindkey -v '^[[B' down-line-or-beginning-search
-#bindkey -e '^[[A' history-substring-search-up
-#bindkey -e '^[[B' history-substring-search-down
-#bindkey -v '^[[A' history-substring-search-up
-#bindkey -v '^[[B' history-substring-search-down
-## bind P and N for EMACS mode
-bindkey -M emacs '^P' history-substring-search-up
-bindkey -M emacs '^N' history-substring-search-down
-## bind k and j for VI mode
-bindkey -M vicmd 'k' history-substring-search-up
-bindkey -M vicmd 'j' history-substring-search-down
-bindkey "\eOd" emacs-backward-word
-bindkey "\eOD" emacs-backward-word
-bindkey "\e\e[D" emacs-backward-word
-bindkey "\eOc" emacs-forward-word
-bindkey "\eOC" emacs-forward-word
-bindkey "\e\e[C" emacs-forward-word
-bindkey "\e[7~" beginning-of-line
-bindkey "\e[8~" end-of-line
-bindkey "\e[1;5D" backward-word
-bindkey "\e[1;5C" forward-word
-bindkey "\e[3~" delete-char
-## for inside tmux
-bindkey "\e[1~" beginning-of-line
-bindkey "\e\e[A" beginning-of-line
-bindkey "\e[4~" end-of-line
-bindkey "\e\e[B" end-of-line
-bindkey "^i" expand-or-complete-prefix
-bindkey "\e\e\e\e" expand-or-complete-prefix
-bindkey "\ep" expand-or-complete-prefix
-bindkey "^u" kill-whole-line
-
-## Figure out the character’s code (take a look at unicode.org/charts/
-## for example) and press ‘ctrl-x i’, followed by the character’s code
-## and press ‘ctrl-x i’ once more.
-## Usage example: ‘ctrl-x i 00A7 ctrl-x i’ will give you an ‘§’.
-autoload insert-unicode-char
-zle -N insert-unicode-char
-bindkey "^Xi" insert-unicode-char
-bindkey "\eu" insert-unicode-char
-
 # Change cursor color orange in vi mode
 zle-keymap-select () {
   if [ $KEYMAP = vicmd ]; then
@@ -353,6 +293,66 @@ zle -N zle-vi-keymap
 bindkey -e
 ## Set vi as default
 #bindkey -v
+
+## Key bindings
+## if this is  an interactive shell, then bind hh to Ctrl-r (for Vi mode check doc)
+#[[ $- =~ ".*i.*" ]] && bindkey -s "\C-r" "\eqhh\n"
+#bindkey -s "\C-r" "\eqhh\n"
+# bind UP and DOWN arrow keys
+zmodload zsh/terminfo
+# bind UP and DOWN arrow keys (compatibility fallback
+# for Ubuntu 12.04, Fedora 21, and MacOSX 10.9 users)
+bindkey "$terminfo[kcuu1]" history-substring-search-up
+bindkey "$terminfo[kcud1]" history-substring-search-down
+bindkey '\eOA' up-line-or-beginning-search
+bindkey '\e[A' up-line-or-beginning-search
+bindkey '\eOB' down-line-or-beginning-search
+bindkey '\e[B' down-line-or-beginning-search
+#bindkey  "\e[A"    history-search-backward
+#bindkey  "\e[B"    history-search-forward
+bindkey -e '^[[A' up-line-or-beginning-search
+bindkey -e '^[[B' down-line-or-beginning-search
+bindkey -v '^[[A' up-line-or-beginning-search
+bindkey -v '^[[B' down-line-or-beginning-search
+#bindkey -e '^[[A' history-substring-search-up
+#bindkey -e '^[[B' history-substring-search-down
+#bindkey -v '^[[A' history-substring-search-up
+#bindkey -v '^[[B' history-substring-search-down
+## bind P and N for EMACS mode
+bindkey -M emacs '^P' history-substring-search-up
+bindkey -M emacs '^N' history-substring-search-down
+## bind k and j for VI mode
+bindkey -M vicmd 'k' history-substring-search-up
+bindkey -M vicmd 'j' history-substring-search-down
+bindkey "\eOd" emacs-backward-word
+bindkey "\eOD" emacs-backward-word
+bindkey "\e\e[D" emacs-backward-word
+bindkey "\eOc" emacs-forward-word
+bindkey "\eOC" emacs-forward-word
+bindkey "\e\e[C" emacs-forward-word
+bindkey "\e[7~" beginning-of-line
+bindkey "\e[8~" end-of-line
+bindkey "\e[1;5D" backward-word
+bindkey "\e[1;5C" forward-word
+bindkey "\e[3~" delete-char
+## for inside tmux
+bindkey "\e[1~" beginning-of-line
+bindkey "\e\e[A" beginning-of-line
+bindkey "\e[4~" end-of-line
+bindkey "\e\e[B" end-of-line
+bindkey "^i" expand-or-complete-prefix
+bindkey "\e\e\e\e" expand-or-complete-prefix
+bindkey "\ep" expand-or-complete-prefix
+bindkey "^u" kill-whole-line
+
+## Figure out the character’s code (take a look at unicode.org/charts/
+## for example) and press ‘ctrl-x i’, followed by the character’s code
+## and press ‘ctrl-x i’ once more.
+## Usage example: ‘ctrl-x i 00A7 ctrl-x i’ will give you an ‘§’.
+autoload insert-unicode-char
+zle -N insert-unicode-char
+bindkey -M emacs "^Xi" insert-unicode-char
+bindkey -M emacs "\eu" insert-unicode-char
 
 ## Keymaps
 bindkey -v "\ek" zle-toggle-keymap
