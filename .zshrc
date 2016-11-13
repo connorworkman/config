@@ -164,15 +164,14 @@ plugins=(screen zshmarks tmux tmuxinator gpg-agent ssh-agent archlinux fancy-ctr
 [ ! -r ${ZSH}/oh-my-zsh.sh ] || \
 	. ${ZSH}/oh-my-zsh.sh
 
-## caching
-#ZSH_CACHE_DIR=${HOME}/.oh-m-zsh-cache
+## ZSH cache
+#ZSH_CACHE_DIR=${HOME}/.oh-my-zsh-cache
 ZSH_CACHE_DIR=${ZSH}/cache
-if [[ ! -d ${ZSH_CACHE_DIR} ]]; then
-  mkdir ${ZSH_CACHE_DIR}
+if [[ ! -d "ZSH_CACHE_DIR" ]]; then
+  mkdir "$ZSH_CACHE_DIR"
 fi
-[[ -d $ZSH/cache ]] && {
-	zstyle ':completion:*' use-cache yes
-	zstyle ':completion::complete:*' cache-path $ZSH/cache; }
+zstyle ':completion:*' use-cache yes
+zstyle ':completion::complete:*' cache-path "$ZSH/cache"
 
 ## User configuration
 
@@ -198,8 +197,8 @@ zle -N znt-kill-widget
 bindkey "^Y" znt-kill-widget
 source /usr/share/zsh/scripts/antigen/antigen.zsh
 zstyle ':completion:*' rehash true
-# History stuff
-zmodload zsh/datetime
+## History stuff
+#zmodload zsh/datetime
 #HISTSIZE=10000
 #SAVEHIST=10000
 HISTSIZE=500000
