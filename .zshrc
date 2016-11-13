@@ -336,14 +336,14 @@ bindkey "\e[1;5D" backward-word
 bindkey "\e[1;5C" forward-word
 bindkey "\e[3~" delete-char
 ## for inside tmux
-bindkey "\e[1~" beginning-of-line
-bindkey "\e\e[A" beginning-of-line
-bindkey "\e[4~" end-of-line
-bindkey "\e\e[B" end-of-line
-bindkey "^i" expand-or-complete-prefix
-bindkey "\e\e\e\e" expand-or-complete-prefix
-bindkey "\ep" expand-or-complete-prefix
-bindkey "^u" kill-whole-line
+bindkey -M emacs "\e[1~" beginning-of-line
+bindkey -M emacs "\e\e[A" beginning-of-line
+bindkey -M emacs "\e[4~" end-of-line
+bindkey -M emacs "\e\e[B" end-of-line
+bindkey -M emacs "^i" expand-or-complete-prefix
+bindkey -M emacs "\e\e\e\e" expand-or-complete-prefix
+bindkey -M emacs "\ep" expand-or-complete-prefix
+bindkey -M emacs "^u" kill-whole-line
 
 ## Figure out the character’s code (take a look at unicode.org/charts/
 ## for example) and press ‘ctrl-x i’, followed by the character’s code
@@ -353,6 +353,11 @@ autoload insert-unicode-char
 zle -N insert-unicode-char
 bindkey -M emacs "^Xi" insert-unicode-char
 bindkey -M emacs "\eu" insert-unicode-char
+bindkey -M emacs "\e[15~" insert-unicode-char
+
+autoload -Uz insert-composed-char
+zle -N insert-composed-char
+bindkey -M emacs "\e[17~" insert-composed-char
 
 ## Keymaps
 bindkey -v "\ek" zle-toggle-keymap
