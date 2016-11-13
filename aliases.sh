@@ -16,6 +16,9 @@ unalias {1..9} gg history c d h j s u 2>/dev/null || true
 
 ## Custom aliases
 
+alias py='python '
+alias py2='python2 '
+alias bbc='bc -l /store/scripts/logic.bc '
 alias spump='eval $(pump --startup) && . ${HOME}/.profile '
 alias zerospace='printf "\n%s\n%s\n" "In chromium console:" "copy(String.fromCodePoint(0x200B)) or copy(String.fromCodePoint(0xFEFF))" '
 alias hgdb='vim -c "tab h gdbmgr.txt | tabn | q" '
