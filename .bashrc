@@ -10,6 +10,9 @@ bind "set menu-complete-display-prefix on"
 
 #[ ! -e "${HOME}"/aliases.sh ] || . "${HOME}"/aliases.sh
 
+[ ! -d /usr/share/fzf ] || \
+	. /usr/share/fzf/*.bash
+
 [ ! -f /usr/share/doc/find-the-command/ftc.bash ] || source /usr/share/doc/find-the-command/ftc.bash
 ## Trap function
 homepushdcheck() {

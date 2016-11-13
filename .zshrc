@@ -405,6 +405,10 @@ bindkey "\ey" zle-youtube-helper
 	. /usr/share/doc/find-the-command/ftc.zsh
 [ ! -r /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ] || \
 	. /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+
+[ ! -d /usr/share/fzf ] || \
+	. /usr/share/fzf/*.zsh
+
 ## Color to use when highlighting suggestion
 ## Uses format of `region_highlight`
 ## More info: http://zsh.sourceforge.net/Doc/Release/Zsh-Line-Editor.html#Zle-Widgets
