@@ -16,6 +16,7 @@ unalias {1..9} gg history c d h j s u z gbr gco gcs 2>/dev/null || true
 
 ## Custom aliases
 
+alias zmv='noglob zmv '
 ## with ag - respects .agignore and .gitignore
 alias fag=' ag --nobreak --nonumbers --noheading . | fzf '
 alias fgr='grep --line-buffered --color=never -r "" * | fzf '

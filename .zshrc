@@ -207,6 +207,8 @@ SAVEHIST=1000000
 # report about cpu-/system-/user-time of command if running longer than 5 seconds
 REPORTTIME=5
 zstyle ':history-search-multi-word' page-size 5
+autoload zmv
+zle -N zmv
 
 ## Bash style
 #autoload select-word-style
