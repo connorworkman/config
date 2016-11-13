@@ -242,7 +242,7 @@ alias tm='tmux '
 alias tma='tmux attach '
 alias wm='wemux '
 alias cp='cp --reflink=auto '
-alias pix="curl -F 'f:1=<-' ix.io "
+alias pix="curl -n -F 'f:1=<-' ix.io "
 alias tbin='nc termbin.com 9999 '
 
 alias p-scan='nmap -sV -A '
