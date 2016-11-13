@@ -16,9 +16,13 @@ unalias {1..9} gg history c d h j s u 2>/dev/null || true
 
 ## Custom aliases
 
+alias psd="paste -sd ' ' "
 alias py='python '
 alias py2='python2 '
-alias bbc='bc -l /store/scripts/logic.bc '
+#alias bbc='bc -l /store/scripts/logic.bc '
+#alias lbc='bc -l /store/scripts/funcs.bc '
+alias lbc='bc -l /store/scripts/funcs.bc '
+
 alias spump='eval $(pump --startup) && . ${HOME}/.profile '
 alias zerospace='printf "\n%s\n%s\n" "In chromium console:" "copy(String.fromCodePoint(0x200B)) or copy(String.fromCodePoint(0xFEFF))" '
 alias hgdb='vim -c "tab h gdbmgr.txt | tabn | q" '
@@ -364,7 +368,6 @@ alias ds-btrfs='sudo btrfs subvolume delete /btrfs/__snapshot/__active/* '
 alias dg-btrfs='sudo btrfs filesystem defragment -r -v / '
 
 alias lfd='ls -lAhqiQFs1 --color=auto /proc/$$/fd '
-alias lbc='bc -l /store/scripts/funcs.bc '
 alias sgcc='gcc -O2 -S -c '
 alias show-sgcc='gcc -c -g -Wa,-a,-ad '
 alias nostdgcc='gcc -m32 -nostdlib -Wl,-melf_x86_64 -o '

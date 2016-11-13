@@ -509,3 +509,6 @@ v `which rtc.sh`
 rtc.sh
 v `which rtc.sh`
 cat .bashrc
+builtin calc
+calc
+which calc
