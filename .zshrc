@@ -322,8 +322,8 @@ bindkey -v '^[[B' down-line-or-beginning-search
 bindkey -M emacs '^P' history-substring-search-up
 bindkey -M emacs '^N' history-substring-search-down
 ## bind k and j for VI mode
-bindkey -M vicmd 'k' history-substring-search-up
-bindkey -M vicmd 'j' history-substring-search-down
+bindkey -M vi 'k' history-substring-search-up
+bindkey -M vi 'j' history-substring-search-down
 bindkey "\eOd" emacs-backward-word
 bindkey "\eOD" emacs-backward-word
 bindkey "\e\e[D" emacs-backward-word
@@ -340,9 +340,8 @@ bindkey -M emacs "\e[1~" beginning-of-line
 bindkey -M emacs "\e\e[A" beginning-of-line
 bindkey -M emacs "\e[4~" end-of-line
 bindkey -M emacs "\e\e[B" end-of-line
-bindkey -M emacs "^i" expand-or-complete-prefix
-bindkey -M emacs "\e\e\e\e" expand-or-complete-prefix
-bindkey -M emacs "\ep" expand-or-complete-prefix
+#bindkey -M emacs "\e\e\e\e" expand-or-complete-prefix
+#bindkey -M emacs "\ep" expand-or-complete-prefix
 bindkey -M emacs "^u" kill-whole-line
 
 ## Figure out the character’s code (take a look at unicode.org/charts/
