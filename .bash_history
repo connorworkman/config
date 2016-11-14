@@ -1,48 +1,3 @@
-	find /@media/microSDXC/audio -maxdepth 1 -name "*alyptik*" -type d -print | \\
-		sed 's/^.*\/alyptik - \(.*\)$/\1/' | \\
-		while read -r; do\
-			rclone lsd "dropbox:/edm/audio/$(<<<${REPLY:l} sed 's/ (.*//')" 2>/dev/null && {\
-				printf '\n \033[31m %s \n\033[0m' \\
-					"Directory dropbox:/edm/audio/$(<<<${REPLY/*- /} \\
-					sed 's/./\l&/g;s/ (.*//') exists\
-				read -rsk 1 ?"Continue? [y/n]: " cont\
-				case $cont in\
-					[Yy]*|'') : ;; ## Continue\
-					[Nn]*) printf " \033[31m %s \n\033[0m" "Exiting..."; return 1 ;;\
-					*) printf " \033[31m %s \n\033[0m" "Invalid input..."; return 1 ;;\
-				esac\
-			}\
-			rclone move "/@media/microSDXC/audio/alyptik - ${REPLY}" \\
-				"dropbox:/edm/audio/$(<<<${REPLY/*- /} \\
-				sed 's/./\l&/g;s/ (.*//')" && \\
-				rmdir "/@media/microSDXC/audio/alyptik - ${REPLY}"\
-		done\
-	find /@media/microSDXC/wanderlust -maxdepth 1 -name "*Wanderlust Ep.*" -type d -print | \\
-		while read -r; do\
-        		rclone move "$REPLY" \\
-				'dropbox:/edm/wanderlust/'"${REPLY/*wanderlust\//}"  && \\
-				rmdir "${REPLY}"\
-		done\
-	find /@media/microSDXC/wanderlust -maxdepth 1 -name "*alyptik*" -type d -print | \\
-		sed 's/^.*\/alyptik - \(.*\)$/\1/' | \\
-		while read -r; do\
-			rclone lsd "dropbox:/edm/wanderlust/$(<<<${REPLY:l} sed 's/ (.*//')" 2>/dev/null && {\
-			    printf '\n \033[31m %s \n\033[0m' \\
-				    "Directory dropbox:/edm/wanderlust/$(<<<${REPLY/*- /} \\
-				    sed 's/./\l&/g;s/ (.*//') exists\!"\
-				read -rsk 1 ?"Continue? [y/n]: " cont\
-				case $cont in\
-					[Yy]*|'') : ;; ## Continue\
-					[Nn]*) printf " \033[31m %s \n\033[0m" "Exiting..."; return 1 ;;\
-					*) printf " \033[31m %s \n\033[0m" "Invalid input..."; return 1 ;;\
-				esac\
-			}\
-			rclone move "/@media/microSDXC/wanderlust/alyptik - ${REPLY}" \\
-				"dropbox:/edm/wanderlust/$(<<<${REPLY/*- /} \\
-				sed 's/./\l&/g;s/ (.*//')" && \\
-				rmdir "/@media/microSDXC/wanderlust/alyptik - ${REPLY}"\
-		done\
-	#rclone sync /@media/microSDXC/audio/ dropbox:/EDM/audio/\
 	rclone sync "/@media/microSDXC/Music/djzomg/" "dropbox:/EDM/djzomg/"\
 	rclone move "/@media/microSDXC/Practice Mixes/" "dropbox:/EDM/practice/"\
 	#rclone move /@media/microSDXC/Practice\ Mixes/ dropbox:/EDM/practice/\
@@ -512,3 +467,34 @@ cat .bashrc
 builtin calc
 calc
 which calc
+bind
+bind -l
+bind -h
+bind -p
+bind -p | grep kill
+bind -p | grep kill
+bind "\C-k" kill-whole-line
+bind -p | grep kill
+bind '\C-k' kill-whole-line
+bind -p | grep kill
+bind '\\C-k' kill-whole-line
+bind -p | grep kill
+bind '' kill-whole-line
+bind -p | grep kill
+bind '\C-k' kill-whole-line
+bind 'C-k' kill-whole-line
+bind '\C-k': kill-whole-line
+bind '\C-k' kill-whole-line
+bind -p | grep '\C'
+bind -p | grep '\C-k'
+bind -p | grep 'C-k'
+bind '\C-u' kill-whole-line
+bind '\C-u' ki-line
+bash
+bind -p
+bind -p
+bind -p | grep 'C-k'
+bind -e
+set -e
+bind -p | grep 'C-k'
+bind '\C-u' ki-line

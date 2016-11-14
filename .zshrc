@@ -188,11 +188,11 @@ zstyle :omz:plugins:ssh-agent identities identity id_rsa id_ecdsa
 BOOKMARKS_FILE="/store/config/.bookmarks"
 
 zle -N znt-history-widget
-bindkey "^R" znt-history-widget
+bindkey "\e\er" znt-history-widget
 zle -N znt-cd-widget
-bindkey "^T" znt-cd-widget
+bindkey "\e\et" znt-cd-widget
 zle -N znt-kill-widget
-bindkey "^Y" znt-kill-widget
+bindkey "\e\ek" znt-kill-widget
 source /usr/share/zsh/scripts/antigen/antigen.zsh
 zstyle ':completion:*' rehash true
 ## History stuff
@@ -206,6 +206,9 @@ REPORTTIME=5
 zstyle ':history-search-multi-word' page-size 5
 autoload zmv
 zle -N zmv
+## if this is  an interactive shell, then bind hh to Ctrl-r (for Vi mode check doc)
+#[[ $- =~ ".*i.*" ]] && bindkey -s "\C-r" "\eqhh\n"
+#bindkey -s "\C-r" "\eqhh\n"
 
 ## Bash style
 #autoload select-word-style
@@ -294,9 +297,6 @@ bindkey -e
 #bindkey -v
 
 ## Key bindings
-## if this is  an interactive shell, then bind hh to Ctrl-r (for Vi mode check doc)
-#[[ $- =~ ".*i.*" ]] && bindkey -s "\C-r" "\eqhh\n"
-#bindkey -s "\C-r" "\eqhh\n"
 # bind UP and DOWN arrow keys
 zmodload zsh/terminfo
 # bind UP and DOWN arrow keys (compatibility fallback
@@ -341,7 +341,11 @@ bindkey -M emacs "\e[4~" end-of-line
 bindkey -M emacs "\e\e[B" end-of-line
 #bindkey -M emacs "\e\e\e\e" expand-or-complete-prefix
 #bindkey -M emacs "\ep" expand-or-complete-prefix
-bindkey -M emacs "^u" kill-whole-line
+bindkey -M emacs "\C-k" kill-whole-line
+
+zle-fz() { print -z $( ([ -n "$ZSH_NAME" ] && fc -l 1 || history) | fzf +s --tac | sed 's/ *[0-9]* *//'); }
+zle -N zle-fh
+bindkey "\C-r" zle-fh
 
 ## Figure out the character’s code (take a look at unicode.org/charts/
 ## for example) and press ‘ctrl-x i’, followed by the character’s code
@@ -366,25 +370,18 @@ bindkey -e "\ev" zle-vi-keymap
 #indkey -s "\ee" 'set -o emacs'
 #bindkey -s "\ev" 'set -o vi'
 
-## Pressing meta-y or ESC-y will input "yout $(xclip -o)" into the current commandline
-zle-yout-helper() {
-  BUFFER="yout $(xclip -o | tr '\n' ' ')"
-  CURSOR="${#BUFFER}"
-}
-#zle -N yout-helper
-#bindkey "^[y" yout-helper
 zle-youtube-helper() {
   local -a links
   links=($(xclip -o))
   # this seems hacky, is there a better way to wrap elements of an array in quotes?
-  local i; for i in {1..$#links}; do links[$i]=\'$links[$i]\'; done; unset i
-  BUFFER="yout -f 22 $links"
-  CURSOR="$#BUFFER"
+  local i; for i in {1..${#links}}; do links[$i]=\'$links[$i]\'; done; unset i
+  #BUFFER="youtube-dl -f 22 $links"
+  BUFFER="youtube-dl $links"
+  CURSOR="${#BUFFER}"
   unset links
 }
 zle -N zle-youtube-helper
-#bindkey "^[Y" zle-youtube-helper
-bindkey "\ey" zle-youtube-helper
+bindkey "\e\ey" zle-youtube-helper
 
 #bindkey -v
 #bindkey '^r' history-incremental-search-backward

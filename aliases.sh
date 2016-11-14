@@ -8,7 +8,7 @@
 ## For a full list of active aliases, run `alias`.
 
 ## Example alias
-alias ohmyzsh='pushd ${ZSH} '
+alias ohmyzsh='pushd "ZSH" '
 
 # Unset previous function/alias iterations
 unset -f fc which define h wd bfg defrag src 2>/dev/null || true
@@ -16,6 +16,7 @@ unalias {1..9} gg history c d h j s u z gbr gco gcs 2>/dev/null || true
 
 ## Custom aliases
 
+alias find='noglob find '
 alias zmv='noglob zmv '
 ## with ag - respects .agignore and .gitignore
 alias fag=' ag --nobreak --nonumbers --noheading . | fzf '
@@ -503,7 +504,7 @@ cf() {
   sep='{{::}}'
   # Copy History DB to circumvent the lock
   # - See http://stackoverflow.com/questions/8936878 for the file path
-  cp -f ~/Library/Application\ Support/Google/Chrome/Default/History /tmp/h
+  cp -f /home/alyptik/.config/chromium/Default/History /tmp/h
 
   sqlite3 -separator $sep /tmp/h \
     "select substr(title, 1, $cols), url
