@@ -167,9 +167,7 @@ plugins=(screen zshmarks tmux tmuxinator gpg-agent ssh-agent archlinux fancy-ctr
 ## ZSH cache
 #ZSH_CACHE_DIR=${HOME}/.oh-my-zsh-cache
 ZSH_CACHE_DIR=${ZSH}/cache
-if [[ ! -d "ZSH_CACHE_DIR" ]]; then
-  mkdir "$ZSH_CACHE_DIR"
-fi
+[[ ! -d "$ZSH_CACHE_DIR" ]] && mkdir "$ZSH_CACHE_DIR"
 zstyle ':completion:*' use-cache yes
 zstyle ':completion::complete:*' cache-path "$ZSH/cache"
 
