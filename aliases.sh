@@ -12,10 +12,11 @@ alias ohmyzsh='pushd "ZSH" '
 
 # Unset previous function/alias iterations
 unset -f fc which define h wd bfg defrag src 2>/dev/null || true
-unalias {1..9} gg history c d h j s u z gbr gco gcs 2>/dev/null || true
+unalias {1..9} gg history c d h j l s u z gbr gco gcs 2>/dev/null || true
 
 ## Custom aliases
 
+alias l='less -RMsw '
 alias mime='xdg-mime '
 alias open='xdg-open '
 alias find='noglob find '
@@ -85,17 +86,19 @@ alias scr='sudo systemctl restart '
 
 alias ls='ls --color=auto '
 #alias la='ls -al --color=auto '
-alias la='ls -lAhqiQFs  --color=auto --time-style=+"%Y-%d-%m %I:%M %p %Z" '
-alias lA='ls -lAhqiQFso  --color=auto --time-style=+"%Y-%d-%m %I:%M %p %Z" '
-alias lB='ls -lAhqiQFXrso  --color=auto --time-style=+"%Y-%d-%m %I:%M %p %Z" '
-alias lC='ls -lAhqiQFSrso  --color=auto --time-style=+"%Y-%d-%m %I:%M %p %Z" '
-alias lD='ls -lAhqiQFtrso  --color=auto --time-style=+"%Y-%d-%m %I:%M %p %Z" '
-alias ll='ls -CBhp --color=auto '
+alias la='ls -lAhiFs --color=auto --time-style=+"%Y-%d-%m %I:%M %p %Z" '
+alias lA='ls -lAhiFXrs --color=auto --time-style=+"%Y-%d-%m %I:%M %p %Z" '
+alias lB='ls -lAhiFSrs --color=auto --time-style=+"%Y-%d-%m %I:%M %p %Z" '
+alias lC='ls -lAhiFtrs --color=auto --time-style=+"%Y-%d-%m %I:%M %p %Z" '
+alias lr='ls -R --color=auto '
+alias lR='ls -lAhiFsR --color=auto --time-style=+"%Y-%d-%m %I:%M %p %Z" '
 alias l.='ls -dCX --color=auto .* '
 alias l..='ls -dCX --color=auto .*/ */ '
+
 alias ..='cd .. '
 alias ...='cd ../../ '
 alias ....='cd ../../../ '
+alias .....='cd ../../../../ '
 ## Colorize the grep command output for ease of use (good for log files)
 alias grep='grep --color=auto '
 alias egrep='egrep --color=auto '
@@ -570,7 +573,7 @@ zhelp() {
 	    [ -r "${ZSH:-/usr/share/oh-my-zsh}/plugins/${i}/" ] && \
 		pushd "${ZSH:-/usr/share/oh-my-zsh}/plugins/${i}/" >/dev/null 2>&1 || \
 		return 2
-	    [ -r "README.md" ] && less "README.md" || less "${i}.plugin.zsh"
+	    [ -r README* ] && less -R README* || less -R "${i}.plugin.zsh"
 	    popd
 	done
 }
@@ -649,6 +652,7 @@ tunssh() {
 }
 
 web_search_custom() {
+	[[ -z "$ZSH" ]] || return 1
 	emulate -L zsh
 	typeset -A urls
 	urls=(reddit "https://www.google.com/search?q=site:reddit.com+" google "https://www.google.com/search?q=" bing "https://www.bing.com/search?q=" yahoo "https://search.yahoo.com/search?p=" duckduckgo "https://www.duckduckgo.com/?q=" yandex "https://yandex.ru/yandsearch?text=" github "https://github.com/search?q=" baidu "https://www.baidu.com/s?wd=" ecosia "https://www.ecosia.org/search?q=")

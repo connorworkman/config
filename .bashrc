@@ -171,6 +171,7 @@ if [ -f /usr/lib/bash-git-prompt/gitprompt.sh ]; then
    # To use upstream's default theme, modified by arch maintainer
    GIT_PROMPT_THEME=Default_Arch
    source /usr/lib/bash-git-prompt/gitprompt.sh
+   source /usr/lib/bash-git-prompt/git-prompt-help.sh
 fi
 
 ## start custom commands

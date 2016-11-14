@@ -391,6 +391,10 @@ au BufNewFile,BufRead *grub* set filetype=grub
 
 au BufWritePost *.c,*.cpp,*.h :silent! !ctags -R &
 
+"command! -nargs=+ Cppman silent! call system("tmux split-window cppman " . expand(<q-args>))
+"au FileType cpp nnoremap <silent><buffer> K <Esc>:Cppman <cword><CR>
+au FileType cpp set keywordprg=cppman
+
 au FileType php setl ofu=phpcomplete#CompletePHP
 au FileType ruby,eruby setl ofu=rubycomplete#Complete
 au FileType html,xhtml setl ofu=htmlcomplete#CompleteTags

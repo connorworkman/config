@@ -498,3 +498,76 @@ bind -e
 set -e
 bind -p | grep 'C-k'
 bind '\C-u' ki-line
+emulat
+emulate
+alias
+alias | grep emulate
+which which
+declare -f
+declare -f | grep emulate
+declare -f | grep emulate -C5
+web_search_custom 
+web_search_custom 
+web_search_custom google.com
+. /home/alyptik/aliases.sh 
+web_search_custom google test
+web_search_custom google.com
+web_search_custom google.com test
+. /home/alyptik/aliases.sh 
+web_search_custom google.com test
+web_search_custom google test
+web_search_custom google test
+which web_search_custom 
+. /home/alyptik/aliases.sh 
+web_search_custom google test
+web_search_custom google test
+. /home/alyptik/aliases.sh 
+web_search_custom google test
+. /home/alyptik/aliases.sh 
+web_search_custom google test
+. /home/alyptik/aliases.sh 
+web_search_custom google test
+. /home/alyptik/aliases.sh 
+web_search_custom google test
+web_search_custom google test
+echo $?
+web_search_custom google test
+return 12
+false
+true
+brc
+f
+fg
+fg
+. /usr/lib/bash-git-prompt/gitprompt.sh 
+. /usr/lib/bash-git-prompt/gitprompt.sh 
+/usr/lib/bash-git-prompt/git-prompt-help.sh 
+. /usr/lib/bash-git-prompt/git-prompt-help.sh 
+< /usr/lib/bash-git-prompt/git-prompt-help.sh 
+l /usr/lib/bash-git-prompt/git-prompt-help.sh 
+pushd /store/config/
+. /usr/lib/bash-git-prompt/git-prompt-help.sh 
+. /usr/lib/bash-git-prompt/gitprompt.sh 
+. /usr/lib/bash-git-prompt/git-prompt-help.sh 
+. ~/.bashrc
+. /usr/lib/bash-git-prompt/git-prompt-help.sh 
+l /usr/lib/bash-git-prompt/git-prompt-help.sh 
+l /usr/lib/bash-git-prompt/gitstatus.sh 
+. l /usr/lib/bash-git-prompt/gitstatus.sh 
+. /usr/lib/bash-git-prompt/gitstatus.sh 
+bash
+. /usr/lib/bash-git-prompt/gitprompt.sh 
+. /usr/lib/bash-git-prompt/gitstatus.sh 
+l /usr/lib/bash-git-prompt/gitstatus.sh 
+/usr/lib/bash-git-prompt/gitstatus.sh 
+s-config 
+/usr/lib/bash-git-prompt/gitstatus.sh 
+/usr/lib/bash-git-prompt/git-prompt-help.sh 
+/usr/lib/bash-git-prompt/git-prompt-help.sh 
+/usr/lib/bash-git-prompt/git-prompt-help.sh  --help
+v /usr/lib/bash-git-prompt/git-prompt-help.sh  
+git_prompt_config 
+git_prompt_help 
+brc
+web_search_custom 
+bash
