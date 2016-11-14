@@ -765,6 +765,7 @@ compdef _scrs scrs
 compdef _scrs scrs2
 compdef _scrs scrs3
 compdef _pacaur apacman
+compdef _man cppman
 
 # {{{ 'hash' some often used directories
 # #d# start

@@ -571,3 +571,4 @@ git_prompt_help
 brc
 web_search_custom 
 bash
+echo $RPROMPT
