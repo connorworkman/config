@@ -168,11 +168,11 @@ cnoremap w!! silent w !sudo dd of=%
 
 map <C-F12> :!ctags -R --c++-kinds=+p --fields=+iaS --extra=+q .<CR>
 
-map <Esc>] <M-]>
-map <Esc>[ <M-[>
+map <Esc>; <M-;>
+map <Esc>' <M-'>
 "map <Esc>\ <M-\>
-nnoremap <M-]> <Esc>:vsplit<CR>:wincmd w<CR>:exec("tag ".expand("<cword>"))<CR>
-nnoremap <M-[> <Esc>:tab split<CR>:exec("tag ".expand("<cword>"))<CR>
+nnoremap <M-;> <Esc>:vsplit<CR>:wincmd w<CR>:exec("tag ".expand("<cword>"))<CR>
+nnoremap <M-'> <Esc>:tab split<CR>:exec("tag ".expand("<cword>"))<CR>
 nnoremap <C-\> <Esc>:WandboxSync<CR>
 
 nnoremap <C-]> g<C-]>
