@@ -173,7 +173,8 @@ map <Esc>' <M-'>
 "map <Esc>\ <M-\>
 nnoremap <M-;> <Esc>:vsplit<CR>:wincmd w<CR>:exec("tag ".expand("<cword>"))<CR>
 nnoremap <M-'> <Esc>:tab split<CR>:exec("tag ".expand("<cword>"))<CR>
-nnoremap <C-\> <Esc>:WandboxSync<CR>
+"nnoremap <C-\> <Esc>:WandboxSync<CR>
+nnoremap <C-\> <Esc>:SCCompileRun<CR>
 
 nnoremap <C-]> g<C-]>
 vnoremap <C-]> g<C-]>
