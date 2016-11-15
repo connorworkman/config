@@ -379,7 +379,7 @@ au BufNewFile,BufRead *.jq setf javascript
 au BufNewFile,BufRead *tmux.conf setf tmux
 au BufNewFile,BufRead *nanorc setf nanorc
 au BufNewFile,BufRead *vimpagerrc setf vim
-au BufNewFile,BufRead *.\(service\|socket\|target\|timer\)* setf sysctl
+au BufNewFile,BufRead *.\(service\|socket\|target\|timer\)* set filetype=sysctl
 "au BufNewFile,BufRead *\(nftables.conf\|.nft\)* setf nftables
 au BufNewFile,BufRead *\(nftables.conf\|.nft\)* set filetype=nftables
 au BufNewFile,BufRead *toxic.conf* set filetype=cfg
