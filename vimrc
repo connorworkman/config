@@ -166,17 +166,19 @@ cnoremap w!! silent w !sudo dd of=%
 "cnoremap w!! silent w !sudo tee %
 "command Sudo silent w !sudo dd of=%
 
-
-
 map <C-F12> :!ctags -R --c++-kinds=+p --fields=+iaS --extra=+q .<CR>
 
-map <C-\> :tab split<CR>:exec("tag ".expand("<cword>"))<CR>
-map <A-]> :vsp <CR>:exec("tag ".expand("<cword>"))<CR>
+map <Esc>] <M-]>
+map <Esc>[ <M-[>
+"map <Esc>\ <M-\>
+nnoremap <M-]> <Esc>:vsplit<CR>:wincmd w<CR>:exec("tag ".expand("<cword>"))<CR>
+nnoremap <M-[> <Esc>:tab split<CR>:exec("tag ".expand("<cword>"))<CR>
+nnoremap <C-\> <Esc>:WandboxSync<CR>
 
-nnoremap <c-]> g<c-]>
-vnoremap <c-]> g<c-]>
-nnoremap g<c-]> <c-]>
-vnoremap g<c-]> <c-]>
+nnoremap <C-]> g<C-]>
+vnoremap <C-]> g<C-]>
+nnoremap g<C-]> <C-]>
+vnoremap g<C-]> <C-]>
 
 " Open a Quickfix window for the last search.
 nnoremap <silent> ,/ :execute 'vimgrep /'.@/.'/g %'<CR>:copen<CR>
@@ -342,7 +344,7 @@ let OmniCpp_MayCompleteDot = 1
 let OmniCpp_MayCompleteArrow = 1
 let OmniCpp_MayCompleteScope = 1
 let g:easytags_on_cursorhold = 1
-let g:easytags_always_enabled = 1
+let g:easytags_always_enabled = 0
 let g:easytags_async = 1
 " colorscheme solarized
 colorscheme gruvbox
