@@ -8,7 +8,7 @@
 ## For a full list of active aliases, run `alias`.
 
 ## Example alias
-alias ohmyzsh='pushd "ZSH" '
+alias ohmyzsh='pushd "$ZSH" >&-'
 
 # Unset previous function/alias iterations
 unset -f fc which define h wd bfg defrag src 2>/dev/null || true
@@ -16,6 +16,7 @@ unalias {1..9} gg history c d h j l s u z gbr gco gcs 2>/dev/null || true
 
 ## Custom aliases
 
+alias scpuled='sudo cpuled console -c nfn >/dev/null 2>&1 & disown'
 alias l='less -RMsw '
 alias mime='xdg-mime '
 alias open='xdg-open '
