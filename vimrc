@@ -324,8 +324,8 @@ if has('gui_running')
   let g:solarized_termcolors=16
   let g:solarized_degrade=0
   let g:solarized_termtrans=0
-  let g:solarized_contrast="low"
-  let g:solarized_visibility="normal"
+  let g:solarized_contrast='low'
+  let g:solarized_visibility='normal'
   set lines=60 columns=108 linespace=0
   set guifont=FiraCode\ Light\ 16
 "  set guifont=Inconsolata\ g\ Light\ 22
@@ -340,26 +340,32 @@ else
   let g:solarized_termcolors=256
   let g:solarized_degrade=0
   let g:solarized_termtrans=1
-  let g:solarized_contrast="high"
-  let g:solarized_visibility="normal"
-  let g:mwDefaultHighlightingPalette = 'maximum'
+  let g:solarized_contrast='high'
+  let g:solarized_visibility='normal'
+  let g:mwDefaultHighlightingPalette='maximum'
 endif
 
-let g:solarized_diffmode="high"
+let g:solarized_diffmode='high'
 let g:solarized_hitrail=1
-let g:gruvbox_contrast_dark="high"
-let g:gruvbox_contrast_light="high"
+let g:gruvbox_contrast_dark='high'
+let g:gruvbox_contrast_light='high'
 let g:gruvbox_improved_strings=0
 let g:gruvbox_improved_warnings=0
-let OmniCpp_MayCompleteDot = 1
-let OmniCpp_MayCompleteArrow = 1
-let OmniCpp_MayCompleteScope = 1
-let g:easytags_on_cursorhold = 1
-let g:easytags_always_enabled = 0
-let g:easytags_async = 1
-let g:easytags_auto_highlight = 0
-let g:easytags_syntax_keyword = "auto"
-let g:easytags_dynamic_files = 1
+let OmniCpp_MayCompleteDot=1
+let OmniCpp_MayCompleteArrow=1
+let OmniCpp_MayCompleteScope=1
+let g:easytags_on_cursorhold=1
+let g:easytags_always_enabled=0
+let g:easytags_async=1
+let g:easytags_auto_highlight=1
+"let g:easytags_syntax_keyword='always'
+let g:easytags_syntax_keyword='auto'
+let g:easytags_dynamic_files=2
+let g:easytags_resolve_links=1
+let g:easytags_include_members=1
+"let g:easytags_events=['BufWritePost', 'CursorHold']
+"let g:easytags_events=['BufWritePost', 'CursorHold', 'CursorHoldI']
+"let g:easytags_events=['CursorHold', 'CursorHoldI']
 
 " colorscheme solarized
 colorscheme gruvbox
@@ -368,29 +374,24 @@ syntax enable
 filetype on
 filetype plugin on
 "set tags=./tags;/
-set tags=~/.vimtags;./tags;/
+set tags=./tags;/;~/.vimtags
+"set regexpengine=2
 set diffopt=filler,context:5,iwhite,vertical
 set omnifunc=syntaxcomplete#Complete
-set nocp
+set nocp verbose=0
 set background=dark
 set mouse=a
-set tabstop=8
-set softtabstop=8
+set noexpandtab tabstop=8 softtabstop=8
 "set shiftwidth=8
 set shiftwidth=4
-set noexpandtab
-set verbose=0
 set display=lastline
 "set showcmd
 set timeout timeoutlen=2500 ttimeoutlen=100
 set pastetoggle=<M-F3>
 set number
-set incsearch
-set ignorecase
-set smartcase
-set magic
-set hidden
 "set relativenumber
+set incsearch ignorecase smartcase
+set magic hidden
 
 "formal: au BufNewFile,BufRead * setf {filetype}
 au BufNewFile,BufRead *.jq setf javascript
@@ -411,7 +412,6 @@ au BufWritePost *.c,*.cc,*.cpp,*.h :silent! !ctags -R &
 au FileType cpp set keywordprg=cppman
 "command! -nargs=+ Cppman silent! call system("tmux split-window cppman " . expand(<q-args>))
 "au FileType cpp nnoremap <silent><buffer> K <Esc>:Cppman <cword><CR>
-
 au FileType php setl ofu=phpcomplete#CompletePHP
 au FileType ruby,eruby setl ofu=rubycomplete#Complete
 au FileType html,xhtml setl ofu=htmlcomplete#CompleteTags
