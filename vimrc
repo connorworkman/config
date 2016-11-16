@@ -166,15 +166,16 @@ cnoremap w!! silent w !sudo dd of=%
 "cnoremap w!! silent w !sudo tee %
 "command Sudo silent w !sudo dd of=%
 
-map <C-F12> :!ctags -R --c++-kinds=+p --fields=+iaS --extra=+q .<CR>
-
 map <Esc>; <M-;>
 map <Esc>' <M-'>
 "map <Esc>\ <M-\>
-nnoremap <M-;> <Esc>:vsplit<CR>:wincmd w<CR>:exec("tag ".expand("<cword>"))<CR>
+noremap <M-;> <Esc>:vsplit<CR>:wincmd w<CR>:exec("tag ".expand("<cword>"))<CR>
+vnoremap <M-;> <Esc>:vsplit<CR>:wincmd w<CR>:exec("tag ".expand("<cword>"))<CR>
 nnoremap <M-'> <Esc>:tab split<CR>:exec("tag ".expand("<cword>"))<CR>
+vnoremap <M-'> <Esc>:tab split<CR>:exec("tag ".expand("<cword>"))<CR>
 "nnoremap <C-\> <Esc>:WandboxSync<CR>
 nnoremap <C-\> <Esc>:SCCompileRun<CR>
+vnoremap <C-\> <Esc>:SCCompileRun<CR>
 
 nnoremap <C-]> g<C-]>
 vnoremap <C-]> g<C-]>
@@ -193,6 +194,9 @@ map [17;5~ <C-F6>
 map [18;5~ <C-F7>
 map [19;5~ <C-F8>
 map [20;5~ <C-F9>
+" Skip F10 and F11
+map [24;5~ <C-F12>
+
 map <Esc><F2> <M-F2>
 map <Esc><F3> <M-F3>
 map <Esc><F4> <M-F4>
@@ -201,6 +205,12 @@ map <Esc><F6> <M-F6>
 map <Esc><F7> <M-F7>
 map <Esc><F8> <M-F8>
 map <Esc><F9> <M-F9>
+" Skip F10 and F11
+map <Esc><F12> <M-F12>
+
+"nnoremap <C-F12> <Esc>:!ctags -R --c++-kinds=+p --fields=+iaS --extra=+q .<CR>
+"vnoremap <C-F12> <Esc>:!ctags -R --c++-kinds=+p --fields=+iaS --extra=+q .<CR>
+
 nnoremap <F2> <Esc>:tabp<CR>
 nnoremap <C-F2> ^
 nnoremap <M-F2> 0dw
@@ -347,13 +357,18 @@ let OmniCpp_MayCompleteScope = 1
 let g:easytags_on_cursorhold = 1
 let g:easytags_always_enabled = 0
 let g:easytags_async = 1
+let g:easytags_auto_highlight = 0
+let g:easytags_syntax_keyword = "auto"
+let g:easytags_dynamic_files = 1
+
 " colorscheme solarized
 colorscheme gruvbox
 syntax on
 syntax enable
 filetype on
 filetype plugin on
-set tags=./tags;/
+"set tags=./tags;/
+set tags=~/.vimtags;./tags;/
 set diffopt=filler,context:5,iwhite,vertical
 set omnifunc=syntaxcomplete#Complete
 set nocp
@@ -379,7 +394,7 @@ set hidden
 
 "formal: au BufNewFile,BufRead * setf {filetype}
 au BufNewFile,BufRead *.jq setf javascript
-au BufNewFile,BufRead *tmux.conf setf tmux
+au BufNewFile,BufRead *tmux.conf set filetype=tmux
 au BufNewFile,BufRead *nanorc setf nanorc
 au BufNewFile,BufRead *vimpagerrc setf vim
 au BufNewFile,BufRead *.\(service\|socket\|target\|timer\)* set filetype=sysctl
@@ -392,10 +407,7 @@ au BufNewFile,BufRead *conf setf cfg
 au BufNewFile,BufRead db.* set filetype=bindzone
 au BufNewFile,BufRead *grub* set filetype=grub
 
-au BufWritePost *.c,*.cpp,*.h :silent! !ctags -R &
-
-"command! -nargs=+ Cppman silent! call system("tmux split-window cppman " . expand(<q-args>))
-"au FileType cpp nnoremap <silent><buffer> K <Esc>:Cppman <cword><CR>
+au BufWritePost *.c,*.cc,*.cpp,*.h :silent! !ctags -R &
 au FileType cpp set keywordprg=cppman
 "command! -nargs=+ Cppman silent! call system("tmux split-window cppman " . expand(<q-args>))
 "au FileType cpp nnoremap <silent><buffer> K <Esc>:Cppman <cword><CR>
@@ -412,7 +424,7 @@ au FileType css setl ofu=csscomplete#CompleteCSS
 "  :20  :  up to 20 lines of command-line history will be remembered
 "  %    :  saves and restores the buffer list
 "  n... :  where to save the viminfo files
-set viminfo=!,\'1000,\"1000,:1000,%,n~/.viminfo
+set viminfo=!,\'100,\"100,:1000,%,n~/.viminfo
 "set viminfo='100,n~/.vim/files/info/viminfo
 "set viminfo+=
 "set viminfo='10,\"100,:20,%,n/store/.viminfo

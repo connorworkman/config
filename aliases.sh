@@ -49,7 +49,7 @@ alias bnginx='sudo tar cvf /store/config/srvbak/nginx-$(date +"%Y-%d-%m").tar /e
 alias em='emerge '
 alias ems='emerge -s '
 alias eq='equery '
-alias gg='web_search_custom google '
+alias gg='web_search google '
 alias pmakepkg='eval $(pump --startup) && . ${HOME}/.profile && makepkg '
 alias j="jump"
 alias b="bookmark"
@@ -60,7 +60,7 @@ alias prc='vim -p ${HOME}/.profile '
 alias brc='vim -p ${HOME}/.bashrc '
 alias zrc='vim -p ${HOME}/.zshrc '
 alias arc='vim -p ${HOME}/aliases.sh '
-alias vrc='sudo vim -p /etc/vimrc '
+alias vrc='vim -p /etc/vimrc '
 alias src='vim -p ${HOME}/.screenrc '
 alias trc='vim -p ${HOME}/.tmux.conf '
 

@@ -761,12 +761,14 @@ function git_prompt_string() {
 ## Source aliases
 [ ! -r $HOME/aliases.sh ] || . ${HOME}/aliases.sh
 safetytoggle -n
+
 compdef _scrs scrs
 compdef _scrs scrs2
 compdef _scrs scrs3
 compdef _pacaur apacman
 compdef _man cppman
 compdef _gnu_generic cower
+compdef _gnu_generic ctags
 
 # {{{ 'hash' some often used directories
 # #d# start
