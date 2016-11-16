@@ -20,7 +20,7 @@ alias scpuled='sudo cpuled console -c nfn >/dev/null 2>&1 & disown'
 alias l='less -RMsw '
 alias mime='xdg-mime '
 alias open='xdg-open '
-alias find='noglob find '
+alias find='find '
 alias zmv='noglob zmv '
 ## with ag - respects .agignore and .gitignore
 alias fag=' ag --nobreak --nonumbers --noheading . | fzf '
