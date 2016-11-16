@@ -321,11 +321,11 @@ if has('gui_running')
   set guioptions=aAeigmrLT
   set clipboard+=unnamedplus
   "set clipboard=unnamedplus,autoselectplus
-  let g:solarized_termcolors=16	"default value is 16
-  let g:solarized_degrade=0		"default value is 0
-  let g:solarized_termtrans=0		"default value is 0
-  let g:solarized_contrast="low"	"default value is normal
-  let g:solarized_visibility="normal"	"default value is normal
+  let g:solarized_termcolors=16
+  let g:solarized_degrade=0
+  let g:solarized_termtrans=0
+  let g:solarized_contrast="low"
+  let g:solarized_visibility="normal"
   set lines=60 columns=108 linespace=0
   set guifont=FiraCode\ Light\ 16
 "  set guifont=Inconsolata\ g\ Light\ 22
@@ -337,16 +337,16 @@ else
   set guioptions=aAeaigmrLT
   set clipboard=unnamedplus,autoselectplus
   "set clipboard+=unnamedplus
-  let g:solarized_termcolors=256	"default value is 16
-  let g:solarized_degrade=0		"default value is 0
-  let g:solarized_termtrans=1		"default value is 0
-  let g:solarized_contrast="high"	"default value is normal
-  let g:solarized_visibility="normal"	"default value is normal
+  let g:solarized_termcolors=256
+  let g:solarized_degrade=0
+  let g:solarized_termtrans=1
+  let g:solarized_contrast="high"
+  let g:solarized_visibility="normal"
   let g:mwDefaultHighlightingPalette = 'maximum'
 endif
 
-let g:solarized_diffmode="high"	"default value is normal
-let g:solarized_hitrail=1	"default value is 0
+let g:solarized_diffmode="high"
+let g:solarized_hitrail=1
 let g:gruvbox_contrast_dark="high"
 let g:gruvbox_contrast_light="high"
 let g:gruvbox_improved_strings=0
