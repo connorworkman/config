@@ -359,8 +359,8 @@ let g:easytags_always_enabled=0
 let g:easytags_async=1
 let g:easytags_auto_highlight=1
 "let g:easytags_syntax_keyword='always'
-let g:easytags_syntax_keyword='auto'
-let g:easytags_dynamic_files=2
+"let g:easytags_syntax_keyword='auto'
+let g:easytags_dynamic_files=0
 let g:easytags_resolve_links=1
 let g:easytags_include_members=1
 "let g:easytags_events=['BufWritePost', 'CursorHold']
@@ -373,12 +373,13 @@ syntax on
 syntax enable
 filetype on
 filetype plugin on
-"set tags=./tags;/
-set tags=./tags;/;~/.vimtags
-"set regexpengine=2
+set tags=~/.vimtags;./tags;/
+"set tags=./tags
+"set regexpengine=1
 set diffopt=filler,context:5,iwhite,vertical
 set omnifunc=syntaxcomplete#Complete
-set nocp verbose=0
+set nocp cpoptions+=d
+set verbose=0
 set background=dark
 set mouse=a
 set noexpandtab tabstop=8 softtabstop=8

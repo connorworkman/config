@@ -781,7 +781,7 @@ ovmf-kvm() {
 			-drive file="${args[1]?No image specified!}",format="$format",aio=native,cache.direct=on \
 			-enable-kvm -usbdevice tablet -machine type=pc,accel=kvm -cpu host -smp "${args[4]:-4}" -show-cursor \
 			-m "${args[3]:-2048}" -net nic -net bridge,br=virbr0,smb=/mnt/shared -vga "${args[5]:-virtio}"
-			-bios "${HOME}/ovmf_x64.bin"
+			-bios "${HOME}/kvmbios.bin"
 			#-spice port=5930,disable-ticketing \
 			#-device "${4:-virtio}"-serial-pci -device virtserialport,chardev=spicechannel0,name=com.redhat.spice.0 \
 			#-chardev spicevmc,id=spicechannel0,name=vdagent \
@@ -791,7 +791,7 @@ ovmf-kvm() {
 			-drive file="${args[1]?No image specified!}",format="$format",aio=native,cache.direct=on \
 			-enable-kvm -usbdevice tablet -machine type=pc,accel=kvm -cpu host -smp "${args[4]:-4}" -show-cursor \
 			-m "${args[3]:-2048}" -net nic -net bridge,br=virbr0,smb=/mnt/shared -vga "${args[5]:-virtio}"
-			-bios "${HOME}/ovmf_x64.bin"
+			-bios "${HOME}/kvmbios.bin"
 			#-spice port=5930,disable-ticketing \
 			#-device "${4:-virtio}"-serial-pci -device virtserialport,chardev=spicechannel0,name=com.redhat.spice.0 \
 			#-chardev spicevmc,id=spicechannel0,name=vdagent \
