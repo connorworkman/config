@@ -766,6 +766,7 @@ compdef _scrs scrs2
 compdef _scrs scrs3
 compdef _pacaur apacman
 compdef _man cppman
+compdef _gnu_generic cower
 
 # {{{ 'hash' some often used directories
 # #d# start
