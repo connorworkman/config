@@ -769,6 +769,7 @@ compdef _pacaur apacman
 compdef _man cppman
 compdef _gnu_generic cower
 compdef _gnu_generic ctags
+compdef _gnu_generic sox
 
 # {{{ 'hash' some often used directories
 # #d# start
