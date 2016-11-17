@@ -46,14 +46,23 @@ X &X::operator=(const T &a) {
 }
 
 template <class T>
+T expon(T n, T e) {
+	T c = 0;
+	for(int k = 0; k < abs(e); k++)
+	    c = c*n;
+	c = (e < 0) ? 1/c : c;
+	return c;
+}
+
+template <class T>
 int get_bit(T x) {
 	int i = 0, b = 0;
 	bool a;
 	//for (i=0; i < 8; i++) {
 	while (i < sizeof(x) * 8) {
-		a = (( 1 << i ) & x) / (int)pow(2,i);
+		a = ((1 << i) & x)/pow(2, i);
 		//printf("%d %d\n",a,i);
-		b += (pow(10,i) * a);
+		b += (pow(10, i) * a);
 		i++;
 	}
 	return b;
