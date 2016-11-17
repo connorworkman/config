@@ -1,0 +1,1 @@
+/home/alyptik/code/aur/nftables/nftables-0.6.tar.bz2.sig

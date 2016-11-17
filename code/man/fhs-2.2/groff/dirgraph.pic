@@ -1,0 +1,91 @@
+# dirgraph.pic
+#
+# Version for FHS 2.1 of 12 February, 2000
+#
+# Display a graphical directory listing with descriptions
+#
+# This file is part of the groff source for the FHS (Filesystem
+# Hierarchy Standard).
+#
+# Copyright (C) 1994-1999 Daniel Quinlan
+# modified in 2000 for FHS 2.1 by Bernd Warken
+#
+# This file is free software; you can redistribute it and/or modify it
+# under the terms of the GNU Library General Public License as published
+# by the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# The GNU C Library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Library General Public License for more details.
+#
+# You should have received a copy of the GNU Library General Public
+# License along with the GNU C Library; see the file COPYING.LIB.  If
+# not, write to the Free Software Foundation, Inc., 59 Temple Place -
+# Suite 330, Boston, MA 02111-1307, USA.
+#
+#######################################################################
+#
+# This file defines functions for graphical elements to display a
+# directory with a description and its entries - files or
+# subdirectories - each with a description as well.  These functions
+# are written in the pic language being part of the groff document
+# preparation system.
+#
+# To use these functions, call the following lines (without the
+# leading comment tokens "# ") from within a groff source file.  This
+# has to be done for every directory picture you want to create.
+#
+# .PS
+# copy "dirgraph.pic"
+# dir("dirname","the directory")
+# sub("entry1","a file")
+# sub("entry2","a subdirectory")
+# .PE
+#
+# There is exactly one call to dir() which represents the header line
+# and for each directory entry there is a sub() call.  For text devices
+# the above example will look something like
+#
+# dirname -- the directory
+# +--entry1         a file
+# +--entry2         a subdirectory
+#
+#######################################################################
+#
+# dir("<dirname>","<description>")
+#
+# Display one line containing a directory name, a dash, and a
+# description for the directory as graphical elements.
+#
+define dir %
+	line invis
+	move to left of last line
+	command ".ds dirgraphEntry \f(CW\fB" $1 "\fR \(em " $2
+	"\*[dirgraphEntry]" ljust
+	command ".rm dirgraphEntry"
+	move to left of last line
+	move down 0.06
+	P: Here
+	move right 0.02
+%
+#######################################################################
+#
+# sub("<entryname>","<description>")
+#
+# Diplay a hook from the line above, the name of the directory entry or
+# subdirectory, and its description, each starting at a fixed position.
+#
+define sub %
+	line down 0.165
+	P: Here
+	line right 0.15
+	move right 0.07
+	line right invis 0.5
+	command ".ds dirgraphEntry \f(CW" $1 "\fR"
+	"\*[dirgraphEntry]" ljust at left of last line
+	command ".rm dirgraphEntry"
+	$2 ljust at right of last line
+	move to P
+%
